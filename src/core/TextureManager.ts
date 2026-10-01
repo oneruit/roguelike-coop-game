@@ -84,8 +84,9 @@ export class TextureManager {
     this.loadBossTextures('boss_demon', renderer);
     this.loadBossTextures('boss_hydra', renderer);
 
-    // Preload revolver bullet sprite
+    // Preload revolver bullet and weapon chakram sprite
     this.getBulletTexture(renderer);
+    this.getChakramTexture(renderer);
 
     // Preload Ronin, Valkyrie, Flail, Sorceress and Chakram hero sprite sheets
     this.loadRoninTextures(renderer);
@@ -152,6 +153,13 @@ export class TextureManager {
   public static getBulletTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
     const tex = this.load('/textures/bullet_revolver.png', renderer);
     tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getChakramTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/weapon_chakram.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     return tex;
   }
