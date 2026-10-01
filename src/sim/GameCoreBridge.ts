@@ -72,6 +72,12 @@ export class GameCoreBridge {
     }
   }
 
+  public revivePlayer(reviverId: string, targetId: string) {
+    if (this.core) {
+      this.core.revivePlayer(reviverId, targetId);
+    }
+  }
+
   public step(dt: number): { events: SimEvent[]; snapshot: SimSnapshot | null } {
     if (this.core && this.mode === 'local_host') {
       const events = this.core.tick(dt);
