@@ -9,6 +9,7 @@ import { DamageNumberManager } from './combat/DamageNumberManager';
 import { Projectile } from './combat/Projectile';
 import { HUD, DetailedPlayerResult } from './ui/HUD';
 import { DevManager } from './ui/DevManager';
+import { DebugHUD } from './ui/DebugHUD';
 import { MapManager } from './ui/MapManager';
 import { NetworkManager, HostSnapshotMessage, ClientSyncMessage, DamageDealtEvent, PlayerStats, NetEvent, PlayerNetState, PLAYER_COLORS, AVAILABLE_SLOT_IDS, NetShotInfo } from './net/NetworkManager';
 import { RemotePlayer } from './entities/RemotePlayer';
@@ -35,8 +36,15 @@ class Game {
   private damageNumbers: DamageNumberManager;
   private hud: HUD;
   private devManager: DevManager;
+  private debugHud: DebugHUD;
   private mapManager: MapManager;
   private net: NetworkManager;
+
+  // Performance Telemetry EMA smoothers
+  private simTimeEma: number = 0;
+  private renderTimeEma: number = 0;
+  private frameTimeEma: number = 0;
+  private fpsEma: number = 0;
 
   // Remote Co-op Teammates (up to 4 teammates in 5-player mode)
   private remotePlayers: Map<string, RemotePlayer> = new Map();
@@ -219,6 +227,12 @@ class Game {
     // P Key Dev Mode Handler
     this.input.onToggleDevMode = () => {
       this.devManager.toggle();
+    };
+
+    // F3 Key Debug Network / Performance HUD Handler
+    this.debugHud = new DebugHUD();
+    this.input.onToggleDebugHud = () => {
+      this.debugHud.toggle();
     };
 
     // Setup Network Listeners
@@ -910,13 +924,86 @@ class Game {
     }
   }
 
+  private getEntityCounts(): { total: number; visible: number; simulated: number } {
+    const projScreenMatrix = new THREE.Matrix4();
+    projScreenMatrix.multiplyMatrices(this.engine.camera.projectionMatrix, this.engine.camera.matrixWorldInverse);
+    const frustum = new THREE.Frustum();
+    frustum.setFromProjectionMatrix(projScreenMatrix);
+
+    let total = 0;
+    let visible = 0;
+    let simulated = 0;
+
+    // 1. Local Player
+    total += 1;
+    simulated += 1;
+    if (frustum.containsPoint(this.player.position)) {
+      visible += 1;
+    }
+
+    // 2. Remote Players
+    for (const remote of this.remotePlayers.values()) {
+      total += 1;
+      simulated += 1;
+      if (frustum.containsPoint(remote.position)) {
+        visible += 1;
+      }
+    }
+
+    // 3. Enemies
+    const enemies = this.enemyManager.enemies;
+    for (let i = 0; i < enemies.length; i++) {
+      const enemy = enemies[i];
+      if (!enemy.isAlive) continue;
+      total += 1;
+      const distSq = enemy.position.distanceToSquared(this.player.position);
+      if (distSq <= 55 * 55) {
+        simulated += 1;
+      }
+      if (frustum.containsPoint(enemy.position)) {
+        visible += 1;
+      }
+    }
+
+    // 4. Projectiles
+    const projs = this.projectiles;
+    for (let i = 0; i < projs.length; i++) {
+      const p = projs[i];
+      if (!p.isAlive) continue;
+      total += 1;
+      simulated += 1;
+      if (frustum.containsPoint(p.position)) {
+        visible += 1;
+      }
+    }
+
+    // 5. Drops / Gems
+    const gems = this.dropManager.gems;
+    for (let i = 0; i < gems.length; i++) {
+      const g = gems[i];
+      total += 1;
+      const distSq = g.position.distanceToSquared(this.player.position);
+      if (distSq <= 45 * 45) {
+        simulated += 1;
+      }
+      if (frustum.containsPoint(g.position)) {
+        visible += 1;
+      }
+    }
+
+    return { total, visible, simulated };
+  }
+
   private loop = () => {
     requestAnimationFrame(this.loop);
 
     const now = performance.now();
+    const frameTimeMs = now - this.lastTime;
     const rawDt = (now - this.lastTime) / 1000;
     const fps = rawDt > 0 ? 1 / rawDt : 60;
     this.lastTime = now;
+
+    const simStart = performance.now();
 
     // Apply Dev Mode timeScale (1x, 2x, 5x)
     let dt = rawDt * this.devManager.timeScale;
@@ -1212,8 +1299,43 @@ class Game {
       this.engine.updateCamera(this.player.position, dt);
     }
 
+    const simEnd = performance.now();
+    const simDuration = simEnd - simStart;
+
     // Render Scene
+    const renderStart = performance.now();
     this.engine.render();
+    const renderEnd = performance.now();
+    const renderDuration = renderEnd - renderStart;
+
+    // Smooth telemetry with Exponential Moving Average (EMA)
+    this.simTimeEma = this.simTimeEma === 0 ? simDuration : this.simTimeEma * 0.85 + simDuration * 0.15;
+    this.renderTimeEma = this.renderTimeEma === 0 ? renderDuration : this.renderTimeEma * 0.85 + renderDuration * 0.15;
+    this.frameTimeEma = this.frameTimeEma === 0 ? frameTimeMs : this.frameTimeEma * 0.85 + frameTimeMs * 0.15;
+    this.fpsEma = this.fpsEma === 0 ? fps : this.fpsEma * 0.85 + fps * 0.15;
+
+    // Update Debug Network / Performance HUD
+    if (this.debugHud.getIsOpen()) {
+      const netStats = this.net.getDebugStats();
+      const counts = this.getEntityCounts();
+      this.debugHud.update({
+        fps: this.fpsEma,
+        frameTime: this.frameTimeEma,
+        simulationTime: this.simTimeEma,
+        renderingTime: this.renderTimeEma,
+        entitiesTotal: counts.total,
+        entitiesVisible: counts.visible,
+        entitiesSimulated: counts.simulated,
+        rtt: netStats.rtt,
+        jitter: netStats.jitter,
+        packetLoss: netStats.packetLoss,
+        connection: netStats.connection,
+        route: netStats.route,
+        turn: netStats.turn,
+        uploadKbps: netStats.uploadKbps,
+        downloadKbps: netStats.downloadKbps
+      });
+    }
   };
 
   private broadcastNetworkState() {

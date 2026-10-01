@@ -2492,3 +2492,34 @@ body, html {
   0% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
   100% { opacity: 0; transform: translate(-50%, -100%) scale(0.9); }
 }
+
+/* ==========================================================================
+   DEBUG NETWORK / PERFORMANCE HUD (F3)
+   ========================================================================== */
+.debug-hud {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 100000;
+  pointer-events: none;
+  user-select: none;
+  background: rgba(11, 8, 14, 0.92);
+  border: 1px solid var(--border-plum-bright, #682e73);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.debug-hud.hidden {
+  display: none !important;
+}
+
+.debug-hud-text {
+  margin: 0;
+  padding: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #38bdf8;
+  white-space: pre;
+}
+
