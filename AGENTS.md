@@ -4,6 +4,27 @@ This document defines the mandatory Git workflow for all AI agents (including An
 
 ---
 
+## The Agent Lifecycle Chain
+
+All work in this repository must strictly follow this sequential chain:
+
+```mermaid
+flowchart TD
+    A["1. Agent receives task"] --> B["2. Sync upstream & create dedicated branch"]
+    B --> C["3. Implement changes & verify locally (typecheck & build)"]
+    C --> D["4. Stage & commit (Conventional Commits)"]
+    D --> E["5. Push branch to origin"]
+    E --> F["6. Open Pull Request targeting base (master/main)"]
+    F --> G["7. Trigger GitHub Actions CI"]
+    G --> H{"Required checks status & conflicts"}
+    H -- "ALL CHECKS GREEN & NO CONFLICTS" --> I["8. AUTO-MERGE Pull Request"]
+    I --> J["9. Task Completed Cleanly"]
+    H -- "CI FAILURE (RED) / CONFLICT / BLOCKER" --> K["8. STOP IMMEDIATELY"]
+    K --> L["9. Report failure details & await manual human fix"]
+```
+
+---
+
 ## 12 Golden Rules for Agents
 
 1. **Never work directly on `main` (or default branch `master`).**
@@ -29,21 +50,23 @@ This document defines the mandatory Git workflow for all AI agents (including An
      npm run typecheck
      npm run build
      ```
-   - Do not push if either check fails. Fix all errors before proceeding.
+   - Do not push if either check fails. Fix all errors locally before proceeding.
 7. **Push the branch to `origin`:**
    - Set the upstream tracking branch on first push: `git push -u origin <branch-name>`.
-8. **Create a Pull Request targeting `main`:**
-   - PR must target `main` (or the repository default branch, e.g., `master`).
+8. **Create a Pull Request targeting `main` (or `master`):**
+   - PR must target the default branch.
    - Include a concise title, description of changes, and verification steps in the PR description.
-9. **NEVER merge Pull Requests automatically:**
-   - Agents must never auto-merge, squash-merge, or fast-forward merge PRs into `main`. Merging is strictly reserved for the human repository owner/reviewer.
+9. **Auto-Merge on Green CI Only; Halt on Any Error:**
+   - **Green path**: If all required CI status checks pass (green) and there are no merge conflicts, the PR is automatically merged into the base branch (using GitHub auto-merge or agent merge).
+   - **Red / Blocker path**: If CI fails, if a merge conflict is detected, or if any check is red/blocked, the agent **MUST STOP IMMEDIATELY**.
+   - **Strict human-in-the-loop rule**: Never attempt to bypass branch protection, never force-merge a broken build, and never repeatedly push blind attempts. Report diagnostic details to the user and wait for human intervention.
 10. **NEVER force-push (`--force` or `--force-with-lease`):**
     - Prohibited unless explicitly and directly commanded by the user in chat.
-11. **Rebase if `main` updated while working:**
-    - If the base branch advanced while developing, rebase the feature branch onto `origin/main` before pushing/finalizing:
+11. **Rebase if base branch updated while working:**
+    - If the base branch advanced while developing, rebase the feature branch onto `origin/master` (or `origin/main`) before pushing:
       ```bash
       git fetch origin
-      git rebase origin/main
+      git rebase origin/master
       ```
     - Resolve any conflicts, re-run verification (`npm run build`), and verify clean state.
 12. **Keep commits focused and atomic:**
@@ -58,7 +81,7 @@ This document defines the mandatory Git workflow for all AI agents (including An
 Identify the base branch (`main` or `master`) and update local tracking:
 ```bash
 # Check primary branch (default is main or master)
-BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "master")
 
 # Fetch latest from remote
 git fetch origin
@@ -115,10 +138,10 @@ git commit -m "feat(world): add altar interaction buffs and visual indicators"
 | `docs` | Documentation only | `docs: update architecture overview in docs/` |
 
 ### Step 5: Check for Upstream Divergence & Rebase
-If `origin/main` has new commits:
+If `origin/master` (or `origin/main`) has new commits:
 ```bash
 git fetch origin
-git rebase origin/main # or origin/master
+git rebase origin/master
 ```
 If there are conflicts:
 1. Resolve conflicts in files.
@@ -131,29 +154,52 @@ If there are conflicts:
 git push -u origin feature/<name>
 ```
 
-### Step 7: Create a Pull Request (Targeting `main` / `master`)
+### Step 7: Create Pull Request & Enable Auto-Merge
 If the GitHub CLI (`gh`) is available:
 ```bash
+# 1. Create the PR targeting master
 gh pr create --base master --head feature/<name> --title "feat(world): add altar buffs" --body "### Summary of changes\n- Added altar interaction..."
+
+# 2. Enable auto-merge (will merge automatically once required CI checks pass)
+gh pr merge feature/<name> --auto --merge
 ```
+*(If `--merge` is not allowed by repo settings, use `--squash` or `--rebase` according to repository policy).*
+
 If `gh` CLI is not installed, output the direct web comparison URL for the user to open and review:
 ```text
 https://github.com/oneruit/roguelike-coop-game/compare/master...feature/<name>?expand=1
 ```
 
-### Step 8: Complete Turn — Do Not Auto-Merge
-- Inform the user that the branch has been pushed and provide the PR link.
-- **Do not merge the PR.** Wait for user review and approval.
+### Step 8: CI Evaluation & Stop Protocol
+
+Once the PR is created, CI is triggered via GitHub Actions:
+- **Case A: All Required Checks Pass (GREEN) & No Conflicts**
+  - The Pull Request auto-merges into the base branch automatically.
+  - The agent reports the successful run, merged status, and clean completion.
+
+- **Case B: CI Check Fails (RED), Merge Conflict, or Blocker Detected**
+  - **STOP IMMEDIATELY.**
+  - **DO NOT** attempt to force-merge, bypass required checks, or push speculative workarounds without human direction.
+  - Formulate a clear diagnosis for the human developer:
+    1. Which check failed (e.g. `Build & Verify (Node 22.x)`).
+    2. The exact error messages, stack trace, or conflicting files.
+    3. Suggested manual resolution steps.
+  - Wait for the human developer to manually resolve the problem and instruct how to proceed.
 
 ---
 
-## CI/CD Automation
+## CI/CD Automation & GitHub Settings
 
 This repository runs automated GitHub Actions on every pull request and push to `main` and `master`:
-- **Workflow**: `.github/workflows/ci.yml`
+- **Workflow file**: `.github/workflows/ci.yml`
 - **Checks performed**:
   - `npm ci`
   - `npm run typecheck` (`tsc --noEmit`)
   - `npm run build` (`tsc && vite build`)
   - Verification across Node.js versions (20.x, 22.x)
-- Any failing checks will block PR merge. Agents must ensure all checks pass before concluding their work.
+
+### Prerequisites for GitHub Auto-Merge:
+1. **Enable Auto-Merge**: Repository Settings → General → Pull Requests → Check **"Allow auto-merge"**.
+2. **Branch Protection**: Repository Settings → Branches → Add rule for `master` (or `main`):
+   - Check **"Require status checks to pass before merging"**.
+   - Select required status checks: `Build & Verify (Node 20.x)` and `Build & Verify (Node 22.x)`.
