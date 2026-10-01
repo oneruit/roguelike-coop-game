@@ -631,12 +631,17 @@ export class NetworkManager {
   }
 
   private removeGuest(assignedId: string) {
+    if (!this.connections.has(assignedId) && !this.lobbyPlayers.some((p) => p.id === assignedId)) {
+      return;
+    }
     this.connections.delete(assignedId);
     const prevCount = this.lobbyPlayers.length;
     this.lobbyPlayers = this.lobbyPlayers.filter((p) => p.id !== assignedId);
 
     if (this.lobbyPlayers.length !== prevCount) {
       this.broadcastLobbyUpdate();
+      // Forward guest disconnection to other connected clients
+      this.send({ type: 'DISCONNECT', playerId: assignedId });
       if (this.onPartnerDisconnected) {
         this.onPartnerDisconnected(assignedId);
       }
@@ -984,10 +989,32 @@ export class NetworkManager {
       }
 
       case 'DISCONNECT': {
-        if (this.role === 'host' && msg.playerId && msg.playerId !== 'p1') {
-          this.removeGuest(msg.playerId);
-        } else {
-          this.handleDisconnect();
+        const discPlayerId = msg.playerId;
+        if (discPlayerId && discPlayerId === this.myId) {
+          break;
+        }
+
+        const isHostDisconnect = discPlayerId === 'p1' || discPlayerId === 'host' || !discPlayerId;
+
+        if (this.role === 'host') {
+          if (discPlayerId && discPlayerId !== 'p1' && discPlayerId !== 'host') {
+            this.removeGuest(discPlayerId);
+          } else {
+            this.handleDisconnect();
+          }
+        } else if (this.role === 'client') {
+          if (isHostDisconnect) {
+            this.handleDisconnect();
+          } else {
+            // A peer guest disconnected: remove from lobby and notify game, but keep playing!
+            this.lobbyPlayers = this.lobbyPlayers.filter((p) => p.id !== discPlayerId);
+            if (this.onPartnerDisconnected && discPlayerId) {
+              this.onPartnerDisconnected(discPlayerId);
+            }
+            if (this.onLobbyStateChanged) {
+              this.onLobbyStateChanged(this.lobbyPlayers);
+            }
+          }
         }
         break;
       }

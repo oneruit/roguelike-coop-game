@@ -227,8 +227,11 @@ class Game {
       }
     };
 
-    // P Key Dev Mode Handler
+    // P Key Dev Mode Handler (Host only in Co-op)
     this.input.onToggleDevMode = () => {
+      if (this.net.role === 'client') {
+        return;
+      }
       this.devManager.toggle();
     };
 
@@ -240,6 +243,12 @@ class Game {
 
     // Setup Network Listeners
     this.setupNetworkCallbacks();
+    this.devManager.isHost = () => this.net.role !== 'client';
+    this.devManager.isCoop = () => this.net.role !== 'solo';
+    this.devManager.onBroadcastDevAction = (action, value) => {
+      this.handleHostDevAction(action, value);
+    };
+
     window.addEventListener('beforeunload', () => {
       this.net.reset();
     });
@@ -454,12 +463,113 @@ class Game {
         this.remotePlayers.delete(slotId);
         this.syncMapManagerPartners();
         this.hud.updateTeammates(this.remotePlayers);
+        this.enemyManager.activePlayerCount = Math.max(1, 1 + this.remotePlayers.size);
       }
     };
 
     this.net.onHostDisconnected = () => {
       this.returnToMainMenu();
     };
+
+    this.net.onDevActionReceived = (action, value) => {
+      this.handleClientDevAction(action, value);
+    };
+  }
+
+  private handleHostDevAction(action: string, value?: any) {
+    if (this.net.role !== 'host') return;
+
+    // Apply cheat to remote players representation on host
+    switch (action) {
+      case 'full_heal':
+        for (const remote of this.remotePlayers.values()) {
+          remote.hp = remote.maxHp;
+          remote.isDowned = false;
+          remote.reviveProgress = 0;
+          remote.redrawOverhead();
+        }
+        break;
+      case 'buff':
+        if (value) {
+          for (const remote of this.remotePlayers.values()) {
+            remote.activeBuffs.set(value.type, { ...value });
+          }
+        }
+        break;
+      case 'level_up':
+        for (const remote of this.remotePlayers.values()) {
+          remote.level += (value || 1);
+          remote.redrawOverhead();
+        }
+        break;
+      case 'xp_1000':
+        if (typeof value === 'number') {
+          for (const remote of this.remotePlayers.values()) {
+            remote.gainXp(value);
+            remote.redrawOverhead();
+          }
+        }
+        break;
+    }
+
+    // Broadcast cheat action to all connected clients in the session
+    this.net.send({ type: 'DEV_ACTION', action, value });
+  }
+
+  private handleClientDevAction(action: string, value?: any) {
+    switch (action) {
+      case 'toggle_god':
+        this.player.isGodMode = !!value;
+        this.player.redrawOverhead();
+        break;
+      case 'full_heal':
+        this.player.fullHeal();
+        if (this.player.isDowned) {
+          this.player.revive();
+        }
+        this.player.redrawOverhead();
+        break;
+      case 'toggle_speed':
+        this.player.isSpeedCheat = !!value;
+        this.player.recalculateStats();
+        break;
+      case 'toggle_onehit':
+        this.player.isOneHitKill = !!value;
+        this.player.recalculateStats();
+        break;
+      case 'buff':
+        if (value) {
+          this.player.addBuff({ ...value });
+        }
+        break;
+      case 'time_scale':
+        if (typeof value === 'number') {
+          this.devManager.timeScale = value;
+        }
+        break;
+      case 'level_up':
+        this.pendingLevelUps += (value || 1);
+        this.triggerLevelUp();
+        break;
+      case 'xp_1000':
+        if (typeof value === 'number' && value > 0) {
+          const lvls = this.player.gainXp(value);
+          if (lvls > 0) {
+            this.pendingLevelUps += lvls;
+            this.triggerLevelUp();
+          }
+        }
+        break;
+      case 'all_weapons':
+        this.player.giveAllWeapons(this.engine.scene);
+        break;
+      case 'max_weapons':
+        this.player.maxAllWeapons();
+        break;
+      case 'vacuum':
+        this.dropManager.vacuumAll();
+        break;
+    }
   }
 
   private syncMapManagerPartners() {
@@ -475,6 +585,12 @@ class Game {
     this.remotePlayers.clear();
     this.syncMapManagerPartners();
     this.enemyManager.activePlayerCount = 1;
+
+    this.player.isGodMode = false;
+    this.player.isSpeedCheat = false;
+    this.player.isOneHitKill = false;
+    this.player.recalculateStats();
+    this.devManager.reset();
 
     this.player.isCoop = false;
     this.player.displayName = 'Вы';

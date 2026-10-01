@@ -380,7 +380,7 @@ export class RemotePlayer {
     tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
   }
 
-  private redrawOverhead() {
+  public redrawOverhead() {
     this.lastDrawnHp = this.hp;
     this.lastDrawnDowned = this.isDowned;
     this.lastDrawnRevive = this.reviveProgress;
