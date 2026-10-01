@@ -1,4 +1,9 @@
-name: Auto PR & Auto-Merge
+name: Auto PR & Auto-Merge (Fallback)
+
+# NOTE: This workflow is the FALLBACK mechanism.
+# The primary PR creation is performed by the agent locally via `gh pr create`.
+# This workflow triggers automatically on push to agent branches in case
+# the agent's local `gh` command failed or was skipped.
 
 on:
   push:
@@ -31,34 +36,46 @@ jobs:
           BRANCH="${GITHUB_REF#refs/heads/}"
           DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
 
-          echo "Target branch: $BRANCH -> $DEFAULT_BRANCH"
+          echo "Branch: $BRANCH → $DEFAULT_BRANCH"
 
           if [ "$BRANCH" = "$DEFAULT_BRANCH" ]; then
             echo "Default branch detected, skipping."
             exit 0
           fi
 
+          # Check if PR already exists (created by the agent locally)
           EXISTING_PR=$(gh pr list --head "$BRANCH" --base "$DEFAULT_BRANCH" --json number --jq '.[0].number')
 
           if [ -z "$EXISTING_PR" ]; then
+            echo "No existing PR found — creating fallback PR..."
+
             COMMIT_TITLE=$(git log -1 --pretty=%s)
             COMMIT_BODY=$(git log -1 --pretty=%b)
-            echo "Creating Pull Request..."
+
+            # Build a rich PR body with full commit list
+            COMMIT_LOG=$(git log origin/"$DEFAULT_BRANCH"..HEAD --pretty=format:"- \`%h\` %s" 2>/dev/null | head -20)
+
             gh pr create \
               --base "$DEFAULT_BRANCH" \
               --head "$BRANCH" \
               --title "$COMMIT_TITLE" \
-              --body "### Automated Pull Request
-Branch: \`$BRANCH\`
-Pushed by: \`${{ github.actor }}\`
+              --body "### Automated Pull Request (Fallback via GitHub Actions)
+**Branch:** \`$BRANCH\`
+**Pushed by:** \`${{ github.actor }}\`
 
 $COMMIT_BODY
 
+#### Commits in this PR
+$COMMIT_LOG
+
 ---
-*Created automatically. Configured for auto-merge if checks pass with zero conflicts.*"
+*Created automatically by the fallback workflow. The agent's local \`gh pr create\` was not executed or failed.*
+*Auto-merge is enabled and will trigger once CI passes with no conflicts.*"
           else
-            echo "PR #$EXISTING_PR already exists."
+            echo "PR #$EXISTING_PR already exists (created by agent). Skipping PR creation."
           fi
 
           echo "Enabling auto-merge..."
-          gh pr merge "$BRANCH" --auto --merge || gh pr merge "$BRANCH" --auto --squash || echo "Auto-merge queueing finished or requires repository setting activation."
+          gh pr merge "$BRANCH" --auto --merge \
+            || gh pr merge "$BRANCH" --auto --squash \
+            || echo "⚠️ Auto-merge queueing failed — check repository settings (auto-merge must be enabled)."
