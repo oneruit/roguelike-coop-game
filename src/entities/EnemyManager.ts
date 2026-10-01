@@ -585,10 +585,13 @@ export class EnemyManager {
     amount: number,
     sourcePos?: THREE.Vector3,
     camera?: THREE.Camera,
-    hitter: string = 'p1'
+    hitter: string = 'p1',
+    showDamageNumber: boolean = true
   ) {
     const isDead = enemy.takeDamage(amount, sourcePos, hitter);
-    this.damageNumbers.spawnDamage(enemy.position, amount, amount > 28, camera);
+    if (showDamageNumber && camera) {
+      this.damageNumbers.spawnDamage(enemy.position, amount, amount > 28, camera);
+    }
     SoundManager.playHit();
     return isDead;
   }
@@ -708,11 +711,12 @@ export class EnemyManager {
     amount: number,
     sourcePos?: THREE.Vector3,
     camera?: THREE.Camera,
-    hitter: string = 'client'
+    hitter: string = 'client',
+    showDamageNumber: boolean = false
   ) {
     const enemy = this.enemies.find((e) => e.id === enemyId);
     if (enemy && enemy.isAlive) {
-      return this.damageEnemy(enemy, amount, sourcePos, camera, hitter);
+      return this.damageEnemy(enemy, amount, sourcePos, camera, hitter, showDamageNumber);
     }
     return false;
   }

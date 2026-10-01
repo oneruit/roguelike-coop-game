@@ -268,6 +268,17 @@ export class RemotePlayer {
     }
   }
 
+  public gainXp(amount: number) {
+    this.xp += amount;
+    while (this.xp >= this.xpToNextLevel) {
+      this.xp -= this.xpToNextLevel;
+      this.level++;
+      this.xpToNextLevel = Math.floor(10 * Math.pow(1.3, this.level - 1));
+      this.lastDrawnHp = -1;
+      this.redrawOverhead();
+    }
+  }
+
   public update(dt: number) {
     this.pulseTimer += dt;
 
@@ -435,20 +446,32 @@ export class RemotePlayer {
       const barX = 26;
       const barY = 48;
       const barW = w - 52;
-      const barH = 14;
+      const barH = 16;
 
       // Track
-      ctx.fillStyle = 'rgba(30, 10, 10, 0.85)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.roundRect(barX, barY, barW, barH, 7);
+      ctx.roundRect(barX, barY, barW, barH, 6);
       ctx.fill();
+      ctx.stroke();
 
       // Fill
       const hpPct = Math.max(0, Math.min(1, this.hp / (this.maxHp || 100)));
-      ctx.fillStyle = hpPct > 0.35 ? '#10b981' : '#ef4444';
-      ctx.beginPath();
-      ctx.roundRect(barX + 2, barY + 2, (barW - 4) * hpPct, barH - 4, 5);
-      ctx.fill();
+      ctx.fillStyle = hpPct > 0.5 ? '#10b981' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      if (hpPct > 0) {
+        ctx.beginPath();
+        ctx.roundRect(barX + 2, barY + 2, (barW - 4) * hpPct, barH - 4, 4);
+        ctx.fill();
+      }
+
+      // Numeric HP Text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 11px "Cinzel", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
     }
 
     this.overheadTexture.needsUpdate = true;

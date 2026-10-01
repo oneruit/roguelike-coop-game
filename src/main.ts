@@ -167,9 +167,6 @@ class Game {
     );
     this.devManager.isHost = () => this.net.role !== 'client';
     this.devManager.isCoop = () => this.player.isCoop;
-    this.devManager.onBroadcastDevAction = (action, value) => {
-      this.handleHostDevAction(action, value);
-    };
 
     // Map Manager (Minimap & Full Desert Map on TAB)
     this.mapManager = new MapManager(
@@ -463,73 +460,6 @@ class Game {
     this.net.onHostDisconnected = () => {
       this.returnToMainMenu();
     };
-
-    this.net.onDevActionReceived = (action, value) => {
-      this.handleClientDevAction(action, value);
-    };
-  }
-
-  private handleHostDevAction(action: string, value?: any) {
-    if (this.net.role !== 'host') return;
-    if (action === 'full_heal') {
-      for (const remote of this.remotePlayers.values()) {
-        remote.hp = remote.maxHp;
-        remote.isDowned = false;
-        remote.reviveProgress = 0;
-      }
-    }
-    this.net.send({ type: 'DEV_ACTION', action, value });
-  }
-
-  private handleClientDevAction(action: string, value?: any) {
-    switch (action) {
-      case 'toggle_god':
-        this.player.isGodMode = !!value;
-        break;
-      case 'full_heal':
-        this.player.fullHeal();
-        if (this.player.isDowned) {
-          this.player.revive();
-        }
-        break;
-      case 'toggle_speed':
-        this.player.isSpeedCheat = !!value;
-        this.player.recalculateStats();
-        break;
-      case 'toggle_onehit':
-        this.player.isOneHitKill = !!value;
-        this.player.recalculateStats();
-        break;
-      case 'buff':
-        if (value) {
-          this.player.addBuff(value);
-        }
-        break;
-      case 'time_scale':
-        if (typeof value === 'number') {
-          this.devManager.timeScale = value;
-        }
-        break;
-      case 'level_up':
-        this.pendingLevelUps += (value || 1);
-        this.triggerLevelUp();
-        break;
-      case 'xp_1000':
-        if (typeof value === 'number' && value > 0) {
-          this.pendingLevelUps += value;
-          this.triggerLevelUp();
-        }
-        break;
-      case 'all_weapons':
-        this.player.giveAllWeapons(this.engine.scene);
-        break;
-      case 'max_weapons':
-        this.player.maxAllWeapons();
-        break;
-      case 'vacuum':
-        this.dropManager.vacuumAll();
-        break;
-    }
   }
 
   private syncMapManagerPartners() {
@@ -547,7 +477,10 @@ class Game {
     this.enemyManager.activePlayerCount = 1;
 
     this.player.isCoop = false;
+    this.player.displayName = 'Вы';
+    this.player.colorCss = '#f59e0b';
     this.player.setCharacter(charType);
+    this.player.redrawOverhead();
     this.hud.setCoopBadge(null);
     this.hud.clearTeammates();
     this.hud.hidePartnerHp();
@@ -584,7 +517,10 @@ class Game {
     this.syncMapManagerPartners();
     this.hud.updateTeammates(this.remotePlayers);
 
+    this.player.displayName = 'Игрок 1 (Вы)';
+    this.player.colorCss = '#f59e0b';
     this.player.isCoop = true;
+    this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
     this.restartGame(new THREE.Vector3(0, 0, 0));
 
@@ -626,7 +562,11 @@ class Game {
     this.hud.updateTeammates(this.remotePlayers);
 
     const myOffset = spawnOffsets[this.net.mySlotId] || [2.5, 0.5];
+    const mySlot = this.net.mySlotId || 'p2';
+    this.player.displayName = getPlayerSlotDisplayName(mySlot, true);
+    this.player.colorCss = PLAYER_COLORS[mySlot]?.css || '#06b6d4';
     this.player.isCoop = true;
+    this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
     this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]));
   }
@@ -655,6 +595,11 @@ class Game {
     this.mapManager.close();
 
     this.player.reset();
+    this.devManager.reset();
+    this.player.isGodMode = false;
+    this.player.isSpeedCheat = false;
+    this.player.isOneHitKill = false;
+    this.player.recalculateStats();
     this.allPlayerStats.clear();
     this.recentlyDeadEnemyIds.clear();
     this.pendingDamageToClients.clear();
@@ -781,6 +726,11 @@ class Game {
     const initialPos = pos || new THREE.Vector3(myOffset[0], 0, myOffset[1]);
 
     this.player.reset(initialPos);
+    this.devManager.reset();
+    this.player.isGodMode = false;
+    this.player.isSpeedCheat = false;
+    this.player.isOneHitKill = false;
+    this.player.recalculateStats();
     this.engine.chunkManager.update(this.player.position);
     this.mapManager.clear();
     this.mapManager.close();
@@ -815,18 +765,10 @@ class Game {
         this.remotePlayers.set(id, remote);
         this.syncMapManagerPartners();
       }
-      const prevLvl = remote.level;
-      const prevXp = remote.xp;
       if (pState.level < remote.level) {
         pState.level = remote.level;
       }
       remote.syncState(pState);
-      if (remote.level > prevLvl && prevLvl > 0) {
-        this.damageNumbers.spawnLevelUp(remote.position, remote.level, this.engine.camera);
-        SoundManager.playLevelUp();
-      } else if (remote.xp > prevXp && prevXp > 0 && remote.level === prevLvl) {
-        this.damageNumbers.spawnXp(remote.position, remote.xp - prevXp, this.engine.camera);
-      }
     }
 
     // Remove any remote players no longer present
@@ -927,18 +869,10 @@ class Game {
       this.remotePlayers.set(clientId, remote);
       this.syncMapManagerPartners();
     }
-    const prevLvl = remote.level;
-    const prevXp = remote.xp;
     if (msg.clientPlayer.level < remote.level) {
       msg.clientPlayer.level = remote.level;
     }
     remote.syncState(msg.clientPlayer);
-    if (remote.level > prevLvl && prevLvl > 0) {
-      this.damageNumbers.spawnLevelUp(remote.position, remote.level, this.engine.camera);
-      SoundManager.playLevelUp();
-    } else if (remote.xp > prevXp && prevXp > 0 && remote.level === prevLvl) {
-      this.damageNumbers.spawnXp(remote.position, remote.xp - prevXp, this.engine.camera);
-    }
 
     if (msg.clientStats) {
       const st = this.allPlayerStats.get(clientId) || { kills: 0, damageDealt: 0, level: 1, revives: 0 };
@@ -1288,10 +1222,8 @@ class Game {
         pickupRadius: remote.isDowned ? 0 : 4.2,
         isAlive: true,
         isDowned: remote.isDowned,
-        onCollect: (xp: number, _gem: Gem) => {
-          if (this.net.role === 'host') {
-            this.damageNumbers.spawnXp(remote.position, xp, this.engine.camera);
-          }
+        onCollect: (xp: number) => {
+          remote.gainXp(xp);
         }
       });
     }

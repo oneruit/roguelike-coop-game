@@ -99,6 +99,19 @@ export class Player {
   public totalDamageDealt: number = 0;
   public revivesCount: number = 0;
 
+  // Overhead 3D Canvas Billboard (Name, HP, Revive Bar)
+  public displayName: string = 'Игрок 1 (Вы)';
+  public colorCss: string = '#f59e0b';
+  private overheadCanvas: HTMLCanvasElement;
+  private overheadCtx: CanvasRenderingContext2D;
+  private overheadTexture: THREE.CanvasTexture;
+  private overheadSprite: THREE.Sprite;
+  private lastDrawnHp: number = -1;
+  private lastDrawnMaxHp: number = -1;
+  private lastDrawnLevel: number = -1;
+  private lastDrawnDowned: boolean = false;
+  private lastDrawnRevive: number = -1;
+
   constructor(scene: THREE.Scene, charType: CharacterType = 'ronin') {
     this.charType = charType;
     this.position = new THREE.Vector3(0, 0, 0);
@@ -135,12 +148,32 @@ export class Player {
     light.position.set(0, 1.2, 0.4);
     this.mesh.add(light);
 
+    // Overhead 3D Canvas Billboard (Name, HP, Revive Bar)
+    this.overheadCanvas = document.createElement('canvas');
+    this.overheadCanvas.width = 256;
+    this.overheadCanvas.height = 96;
+    this.overheadCtx = this.overheadCanvas.getContext('2d')!;
+
+    this.overheadTexture = new THREE.CanvasTexture(this.overheadCanvas);
+    this.overheadTexture.minFilter = THREE.LinearFilter;
+    const spriteMat = new THREE.SpriteMaterial({
+      map: this.overheadTexture,
+      transparent: true,
+      depthTest: false
+    });
+    this.overheadSprite = new THREE.Sprite(spriteMat);
+    this.overheadSprite.position.set(0, 2.5, 0);
+    this.overheadSprite.scale.set(2.4, 0.9, 1);
+    this.overheadSprite.renderOrder = 999;
+    this.mesh.add(this.overheadSprite);
+
     // Setup 3D Buff Auras
     this.setupAuras();
 
-    scene.add(this.mesh);
-
     this.applyCharacterPerks();
+    this.redrawOverhead();
+
+    scene.add(this.mesh);
   }
 
   private setupAuras() {
@@ -237,6 +270,8 @@ export class Player {
     this.attackAnimTimer = 0;
     this.setDirection(this.currentDir);
     this.applyCharacterPerks();
+    this.lastDrawnHp = -1;
+    this.redrawOverhead();
   }
 
   public setDirection(dir: SpriteDirection) {
@@ -491,6 +526,17 @@ export class Player {
     for (const weapon of this.weapons) {
       weapon.update(dt, this.position, enemies, spawnProjectile, damageEnemyWithMultiplier);
     }
+
+    // Update overhead billboard UI (Name, Level, HP Bar, Revive progress)
+    if (
+      this.hp !== this.lastDrawnHp ||
+      this.maxHp !== this.lastDrawnMaxHp ||
+      this.level !== this.lastDrawnLevel ||
+      this.isDowned !== this.lastDrawnDowned ||
+      Math.abs(this.reviveProgress - this.lastDrawnRevive) > 0.05
+    ) {
+      this.redrawOverhead();
+    }
   }
 
   private updateAnimatedCharacterAnimation(dt: number) {
@@ -683,6 +729,132 @@ export class Player {
     this.activeBuffs.clear();
     this.setDirection('front');
     this.applyCharacterPerks();
+    this.lastDrawnHp = -1;
+    this.redrawOverhead();
+  }
+
+  public redrawOverhead() {
+    this.lastDrawnHp = this.hp;
+    this.lastDrawnMaxHp = this.maxHp;
+    this.lastDrawnLevel = this.level;
+    this.lastDrawnDowned = this.isDowned;
+    this.lastDrawnRevive = this.reviveProgress;
+
+    const ctx = this.overheadCtx;
+    if (!ctx) return;
+    const w = this.overheadCanvas.width;
+    const h = this.overheadCanvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    if (this.isDowned) {
+      // Downed Badge
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+      ctx.beginPath();
+      ctx.roundRect(16, 8, w - 32, 34, 8);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px "Cinzel", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚠️ РАНЕН! СПАСИТЕ!', w / 2, 25);
+
+      // Revive progress bar
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.beginPath();
+      ctx.roundRect(24, 48, w - 48, 18, 9);
+      ctx.fill();
+
+      if (this.reviveProgress > 0) {
+        ctx.fillStyle = '#10b981';
+        ctx.beginPath();
+        ctx.roundRect(26, 50, (w - 52) * Math.min(1, this.reviveProgress), 14, 7);
+        ctx.fill();
+      }
+    } else {
+      // Name & Level Pill
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = this.colorCss;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(16, 6, w - 32, 36, 18);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = this.colorCss;
+      ctx.font = 'bold 17px "Cinzel", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const heroName =
+        this.charType === 'valkyrie'
+          ? 'Каэла'
+          : this.charType === 'flail'
+          ? 'Бригитта'
+          : this.charType === 'sorceress'
+          ? 'Ария'
+          : this.charType === 'chakram'
+          ? 'Кира'
+          : 'Рен';
+      ctx.fillText(`${this.displayName} (${heroName}) [L${this.level}]`, w / 2, 24);
+
+      // Health Bar
+      const barX = 26;
+      const barY = 48;
+      const barW = w - 52;
+      const barH = 16;
+
+      // Track
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barW, barH, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Fill
+      const hpPct = Math.max(0, Math.min(1, this.hp / (this.maxHp || 100)));
+      ctx.fillStyle = hpPct > 0.5 ? '#10b981' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      if (hpPct > 0) {
+        ctx.beginPath();
+        ctx.roundRect(barX + 2, barY + 2, (barW - 4) * hpPct, barH - 4, 4);
+        ctx.fill();
+      }
+
+      // Numeric HP Text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 11px "Cinzel", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
+    }
+
+    this.overheadTexture.needsUpdate = true;
+  }
+
+  public destroy(scene?: THREE.Scene) {
+    if (scene) scene.remove(this.mesh);
+    this.spriteMaterial.dispose();
+    this.overheadTexture.dispose();
+    this.overheadSprite.material.dispose();
+    this.roninGeom.dispose();
+    if (this.invulnShieldMesh) {
+      this.invulnShieldMesh.geometry.dispose();
+      (this.invulnShieldMesh.material as THREE.Material).dispose();
+    }
+    if (this.damageAuraMesh) {
+      this.damageAuraMesh.geometry.dispose();
+      (this.damageAuraMesh.material as THREE.Material).dispose();
+    }
+    if (this.speedAuraMesh) {
+      this.speedAuraMesh.geometry.dispose();
+      (this.speedAuraMesh.material as THREE.Material).dispose();
+    }
+    if (this.regenAuraMesh) {
+      this.regenAuraMesh.geometry.dispose();
+      (this.regenAuraMesh.material as THREE.Material).dispose();
+    }
   }
 
   public getWeaponsNetState(): { id: string; name: string; icon: string; level: number }[] {

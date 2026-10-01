@@ -77,51 +77,30 @@ export class DevManager {
 
     // 1. Hero Cheats
     document.getElementById('dev-btn-god')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const active = this.player.toggleGodMode();
       this.updateStatusBadge(this.elGodStatus, active);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('toggle_god', active);
-      }
     });
 
     document.getElementById('dev-btn-heal')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.player.fullHeal();
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('full_heal');
-      }
     });
 
     document.getElementById('dev-btn-speed')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const active = this.player.toggleSpeedCheat();
       this.updateStatusBadge(this.elSpeedStatus, active);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('toggle_speed', active);
-      }
     });
 
     document.getElementById('dev-btn-onehit')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const active = this.player.toggleOneHitKill();
       this.updateStatusBadge(this.elOnehitStatus, active);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('toggle_onehit', active);
-      }
     });
 
     document.getElementById('dev-btn-vacuum')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.dropManager.vacuumAll();
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('vacuum');
-      }
     });
 
     // 2. Altars & Shrine Buffs
     document.getElementById('dev-buff-damage')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const buff = {
         type: 'damage' as const,
         name: 'Ярость Пустыни',
@@ -132,13 +111,9 @@ export class DevManager {
         value: 0.8
       };
       this.player.addBuff(buff);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('buff', buff);
-      }
     });
 
     document.getElementById('dev-buff-speed')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const buff = {
         type: 'speed' as const,
         name: 'Дыхание Прерии',
@@ -149,13 +124,9 @@ export class DevManager {
         value: 0.6
       };
       this.player.addBuff(buff);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('buff', buff);
-      }
     });
 
     document.getElementById('dev-buff-regen')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const buff = {
         type: 'regen' as const,
         name: 'Живительный Оазис',
@@ -166,13 +137,9 @@ export class DevManager {
         value: 12
       };
       this.player.addBuff(buff);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('buff', buff);
-      }
     });
 
     document.getElementById('dev-buff-invuln')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const buff = {
         type: 'invulnerable' as const,
         name: 'Щит Солнца',
@@ -183,39 +150,30 @@ export class DevManager {
         value: 1.0
       };
       this.player.addBuff(buff);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('buff', buff);
-      }
     });
 
     // 3. Time & Speed
     document.getElementById('dev-btn-boss-30')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.enemyManager.setGameTime(1795); // 29:55 - 5 seconds before 30:00!
     });
 
     document.getElementById('dev-btn-boss-time')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.enemyManager.setGameTime(295); // 04:55
     });
 
     document.getElementById('dev-btn-boss-10')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.enemyManager.setGameTime(595); // 09:55
     });
 
     document.getElementById('dev-btn-boss-15')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.enemyManager.setGameTime(895); // 14:55
     });
 
     document.getElementById('dev-btn-time-plus')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.enemyManager.setGameTime(this.enemyManager.gameTime + 60);
     });
 
     document.getElementById('dev-btn-time-minus')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.enemyManager.setGameTime(Math.max(0, this.enemyManager.gameTime - 60));
     });
 
@@ -229,62 +187,38 @@ export class DevManager {
     speedBtns.forEach(btnInfo => {
       const el = document.getElementById(btnInfo.id);
       el?.addEventListener('click', () => {
-        if (this.isCoop() && !this.isHost()) return;
         this.timeScale = btnInfo.scale;
         speedBtns.forEach(b => document.getElementById(b.id)?.classList.remove('active'));
         el.classList.add('active');
-        if (this.isCoop() && this.isHost()) {
-          this.onBroadcastDevAction?.('time_scale', btnInfo.scale);
-        }
       });
     });
 
     // 3. Level & Weapons
     document.getElementById('dev-btn-lvl1')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.player.addLevel();
       this.onTriggerLevelUp(1);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('level_up', 1);
-      }
     });
 
     document.getElementById('dev-btn-lvl10')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       for (let i = 0; i < 10; i++) {
         this.player.addLevel();
       }
       this.onTriggerLevelUp(10);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('level_up', 10);
-      }
     });
 
     document.getElementById('dev-btn-xp1000')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       const levels = this.player.gainXp(1000);
       if (levels > 0) {
         this.onTriggerLevelUp(levels);
       }
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('xp_1000', levels);
-      }
     });
 
     document.getElementById('dev-btn-all-weapons')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.player.giveAllWeapons(this.scene);
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('all_weapons');
-      }
     });
 
     document.getElementById('dev-btn-max-weapons')?.addEventListener('click', () => {
-      if (this.isCoop() && !this.isHost()) return;
       this.player.maxAllWeapons();
-      if (this.isCoop() && this.isHost()) {
-        this.onBroadcastDevAction?.('max_weapons');
-      }
     });
 
     // 4. Monsters & Boss
@@ -390,5 +324,23 @@ export class DevManager {
     const mins = Math.floor(this.enemyManager.gameTime / 60);
     const secs = Math.floor(this.enemyManager.gameTime % 60);
     this.elTimeStr.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Resets all dev mode cheats and restores default session state
+   */
+  public reset() {
+    this.timeScale = 1.0;
+    this.updateStatusBadge(this.elGodStatus, false);
+    this.updateStatusBadge(this.elSpeedStatus, false);
+    this.updateStatusBadge(this.elOnehitStatus, false);
+
+    const speedBtns = ['dev-speed-1x', 'dev-speed-2x', 'dev-speed-5x'];
+    speedBtns.forEach(id => document.getElementById(id)?.classList.remove('active'));
+    document.getElementById('dev-speed-1x')?.classList.add('active');
+
+    if (this.isVisible) {
+      this.toggle();
+    }
   }
 }
