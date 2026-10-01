@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/src/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;600;700;800&family=Rye&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@600;700;800;900&family=Outfit:wght@400;600;700;800&family=Rye&display=swap" rel="stylesheet">
   </head>
   <body>
     <!-- Three.js Canvas Container -->
@@ -102,90 +102,117 @@
       </div>
 
       <!-- Main Menu Modal (Start screen) -->
-      <div id="main-menu-modal" class="modal">
+      <div id="main-menu-modal" class="modal main-menu-modal">
         <div class="modal-backdrop main-menu-backdrop"></div>
         <div class="modal-card main-menu-card">
-          <div class="menu-brand">
-            <div class="sub-title">WILD WEST SURVIVAL • 2.5D</div>
-            <h1 class="main-menu-title">ДИКИЙ ЗАПАД</h1>
-            <div class="menu-tagline">КРОВАВАЯ ПРЕРИЯ: ВЫЖИВАНИЕ</div>
-          </div>
-
           <div class="main-menu-buttons">
-            <button id="menu-btn-single" class="main-menu-btn action-btn">
-              <div class="btn-text-wrap">
-                <span class="btn-title">Single-player mode</span>
-                <span class="btn-desc">Одиночный бой на выживание против полчищ нежити</span>
+            <!-- 1. НОВАЯ ИГРА (СИНГЛ) -->
+            <button id="menu-btn-single" class="main-menu-nav-btn btn-single" type="button">
+              <div class="menu-icon-wrap">
+                <svg class="menu-icon-svg icon-play" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 7.2c0-1.2 1.3-1.95 2.35-1.35l14 8.8a1.56 1.56 0 0 1 0 2.7l-14 8.8c-1.05.6-2.35-.15-2.35-1.35V7.2z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="menu-text-wrap">
+                <span class="menu-btn-title">НОВАЯ ИГРА</span>
+                <span class="menu-btn-sub">СИНГЛ</span>
               </div>
             </button>
 
-            <button id="menu-btn-coop" class="main-menu-btn action-btn coop-create-btn">
-              <div class="btn-text-wrap">
-                <span class="btn-title">Co-op mode</span>
-                <span class="btn-desc">Командная экспедиция до 5 игроков • Создать или войти по коду</span>
+            <!-- 2. КООП НА 5 ЧЕЛОВЕК -->
+            <button id="menu-btn-coop" class="main-menu-nav-btn btn-coop" type="button">
+              <div class="menu-icon-wrap">
+                <svg class="menu-icon-svg icon-coop" viewBox="0 0 36 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8" cy="11" r="3.5" fill="currentColor"/>
+                  <path d="M2 24c0-3.3 2.7-5.5 6-5.5 1.4 0 2.7.4 3.7 1.2-.8 1.2-1.2 2.7-1.2 4.3H2z" fill="currentColor"/>
+                  <circle cx="28" cy="11" r="3.5" fill="currentColor"/>
+                  <path d="M34 24h-8.5c0-1.6-.4-3.1-1.2-4.3 1-.8 2.3-1.2 3.7-1.2 3.3 0 6 2.2 6 5.5z" fill="currentColor"/>
+                  <circle cx="18" cy="9.5" r="4.2" fill="currentColor"/>
+                  <path d="M10.5 24c0-3.8 3.3-6.5 7.5-6.5s7.5 2.7 7.5 6.5h-15z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="menu-text-wrap">
+                <span class="menu-btn-title">КООП НА 5 ЧЕЛОВЕК</span>
               </div>
             </button>
 
-            <button id="menu-btn-settings" class="main-menu-btn action-btn settings-menu-btn">
-              <div class="btn-text-wrap">
-                <span class="btn-title">Settings</span>
-                <span class="btn-desc">Настройки звука, графики и управление</span>
+            <!-- 3. НАСТРОЙКИ -->
+            <button id="menu-btn-settings" class="main-menu-nav-btn btn-settings" type="button">
+              <div class="menu-icon-wrap">
+                <svg class="menu-icon-svg icon-settings" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M14.07 3.5a1.5 1.5 0 0 1 1.49-1.3h0.88a1.5 1.5 0 0 1 1.49 1.3l.3 2.14a11.1 11.1 0 0 1 2.22.92l1.83-1.16a1.5 1.5 0 0 1 1.95.34l.62.77a1.5 1.5 0 0 1 .15 1.97l-1.28 1.75c.5.68.9 1.43 1.18 2.22l2.12.4a1.5 1.5 0 0 1 1.23 1.55v.98a1.5 1.5 0 0 1-1.23 1.55l-2.12.4a10.9 10.9 0 0 1-1.18 2.22l1.28 1.75a1.5 1.5 0 0 1-.15 1.97l-.62.77a1.5 1.5 0 0 1-1.95.34l-1.83-1.16a11.1 11.1 0 0 1-2.22.92l-.3 2.14a1.5 1.5 0 0 1-1.49 1.3h-.88a1.5 1.5 0 0 1-1.49-1.3l-.3-2.14a11.1 11.1 0 0 1-2.22-.92l-1.83 1.16a1.5 1.5 0 0 1-1.95-.34l-.62-.77a1.5 1.5 0 0 1-.15-1.97l1.28-1.75a10.9 10.9 0 0 1-1.18-2.22l-2.12-.4A1.5 1.5 0 0 1 3.5 17.5v-.98a1.5 1.5 0 0 1 1.23-1.55l2.12-.4a10.9 10.9 0 0 1 1.18-2.22L6.75 10.6a1.5 1.5 0 0 1 .15-1.97l.62-.77a1.5 1.5 0 0 1 1.95-.34l1.83 1.16a11.1 11.1 0 0 1 2.22-.92l.3-2.14zM16 11.2a4.8 4.8 0 1 0 0 9.6 4.8 4.8 0 0 0 0-9.6z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="menu-text-wrap">
+                <span class="menu-btn-title">НАСТРОЙКИ</span>
               </div>
             </button>
 
-            <button id="menu-btn-exit" class="main-menu-btn action-btn exit-menu-btn">
-              <div class="btn-text-wrap">
-                <span class="btn-title">Exit</span>
-                <span class="btn-desc">Выход из игры</span>
+            <!-- 4. ВЫХОД -->
+            <button id="menu-btn-exit" class="main-menu-nav-btn btn-exit" type="button">
+              <div class="menu-icon-wrap">
+                <svg class="menu-icon-svg icon-exit" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 6H7a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h7" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 16h15m-5-5l5 5-5 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="menu-text-wrap">
+                <span class="menu-btn-title">ВЫХОД</span>
               </div>
             </button>
-          </div>
-
-          <div class="menu-footer">
-            <span>Кооператив WebRTC P2P & LAN • До 5 Героев • Алтари & Босс</span>
           </div>
         </div>
       </div>
 
       <!-- Co-op Mode Selection Modal -->
       <div id="coop-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card coop-menu-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card coop-menu-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">WILD WEST • 5-PLAYER EXPEDITION</div>
-            <h2>CO-OP MODE</h2>
-            <div class="menu-tagline">ВЫБЕРИТЕ СПОСОБ ПОДКЛЮЧЕНИЯ (ОТРЯД ДО 5 ИГРОКОВ)</div>
+            <div class="sub-title menu-badge-green">КООПЕРАТИВ • ДО 5 ИГРОКОВ</div>
+            <h2 class="modern-menu-title">РЕЖИМ ЭКСПЕДИЦИИ</h2>
+            <div class="menu-tagline-modern">ВЫБЕРИТЕ СПОСОБ ПОДКЛЮЧЕНИЯ В ОТРЯД</div>
           </div>
 
           <div class="main-menu-buttons">
-            <button id="coop-btn-host" class="main-menu-btn action-btn coop-create-btn">
-              <div class="btn-text-wrap">
-                <span class="btn-title">СОЗДАТЬ КОМНАТУ (ХОСТ)</span>
-                <span class="btn-desc">Создать экспедицию и пригласить до 4 напарников</span>
+            <button id="coop-btn-host" class="main-menu-nav-btn btn-coop coop-host-btn" type="button">
+              <div class="menu-icon-wrap">
+                <svg class="menu-icon-svg icon-coop" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 23h22v3H5v-3zM6 19l3.5-9 6.5 6 6.5-6L26 19H6z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="menu-text-wrap">
+                <span class="menu-btn-title">СОЗДАТЬ КОМНАТУ (ХОСТ)</span>
+                <span class="menu-btn-sub">ОТРЯД ДО 5 ЧЕЛОВЕК • СВОЙ КОД</span>
               </div>
             </button>
 
-            <button id="coop-btn-join" class="main-menu-btn action-btn coop-join-btn">
-              <div class="btn-text-wrap">
-                <span class="btn-title">ПОДКЛЮЧИТЬСЯ К КОМНАТЕ</span>
-                <span class="btn-desc">Войти по коду комнаты командира отряда</span>
+            <button id="coop-btn-join" class="main-menu-nav-btn btn-single coop-join-btn" type="button">
+              <div class="menu-icon-wrap">
+                <svg class="menu-icon-svg icon-play" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 8l-1.4 1.4 4.6 4.6H4v2h18.2l-4.6 4.6L19 22l7-7-7-7zM26 6v4h2V6a2 2 0 0 0-2-2H10v2h16zM26 22v4H10v2h16a2 2 0 0 0 2-2v-4h-2z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="menu-text-wrap">
+                <span class="menu-btn-title">ПОДКЛЮЧИТЬСЯ К КОМНАТЕ</span>
+                <span class="menu-btn-sub">ВОЙТИ ПО КОДУ КОМАНДИРА</span>
               </div>
             </button>
           </div>
 
           <div class="lobby-actions" style="margin-top: 24px;">
-            <button id="coop-btn-back" class="action-btn secondary-btn">Назад в главное меню</button>
+            <button id="coop-btn-back" class="modern-back-btn">← Назад в главное меню</button>
           </div>
         </div>
       </div>
 
       <!-- Settings Modal -->
       <div id="settings-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card settings-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card settings-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">ПАРАМЕТРЫ ИГРЫ</div>
-            <h2>SETTINGS</h2>
+            <div class="sub-title menu-badge-yellow">ПАРАМЕТРЫ ИГРЫ</div>
+            <h2 class="modern-menu-title">НАСТРОЙКИ</h2>
           </div>
 
           <div class="settings-content">
@@ -241,44 +268,44 @@
                 <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза</span></div>
                 <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Режим разработчика</span></div>
               </div>
-              <button id="settings-btn-open-guide" class="action-btn secondary-btn" style="margin-top: 10px; width: 100%;">
+              <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 10px; width: 100%;">
                 Открыть справочник стрелка
               </button>
             </div>
           </div>
 
           <div class="lobby-actions" style="margin-top: 24px;">
-            <button id="settings-btn-back" class="action-btn">Назад</button>
+            <button id="settings-btn-back" class="modern-back-btn">← Назад в главное меню</button>
           </div>
         </div>
       </div>
 
       <!-- Exit Confirmation Modal -->
       <div id="exit-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card exit-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card exit-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">ПОДТВЕРЖДЕНИЕ ВЫХОДА</div>
-            <h2>EXIT</h2>
+            <div class="sub-title menu-badge-red">ПОДТВЕРЖДЕНИЕ ВЫХОДА</div>
+            <h2 class="modern-menu-title">ВЫХОД</h2>
           </div>
           <p id="exit-message" class="exit-message">
             Вы уверены, что хотите выйти из игры?<br>
-            <span style="font-size: 13px; color: #a89f91;">Are you sure you want to exit the game?</span>
+            <span class="exit-sub">Are you sure you want to exit the game?</span>
           </p>
-          <div id="exit-actions-row" class="pause-actions" style="margin-top: 24px;">
-            <button id="btn-confirm-exit" class="action-btn exit-btn-danger">Выйти / Exit</button>
-            <button id="btn-cancel-exit" class="action-btn secondary-btn">Отмена / Cancel</button>
+          <div id="exit-actions-row" class="exit-actions-row" style="margin-top: 24px;">
+            <button id="btn-confirm-exit" class="exit-confirm-btn">Выйти / Exit</button>
+            <button id="btn-cancel-exit" class="modern-back-btn">Отмена</button>
           </div>
         </div>
       </div>
 
       <!-- Host Lobby Modal (Up to 5 players) -->
       <div id="host-lobby-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card host-lobby-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card host-lobby-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">КООПЕРАТИВ • ОТРЯД ДО 5 СТРЕЛКОВ</div>
-            <h2>КОМНАТА ЭКСПЕДИЦИИ (ХОСТ)</h2>
+            <div class="sub-title menu-badge-green">КООПЕРАТИВ • ОТРЯД ДО 5 СТРЕЛКОВ</div>
+            <h2 class="modern-menu-title">КОМНАТА ЭКСПЕДИЦИИ (ХОСТ)</h2>
           </div>
 
           <div class="room-code-section">
@@ -342,18 +369,18 @@
 
           <div class="lobby-actions">
             <button id="btn-host-start" class="action-btn start-expedition-btn">НАЧАТЬ ЭКСПЕДИЦИЮ</button>
-            <button id="btn-host-back" class="action-btn secondary-btn">Назад в меню</button>
+            <button id="btn-host-back" class="modern-back-btn">← Назад в меню</button>
           </div>
         </div>
       </div>
 
       <!-- Join Lobby Modal (Up to 5 players) -->
       <div id="join-lobby-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card join-lobby-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card join-lobby-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">КООПЕРАТИВ • ПОДКЛЮЧЕНИЕ</div>
-            <h2>ВОЙТИ В ЭКСПЕДИЦИЮ</h2>
+            <div class="sub-title menu-badge-blue">КООПЕРАТИВ • ПОДКЛЮЧЕНИЕ</div>
+            <h2 class="modern-menu-title">ВОЙТИ В ЭКСПЕДИЦИЮ</h2>
           </div>
 
           <div class="join-input-section">
@@ -412,7 +439,7 @@
           <div class="lobby-actions">
             <button id="btn-join-connect" class="action-btn">ПОДКЛЮЧИТЬСЯ</button>
             <button id="btn-guest-ready" class="action-btn ready-toggle-btn hidden">НАЖМИТЕ «ГОТОВ»</button>
-            <button id="btn-join-back" class="action-btn secondary-btn">Назад в меню</button>
+            <button id="btn-join-back" class="modern-back-btn">← Назад в меню</button>
           </div>
         </div>
       </div>
@@ -466,11 +493,11 @@
 
       <!-- Character Select Modal -->
       <div id="character-select-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card select-character-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card select-character-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">ОДИНОЧНЫЙ РЕЖИМ</div>
-            <h1 class="wild-west-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
+            <div class="sub-title menu-badge-blue">ОДИНОЧНЫЙ РЕЖИМ</div>
+            <h1 class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
           </div>
           <div class="character-grid">
             <!-- Hero 1: Ren (Ronin) -->
@@ -481,11 +508,11 @@
               <div class="char-name">Рен «Багровый вихрь»</div>
               <div class="char-type">Багровый ронин (Берсерк)</div>
               <div class="char-perks">
-                <div class="perk-tag">• Стартовое оружие: Багровый Вихрь</div>
-                <div class="perk-tag">• Полный цикл 4-фазных анимаций (96x96)</div>
-                <div class="perk-tag">• +35% к базовому урону и высокая скорость</div>
+                <div class="perk-tag">• Оружие: Багровый Вихрь</div>
+                <div class="perk-tag">• 4-фазные анимации (96x96)</div>
+                <div class="perk-tag">• +35% к урону и высокая скорость</div>
               </div>
-              <button class="action-btn select-btn">Выбрать</button>
+              <button class="action-btn select-btn">ВЫБРАТЬ</button>
             </div>
 
             <!-- Hero 2: Valkyrie (Каэла) -->
@@ -496,11 +523,11 @@
               <div class="char-name">Каэла «Стальной вихрь»</div>
               <div class="char-type">Мечница с двуручным мечом</div>
               <div class="char-perks">
-                <div class="perk-tag">• Стартовое оружие: Двуручный Меч</div>
-                <div class="perk-tag">• Огромный радиус кругового размаха (4.2м)</div>
-                <div class="perk-tag">• +45% к урону, 135 HP и повышенная стойкость</div>
+                <div class="perk-tag">• Оружие: Двуручный Меч</div>
+                <div class="perk-tag">• Круговой размах (радиус 4.2м)</div>
+                <div class="perk-tag">• +45% урона, 135 HP и стойкость</div>
               </div>
-              <button class="action-btn select-btn">Выбрать</button>
+              <button class="action-btn select-btn">ВЫБРАТЬ</button>
             </div>
 
             <!-- Hero 3: Brigitta (Бригитта) -->
@@ -511,11 +538,11 @@
               <div class="char-name">Бригитта «Громовой Цеп»</div>
               <div class="char-type">Воительница с кистенем (Цеп)</div>
               <div class="char-perks">
-                <div class="perk-tag">• Стартовое оружие: Боевой Цеп</div>
-                <div class="perk-tag">• Сокрушающий отброс монстров и круговой вихрь</div>
-                <div class="perk-tag">• +40% к урону, 125 HP и высокий темп</div>
+                <div class="perk-tag">• Оружие: Боевой Цеп</div>
+                <div class="perk-tag">• Сокрушающий отброс врагов</div>
+                <div class="perk-tag">• +40% урона, 125 HP и вихрь</div>
               </div>
-              <button class="action-btn select-btn">Выбрать</button>
+              <button class="action-btn select-btn">ВЫБРАТЬ</button>
             </div>
 
             <!-- Hero 4: Sorceress (Ария) -->
@@ -526,11 +553,11 @@
               <div class="char-name">Ария «Звёздный Посох»</div>
               <div class="char-type">Чародейка Эфира (Дальний бой)</div>
               <div class="char-perks">
-                <div class="perk-tag">• Стартовое оружие: Звёздный Посох</div>
-                <div class="perk-tag">• Дальняя магия с пробиванием врагов</div>
-                <div class="perk-tag">• Высокая скорость (8.8) и быстрый каст</div>
+                <div class="perk-tag">• Оружие: Звёздный Посох</div>
+                <div class="perk-tag">• Пробивающая дальняя магия</div>
+                <div class="perk-tag">• Высокая скорость (8.8) и каст</div>
               </div>
-              <button class="action-btn select-btn">Выбрать</button>
+              <button class="action-btn select-btn">ВЫБРАТЬ</button>
             </div>
 
             <!-- Hero 5: Kira (Кира) -->
@@ -539,17 +566,17 @@
                 <img src="/textures/hero_chakram_front.png" alt="Кира Воительница с чакрамом" class="char-portrait" />
               </div>
               <div class="char-name">Кира «Танцующий Чакрам»</div>
-              <div class="char-type">Воительница с чакрамом (Средняя дистанция)</div>
+              <div class="char-type">Воительница с чакрамом</div>
               <div class="char-perks">
-                <div class="perk-tag">• Стартовое оружие: Танцующий Чакрам</div>
-                <div class="perk-tag">• Бросок по дуге с возвращением бумерангом</div>
-                <div class="perk-tag">• Двойное рассечение на пути туда и обратно</div>
+                <div class="perk-tag">• Оружие: Танцующий Чакрам</div>
+                <div class="perk-tag">• Бросок бумерангом по дуге</div>
+                <div class="perk-tag">• Двойное рассечение туда и назад</div>
               </div>
-              <button class="action-btn select-btn">Выбрать</button>
+              <button class="action-btn select-btn">ВЫБРАТЬ</button>
             </div>
           </div>
           <div style="margin-top: 24px;">
-            <button id="btn-char-select-back" class="action-btn secondary-btn">Назад в главное меню</button>
+            <button id="btn-char-select-back" class="modern-back-btn">← Назад в главное меню</button>
           </div>
         </div>
       </div>
