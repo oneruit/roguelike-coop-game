@@ -708,7 +708,7 @@ export class SimChakramWeapon extends SimWeapon {
   private alternateSign: number = 1;
 
   constructor() {
-    super('chakram', 'Вихревой Чакрам', '🪃', 0.68, 36);
+    super('chakram', 'Танцующий Чакрам', '🪃', 0.68, 36);
   }
 
   public update(

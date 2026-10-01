@@ -55,22 +55,9 @@ export class Projectile {
   private static orbCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   private static orbMatCache = new Map<number, THREE.MeshStandardMaterial>();
 
-  // Shared assets for Chakram (Spinning Blade Ring)
-  private static chakramRingGeom = new THREE.TorusGeometry(0.55, 0.12, 8, 28);
-  private static chakramDiscGeom = new THREE.CircleGeometry(0.46, 20);
-  private static chakramRingMat = new THREE.MeshStandardMaterial({
-    color: 0xf59e0b,
-    emissive: 0xd97706,
-    emissiveIntensity: 0.85,
-    roughness: 0.25,
-    metalness: 0.8
-  });
-  private static chakramDiscMat = new THREE.MeshBasicMaterial({
-    color: 0xfef08a,
-    transparent: true,
-    opacity: 0.35,
-    side: THREE.DoubleSide
-  });
+  // Shared assets for Chakram (Spinning Blade Plane)
+  private static chakramGeom: THREE.PlaneGeometry | null = null;
+  private static chakramMaterial: THREE.MeshBasicMaterial | null = null;
 
   // Shared assets for Gun Bullet Sprites
   private static bulletGeomA: THREE.PlaneGeometry | null = null;
@@ -113,13 +100,22 @@ export class Projectile {
     this.mesh = new THREE.Group();
 
     if (this.isChakram) {
-      // Golden razor-sharp spinning chakram blade with glowing energy core
-      const ringMesh = new THREE.Mesh(Projectile.chakramRingGeom, Projectile.chakramRingMat);
-      ringMesh.rotation.x = Math.PI / 2;
-      const discMesh = new THREE.Mesh(Projectile.chakramDiscGeom, Projectile.chakramDiscMat);
-      discMesh.rotation.x = -Math.PI / 2;
-      this.mesh.add(ringMesh);
-      this.mesh.add(discMesh);
+      if (!Projectile.chakramGeom || !Projectile.chakramMaterial) {
+        const geom = new THREE.PlaneGeometry(1.0, 1.0);
+        geom.rotateX(-Math.PI / 2);
+        Projectile.chakramGeom = geom;
+
+        Projectile.chakramMaterial = new THREE.MeshBasicMaterial({
+          map: TextureManager.getChakramTexture(),
+          transparent: true,
+          alphaTest: 0.02,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+      }
+
+      const bladeMesh = new THREE.Mesh(Projectile.chakramGeom, Projectile.chakramMaterial);
+      this.mesh.add(bladeMesh);
 
       const scale = this.radius * 2.8;
       this.mesh.scale.set(scale, scale, scale);
@@ -187,7 +183,7 @@ export class Projectile {
       this.mesh.rotation.y += dt * 6;
     } else if (this.isChakram) {
       this.elapsedTime += dt;
-      this.mesh.rotation.y += dt * 26; // Rapid horizontal blade spin
+      this.mesh.rotation.y -= dt * 17; // Clockwise blade spin (avoids stroboscopic wagon-wheel aliasing)
 
       const turnTime = this.maxLifetime * 0.44;
       if (this.elapsedTime < turnTime) {
