@@ -60,17 +60,17 @@ jobs:
               --head "$BRANCH" \
               --title "$COMMIT_TITLE" \
               --body "### Automated Pull Request (Fallback via GitHub Actions)
-**Branch:** \`$BRANCH\`
-**Pushed by:** \`${{ github.actor }}\`
-
-$COMMIT_BODY
-
-#### Commits in this PR
-$COMMIT_LOG
-
----
-*Created automatically by the fallback workflow. The agent's local \`gh pr create\` was not executed or failed.*
-*Auto-merge is enabled and will trigger once CI passes with no conflicts.*"
+            **Branch:** \`$BRANCH\`
+            **Pushed by:** \`${{ github.actor }}\`
+            
+            $COMMIT_BODY
+            
+            #### Commits in this PR
+            $COMMIT_LOG
+            
+            ---
+            *Created automatically by the fallback workflow. The agent's local \`gh pr create\` was not executed or failed.*
+            *Auto-merge is enabled and will trigger once CI passes with no conflicts.*"
           else
             echo "PR #$EXISTING_PR already exists (created by agent). Skipping PR creation."
           fi
