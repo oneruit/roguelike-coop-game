@@ -216,8 +216,8 @@ export type NetMessage =
   | ClientSyncMessage
   | ReviveActionMessage
   | { type: 'DISCONNECT'; playerId: string }
-  | { type: 'PING'; timestamp: number; fromId: string }
-  | { type: 'PONG'; timestamp: number; fromId: string }
+  | { type: 'PING'; timestamp: number; fromId: string; targetId?: string }
+  | { type: 'PONG'; timestamp: number; fromId: string; targetId: string }
   | { type: 'DEV_ACTION'; action: string; value?: any };
 
 export class NetworkManager {
@@ -350,6 +350,9 @@ export class NetworkManager {
       this.localChannel.onmessage = (event) => {
         const raw = event.data;
         if (raw && typeof raw === 'object' && raw._sender !== this.myId) {
+          if (raw._target && raw._target !== 'p1' && raw._target !== 'host' && raw._target !== this.myId) {
+            return;
+          }
           this.handleRawMessage(raw.payload, raw._sender);
         }
       };
@@ -694,15 +697,29 @@ export class NetworkManager {
 
     switch (msg.type) {
       case 'PING': {
-        this.send({ type: 'PONG', timestamp: msg.timestamp, fromId: this.myId });
+        // If message has targetId, ensure it is addressed to this node
+        if (msg.targetId && msg.targetId !== this.myId && !(this.role === 'host' && (msg.targetId === 'p1' || msg.targetId === 'host'))) {
+          break;
+        }
+        // Clients should only respond to host PINGs, not peer clients
+        if (this.role === 'client' && msg.fromId !== 'p1' && msg.fromId !== 'host') {
+          break;
+        }
+        const recipient = msg.fromId;
+        this.sendToPeer(recipient, { type: 'PONG', timestamp: msg.timestamp, fromId: this.myId, targetId: recipient });
         break;
       }
 
       case 'PONG': {
-        const rtt = Math.round(performance.now() - msg.timestamp);
+        // Only accept PONG directed to this specific node
+        if (msg.targetId && msg.targetId !== this.myId && !(this.role === 'host' && (msg.targetId === 'p1' || msg.targetId === 'host'))) {
+          break;
+        }
+        const now = performance.now();
+        const rtt = Math.round(now - msg.timestamp);
         if (rtt >= 0 && rtt < 10000) {
           this.pongsReceivedCount++;
-          if (this.lastRtt > 0) {
+          if (this.lastRtt >= 0) {
             const diff = Math.abs(rtt - this.lastRtt);
             this.jitter = Number((this.jitter * 0.8 + diff * 0.2).toFixed(1));
           }
@@ -1030,7 +1047,53 @@ export class NetworkManager {
     // BroadcastChannel for local cross-tab communication
     if (this.localChannel) {
       try {
-        this.localChannel.postMessage({ _sender: this.myId, payload });
+        const targetId = (msg as any).targetId;
+        this.localChannel.postMessage({ _sender: this.myId, _target: targetId, payload });
+        this.bytesSentWindow += payloadSize;
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  /**
+   * Sends a targeted message to a specific peer or host.
+   */
+  public sendToPeer(targetId: string, msg: NetMessage) {
+    let payload: any = msg;
+    let payloadSize = 0;
+    if (typeof payload === 'object') {
+      try {
+        payloadSize = JSON.stringify(payload).length;
+      } catch {
+        payloadSize = 128;
+      }
+    }
+
+    if (this.role === 'host') {
+      const conn = this.connections.get(targetId);
+      if (conn && conn.open) {
+        try {
+          conn.send(payload);
+          this.bytesSentWindow += payloadSize;
+        } catch (e) {
+          console.warn(`Send to ${targetId} failed:`, e);
+        }
+      }
+    } else if (this.role === 'client') {
+      if (this.clientConnection && this.clientConnection.open) {
+        try {
+          this.clientConnection.send(payload);
+          this.bytesSentWindow += payloadSize;
+        } catch (e) {
+          console.warn('Send to host failed:', e);
+        }
+      }
+    }
+
+    if (this.localChannel) {
+      try {
+        this.localChannel.postMessage({ _sender: this.myId, _target: targetId, payload });
         this.bytesSentWindow += payloadSize;
       } catch {
         // ignore
@@ -1108,9 +1171,18 @@ export class NetworkManager {
             this.handleDisconnect();
             return;
           }
-          this.send({ type: 'PING', timestamp: performance.now(), fromId: this.myId });
-        } else if (this.role === 'host' && this.connections.size > 0) {
-          this.send({ type: 'PING', timestamp: performance.now(), fromId: 'p1' });
+          this.sendToPeer('p1', { type: 'PING', timestamp: performance.now(), fromId: this.myId, targetId: 'p1' });
+        } else if (this.role === 'host') {
+          const clientIds = new Set<string>();
+          for (const id of this.connections.keys()) {
+            clientIds.add(id);
+          }
+          for (const p of this.lobbyPlayers) {
+            if (p.id !== 'p1' && p.id !== 'host') clientIds.add(p.id);
+          }
+          for (const id of clientIds) {
+            this.sendToPeer(id, { type: 'PING', timestamp: performance.now(), fromId: 'p1', targetId: id });
+          }
         }
         this.pollWebRtcStats();
       }
@@ -1199,8 +1271,8 @@ export class NetworkManager {
 
     if (this.isConnected) {
       return {
-        rtt: this.ping > 0 ? this.ping : 31,
-        jitter: this.jitter > 0 ? this.jitter : 1.8,
+        rtt: this.lastRtt >= 0 ? this.ping : (this.ping > 0 ? this.ping : 1),
+        jitter: this.jitter >= 0 ? this.jitter : 0,
         packetLoss: this.packetLoss,
         connection: this.webRtcConnectionState || 'connected',
         route: this.webRtcRoute || 'P2P',
