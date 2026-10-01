@@ -4,6 +4,7 @@ import { SpriteDirection } from '../core/TextureManager';
 import { EnemyType } from '../entities/Enemy';
 import { GemType } from '../drops/Gem';
 import { packHostSnapshot, unpackHostSnapshot, isBinarySnapshot } from './BinarySnapshot';
+import { RoomDirectory } from './RoomDirectory';
 
 const PEERJS_HOST = import.meta.env.VITE_PEERJS_HOST || undefined;
 const PEERJS_PORT = import.meta.env.VITE_PEERJS_PORT ? Number(import.meta.env.VITE_PEERJS_PORT) : undefined;
@@ -203,8 +204,9 @@ export interface ReviveActionMessage {
 }
 
 export type NetMessage =
-  | { type: 'HELLO'; clientId?: string; hero: CharacterType; name?: string }
+  | { type: 'HELLO'; clientId?: string; hero: CharacterType; name?: string; password?: string }
   | { type: 'HELLO_ACK'; assignedId: string; players: LobbyPlayerInfo[] }
+  | { type: 'JOIN_REJECTED'; reason: 'WRONG_PASSWORD' | 'ROOM_FULL' | 'GAME_STARTED'; message: string }
   | { type: 'HERO_SELECT'; playerId: string; hero: CharacterType }
   | { type: 'PLAYER_READY'; playerId: string; isReady: boolean }
   | { type: 'ALTAR_CAPTURED'; altarType: BuffType; playerId: string }
@@ -226,6 +228,11 @@ export class NetworkManager {
   public isConnected: boolean = false;
   public myId: string = 'p1';
   public isSlotAssigned: boolean = false;
+  public roomPassword?: string;
+  public hasPassword: boolean = false;
+  public isGameStarted: boolean = false;
+  private joinPassword?: string;
+  public onJoinRejected?: (reason: 'WRONG_PASSWORD' | 'ROOM_FULL' | 'GAME_STARTED', message: string) => void;
   public get mySlotId(): string {
     if (this.role === 'host') return 'p1';
     return this.myId || 'p2';
@@ -289,13 +296,16 @@ export class NetworkManager {
   /**
    * Host creates a new multiplayer room for up to 5 players.
    */
-  public async createRoom(roomCode: string, hero: CharacterType): Promise<boolean> {
+  public async createRoom(roomCode: string, hero: CharacterType, password?: string): Promise<boolean> {
     this.reset();
     this.role = 'host';
     this.myId = 'p1';
     this.isSlotAssigned = true;
     this.roomCode = roomCode.toUpperCase().trim();
     this.myHero = hero;
+    this.roomPassword = password && password.trim() ? password.trim() : undefined;
+    this.hasPassword = !!this.roomPassword;
+    this.isGameStarted = false;
 
     this.lobbyPlayers = [
       {
@@ -311,6 +321,28 @@ export class NetworkManager {
     ];
 
     this.notifyStatus('Создание комнаты и ожидание союзников (до 5 игроков)...', false);
+
+    const announceRoom = () => {
+      RoomDirectory.startHosting(
+        {
+          roomCode: this.roomCode,
+          hostHero: this.myHero,
+          hostName: 'Игрок 1',
+          playerCount: this.lobbyPlayers.length,
+          maxPlayers: NetworkManager.MAX_PLAYERS,
+          hasPassword: this.hasPassword,
+          status: 'lobby',
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        },
+        () => ({
+          playerCount: this.lobbyPlayers.length,
+          hostHero: this.myHero,
+          hasPassword: this.hasPassword,
+          status: this.isGameStarted ? 'playing' : 'lobby'
+        })
+      );
+    };
 
     // 1. Local BroadcastChannel for same-device multi-tab testing
     try {
@@ -366,6 +398,7 @@ export class NetworkManager {
           if (this.onLobbyStateChanged) {
             this.onLobbyStateChanged(this.lobbyPlayers);
           }
+          announceRoom();
           resolve(true);
         });
 
@@ -380,26 +413,40 @@ export class NetworkManager {
           } else {
             this.notifyStatus(`Комната создана локально. Код: ${this.roomCode}`, true);
           }
+          announceRoom();
           resolve(true);
         });
       } catch (e) {
         console.warn('PeerJS init failed, falling back to local BroadcastChannel:', e);
         this.notifyStatus(`Комната создана локально (Broadcast). Код: ${this.roomCode}`, true);
+        announceRoom();
         resolve(true);
       }
     });
   }
 
   /**
+   * Sets or clears room password on an active host.
+   */
+  public setPassword(password?: string) {
+    this.roomPassword = password && password.trim() ? password.trim() : undefined;
+    this.hasPassword = !!this.roomPassword;
+    if (this.role === 'host') {
+      RoomDirectory.updateHosting({ hasPassword: this.hasPassword });
+    }
+  }
+
+  /**
    * Guest joins an existing room by code.
    */
-  public async joinRoom(roomCode: string, hero: CharacterType): Promise<boolean> {
+  public async joinRoom(roomCode: string, hero: CharacterType, password?: string): Promise<boolean> {
     this.reset();
     this.role = 'client';
     this.roomCode = roomCode.toUpperCase().trim();
     this.myHero = hero;
     this.myId = '';
     this.isSlotAssigned = false;
+    this.joinPassword = password ? password.trim() : undefined;
 
     this.notifyStatus(`Поиск комнаты ${this.roomCode}...`, false);
 
@@ -417,7 +464,7 @@ export class NetworkManager {
       };
       // Send HELLO ping on local channel
       setTimeout(() => {
-        this.send({ type: 'HELLO', hero: this.myHero, name: 'Игрок' });
+        this.send({ type: 'HELLO', hero: this.myHero, name: 'Игрок', password: this.joinPassword });
       }, 120);
     } catch {
       // ignore
@@ -488,7 +535,7 @@ export class NetworkManager {
             this.isConnected = true;
             this.notifyStatus(`Подключено к комнате ${this.roomCode}! Ожидание ответа хоста...`, true);
             this.startPingLoop();
-            this.send({ type: 'HELLO', hero: this.myHero, name: 'Игрок' });
+            this.send({ type: 'HELLO', hero: this.myHero, name: 'Игрок', password: this.joinPassword });
             doResolve(true);
           });
 
@@ -529,7 +576,31 @@ export class NetworkManager {
     // Check if room is full
     if (this.connections.size >= NetworkManager.MAX_PLAYERS - 1) {
       console.warn('Room is full (max 5 players). Rejecting connection.');
-      conn.close();
+      conn.on('open', () => {
+        try {
+          conn.send({
+            type: 'JOIN_REJECTED',
+            reason: 'ROOM_FULL',
+            message: 'Комната заполнена (макс. 5 игроков)'
+          });
+        } catch {}
+        setTimeout(() => conn.close(), 300);
+      });
+      return;
+    }
+
+    if (this.isGameStarted) {
+      console.warn('Game already started. Rejecting connection.');
+      conn.on('open', () => {
+        try {
+          conn.send({
+            type: 'JOIN_REJECTED',
+            reason: 'GAME_STARTED',
+            message: 'Экспедиция уже началась'
+          });
+        } catch {}
+        setTimeout(() => conn.close(), 300);
+      });
       return;
     }
 
@@ -570,6 +641,7 @@ export class NetworkManager {
   }
 
   private broadcastLobbyUpdate() {
+    RoomDirectory.updateHosting({ playerCount: this.lobbyPlayers.length });
     const msg: LobbyUpdateMessage = {
       type: 'LOBBY_UPDATE',
       players: this.lobbyPlayers
@@ -654,9 +726,69 @@ export class NetworkManager {
             guestId = AVAILABLE_SLOT_IDS.find((id) => !this.lobbyPlayers.some((p) => p.id === id));
           }
 
+          const guestConn = guestId ? this.connections.get(guestId) : undefined;
+
+          // Reject if game already running
+          if (this.isGameStarted) {
+            const rejectMsg: NetMessage = {
+              type: 'JOIN_REJECTED',
+              reason: 'GAME_STARTED',
+              message: 'Экспедиция уже началась'
+            };
+            if (guestConn && guestConn.open) {
+              try { guestConn.send(rejectMsg); } catch {}
+              setTimeout(() => guestConn.close(), 300);
+            }
+            if (this.localChannel) {
+              try {
+                this.localChannel.postMessage({ _sender: this.myId, _target: guestId, payload: rejectMsg });
+              } catch {}
+            }
+            return;
+          }
+
+          // Reject if room is full
           if (!guestId || this.lobbyPlayers.length >= NetworkManager.MAX_PLAYERS) {
             console.warn('Room full or no slot available.');
+            const rejectMsg: NetMessage = {
+              type: 'JOIN_REJECTED',
+              reason: 'ROOM_FULL',
+              message: 'Комната заполнена (макс. 5 игроков)'
+            };
+            if (guestConn && guestConn.open) {
+              try { guestConn.send(rejectMsg); } catch {}
+              setTimeout(() => guestConn.close(), 300);
+            }
+            if (this.localChannel) {
+              try {
+                this.localChannel.postMessage({ _sender: this.myId, _target: guestId, payload: rejectMsg });
+              } catch {}
+            }
             return;
+          }
+
+          // Verify room password
+          if (this.hasPassword && this.roomPassword) {
+            const receivedPwd = msg.password ? msg.password.trim() : '';
+            if (receivedPwd !== this.roomPassword) {
+              console.warn(`Guest ${guestId} provided incorrect password.`);
+              const rejectMsg: NetMessage = {
+                type: 'JOIN_REJECTED',
+                reason: 'WRONG_PASSWORD',
+                message: 'Неверный пароль комнаты'
+              };
+              if (guestConn && guestConn.open) {
+                try { guestConn.send(rejectMsg); } catch {}
+                setTimeout(() => guestConn.close(), 300);
+              }
+              if (this.localChannel) {
+                try {
+                  this.localChannel.postMessage({ _sender: this.myId, _target: guestId, payload: rejectMsg });
+                } catch {}
+              }
+              this.removeGuest(guestId);
+              return;
+            }
           }
 
           const slotNum = AVAILABLE_SLOT_IDS.indexOf(guestId) + 2;
@@ -684,7 +816,6 @@ export class NetworkManager {
           this.isConnected = true;
 
           // Send HELLO_ACK ONLY to the connecting guest's connection, NOT broadcast to all guests!
-          const guestConn = this.connections.get(guestId);
           if (guestConn && guestConn.open) {
             try {
               guestConn.send({
@@ -713,6 +844,20 @@ export class NetworkManager {
 
           // Broadcast roster update to all existing guests
           this.broadcastLobbyUpdate();
+        }
+        break;
+      }
+
+      case 'JOIN_REJECTED': {
+        if (this.role === 'client') {
+          this.notifyStatus(msg.message, false);
+          if (this.onJoinRejected) {
+            this.onJoinRejected(msg.reason, msg.message);
+          }
+          if (this.joinRoomResolver) {
+            this.joinRoomResolver(false);
+          }
+          this.handleDisconnect();
         }
         break;
       }
@@ -903,6 +1048,7 @@ export class NetworkManager {
     }
     this.send({ type: 'HERO_SELECT', playerId: this.myId, hero });
     if (this.role === 'host') {
+      RoomDirectory.updateHosting({ hostHero: hero });
       this.broadcastLobbyUpdate();
     } else {
       if (this.onLobbyStateChanged) {
@@ -934,6 +1080,8 @@ export class NetworkManager {
 
   public startGame(seed = Math.floor(Math.random() * 1000000)) {
     if (this.role !== 'host') return;
+    this.isGameStarted = true;
+    RoomDirectory.updateHosting({ status: 'playing' });
     const msg: GameStartMessage = {
       type: 'GAME_START',
       players: this.lobbyPlayers,
@@ -1094,6 +1242,11 @@ export class NetworkManager {
   }
 
   public reset() {
+    RoomDirectory.stopHosting();
+    this.roomPassword = undefined;
+    this.hasPassword = false;
+    this.isGameStarted = false;
+    this.joinPassword = undefined;
     this.joinRoomResolver = null;
     if (this.pingInterval) {
       clearInterval(this.pingInterval);

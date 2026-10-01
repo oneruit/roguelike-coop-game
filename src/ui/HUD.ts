@@ -5,6 +5,7 @@ import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
 import { PlayerStats, LobbyPlayerInfo, PLAYER_COLORS, getPlayerSlotNumber } from '../net/NetworkManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
+import { PublicRoomInfo } from '../net/RoomDirectory';
 import * as THREE from 'three';
 
 export interface UpgradeOption {
@@ -105,15 +106,36 @@ export class HUD {
   private hostPartnerDesc: HTMLElement;
   private btnHostStart: HTMLButtonElement;
   private btnHostBack: HTMLElement;
+  private hostPasswordInput: HTMLInputElement;
+  private hostPasswordBadge: HTMLElement;
+  private btnToggleHostPwd: HTMLElement | null;
 
+  // Join Lobby elements
   private joinRoomInput: HTMLInputElement;
+  private joinPasswordInput: HTMLInputElement | null;
   private joinStatusText: HTMLElement;
   private btnJoinConnect: HTMLButtonElement;
   private btnGuestReady: HTMLButtonElement;
   private btnJoinBack: HTMLElement;
+  private tabBtnBrowser: HTMLElement | null;
+  private tabBtnDirect: HTMLElement | null;
+  private tabContentBrowser: HTMLElement | null;
+  private tabContentDirect: HTMLElement | null;
+  private btnRefreshRooms: HTMLElement | null;
+  private availableRoomsList: HTMLElement | null;
   public isGuestReady: boolean = false;
   public isGuestConnected: boolean = false;
   public onGuestReadyToggle?: (isReady: boolean) => void;
+
+  // Password Prompt Modal
+  private passwordPromptModal: HTMLElement | null;
+  private pwdPromptRoomTitle: HTMLElement | null;
+  private pwdPromptInput: HTMLInputElement | null;
+  private btnTogglePromptPwd: HTMLElement | null;
+  private pwdPromptError: HTMLElement | null;
+  private btnPwdPromptSubmit: HTMLButtonElement | null;
+  private btnPwdPromptCancel: HTMLElement | null;
+  private pendingPasswordRoomCode: string | null = null;
 
   // Co-op In-game HUD
   private coopBadge: HTMLElement;
@@ -154,7 +176,9 @@ export class HUD {
   public onHostStartExpedition?: () => void;
   public onHostHeroChanged?: (hero: CharacterType) => void;
   public onGuestHeroChanged?: (hero: CharacterType) => void;
-  public onGuestConnectClicked?: (roomCode: string, hero: CharacterType) => void;
+  public onGuestConnectClicked?: (roomCode: string, hero: CharacterType, password?: string) => void;
+  public onHostPasswordChanged?: (password: string) => void;
+  public onRefreshRoomsClicked?: () => void;
   public onReturnToMenu?: () => void;
 
   constructor(
@@ -240,13 +264,32 @@ export class HUD {
     this.hostPartnerDesc = document.getElementById('host-partner-desc')!;
     this.btnHostStart = document.getElementById('btn-host-start') as HTMLButtonElement;
     this.btnHostBack = document.getElementById('btn-host-back')!;
+    this.hostPasswordInput = document.getElementById('host-password-input') as HTMLInputElement;
+    this.hostPasswordBadge = document.getElementById('host-password-badge')!;
+    this.btnToggleHostPwd = document.getElementById('btn-toggle-host-pwd');
 
     // Join Lobby Elements
     this.joinRoomInput = document.getElementById('join-room-input') as HTMLInputElement;
+    this.joinPasswordInput = document.getElementById('join-password-input') as HTMLInputElement | null;
     this.joinStatusText = document.getElementById('join-status-text')!;
     this.btnJoinConnect = document.getElementById('btn-join-connect') as HTMLButtonElement;
     this.btnGuestReady = document.getElementById('btn-guest-ready') as HTMLButtonElement;
     this.btnJoinBack = document.getElementById('btn-join-back')!;
+    this.tabBtnBrowser = document.getElementById('tab-btn-browser');
+    this.tabBtnDirect = document.getElementById('tab-btn-direct');
+    this.tabContentBrowser = document.getElementById('tab-content-browser');
+    this.tabContentDirect = document.getElementById('tab-content-direct');
+    this.btnRefreshRooms = document.getElementById('btn-refresh-rooms');
+    this.availableRoomsList = document.getElementById('available-rooms-list');
+
+    // Password Prompt Modal
+    this.passwordPromptModal = document.getElementById('password-prompt-modal');
+    this.pwdPromptRoomTitle = document.getElementById('pwd-prompt-room-title');
+    this.pwdPromptInput = document.getElementById('pwd-prompt-input') as HTMLInputElement | null;
+    this.btnTogglePromptPwd = document.getElementById('btn-toggle-prompt-pwd');
+    this.pwdPromptError = document.getElementById('pwd-prompt-error');
+    this.btnPwdPromptSubmit = document.getElementById('btn-pwd-prompt-submit') as HTMLButtonElement | null;
+    this.btnPwdPromptCancel = document.getElementById('btn-pwd-prompt-cancel');
 
     // Co-op HUD Elements
     this.coopBadge = document.getElementById('coop-badge')!;
@@ -455,6 +498,67 @@ export class HUD {
       });
     });
 
+    // Host Password Input & visibility toggle
+    this.hostPasswordInput?.addEventListener('input', () => {
+      const pwd = this.hostPasswordInput.value.trim();
+      if (pwd) {
+        this.hostPasswordBadge.innerText = '🔒 С ПАРОЛЕМ';
+        this.hostPasswordBadge.className = 'password-badge locked';
+      } else {
+        this.hostPasswordBadge.innerText = '🔓 БЕЗ ПАРОЛЯ';
+        this.hostPasswordBadge.className = 'password-badge open';
+      }
+      if (this.onHostPasswordChanged) {
+        this.onHostPasswordChanged(pwd);
+      }
+    });
+
+    this.btnToggleHostPwd?.addEventListener('click', () => {
+      if (this.hostPasswordInput.type === 'password') {
+        this.hostPasswordInput.type = 'text';
+      } else {
+        this.hostPasswordInput.type = 'password';
+      }
+    });
+
+    this.btnTogglePromptPwd?.addEventListener('click', () => {
+      if (this.pwdPromptInput && this.pwdPromptInput.type === 'password') {
+        this.pwdPromptInput.type = 'text';
+      } else if (this.pwdPromptInput) {
+        this.pwdPromptInput.type = 'password';
+      }
+    });
+
+    // Join Tabs Switcher
+    this.tabBtnBrowser?.addEventListener('click', () => {
+      this.switchJoinTab('browser');
+    });
+
+    this.tabBtnDirect?.addEventListener('click', () => {
+      this.switchJoinTab('direct');
+    });
+
+    this.btnRefreshRooms?.addEventListener('click', () => {
+      if (this.onRefreshRoomsClicked) {
+        this.onRefreshRoomsClicked();
+      }
+    });
+
+    // Password Prompt Actions
+    this.btnPwdPromptCancel?.addEventListener('click', () => {
+      this.hidePasswordPrompt();
+    });
+
+    this.btnPwdPromptSubmit?.addEventListener('click', () => {
+      this.submitPasswordPrompt();
+    });
+
+    this.pwdPromptInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        this.submitPasswordPrompt();
+      }
+    });
+
     // Guest Join Connect Button
     this.btnJoinConnect.addEventListener('click', () => {
       const code = this.joinRoomInput.value.trim().toUpperCase();
@@ -462,14 +566,21 @@ export class HUD {
         this.setJoinStatus('Пожалуйста, введите код комнаты!', true);
         return;
       }
+      const pwd = this.joinPasswordInput?.value?.trim() || undefined;
       this.btnJoinConnect.disabled = true;
       this.btnJoinConnect.innerText = '⏳ Подключение...';
       if (this.onGuestConnectClicked) {
-        this.onGuestConnectClicked(code, this.guestSelectedHero);
+        this.onGuestConnectClicked(code, this.guestSelectedHero, pwd);
       }
     });
 
     this.joinRoomInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        this.btnJoinConnect.click();
+      }
+    });
+
+    this.joinPasswordInput?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         this.btnJoinConnect.click();
       }
@@ -655,6 +766,13 @@ export class HUD {
       colorHex: 0xf59e0b,
       colorCss: '#f59e0b'
     };
+    if (this.hostPasswordInput) {
+      this.hostPasswordInput.value = '';
+    }
+    if (this.hostPasswordBadge) {
+      this.hostPasswordBadge.innerText = '🔓 БЕЗ ПАРОЛЯ';
+      this.hostPasswordBadge.className = 'password-badge open';
+    }
     this.renderHostRoster([initialHostInfo]);
     this.hostLobbyModal.classList.remove('hidden');
   }
@@ -868,7 +986,12 @@ export class HUD {
       if (connected) {
         this.btnJoinConnect.classList.add('hidden');
       } else {
-        this.btnJoinConnect.classList.remove('hidden');
+        const isDirect = this.tabBtnDirect?.classList.contains('active');
+        if (isDirect) {
+          this.btnJoinConnect.classList.remove('hidden');
+        } else {
+          this.btnJoinConnect.classList.add('hidden');
+        }
         this.btnJoinConnect.disabled = false;
         this.btnJoinConnect.innerText = 'ПОДКЛЮЧИТЬСЯ';
       }
@@ -876,14 +999,191 @@ export class HUD {
     if (this.joinRoomInput) {
       this.joinRoomInput.disabled = connected;
     }
+    if (this.joinPasswordInput) {
+      this.joinPasswordInput.disabled = connected;
+    }
+
+    if (connected) {
+      this.hidePasswordPrompt();
+      this.tabBtnBrowser?.parentElement?.classList.add('hidden');
+      this.tabContentBrowser?.classList.add('hidden');
+      this.tabContentDirect?.classList.add('hidden');
+    } else {
+      this.tabBtnBrowser?.parentElement?.classList.remove('hidden');
+      const isBrowser = this.tabBtnBrowser?.classList.contains('active');
+      if (isBrowser) {
+        this.tabContentBrowser?.classList.remove('hidden');
+        this.tabContentDirect?.classList.add('hidden');
+      } else {
+        this.tabContentBrowser?.classList.add('hidden');
+        this.tabContentDirect?.classList.remove('hidden');
+      }
+    }
+  }
+
+  public switchJoinTab(tab: 'browser' | 'direct') {
+    if (tab === 'browser') {
+      this.tabBtnBrowser?.classList.add('active');
+      this.tabBtnDirect?.classList.remove('active');
+      this.tabContentBrowser?.classList.remove('hidden');
+      this.tabContentDirect?.classList.add('hidden');
+      this.btnJoinConnect?.classList.add('hidden');
+      this.setJoinStatus('Выберите комнату из списка для подключения', false);
+      if (this.onRefreshRoomsClicked) {
+        this.onRefreshRoomsClicked();
+      }
+    } else {
+      this.tabBtnBrowser?.classList.remove('active');
+      this.tabBtnDirect?.classList.add('active');
+      this.tabContentBrowser?.classList.add('hidden');
+      this.tabContentDirect?.classList.remove('hidden');
+      if (!this.isGuestConnected) {
+        this.btnJoinConnect?.classList.remove('hidden');
+      }
+      this.setJoinStatus('Введите код комнаты и нажмите «Подключиться»', false);
+    }
+  }
+
+  public showPasswordPrompt(roomCode: string) {
+    this.pendingPasswordRoomCode = roomCode;
+    if (this.pwdPromptRoomTitle) {
+      this.pwdPromptRoomTitle.innerText = `КОМНАТА ${roomCode}`;
+    }
+    if (this.pwdPromptInput) {
+      this.pwdPromptInput.value = '';
+    }
+    if (this.pwdPromptError) {
+      this.pwdPromptError.classList.add('hidden');
+    }
+    this.passwordPromptModal?.classList.remove('hidden');
+    setTimeout(() => this.pwdPromptInput?.focus(), 50);
+  }
+
+  public hidePasswordPrompt() {
+    this.pendingPasswordRoomCode = null;
+    this.passwordPromptModal?.classList.add('hidden');
+    if (this.pwdPromptError) {
+      this.pwdPromptError.classList.add('hidden');
+    }
+  }
+
+  public showPasswordPromptError(msg: string = 'Неверный пароль. Попробуйте снова.') {
+    if (this.pwdPromptError) {
+      this.pwdPromptError.innerText = msg;
+      this.pwdPromptError.classList.remove('hidden');
+    }
+    if (this.pwdPromptInput) {
+      this.pwdPromptInput.focus();
+      this.pwdPromptInput.select();
+    }
+  }
+
+  private submitPasswordPrompt() {
+    if (!this.pendingPasswordRoomCode) return;
+    const pwd = this.pwdPromptInput?.value?.trim() || '';
+    const roomCode = this.pendingPasswordRoomCode;
+    this.hidePasswordPrompt();
+    this.joinRoomInput.value = roomCode;
+    if (this.joinPasswordInput) {
+      this.joinPasswordInput.value = pwd;
+    }
+    if (this.onGuestConnectClicked) {
+      this.onGuestConnectClicked(roomCode, this.guestSelectedHero, pwd);
+    }
+  }
+
+  public renderAvailableRooms(rooms: PublicRoomInfo[]) {
+    if (!this.availableRoomsList) return;
+    this.availableRoomsList.innerHTML = '';
+
+    if (!rooms || rooms.length === 0) {
+      this.availableRoomsList.innerHTML = `
+        <div class="room-empty-state">
+          <div class="room-empty-state-icon">🤠</div>
+          <div>Активных экспедиций пока не найдено.</div>
+          <div style="font-size: 11px; opacity: 0.7;">Создайте свою или нажмите 🔄 Обновить.</div>
+        </div>
+      `;
+      return;
+    }
+
+    const heroNames: Record<string, string> = {
+      ronin: 'Рен (Вихрь)',
+      valkyrie: 'Каэла (Меч)',
+      flail: 'Бригитта (Цеп)',
+      sorceress: 'Ария (Магия)',
+      chakram: 'Кира (Чакрам)'
+    };
+
+    for (const r of rooms) {
+      const card = document.createElement('div');
+      card.className = 'room-browser-card';
+
+      const isFull = r.playerCount >= r.maxPlayers;
+      const isPlaying = r.status === 'playing';
+      const canJoin = !isFull && !isPlaying;
+
+      const heroName = heroNames[r.hostHero] || 'Рен';
+      const secBadgeClass = r.hasPassword ? 'with-password' : 'open';
+      const secBadgeText = r.hasPassword ? '🔒 С ПАРОЛЕМ' : '🔓 ОТКРЫТАЯ';
+      const statusBadgeClass = r.status === 'playing' ? 'playing' : 'lobby';
+      const statusBadgeText = r.status === 'playing' ? '⚔️ В ПОХОДЕ' : '⏳ В ЛОББИ';
+
+      card.innerHTML = `
+        <div class="room-card-left">
+          <div class="room-host-avatar" title="${heroName}">
+            <img src="/textures/hero_${r.hostHero}_front.png" alt="${heroName}" />
+          </div>
+          <div class="room-card-info">
+            <div class="room-card-title-row">
+              <span class="room-card-code">${r.roomCode}</span>
+              <span class="room-players-badge">👥 ${r.playerCount}/${r.maxPlayers}</span>
+            </div>
+            <div class="room-card-badges">
+              <span class="room-security-badge ${secBadgeClass}">${secBadgeText}</span>
+              <span class="room-status-badge ${statusBadgeClass}">${statusBadgeText}</span>
+              <span class="room-card-details">Хост: ${heroName}</span>
+            </div>
+          </div>
+        </div>
+        <div class="room-card-actions">
+          <button class="room-join-btn" ${canJoin ? '' : 'disabled'}>
+            ${isFull ? 'ПОЛНАЯ' : (isPlaying ? 'В ПОХОДЕ' : 'ВОЙТИ')}
+          </button>
+        </div>
+      `;
+
+      const joinBtn = card.querySelector<HTMLButtonElement>('.room-join-btn');
+      if (joinBtn && canJoin) {
+        joinBtn.addEventListener('click', () => {
+          if (r.hasPassword) {
+            this.showPasswordPrompt(r.roomCode);
+          } else {
+            this.joinRoomInput.value = r.roomCode;
+            if (this.joinPasswordInput) {
+              this.joinPasswordInput.value = '';
+            }
+            if (this.onGuestConnectClicked) {
+              this.onGuestConnectClicked(r.roomCode, this.guestSelectedHero, '');
+            }
+          }
+        });
+      }
+
+      this.availableRoomsList.appendChild(card);
+    }
   }
 
   public showJoinLobby(defaultHero: CharacterType = 'valkyrie') {
     this.joinRoomInput.value = '';
+    if (this.joinPasswordInput) {
+      this.joinPasswordInput.value = '';
+    }
     this.isGuestReady = false;
     this.isGuestConnected = false;
     this.setGuestConnectedMode(false);
-    this.setJoinStatus('Введите код комнаты хоста и нажмите «Подключиться»', false);
+    this.switchJoinTab('browser');
+    this.setJoinStatus('Выберите экспедицию из списка или перейдите на вкладку «Ввод по коду»', false);
     if (this.joinRosterSection) {
       this.joinRosterSection.classList.add('hidden');
     }
@@ -897,9 +1197,13 @@ export class HUD {
       }
     });
     this.joinLobbyModal.classList.remove('hidden');
+    if (this.onRefreshRoomsClicked) {
+      this.onRefreshRoomsClicked();
+    }
   }
 
   public hideJoinLobby() {
+    this.hidePasswordPrompt();
     this.setGuestConnectedMode(false);
     this.joinLobbyModal.classList.add('hidden');
   }
