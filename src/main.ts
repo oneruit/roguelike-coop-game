@@ -15,6 +15,7 @@ import { NetworkManager, HostSnapshotMessage, ClientSyncMessage, DamageDealtEven
 import { RemotePlayer } from './entities/RemotePlayer';
 import { SoundManager } from './core/SoundManager';
 import { ALTAR_CONFIGS } from './world/Altar';
+import { RoomDirectory } from './net/RoomDirectory';
 
 enum GameState {
   MAIN_MENU,
@@ -39,6 +40,7 @@ class Game {
   private debugHud: DebugHUD;
   private mapManager: MapManager;
   private net: NetworkManager;
+  private roomPollingTimer: number | null = null;
 
   // Performance Telemetry EMA smoothers
   private simTimeEma: number = 0;
@@ -289,8 +291,17 @@ class Game {
       this.startCoopGameAsHost();
     };
 
-    this.hud.onGuestConnectClicked = (roomCode, hero) => {
-      this.connectAsGuest(roomCode, hero);
+    this.hud.onHostPasswordChanged = (pwd) => {
+      this.net.setPassword(pwd);
+    };
+
+    this.hud.onRefreshRoomsClicked = async () => {
+      const rooms = await RoomDirectory.fetchRooms();
+      this.hud.renderAvailableRooms(rooms);
+    };
+
+    this.hud.onGuestConnectClicked = (roomCode, hero, password) => {
+      this.connectAsGuest(roomCode, hero, password);
     };
 
     this.hud.onGuestReadyToggle = (isReady) => {
@@ -319,14 +330,39 @@ class Game {
         ? 'chakram'
         : 'ronin';
     this.hud.showJoinLobby(nextHero);
+    this.startRoomPolling();
   }
 
-  private async connectAsGuest(roomCode: string, hero: CharacterType) {
+  private startRoomPolling() {
+    this.stopRoomPolling();
+    RoomDirectory.fetchRooms().then((rooms) => {
+      this.hud.renderAvailableRooms(rooms);
+    });
+
+    this.roomPollingTimer = window.setInterval(async () => {
+      if (this.gameState === GameState.JOIN_LOBBY && !this.hud.isGuestConnected) {
+        const rooms = await RoomDirectory.fetchRooms();
+        this.hud.renderAvailableRooms(rooms);
+      } else {
+        this.stopRoomPolling();
+      }
+    }, 3500);
+  }
+
+  private stopRoomPolling() {
+    if (this.roomPollingTimer) {
+      clearInterval(this.roomPollingTimer);
+      this.roomPollingTimer = null;
+    }
+  }
+
+  private async connectAsGuest(roomCode: string, hero: CharacterType, password?: string) {
     const upperCode = roomCode.toUpperCase().trim();
     this.hud.setJoinStatus(`Подключение к комнате ${upperCode}...`, false);
     this.player.setCharacter(hero);
-    const ok = await this.net.joinRoom(upperCode, hero);
+    const ok = await this.net.joinRoom(upperCode, hero, password);
     if (ok || this.net.isConnected) {
+      this.stopRoomPolling();
       this.hud.setGuestConnectedMode(true);
       if (!this.hud.isGuestReady) {
         this.hud.setJoinStatus(`Подключено к ${upperCode}! Нажмите «ГОТОВ» для подтверждения.`, false);
@@ -334,11 +370,20 @@ class Game {
       this.hud.renderJoinRoster(this.net.lobbyPlayers, this.net.mySlotId);
     } else {
       this.hud.setGuestConnectedMode(false);
-      this.hud.setJoinStatus('Не удалось подключиться. Проверьте код комнаты!', true);
+      if (!this.hud.isGuestConnected) {
+        this.hud.setJoinStatus('Не удалось подключиться. Проверьте код комнаты или пароль!', true);
+      }
     }
   }
 
   private setupNetworkCallbacks() {
+    this.net.onJoinRejected = (reason, message) => {
+      if (reason === 'WRONG_PASSWORD') {
+        this.hud.showPasswordPromptError(message);
+      }
+      this.hud.setJoinStatus(message, true);
+    };
+
     this.net.onConnectionStatusChanged = (status, isSuccess) => {
       if (this.net.role === 'client') {
         if (!this.net.isConnected || !isSuccess) {
@@ -587,6 +632,7 @@ class Game {
   }
 
   private returnToMainMenu() {
+    this.stopRoomPolling();
     this.net.reset();
     for (const rp of this.remotePlayers.values()) {
       rp.destroy(this.engine.scene);

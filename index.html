@@ -317,6 +317,18 @@
             <p class="code-hint">Отправьте этот код друзьям. В одной экспедиции могут участвовать до 5 игроков одновременно!</p>
           </div>
 
+          <div class="room-password-section">
+            <div class="password-label-row">
+              <span class="code-label">ПАРОЛЬ КОМНАТЫ:</span>
+              <span id="host-password-badge" class="password-badge open">🔓 БЕЗ ПАРОЛЯ</span>
+            </div>
+            <div class="password-input-row">
+              <input id="host-password-input" type="password" class="room-code-input" placeholder="Оставьте пустым для открытого входа" maxlength="32" autocomplete="off" />
+              <button id="btn-toggle-host-pwd" class="pwd-visibility-btn" title="Показать/скрыть пароль" type="button">👁️</button>
+            </div>
+            <p class="code-hint">Оставьте пустым, чтобы любой игрок мог присоединиться из списка, либо задайте пароль.</p>
+          </div>
+
           <div class="lobby-heroes-section">
             <div class="section-label">ВАШ ГЕРОЙ:</div>
             <div class="lobby-hero-picker">
@@ -383,10 +395,41 @@
             <h2 class="modern-menu-title">ВОЙТИ В ЭКСПЕДИЦИЮ</h2>
           </div>
 
-          <div class="join-input-section">
-            <label for="join-room-input" class="code-label">ВВЕДИТЕ КОД КОМНАТЫ ХОСТА:</label>
-            <div class="input-row">
-              <input id="join-room-input" type="text" class="room-code-input" placeholder="НАПРИМЕР: WEST-42" maxlength="16" autocomplete="off" />
+          <div class="join-nav-tabs">
+            <button id="tab-btn-browser" class="join-tab-btn active" type="button">
+              <span class="tab-icon">🌐</span> ДОСТУПНЫЕ КОМНАТЫ
+            </button>
+            <button id="tab-btn-direct" class="join-tab-btn" type="button">
+              <span class="tab-icon">🔑</span> ВВОД ПО КОДУ
+            </button>
+          </div>
+
+          <!-- Tab 1: Available Rooms Browser -->
+          <div id="tab-content-browser" class="join-tab-content active">
+            <div class="rooms-browser-header">
+              <span class="browser-header-title">ОТКРЫТЫЕ И ЗАЩИЩЁННЫЕ ЭКСПЕДИЦИИ:</span>
+              <button id="btn-refresh-rooms" class="refresh-rooms-btn" type="button" title="Обновить список комнат">
+                <span class="refresh-icon">🔄</span> Обновить
+              </button>
+            </div>
+            <div id="available-rooms-list" class="available-rooms-list">
+              <!-- Dynamically populated room cards -->
+            </div>
+          </div>
+
+          <!-- Tab 2: Direct Code and Password -->
+          <div id="tab-content-direct" class="join-tab-content hidden">
+            <div class="join-input-section">
+              <label for="join-room-input" class="code-label">ВВЕДИТЕ КОД КОМНАТЫ ХОСТА:</label>
+              <div class="input-row">
+                <input id="join-room-input" type="text" class="room-code-input" placeholder="НАПРИМЕР: WEST-42" maxlength="16" autocomplete="off" />
+              </div>
+            </div>
+            <div class="join-input-section" style="margin-top: 10px;">
+              <label for="join-password-input" class="code-label">ПАРОЛЬ КОМНАТЫ (ЕСЛИ УСТАНОВЛЕН):</label>
+              <div class="input-row">
+                <input id="join-password-input" type="password" class="room-code-input" placeholder="Оставьте пустым для открытой комнаты" maxlength="32" autocomplete="off" />
+              </div>
             </div>
           </div>
 
@@ -433,13 +476,36 @@
           </div>
 
           <div id="join-status-box" class="join-status-box">
-            <span id="join-status-text">Введите код комнаты и нажмите «Подключиться»</span>
+            <span id="join-status-text">Выберите комнату из списка или введите код хоста</span>
           </div>
 
           <div class="lobby-actions">
             <button id="btn-join-connect" class="action-btn">ПОДКЛЮЧИТЬСЯ</button>
             <button id="btn-guest-ready" class="action-btn ready-toggle-btn hidden">НАЖМИТЕ «ГОТОВ»</button>
             <button id="btn-join-back" class="modern-back-btn">← Назад в меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Prompt Modal -->
+      <div id="password-prompt-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card password-prompt-card modern-glass-modal">
+          <div class="modal-header">
+            <div class="sub-title menu-badge-amber">🔒 ТРЕБУЕТСЯ ПАРОЛЬ</div>
+            <h3 id="pwd-prompt-room-title" class="modern-menu-title">ВХОД В КОМНАТУ</h3>
+          </div>
+          <div class="password-prompt-body">
+            <p class="code-hint">Хост установил пароль для защиты этой экспедиции. Введите пароль для входа:</p>
+            <div class="password-input-row" style="margin-top: 12px;">
+              <input id="pwd-prompt-input" type="password" class="room-code-input" placeholder="Введите пароль" maxlength="32" autocomplete="off" />
+              <button id="btn-toggle-prompt-pwd" class="pwd-visibility-btn" title="Показать/скрыть пароль" type="button">👁️</button>
+            </div>
+            <div id="pwd-prompt-error" class="password-error-text hidden">Неверный пароль. Попробуйте снова.</div>
+          </div>
+          <div class="lobby-actions" style="margin-top: 16px;">
+            <button id="btn-pwd-prompt-submit" class="action-btn">ПОДТВЕРДИТЬ И ВОЙТИ</button>
+            <button id="btn-pwd-prompt-cancel" class="modern-back-btn">Отмена</button>
           </div>
         </div>
       </div>
