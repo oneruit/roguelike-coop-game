@@ -1,8 +1,5 @@
 import { HostSnapshotMessage, EnemySnapshot, DropSnapshot, PlayerNetState, PlayerStats, NetEvent } from './NetworkManager';
-import { SpriteDirection } from '../core/TextureManager';
-import { CharacterType, HeroAnimState } from '../entities/Player';
-import { EnemyType } from '../entities/Enemy';
-import { GemType } from '../drops/Gem';
+import { SpriteDirection, CharacterType, HeroAnimState, EnemyType, GemType } from '../sim/types';
 
 const MAGIC_HEADER = 0x48534e50; // "HSNP" (Host Snapshot Network Packet)
 const PROTOCOL_VERSION = 1;

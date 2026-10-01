@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-
 export type ObstacleType = 'cactus' | 'tree' | 'boulder' | 'altar' | 'landmark';
 
 export interface Obstacle {
@@ -7,6 +5,11 @@ export interface Obstacle {
   z: number;
   radius: number;
   type: ObstacleType;
+}
+
+export interface SimPoint2D {
+  x: number;
+  z: number;
 }
 
 export class ObstacleManager {
@@ -64,7 +67,7 @@ export class ObstacleManager {
    * High performance zero-allocation collision resolution.
    */
   public resolveEntityCollision(
-    position: THREE.Vector3,
+    position: SimPoint2D,
     entityRadius: number,
     iterations = 1
   ): boolean {

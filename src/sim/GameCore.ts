@@ -24,11 +24,13 @@ import {
   createSimWeaponForCharacter,
   createSimWeaponById
 } from './SimWeapons';
+import { ObstacleManager } from '../world/ObstacleManager';
 
 export interface GameCoreConfig {
   seed?: number;
   isCoop?: boolean;
   tickRate?: number; // e.g. 30 or 60 Hz
+  obstacleManager?: ObstacleManager;
 }
 
 export interface SimEnemyConfig {
@@ -269,6 +271,7 @@ export class GameCore {
   public activeBoss: SimEnemyInternal | null = null;
   public immortalBossSpawned: boolean = false;
   public lastBossMinute: number = 0;
+  public obstacleManager: ObstacleManager;
 
   // Spawning & waves
   private spawnTimer: number = 0;
@@ -292,12 +295,22 @@ export class GameCore {
     this.rng = new SimRNG(config.seed ?? 1337);
     this.isCoop = !!config.isCoop;
     this.tickRate = config.tickRate || 30;
+    this.obstacleManager = config.obstacleManager || new ObstacleManager();
 
-    // Initialize 4 ancient shrines at quadrants
-    this.altars.push(new SimAltarInternal('damage', 'Алтарь Ярости', new SimVec3(45, 0, 45), 25));
-    this.altars.push(new SimAltarInternal('speed', 'Алтарь Ветра', new SimVec3(-45, 0, 45), 20));
-    this.altars.push(new SimAltarInternal('regen', 'Алтарь Жизни', new SimVec3(45, 0, -45), 18));
-    this.altars.push(new SimAltarInternal('invulnerable', 'Алтарь Духов', new SimVec3(-45, 0, -45), 12));
+    // Initialize 4 ancient shrines matching world chunk layout
+    this.altars.push(new SimAltarInternal('damage', 'Алтарь Ярости', new SimVec3(21, 0, 75), 25));
+    this.altars.push(new SimAltarInternal('speed', 'Алтарь Ветра', new SimVec3(-25, 0, 30), 20));
+    this.altars.push(new SimAltarInternal('regen', 'Алтарь Жизни', new SimVec3(78, 0, -28), 18));
+    this.altars.push(new SimAltarInternal('invulnerable', 'Алтарь Духов', new SimVec3(22, 0, -30), 12));
+
+    for (const altar of this.altars) {
+      this.obstacleManager.addObstacle(altar.id, {
+        x: altar.position.x,
+        z: altar.position.z,
+        radius: 1.5,
+        type: 'altar'
+      });
+    }
   }
 
   // -------------------------------------------------------------
@@ -333,6 +346,23 @@ export class GameCore {
       const newW = createSimWeaponById(weaponId);
       if (newW) player.weapons.push(newW);
     }
+  }
+
+  public revivePlayer(reviverId: string, targetId: string) {
+    const reviver = this.players.get(reviverId);
+    const downed = this.players.get(targetId);
+    if (!reviver || !downed || !downed.isDowned) return;
+
+    downed.isDowned = false;
+    downed.reviveProgress = 0;
+    downed.hp = Math.round(downed.maxHp * 0.4);
+    reviver.revivesCount++;
+
+    this.events.push({
+      type: 'player_revived',
+      targetId: downed.id,
+      reviverId: reviver.id
+    });
   }
 
   // -------------------------------------------------------------
@@ -404,6 +434,7 @@ export class GameCore {
       if (isMoving) {
         player.position.x += mx * player.speed * dt;
         player.position.z += mz * player.speed * dt;
+        this.obstacleManager.resolveEntityCollision(player.position, 0.45);
 
         // Facing direction
         if (Math.abs(mx) > Math.abs(mz)) {
@@ -596,6 +627,7 @@ export class GameCore {
         const vz = (dz / dist) * enemy.speed * dt;
         enemy.position.x += vx;
         enemy.position.z += vz;
+        this.obstacleManager.resolveEntityCollision(enemy.position, (enemy.width + enemy.height) * 0.15);
 
         // Facing direction
         if (Math.abs(dx) > Math.abs(dz)) {
