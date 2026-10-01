@@ -237,6 +237,14 @@ export class Projectile {
     return false;
   }
 
+  public updateVisuals(inFrustum: boolean) {
+    if (!this.isAlive || !inFrustum) {
+      this.mesh.visible = false;
+      return;
+    }
+    this.mesh.visible = true;
+  }
+
   public destroy(scene: THREE.Scene) {
     scene.remove(this.mesh);
   }

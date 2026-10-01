@@ -341,50 +341,23 @@ export class Altar {
     this.billboardTexture.needsUpdate = true;
   }
 
-  public update(
+  /**
+   * Authoritative simulation update: capture zones, timers, buffs.
+   */
+  public updateSimulation(
     dt: number,
     player: Player,
-    camera: THREE.Camera,
     partnerPos?: THREE.Vector3,
     isPartnerAlive: boolean = true,
     allowCapture: boolean = true,
     allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
-    this.animTimer += dt;
-
-    // Relic floating bob and rotation
-    this.relicMesh.rotation.y += dt * (this.isCaptured ? 0.8 : (1.6 + this.captureProgress * 3.0));
-    this.relicMesh.position.y = 1.95 + Math.sin(this.animTimer * 2.5) * 0.15;
-
-    // Make billboard face camera
-    this.billboardMesh.quaternion.copy(camera.quaternion);
-
-    // Shockwave effect animation
-    if (this.isShockwaving) {
-      this.shockwaveTimer += dt * 3.5;
-      const scale = 0.5 + this.shockwaveTimer * 7.0;
-      this.shockwaveMesh.scale.set(scale, scale, scale);
-      this.shockwaveMat.opacity = Math.max(0, 1 - this.shockwaveTimer);
-      if (this.shockwaveTimer >= 1.0) {
-        this.isShockwaving = false;
-        this.shockwaveMat.opacity = 0;
-      }
-    }
-
-    // Handlers for captured/recharging state
     if (this.isCaptured) {
       this.rechargeTimer -= dt;
-      this.light.intensity = 0.8 + Math.sin(this.animTimer * 2) * 0.3;
-      this.innerZoneMat.opacity = 0.05;
-
       if (this.rechargeTimer <= 0) {
-        // Reactivate!
         this.isCaptured = false;
         this.captureProgress = 0;
-        this.light.intensity = 2.2;
       }
-
-      this.renderBillboard(0);
       return;
     }
 
@@ -405,8 +378,6 @@ export class Altar {
 
     if (isInside) {
       this.captureProgress += dt / this.captureTime;
-      this.innerZoneMat.opacity = 0.15 + this.captureProgress * 0.45;
-      this.light.intensity = 2.0 + this.captureProgress * 2.5;
 
       // Pulse audio tick
       SoundManager.playAltarCapturing(this.captureProgress);
@@ -436,12 +407,65 @@ export class Altar {
       // Slow progress decay when player leaves
       if (this.captureProgress > 0) {
         this.captureProgress = Math.max(0, this.captureProgress - dt * 0.35);
-        this.innerZoneMat.opacity = 0.1 + this.captureProgress * 0.3;
-        this.light.intensity = 2.0 + this.captureProgress;
+      }
+    }
+  }
+
+  /**
+   * Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh animations.
+   * If inFrustum is false, sets mesh.visible = false and skips all canvas redraws.
+   */
+  public updateVisuals(dt: number, camera: THREE.Camera, inFrustum: boolean) {
+    if (!inFrustum) {
+      this.mesh.visible = false;
+      return;
+    }
+
+    this.mesh.visible = true;
+    this.animTimer += dt;
+
+    // Relic floating bob and rotation
+    this.relicMesh.rotation.y += dt * (this.isCaptured ? 0.8 : (1.6 + this.captureProgress * 3.0));
+    this.relicMesh.position.y = 1.95 + Math.sin(this.animTimer * 2.5) * 0.15;
+
+    // Make billboard face camera
+    this.billboardMesh.quaternion.copy(camera.quaternion);
+
+    // Shockwave effect animation
+    if (this.isShockwaving) {
+      this.shockwaveTimer += dt * 3.5;
+      const scale = 0.5 + this.shockwaveTimer * 7.0;
+      this.shockwaveMesh.scale.set(scale, scale, scale);
+      this.shockwaveMat.opacity = Math.max(0, 1 - this.shockwaveTimer);
+      if (this.shockwaveTimer >= 1.0) {
+        this.isShockwaving = false;
+        this.shockwaveMat.opacity = 0;
       }
     }
 
-    this.renderBillboard(this.captureProgress);
+    // Handlers for captured/recharging state
+    if (this.isCaptured) {
+      this.light.intensity = 0.8 + Math.sin(this.animTimer * 2) * 0.3;
+      this.innerZoneMat.opacity = 0.05;
+      this.renderBillboard(0);
+    } else {
+      this.innerZoneMat.opacity = 0.15 + this.captureProgress * 0.45;
+      this.light.intensity = 2.0 + this.captureProgress * 2.5;
+      this.renderBillboard(this.captureProgress);
+    }
+  }
+
+  public update(
+    dt: number,
+    player: Player,
+    camera: THREE.Camera,
+    partnerPos?: THREE.Vector3,
+    isPartnerAlive: boolean = true,
+    allowCapture: boolean = true,
+    allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
+  ) {
+    this.updateSimulation(dt, player, partnerPos, isPartnerAlive, allowCapture, allPlayers);
+    this.updateVisuals(dt, camera, true);
   }
 
   /** Apply a capture decided by the host without replaying the local capture logic. */

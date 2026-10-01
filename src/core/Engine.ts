@@ -87,11 +87,13 @@ export class Engine {
     const targetY = playerPos.y + this.cameraOffset.y;
     const targetZ = playerPos.z + this.cameraOffset.z;
 
-    this.camera.position.x = THREE.MathUtils.lerp(this.camera.position.x, targetX, dt * 6);
-    this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, targetY, dt * 6);
-    this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, targetZ, dt * 6);
+    const factor = 1 - Math.exp(-12 * Math.min(dt, 0.1));
 
-    this.cameraTarget.lerp(playerPos, dt * 8);
+    this.camera.position.x = THREE.MathUtils.lerp(this.camera.position.x, targetX, factor);
+    this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, targetY, factor);
+    this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, targetZ, factor);
+
+    this.cameraTarget.lerp(playerPos, factor);
     this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y + 0.6, this.cameraTarget.z);
 
     // Keep sun & shadow camera aligned with player position in the infinite desert

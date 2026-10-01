@@ -238,6 +238,7 @@ export class NetworkManager {
   public onClientSyncReceived?: (msg: ClientSyncMessage) => void;
   public onReviveReceived?: (msg: ReviveActionMessage) => void;
   public onPartnerDisconnected?: (playerId: string) => void;
+  public onHostDisconnected?: () => void;
   public onConnectionStatusChanged?: (status: string, isSuccess: boolean) => void;
   public onDevActionReceived?: (action: string, value?: any) => void;
   public onAltarCapturedReceived?: (altarType: BuffType, fromPlayerId: string) => void;
@@ -249,6 +250,7 @@ export class NetworkManager {
   public webRtcRoute: string = 'P2P';
   public isTurnRoute: boolean = false;
   public webRtcConnectionState: string = 'connected';
+  private lastHostMessageTime: number = 0;
 
   private bytesSentWindow: number = 0;
   private bytesReceivedWindow: number = 0;
@@ -485,6 +487,7 @@ export class NetworkManager {
 
           conn.on('error', (err) => {
             console.warn('Connection error:', err);
+            this.handleDisconnect();
           });
         });
 
@@ -596,6 +599,10 @@ export class NetworkManager {
       msg = data as NetMessage;
     } else {
       return;
+    }
+
+    if (this.role === 'client') {
+      this.lastHostMessageTime = performance.now();
     }
 
     switch (msg.type) {
@@ -799,7 +806,7 @@ export class NetworkManager {
       }
 
       case 'DISCONNECT': {
-        if (this.role === 'host' && msg.playerId) {
+        if (this.role === 'host' && msg.playerId && msg.playerId !== 'p1') {
           this.removeGuest(msg.playerId);
         } else {
           this.handleDisconnect();
@@ -932,6 +939,11 @@ export class NetworkManager {
           this.packetLoss = Number(((lost / this.pingsSentCount) * 100).toFixed(1));
         }
         if (this.role === 'client') {
+          if (this.lastHostMessageTime > 0 && performance.now() - this.lastHostMessageTime > 5000) {
+            console.warn('Host heartbeat timed out. Disconnecting.');
+            this.handleDisconnect();
+            return;
+          }
           this.send({ type: 'PING', timestamp: performance.now(), fromId: this.myId });
         } else if (this.role === 'host' && this.connections.size > 0) {
           this.send({ type: 'PING', timestamp: performance.now(), fromId: 'p1' });
@@ -968,6 +980,11 @@ export class NetworkManager {
         this.webRtcConnectionState = 'connected';
       } else if (connState === 'connecting' || iceState === 'checking') {
         this.webRtcConnectionState = 'connecting';
+      } else if (connState === 'disconnected' || connState === 'failed' || connState === 'closed' || iceState === 'failed' || iceState === 'closed') {
+        this.webRtcConnectionState = connState || 'closed';
+        if (this.role === 'client') {
+          this.handleDisconnect();
+        }
       } else if (connState) {
         this.webRtcConnectionState = connState;
       }
@@ -1044,6 +1061,11 @@ export class NetworkManager {
 
   private handleDisconnect() {
     this.isConnected = false;
+    if (this.role === 'client') {
+      if (this.onHostDisconnected) {
+        this.onHostDisconnected();
+      }
+    }
     if (this.onPartnerDisconnected) {
       this.onPartnerDisconnected('p1');
     }
@@ -1062,7 +1084,13 @@ export class NetworkManager {
       this.pingInterval = null;
     }
 
-    if (this.role === 'client' && this.clientConnection) {
+    if (this.role === 'host') {
+      try {
+        this.send({ type: 'DISCONNECT', playerId: 'p1' });
+      } catch {
+        // ignore
+      }
+    } else if (this.role === 'client' && this.clientConnection) {
       try {
         this.send({ type: 'DISCONNECT', playerId: this.myId });
         this.clientConnection.close();
@@ -1111,6 +1139,7 @@ export class NetworkManager {
     this.webRtcRoute = 'P2P';
     this.isTurnRoute = false;
     this.webRtcConnectionState = 'connected';
+    this.lastHostMessageTime = 0;
 
     this.role = 'solo';
     this.roomCode = '';

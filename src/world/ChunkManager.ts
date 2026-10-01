@@ -131,6 +131,15 @@ export class ChunkManager {
     const worldCenterX = cx * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
     const worldCenterZ = cz * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
 
+    const minX = cx * ChunkManager.CHUNK_SIZE - 1;
+    const minZ = cz * ChunkManager.CHUNK_SIZE - 1;
+    const maxX = (cx + 1) * ChunkManager.CHUNK_SIZE + 1;
+    const maxZ = (cz + 1) * ChunkManager.CHUNK_SIZE + 1;
+    (chunkGroup as any).boundingBox = new THREE.Box3(
+      new THREE.Vector3(minX, -2, minZ),
+      new THREE.Vector3(maxX, 16, maxZ)
+    );
+
     // Floor Mesh (receives dynamic shadows)
     const floorMesh = new THREE.Mesh(this.sharedFloorGeometry, TerrainMaterials.sandMaterial);
     floorMesh.rotation.x = -Math.PI / 2;
@@ -310,6 +319,19 @@ export class ChunkManager {
         }
       }
     });
+  }
+
+  /**
+   * Rendering phase: Culls entire chunks that are outside the camera frustum.
+   * Completely skips rendering terrain sand floors and 20-30 props per culled chunk!
+   */
+  public cull(frustum: THREE.Frustum) {
+    for (const group of this.activeChunks.values()) {
+      const box = (group as any).boundingBox as THREE.Box3 | undefined;
+      if (box) {
+        group.visible = frustum.intersectsBox(box);
+      }
+    }
   }
 
   /**
