@@ -12,7 +12,7 @@ export class RemotePlayer {
   private shadowMesh: THREE.Mesh;
 
   public id: string = 'p2';
-  public name: string = 'Напарник';
+  public name: string = 'Игрок 2';
   public colorHex: number = 0x06b6d4;
   public colorCss: string = '#06b6d4';
 
@@ -57,7 +57,7 @@ export class RemotePlayer {
   constructor(
     scene: THREE.Scene,
     id: string = 'p2',
-    name: string = 'Напарник',
+    name: string = 'Игрок 2',
     charType: CharacterType = 'valkyrie',
     colorHex: number | string = 0x06b6d4
   ) {

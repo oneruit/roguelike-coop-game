@@ -11,7 +11,7 @@ import { HUD, DetailedPlayerResult } from './ui/HUD';
 import { DevManager } from './ui/DevManager';
 import { DebugHUD } from './ui/DebugHUD';
 import { MapManager } from './ui/MapManager';
-import { NetworkManager, HostSnapshotMessage, ClientSyncMessage, DamageDealtEvent, PlayerStats, NetEvent, PlayerNetState, PLAYER_COLORS, AVAILABLE_SLOT_IDS, NetShotInfo } from './net/NetworkManager';
+import { NetworkManager, HostSnapshotMessage, ClientSyncMessage, DamageDealtEvent, PlayerStats, NetEvent, PlayerNetState, PLAYER_COLORS, AVAILABLE_SLOT_IDS, NetShotInfo, getPlayerSlotDisplayName } from './net/NetworkManager';
 import { RemotePlayer } from './entities/RemotePlayer';
 import { SoundManager } from './core/SoundManager';
 import { ALTAR_CONFIGS } from './world/Altar';
@@ -331,6 +331,7 @@ class Game {
       if (!this.hud.isGuestReady) {
         this.hud.setJoinStatus(`Подключено к ${upperCode}! Нажмите «ГОТОВ» для подтверждения.`, false);
       }
+      this.hud.renderJoinRoster(this.net.lobbyPlayers, this.net.mySlotId);
     } else {
       this.hud.setGuestConnectedMode(false);
       this.hud.setJoinStatus('Не удалось подключиться. Проверьте код комнаты!', true);
@@ -350,7 +351,7 @@ class Game {
       if (this.net.role === 'host') {
         this.hud.renderHostRoster(this.net.lobbyPlayers);
       } else {
-        this.hud.renderJoinRoster(this.net.lobbyPlayers);
+        this.hud.renderJoinRoster(this.net.lobbyPlayers, this.net.mySlotId);
       }
     };
 
@@ -529,7 +530,7 @@ class Game {
       const offset = spawnOffsets[p.id] || [2.5, 0.5];
       const hero = p.hero || p.charType || 'valkyrie';
       const color = p.colorCss || p.colorHex || '#06b6d4';
-      const remote = new RemotePlayer(this.engine.scene, p.id, p.name, hero, color);
+      const remote = new RemotePlayer(this.engine.scene, p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
       remote.position.set(offset[0], 0, offset[1]);
       this.remotePlayers.set(p.id, remote);
     }
@@ -570,7 +571,7 @@ class Game {
       const isP1 = p.id === 'p1' || p.id === 'host';
       const hero = p.hero || p.charType || (isP1 ? 'ronin' : 'valkyrie');
       const color = p.colorCss || p.colorHex || (isP1 ? '#f59e0b' : '#06b6d4');
-      const remote = new RemotePlayer(this.engine.scene, p.id, p.name, hero, color);
+      const remote = new RemotePlayer(this.engine.scene, p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
       remote.position.set(offset[0], 0, offset[1]);
       this.remotePlayers.set(p.id, remote);
     }
@@ -763,7 +764,7 @@ class Game {
         const isP1 = id === 'p1' || id === 'host';
         const hero = pState.charType || pInfo?.hero || (isP1 ? 'ronin' : 'valkyrie');
         const color = pInfo?.colorCss || (PLAYER_COLORS[id]?.css || (isP1 ? '#f59e0b' : '#38bdf8'));
-        const name = pInfo?.name || (isP1 ? 'Игрок 1 (Хост)' : `Игрок ${id.toUpperCase()}`);
+        const name = getPlayerSlotDisplayName(id, false);
         remote = new RemotePlayer(this.engine.scene, id, name, hero, color);
         this.remotePlayers.set(id, remote);
         this.syncMapManagerPartners();
@@ -875,7 +876,7 @@ class Game {
       const pInfo = this.net.lobbyPlayers.find(p => p.id === clientId);
       const hero = msg.clientPlayer.charType || pInfo?.hero || 'valkyrie';
       const color = pInfo?.colorCss || (PLAYER_COLORS[clientId]?.css || '#38bdf8');
-      const name = pInfo?.name || `Игрок ${clientId.toUpperCase()}`;
+      const name = getPlayerSlotDisplayName(clientId, false);
       remote = new RemotePlayer(this.engine.scene, clientId, name, hero, color);
       this.remotePlayers.set(clientId, remote);
       this.syncMapManagerPartners();
@@ -1549,7 +1550,7 @@ class Game {
     // Local Player result
     allPlayersResults.push({
       id: mySlot,
-      name: `Вы (${mySlot.toUpperCase()})`,
+      name: getPlayerSlotDisplayName(mySlot, true),
       charType: this.player.charType,
       colorCss: PLAYER_COLORS[mySlot]?.css || '#f59e0b',
       stats: myStats,
@@ -1566,7 +1567,7 @@ class Game {
       };
       allPlayersResults.push({
         id,
-        name: remote.name,
+        name: getPlayerSlotDisplayName(id, false),
         charType: remote.charType,
         colorCss: remote.colorCss,
         stats,

@@ -131,7 +131,7 @@ export interface LobbyPlayerInfo {
 }
 
 export const PLAYER_COLORS: Record<string, { hex: number; css: string; name: string }> = {
-  p1: { hex: 0xf59e0b, css: '#f59e0b', name: 'Игрок 1 (Хост)' },
+  p1: { hex: 0xf59e0b, css: '#f59e0b', name: 'Игрок 1' },
   p2: { hex: 0x06b6d4, css: '#06b6d4', name: 'Игрок 2' },
   p3: { hex: 0xa855f7, css: '#a855f7', name: 'Игрок 3' },
   p4: { hex: 0xf97316, css: '#f97316', name: 'Игрок 4' },
@@ -139,6 +139,21 @@ export const PLAYER_COLORS: Record<string, { hex: number; css: string; name: str
 };
 
 export const AVAILABLE_SLOT_IDS = ['p2', 'p3', 'p4', 'p5'];
+
+export function getPlayerSlotNumber(slotId: string): number {
+  if (slotId === 'p1' || slotId === 'host') return 1;
+  if (slotId === 'p2') return 2;
+  if (slotId === 'p3') return 3;
+  if (slotId === 'p4') return 4;
+  if (slotId === 'p5') return 5;
+  const match = slotId.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 1;
+}
+
+export function getPlayerSlotDisplayName(slotId: string, isLocal = false): string {
+  const num = getPlayerSlotNumber(slotId);
+  return isLocal ? `Игрок ${num} (Вы)` : `Игрок ${num}`;
+}
 
 export interface HostSnapshotMessage {
   type: 'HOST_SNAPSHOT';
@@ -285,7 +300,7 @@ export class NetworkManager {
     this.lobbyPlayers = [
       {
         id: 'p1',
-        name: 'Командир (Вы)',
+        name: 'Игрок 1',
         hero: this.myHero,
         charType: this.myHero,
         isHost: true,
@@ -652,6 +667,7 @@ export class NetworkManager {
           if (existing) {
             existing.hero = msg.hero;
             existing.charType = msg.hero;
+            existing.name = `Игрок ${slotNum}`;
           } else {
             this.lobbyPlayers.push({
               id: guestId,

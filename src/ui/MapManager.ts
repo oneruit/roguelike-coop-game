@@ -422,7 +422,8 @@ export class MapManager {
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(rp.name.slice(0, 2), drawX, drawZ);
+      const slotLabel = rp.id.startsWith('p') ? `P${rp.id.slice(1)}` : rp.name.slice(0, 2);
+      ctx.fillText(slotLabel, drawX, drawZ);
     }
 
     ctx.restore(); // Exit clip
