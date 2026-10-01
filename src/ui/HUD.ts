@@ -593,6 +593,12 @@ export class HUD {
     this.hideCoopMenu();
     this.hideSettings();
     this.hideExitModal();
+    this.hideHostLobby();
+    this.hideJoinLobby();
+    this.hidePause();
+    this.hideGameOver();
+    this.hideLevelUp();
+    this.hideGuide();
     this.mainMenuModal.classList.remove('hidden');
   }
 

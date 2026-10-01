@@ -29,6 +29,30 @@ export class AltarManager {
     }
   }
 
+  private tempSphere = new THREE.Sphere();
+
+  public updateSimulation(
+    dt: number,
+    player: Player,
+    partnerPos?: THREE.Vector3,
+    isPartnerAlive: boolean = true,
+    allowCapture: boolean = true,
+    allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
+  ) {
+    for (const altar of this.altars) {
+      altar.updateSimulation(dt, player, partnerPos, isPartnerAlive, allowCapture, allPlayers);
+    }
+  }
+
+  public updateVisuals(dt: number, camera: THREE.Camera, frustum: THREE.Frustum) {
+    for (const altar of this.altars) {
+      this.tempSphere.center.set(altar.position.x, 2.0, altar.position.z);
+      this.tempSphere.radius = 8.0;
+      const inFrustum = frustum.intersectsSphere(this.tempSphere);
+      altar.updateVisuals(dt, camera, inFrustum);
+    }
+  }
+
   public update(
     dt: number,
     player: Player,
@@ -38,8 +62,9 @@ export class AltarManager {
     allowCapture: boolean = true,
     allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
+    this.updateSimulation(dt, player, partnerPos, isPartnerAlive, allowCapture, allPlayers);
     for (const altar of this.altars) {
-      altar.update(dt, player, camera, partnerPos, isPartnerAlive, allowCapture, allPlayers);
+      altar.updateVisuals(dt, camera, true);
     }
   }
 

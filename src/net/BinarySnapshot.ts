@@ -69,13 +69,13 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
   // DamageTaken count (1) + DamageTaken (damageTaken.length * 3)
   // Events length (2) + Events bytes
   const bufferSize =
-    32 +
+    64 +
     players.length * 48 +
-    enemies.length * 24 +
-    drops.length * 18 +
-    damageTaken.length * 3 +
+    enemies.length * 32 +
+    drops.length * 24 +
+    damageTaken.length * 8 +
     eventsLen +
-    64;
+    512;
 
   const buffer = new ArrayBuffer(bufferSize);
   const view = new DataView(buffer);
@@ -138,9 +138,12 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
   // 5. Enemies
   view.setUint16(offset, enemies.length, true); offset += 2;
   for (const enemy of enemies) {
-    // ID as 7-byte ASCII
-    const idBytes = textEncoder.encode(enemy.id.padEnd(7).substring(0, 7));
-    u8.set(idBytes, offset); offset += 7;
+    // ID as fixed 7-byte ASCII
+    const idStr = enemy.id || '';
+    for (let j = 0; j < 7; j++) {
+      u8[offset + j] = j < idStr.length ? (idStr.charCodeAt(j) & 0x7f) : 32;
+    }
+    offset += 7;
 
     let typeIdx = ENEMIES.indexOf(enemy.type);
     if (typeIdx === -1) typeIdx = 0;
@@ -161,8 +164,11 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
   // 6. Drops (Gems)
   view.setUint16(offset, drops.length, true); offset += 2;
   for (const drop of drops) {
-    const idBytes = textEncoder.encode(drop.id.padEnd(7).substring(0, 7));
-    u8.set(idBytes, offset); offset += 7;
+    const idStr = drop.id || '';
+    for (let j = 0; j < 7; j++) {
+      u8[offset + j] = j < idStr.length ? (idStr.charCodeAt(j) & 0x7f) : 32;
+    }
+    offset += 7;
 
     let gemIdx = GEMS.indexOf(drop.type);
     if (gemIdx === -1) gemIdx = 0;
@@ -284,8 +290,12 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
   const enemies: EnemySnapshot[] = new Array(enemiesCount);
 
   for (let i = 0; i < enemiesCount; i++) {
-    const idBytes = u8.subarray(offset, offset + 7); offset += 7;
-    const id = textDecoder.decode(idBytes).trim();
+    let id = '';
+    for (let j = 0; j < 7; j++) {
+      const code = u8[offset + j];
+      if (code > 32) id += String.fromCharCode(code);
+    }
+    offset += 7;
 
     const typeIdx = view.getUint8(offset); offset += 1;
     const dirIdx = view.getUint8(offset); offset += 1;
@@ -313,8 +323,12 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
   const drops: DropSnapshot[] = new Array(dropsCount);
 
   for (let i = 0; i < dropsCount; i++) {
-    const idBytes = u8.subarray(offset, offset + 7); offset += 7;
-    const id = textDecoder.decode(idBytes).trim();
+    let id = '';
+    for (let j = 0; j < 7; j++) {
+      const code = u8[offset + j];
+      if (code > 32) id += String.fromCharCode(code);
+    }
+    offset += 7;
 
     const gemIdx = view.getUint8(offset); offset += 1;
     const x = view.getFloat32(offset, true); offset += 4;

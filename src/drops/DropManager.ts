@@ -153,6 +153,26 @@ export class DropManager {
     }
   }
 
+  private tempSphere = new THREE.Sphere();
+
+  /**
+   * Rendering phase: Viewport/Frustum culling across all ground gems.
+   * Culled gems have mesh.visible = false and skip all bobbing/rotation calculations.
+   */
+  public updateVisuals(dt: number, frustum: THREE.Frustum) {
+    for (let i = 0; i < this.gems.length; i++) {
+      const gem = this.gems[i];
+      if (gem.isCollected) {
+        gem.mesh.visible = false;
+        continue;
+      }
+      this.tempSphere.center.set(gem.position.x, 0.4, gem.position.z);
+      this.tempSphere.radius = 1.2;
+      const inFrustum = frustum.intersectsSphere(this.tempSphere);
+      gem.updateVisuals(dt, inFrustum);
+    }
+  }
+
   public clear() {
     for (const gem of this.gems) {
       gem.destroy(this.scene);

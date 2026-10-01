@@ -47,6 +47,7 @@ export class Enemy {
   public isImmortal: boolean;
   public isAlive = true;
   public lastHitBy: string = 'p1';
+  public boundingRadius: number;
 
   // 4-Directional Sprites
   private textures: DirectionalTextures;
@@ -83,6 +84,7 @@ export class Enemy {
     this.isImmortal = !!config.isImmortal;
 
     this.position = spawnPos.clone();
+    this.boundingRadius = Math.max(this.width, this.height) * 0.75 + 0.5;
     this.mesh = new THREE.Group();
 
     // 1. Load Textures
@@ -209,10 +211,16 @@ export class Enemy {
     this.spriteMesh.rotation.z = 0;
   }
 
-  public update(dt: number, playerPos: THREE.Vector3) {
+  /**
+   * Authoritative simulation update: handles movement, knockback, and AI logic.
+   * Completely decoupled from rendering and Three.js draw cycles.
+   */
+  public updateSimulation(dt: number, playerPos: THREE.Vector3) {
     if (!this.isAlive) return;
 
-    this.animTimer += dt * (this.speed > 5 ? 14 : 9);
+    if (this.flashTimer > 0) {
+      this.flashTimer -= dt;
+    }
 
     // Knockback handling (Immortal Reaper is completely immune to knockback)
     if (this.knockbackVelocity.lengthSq() > 0.01) {
@@ -252,8 +260,6 @@ export class Enemy {
           this.setDirection(newDir);
         }
       }
-
-      this.updateBossAnimation(dt);
     } else {
       if (dist > 0.25) {
         toPlayer.normalize();
@@ -271,10 +277,34 @@ export class Enemy {
           this.setDirection(newDir);
         }
       }
+    }
+  }
 
+  public update(dt: number, playerPos: THREE.Vector3) {
+    this.updateSimulation(dt, playerPos);
+    this.updateVisuals(dt, true);
+  }
+
+  /**
+   * Rendering phase: Viewport/Frustum culling and visual animations.
+   * If inFrustum is false, skips all bobbing math, matrix copies, and sets mesh.visible = false.
+   */
+  public updateVisuals(dt: number, inFrustum: boolean) {
+    if (!this.isAlive || !inFrustum) {
+      this.mesh.visible = false;
+      return;
+    }
+
+    this.mesh.visible = true;
+    this.mesh.position.copy(this.position);
+
+    this.animTimer += dt * (this.speed > 5 ? 14 : 9);
+
+    if (this.isBoss && this.bossTextures) {
+      this.updateBossAnimation(dt);
+    } else {
       // Walking / Bobbing animation
       if (this.isImmortal) {
-        // Ominous hovering phantom float
         this.spriteMesh.position.y = Math.sin(this.animTimer * 0.4) * 0.35 + 0.15;
         this.spriteMesh.rotation.z = Math.sin(this.animTimer * 0.25) * 0.04;
       } else if (this.type === 'ghost') {
@@ -286,14 +316,11 @@ export class Enemy {
       }
     }
 
-    this.mesh.position.copy(this.position);
-
     // Hit flash handling
     if (this.flashTimer > 0) {
-      this.flashTimer -= dt;
-      if (this.flashTimer <= 0) {
-        this.spriteMaterial.color.setHex(this.isImmortal ? 0x380949 : 0xffffff);
-      }
+      this.spriteMaterial.color.setHex(this.isImmortal ? 0xc084fc : 0xff3333);
+    } else {
+      this.spriteMaterial.color.setHex(this.isImmortal ? 0x380949 : 0xffffff);
     }
   }
 
