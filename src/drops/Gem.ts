@@ -85,9 +85,8 @@ export class Gem {
   public update(dt: number, playerPos: THREE.Vector3, pickupRadius: number): boolean {
     if (this.isCollected) return false;
 
-    this.floatTime += dt * 3;
-    const dx = playerPos.x - this.mesh.position.x;
-    const dz = playerPos.z - this.mesh.position.z;
+    const dx = playerPos.x - this.position.x;
+    const dz = playerPos.z - this.position.z;
     const distSq = dx * dx + dz * dz;
 
     if (distSq <= pickupRadius * pickupRadius) {
@@ -103,8 +102,8 @@ export class Gem {
         const speed = 14 + (pickupRadius - dist) * 2;
         this.velocity.x += (dirX * speed - this.velocity.x) * Math.min(1, dt * 10);
         this.velocity.z += (dirZ * speed - this.velocity.z) * Math.min(1, dt * 10);
-        this.mesh.position.x += this.velocity.x * dt;
-        this.mesh.position.z += this.velocity.z * dt;
+        this.position.x += this.velocity.x * dt;
+        this.position.z += this.velocity.z * dt;
       }
 
       // Reached player!
@@ -112,13 +111,27 @@ export class Gem {
         this.isCollected = true;
         return true;
       }
-    } else {
-      // Floating animation
-      this.mesh.rotation.y += dt * 2.5;
-      this.mesh.position.y = this.baseHeight + Math.sin(this.floatTime) * 0.12;
     }
 
     return false;
+  }
+
+  /**
+   * Rendering phase: Viewport/Frustum culling and visual animations.
+   * If inFrustum is false, skips rotation and float bobbing, setting mesh.visible = false.
+   */
+  public updateVisuals(dt: number, inFrustum: boolean) {
+    if (this.isCollected || !inFrustum) {
+      this.mesh.visible = false;
+      return;
+    }
+
+    this.mesh.visible = true;
+    this.floatTime += dt * 3;
+    this.mesh.position.x = this.position.x;
+    this.mesh.position.z = this.position.z;
+    this.mesh.position.y = this.baseHeight + Math.sin(this.floatTime) * 0.12;
+    this.mesh.rotation.y += dt * 2.5;
   }
 
   public destroy(scene: THREE.Scene) {

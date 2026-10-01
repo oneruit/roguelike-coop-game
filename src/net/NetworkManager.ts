@@ -131,7 +131,7 @@ export interface LobbyPlayerInfo {
 }
 
 export const PLAYER_COLORS: Record<string, { hex: number; css: string; name: string }> = {
-  p1: { hex: 0xf59e0b, css: '#f59e0b', name: 'Игрок 1 (Хост)' },
+  p1: { hex: 0xf59e0b, css: '#f59e0b', name: 'Игрок 1' },
   p2: { hex: 0x06b6d4, css: '#06b6d4', name: 'Игрок 2' },
   p3: { hex: 0xa855f7, css: '#a855f7', name: 'Игрок 3' },
   p4: { hex: 0xf97316, css: '#f97316', name: 'Игрок 4' },
@@ -139,6 +139,21 @@ export const PLAYER_COLORS: Record<string, { hex: number; css: string; name: str
 };
 
 export const AVAILABLE_SLOT_IDS = ['p2', 'p3', 'p4', 'p5'];
+
+export function getPlayerSlotNumber(slotId: string): number {
+  if (slotId === 'p1' || slotId === 'host') return 1;
+  if (slotId === 'p2') return 2;
+  if (slotId === 'p3') return 3;
+  if (slotId === 'p4') return 4;
+  if (slotId === 'p5') return 5;
+  const match = slotId.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 1;
+}
+
+export function getPlayerSlotDisplayName(slotId: string, isLocal = false): string {
+  const num = getPlayerSlotNumber(slotId);
+  return isLocal ? `Игрок ${num} (Вы)` : `Игрок ${num}`;
+}
 
 export interface HostSnapshotMessage {
   type: 'HOST_SNAPSHOT';
@@ -238,6 +253,7 @@ export class NetworkManager {
   public onClientSyncReceived?: (msg: ClientSyncMessage) => void;
   public onReviveReceived?: (msg: ReviveActionMessage) => void;
   public onPartnerDisconnected?: (playerId: string) => void;
+  public onHostDisconnected?: () => void;
   public onConnectionStatusChanged?: (status: string, isSuccess: boolean) => void;
   public onDevActionReceived?: (action: string, value?: any) => void;
   public onAltarCapturedReceived?: (altarType: BuffType, fromPlayerId: string) => void;
@@ -249,6 +265,7 @@ export class NetworkManager {
   public webRtcRoute: string = 'P2P';
   public isTurnRoute: boolean = false;
   public webRtcConnectionState: string = 'connected';
+  private lastHostMessageTime: number = 0;
 
   private bytesSentWindow: number = 0;
   private bytesReceivedWindow: number = 0;
@@ -283,7 +300,7 @@ export class NetworkManager {
     this.lobbyPlayers = [
       {
         id: 'p1',
-        name: 'Командир (Вы)',
+        name: 'Игрок 1',
         hero: this.myHero,
         charType: this.myHero,
         isHost: true,
@@ -485,6 +502,7 @@ export class NetworkManager {
 
           conn.on('error', (err) => {
             console.warn('Connection error:', err);
+            this.handleDisconnect();
           });
         });
 
@@ -598,6 +616,10 @@ export class NetworkManager {
       return;
     }
 
+    if (this.role === 'client') {
+      this.lastHostMessageTime = performance.now();
+    }
+
     switch (msg.type) {
       case 'PING': {
         this.send({ type: 'PONG', timestamp: msg.timestamp, fromId: this.myId });
@@ -645,6 +667,7 @@ export class NetworkManager {
           if (existing) {
             existing.hero = msg.hero;
             existing.charType = msg.hero;
+            existing.name = `Игрок ${slotNum}`;
           } else {
             this.lobbyPlayers.push({
               id: guestId,
@@ -799,7 +822,7 @@ export class NetworkManager {
       }
 
       case 'DISCONNECT': {
-        if (this.role === 'host' && msg.playerId) {
+        if (this.role === 'host' && msg.playerId && msg.playerId !== 'p1') {
           this.removeGuest(msg.playerId);
         } else {
           this.handleDisconnect();
@@ -932,6 +955,11 @@ export class NetworkManager {
           this.packetLoss = Number(((lost / this.pingsSentCount) * 100).toFixed(1));
         }
         if (this.role === 'client') {
+          if (this.lastHostMessageTime > 0 && performance.now() - this.lastHostMessageTime > 5000) {
+            console.warn('Host heartbeat timed out. Disconnecting.');
+            this.handleDisconnect();
+            return;
+          }
           this.send({ type: 'PING', timestamp: performance.now(), fromId: this.myId });
         } else if (this.role === 'host' && this.connections.size > 0) {
           this.send({ type: 'PING', timestamp: performance.now(), fromId: 'p1' });
@@ -968,6 +996,11 @@ export class NetworkManager {
         this.webRtcConnectionState = 'connected';
       } else if (connState === 'connecting' || iceState === 'checking') {
         this.webRtcConnectionState = 'connecting';
+      } else if (connState === 'disconnected' || connState === 'failed' || connState === 'closed' || iceState === 'failed' || iceState === 'closed') {
+        this.webRtcConnectionState = connState || 'closed';
+        if (this.role === 'client') {
+          this.handleDisconnect();
+        }
       } else if (connState) {
         this.webRtcConnectionState = connState;
       }
@@ -1044,6 +1077,11 @@ export class NetworkManager {
 
   private handleDisconnect() {
     this.isConnected = false;
+    if (this.role === 'client') {
+      if (this.onHostDisconnected) {
+        this.onHostDisconnected();
+      }
+    }
     if (this.onPartnerDisconnected) {
       this.onPartnerDisconnected('p1');
     }
@@ -1062,7 +1100,13 @@ export class NetworkManager {
       this.pingInterval = null;
     }
 
-    if (this.role === 'client' && this.clientConnection) {
+    if (this.role === 'host') {
+      try {
+        this.send({ type: 'DISCONNECT', playerId: 'p1' });
+      } catch {
+        // ignore
+      }
+    } else if (this.role === 'client' && this.clientConnection) {
       try {
         this.send({ type: 'DISCONNECT', playerId: this.myId });
         this.clientConnection.close();
@@ -1111,6 +1155,7 @@ export class NetworkManager {
     this.webRtcRoute = 'P2P';
     this.isTurnRoute = false;
     this.webRtcConnectionState = 'connected';
+    this.lastHostMessageTime = 0;
 
     this.role = 'solo';
     this.roomCode = '';

@@ -11,7 +11,7 @@ import { HUD, DetailedPlayerResult } from './ui/HUD';
 import { DevManager } from './ui/DevManager';
 import { DebugHUD } from './ui/DebugHUD';
 import { MapManager } from './ui/MapManager';
-import { NetworkManager, HostSnapshotMessage, ClientSyncMessage, DamageDealtEvent, PlayerStats, NetEvent, PlayerNetState, PLAYER_COLORS, AVAILABLE_SLOT_IDS, NetShotInfo } from './net/NetworkManager';
+import { NetworkManager, HostSnapshotMessage, ClientSyncMessage, DamageDealtEvent, PlayerStats, NetEvent, PlayerNetState, PLAYER_COLORS, AVAILABLE_SLOT_IDS, NetShotInfo, getPlayerSlotDisplayName } from './net/NetworkManager';
 import { RemotePlayer } from './entities/RemotePlayer';
 import { SoundManager } from './core/SoundManager';
 import { ALTAR_CONFIGS } from './world/Altar';
@@ -45,6 +45,10 @@ class Game {
   private renderTimeEma: number = 0;
   private frameTimeEma: number = 0;
   private fpsEma: number = 0;
+
+  // Frustum Culling
+  private cameraFrustum = new THREE.Frustum();
+  private projScreenMatrix = new THREE.Matrix4();
 
   // Remote Co-op Teammates (up to 4 teammates in 5-player mode)
   private remotePlayers: Map<string, RemotePlayer> = new Map();
@@ -237,6 +241,9 @@ class Game {
 
     // Setup Network Listeners
     this.setupNetworkCallbacks();
+    window.addEventListener('beforeunload', () => {
+      this.net.reset();
+    });
 
     // Start in Main Menu state
     this.gameState = GameState.MAIN_MENU;
@@ -324,6 +331,7 @@ class Game {
       if (!this.hud.isGuestReady) {
         this.hud.setJoinStatus(`Подключено к ${upperCode}! Нажмите «ГОТОВ» для подтверждения.`, false);
       }
+      this.hud.renderJoinRoster(this.net.lobbyPlayers, this.net.mySlotId);
     } else {
       this.hud.setGuestConnectedMode(false);
       this.hud.setJoinStatus('Не удалось подключиться. Проверьте код комнаты!', true);
@@ -343,7 +351,7 @@ class Game {
       if (this.net.role === 'host') {
         this.hud.renderHostRoster(this.net.lobbyPlayers);
       } else {
-        this.hud.renderJoinRoster(this.net.lobbyPlayers);
+        this.hud.renderJoinRoster(this.net.lobbyPlayers, this.net.mySlotId);
       }
     };
 
@@ -405,6 +413,10 @@ class Game {
         this.syncMapManagerPartners();
         this.hud.updateTeammates(this.remotePlayers);
       }
+    };
+
+    this.net.onHostDisconnected = () => {
+      this.returnToMainMenu();
     };
 
     this.net.onDevActionReceived = (action, value) => {
@@ -518,7 +530,7 @@ class Game {
       const offset = spawnOffsets[p.id] || [2.5, 0.5];
       const hero = p.hero || p.charType || 'valkyrie';
       const color = p.colorCss || p.colorHex || '#06b6d4';
-      const remote = new RemotePlayer(this.engine.scene, p.id, p.name, hero, color);
+      const remote = new RemotePlayer(this.engine.scene, p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
       remote.position.set(offset[0], 0, offset[1]);
       this.remotePlayers.set(p.id, remote);
     }
@@ -559,7 +571,7 @@ class Game {
       const isP1 = p.id === 'p1' || p.id === 'host';
       const hero = p.hero || p.charType || (isP1 ? 'ronin' : 'valkyrie');
       const color = p.colorCss || p.colorHex || (isP1 ? '#f59e0b' : '#06b6d4');
-      const remote = new RemotePlayer(this.engine.scene, p.id, p.name, hero, color);
+      const remote = new RemotePlayer(this.engine.scene, p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
       remote.position.set(offset[0], 0, offset[1]);
       this.remotePlayers.set(p.id, remote);
     }
@@ -600,6 +612,8 @@ class Game {
     this.allPlayerStats.clear();
     this.recentlyDeadEnemyIds.clear();
     this.pendingDamageToClients.clear();
+    this.pendingLevelUps = 0;
+    this.isLevelUpActive = false;
     this.hud.resetBossUI();
     this.gameState = GameState.MAIN_MENU;
     this.hud.showMainMenu();
@@ -750,7 +764,7 @@ class Game {
         const isP1 = id === 'p1' || id === 'host';
         const hero = pState.charType || pInfo?.hero || (isP1 ? 'ronin' : 'valkyrie');
         const color = pInfo?.colorCss || (PLAYER_COLORS[id]?.css || (isP1 ? '#f59e0b' : '#38bdf8'));
-        const name = pInfo?.name || (isP1 ? 'Игрок 1 (Хост)' : `Игрок ${id.toUpperCase()}`);
+        const name = getPlayerSlotDisplayName(id, false);
         remote = new RemotePlayer(this.engine.scene, id, name, hero, color);
         this.remotePlayers.set(id, remote);
         this.syncMapManagerPartners();
@@ -862,7 +876,7 @@ class Game {
       const pInfo = this.net.lobbyPlayers.find(p => p.id === clientId);
       const hero = msg.clientPlayer.charType || pInfo?.hero || 'valkyrie';
       const color = pInfo?.colorCss || (PLAYER_COLORS[clientId]?.css || '#38bdf8');
-      const name = pInfo?.name || `Игрок ${clientId.toUpperCase()}`;
+      const name = getPlayerSlotDisplayName(clientId, false);
       remote = new RemotePlayer(this.engine.scene, clientId, name, hero, color);
       this.remotePlayers.set(clientId, remote);
       this.syncMapManagerPartners();
@@ -925,11 +939,6 @@ class Game {
   }
 
   private getEntityCounts(): { total: number; visible: number; simulated: number } {
-    const projScreenMatrix = new THREE.Matrix4();
-    projScreenMatrix.multiplyMatrices(this.engine.camera.projectionMatrix, this.engine.camera.matrixWorldInverse);
-    const frustum = new THREE.Frustum();
-    frustum.setFromProjectionMatrix(projScreenMatrix);
-
     let total = 0;
     let visible = 0;
     let simulated = 0;
@@ -937,7 +946,7 @@ class Game {
     // 1. Local Player
     total += 1;
     simulated += 1;
-    if (frustum.containsPoint(this.player.position)) {
+    if (this.cameraFrustum.containsPoint(this.player.position)) {
       visible += 1;
     }
 
@@ -945,7 +954,7 @@ class Game {
     for (const remote of this.remotePlayers.values()) {
       total += 1;
       simulated += 1;
-      if (frustum.containsPoint(remote.position)) {
+      if (this.cameraFrustum.containsPoint(remote.position)) {
         visible += 1;
       }
     }
@@ -956,11 +965,8 @@ class Game {
       const enemy = enemies[i];
       if (!enemy.isAlive) continue;
       total += 1;
-      const distSq = enemy.position.distanceToSquared(this.player.position);
-      if (distSq <= 55 * 55) {
-        simulated += 1;
-      }
-      if (frustum.containsPoint(enemy.position)) {
+      simulated += 1;
+      if (enemy.mesh.visible) {
         visible += 1;
       }
     }
@@ -972,7 +978,7 @@ class Game {
       if (!p.isAlive) continue;
       total += 1;
       simulated += 1;
-      if (frustum.containsPoint(p.position)) {
+      if (p.mesh.visible) {
         visible += 1;
       }
     }
@@ -981,12 +987,10 @@ class Game {
     const gems = this.dropManager.gems;
     for (let i = 0; i < gems.length; i++) {
       const g = gems[i];
+      if (g.isCollected) continue;
       total += 1;
-      const distSq = g.position.distanceToSquared(this.player.position);
-      if (distSq <= 45 * 45) {
-        simulated += 1;
-      }
-      if (frustum.containsPoint(g.position)) {
+      simulated += 1;
+      if (g.mesh.visible) {
         visible += 1;
       }
     }
@@ -994,78 +998,297 @@ class Game {
     return { total, visible, simulated };
   }
 
-  private loop = () => {
-    requestAnimationFrame(this.loop);
-
-    const now = performance.now();
-    const frameTimeMs = now - this.lastTime;
-    const rawDt = (now - this.lastTime) / 1000;
-    const fps = rawDt > 0 ? 1 / rawDt : 60;
-    this.lastTime = now;
-
-    const simStart = performance.now();
-
-    // Apply Dev Mode timeScale (1x, 2x, 5x)
-    let dt = rawDt * this.devManager.timeScale;
-    if (dt > 0.2) dt = 0.2;
-
-    // Telemetry updates
-    this.devManager.updateTelemetry(fps, this.projectiles.length);
-    this.hud.updatePerformance(fps, this.player.isCoop ? this.net.ping : undefined);
-
-    if (this.gameState === GameState.PLAYING) {
-      if (this.net.role !== 'client') {
-        this.gameTime = this.enemyManager.gameTime;
+  private updateProjectileVisuals(frustum: THREE.Frustum) {
+    for (let i = 0; i < this.projectiles.length; i++) {
+      const p = this.projectiles[i];
+      if (!p.isAlive) {
+        p.mesh.visible = false;
+        continue;
       }
+      p.updateVisuals(frustum.containsPoint(p.position));
+    }
+  }
 
-      // 1. Process Input
-      this.input.update(this.engine.camera);
-      if (this.player.isDowned || !this.player.isAlive) {
-        this.input.moveDirection.set(0, 0, 0);
-      }
+  /**
+   * Authoritative Simulation Step (Fixed Timestep 60Hz).
+   * Completely decoupled from rendering refresh rate and monitor Hz.
+   */
+  private updateSimulation(dt: number) {
+    if (this.net.role !== 'client') {
+      this.gameTime = this.enemyManager.gameTime;
+    }
 
-      // 2. Update Player
-      this.player.update(
-        dt,
-        this.input.moveDirection,
-        this.enemyManager.enemies,
-        this.spawnProjectile,
-        this.engine.obstacleManager,
-        (enemy, amount, sourcePos) => {
-          if (this.net.role === 'client') {
-            const isDead = enemy.takeDamage(amount, sourcePos, this.net.mySlotId);
-            this.damageNumbers.spawnDamage(enemy.position, amount, amount > 28, this.engine.camera);
-            SoundManager.playHit();
-            this.player.totalDamageDealt += amount;
+    // 1. Process Input
+    this.input.update(this.engine.camera);
+    if (this.player.isDowned || !this.player.isAlive) {
+      this.input.moveDirection.set(0, 0, 0);
+    }
 
-            if (isDead) {
-              this.player.kills++;
-              this.recentlyDeadEnemyIds.add(enemy.id);
-              enemy.destroy(this.engine.scene);
-              const idx = this.enemyManager.enemies.indexOf(enemy);
-              if (idx !== -1) {
-                this.enemyManager.enemies.splice(idx, 1);
-              }
+    // 2. Update Player
+    this.player.update(
+      dt,
+      this.input.moveDirection,
+      this.enemyManager.enemies,
+      this.spawnProjectile,
+      this.engine.obstacleManager,
+      (enemy, amount, sourcePos) => {
+        if (this.net.role === 'client') {
+          const isDead = enemy.takeDamage(amount, sourcePos, this.net.mySlotId);
+          this.damageNumbers.spawnDamage(enemy.position, amount, amount > 28, this.engine.camera);
+          SoundManager.playHit();
+          this.player.totalDamageDealt += amount;
+
+          if (isDead) {
+            this.player.kills++;
+            this.recentlyDeadEnemyIds.add(enemy.id);
+            enemy.destroy(this.engine.scene);
+            const idx = this.enemyManager.enemies.indexOf(enemy);
+            if (idx !== -1) {
+              this.enemyManager.enemies.splice(idx, 1);
             }
+          }
 
-            // Queue damage event for host
-            this.pendingClientHits.push({
-              enemyId: enemy.id,
-              damage: amount,
-              sourceX: sourcePos ? sourcePos.x : this.player.position.x,
-              sourceZ: sourcePos ? sourcePos.z : this.player.position.z,
-              isFatal: isDead
-            });
+          // Queue damage event for host
+          this.pendingClientHits.push({
+            enemyId: enemy.id,
+            damage: amount,
+            sourceX: sourcePos ? sourcePos.x : this.player.position.x,
+            sourceZ: sourcePos ? sourcePos.z : this.player.position.z,
+            isFatal: isDead
+          });
+        } else {
+          this.player.totalDamageDealt += amount;
+          this.enemyManager.damageEnemy(enemy, amount, sourcePos, this.engine.camera, this.net.mySlotId || 'p1');
+        }
+      }
+    );
+
+    // 3. Update Remote Teammates & Revive Logic
+    for (const remote of this.remotePlayers.values()) {
+      remote.update(dt);
+    }
+
+    // Co-op Revive Proximity Check (allows reviving any downed teammate within 3.5m)
+    if (!this.player.isDowned && this.player.isAlive) {
+      for (const [id, remote] of this.remotePlayers) {
+        if (remote.isDowned) {
+          const dist = this.player.position.distanceTo(remote.position);
+          if (dist <= 3.5) {
+            const currentTimer = (this.partnerReviveTimers.get(id) || 0) + dt / 3.0; // 3 seconds to revive
+            this.partnerReviveTimers.set(id, currentTimer);
+            remote.reviveProgress = Math.min(1, currentTimer);
+            if (currentTimer >= 1.0) {
+              this.partnerReviveTimers.set(id, 0);
+              remote.isDowned = false;
+              remote.reviveProgress = 0;
+              this.player.revivesCount++;
+              this.net.send({ type: 'REVIVE_ACTION', targetId: id });
+            }
           } else {
-            this.player.totalDamageDealt += amount;
-            this.enemyManager.damageEnemy(enemy, amount, sourcePos, this.engine.camera, this.net.mySlotId || 'p1');
+            const currentTimer = Math.max(0, (this.partnerReviveTimers.get(id) || 0) - dt * 0.8);
+            this.partnerReviveTimers.set(id, currentTimer);
+            remote.reviveProgress = currentTimer;
+          }
+        } else {
+          this.partnerReviveTimers.set(id, 0);
+        }
+      }
+    }
+
+    // Team wipe check: if all teammates are downed, GAME OVER or VICTORY!
+    if (this.player.isCoop) {
+      let anyAlive = !this.player.isDowned;
+      for (const remote of this.remotePlayers.values()) {
+        if (!remote.isDowned) {
+          anyAlive = true;
+          break;
+        }
+      }
+      if (!anyAlive) {
+        const isVictory = this.gameTime >= 1800 || (this.enemyManager.activeBoss?.isImmortal ?? false);
+        this.triggerGameOver(isVictory);
+      }
+    }
+
+    // Infinite procedural chunk generation streaming (tracks all teammates)
+    const allPlayerPositions = [this.player.position];
+    for (const remote of this.remotePlayers.values()) {
+      allPlayerPositions.push(remote.position);
+    }
+    this.engine.chunkManager.update(allPlayerPositions);
+
+    // Update Ancient Altars simulation (supports up to 5 players in co-op)
+    const allAltarPlayers: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[] = [
+      { position: this.player.position, isAlive: this.player.isAlive, isDowned: this.player.isDowned }
+    ];
+    for (const remote of this.remotePlayers.values()) {
+      allAltarPlayers.push({
+        position: remote.position,
+        isAlive: true,
+        isDowned: remote.isDowned
+      });
+    }
+    this.engine.altarManager.updateSimulation(
+      dt,
+      this.player,
+      undefined,
+      true,
+      true,
+      allAltarPlayers
+    );
+
+    // Update Map & Minimap logic
+    this.mapManager.update(dt);
+
+    // 4. Update Enemies Simulation (Host/Solo simulate movement, separation & AI)
+    if (this.net.role !== 'client') {
+      const allTargets: PlayerTargetInfo[] = [
+        {
+          id: 'p1',
+          position: this.player.position,
+          isAlive: this.player.isAlive,
+          isDowned: this.player.isDowned
+        }
+      ];
+      for (const [id, remote] of this.remotePlayers) {
+        allTargets.push({
+          id,
+          position: remote.position,
+          isAlive: true,
+          isDowned: remote.isDowned
+        });
+      }
+
+      this.enemyManager.update(
+        dt,
+        this.player.position,
+        (damage: number, isImmortalHit?: boolean) => {
+          const isVictoryDeath = isImmortalHit || this.gameTime >= 1800;
+          const died = this.player.takeDamage(damage, isVictoryDeath);
+          if (died) {
+            this.triggerGameOver(isVictoryDeath);
+          }
+        },
+        this.engine.obstacleManager,
+        allTargets,
+        (targetId: string, damage: number, isImmortalHit?: boolean) => {
+          const remote = this.remotePlayers.get(targetId);
+          if (remote) {
+            const isVictoryDeath = isImmortalHit || this.gameTime >= 1800;
+            remote.hp = Math.max(0, remote.hp - damage);
+            const cur = this.pendingDamageToClients.get(targetId) || 0;
+            this.pendingDamageToClients.set(targetId, cur + damage);
+            if (isVictoryDeath) {
+              remote.isDowned = true;
+            }
           }
         }
       );
+    } else {
+      // Client-side local collision check against enemies
+      if (this.player.isAlive && !this.player.isDowned) {
+        const now = performance.now();
+        if (now - this.lastClientLocalHitTime > 380) {
+          for (const enemy of this.enemyManager.enemies) {
+            if (!enemy.isAlive) continue;
+            const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
+            const dx = enemy.position.x - this.player.position.x;
+            const dz = enemy.position.z - this.player.position.z;
+            if (dx * dx + dz * dz < collisionRadius * collisionRadius) {
+              this.lastClientLocalHitTime = now;
+              const isVictoryDeath = enemy.isImmortal || this.gameTime >= 1800;
+              const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
+              SoundManager.playPlayerHurt();
+              if (died) {
+                this.triggerGameOver(isVictoryDeath);
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
 
-      // Update Remote Teammates & Revive Logic
-      for (const remote of this.remotePlayers.values()) {
-        remote.update(dt);
+    // 5. Update Projectiles & Combat Collisions
+    this.updateProjectiles(dt);
+
+    // 6. Update Drops (XP Gems)
+    const dropCollectors = [
+      {
+        id: this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2'),
+        position: this.player.position,
+        pickupRadius: (this.player.isDowned || !this.player.isAlive) ? 0 : this.player.pickupRadius,
+        isAlive: this.player.isAlive,
+        isDowned: this.player.isDowned,
+        onCollect: (xp: number, gem: Gem) => {
+          const levelsGained = this.player.gainXp(xp);
+          this.damageNumbers.spawnXp(this.player.position, xp, this.engine.camera);
+          if (this.net.role === 'client') {
+            this.pendingClientCollectedGems.push(gem.id);
+          }
+          if (levelsGained > 0) {
+            this.damageNumbers.spawnLevelUp(this.player.position, this.player.level, this.engine.camera);
+            this.pendingLevelUps += levelsGained;
+            this.triggerLevelUp();
+          }
+        }
+      }
+    ];
+
+    for (const [id, remote] of this.remotePlayers) {
+      dropCollectors.push({
+        id,
+        position: remote.position,
+        pickupRadius: remote.isDowned ? 0 : 4.2,
+        isAlive: true,
+        isDowned: remote.isDowned,
+        onCollect: (xp: number, _gem: Gem) => {
+          if (this.net.role === 'host') {
+            this.damageNumbers.spawnXp(remote.position, xp, this.engine.camera);
+          }
+        }
+      });
+    }
+
+    this.dropManager.updateWithCollectors(dt, dropCollectors);
+
+    // 7. Multiplayer Network Tick (~25 Hz)
+    this.netSendTimer += dt;
+    if (this.netSendTimer >= 0.04) {
+      this.netSendTimer = 0;
+      this.broadcastNetworkState();
+    }
+  }
+
+  /**
+   * Rendering Phase: runs on requestAnimationFrame at display refresh rate.
+   * Performs Viewport/Frustum culling: hides everything outside the camera frustum
+   * to eliminate off-screen draw calls and matrix computations.
+   */
+  private updateRendering(rawDt: number, fps: number) {
+    // 1. Telemetry updates
+    this.devManager.updateTelemetry(fps, this.projectiles.length);
+    this.hud.updatePerformance(fps, this.player.isCoop ? this.net.ping : undefined);
+
+    // 2. Camera follow & Frustum update
+    this.engine.updateCamera(this.player.position, rawDt);
+    this.projScreenMatrix.multiplyMatrices(this.engine.camera.projectionMatrix, this.engine.camera.matrixWorldInverse);
+    this.cameraFrustum.setFromProjectionMatrix(this.projScreenMatrix);
+
+    if (this.gameState === GameState.PLAYING) {
+      // 3. Viewport / Frustum Culling & Visual Updates (Do NOT draw what is not visible!)
+      this.engine.chunkManager.cull(this.cameraFrustum);
+      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum);
+      this.dropManager.updateVisuals(rawDt, this.cameraFrustum);
+      this.updateProjectileVisuals(this.cameraFrustum);
+      this.engine.altarManager.updateVisuals(rawDt, this.engine.camera, this.cameraFrustum);
+
+      // 4. Update HUDs
+      let teammatesKills = 0;
+      for (const [id, st] of this.allPlayerStats) {
+        if (id !== this.net.mySlotId && id !== (this.net.role === 'host' ? 'p1' : '')) {
+          teammatesKills += st.kills;
+        }
       }
       this.hud.updateTeammates(
         this.remotePlayers,
@@ -1074,203 +1297,6 @@ class Game {
         this.player.isCoop ? this.net.role : 'solo',
         this.net.lobbyPlayers
       );
-
-      // Co-op Revive Proximity Check (allows reviving any downed teammate within 3.5m)
-      if (!this.player.isDowned && this.player.isAlive) {
-        for (const [id, remote] of this.remotePlayers) {
-          if (remote.isDowned) {
-            const dist = this.player.position.distanceTo(remote.position);
-            if (dist <= 3.5) {
-              const currentTimer = (this.partnerReviveTimers.get(id) || 0) + dt / 3.0; // 3 seconds to revive
-              this.partnerReviveTimers.set(id, currentTimer);
-              remote.reviveProgress = Math.min(1, currentTimer);
-              if (currentTimer >= 1.0) {
-                this.partnerReviveTimers.set(id, 0);
-                remote.isDowned = false;
-                remote.reviveProgress = 0;
-                this.player.revivesCount++;
-                this.net.send({ type: 'REVIVE_ACTION', targetId: id });
-              }
-            } else {
-              const currentTimer = Math.max(0, (this.partnerReviveTimers.get(id) || 0) - dt * 0.8);
-              this.partnerReviveTimers.set(id, currentTimer);
-              remote.reviveProgress = currentTimer;
-            }
-          } else {
-            this.partnerReviveTimers.set(id, 0);
-          }
-        }
-      }
-
-      // Team wipe check: if all teammates are downed, GAME OVER or VICTORY!
-      if (this.player.isCoop) {
-        let anyAlive = !this.player.isDowned;
-        for (const remote of this.remotePlayers.values()) {
-          if (!remote.isDowned) {
-            anyAlive = true;
-            break;
-          }
-        }
-        if (!anyAlive) {
-          const isVictory = this.gameTime >= 1800 || (this.enemyManager.activeBoss?.isImmortal ?? false);
-          this.triggerGameOver(isVictory);
-        }
-      }
-
-      // Infinite procedural chunk generation streaming (tracks all teammates)
-      const allPlayerPositions = [this.player.position];
-      for (const remote of this.remotePlayers.values()) {
-        allPlayerPositions.push(remote.position);
-      }
-      this.engine.chunkManager.update(allPlayerPositions);
-
-      // Update Ancient Altars (supports up to 5 players in co-op)
-      const allAltarPlayers: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[] = [
-        { position: this.player.position, isAlive: this.player.isAlive, isDowned: this.player.isDowned }
-      ];
-      for (const remote of this.remotePlayers.values()) {
-        allAltarPlayers.push({
-          position: remote.position,
-          isAlive: true,
-          isDowned: remote.isDowned
-        });
-      }
-      this.engine.altarManager.update(
-        dt,
-        this.player,
-        this.engine.camera,
-        undefined,
-        true,
-        true,
-        allAltarPlayers
-      );
-
-      // Update Map & Minimap
-      this.mapManager.update(dt);
-
-      // 3. Update Camera
-      this.engine.updateCamera(this.player.position, dt);
-
-      // 4. Update Enemies (Host and Solo simulate enemy movement & multi-target AI)
-      if (this.net.role !== 'client') {
-        const allTargets: PlayerTargetInfo[] = [
-          {
-            id: 'p1',
-            position: this.player.position,
-            isAlive: this.player.isAlive,
-            isDowned: this.player.isDowned
-          }
-        ];
-        for (const [id, remote] of this.remotePlayers) {
-          allTargets.push({
-            id,
-            position: remote.position,
-            isAlive: true,
-            isDowned: remote.isDowned
-          });
-        }
-
-        this.enemyManager.update(
-          dt,
-          this.player.position,
-          (damage: number, isImmortalHit?: boolean) => {
-            const isVictoryDeath = isImmortalHit || this.gameTime >= 1800;
-            const died = this.player.takeDamage(damage, isVictoryDeath);
-            if (died) {
-              this.triggerGameOver(isVictoryDeath);
-            }
-          },
-          this.engine.obstacleManager,
-          allTargets,
-          (targetId: string, damage: number, isImmortalHit?: boolean) => {
-            const remote = this.remotePlayers.get(targetId);
-            if (remote) {
-              const isVictoryDeath = isImmortalHit || this.gameTime >= 1800;
-              remote.hp = Math.max(0, remote.hp - damage);
-              const cur = this.pendingDamageToClients.get(targetId) || 0;
-              this.pendingDamageToClients.set(targetId, cur + damage);
-              if (isVictoryDeath) {
-                remote.isDowned = true;
-              }
-            }
-          }
-        );
-      } else {
-        // Client-side local collision check against enemies
-        if (this.player.isAlive && !this.player.isDowned) {
-          const now = performance.now();
-          if (now - this.lastClientLocalHitTime > 380) {
-            for (const enemy of this.enemyManager.enemies) {
-              if (!enemy.isAlive) continue;
-              const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
-              const dx = enemy.position.x - this.player.position.x;
-              const dz = enemy.position.z - this.player.position.z;
-              if (dx * dx + dz * dz < collisionRadius * collisionRadius) {
-                this.lastClientLocalHitTime = now;
-                const isVictoryDeath = enemy.isImmortal || this.gameTime >= 1800;
-                const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
-                SoundManager.playPlayerHurt();
-                if (died) {
-                  this.triggerGameOver(isVictoryDeath);
-                }
-                break;
-              }
-            }
-          }
-        }
-      }
-
-      // 5. Update Projectiles & Combat Collisions
-      this.updateProjectiles(dt);
-
-      // 6. Update Drops (XP Gems)
-      // Dead / downed players NEVER attract or pick up gems!
-      const dropCollectors = [
-        {
-          id: this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2'),
-          position: this.player.position,
-          pickupRadius: (this.player.isDowned || !this.player.isAlive) ? 0 : this.player.pickupRadius,
-          isAlive: this.player.isAlive,
-          isDowned: this.player.isDowned,
-          onCollect: (xp: number, gem: Gem) => {
-            const levelsGained = this.player.gainXp(xp);
-            this.damageNumbers.spawnXp(this.player.position, xp, this.engine.camera);
-            if (this.net.role === 'client') {
-              this.pendingClientCollectedGems.push(gem.id);
-            }
-            if (levelsGained > 0) {
-              this.damageNumbers.spawnLevelUp(this.player.position, this.player.level, this.engine.camera);
-              this.pendingLevelUps += levelsGained;
-              this.triggerLevelUp();
-            }
-          }
-        }
-      ];
-
-      for (const [id, remote] of this.remotePlayers) {
-        dropCollectors.push({
-          id,
-          position: remote.position,
-          pickupRadius: remote.isDowned ? 0 : 4.2,
-          isAlive: true,
-          isDowned: remote.isDowned,
-          onCollect: (xp: number, _gem: Gem) => {
-            if (this.net.role === 'host') {
-              this.damageNumbers.spawnXp(remote.position, xp, this.engine.camera);
-            }
-          }
-        });
-      }
-
-      this.dropManager.updateWithCollectors(dt, dropCollectors);
-
-      // 7. Update HUD
-      let teammatesKills = 0;
-      for (const [id, st] of this.allPlayerStats) {
-        if (id !== this.net.mySlotId && id !== (this.net.role === 'host' ? 'p1' : '')) {
-          teammatesKills += st.kills;
-        }
-      }
       this.hud.update(
         this.player,
         this.enemyManager.totalKills,
@@ -1285,36 +1311,12 @@ class Game {
         this.player.isCoop ? this.net.role : 'solo',
         this.net.lobbyPlayers
       );
-
-      // 8. Multiplayer Network Tick (~25 Hz)
-      this.netSendTimer += dt;
-      if (this.netSendTimer >= 0.04) {
-        this.netSendTimer = 0;
-        this.broadcastNetworkState();
-      }
-    } else if (this.gameState === GameState.PAUSED && this.mapManager.isOpen) {
-      this.mapManager.update(rawDt);
-      this.engine.updateCamera(this.player.position, rawDt);
-    } else if (this.gameState === GameState.MAIN_MENU || this.gameState === GameState.CHARACTER_SELECT) {
-      this.engine.updateCamera(this.player.position, dt);
     }
 
-    const simEnd = performance.now();
-    const simDuration = simEnd - simStart;
-
-    // Render Scene
-    const renderStart = performance.now();
+    // 5. Render Scene via Three.js
     this.engine.render();
-    const renderEnd = performance.now();
-    const renderDuration = renderEnd - renderStart;
 
-    // Smooth telemetry with Exponential Moving Average (EMA)
-    this.simTimeEma = this.simTimeEma === 0 ? simDuration : this.simTimeEma * 0.85 + simDuration * 0.15;
-    this.renderTimeEma = this.renderTimeEma === 0 ? renderDuration : this.renderTimeEma * 0.85 + renderDuration * 0.15;
-    this.frameTimeEma = this.frameTimeEma === 0 ? frameTimeMs : this.frameTimeEma * 0.85 + frameTimeMs * 0.15;
-    this.fpsEma = this.fpsEma === 0 ? fps : this.fpsEma * 0.85 + fps * 0.15;
-
-    // Update Debug Network / Performance HUD
+    // 6. Update Debug Network / Performance HUD
     if (this.debugHud.getIsOpen()) {
       const netStats = this.net.getDebugStats();
       const counts = this.getEntityCounts();
@@ -1336,6 +1338,39 @@ class Game {
         downloadKbps: netStats.downloadKbps
       });
     }
+  }
+
+  private loop = () => {
+    requestAnimationFrame(this.loop);
+
+    const now = performance.now();
+    const frameTimeMs = now - this.lastTime;
+    const rawDt = Math.min((now - this.lastTime) / 1000, 0.2);
+    const fps = rawDt > 0 ? 1 / rawDt : 60;
+    this.lastTime = now;
+
+    // Apply Dev Mode timeScale (1x, 2x, 5x)
+    const scaledDt = rawDt * this.devManager.timeScale;
+
+    // 1. Simulation Phase (runs smoothly in sync with rendering refresh rate)
+    const simStart = performance.now();
+    if (this.gameState === GameState.PLAYING) {
+      this.updateSimulation(scaledDt);
+    } else if (this.gameState === GameState.PAUSED && this.mapManager.isOpen) {
+      this.mapManager.update(rawDt);
+    }
+    const simDuration = performance.now() - simStart;
+
+    // 2. Rendering Phase (at display refresh rate, culls off-screen objects)
+    const renderStart = performance.now();
+    this.updateRendering(rawDt, fps);
+    const renderDuration = performance.now() - renderStart;
+
+    // Smooth telemetry with Exponential Moving Average (EMA)
+    this.simTimeEma = this.simTimeEma === 0 ? simDuration : this.simTimeEma * 0.85 + simDuration * 0.15;
+    this.renderTimeEma = this.renderTimeEma === 0 ? renderDuration : this.renderTimeEma * 0.85 + renderDuration * 0.15;
+    this.frameTimeEma = this.frameTimeEma === 0 ? frameTimeMs : this.frameTimeEma * 0.85 + frameTimeMs * 0.15;
+    this.fpsEma = this.fpsEma === 0 ? fps : this.fpsEma * 0.85 + fps * 0.15;
   };
 
   private broadcastNetworkState() {
@@ -1515,7 +1550,7 @@ class Game {
     // Local Player result
     allPlayersResults.push({
       id: mySlot,
-      name: `Вы (${mySlot.toUpperCase()})`,
+      name: getPlayerSlotDisplayName(mySlot, true),
       charType: this.player.charType,
       colorCss: PLAYER_COLORS[mySlot]?.css || '#f59e0b',
       stats: myStats,
@@ -1532,7 +1567,7 @@ class Game {
       };
       allPlayersResults.push({
         id,
-        name: remote.name,
+        name: getPlayerSlotDisplayName(id, false),
         charType: remote.charType,
         colorCss: remote.colorCss,
         stats,

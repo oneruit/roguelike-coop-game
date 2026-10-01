@@ -21,6 +21,10 @@ export class DamageNumberManager {
         (Math.random() - 0.5) * 0.6
       ));
       v.project(camera);
+      // Cull if behind camera or off-screen
+      if (v.z < -1 || v.z > 1 || v.x < -1.1 || v.x > 1.1 || v.y < -1.1 || v.y > 1.1) {
+        return;
+      }
       const x = (v.x * 0.5 + 0.5) * window.innerWidth;
       const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
       el.style.left = `${x}px`;
@@ -55,6 +59,10 @@ export class DamageNumberManager {
         (Math.random() - 0.5) * 0.4
       ));
       v.project(camera);
+      // Cull if behind camera or off-screen
+      if (v.z < -1 || v.z > 1 || v.x < -1.1 || v.x > 1.1 || v.y < -1.1 || v.y > 1.1) {
+        return;
+      }
       const x = (v.x * 0.5 + 0.5) * window.innerWidth;
       const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
       el.style.left = `${x}px`;

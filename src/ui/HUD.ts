@@ -3,7 +3,7 @@ import { Weapon, HeavyColtWeapon, DualRevolversWeapon, OrbitingBarrierWeapon, Ho
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
-import { PlayerStats, LobbyPlayerInfo, PLAYER_COLORS } from '../net/NetworkManager';
+import { PlayerStats, LobbyPlayerInfo, PLAYER_COLORS, getPlayerSlotNumber } from '../net/NetworkManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
 import * as THREE from 'three';
 
@@ -479,7 +479,7 @@ export class HUD {
       this.isGuestReady = !this.isGuestReady;
       this.updateGuestReadyButtonUI();
       if (this.isGuestReady) {
-        this.setJoinStatus('Вы готовы к походу! Ожидание старта командиром...', false);
+        this.setJoinStatus('Вы готовы к походу! Ожидание старта хостом...', false);
       } else {
         const code = this.joinRoomInput.value.toUpperCase().trim();
         this.setJoinStatus(code ? `Подключено к ${code}! Нажмите «ГОТОВ» для подтверждения.` : 'Подключено к экспедиции! Нажмите «ГОТОВ» для подтверждения.', false);
@@ -593,6 +593,12 @@ export class HUD {
     this.hideCoopMenu();
     this.hideSettings();
     this.hideExitModal();
+    this.hideHostLobby();
+    this.hideJoinLobby();
+    this.hidePause();
+    this.hideGameOver();
+    this.hideLevelUp();
+    this.hideGuide();
     this.mainMenuModal.classList.remove('hidden');
   }
 
@@ -640,7 +646,7 @@ export class HUD {
 
     const initialHostInfo: LobbyPlayerInfo = {
       id: 'p1',
-      name: 'Командир (Вы)',
+      name: 'Игрок 1',
       hero: hero,
       charType: hero,
       heroName: this.getHeroName(hero),
@@ -670,12 +676,12 @@ export class HUD {
           : hero === 'chakram'
           ? 'Кира (Чакрам)'
           : 'Рен (Ронин)';
-      this.hostPartnerTitle.innerText = `Напарник подключился! (${heroName})`;
-      this.hostPartnerDesc.innerText = 'Стрелок готов к экспедиции! Вы можете начать поход или дождаться остальных.';
+      this.hostPartnerTitle.innerText = `Игрок подключился! (${heroName})`;
+      this.hostPartnerDesc.innerText = 'Игрок готов к экспедиции! Вы можете начать поход или дождаться остальных.';
       this.btnHostStart.disabled = false;
     } else {
       this.hostPartnerBox.className = 'partner-status-box waiting';
-      this.hostPartnerTitle.innerText = 'Ожидание стрелков отряда...';
+      this.hostPartnerTitle.innerText = 'Ожидание игроков...';
       this.hostPartnerDesc.innerText = 'Отправьте код комнаты друзьям. Можно начать поход в любой момент!';
       this.btnHostStart.disabled = false;
     }
@@ -685,7 +691,7 @@ export class HUD {
     const list = lobbyPlayers && lobbyPlayers.length > 0 ? lobbyPlayers : [
       {
         id: 'p1',
-        name: 'Командир (Вы)',
+        name: 'Игрок 1',
         hero: this.hostSelectedHero,
         charType: this.hostSelectedHero,
         isHost: true,
@@ -694,13 +700,13 @@ export class HUD {
         colorCss: '#f59e0b'
       }
     ];
-    this.renderRosterGrid(this.hostPlayersRoster, list);
+    this.renderRosterGrid(this.hostPlayersRoster, list, 'p1');
     if (this.hostPlayerCount) {
       this.hostPlayerCount.innerText = `${list.length}`;
     }
     const countBadge = document.getElementById('host-player-count-badge');
     if (countBadge) {
-      countBadge.innerText = `${list.length} / 5 СТРЕЛКОВ`;
+      countBadge.innerText = `${list.length} / 5 ИГРОКОВ`;
     }
 
     const guests = list.filter(p => !p.isHost && p.id !== 'p1');
@@ -710,59 +716,58 @@ export class HUD {
       if (allGuestsReady) {
         this.hostPartnerBox.className = 'partner-status-box connected';
         this.hostPartnerTitle.innerText = `Отряд готов (${list.length}/5)! Все подтвердили готовность.`;
-        this.hostPartnerDesc.innerText = 'Все стрелки готовы! Вы можете выдвигаться в экспедицию.';
+        this.hostPartnerDesc.innerText = 'Все игроки готовы! Вы можете выдвигаться в экспедицию.';
         this.btnHostStart.disabled = false;
         this.btnHostStart.innerText = 'НАЧАТЬ ЭКСПЕДИЦИЮ';
       } else {
         const notReadyCount = guests.filter(p => !p.isReady).length;
         this.hostPartnerBox.className = 'partner-status-box waiting';
         this.hostPartnerTitle.innerText = `Ожидание подтверждения (${notReadyCount} не готовы)`;
-        this.hostPartnerDesc.innerText = 'Игроки подключились, но ещё не нажали «ГОТОВ». Дождитесь подтверждения от всех стрелков.';
+        this.hostPartnerDesc.innerText = 'Игроки подключились, но ещё не нажали «ГОТОВ». Дождитесь подтверждения от всех игроков.';
         this.btnHostStart.disabled = true;
         this.btnHostStart.innerText = 'ОЖИДАНИЕ ГОТОВНОСТИ ИГРОКОВ...';
       }
     } else {
       this.hostPartnerBox.className = 'partner-status-box waiting';
-      this.hostPartnerTitle.innerText = 'Ожидание напарников в отряд...';
+      this.hostPartnerTitle.innerText = 'Ожидание игроков в отряд...';
       this.hostPartnerDesc.innerText = 'Отправьте код комнаты друзьям. Можно начать поход в любой момент!';
       this.btnHostStart.disabled = false;
       this.btnHostStart.innerText = 'НАЧАТЬ ЭКСПЕДИЦИЮ';
     }
   }
 
-  public renderJoinRoster(lobbyPlayers: LobbyPlayerInfo[]) {
+  public renderJoinRoster(lobbyPlayers: LobbyPlayerInfo[], mySlotId: string = 'p2') {
     if (this.joinRosterSection) {
       this.joinRosterSection.classList.remove('hidden');
     }
-    this.renderRosterGrid(this.joinPlayersRoster, lobbyPlayers);
+    this.renderRosterGrid(this.joinPlayersRoster, lobbyPlayers, mySlotId);
     if (this.joinPlayerCount) {
       this.joinPlayerCount.innerText = `${lobbyPlayers.length}`;
     }
     const countBadge = document.getElementById('join-player-count-badge');
     if (countBadge) {
-      countBadge.innerText = `${lobbyPlayers.length} / 5 СТРЕЛКОВ`;
+      countBadge.innerText = `${lobbyPlayers.length} / 5 ИГРОКОВ`;
     }
     if (!this.isGuestConnected) {
       this.setGuestConnectedMode(true);
     }
     if (this.isGuestReady) {
-      this.setJoinStatus('Вы готовы к походу! Ожидание старта командиром...', false);
+      this.setJoinStatus('Вы готовы к походу! Ожидание старта хостом...', false);
     } else {
       const code = this.joinRoomInput.value.toUpperCase().trim();
       this.setJoinStatus(code ? `Подключено к ${code}! Нажмите «ГОТОВ» для подтверждения.` : 'Подключено к экспедиции! Нажмите «ГОТОВ» для подтверждения.', false);
     }
   }
 
-  private renderRosterGrid(container: HTMLElement, lobbyPlayers: LobbyPlayerInfo[]) {
+  private renderRosterGrid(container: HTMLElement, lobbyPlayers: LobbyPlayerInfo[], mySlotId: string = 'p1') {
     if (!container) return;
     container.innerHTML = '';
 
-    const slotLabels = ['ИГРОК 1 (ХОСТ)', 'ИГРОК 2', 'ИГРОК 3', 'ИГРОК 4', 'ИГРОК 5'];
     const slotKeys = ['p1', 'p2', 'p3', 'p4', 'p5'];
 
     for (let i = 0; i < 5; i++) {
       const slotKey = slotKeys[i];
-      const slotLabel = slotLabels[i];
+      const slotNum = i + 1;
       const player = lobbyPlayers.find(p => p.id === slotKey) || (i < lobbyPlayers.length ? lobbyPlayers[i] : null);
 
       const card = document.createElement('div');
@@ -770,6 +775,14 @@ export class HUD {
         const hero = player.hero || player.charType || 'ronin';
         const heroName = this.getHeroName(hero);
         const isHost = player.isHost || player.id === 'p1';
+        const isLocal = player.id === mySlotId;
+        const displayName = `Игрок ${slotNum}${isLocal ? ' (Вы)' : ''}`;
+        const slotTag = isLocal
+          ? `ИГРОК ${slotNum} (ВЫ)`
+          : isHost
+          ? `ИГРОК ${slotNum} (ХОСТ)`
+          : `ИГРОК ${slotNum}`;
+
         const statusHtml = isHost
           ? '<div class="slot-status ready">ХОСТ</div>'
           : player.isReady
@@ -779,19 +792,19 @@ export class HUD {
         card.className = 'roster-slot-card occupied';
         card.style.borderColor = player.colorCss;
         card.innerHTML = `
-          <div class="slot-tag slot-${player.id}">${slotLabel}</div>
+          <div class="slot-tag slot-${player.id}">${slotTag}</div>
           <img src="${this.getHeroAvatar(hero)}" class="slot-avatar" alt="${heroName}" />
-          <div class="slot-player-name" style="color: ${player.colorCss};">${player.name}</div>
+          <div class="slot-player-name" style="color: ${player.colorCss};">${displayName}</div>
           <div class="slot-hero-name">${heroName}</div>
           ${statusHtml}
         `;
       } else {
         card.className = 'roster-slot-card empty';
         card.innerHTML = `
-          <div class="slot-tag">${slotLabel}</div>
+          <div class="slot-tag">ИГРОК ${slotNum}</div>
           <div class="slot-empty-icon">+</div>
           <div class="slot-player-name" style="opacity: 0.6;">Свободно</div>
-          <div class="slot-hero-name" style="opacity: 0.5;">Слот ${i + 1}</div>
+          <div class="slot-hero-name" style="opacity: 0.5;">Слот ${slotNum}</div>
           <div class="slot-status waiting">Ожидание...</div>
         `;
       }
@@ -918,7 +931,7 @@ export class HUD {
     remotePlayers: Map<string, RemotePlayer>,
     mySlotId: string = 'p1',
     role: string = 'solo',
-    lobbyPlayers: LobbyPlayerInfo[] = []
+    _lobbyPlayers: LobbyPlayerInfo[] = []
   ) {
     if (!this.poePartyList) return;
 
@@ -942,12 +955,8 @@ export class HUD {
     }[] = [];
 
     // 1. Local Player
-    const localRoleName =
-      role === 'host'
-        ? 'Командир (Вы)'
-        : role === 'client'
-        ? `Стрелок ${mySlotId.toUpperCase()} (Вы)`
-        : 'Вы';
+    const localSlotNum = getPlayerSlotNumber(mySlotId);
+    const localDisplayName = role === 'solo' ? 'Игрок 1 (Вы)' : `Игрок ${localSlotNum} (Вы)`;
     const localColor = (PLAYER_COLORS[mySlotId]?.css) || '#f59e0b';
     const localBuffs: { type: BuffType; icon: string; duration: number }[] = [];
     for (const b of localPlayer.activeBuffs.values()) {
@@ -956,7 +965,7 @@ export class HUD {
 
     members.push({
       id: mySlotId || 'p1',
-      name: localRoleName,
+      name: localDisplayName,
       hero: localPlayer.charType,
       colorCss: localColor,
       hp: localPlayer.hp,
@@ -974,15 +983,16 @@ export class HUD {
 
     // 2. Remote Teammates
     for (const [id, rp] of remotePlayers) {
-      const pInfo = lobbyPlayers.find(p => p.id === id);
       const rpBuffs: { type: BuffType; icon: string; duration: number }[] = [];
       for (const b of rp.activeBuffs.values()) {
         rpBuffs.push({ type: b.type, icon: b.icon, duration: b.duration });
       }
+      const remoteSlotNum = getPlayerSlotNumber(id);
+      const remoteDisplayName = `Игрок ${remoteSlotNum}`;
 
       members.push({
         id,
-        name: pInfo?.name || rp.name,
+        name: remoteDisplayName,
         hero: rp.charType,
         colorCss: rp.colorCss,
         hp: rp.hp,

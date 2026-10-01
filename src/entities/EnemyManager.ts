@@ -276,13 +276,12 @@ export class EnemyManager {
         continue;
       }
 
-      enemy.update(dt, closestTargetPos);
+      enemy.updateSimulation(dt, closestTargetPos);
 
       // Slide around terrain obstacles (cacti, trees, boulders, altars) for nearby grounded enemies
       if (obstacleManager && enemy.type !== 'ghost' && closestDistSq <= 32 * 32) {
         const rad = (enemy.width + enemy.height) * 0.16;
         obstacleManager.resolveEntityCollision(enemy.position, rad, 1);
-        enemy.mesh.position.copy(enemy.position);
       }
 
       // Check collision with targeted player
@@ -716,6 +715,26 @@ export class EnemyManager {
       return this.damageEnemy(enemy, amount, sourcePos, camera, hitter);
     }
     return false;
+  }
+
+  private tempSphere = new THREE.Sphere();
+
+  /**
+   * Rendering phase: Viewport/Frustum culling across all active enemies.
+   * Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls).
+   */
+  public updateVisuals(dt: number, frustum: THREE.Frustum) {
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
+      if (!enemy.isAlive) {
+        enemy.mesh.visible = false;
+        continue;
+      }
+      this.tempSphere.center.set(enemy.position.x, enemy.height * 0.5, enemy.position.z);
+      this.tempSphere.radius = enemy.boundingRadius;
+      const inFrustum = frustum.intersectsSphere(this.tempSphere);
+      enemy.updateVisuals(dt, inFrustum);
+    }
   }
 
   public clear() {
