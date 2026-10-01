@@ -1,0 +1,711 @@
+import * as THREE from 'three';
+import {
+  Weapon,
+  WhirlwindSlashWeapon,
+  GreatswordWeapon,
+  FlailWeapon,
+  AstralStaffWeapon,
+  ChakramWeapon,
+  HeavyColtWeapon,
+  DualRevolversWeapon,
+  OrbitingBarrierWeapon,
+  HolyAuraWeapon,
+  KatanaSlashWeapon
+} from '../combat/Weapon';
+import { Projectile } from '../combat/Projectile';
+import { Enemy } from './Enemy';
+import { TextureManager, SpriteDirection, AnimatedCharacterTextures } from '../core/TextureManager';
+import { SoundManager } from '../core/SoundManager';
+import { ObstacleManager } from '../world/ObstacleManager';
+
+export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram';
+export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
+export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable';
+
+export interface ActiveBuff {
+  type: BuffType;
+  name: string;
+  icon: string;
+  color: string;
+  duration: number;
+  maxDuration: number;
+  value: number; // e.g. 0.8 for +80% damage, 0.6 for +60% speed, 12 for 12 hp/s regen
+}
+
+export class Player {
+  public mesh: THREE.Group;
+  public position: THREE.Vector3;
+  private spriteMesh: THREE.Mesh;
+  private spriteMaterial: THREE.MeshBasicMaterial;
+  private shadowMesh: THREE.Mesh;
+
+  // Directional Textures & Animated State Machine
+  private animatedTextures!: AnimatedCharacterTextures;
+  public animState: HeroAnimState = 'IDLE';
+  public attackAnimTimer: number = 0;
+  private animFrameTimer: number = 0;
+  private roninGeom!: THREE.PlaneGeometry;
+
+  public currentDir: SpriteDirection = 'front';
+
+  // Stats
+  public charType: CharacterType = 'ronin';
+  public hp: number = 115;
+  public maxHp: number = 115;
+  public speed: number = 8.6;
+  public baseSpeed: number = 8.6;
+  public xp: number = 0;
+  public xpToNextLevel: number = 10;
+  public level: number = 1;
+  public pickupRadius: number = 4.2;
+  public damageMultiplier: number = 1.35;
+  public baseDamageMultiplier: number = 1.35;
+  public passiveDamageMultiplier: number = 1.0;
+  public passiveSpeedMultiplier: number = 1.0;
+  public passiveCooldownMultiplier: number = 1.0;
+  public passiveHpRegen: number = 0;
+  public passiveDamageReduction: number = 0;
+  public sheriffStarCount: number = 0;
+
+  // Active Shrine Buffs
+  public activeBuffs: Map<BuffType, ActiveBuff> = new Map();
+
+  // Visual Buff Auras
+  private invulnShieldMesh!: THREE.Mesh;
+  private damageAuraMesh!: THREE.Mesh;
+  private speedAuraMesh!: THREE.Mesh;
+  private regenAuraMesh!: THREE.Mesh;
+
+  // Developer Cheats
+  public isGodMode: boolean = false;
+  public isSpeedCheat: boolean = false;
+  public isOneHitKill: boolean = false;
+
+  // Weapons
+  public weapons: Weapon[] = [];
+
+  // Movement & Animation
+  private animTimer: number = 0;
+  public isAlive: boolean = true;
+  private flashTimer: number = 0;
+
+  // Co-op and Downed mechanics
+  public isCoop: boolean = false;
+  public isDowned: boolean = false;
+  public reviveProgress: number = 0;
+
+  // Individual player statistics
+  public kills: number = 0;
+  public totalDamageDealt: number = 0;
+  public revivesCount: number = 0;
+
+  constructor(scene: THREE.Scene, charType: CharacterType = 'ronin') {
+    this.charType = charType;
+    this.position = new THREE.Vector3(0, 0, 0);
+    this.mesh = new THREE.Group();
+
+    // Ren (Ronin) animated 96x96 cell geometry (anchored at feet y=74, cell 96x96)
+    // Offset from center is (74/96 - 0.5) * 3.6 = 0.27083 * 3.6 = 0.975
+    this.roninGeom = new THREE.PlaneGeometry(3.6, 3.6);
+    this.roninGeom.translate(0, 0.975, 0);
+
+    this.loadCharacterTextures(this.charType);
+
+    this.spriteMaterial = new THREE.MeshBasicMaterial({
+      map: this.animatedTextures.idle,
+      transparent: true,
+      alphaTest: 0.05,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      depthTest: false
+    });
+
+    this.spriteMesh = new THREE.Mesh(this.roninGeom, this.spriteMaterial);
+    this.spriteMesh.rotation.x = -Math.PI / 4.8;
+    this.spriteMesh.position.y = 0.05;
+    this.spriteMesh.renderOrder = 25;
+    this.mesh.add(this.spriteMesh);
+
+    // Ground Shadow
+    this.shadowMesh = TextureManager.createShadowMesh(0.75);
+    this.mesh.add(this.shadowMesh);
+
+    // Hero Light Glow
+    const light = new THREE.PointLight(0xf59e0b, 1.4, 9);
+    light.position.set(0, 1.2, 0.4);
+    this.mesh.add(light);
+
+    // Setup 3D Buff Auras
+    this.setupAuras();
+
+    scene.add(this.mesh);
+
+    this.applyCharacterPerks();
+  }
+
+  private setupAuras() {
+    // 1. Invulnerability Golden Shield Bubble
+    const shieldGeom = new THREE.IcosahedronGeometry(1.4, 1);
+    const shieldMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      emissive: 0xf59e0b,
+      emissiveIntensity: 0.6,
+      transparent: true,
+      opacity: 0.4,
+      wireframe: true
+    });
+    this.invulnShieldMesh = new THREE.Mesh(shieldGeom, shieldMat);
+    this.invulnShieldMesh.position.y = 1.2;
+    this.invulnShieldMesh.visible = false;
+    this.mesh.add(this.invulnShieldMesh);
+
+    // 2. Crimson Wrath Ring (Damage Buff)
+    const dmgGeom = new THREE.TorusGeometry(1.15, 0.08, 6, 24);
+    dmgGeom.rotateX(Math.PI / 2);
+    const dmgMat = new THREE.MeshBasicMaterial({
+      color: 0xef4444,
+      transparent: true,
+      opacity: 0.85
+    });
+    this.damageAuraMesh = new THREE.Mesh(dmgGeom, dmgMat);
+    this.damageAuraMesh.position.y = 1.0;
+    this.damageAuraMesh.visible = false;
+    this.mesh.add(this.damageAuraMesh);
+
+    // 3. Cyan Swift Wind Ring (Speed Buff)
+    const speedGeom = new THREE.TorusGeometry(1.1, 0.06, 6, 24);
+    speedGeom.rotateX(Math.PI / 2.2);
+    const speedMat = new THREE.MeshBasicMaterial({
+      color: 0x06b6d4,
+      transparent: true,
+      opacity: 0.8
+    });
+    this.speedAuraMesh = new THREE.Mesh(speedGeom, speedMat);
+    this.speedAuraMesh.position.y = 0.5;
+    this.speedAuraMesh.visible = false;
+    this.mesh.add(this.speedAuraMesh);
+
+    // 4. Emerald Vitality Ring (Regen Buff)
+    const regenGeom = new THREE.TorusGeometry(0.95, 0.07, 6, 24);
+    regenGeom.rotateX(Math.PI / 2);
+    const regenMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      transparent: true,
+      opacity: 0.85
+    });
+    this.regenAuraMesh = new THREE.Mesh(regenGeom, regenMat);
+    this.regenAuraMesh.position.y = 0.8;
+    this.regenAuraMesh.visible = false;
+    this.mesh.add(this.regenAuraMesh);
+  }
+
+  public isAnimatedCharacter(): boolean {
+    return true;
+  }
+
+  private loadCharacterTextures(charType: CharacterType) {
+    const raw =
+      charType === 'valkyrie'
+        ? TextureManager.loadValkyrieTextures()
+        : charType === 'flail'
+        ? TextureManager.loadFlailTextures()
+        : charType === 'sorceress'
+        ? TextureManager.loadSorceressTextures()
+        : charType === 'chakram'
+        ? TextureManager.loadChakramTextures()
+        : TextureManager.loadRoninTextures();
+
+    this.animatedTextures = {
+      idle: raw.idle.clone(),
+      walk: raw.walk.clone(),
+      attack: raw.attack.clone(),
+      walk_attack: raw.walk_attack.clone()
+    };
+    this.animatedTextures.idle.needsUpdate = true;
+    this.animatedTextures.walk.needsUpdate = true;
+    this.animatedTextures.attack.needsUpdate = true;
+    this.animatedTextures.walk_attack.needsUpdate = true;
+  }
+
+  public setCharacter(charType: CharacterType = 'ronin') {
+    this.charType = charType;
+    this.loadCharacterTextures(this.charType);
+    this.spriteMesh.geometry = this.roninGeom;
+    this.spriteMaterial.map = this.animatedTextures.idle;
+    this.animState = 'IDLE';
+    this.animFrameTimer = 0;
+    this.attackAnimTimer = 0;
+    this.setDirection(this.currentDir);
+    this.applyCharacterPerks();
+  }
+
+  public setDirection(dir: SpriteDirection) {
+    this.currentDir = dir;
+  }
+
+  public triggerAttackAnim(duration: number = 0.5) {
+    this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
+  }
+
+  private applyCharacterPerks() {
+    this.weapons = [];
+    if (this.charType === 'valkyrie') {
+      // Hero 2: Valkyrie (Каэла «Двуручный Меч»)
+      // Heavy greatsword: wide sweeping cleave, heavy impact, high HP & fortitude
+      this.baseDamageMultiplier = 1.45;
+      this.maxHp = 135;
+      this.hp = 135;
+      this.baseSpeed = 8.2;
+      this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5)));
+    } else if (this.charType === 'flail') {
+      // Hero 3: Brigitta (Бригитта «Стальной Цеп»)
+      // Heavy spiked flail: crushing sweeps, staggered enemy knockback, balanced swift combat
+      this.baseDamageMultiplier = 1.40;
+      this.maxHp = 125;
+      this.hp = 125;
+      this.baseSpeed = 8.5;
+      this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45)));
+    } else if (this.charType === 'sorceress') {
+      // Hero 4: Aria (Ария «Звёздный Посох»)
+      // Astral starlight bolts, long-range magic pierce, high swiftness
+      this.baseDamageMultiplier = 1.30;
+      this.maxHp = 105;
+      this.hp = 105;
+      this.baseSpeed = 8.8;
+      this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48)));
+    } else if (this.charType === 'chakram') {
+      // Hero 5: Kira (Кира «Танцующий Чакрам»)
+      // Returning curved boomerang chakram, medium-range agile skirmisher
+      this.baseDamageMultiplier = 1.35;
+      this.maxHp = 115;
+      this.hp = 115;
+      this.baseSpeed = 8.7;
+      this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
+    } else {
+      // Hero 1: Ren Ronin (Рен «Багровый вихрь»)
+      this.baseDamageMultiplier = 1.35;
+      this.maxHp = 115;
+      this.hp = 115;
+      this.baseSpeed = 8.6;
+      this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
+    }
+    this.passiveDamageMultiplier = 1.0;
+    this.passiveSpeedMultiplier = 1.0;
+    this.passiveCooldownMultiplier = 1.0;
+    this.passiveHpRegen = 0;
+    this.passiveDamageReduction = 0;
+    this.sheriffStarCount = 0;
+    this.recalculateStats();
+  }
+
+  public addBuff(buff: ActiveBuff) {
+    this.activeBuffs.set(buff.type, { ...buff });
+  }
+
+  public hasBuff(type: BuffType): boolean {
+    return this.activeBuffs.has(type);
+  }
+
+  public recalculateStats() {
+    let speedBonus = 0;
+    let dmgBonus = 0;
+
+    const speedBuff = this.activeBuffs.get('speed');
+    if (speedBuff) speedBonus += speedBuff.value;
+
+    const dmgBuff = this.activeBuffs.get('damage');
+    if (dmgBuff) dmgBonus += dmgBuff.value;
+
+    // Apply speed cheat or base speed * passive multiplier + speed buff
+    const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
+    this.speed = baseSpd * (1 + speedBonus);
+
+    // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
+    const baseDmg = this.isOneHitKill ? 50.0 : (this.baseDamageMultiplier * this.passiveDamageMultiplier);
+    this.damageMultiplier = baseDmg * (1 + dmgBonus);
+  }
+
+  public addSheriffStarBonus(multiplier: number = 1.20) {
+    this.passiveDamageMultiplier *= multiplier;
+    this.sheriffStarCount++;
+    this.recalculateStats();
+  }
+
+  public addSpeedBonus(multiplier: number = 1.15) {
+    this.passiveSpeedMultiplier *= multiplier;
+    this.recalculateStats();
+  }
+
+  public addHpRegen(amount: number = 1.5) {
+    this.passiveHpRegen += amount;
+  }
+
+  public addDamageReduction(pct: number = 0.10) {
+    this.passiveDamageReduction = Math.min(0.70, this.passiveDamageReduction + pct);
+  }
+
+  public addCooldownReduction(pct: number = 0.08) {
+    this.passiveCooldownMultiplier *= (1 - pct);
+    for (const w of this.weapons) {
+      (w as any).cooldown = Math.max(0.12, (w as any).cooldown * (1 - pct));
+    }
+  }
+
+  public update(
+    dt: number,
+    moveDir: THREE.Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void,
+    obstacleManager?: ObstacleManager,
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+  ) {
+    if (!this.isAlive) return;
+
+    // Passive HP Regeneration from Hunter Amulet
+    if (this.passiveHpRegen > 0 && !this.isDowned) {
+      this.heal(this.passiveHpRegen * dt);
+    }
+
+    // 1. Process Active Shrine Buffs
+    for (const [type, buff] of this.activeBuffs.entries()) {
+      buff.duration -= dt;
+
+      // Health regeneration tick
+      if (type === 'regen') {
+        this.heal(buff.value * dt);
+      }
+
+      if (buff.duration <= 0) {
+        this.activeBuffs.delete(type);
+        SoundManager.playBuffExpire();
+      }
+    }
+    this.recalculateStats();
+
+    // 2. Animate Visual Buff Auras
+    const hasInvuln = this.activeBuffs.has('invulnerable');
+    this.invulnShieldMesh.visible = hasInvuln;
+    if (hasInvuln) {
+      this.invulnShieldMesh.rotation.y += dt * 2.2;
+      this.invulnShieldMesh.rotation.x += dt * 1.1;
+      const pulse = 1.0 + Math.sin(this.animTimer * 6) * 0.06;
+      this.invulnShieldMesh.scale.set(pulse, pulse, pulse);
+    }
+
+    const hasDmg = this.activeBuffs.has('damage');
+    this.damageAuraMesh.visible = hasDmg;
+    if (hasDmg) {
+      this.damageAuraMesh.rotation.z -= dt * 4.5;
+      this.damageAuraMesh.position.y = 1.0 + Math.sin(this.animTimer * 4) * 0.12;
+    }
+
+    const hasSpeed = this.activeBuffs.has('speed');
+    this.speedAuraMesh.visible = hasSpeed;
+    if (hasSpeed) {
+      this.speedAuraMesh.rotation.z += dt * 6.0;
+    }
+
+    const hasRegen = this.activeBuffs.has('regen');
+    this.regenAuraMesh.visible = hasRegen;
+    if (hasRegen) {
+      this.regenAuraMesh.rotation.z += dt * 3.0;
+      this.regenAuraMesh.position.y = 0.5 + ((this.animTimer * 1.4) % 1.5);
+    }
+
+    // Downed / dead state handling: player cannot move, attack, or crawl
+    if (this.isDowned || !this.isAlive) {
+      this.spriteMesh.rotation.z = Math.PI / 2.3;
+      this.spriteMaterial.color.setHex(0xff6666);
+      this.mesh.position.copy(this.position);
+      return;
+    }
+
+    // 3. Movement & 4-Directional Sprite Selection
+    const isMoving = moveDir.lengthSq() > 0.01;
+    const isAttacking = this.attackAnimTimer > 0;
+
+    if (this.attackAnimTimer > 0) {
+      this.attackAnimTimer -= dt;
+    }
+
+    if (isMoving) {
+      this.position.addScaledVector(moveDir, this.speed * dt);
+      this.animTimer += dt * 12;
+
+      let newDir: SpriteDirection = this.currentDir;
+      if (Math.abs(moveDir.x) >= Math.abs(moveDir.z)) {
+        newDir = moveDir.x < 0 ? 'left' : 'right';
+      } else {
+        newDir = moveDir.z < 0 ? 'back' : 'front';
+      }
+
+      if (newDir !== this.currentDir) {
+        this.setDirection(newDir);
+      }
+    } else {
+      this.animTimer += dt * 3;
+    }
+
+    // 4. Animation Execution: 4-State Machine (IDLE, WALK, ATTACK, WALK_ATTACK)
+    let newState: HeroAnimState = 'IDLE';
+    if (isAttacking && isMoving) {
+      newState = 'WALK_ATTACK';
+    } else if (isAttacking) {
+      newState = 'ATTACK';
+    } else if (isMoving) {
+      newState = 'WALK';
+    } else {
+      newState = 'IDLE';
+    }
+
+    if (newState !== this.animState) {
+      this.animState = newState;
+      this.animFrameTimer = 0;
+    }
+
+    this.updateAnimatedCharacterAnimation(dt);
+    this.spriteMesh.position.y = 0.05;
+    this.spriteMesh.rotation.z = 0;
+
+    // Smooth collision sliding against surrounding obstacles (cacti, trees, boulders, altars)
+    if (obstacleManager) {
+      obstacleManager.resolveEntityCollision(this.position, 0.45);
+    }
+
+    this.mesh.position.copy(this.position);
+
+    // Hit flash handling
+    if (this.flashTimer > 0) {
+      this.flashTimer -= dt;
+      if (this.flashTimer <= 0) {
+        this.spriteMaterial.color.setHex(0xffffff);
+      }
+    }
+
+    // Update weapons
+    const damageEnemyWithMultiplier = damageEnemy
+      ? (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => {
+          damageEnemy(enemy, amount * this.damageMultiplier, sourcePos);
+        }
+      : undefined;
+    for (const weapon of this.weapons) {
+      weapon.update(dt, this.position, enemies, spawnProjectile, damageEnemyWithMultiplier);
+    }
+  }
+
+  private updateAnimatedCharacterAnimation(dt: number) {
+    if (!this.animatedTextures) return;
+
+    // Config for each of the 4 states: texture, column frame count, and playback FPS
+    const STATE_CONFIG: Record<HeroAnimState, { texture: THREE.Texture; cols: number; fps: number }> = {
+      IDLE: {
+        texture: this.animatedTextures.idle,
+        cols: 10,
+        fps: 8 // Smooth breathing/idle
+      },
+      WALK: {
+        texture: this.animatedTextures.walk,
+        cols: 6,
+        fps: 12 // Responsive run footsteps
+      },
+      ATTACK: {
+        texture: this.animatedTextures.attack,
+        cols: 8,
+        fps: 16 // Fast, punchy slash
+      },
+      WALK_ATTACK: {
+        texture: this.animatedTextures.walk_attack,
+        cols: 6,
+        fps: 14 // Dash cleave
+      }
+    };
+
+    const cfg = STATE_CONFIG[this.animState];
+    const tex = cfg.texture;
+
+    this.animFrameTimer += dt * cfg.fps;
+    const frameCol = Math.floor(this.animFrameTimer) % cfg.cols;
+
+    // Direction to row mapping:
+    // Row 0: front, Row 1: left, Row 2: right, Row 3: back
+    const DIR_ROW_MAP: Record<SpriteDirection, number> = {
+      front: 0,
+      right: 2,
+      left: 1,
+      back: 3
+    };
+    const row = DIR_ROW_MAP[this.currentDir];
+
+    if (this.spriteMaterial.map !== tex) {
+      this.spriteMaterial.map = tex;
+    }
+
+    // Three.js UV repeat and offset mapping
+    tex.repeat.set(1 / cfg.cols, 1 / 4);
+    tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+  }
+
+  public takeDamage(amount: number, ignoreInvuln = false): boolean {
+    if (!this.isAlive || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable'))) || this.isDowned) {
+      return false;
+    }
+
+    const finalAmount = ignoreInvuln ? amount : Math.max(1, amount * (1 - this.passiveDamageReduction));
+    this.hp = Math.max(0, this.hp - finalAmount);
+    this.flashTimer = 0.15;
+    this.spriteMaterial.color.setHex(0xff2222);
+
+    if (this.hp <= 0) {
+      if (this.isCoop && !ignoreInvuln) {
+        this.isDowned = true;
+        this.hp = 0;
+        this.spriteMesh.rotation.z = Math.PI / 2.3;
+        return false;
+      }
+      this.isAlive = false;
+      return true;
+    }
+    return false;
+  }
+
+  public revive(percent = 0.45) {
+    if (!this.isDowned) return;
+    this.isDowned = false;
+    this.hp = Math.round(this.maxHp * percent);
+    this.spriteMesh.rotation.z = 0;
+    this.spriteMaterial.color.setHex(0xffffff);
+    this.addBuff({
+      type: 'invulnerable',
+      name: 'Щит возрождения',
+      icon: '🛡️',
+      color: '#f59e0b',
+      duration: 3.5,
+      maxDuration: 3.5,
+      value: 1
+    });
+    SoundManager.playAltarCaptured();
+  }
+
+  public heal(amount: number) {
+    this.hp = Math.min(this.maxHp, this.hp + amount);
+  }
+
+  public fullHeal() {
+    this.hp = this.maxHp;
+  }
+
+  public toggleGodMode(): boolean {
+    this.isGodMode = !this.isGodMode;
+    return this.isGodMode;
+  }
+
+  public toggleSpeedCheat(): boolean {
+    this.isSpeedCheat = !this.isSpeedCheat;
+    this.recalculateStats();
+    return this.isSpeedCheat;
+  }
+
+  public toggleOneHitKill(): boolean {
+    this.isOneHitKill = !this.isOneHitKill;
+    this.recalculateStats();
+    return this.isOneHitKill;
+  }
+
+  public giveAllWeapons(scene: THREE.Scene) {
+    const hasColt = this.weapons.some(w => w.id === 'heavy_colt');
+    if (!hasColt && this.weapons.length < 5) this.weapons.push(new HeavyColtWeapon());
+
+    const hasRevolvers = this.weapons.some(w => w.id === 'dual_revolvers');
+    if (!hasRevolvers && this.weapons.length < 5) this.weapons.push(new DualRevolversWeapon());
+
+    const hasOrbs = this.weapons.some(w => w.id === 'orbiting_barrier');
+    if (!hasOrbs && this.weapons.length < 5) this.weapons.push(new OrbitingBarrierWeapon());
+
+    const hasAura = this.weapons.some(w => w.id === 'holy_aura');
+    if (!hasAura && this.weapons.length < 5) {
+      const aura = new HolyAuraWeapon();
+      aura.initVisual(scene, this.position);
+      this.weapons.push(aura);
+    }
+
+    const hasKatana = this.weapons.some(w => w.id === 'katana_slash');
+    if (!hasKatana && this.weapons.length < 5) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
+  }
+
+  public maxAllWeapons() {
+    for (const weapon of this.weapons) {
+      while (weapon.level < weapon.maxLevel) {
+        weapon.upgrade();
+      }
+    }
+  }
+
+  public calculateXpToNextLevel(level: number): number {
+    const baseXp = 10;
+    const growth = 1.08;
+
+    return Math.floor(baseXp * Math.pow(level, 1.5) * growth);
+  }
+
+  public addLevel(): boolean {
+    this.level++;
+    this.xpToNextLevel = this.calculateXpToNextLevel(this.level);
+    return true;
+  }
+
+  public gainXp(amount: number): number {
+    this.xp += amount;
+    let levelsGained = 0;
+    while (this.xp >= this.xpToNextLevel) {
+      this.xp -= this.xpToNextLevel;
+      this.level++;
+      levelsGained++;
+      this.xpToNextLevel = this.calculateXpToNextLevel(this.level);
+    }
+    return levelsGained;
+  }
+
+  public reset(pos: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
+    this.position.copy(pos);
+    this.mesh.position.copy(pos);
+    this.xp = 0;
+    this.level = 1;
+    this.xpToNextLevel = this.calculateXpToNextLevel(1);
+    this.pickupRadius = 4.2;
+    this.isAlive = true;
+    this.isDowned = false;
+    this.reviveProgress = 0;
+    this.kills = 0;
+    this.totalDamageDealt = 0;
+    this.revivesCount = 0;
+    this.spriteMesh.rotation.z = 0;
+    this.spriteMaterial.color.setHex(0xffffff);
+    this.activeBuffs.clear();
+    this.setDirection('front');
+    this.applyCharacterPerks();
+  }
+
+  public getWeaponsNetState(): { id: string; name: string; icon: string; level: number }[] {
+    return this.weapons.map(w => ({
+      id: w.id,
+      name: w.name,
+      icon: w.icon,
+      level: w.level
+    }));
+  }
+
+  public getBuffsNetState(): { type: BuffType; duration: number; maxDuration: number; name: string; icon: string; color: string }[] {
+    const list: { type: BuffType; duration: number; maxDuration: number; name: string; icon: string; color: string }[] = [];
+    for (const b of this.activeBuffs.values()) {
+      list.push({
+        type: b.type,
+        duration: Math.max(0, b.duration),
+        maxDuration: b.maxDuration,
+        name: b.name,
+        icon: b.icon,
+        color: b.color
+      });
+    }
+    return list;
+  }
+}

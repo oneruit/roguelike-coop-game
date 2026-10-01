@@ -1,0 +1,104 @@
+import * as THREE from 'three';
+
+export class DamageNumberManager {
+  public static enabled = true;
+  private container: HTMLElement;
+
+  constructor() {
+    this.container = document.getElementById('damage-numbers-layer') || document.body;
+  }
+
+  public spawnDamage(worldPos: THREE.Vector3, amount: number, isCrit = false, camera?: THREE.Camera) {
+    if (!DamageNumberManager.enabled) return;
+    const el = document.createElement('div');
+    el.className = `dmg-number ${isCrit ? 'dmg-crit' : ''}`;
+    el.innerText = `${Math.round(amount)}${isCrit ? '!' : ''}`;
+
+    if (camera) {
+      const v = worldPos.clone().add(new THREE.Vector3(
+        (Math.random() - 0.5) * 0.6,
+        1.2 + Math.random() * 0.4,
+        (Math.random() - 0.5) * 0.6
+      ));
+      v.project(camera);
+      const x = (v.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    } else {
+      el.style.left = '50%';
+      el.style.top = '50%';
+    }
+
+    if (this.container.childElementCount > 32) {
+      this.container.firstElementChild?.remove();
+    }
+    this.container.appendChild(el);
+
+    setTimeout(() => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    }, 750);
+  }
+
+  public spawnXp(worldPos: THREE.Vector3, amount: number, camera?: THREE.Camera) {
+    if (!DamageNumberManager.enabled) return;
+    const el = document.createElement('div');
+    el.className = 'dmg-number dmg-xp';
+    el.innerText = `+${amount} XP`;
+
+    if (camera) {
+      const v = worldPos.clone().add(new THREE.Vector3(
+        (Math.random() - 0.5) * 0.4,
+        1.3 + Math.random() * 0.4,
+        (Math.random() - 0.5) * 0.4
+      ));
+      v.project(camera);
+      const x = (v.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    } else {
+      el.style.left = '50%';
+      el.style.top = '40%';
+    }
+
+    if (this.container.childElementCount > 36) {
+      this.container.firstElementChild?.remove();
+    }
+    this.container.appendChild(el);
+
+    setTimeout(() => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    }, 850);
+  }
+
+  public spawnLevelUp(worldPos: THREE.Vector3, level: number, camera?: THREE.Camera) {
+    if (!DamageNumberManager.enabled) return;
+    const el = document.createElement('div');
+    el.className = 'dmg-number dmg-levelup';
+    el.innerText = `LEVEL UP! [${level}]`;
+
+    if (camera) {
+      const v = worldPos.clone().add(new THREE.Vector3(0, 1.8, 0));
+      v.project(camera);
+      const x = (v.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    } else {
+      el.style.left = '50%';
+      el.style.top = '35%';
+    }
+
+    this.container.appendChild(el);
+    setTimeout(() => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    }, 1300);
+  }
+}

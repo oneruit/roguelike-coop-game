@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wild West 2.5D Survival</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;600;700;800&family=Rye&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Three.js Canvas Container -->
+    <div id="game-container"></div>
+
+    <!-- UI Overlay Layer -->
+    <div id="ui-overlay">
+      <!-- Top HUD: XP Bar, Timer, Kills -->
+      <div id="hud-top">
+        <div id="xp-bar-container">
+          <div id="xp-bar-fill"></div>
+          <div id="xp-text">LVL <span id="player-level">1</span></div>
+        </div>
+
+        <div id="stats-panel">
+          <div class="stat-badge timer-badge">
+            <span class="stat-label">TIME</span>
+            <span id="game-timer">00:00</span>
+          </div>
+          <div class="stat-badge kill-badge">
+            <span class="stat-label">KILLS</span>
+            <span id="kill-count">0</span>
+            <span id="coop-kills-detail" class="hidden coop-kills-detail">
+              (<span class="my-kills-tag">Вы: <strong id="my-kills-count">0</strong></span> | <span class="partner-kills-tag">П2: <strong id="partner-kills-count">0</strong></span>)
+            </span>
+          </div>
+          <div id="coop-badge" class="stat-badge coop-badge hidden">
+            <span class="stat-label">ONLINE</span>
+            <span id="coop-room-name">КООП</span>
+          </div>
+        </div>
+
+        <!-- Boss Health Bar Container (shown when boss spawns) -->
+        <div id="boss-hp-container" class="hidden">
+          <div class="boss-hp-header">
+            <span class="boss-tag">BOSS</span>
+            <span class="boss-name" id="boss-name-text">КРОВАВЫЙ ШЕРИФ</span>
+            <span class="boss-hp-val" id="boss-hp-text">3500 / 3500</span>
+          </div>
+          <div class="boss-hp-bar">
+            <div id="boss-hp-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top-Right Performance Overlay (FPS & Ping) -->
+      <div id="perf-overlay" class="perf-overlay">
+        <span id="perf-fps" class="perf-badge perf-fps">60 FPS</span>
+        <span id="perf-ping" class="perf-badge perf-ping hidden">0 ms</span>
+      </div>
+
+      <!-- Minimap Radar in top-right corner -->
+      <div id="minimap-container" title="Нажмите, чтобы открыть карту [TAB]">
+        <canvas id="minimap-canvas" width="170" height="170"></canvas>
+        <div class="minimap-footer">
+          <span id="minimap-coords" class="minimap-coords">0, 0</span>
+          <span class="minimap-hint">[TAB] Карта</span>
+        </div>
+      </div>
+
+      <!-- Boss Warning Banner -->
+      <div id="boss-warning-banner" class="hidden">
+        <div id="boss-warning-text" class="warning-text">ВНИМАНИЕ: ПОЯВИЛСЯ БОСС «КРОВАВЫЙ ШЕРИФ»!</div>
+      </div>
+
+      <!-- Altar Capture Notification Banner -->
+      <div id="altar-notification-banner" class="hidden">
+        <div id="altar-notification-text" class="altar-notif-text">АЛТАРЬ ЗАХВАЧЕН!</div>
+      </div>
+
+      <!-- Top-Left HUD: Acquired Abilities, Altar Buffs & PoE Party List -->
+      <div id="top-left-hud">
+        <div id="active-weapons-bar" class="weapons-bar"></div>
+        <div id="active-buffs-tray" class="buffs-tray"></div>
+        <!-- Path of Exile Style Party List -->
+        <div id="poe-party-list" class="poe-party-list"></div>
+      </div>
+
+      <!-- Controls Hint -->
+      <div id="controls-hint">
+        <span>[W][A][S][D] / Стрелочки — Перемещение</span>
+        <span class="dot">•</span>
+        <span>Авто-атака включена</span>
+        <span class="dot">•</span>
+        <span class="key-tag">[TAB]</span> <span>Карта</span>
+        <span class="dot">•</span>
+        <span class="key-tag">[ESC]</span> <span>Пауза</span>
+        <span class="dot">•</span>
+        <span class="key-tag dev-tag">[P]</span> <span>Dev Mode</span>
+      </div>
+
+      <!-- Main Menu Modal (Start screen) -->
+      <div id="main-menu-modal" class="modal">
+        <div class="modal-backdrop main-menu-backdrop"></div>
+        <div class="modal-card main-menu-card">
+          <div class="menu-brand">
+            <div class="sub-title">WILD WEST SURVIVAL • 2.5D</div>
+            <h1 class="main-menu-title">ДИКИЙ ЗАПАД</h1>
+            <div class="menu-tagline">КРОВАВАЯ ПРЕРИЯ: ВЫЖИВАНИЕ</div>
+          </div>
+
+          <div class="main-menu-buttons">
+            <button id="menu-btn-single" class="main-menu-btn action-btn">
+              <div class="btn-text-wrap">
+                <span class="btn-title">Single-player mode</span>
+                <span class="btn-desc">Одиночный бой на выживание против полчищ нежити</span>
+              </div>
+            </button>
+
+            <button id="menu-btn-coop" class="main-menu-btn action-btn coop-create-btn">
+              <div class="btn-text-wrap">
+                <span class="btn-title">Co-op mode</span>
+                <span class="btn-desc">Командная экспедиция до 5 игроков • Создать или войти по коду</span>
+              </div>
+            </button>
+
+            <button id="menu-btn-settings" class="main-menu-btn action-btn settings-menu-btn">
+              <div class="btn-text-wrap">
+                <span class="btn-title">Settings</span>
+                <span class="btn-desc">Настройки звука, графики и управление</span>
+              </div>
+            </button>
+
+            <button id="menu-btn-exit" class="main-menu-btn action-btn exit-menu-btn">
+              <div class="btn-text-wrap">
+                <span class="btn-title">Exit</span>
+                <span class="btn-desc">Выход из игры</span>
+              </div>
+            </button>
+          </div>
+
+          <div class="menu-footer">
+            <span>Кооператив WebRTC P2P & LAN • До 5 Героев • Алтари & Босс</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Co-op Mode Selection Modal -->
+      <div id="coop-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card coop-menu-card">
+          <div class="modal-header">
+            <div class="sub-title">WILD WEST • 5-PLAYER EXPEDITION</div>
+            <h2>CO-OP MODE</h2>
+            <div class="menu-tagline">ВЫБЕРИТЕ СПОСОБ ПОДКЛЮЧЕНИЯ (ОТРЯД ДО 5 ИГРОКОВ)</div>
+          </div>
+
+          <div class="main-menu-buttons">
+            <button id="coop-btn-host" class="main-menu-btn action-btn coop-create-btn">
+              <div class="btn-text-wrap">
+                <span class="btn-title">СОЗДАТЬ КОМНАТУ (ХОСТ)</span>
+                <span class="btn-desc">Создать экспедицию и пригласить до 4 напарников</span>
+              </div>
+            </button>
+
+            <button id="coop-btn-join" class="main-menu-btn action-btn coop-join-btn">
+              <div class="btn-text-wrap">
+                <span class="btn-title">ПОДКЛЮЧИТЬСЯ К КОМНАТЕ</span>
+                <span class="btn-desc">Войти по коду комнаты командира отряда</span>
+              </div>
+            </button>
+          </div>
+
+          <div class="lobby-actions" style="margin-top: 24px;">
+            <button id="coop-btn-back" class="action-btn secondary-btn">Назад в главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Modal -->
+      <div id="settings-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card settings-card">
+          <div class="modal-header">
+            <div class="sub-title">ПАРАМЕТРЫ ИГРЫ</div>
+            <h2>SETTINGS</h2>
+          </div>
+
+          <div class="settings-content">
+            <!-- Audio Settings -->
+            <div class="settings-section">
+              <div class="settings-section-title">Звук и Аудио / Audio</div>
+              <div class="settings-row">
+                <label for="settings-volume" class="settings-label">Громкость звуков:</label>
+                <div class="settings-control-row">
+                  <input type="range" id="settings-volume" min="0" max="100" value="80" class="settings-slider" />
+                  <span id="settings-volume-val" class="settings-val-badge">80%</span>
+                  <button id="settings-btn-test-sound" class="settings-mini-btn" title="Проверить громкость">Тест</button>
+                </div>
+              </div>
+              <div class="settings-row">
+                <label for="settings-mute" class="settings-label">Отключить звук (Mute):</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settings-mute" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="settings-section">
+              <div class="settings-section-title">Графика и Экран / Display</div>
+              <div class="settings-row">
+                <label for="settings-perf-overlay" class="settings-label">Счетчик FPS и Пинг (Latency):</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settings-perf-overlay" checked />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <label for="settings-damage-numbers" class="settings-label">Урон над врагами (Damage numbers):</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settings-damage-numbers" checked />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <label class="settings-label">Полноэкранный режим:</label>
+                <button id="settings-btn-fullscreen" class="settings-mini-btn">Полный экран</button>
+              </div>
+            </div>
+
+            <!-- Controls & Guide -->
+            <div class="settings-section">
+              <div class="settings-section-title">Управление и Правила / Controls</div>
+              <div class="settings-controls-summary">
+                <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
+                <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
+                <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза</span></div>
+                <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Режим разработчика</span></div>
+              </div>
+              <button id="settings-btn-open-guide" class="action-btn secondary-btn" style="margin-top: 10px; width: 100%;">
+                Открыть справочник стрелка
+              </button>
+            </div>
+          </div>
+
+          <div class="lobby-actions" style="margin-top: 24px;">
+            <button id="settings-btn-back" class="action-btn">Назад</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exit Confirmation Modal -->
+      <div id="exit-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card exit-card">
+          <div class="modal-header">
+            <div class="sub-title">ПОДТВЕРЖДЕНИЕ ВЫХОДА</div>
+            <h2>EXIT</h2>
+          </div>
+          <p id="exit-message" class="exit-message">
+            Вы уверены, что хотите выйти из игры?<br>
+            <span style="font-size: 13px; color: #a89f91;">Are you sure you want to exit the game?</span>
+          </p>
+          <div id="exit-actions-row" class="pause-actions" style="margin-top: 24px;">
+            <button id="btn-confirm-exit" class="action-btn exit-btn-danger">Выйти / Exit</button>
+            <button id="btn-cancel-exit" class="action-btn secondary-btn">Отмена / Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Host Lobby Modal (Up to 5 players) -->
+      <div id="host-lobby-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card host-lobby-card">
+          <div class="modal-header">
+            <div class="sub-title">КООПЕРАТИВ • ОТРЯД ДО 5 СТРЕЛКОВ</div>
+            <h2>КОМНАТА ЭКСПЕДИЦИИ (ХОСТ)</h2>
+          </div>
+
+          <div class="room-code-section">
+            <span class="code-label">КОД ДЛЯ ПОДКЛЮЧЕНИЯ НАПАРНИКОВ (ДО 4 ЧЕЛОВЕК):</span>
+            <div class="code-display-row">
+              <span id="host-room-code" class="room-code-tag">WEST-42</span>
+              <button id="btn-copy-code" class="copy-code-btn" title="Скопировать код в буфер обмена">Скопировать</button>
+            </div>
+            <p class="code-hint">Отправьте этот код друзьям. В одной экспедиции могут участвовать до 5 стрелков одновременно!</p>
+          </div>
+
+          <div class="lobby-heroes-section">
+            <div class="section-label">ВАШ ГЕРОЙ:</div>
+            <div class="lobby-hero-picker">
+              <div class="lobby-hero-opt active" data-host-hero="ronin">
+                <img src="/textures/hero_ronin_front.png" class="hero-opt-img" alt="Рен" />
+                <div class="hero-opt-name">Рен «Багровый вихрь»</div>
+                <div class="hero-opt-perk">Вихревой клинок (+35% урона)</div>
+              </div>
+              <div class="lobby-hero-opt" data-host-hero="valkyrie">
+                <img src="/textures/hero_valkyrie_front.png" class="hero-opt-img" alt="Каэла" />
+                <div class="hero-opt-name">Каэла «Стальной вихрь»</div>
+                <div class="hero-opt-perk">Двуручный меч (+45% урона, 135 HP)</div>
+              </div>
+              <div class="lobby-hero-opt" data-host-hero="flail">
+                <img src="/textures/hero_flail_front.png" class="hero-opt-img" alt="Бригитта" />
+                <div class="hero-opt-name">Бригитта «Стальной цеп»</div>
+                <div class="hero-opt-perk">Боевой цеп (+40% урона, 125 HP)</div>
+              </div>
+              <div class="lobby-hero-opt" data-host-hero="sorceress">
+                <img src="/textures/hero_sorceress_front.png" class="hero-opt-img" alt="Ария" />
+                <div class="hero-opt-name">Ария «Звёздный посох»</div>
+                <div class="hero-opt-perk">Дальняя магия (+30% урона, 8.8 скор.)</div>
+              </div>
+              <div class="lobby-hero-opt" data-host-hero="chakram">
+                <img src="/textures/hero_chakram_front.png" class="hero-opt-img" alt="Кира" />
+                <div class="hero-opt-name">Кира «Чакрам»</div>
+                <div class="hero-opt-perk">Бумеранг-чакрам (+35% урона, дуга)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Squad Roster (5 slots) -->
+          <div class="lobby-roster-section">
+            <div class="section-label-row">
+              <span class="section-label">СОСТАВ ЭКСПЕДИЦИИ:</span>
+              <span id="host-player-count-badge" class="roster-count-badge"><span id="host-player-count">1</span> / 5 СТРЕЛКОВ</span>
+            </div>
+            <div id="host-players-roster" class="lobby-roster-grid">
+              <!-- Dynamically populated 5 slots -->
+            </div>
+          </div>
+
+          <div id="host-partner-box" class="partner-status-box waiting">
+            <div class="partner-status-spinner">...</div>
+            <div class="partner-status-content">
+              <div class="partner-status-title" id="host-partner-title">Ожидание стрелков отряда...</div>
+              <div class="partner-status-desc" id="host-partner-desc">Как только напарники введут код комнаты, их слоты займутся. Вы можете начать поход в любой момент!</div>
+            </div>
+          </div>
+
+          <div class="lobby-actions">
+            <button id="btn-host-start" class="action-btn start-expedition-btn">НАЧАТЬ ЭКСПЕДИЦИЮ</button>
+            <button id="btn-host-back" class="action-btn secondary-btn">Назад в меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Join Lobby Modal (Up to 5 players) -->
+      <div id="join-lobby-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card join-lobby-card">
+          <div class="modal-header">
+            <div class="sub-title">КООПЕРАТИВ • ПОДКЛЮЧЕНИЕ</div>
+            <h2>ВОЙТИ В ЭКСПЕДИЦИЮ</h2>
+          </div>
+
+          <div class="join-input-section">
+            <label for="join-room-input" class="code-label">ВВЕДИТЕ КОД КОМНАТЫ ХОСТА:</label>
+            <div class="input-row">
+              <input id="join-room-input" type="text" class="room-code-input" placeholder="НАПРИМЕР: WEST-42" maxlength="16" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="lobby-heroes-section">
+            <div class="section-label">ВАШ ГЕРОЙ:</div>
+            <div class="lobby-hero-picker">
+              <div class="lobby-hero-opt active" data-guest-hero="valkyrie">
+                <img src="/textures/hero_valkyrie_front.png" class="hero-opt-img" alt="Каэла" />
+                <div class="hero-opt-name">Каэла «Стальной вихрь»</div>
+                <div class="hero-opt-perk">Двуручный меч (+45% урона, 135 HP)</div>
+              </div>
+              <div class="lobby-hero-opt" data-guest-hero="flail">
+                <img src="/textures/hero_flail_front.png" class="hero-opt-img" alt="Бригитта" />
+                <div class="hero-opt-name">Бригитта «Стальной цеп»</div>
+                <div class="hero-opt-perk">Боевой цеп (+40% урона, 125 HP)</div>
+              </div>
+              <div class="lobby-hero-opt" data-guest-hero="sorceress">
+                <img src="/textures/hero_sorceress_front.png" class="hero-opt-img" alt="Ария" />
+                <div class="hero-opt-name">Ария «Звёздный посох»</div>
+                <div class="hero-opt-perk">Дальняя магия (+30% урона, 8.8 скор.)</div>
+              </div>
+              <div class="lobby-hero-opt" data-guest-hero="ronin">
+                <img src="/textures/hero_ronin_front.png" class="hero-opt-img" alt="Рен" />
+                <div class="hero-opt-name">Рен «Багровый вихрь»</div>
+                <div class="hero-opt-perk">Вихревой клинок (+35% урона)</div>
+              </div>
+              <div class="lobby-hero-opt" data-guest-hero="chakram">
+                <img src="/textures/hero_chakram_front.png" class="hero-opt-img" alt="Кира" />
+                <div class="hero-opt-name">Кира «Чакрам»</div>
+                <div class="hero-opt-perk">Бумеранг-чакрам (+35% урона, дуга)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connected Team Roster Preview in Join Modal -->
+          <div id="join-roster-section" class="lobby-roster-section hidden">
+            <div class="section-label-row">
+              <span class="section-label">СОСТАВ ЭКСПЕДИЦИИ:</span>
+              <span id="join-player-count-badge" class="roster-count-badge"><span id="join-player-count">1</span> / 5 СТРЕЛКОВ</span>
+            </div>
+            <div id="join-players-roster" class="lobby-roster-grid">
+              <!-- Dynamically populated 5 slots -->
+            </div>
+          </div>
+
+          <div id="join-status-box" class="join-status-box">
+            <span id="join-status-text">Введите код комнаты и нажмите «Подключиться»</span>
+          </div>
+
+          <div class="lobby-actions">
+            <button id="btn-join-connect" class="action-btn">ПОДКЛЮЧИТЬСЯ</button>
+            <button id="btn-guest-ready" class="action-btn ready-toggle-btn hidden">НАЖМИТЕ «ГОТОВ»</button>
+            <button id="btn-join-back" class="action-btn secondary-btn">Назад в меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rules / Guide Modal -->
+      <div id="guide-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card guide-card">
+          <div class="modal-header">
+            <div class="sub-title">СПРАВОЧНИК СТРЕЛКА</div>
+            <h2>ПРАВИЛА И ОСОБЕННОСТИ</h2>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-item">
+              <div class="guide-icon">[01]</div>
+              <div class="guide-text">
+                <strong>Кооператив до 5 человек</strong>
+                <p>Сражайтесь вместе отрядом до 5 стрелков! Орды монстров атакуют всех игроков. XP кристаллы собираются совместно, а сложность волн адаптируется под размер отряда.</p>
+              </div>
+            </div>
+
+            <div class="guide-item">
+              <div class="guide-icon">[02]</div>
+              <div class="guide-text">
+                <strong>Спасение союзника</strong>
+                <p>Если напарник пал, игра продолжается! Подойдите к поверженному товарищу и удерживайте позицию 3 секунды, чтобы поднять его на ноги с щитом!</p>
+              </div>
+            </div>
+
+            <div class="guide-item">
+              <div class="guide-icon">[03]</div>
+              <div class="guide-text">
+                <strong>Древние алтари</strong>
+                <p>Находите на карте Алтари Ярости, Ветра, Жизни и Щита. Захватывайте зону алтаря ради мощнейших баффов.</p>
+              </div>
+            </div>
+
+            <div class="guide-item">
+              <div class="guide-icon">[04]</div>
+              <div class="guide-text">
+                <strong>Управление</strong>
+                <p>[W][A][S][D] / Стрелочки — движение (авто-атака включена), [TAB] — большая карта, [ESC] — пауза, [P] — Dev Console.</p>
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-close-guide" class="action-btn guide-close-btn">Понятно, к победе!</button>
+        </div>
+      </div>
+
+      <!-- Character Select Modal -->
+      <div id="character-select-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card select-character-card">
+          <div class="modal-header">
+            <div class="sub-title">ОДИНОЧНЫЙ РЕЖИМ</div>
+            <h1 class="wild-west-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
+          </div>
+          <div class="character-grid">
+            <!-- Hero 1: Ren (Ronin) -->
+            <div class="character-card" data-hero="ronin">
+              <div class="char-portrait-wrapper">
+                <img src="/textures/hero_ronin_front.png" alt="Багровый ронин" class="char-portrait" />
+              </div>
+              <div class="char-name">Рен «Багровый вихрь»</div>
+              <div class="char-type">Багровый ронин (Берсерк)</div>
+              <div class="char-perks">
+                <div class="perk-tag">• Стартовое оружие: Багровый Вихрь</div>
+                <div class="perk-tag">• Полный цикл 4-фазных анимаций (96x96)</div>
+                <div class="perk-tag">• +35% к базовому урону и высокая скорость</div>
+              </div>
+              <button class="action-btn select-btn">Выбрать</button>
+            </div>
+
+            <!-- Hero 2: Valkyrie (Каэла) -->
+            <div class="character-card" data-hero="valkyrie">
+              <div class="char-portrait-wrapper">
+                <img src="/textures/hero_valkyrie_front.png" alt="Каэла Двуручный меч" class="char-portrait" />
+              </div>
+              <div class="char-name">Каэла «Стальной вихрь»</div>
+              <div class="char-type">Мечница с двуручным мечом</div>
+              <div class="char-perks">
+                <div class="perk-tag">• Стартовое оружие: Двуручный Меч</div>
+                <div class="perk-tag">• Огромный радиус кругового размаха (4.2м)</div>
+                <div class="perk-tag">• +45% к урону, 135 HP и повышенная стойкость</div>
+              </div>
+              <button class="action-btn select-btn">Выбрать</button>
+            </div>
+
+            <!-- Hero 3: Brigitta (Бригитта) -->
+            <div class="character-card" data-hero="flail">
+              <div class="char-portrait-wrapper">
+                <img src="/textures/hero_flail_front.png" alt="Бригитта Воительница с цепом" class="char-portrait" />
+              </div>
+              <div class="char-name">Бригитта «Громовой Цеп»</div>
+              <div class="char-type">Воительница с кистенем (Цеп)</div>
+              <div class="char-perks">
+                <div class="perk-tag">• Стартовое оружие: Боевой Цеп</div>
+                <div class="perk-tag">• Сокрушающий отброс монстров и круговой вихрь</div>
+                <div class="perk-tag">• +40% к урону, 125 HP и высокий темп</div>
+              </div>
+              <button class="action-btn select-btn">Выбрать</button>
+            </div>
+
+            <!-- Hero 4: Sorceress (Ария) -->
+            <div class="character-card" data-hero="sorceress">
+              <div class="char-portrait-wrapper">
+                <img src="/textures/hero_sorceress_front.png" alt="Ария Волшебница с посохом" class="char-portrait" />
+              </div>
+              <div class="char-name">Ария «Звёздный Посох»</div>
+              <div class="char-type">Чародейка Эфира (Дальний бой)</div>
+              <div class="char-perks">
+                <div class="perk-tag">• Стартовое оружие: Звёздный Посох</div>
+                <div class="perk-tag">• Дальняя магия с пробиванием врагов</div>
+                <div class="perk-tag">• Высокая скорость (8.8) и быстрый каст</div>
+              </div>
+              <button class="action-btn select-btn">Выбрать</button>
+            </div>
+
+            <!-- Hero 5: Kira (Кира) -->
+            <div class="character-card" data-hero="chakram">
+              <div class="char-portrait-wrapper">
+                <img src="/textures/hero_chakram_front.png" alt="Кира Воительница с чакрамом" class="char-portrait" />
+              </div>
+              <div class="char-name">Кира «Танцующий Чакрам»</div>
+              <div class="char-type">Воительница с чакрамом (Средняя дистанция)</div>
+              <div class="char-perks">
+                <div class="perk-tag">• Стартовое оружие: Танцующий Чакрам</div>
+                <div class="perk-tag">• Бросок по дуге с возвращением бумерангом</div>
+                <div class="perk-tag">• Двойное рассечение на пути туда и обратно</div>
+              </div>
+              <button class="action-btn select-btn">Выбрать</button>
+            </div>
+          </div>
+          <div style="margin-top: 24px;">
+            <button id="btn-char-select-back" class="action-btn secondary-btn">Назад в главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Modal (ESC) -->
+      <div id="pause-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card pause-card">
+          <div class="modal-header">
+            <div class="sub-title">ПАУЗА</div>
+            <h2>ИГРА ПРИОСТАНОВЛЕНА</h2>
+          </div>
+          <p class="pause-hint">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
+          <div class="pause-actions">
+            <button id="btn-resume" class="action-btn">Продолжить</button>
+            <button id="btn-pause-settings" class="action-btn secondary-btn">Настройки</button>
+            <button id="btn-pause-restart" class="action-btn secondary-btn">Начать заново</button>
+            <button id="btn-pause-menu" class="action-btn secondary-btn">В главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desert Map Modal (TAB) -->
+      <div id="map-modal" class="modal hidden">
+        <div class="modal-backdrop" id="map-backdrop"></div>
+        <div class="modal-card fullmap-card">
+          <div class="map-modal-header">
+            <div>
+              <div class="sub-title">КАРТОГРАФИЯ ДИКОГО ЗАПАДА</div>
+              <h2 class="map-title">КАРТА ПУСТЫНИ (ИССЛЕДОВАНО)</h2>
+            </div>
+            <button id="btn-close-map" class="close-x-btn">[X] [TAB]</button>
+          </div>
+
+          <div id="fullmap-stats" class="fullmap-stats-bar">
+            <!-- Dynamically populated stats -->
+          </div>
+
+          <div class="fullmap-canvas-container">
+            <canvas id="fullmap-canvas" width="760" height="500"></canvas>
+          </div>
+
+          <!-- Map Controls Hint -->
+          <div class="map-controls-hint">
+            <span>[Колесо мыши] Масштаб</span>
+            <span>•</span>
+            <span>[Зажать ЛКМ] Сдвиг карты</span>
+            <span>•</span>
+            <span>[ПРОБЕЛ / 2x ЛКМ] Центрировать на игроке</span>
+          </div>
+
+          <!-- Map Legend -->
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-icon">🤠</span><span>Вы (Позиция)</span></div>
+            <div class="legend-item"><span class="legend-icon">⛺</span><span>Стоянка (0, 0)</span></div>
+            <div class="legend-item"><span class="legend-icon">⚔️</span><span>Алтарь Ярости</span></div>
+            <div class="legend-item"><span class="legend-icon">⚡</span><span>Алтарь Ветра</span></div>
+            <div class="legend-item"><span class="legend-icon">💖</span><span>Алтарь Жизни</span></div>
+            <div class="legend-item"><span class="legend-icon">🛡️</span><span>Алтарь Щита</span></div>
+            <div class="legend-item"><span class="legend-icon">💎</span><span>Кристаллы / Предметы</span></div>
+            <div class="legend-item"><span class="legend-icon">🌵</span><span>Препятствия</span></div>
+            <div class="legend-item"><span class="legend-icon">💀</span><span>Шериф (Босс)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Up Modal -->
+      <div id="level-up-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+          <div class="modal-header">
+            <div id="level-up-step-indicator" class="sub-title">ШАГ 1 ИЗ 2 • ВЫБОР ОРУЖИЯ</div>
+            <h2 id="level-up-title">ВЫБЕРИТЕ ОРУЖИЕ</h2>
+          </div>
+          <div id="upgrade-cards" class="upgrade-grid">
+            <!-- Dynamically populated cards -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over / Victory Modal -->
+      <div id="game-over-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card game-over-card" id="game-over-card">
+          <div id="victory-badge" class="victory-badge-pill hidden">ЛЕГЕНДА ДИКОГО ЗАПАДА • 30 МИНУТ</div>
+          <h1 id="game-over-title" class="death-title">ВЫ ПОГИБЛИ</h1>
+          <p id="game-over-subtitle" class="death-subtitle">Пустыня не прощает ошибок...</p>
+
+          <!-- Victory Announcement & Stats Suggestion -->
+          <div id="victory-stats-prompt" class="victory-stats-prompt hidden">
+            <div class="victory-prompt-icon">[!]</div>
+            <div class="victory-prompt-text">
+              <strong class="victory-prompt-headline">ВЫ ВЫЖИЛИ ВСЕ 30 МИНУТ!</strong>
+              <span>Бессмертный Жнец явился за вашей душой, но вы покорили кровавую прерию! Предлагаем изучить итоговую статистику вашей легендарной экспедиции:</span>
+            </div>
+          </div>
+
+          <div id="solo-game-over-stats" class="game-over-stats">
+            <div class="stat-row">
+              <span>Время выживания:</span>
+              <strong id="final-time">00:00</strong>
+            </div>
+            <div class="stat-row">
+              <span>Уничтожено врагов:</span>
+              <strong id="final-kills">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Нанесённый урон:</span>
+              <strong id="final-damage">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Достигнутый уровень:</span>
+              <strong id="final-level">1</strong>
+            </div>
+          </div>
+
+          <!-- Co-op Comparative Statistics Table (Supports up to 5 players) -->
+          <div id="coop-game-over-stats" class="game-over-coop-container hidden">
+            <div class="coop-time-banner">
+              Время выживания: <strong id="coop-final-time">00:00</strong>
+            </div>
+            <div id="coop-stats-table-wrapper" class="coop-stats-table-wrapper">
+              <table id="coop-stats-table" class="coop-stats-table">
+                <thead id="coop-stats-thead">
+                  <tr>
+                    <th>Параметр</th>
+                    <th class="p1-col">Вы (П1)</th>
+                    <th class="p2-col">Напарник (П2)</th>
+                  </tr>
+                </thead>
+                <tbody id="coop-stats-tbody">
+                  <tr>
+                    <td>Убийств</td>
+                    <td id="coop-p1-kills">0</td>
+                    <td id="coop-p2-kills">0</td>
+                  </tr>
+                  <tr>
+                    <td>Урон</td>
+                    <td id="coop-p1-damage">0</td>
+                    <td id="coop-p2-damage">0</td>
+                  </tr>
+                  <tr>
+                    <td>Уровень</td>
+                    <td id="coop-p1-level">1</td>
+                    <td id="coop-p2-level">1</td>
+                  </tr>
+                  <tr>
+                    <td>Спасений</td>
+                    <td id="coop-p1-revives">0</td>
+                    <td id="coop-p2-revives">0</td>
+                  </tr>
+                  <tr class="total-row">
+                    <td>Врагов команды</td>
+                    <td colspan="2" id="coop-total-kills">0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Arsenal & Weapons Acquired in Run -->
+          <div id="game-over-arsenal" class="game-over-arsenal-box">
+            <div class="arsenal-title">СНАРЯЖЕНИЕ ЭКСПЕДИЦИИ:</div>
+            <div id="arsenal-items-list" class="arsenal-items-list"></div>
+          </div>
+
+          <div class="pause-actions" style="margin-top: 20px;">
+            <button id="btn-restart" class="action-btn">Возродиться</button>
+            <button id="btn-gameover-menu" class="action-btn secondary-btn">В главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer Mode Console / Panel (P key) -->
+      <div id="dev-panel-modal" class="modal hidden">
+        <div class="modal-backdrop" id="dev-backdrop"></div>
+        <div class="modal-card dev-card">
+          <div class="dev-header">
+            <div class="dev-title-row">
+              <div class="terminal-badge">DEV CONSOLE</div>
+              <h2 class="dev-title">РЕЖИМ РАЗРАБОТЧИКА</h2>
+            </div>
+            <button id="btn-dev-close" class="close-x-btn">[X] [P]</button>
+          </div>
+
+          <!-- Co-op Host Control Banner -->
+          <div id="dev-coop-banner" class="dev-coop-banner hidden">
+            <span class="coop-banner-icon">[!]</span>
+            <div class="coop-banner-text">
+              <strong>Внимание:</strong> В кооперативном режиме читы и управление миром доступны только <strong>ХОСТУ комнаты</strong>. Все применённые им читы действуют на весь отряд!
+            </div>
+          </div>
+
+          <!-- Live Debug Telemetry -->
+          <div class="dev-telemetry-bar">
+            <div class="telemetry-item">FPS: <strong id="dev-fps">60</strong></div>
+            <div class="telemetry-item">Коорд: <strong id="dev-coords">0, 0</strong></div>
+            <div class="telemetry-item">Чанк: <strong id="dev-chunk">[0, 0]</strong></div>
+            <div class="telemetry-item">Враги: <strong id="dev-enemies-count">0</strong></div>
+            <div class="telemetry-item">Снаряды: <strong id="dev-projectiles-count">0</strong></div>
+            <div class="telemetry-item">Кристаллы: <strong id="dev-gems-count">0</strong></div>
+            <div class="telemetry-item">Время: <strong id="dev-time-str">00:00</strong></div>
+          </div>
+
+          <!-- Dev Control Sections -->
+          <div class="dev-sections-container">
+            <!-- Section 1: Hero & Cheats -->
+            <div class="dev-section">
+              <div class="section-title">ПЕРСОНАЖ & ЧИТЫ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-btn-god" class="dev-btn toggle-btn">
+                  <span class="btn-icon">[DEF]</span>
+                  <span>Режим Бога:</span>
+                  <strong id="dev-god-status" class="status-off">ВЫКЛ</strong>
+                </button>
+                <button id="dev-btn-heal" class="dev-btn">
+                  <span class="btn-icon">[HP]</span>
+                  <span>Полное HP</span>
+                </button>
+                <button id="dev-btn-speed" class="dev-btn toggle-btn">
+                  <span class="btn-icon">[SPD]</span>
+                  <span>Супер-бег (2.2x):</span>
+                  <strong id="dev-speed-status" class="status-off">ВЫКЛ</strong>
+                </button>
+                <button id="dev-btn-onehit" class="dev-btn toggle-btn">
+                  <span class="btn-icon">[HIT]</span>
+                  <span>1-Hit Kill (50x):</span>
+                  <strong id="dev-onehit-status" class="status-off">ВЫКЛ</strong>
+                </button>
+                <button id="dev-btn-vacuum" class="dev-btn">
+                  <span class="btn-icon">[VAC]</span>
+                  <span>Вакуум (Собрать всё)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 2: Altars & Buffs -->
+            <div class="dev-section">
+              <div class="section-title">СВЯТИЛИЩА & БАФФЫ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-buff-damage" class="dev-btn">
+                  <span class="btn-icon">[ATK]</span>
+                  <span>Бафф: Ярость (+80%)</span>
+                </button>
+                <button id="dev-buff-speed" class="dev-btn">
+                  <span class="btn-icon">[SPD]</span>
+                  <span>Бафф: Ветер (+60%)</span>
+                </button>
+                <button id="dev-buff-regen" class="dev-btn">
+                  <span class="btn-icon">[REG]</span>
+                  <span>Бафф: Реген (+12 HP/с)</span>
+                </button>
+                <button id="dev-buff-invuln" class="dev-btn">
+                  <span class="btn-icon">[INV]</span>
+                  <span>Бафф: Бессмертие (12с)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 3: Time & Speed -->
+            <div class="dev-section">
+              <div class="section-title">ВРЕМЯ И СКОРОСТЬ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-btn-boss-30" class="dev-btn alert-dev-btn" style="background: rgba(168, 85, 247, 0.25) !important; border-color: #a855f7 !important; color: #f3e8ff !important;">
+                  <span class="btn-icon">[!]</span>
+                  <strong>Прыжок на 29:55 (30м Финал)</strong>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                  <button id="dev-btn-boss-time" class="dev-btn alert-dev-btn" style="flex: 1; padding: 6px 8px; font-size: 11px;">
+                    <span>[>>] 04:55</span>
+                  </button>
+                  <button id="dev-btn-boss-10" class="dev-btn alert-dev-btn" style="flex: 1; padding: 6px 8px; font-size: 11px;">
+                    <span>[>>] 09:55</span>
+                  </button>
+                  <button id="dev-btn-boss-15" class="dev-btn alert-dev-btn" style="flex: 1; padding: 6px 8px; font-size: 11px;">
+                    <span>[>>] 14:55</span>
+                  </button>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button id="dev-btn-time-plus" class="dev-btn" style="flex: 1;">
+                    <span class="btn-icon">[+]</span>
+                    <span>+60с</span>
+                  </button>
+                  <button id="dev-btn-time-minus" class="dev-btn" style="flex: 1;">
+                    <span class="btn-icon">[-]</span>
+                    <span>-60с</span>
+                  </button>
+                </div>
+                <div class="speed-toggle-row">
+                  <button id="dev-speed-1x" class="dev-speed-btn active">1x Скорость</button>
+                  <button id="dev-speed-2x" class="dev-speed-btn">2x Скорость</button>
+                  <button id="dev-speed-5x" class="dev-speed-btn">5x Скорость</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Level & Weapons -->
+            <div class="dev-section">
+              <div class="section-title">ПРОКАЧКА И ОРУЖИЕ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-btn-lvl1" class="dev-btn">
+                  <span class="btn-icon">[LVL]</span>
+                  <span>+1 Уровень (Level Up)</span>
+                </button>
+                <button id="dev-btn-lvl10" class="dev-btn">
+                  <span class="btn-icon">[+10]</span>
+                  <span>+10 Уровней</span>
+                </button>
+                <button id="dev-btn-xp1000" class="dev-btn">
+                  <span class="btn-icon">[XP]</span>
+                  <span>+1000 Опыта</span>
+                </button>
+                <button id="dev-btn-all-weapons" class="dev-btn">
+                  <span class="btn-icon">[WEP]</span>
+                  <span>Выдать 5 оружий</span>
+                </button>
+                <button id="dev-btn-max-weapons" class="dev-btn">
+                  <span class="btn-icon">[MAX]</span>
+                  <span>Максимум уровней (MAX)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 4: Monster Spawning & Boss -->
+            <div class="dev-section dev-full-section">
+              <div class="section-title">СПАВН МОНСТРОВ & БОССА</div>
+              <div class="dev-btn-row">
+                <button id="dev-btn-spawn-boss" class="dev-btn boss-spawn-btn">
+                  <span class="btn-icon">[B1]</span>
+                  <strong>ДЕМОН (5М)</strong>
+                </button>
+                <button id="dev-btn-spawn-hydra" class="dev-btn boss-spawn-btn" style="background: linear-gradient(135deg, rgba(234, 88, 12, 0.4), rgba(154, 52, 18, 0.6)) !important; border-color: #fb923c !important; color: #ffedd5 !important;">
+                  <span class="btn-icon">[B2]</span>
+                  <strong>ГИДРА (10М)</strong>
+                </button>
+                <button id="dev-btn-spawn-reaper" class="dev-btn boss-spawn-btn" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.4), rgba(88, 28, 135, 0.6)) !important; border-color: #c084fc !important; color: #f5d0fe !important;">
+                  <span class="btn-icon">[B3]</span>
+                  <strong>ЖНЕЦ (30М)</strong>
+                </button>
+                <button id="dev-btn-nuke" class="dev-btn nuke-btn">
+                  <span class="btn-icon">[X]</span>
+                  <span>УНИЧТОЖИТЬ ВРАГОВ</span>
+                </button>
+              </div>
+              <div class="spawn-monsters-grid">
+                <button class="dev-spawn-btn" data-type="coyote">Койот</button>
+                <button class="dev-spawn-btn" data-type="crawler">Тварь</button>
+                <button class="dev-spawn-btn" data-type="cactus">Кактус</button>
+                <button class="dev-spawn-btn" data-type="skeleton">Скелет</button>
+                <button class="dev-spawn-btn" data-type="ghost">Призрак</button>
+                <button class="dev-spawn-btn" data-type="scorpion">Скорпион</button>
+                <button class="dev-spawn-btn" data-type="brute">Громила</button>
+                <button class="dev-spawn-btn" data-type="bison">Бизон</button>
+                <button class="dev-spawn-btn" data-type="hydra" style="background: rgba(234, 88, 12, 0.35); border-color: #fb923c; color: #ffedd5;">Гидра</button>
+                <button class="dev-spawn-btn" data-type="reaper" style="background: rgba(147, 51, 234, 0.35); border-color: #c084fc; color: #f5d0fe;">Жнец</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Damage Numbers Container -->
+    <div id="damage-numbers-layer"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

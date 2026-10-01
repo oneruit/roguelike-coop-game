@@ -1,0 +1,540 @@
+import * as THREE from 'three';
+
+// Reusable shared materials for high performance and low draw overhead
+export class TerrainMaterials {
+  public static sandMaterial: THREE.MeshStandardMaterial;
+  public static cactusMaterial: THREE.MeshStandardMaterial;
+  public static cactusRibMaterial: THREE.MeshStandardMaterial;
+  public static cactusFlowerMaterial: THREE.MeshBasicMaterial;
+  public static barkMaterial: THREE.MeshStandardMaterial;
+  public static foliageMaterial: THREE.MeshStandardMaterial;
+  public static rockMaterial: THREE.MeshStandardMaterial;
+  public static scrubMaterial: THREE.MeshStandardMaterial;
+  public static boneMaterial: THREE.MeshStandardMaterial;
+  public static woodMaterial: THREE.MeshStandardMaterial;
+  public static ironMaterial: THREE.MeshStandardMaterial;
+
+  private static initialized = false;
+
+  public static init() {
+    if (this.initialized) return;
+    this.initialized = true;
+
+    // 1. High Quality Procedural Desert Sand Texture
+    const sandCanvas = document.createElement('canvas');
+    sandCanvas.width = 512;
+    sandCanvas.height = 512;
+    const ctx = sandCanvas.getContext('2d')!;
+
+    // Rich warm desert sand gradient base
+    const grad = ctx.createLinearGradient(0, 0, 512, 512);
+    grad.addColorStop(0, '#c78446');
+    grad.addColorStop(0.35, '#b97538');
+    grad.addColorStop(0.7, '#cc8b4c');
+    grad.addColorStop(1, '#ab682d');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Wind dune ripples (flowing undulating ridges)
+    ctx.strokeStyle = 'rgba(235, 175, 115, 0.28)';
+    ctx.lineWidth = 4;
+    for (let y = 12; y < 512; y += 28) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      for (let x = 0; x <= 512; x += 16) {
+        const wave = Math.sin((x / 512) * Math.PI * 4 + (y / 50)) * 6 +
+                     Math.sin((x / 512) * Math.PI * 8) * 2;
+        ctx.lineTo(x, y + wave);
+      }
+      ctx.stroke();
+    }
+
+    // Shadow undertones under dune ripples
+    ctx.strokeStyle = 'rgba(100, 50, 20, 0.22)';
+    ctx.lineWidth = 3;
+    for (let y = 16; y < 512; y += 28) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      for (let x = 0; x <= 512; x += 16) {
+        const wave = Math.sin((x / 512) * Math.PI * 4 + (y / 50)) * 6 +
+                     Math.sin((x / 512) * Math.PI * 8) * 2;
+        ctx.lineTo(x, y + wave + 3);
+      }
+      ctx.stroke();
+    }
+
+    // Desert pebbles & fine mineral flecks
+    for (let i = 0; i < 900; i++) {
+      const px = Math.floor(Math.random() * 512);
+      const py = Math.floor(Math.random() * 512);
+      const size = Math.random() < 0.85 ? 1.5 : 2.8;
+      const shade = Math.random();
+      if (shade < 0.45) {
+        ctx.fillStyle = 'rgba(255, 230, 180, 0.45)'; // Quartz/sunlit grains
+      } else if (shade < 0.75) {
+        ctx.fillStyle = 'rgba(85, 40, 18, 0.4)'; // Iron oxide pebble
+      } else {
+        ctx.fillStyle = 'rgba(180, 100, 50, 0.35)'; // Terracotta grit
+      }
+      ctx.fillRect(px, py, size, size);
+    }
+
+    const sandTexture = new THREE.CanvasTexture(sandCanvas);
+    sandTexture.wrapS = THREE.RepeatWrapping;
+    sandTexture.wrapT = THREE.RepeatWrapping;
+    sandTexture.repeat.set(6, 6);
+
+    this.sandMaterial = new THREE.MeshStandardMaterial({
+      map: sandTexture,
+      roughness: 0.92,
+      metalness: 0.04
+    });
+
+    // 2. Cactus Material (Saguaro Green)
+    this.cactusMaterial = new THREE.MeshStandardMaterial({
+      color: 0x2d5e37,
+      roughness: 0.75,
+      metalness: 0.05
+    });
+
+    this.cactusRibMaterial = new THREE.MeshStandardMaterial({
+      color: 0x22492a,
+      roughness: 0.8
+    });
+
+    this.cactusFlowerMaterial = new THREE.MeshBasicMaterial({
+      color: 0xf43f5e // Crimson desert bloom
+    });
+
+    // 3. Tree Bark Material (Weathered Desert Mesquite / Deadwood)
+    this.barkMaterial = new THREE.MeshStandardMaterial({
+      color: 0x3d2719,
+      roughness: 0.9,
+      metalness: 0.02
+    });
+
+    // 4. Dry Olive Foliage for Desert Acacia
+    this.foliageMaterial = new THREE.MeshStandardMaterial({
+      color: 0x5a6336,
+      roughness: 0.85,
+      metalness: 0.0
+    });
+
+    // 5. Sandstone Boulder Material
+    this.rockMaterial = new THREE.MeshStandardMaterial({
+      color: 0x8a5433,
+      roughness: 0.88,
+      metalness: 0.08
+    });
+
+    // 6. Desert Scrub / Dried Sagebrush
+    this.scrubMaterial = new THREE.MeshStandardMaterial({
+      color: 0x937848,
+      roughness: 0.95,
+      side: THREE.DoubleSide
+    });
+
+    // 7. Animal Bone / Skull Material
+    this.boneMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd8d2c4,
+      roughness: 0.65,
+      metalness: 0.05
+    });
+
+    // 8. Weathered Wood Material (Wagon Wheel, Posts)
+    this.woodMaterial = new THREE.MeshStandardMaterial({
+      color: 0x543926,
+      roughness: 0.85
+    });
+
+    // 9. Rusted Iron Material (Wheel Band)
+    this.ironMaterial = new THREE.MeshStandardMaterial({
+      color: 0x3a251e,
+      roughness: 0.7,
+      metalness: 0.35
+    });
+  }
+}
+
+export class TerrainProps {
+  /**
+   * Builds an authentic 3D Saguaro Cactus with fluting and 0-2 curved arms.
+   */
+  public static createCactus(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    const height = 3.6 + rng() * 2.2;
+    const radius = 0.36 + rng() * 0.1;
+
+    // Main Trunk (ribbed cylinder)
+    const trunkGeom = new THREE.CylinderGeometry(radius * 0.92, radius, height, 8);
+    const trunk = new THREE.Mesh(trunkGeom, TerrainMaterials.cactusMaterial);
+    trunk.position.y = height / 2;
+    trunk.castShadow = true;
+    trunk.receiveShadow = true;
+    group.add(trunk);
+
+    // Domed Cap
+    const capGeom = new THREE.SphereGeometry(radius * 0.92, 8, 6);
+    capGeom.scale(1, 0.7, 1);
+    const cap = new THREE.Mesh(capGeom, TerrainMaterials.cactusMaterial);
+    cap.position.y = height;
+    cap.castShadow = true;
+    group.add(cap);
+
+    // Occasional desert flower bud on top
+    if (rng() < 0.45) {
+      const flowerGeom = new THREE.ConeGeometry(0.14, 0.25, 5);
+      const flower = new THREE.Mesh(flowerGeom, TerrainMaterials.cactusFlowerMaterial);
+      flower.position.y = height + 0.3;
+      group.add(flower);
+    }
+
+    // Arms (0, 1, or 2 arms)
+    const armConfig = rng();
+    if (armConfig > 0.2) {
+      // Left Arm
+      const armHeight = height * (0.42 + rng() * 0.18);
+      const armLength = 0.8 + rng() * 0.4;
+      const armUp = 1.0 + rng() * 0.8;
+      const armRad = radius * 0.78;
+
+      const armGroup = new THREE.Group();
+      armGroup.position.set(-radius * 0.7, armHeight, 0);
+
+      // Horizontal branch
+      const horizGeom = new THREE.CylinderGeometry(armRad, armRad, armLength, 6);
+      horizGeom.rotateZ(Math.PI / 2);
+      const horiz = new THREE.Mesh(horizGeom, TerrainMaterials.cactusMaterial);
+      horiz.position.x = -armLength / 2;
+      horiz.castShadow = true;
+      armGroup.add(horiz);
+
+      // Vertical branch pointing up
+      const vertGeom = new THREE.CylinderGeometry(armRad * 0.9, armRad, armUp, 6);
+      const vert = new THREE.Mesh(vertGeom, TerrainMaterials.cactusMaterial);
+      vert.position.set(-armLength, armUp / 2, 0);
+      vert.castShadow = true;
+      armGroup.add(vert);
+
+      // Arm cap
+      const armCapGeom = new THREE.SphereGeometry(armRad * 0.9, 6, 5);
+      const armCap = new THREE.Mesh(armCapGeom, TerrainMaterials.cactusMaterial);
+      armCap.position.set(-armLength, armUp, 0);
+      armCap.castShadow = true;
+      armGroup.add(armCap);
+
+      armGroup.rotation.y = rng() * Math.PI * 2;
+      group.add(armGroup);
+    }
+
+    if (armConfig > 0.6) {
+      // Right Arm (staggered height)
+      const armHeight = height * (0.55 + rng() * 0.18);
+      const armLength = 0.75 + rng() * 0.35;
+      const armUp = 0.9 + rng() * 0.7;
+      const armRad = radius * 0.75;
+
+      const armGroup2 = new THREE.Group();
+      armGroup2.position.set(radius * 0.7, armHeight, 0);
+
+      const horizGeom2 = new THREE.CylinderGeometry(armRad, armRad, armLength, 6);
+      horizGeom2.rotateZ(-Math.PI / 2);
+      const horiz2 = new THREE.Mesh(horizGeom2, TerrainMaterials.cactusMaterial);
+      horiz2.position.x = armLength / 2;
+      horiz2.castShadow = true;
+      armGroup2.add(horiz2);
+
+      const vertGeom2 = new THREE.CylinderGeometry(armRad * 0.9, armRad, armUp, 6);
+      const vert2 = new THREE.Mesh(vertGeom2, TerrainMaterials.cactusMaterial);
+      vert2.position.set(armLength, armUp / 2, 0);
+      vert2.castShadow = true;
+      armGroup2.add(vert2);
+
+      const armCapGeom2 = new THREE.SphereGeometry(armRad * 0.9, 6, 5);
+      const armCap2 = new THREE.Mesh(armCapGeom2, TerrainMaterials.cactusMaterial);
+      armCap2.position.set(armLength, armUp, 0);
+      armCap2.castShadow = true;
+      armGroup2.add(armCap2);
+
+      armGroup2.rotation.y = rng() * Math.PI * 2;
+      group.add(armGroup2);
+    }
+
+    // Natural random rotation
+    group.rotation.y = rng() * Math.PI * 2;
+    return group;
+  }
+
+  /**
+   * Builds a twisted desert deadwood tree or dry desert acacia.
+   */
+  public static createTree(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    const isAcacia = rng() < 0.45;
+    const trunkHeight1 = 2.0 + rng() * 0.8;
+    const trunkHeight2 = 1.8 + rng() * 0.8;
+    const trunkRad = 0.38 + rng() * 0.12;
+
+    // Segment 1 (Leaning base trunk)
+    const seg1Geom = new THREE.CylinderGeometry(trunkRad * 0.8, trunkRad, trunkHeight1, 6);
+    const leanAngle = 0.12 + rng() * 0.18;
+    const leanDir = rng() * Math.PI * 2;
+    seg1Geom.rotateZ(leanAngle);
+    seg1Geom.rotateY(leanDir);
+
+    const seg1 = new THREE.Mesh(seg1Geom, TerrainMaterials.barkMaterial);
+    seg1.position.y = trunkHeight1 / 2;
+    seg1.castShadow = true;
+    seg1.receiveShadow = true;
+    group.add(seg1);
+
+    // Mid joint point
+    const midX = Math.sin(leanAngle) * (trunkHeight1 / 2) * -Math.cos(leanDir);
+    const midZ = Math.sin(leanAngle) * (trunkHeight1 / 2) * Math.sin(leanDir);
+    const midY = trunkHeight1 * Math.cos(leanAngle);
+
+    // Segment 2 (Crooked upper trunk)
+    const seg2Geom = new THREE.CylinderGeometry(trunkRad * 0.55, trunkRad * 0.8, trunkHeight2, 6);
+    const leanAngle2 = 0.2 + rng() * 0.25;
+    const leanDir2 = leanDir + Math.PI * 0.6 + (rng() - 0.5) * 0.5;
+    seg2Geom.rotateZ(leanAngle2);
+    seg2Geom.rotateY(leanDir2);
+
+    const seg2 = new THREE.Mesh(seg2Geom, TerrainMaterials.barkMaterial);
+    seg2.position.set(midX, midY + trunkHeight2 * 0.4, midZ);
+    seg2.castShadow = true;
+    group.add(seg2);
+
+    // Branches spreading outwards
+    const branchCount = 3 + Math.floor(rng() * 3);
+    for (let b = 0; b < branchCount; b++) {
+      const bLen = 1.8 + rng() * 1.4;
+      const bRad = trunkRad * 0.38;
+      const bGeom = new THREE.CylinderGeometry(bRad * 0.5, bRad, bLen, 5);
+
+      const bAngle = (b / branchCount) * Math.PI * 2 + (rng() - 0.5) * 0.5;
+      const bElevation = 0.45 + rng() * 0.4; // Tilted upward
+
+      bGeom.rotateX(Math.PI / 2 - bElevation);
+      bGeom.rotateY(bAngle);
+
+      const branch = new THREE.Mesh(bGeom, TerrainMaterials.barkMaterial);
+      const attachY = midY + (rng() * 0.6 + 0.3) * trunkHeight2;
+      branch.position.set(midX, attachY, midZ);
+      branch.castShadow = true;
+      group.add(branch);
+
+      // Tip foliage clumps if Acacia variant
+      if (isAcacia) {
+        const foliageGeom = new THREE.DodecahedronGeometry(0.75 + rng() * 0.45, 0);
+        foliageGeom.scale(1.4, 0.45, 1.2);
+        const foliage = new THREE.Mesh(foliageGeom, TerrainMaterials.foliageMaterial);
+
+        const tipDist = bLen * 0.9;
+        const tipX = midX + Math.sin(bAngle) * Math.cos(bElevation) * tipDist;
+        const tipY = attachY + Math.sin(bElevation) * tipDist;
+        const tipZ = midZ + Math.cos(bAngle) * Math.cos(bElevation) * tipDist;
+
+        foliage.position.set(tipX, tipY, tipZ);
+        foliage.rotation.y = rng() * Math.PI;
+        foliage.castShadow = true;
+        group.add(foliage);
+      }
+    }
+
+    group.rotation.y = rng() * Math.PI * 2;
+    return group;
+  }
+
+  /**
+   * Builds an earthy sandstone boulder formation.
+   */
+  public static createBoulder(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    const baseRadius = 0.7 + rng() * 0.8;
+    const geom = new THREE.DodecahedronGeometry(baseRadius, 0);
+
+    // Irregular non-uniform scale for natural flat rock look
+    const sx = 1.0 + rng() * 0.7;
+    const sy = 0.6 + rng() * 0.4;
+    const sz = 1.0 + rng() * 0.6;
+    geom.scale(sx, sy, sz);
+
+    const boulder = new THREE.Mesh(geom, TerrainMaterials.rockMaterial);
+    boulder.position.y = (baseRadius * sy) * 0.65; // Partially sunken into sand
+    boulder.rotation.set(rng() * 0.3, rng() * Math.PI * 2, rng() * 0.3);
+    boulder.castShadow = true;
+    boulder.receiveShadow = true;
+    group.add(boulder);
+
+    // 40% chance of a smaller accent rock nearby
+    if (rng() < 0.4) {
+      const smallRad = baseRadius * (0.35 + rng() * 0.25);
+      const smallGeom = new THREE.DodecahedronGeometry(smallRad, 0);
+      smallGeom.scale(1.2, 0.7, 1.1);
+      const smallRock = new THREE.Mesh(smallGeom, TerrainMaterials.rockMaterial);
+      const ang = rng() * Math.PI * 2;
+      const dist = (baseRadius * sx * 0.7) + smallRad;
+      smallRock.position.set(Math.cos(ang) * dist, smallRad * 0.4, Math.sin(ang) * dist);
+      smallRock.rotation.set(rng() * 0.5, rng() * Math.PI * 2, rng() * 0.4);
+      smallRock.castShadow = true;
+      group.add(smallRock);
+    }
+
+    return group;
+  }
+
+  /**
+   * Builds dry desert grass / sagebrush tuft.
+   */
+  public static createScrub(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    const bladeCount = 4 + Math.floor(rng() * 3);
+    const height = 0.6 + rng() * 0.5;
+    const width = 0.5 + rng() * 0.4;
+
+    for (let i = 0; i < bladeCount; i++) {
+      const geom = new THREE.PlaneGeometry(width * 0.4, height);
+      geom.translate(0, height / 2, 0);
+      const mesh = new THREE.Mesh(geom, TerrainMaterials.scrubMaterial);
+      mesh.rotation.y = (i / bladeCount) * Math.PI + (rng() - 0.5) * 0.3;
+      mesh.rotation.x = (rng() - 0.5) * 0.3;
+      mesh.rotation.z = (rng() - 0.5) * 0.3;
+      mesh.castShadow = true;
+      group.add(mesh);
+    }
+
+    return group;
+  }
+
+  /**
+   * Builds a steer skull landmark (western desert cow skull with horns).
+   */
+  public static createSteerSkull(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    // Cranium
+    const craniumGeom = new THREE.ConeGeometry(0.24, 0.6, 5);
+    craniumGeom.scale(1.1, 1.0, 0.65);
+    craniumGeom.rotateX(-Math.PI / 2.2);
+    const cranium = new THREE.Mesh(craniumGeom, TerrainMaterials.boneMaterial);
+    cranium.position.y = 0.16;
+    cranium.castShadow = true;
+    group.add(cranium);
+
+    // Eye Sockets (dark recesses)
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a120c });
+    const eyeGeom = new THREE.BoxGeometry(0.06, 0.06, 0.04);
+
+    const eyeL = new THREE.Mesh(eyeGeom, eyeMat);
+    eyeL.position.set(-0.1, 0.22, 0.08);
+    group.add(eyeL);
+
+    const eyeR = new THREE.Mesh(eyeGeom, eyeMat);
+    eyeR.position.set(0.1, 0.22, 0.08);
+    group.add(eyeR);
+
+    // Left Horn (curving outward and up)
+    const hornLGeom = new THREE.CylinderGeometry(0.02, 0.07, 0.55, 5);
+    hornLGeom.rotateZ(Math.PI / 3);
+    hornLGeom.rotateY(-0.3);
+    const hornL = new THREE.Mesh(hornLGeom, TerrainMaterials.boneMaterial);
+    hornL.position.set(-0.32, 0.3, 0.18);
+    hornL.castShadow = true;
+    group.add(hornL);
+
+    // Right Horn
+    const hornRGeom = new THREE.CylinderGeometry(0.02, 0.07, 0.55, 5);
+    hornRGeom.rotateZ(-Math.PI / 3);
+    hornRGeom.rotateY(0.3);
+    const hornR = new THREE.Mesh(hornRGeom, TerrainMaterials.boneMaterial);
+    hornR.position.set(0.32, 0.3, 0.18);
+    hornR.castShadow = true;
+    group.add(hornR);
+
+    group.rotation.y = rng() * Math.PI * 2;
+    return group;
+  }
+
+  /**
+   * Builds an abandoned wooden wagon wheel half-buried in the sand.
+   */
+  public static createWagonWheel(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    const radius = 1.0;
+    const tube = 0.08;
+
+    // Rim
+    const rimGeom = new THREE.TorusGeometry(radius, tube, 6, 16);
+    const rim = new THREE.Mesh(rimGeom, TerrainMaterials.woodMaterial);
+    rim.castShadow = true;
+    group.add(rim);
+
+    // Outer iron band
+    const ironGeom = new THREE.TorusGeometry(radius + 0.015, tube * 0.35, 4, 16);
+    const iron = new THREE.Mesh(ironGeom, TerrainMaterials.ironMaterial);
+    group.add(iron);
+
+    // Center Hub
+    const hubGeom = new THREE.CylinderGeometry(0.2, 0.2, 0.25, 8);
+    hubGeom.rotateX(Math.PI / 2);
+    const hub = new THREE.Mesh(hubGeom, TerrainMaterials.woodMaterial);
+    hub.castShadow = true;
+    group.add(hub);
+
+    // Spokes (6 crossing spokes)
+    const spokeCount = 6;
+    for (let s = 0; s < spokeCount; s++) {
+      const angle = (s / spokeCount) * Math.PI;
+      const spokeGeom = new THREE.CylinderGeometry(0.04, 0.04, radius * 2 - 0.1, 5);
+      spokeGeom.rotateZ(angle);
+      const spoke = new THREE.Mesh(spokeGeom, TerrainMaterials.woodMaterial);
+      spoke.castShadow = true;
+      group.add(spoke);
+    }
+
+    // Tilted and sunk into sand
+    group.rotation.x = -Math.PI / 4 + (rng() - 0.5) * 0.3;
+    group.rotation.y = rng() * Math.PI * 2;
+    group.position.y = 0.45;
+
+    return group;
+  }
+
+  /**
+   * Builds a weathered wooden trail marker post.
+   */
+  public static createTrailPost(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    // Vertical post
+    const postGeom = new THREE.CylinderGeometry(0.14, 0.16, 2.5, 5);
+    const post = new THREE.Mesh(postGeom, TerrainMaterials.woodMaterial);
+    post.position.y = 1.25;
+    post.castShadow = true;
+    group.add(post);
+
+    // Cross directional board
+    const boardGeom = new THREE.BoxGeometry(1.2, 0.25, 0.08);
+    const board = new THREE.Mesh(boardGeom, TerrainMaterials.woodMaterial);
+    board.position.set(0.15, 2.0, 0);
+    board.rotation.z = (rng() - 0.5) * 0.2;
+    board.castShadow = true;
+    group.add(board);
+
+    group.rotation.y = rng() * Math.PI * 2;
+    return group;
+  }
+}
