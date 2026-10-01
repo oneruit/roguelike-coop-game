@@ -1,217 +1,253 @@
 # Agent Git Workflow & Contribution Guidelines
 
-This document defines the mandatory Git workflow for all AI agents (including Antigravity, Claude, Copilot, etc.) and automated tools contributing to this repository.
+This document defines the **mandatory, fully automated** Git workflow for all AI agents (Antigravity, Claude, Copilot, etc.) contributing to this repository.
+
+> **The developer's only manual action is resolving merge conflicts or CI failures.**  
+> Everything else — branch creation, PR, auto-merge — is automated by the agent.
 
 ---
 
 ## The Agent Lifecycle Chain
 
-All work in this repository must strictly follow this fully automated sequential chain:
-
 ```mermaid
 flowchart TD
     A["1. Agent receives task"] --> B["2. Sync upstream & create dedicated branch"]
-    B --> C["3. Implement changes & verify locally (typecheck & build)"]
-    C --> D["4. Stage & commit (Conventional Commits)"]
-    D --> E["5. Push branch to origin"]
-    E --> F["6. AUTOMATIC PR / MR CREATION (Zero manual steps)"]
-    F --> G["7. Automated CI Verification"]
-    G --> H{"Conflicts & CI status check"}
-    H -- "NO CONFLICTS & ALL CHECKS GREEN" --> I["8. AUTOMATIC MERGE (MR / Auto-Merge)"]
-    I --> J["9. Task Completed Cleanly"]
-    H -- "MERGE CONFLICT / CI FAILURE / BLOCKER" --> K["8. STOP IMMEDIATELY"]
-    K --> L["9. Report diagnostics & await manual human fix"]
+    B --> C["3. Implement changes"]
+    C --> D["4. typecheck & build locally"]
+    D -- "FAIL" --> C
+    D -- "PASS" --> E["5. Stage & commit (Conventional Commits)"]
+    E --> F["6. Push branch to origin"]
+    F --> G["7. gh pr create (auto) + gh pr merge --auto"]
+    G --> H["8. GitHub Actions CI runs"]
+    H --> I{"Conflicts & CI status"}
+    I -- "NO CONFLICTS & ALL GREEN" --> J["9. Auto-merge into master ✅"]
+    J --> K["10. Task Completed"]
+    I -- "CONFLICT / CI FAIL" --> L["9. STOP — Report to developer ⛔"]
+    L --> M["10. Await manual fix"]
 ```
 
 ---
 
 ## 12 Golden Rules for Agents
 
-1. **Never work directly on `main` (or default branch `master`).**
-   - Direct commits to `main`/`master` are strictly prohibited.
-2. **Always fetch latest upstream before starting:**
-   - Always run `git fetch origin` and ensure your working base is up to date with the remote primary branch (`origin/main` or `origin/master`).
-3. **Create a dedicated branch for each task:**
-   - Every individual request, bugfix, or feature must live on its own separate branch.
-4. **Follow strict branch naming conventions:**
-   - `feature/<name>` — New game mechanics, entity systems, UI, networking features.
-   - `fix/<name>` — Bug fixes, collision corrections, networking patches.
-   - `refactor/<name>` — Code cleanup, architecture improvements without behavior changes.
-   - `chore/<name>` — Dependency updates, tooling, configuration updates.
-   - `docs/<name>` — Documentation updates only.
-   - `test/<name>` — Adding or improving tests.
-   *(Use kebab-case for `<name>`, e.g., `feature/altar-interaction`, `fix/projectile-damage-calc`)*.
-5. **Write clear Conventional Commits:**
-   - Follow the Conventional Commits specification: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `perf:`, etc.
-   - Use imperative mood: `"feat(combat): add piercing projectile behavior"` (not `"added piercing projectiles"`).
-6. **Always verify build & type check before pushing:**
-   - Agents **MUST** execute and verify locally:
-     ```bash
-     npm run typecheck
-     npm run build
-     ```
-   - Do not push if either check fails. Fix all errors locally before proceeding.
-7. **Push the branch to `origin`:**
-   - Set the upstream tracking branch on first push: `git push -u origin <branch-name>`.
-8. **Automate PR / MR Creation (Zero Manual Effort):**
-   - Pull Request (GitHub) and Merge Request (GitLab) creation **MUST be executed automatically**.
-   - Agents must not leave PR/MR creation as a manual action for the developer.
-   - The PR/MR must target the default branch (`master` or `main`), populated with the commit summary and changes description.
-9. **Automatic Merge (MR) on Clean CI; Halt on Conflicts:**
-   - **No conflicts & CI Green**: Once CI checks pass and no merge conflicts exist, the PR/MR must be automatically merged into the base branch (using GitHub auto-merge or agent-triggered merge).
-   - **Merge Conflicts or CI Failure**: If there is a merge conflict, a broken build/test, or any blocking condition:
-     - **STOP IMMEDIATELY.**
-     - **DO NOT** attempt to force-merge, bypass branch protections, or repeatedly push speculative blind fixes.
-     - Report the exact conflict files or failing test logs to the human developer and await manual intervention.
-10. **NEVER force-push (`--force` or `--force-with-lease`):**
-    - Prohibited unless explicitly and directly commanded by the user in chat.
-11. **Rebase if base branch updated while working:**
-    - If the base branch advanced while developing, rebase the feature branch onto `origin/master` (or `origin/main`) before pushing:
-      ```bash
-      git fetch origin
-      git rebase origin/master
-      ```
-    - Resolve any conflicts locally, re-run verification (`npm run build`), and ensure a clean state.
-12. **Keep commits focused and atomic:**
-    - Only stage and commit files related to the specific prompt/task.
-    - Never include unrelated files, temporary editor files, or accidentally untracked artifacts.
+1. **Never commit directly to `main` / `master`.**  
+   All work lives on a dedicated branch. Direct commits to the default branch are strictly prohibited.
+
+2. **Always sync upstream before starting.**  
+   Run `git fetch origin` and reset your working base to the latest remote primary branch.
+
+3. **One task = one branch.**  
+   Every feature, bugfix, or refactor gets its own branch. Never reuse branches across tasks.
+
+4. **Follow strict branch naming conventions (kebab-case):**
+   | Prefix | When to use |
+   | :--- | :--- |
+   | `feature/<name>` | New game mechanics, systems, UI, networking |
+   | `fix/<name>` | Bug fixes, collision, networking patches |
+   | `refactor/<name>` | Code cleanup without behavior changes |
+   | `chore/<name>` | Tooling, dependency, config updates |
+   | `docs/<name>` | Documentation only |
+   | `test/<name>` | Adding or improving tests |
+
+5. **Write Conventional Commits (imperative mood).**  
+   Format: `<type>(<scope>): <description>`  
+   Example: `feat(combat): add piercing projectile behavior`
+
+6. **Always verify locally before pushing.**  
+   Both commands must exit with code `0`. Fix all errors before proceeding:
+   ```powershell
+   npm run typecheck
+   npm run build
+   ```
+
+7. **Push the branch with upstream tracking.**
+   ```powershell
+   git push -u origin <branch-name>
+   ```
+
+8. **Immediately after push: create PR via `gh` CLI (agent's responsibility).**  
+   The agent MUST run these commands right after `git push` — do not rely solely on GitHub Actions:
+   ```powershell
+   # Create PR (idempotent — skips if PR already exists)
+   gh pr create `
+     --base master `
+     --head <branch-name> `
+     --title "<commit title>" `
+     --body "$(gh pr view --json body -q .body 2>$null || echo 'Automated PR')"
+
+   # Queue auto-merge (runs as soon as CI passes)
+   gh pr merge <branch-name> --auto --merge
+   ```
+   If `--merge` is blocked by repository settings, fall back to `--squash`:
+   ```powershell
+   gh pr merge <branch-name> --auto --squash
+   ```
+
+9. **Auto-merge runs only when CI is green and there are no conflicts.**  
+   - ✅ No conflicts + all checks pass → PR merges automatically, task complete.  
+   - ⛔ Merge conflict or CI failure → **STOP IMMEDIATELY**.
+
+10. **On conflict or CI failure: stop and report.**  
+    DO NOT attempt to force-merge, bypass checks, or push speculative workarounds.  
+    Report to the developer:
+    1. Which files conflict / which CI step failed.
+    2. Exact error messages or conflict markers.
+    3. Suggested manual resolution steps.  
+    Then **wait** for the developer to fix and instruct how to continue.
+
+11. **NEVER force-push** (`--force` / `--force-with-lease`) unless the developer explicitly commands it in chat.
+
+12. **Keep commits atomic.**  
+    Stage only files directly related to the task. Never include unrelated files, editor artifacts, or temp files.
 
 ---
 
-## Step-by-Step Command Playbook for Agents
+## Step-by-Step Command Playbook
 
-### Step 1: Detect Default Branch & Sync Upstream
-Identify the base branch (`main` or `master`) and update local tracking:
-```bash
-# Check primary branch (default is master or main)
-BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "master")
+### Step 1 — Sync Upstream
 
-# Fetch latest from remote
-git fetch origin
-
-# Switch to base branch and pull latest changes
-git checkout $BASE_BRANCH
-git pull origin $BASE_BRANCH
-```
-*(On Windows PowerShell:)*
 ```powershell
 git fetch origin
-git checkout master # or main
+git checkout master          # or: git checkout main
 git pull origin master
 ```
 
-### Step 2: Create a Dedicated Feature Branch
-Branch from the updated base:
-```bash
-# For a new feature
+### Step 2 — Create a Dedicated Branch
+
+```powershell
 git checkout -b feature/altar-buff-system
-
-# For a bug fix
-git checkout -b fix/enemy-desync-on-chunk-unload
-
-# For refactoring
-git checkout -b refactor/binary-snapshot-serializer
+# or: fix/enemy-desync, refactor/snapshot-serializer, etc.
 ```
 
-### Step 3: Implement & Verify Locally
-Make your changes, then run verification before staging:
-```bash
-# 1. Check TypeScript types
-npm run typecheck
+### Step 3 — Implement & Verify
 
-# 2. Verify Vite production build
-npm run build
+Make all changes, then:
+```powershell
+npm run typecheck   # must pass
+npm run build       # must pass
 ```
+Fix any errors before moving on.
 
-### Step 4: Stage & Commit (Conventional Commits)
-Stage only relevant files:
-```bash
+### Step 4 — Stage & Commit
+
+```powershell
 git add src/world/Altar.ts src/combat/DamageNumberManager.ts
 git commit -m "feat(world): add altar interaction buffs and visual indicators"
 ```
 
-#### Commit Types:
+#### Commit Type Reference
 | Prefix | Purpose | Example |
 | :--- | :--- | :--- |
-| `feat` | New capability or feature | `feat(drops): add automatic gem magnetic attraction` |
-| `fix` | Bug fix or error resolution | `fix(net): resolve snapshot buffer overflow during peer disconnect` |
-| `refactor`| Code change without behavioral difference | `refactor(entities): simplify enemy state machine transitions` |
-| `perf` | Performance improvement | `perf(chunks): optimize spatial hash lookup for drop items` |
-| `chore` | Maintenance, dependencies, config | `chore(ci): add build verification workflow` |
-| `docs` | Documentation only | `docs: update architecture overview in docs/` |
+| `feat` | New capability | `feat(drops): add gem magnetic attraction` |
+| `fix` | Bug fix | `fix(net): resolve snapshot buffer overflow` |
+| `refactor` | No behavior change | `refactor(entities): simplify enemy state machine` |
+| `perf` | Performance | `perf(chunks): optimize spatial hash lookup` |
+| `chore` | Maintenance | `chore(ci): add build verification workflow` |
+| `docs` | Documentation | `docs: update architecture overview` |
 
-### Step 5: Check for Upstream Divergence & Rebase
-If `origin/master` (or `origin/main`) has new commits:
-```bash
+### Step 5 — Check for Upstream Divergence
+
+```powershell
 git fetch origin
 git rebase origin/master
 ```
-If there are conflicts:
-1. Resolve conflicts in files.
+
+If there are conflicts during rebase:
+1. Resolve conflicts manually in the affected files.
 2. Re-run `npm run typecheck && npm run build`.
 3. `git add <resolved-files>`
 4. `git rebase --continue`
 
-### Step 6: Push to Origin
-```bash
-git push -u origin feature/<name>
+### Step 6 — Push to Origin
+
+```powershell
+git push -u origin <branch-name>
 ```
 
-*(On GitLab repositories, push options can automatically create the MR and set auto-merge in a single command):*
-```bash
-git push -u origin feature/<name> -o merge_request.create -o merge_request.auto_merge -o merge_request.target=master
+### Step 7 — Create PR & Enable Auto-Merge (Agent's Responsibility)
+
+Run **immediately** after push. This is mandatory — the agent must not skip this step:
+
+```powershell
+# Capture branch name and last commit info
+$BRANCH = git rev-parse --abbrev-ref HEAD
+$COMMIT_TITLE = git log -1 --pretty=%s
+$COMMIT_BODY  = git log -1 --pretty=%b
+
+# Build PR body
+$PR_BODY = @"
+### Automated Pull Request
+**Branch:** ``$BRANCH``
+**Author:** Agent
+
+$COMMIT_BODY
+
+---
+*This PR was created automatically by an AI agent. Auto-merge is enabled and will trigger once CI passes and no conflicts exist.*
+"@
+
+# Create PR (safe to run even if PR already exists)
+$EXISTING = gh pr list --head $BRANCH --json number --jq '.[0].number'
+if (-not $EXISTING) {
+    gh pr create --base master --head $BRANCH --title $COMMIT_TITLE --body $PR_BODY
+} else {
+    Write-Host "PR #$EXISTING already exists, skipping creation."
+}
+
+# Queue auto-merge
+gh pr merge $BRANCH --auto --merge
+# If the above fails due to repo settings, try squash:
+# gh pr merge $BRANCH --auto --squash
 ```
 
-### Step 7: Automatic PR / MR Creation & Auto-Merge Activation
+> **Note:** The GitHub Actions workflow (`.github/workflows/auto-pr.yml`) acts as a **fallback** in case the agent's local `gh` command fails. The agent-side execution is always the primary mechanism.
 
-The creation of the Pull Request and queuing of the auto-merge must happen automatically:
+### Step 8 — Verify CI & Merge Outcome
 
-#### Method A: GitHub CLI (`gh`)
-If GitHub CLI is installed and authenticated:
-```bash
-# 1. Automatically create the PR targeting default branch
-gh pr create --base master --head feature/<name> --title "feat(world): add altar buffs" --body "Automated PR for feature/<name>"
+After queuing auto-merge, confirm the PR status:
 
-# 2. Automatically queue auto-merge once CI checks pass
-gh pr merge feature/<name> --auto --merge
+```powershell
+# Check PR status
+gh pr view $BRANCH --json state,mergeable,statusCheckRollup
+
+# Watch CI checks (optional live view)
+gh pr checks $BRANCH --watch
 ```
-*(If `--merge` is restricted, use `--squash` according to repository settings).*
 
-#### Method B: Built-in GitHub Actions Automation (`.github/workflows/auto-pr.yml`)
-This repository includes an automated workflow (`.github/workflows/auto-pr.yml`) that triggers on every push to `feature/**`, `fix/**`, `refactor/**`, `chore/**`, `docs/**`, and `test/**`:
-- It detects the new branch and automatically creates a Pull Request targeting `master`.
-- It activates the `--auto --merge` flag using repository workflow permissions.
-- Even if local CLI is unauthenticated, the remote pipeline ensures PR creation and auto-merge require zero human clicks.
+**Case A — All green, no conflicts:**
+- Auto-merge completes. Task is done. ✅
+- Report to the developer: PR number, merge commit SHA, summary of changes.
 
-### Step 8: CI Evaluation & Stop Protocol
-
-Once the PR is created, CI is triggered via GitHub Actions:
-- **Case A: No Conflicts & All Required Checks Pass (GREEN)**
-  - The Pull Request auto-merges into the base branch automatically.
-  - The agent confirms the successful merge and concludes the task.
-
-- **Case B: Merge Conflict, CI Failure (RED), or Blocker**
-  - **STOP IMMEDIATELY.**
-  - **DO NOT** attempt to force-merge, bypass required checks, or push speculative workarounds.
-  - Formulate a clear diagnosis for the human developer:
-    1. Identify conflicting files or failing CI step (e.g. `Build & Verify (Node 22.x)`).
-    2. Provide exact error messages, stack trace, or conflict markers.
-    3. Suggest manual resolution steps.
-  - Wait for the human developer to manually resolve the problem and instruct how to proceed.
+**Case B — Conflict or CI failure:**
+- **STOP IMMEDIATELY.** ⛔
+- Run `gh pr checks $BRANCH` and `gh pr view $BRANCH` to collect diagnostic info.
+- Report to the developer:
+  1. Failing check names and error output.
+  2. Conflicting file list (if merge conflict).
+  3. Recommended fix steps.
+- **Do not push again** until the developer responds with instructions.
 
 ---
 
 ## CI/CD Automation & GitHub Settings
 
-This repository runs automated GitHub Actions:
-- **CI Build & Verification**: `.github/workflows/ci.yml` (checks `npm run typecheck` and `npm run build` on Node 20.x & 22.x).
-- **Auto-PR & Merge Queueing**: `.github/workflows/auto-pr.yml` (automatically creates PR and queues auto-merge on push).
+| Workflow | Trigger | Purpose |
+| :--- | :--- | :--- |
+| `.github/workflows/ci.yml` | Push to `master`/`main`, any PR | TypeScript type-check + production build on Node 20.x & 22.x |
+| `.github/workflows/auto-pr.yml` | Push to `feature/**`, `fix/**`, `refactor/**`, `chore/**`, `docs/**`, `test/**` | **Fallback** auto-PR creation + auto-merge queueing |
 
-### Prerequisites for Full GitHub Automation:
-1. **Enable Auto-Merge**: Repository Settings → General → Pull Requests → Check **"Allow auto-merge"**.
-2. **Workflow Permissions**: Repository Settings → Actions → General → Workflow permissions:
-   - Select **"Read and write permissions"**.
-   - Check **"Allow GitHub Actions to create and approve pull requests"**.
-3. **Branch Protection**: Repository Settings → Branches → Add rule for `master` (or `main`):
-   - Check **"Require status checks to pass before merging"**.
-   - Require status checks: `Build & Verify (Node 20.x)` and `Build & Verify (Node 22.x)`.
+### Required GitHub Repository Settings (one-time setup by developer)
+
+1. **Enable Auto-Merge**  
+   Settings → General → Pull Requests → ✅ **Allow auto-merge**
+
+2. **Workflow Permissions**  
+   Settings → Actions → General → Workflow permissions:
+   - ✅ **Read and write permissions**
+   - ✅ **Allow GitHub Actions to create and approve pull requests**
+
+3. **Branch Protection Rule for `master`**  
+   Settings → Branches → Add rule:
+   - ✅ Require status checks to pass before merging
+   - Required checks: `Build & Verify (Node 20.x)` and `Build & Verify (Node 22.x)`
+   - ✅ Require branches to be up to date before merging
