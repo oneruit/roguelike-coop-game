@@ -25,7 +25,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_spurs',
     title: 'Шпоры Скорохода',
     icon: '👢',
-    description: '+15% к скорости бега'
+    description: '+3% к скорости бега'
   },
   stat_flask: {
     id: 'stat_flask',

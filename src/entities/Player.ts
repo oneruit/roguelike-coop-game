@@ -373,7 +373,7 @@ export class Player {
     this.recalculateStats();
   }
 
-  public addSpeedBonus(multiplier: number = 1.15) {
+  public addSpeedBonus(multiplier: number = 1.03) {
     this.passiveSpeedMultiplier = Math.min(2.5, this.passiveSpeedMultiplier * multiplier);
     this.spursCount++;
     this.recalculateStats();
@@ -415,8 +415,8 @@ export class Player {
         this.addSheriffStarBonus(1.02);
         return `⭐ +2% Урон (${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
       case 'stat_spurs':
-        this.addSpeedBonus(1.15);
-        return `👢 +15% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)})`;
+        this.addSpeedBonus(1.03);
+        return `👢 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)})`;
       case 'stat_flask':
         this.addFlaskBonus(30);
         return `🍶 +30 Макс HP & Исцеление (${this.maxHp} HP)`;
