@@ -134,7 +134,7 @@ export class RemotePlayer {
       depthTest: false
     });
     this.overheadSprite = new THREE.Sprite(spriteMat);
-    this.overheadSprite.position.set(0, 2.5, 0);
+    this.overheadSprite.position.set(0, 3.0, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
     this.mesh.add(this.overheadSprite);
