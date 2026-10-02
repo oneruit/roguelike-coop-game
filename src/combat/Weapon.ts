@@ -54,16 +54,16 @@ export abstract class Weapon {
 }
 
 /**
- * Heavy Colt (Тяжелый Кольт) - Hero 1 Male starting weapon
- * High-caliber heavy penetrating bullet with powerful knockback
+ * Hunting Bow (Охотничий Лук)
+ * Long-range sharp piercing arrows cutting through lines of enemies
  */
-export class HeavyColtWeapon extends Weapon {
+export class BowWeapon extends Weapon {
   private projectileCount: number = 1;
-  private projectileSpeed: number = 22;
+  private projectileSpeed: number = 24;
   private pierce: number = 2;
 
   constructor() {
-    super('heavy_colt', 'Тяжелый Кольт', '🔫', 1.0, 24);
+    super('bow', 'Охотничий Лук', '🏹', 1.0, 24);
   }
 
   public update(
@@ -98,11 +98,12 @@ export class HeavyColtWeapon extends Weapon {
             pierce: this.pierce,
             lifetime: 2.2,
             radius: 0.32,
-            color: 0xf59e0b // Golden fire lead
+            color: 0xf59e0b,
+            isArrow: true
           });
 
           spawnProjectile(proj);
-          SoundManager.playShoot();
+          SoundManager.playBowShoot();
         }, index * 90);
       });
     }
@@ -127,12 +128,16 @@ export class HeavyColtWeapon extends Weapon {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+8 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 выстрел (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) perks.push('-7% перезарядки');
     return perks.join(', ');
   }
 }
+
+// Backwards compatibility alias
+export const HeavyColtWeapon = BowWeapon;
+export type HeavyColtWeapon = BowWeapon;
 
 /**
  * Dual Revolvers (Парные Револьверы) - Hero 2 Female starting weapon

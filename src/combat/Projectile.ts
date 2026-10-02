@@ -18,6 +18,7 @@ export interface ProjectileOptions {
   orbitSpeed?: number;
   isCosmetic?: boolean;
   ownerId?: string;
+  isArrow?: boolean;
 }
 
 export class Projectile {
@@ -31,6 +32,7 @@ export class Projectile {
   public radius: number;
   public color: number;
   public isMagic: boolean;
+  public isArrow = false;
   public isCosmetic: boolean;
   public ownerId?: string;
   public isAlive = true;
@@ -58,6 +60,11 @@ export class Projectile {
   // Shared assets for Chakram (Spinning Blade Plane)
   private static chakramGeom: THREE.PlaneGeometry | null = null;
   private static chakramMaterial: THREE.MeshBasicMaterial | null = null;
+
+  // Shared assets for Arrow Sprites
+  private static arrowGeomA: THREE.PlaneGeometry | null = null;
+  private static arrowGeomB: THREE.PlaneGeometry | null = null;
+  private static arrowMaterial: THREE.MeshBasicMaterial | null = null;
 
   // Shared assets for Gun Bullet Sprites
   private static bulletGeomA: THREE.PlaneGeometry | null = null;
@@ -94,6 +101,7 @@ export class Projectile {
     this.orbitRadius = options.orbitRadius ?? 2.5;
     this.orbitSpeed = options.orbitSpeed ?? 4.0;
     this.isChakram = !!options.isChakram;
+    this.isArrow = !!options.isArrow;
     this.curveSign = options.curveSign ?? 1;
     this.maxLifetime = options.lifetime;
 
@@ -119,6 +127,36 @@ export class Projectile {
 
       const scale = this.radius * 2.8;
       this.mesh.scale.set(scale, scale, scale);
+    } else if (this.isArrow) {
+      if (!Projectile.arrowGeomA || !Projectile.arrowGeomB || !Projectile.arrowMaterial) {
+        const aspect = 32 / 128; // 0.25
+        const geomA = new THREE.PlaneGeometry(1.5, 1.5 * aspect);
+        geomA.rotateX(Math.PI / 4);
+        Projectile.arrowGeomA = geomA;
+
+        const geomB = new THREE.PlaneGeometry(1.5, 1.5 * aspect);
+        geomB.rotateX(-Math.PI / 4);
+        Projectile.arrowGeomB = geomB;
+
+        Projectile.arrowMaterial = new THREE.MeshBasicMaterial({
+          map: TextureManager.getArrowTexture(),
+          transparent: true,
+          alphaTest: 0.03,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+      }
+
+      const meshA = new THREE.Mesh(Projectile.arrowGeomA, Projectile.arrowMaterial);
+      const meshB = new THREE.Mesh(Projectile.arrowGeomB, Projectile.arrowMaterial);
+      this.mesh.add(meshA);
+      this.mesh.add(meshB);
+
+      const scale = this.radius * 3.8;
+      this.mesh.scale.set(scale, scale, scale);
+
+      const angle = Math.atan2(this.direction.z, this.direction.x);
+      this.mesh.rotation.y = -angle;
     } else if (this.isOrbiting || options.isMagic) {
       const sphere = new THREE.Mesh(Projectile.orbGeom, Projectile.getOrbMaterial(options.color));
       this.mesh.add(sphere);

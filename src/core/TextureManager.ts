@@ -84,8 +84,9 @@ export class TextureManager {
     this.loadBossTextures('boss_demon', renderer);
     this.loadBossTextures('boss_hydra', renderer);
 
-    // Preload revolver bullet and weapon chakram sprite
+    // Preload revolver bullet, arrow and weapon chakram sprite
     this.getBulletTexture(renderer);
+    this.getArrowTexture(renderer);
     this.getChakramTexture(renderer);
 
     // Preload Ronin, Valkyrie, Flail, Sorceress and Chakram hero sprite sheets
@@ -155,6 +156,87 @@ export class TextureManager {
     tex.magFilter = THREE.NearestFilter;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     return tex;
+  }
+
+  private static sharedArrowTexture: THREE.CanvasTexture | null = null;
+
+  public static getArrowTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    if (!this.sharedArrowTexture) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 32;
+      const ctx = canvas.getContext('2d')!;
+
+      ctx.clearRect(0, 0, 128, 32);
+
+      // 1. Wooden Shaft
+      const woodGrad = ctx.createLinearGradient(0, 14, 0, 18);
+      woodGrad.addColorStop(0, '#d97706');
+      woodGrad.addColorStop(0.5, '#b45309');
+      woodGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = woodGrad;
+      ctx.fillRect(16, 14, 86, 4);
+
+      // 2. Fletchings (Feathers) at back (X = 14 to 44)
+      ctx.fillStyle = '#dc2626';
+      // Top feather
+      ctx.beginPath();
+      ctx.moveTo(14, 14);
+      ctx.lineTo(24, 4);
+      ctx.lineTo(44, 14);
+      ctx.closePath();
+      ctx.fill();
+
+      // Bottom feather
+      ctx.beginPath();
+      ctx.moveTo(14, 18);
+      ctx.lineTo(24, 28);
+      ctx.lineTo(44, 18);
+      ctx.closePath();
+      ctx.fill();
+
+      // Feather quill stripes
+      ctx.strokeStyle = '#fef2f2';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(22, 14); ctx.lineTo(26, 7);
+      ctx.moveTo(30, 14); ctx.lineTo(33, 8);
+      ctx.moveTo(22, 18); ctx.lineTo(26, 25);
+      ctx.moveTo(30, 18); ctx.lineTo(33, 24);
+      ctx.stroke();
+
+      // Nock (end of arrow)
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(10, 14, 6, 4);
+
+      // 3. Metallic Arrowhead (X = 98 to 124)
+      const metalGrad = ctx.createLinearGradient(0, 6, 0, 26);
+      metalGrad.addColorStop(0, '#f8fafc');
+      metalGrad.addColorStop(0.4, '#cbd5e1');
+      metalGrad.addColorStop(1, '#475569');
+
+      ctx.fillStyle = metalGrad;
+      ctx.beginPath();
+      ctx.moveTo(124, 16); // Sharp arrow tip
+      ctx.lineTo(98, 6);   // Top barb
+      ctx.lineTo(104, 16); // Center notch
+      ctx.lineTo(98, 26);  // Bottom barb
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      this.sharedArrowTexture = new THREE.CanvasTexture(canvas);
+      this.sharedArrowTexture.colorSpace = THREE.SRGBColorSpace;
+      this.sharedArrowTexture.magFilter = THREE.LinearFilter;
+      this.sharedArrowTexture.minFilter = THREE.LinearMipmapLinearFilter;
+      if (renderer) {
+        renderer.initTexture(this.sharedArrowTexture);
+      }
+    }
+    return this.sharedArrowTexture;
   }
 
   public static getChakramTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {

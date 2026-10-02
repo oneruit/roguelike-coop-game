@@ -78,6 +78,45 @@ export class SoundManager {
   }
 
   /**
+   * Sound when bow releases an arrow (bowstring twang + swift aerodynamic whoosh)
+   */
+  public static playBowShoot() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+
+    const ctx = this.ctx;
+    // 1. Bowstring release twang
+    const twangOsc = ctx.createOscillator();
+    const twangGain = ctx.createGain();
+    twangOsc.type = 'triangle';
+    twangOsc.frequency.setValueAtTime(360, ctx.currentTime);
+    twangOsc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.08);
+
+    twangGain.gain.setValueAtTime(0.16, ctx.currentTime);
+    twangGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+
+    twangOsc.connect(twangGain);
+    twangGain.connect(this.getMasterGain());
+    twangOsc.start();
+    twangOsc.stop(ctx.currentTime + 0.09);
+
+    // 2. Aerodynamic arrow whoosh cutting through the air
+    const whooshOsc = ctx.createOscillator();
+    const whooshGain = ctx.createGain();
+    whooshOsc.type = 'sine';
+    whooshOsc.frequency.setValueAtTime(680, ctx.currentTime + 0.01);
+    whooshOsc.frequency.exponentialRampToValueAtTime(280, ctx.currentTime + 0.13);
+
+    whooshGain.gain.setValueAtTime(0.09, ctx.currentTime + 0.01);
+    whooshGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
+
+    whooshOsc.connect(whooshGain);
+    whooshGain.connect(this.getMasterGain());
+    whooshOsc.start(ctx.currentTime + 0.01);
+    whooshOsc.stop(ctx.currentTime + 0.14);
+  }
+
+  /**
    * Sound when sword slashes
    */
   public static playSlash() {
