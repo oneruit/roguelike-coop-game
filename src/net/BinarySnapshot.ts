@@ -7,7 +7,7 @@ const PROTOCOL_VERSION = 1;
 const SLOTS = ['p1', 'p2', 'p3', 'p4', 'p5'] as const;
 const DIRS: SpriteDirection[] = ['front', 'back', 'left', 'right'];
 const ANIMS: HeroAnimState[] = ['IDLE', 'WALK', 'ATTACK', 'WALK_ATTACK'];
-const CHARS: CharacterType[] = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram'];
+const CHARS: CharacterType[] = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer'];
 const ENEMIES: EnemyType[] = [
   'coyote',
   'crawler',

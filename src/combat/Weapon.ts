@@ -61,9 +61,15 @@ export class BowWeapon extends Weapon {
   private projectileCount: number = 1;
   private projectileSpeed: number = 24;
   private pierce: number = 2;
+  private onTriggerAttack?: () => void;
 
-  constructor() {
+  constructor(onTriggerAttack?: () => void) {
     super('bow', 'Охотничий Лук', '🏹', 1.0, 36);
+    this.onTriggerAttack = onTriggerAttack;
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
   }
 
   public update(
@@ -83,6 +89,10 @@ export class BowWeapon extends Weapon {
         .sort((a, b) => a.distSq - b.distSq);
 
       const targets = candidates.slice(0, this.projectileCount).map(c => c.enemy);
+      if (targets.length > 0 && this.onTriggerAttack) {
+        this.onTriggerAttack();
+      }
+
       targets.forEach((target, index) => {
         setTimeout(() => {
           if (!target || !target.isAlive) return;

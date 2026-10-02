@@ -1,4 +1,4 @@
-export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram';
+export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer';
 export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
 export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
 export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable';

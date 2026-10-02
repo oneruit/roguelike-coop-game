@@ -122,6 +122,10 @@ export class SimBowWeapon extends SimWeapon {
         .sort((a, b) => a.distSq - b.distSq);
 
       const targets = candidates.slice(0, this.projectileCount).map(c => c.enemy);
+      if (targets.length > 0) {
+        if (_triggerAnim) _triggerAnim(0.40);
+        if (emitSound) emitSound('shoot');
+      }
       targets.forEach((target) => {
         if (!target || !target.isAlive) return;
         const dir = new SimVec3().subVectors(target.position, player.position);
@@ -831,6 +835,8 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
       return new SimAstralStaffWeapon();
     case 'chakram':
       return new SimChakramWeapon();
+    case 'archer':
+      return new SimBowWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();

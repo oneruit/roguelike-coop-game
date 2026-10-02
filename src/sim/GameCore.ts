@@ -109,6 +109,11 @@ export class SimPlayerInternal {
       this.hp = 115;
       this.baseSpeed = 8.7;
       this.baseDamageMultiplier = 1.35;
+    } else if (charType === 'archer') {
+      this.maxHp = 110;
+      this.hp = 110;
+      this.baseSpeed = 8.9;
+      this.baseDamageMultiplier = 1.35;
     } else {
       this.maxHp = 115;
       this.hp = 115;
