@@ -244,8 +244,13 @@ export class RemotePlayer {
     this.maxHp = state.maxHp;
     this.level = state.level;
     if (state.xp !== undefined) this.xp = state.xp;
-    if (state.xpToNextLevel !== undefined) this.xpToNextLevel = state.xpToNextLevel;
     this.isDowned = state.isDowned;
+    if (state.reviveProgress !== undefined) {
+      this.reviveProgress = state.reviveProgress;
+    }
+    if (!this.isDowned) {
+      this.reviveProgress = 0;
+    }
     if (state.charType && state.charType !== this.charType) {
       this.setCharacter(state.charType);
     }

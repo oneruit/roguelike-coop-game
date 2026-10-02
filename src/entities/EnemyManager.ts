@@ -721,9 +721,17 @@ export class EnemyManager {
     // Cleanup dead/despawned
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       if (!seenIds.has(this.enemies[i].id)) {
-        this.enemies[i].destroy(this.scene);
+        const deadEnemy = this.enemies[i];
+        if (deadEnemy === this.activeBoss) {
+          this.activeBoss = null;
+        }
+        deadEnemy.destroy(this.scene);
         this.enemies.splice(i, 1);
       }
+    }
+
+    if (this.activeBoss && (!this.enemies.includes(this.activeBoss) || !this.activeBoss.isAlive)) {
+      this.activeBoss = null;
     }
   }
 

@@ -71,6 +71,7 @@ export interface PlayerNetState {
   xp?: number;
   xpToNextLevel?: number;
   isDowned: boolean;
+  reviveProgress?: number;
   charType: CharacterType;
   kills: number;
   damageDealt: number;
@@ -118,6 +119,8 @@ export interface NetEvent {
   altarType?: BuffType;
   buffDuration?: number;
   playerId?: string;
+  targetId?: string;
+  reviverId?: string;
   shot?: NetShotInfo;
 }
 
@@ -184,6 +187,7 @@ export interface ClientSyncMessage {
   collectedGemIds: string[];
   isRevivingPartner: boolean;
   revivingTargetId?: string;
+  reviveProgress?: number;
   shots?: NetShotInfo[];
 }
 
@@ -203,6 +207,7 @@ export interface ReviveActionMessage {
   reviverId?: string;
   targetId: string;
   target?: string;
+  progress?: number;
 }
 
 export type NetMessage =
@@ -1076,7 +1081,7 @@ export class NetworkManager {
     // BroadcastChannel for local cross-tab communication
     if (this.localChannel) {
       try {
-        const targetId = (msg as any).targetId;
+        const targetId = (msg.type === 'PING' || msg.type === 'PONG') ? (msg as any).targetId : undefined;
         this.localChannel.postMessage({ _sender: this.myId, _target: targetId, payload });
         this.bytesSentWindow += payloadSize;
       } catch {

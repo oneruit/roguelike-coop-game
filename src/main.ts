@@ -120,6 +120,16 @@ class Game {
       }
     };
 
+    // Boss defeat event listener
+    this.enemyManager.onBossDefeat = () => {
+      this.hud.resetBossUI();
+      if (this.net.role === 'host') {
+        this.pendingNetworkEvents.push({
+          type: 'boss_defeat'
+        });
+      }
+    };
+
     // Altar capture event listener
     this.engine.altarManager.onAltarCaptured = (altar) => {
       this.hud.triggerAltarNotification(
@@ -446,13 +456,41 @@ class Game {
 
     this.net.onReviveReceived = (msg) => {
       const targetId = msg.targetId || msg.target || '';
-      if (targetId === this.net.mySlotId || (this.net.role === 'host' && (targetId === 'p1' || targetId === 'host'))) {
-        this.player.revive();
+      const isTargetHost = targetId === 'p1' || targetId === 'host';
+      const isTargetMe = targetId === this.net.mySlotId || (this.net.role === 'host' && isTargetHost);
+
+      if (isTargetMe) {
+        if (this.player.isDowned) {
+          this.player.revive();
+        }
       } else if (targetId) {
-        const remote = this.remotePlayers.get(targetId);
+        const remote = this.remotePlayers.get(targetId) || (isTargetHost ? this.remotePlayers.get('p1') : undefined);
         if (remote) {
           remote.isDowned = false;
+          remote.hp = Math.round(remote.maxHp * 0.45);
           remote.reviveProgress = 0;
+          remote.redrawOverhead();
+        }
+      }
+
+      // If we are host, ensure all clients receive the revive action and event
+      if (this.net.role === 'host') {
+        const normalizedTarget = isTargetHost ? 'p1' : targetId;
+        this.net.send({
+          type: 'REVIVE_ACTION',
+          targetId: normalizedTarget,
+          reviverId: msg.reviverId
+        });
+        this.pendingNetworkEvents.push({
+          type: 'revive',
+          targetId: normalizedTarget,
+          reviverId: msg.reviverId
+        });
+        if (msg.reviverId && msg.reviverId !== 'p1' && msg.reviverId !== 'host') {
+          const reviverStats = this.allPlayerStats.get(msg.reviverId);
+          if (reviverStats) {
+            reviverStats.revives++;
+          }
         }
       }
     };
@@ -878,8 +916,14 @@ class Game {
 
     // Sync all remote players from snapshot
     for (const [id, pState] of Object.entries(playersMap)) {
-      if (id === this.net.mySlotId) continue; // local player
-      if (id !== 'host' && id !== 'p1' && !AVAILABLE_SLOT_IDS.includes(id)) continue;
+      if (id === this.net.mySlotId) {
+        if (this.player.isDowned && pState.reviveProgress !== undefined) {
+          this.player.reviveProgress = pState.reviveProgress;
+        }
+        continue;
+      }
+      if (id === 'host') continue; // Host is always represented as 'p1'
+      if (id !== 'p1' && !AVAILABLE_SLOT_IDS.includes(id)) continue;
 
       let remote = this.remotePlayers.get(id);
       if (!remote) {
@@ -896,6 +940,10 @@ class Game {
         pState.level = remote.level;
       }
       remote.syncState(pState);
+      const localReviveTimer = this.partnerReviveTimers.get(id) || 0;
+      if (localReviveTimer > 0) {
+        remote.reviveProgress = Math.max(remote.reviveProgress, localReviveTimer);
+      }
     }
 
     // Remove any remote players no longer present
@@ -912,12 +960,46 @@ class Game {
     this.dropManager.applySnapshot(msg.drops);
     this.enemyManager.totalKills = msg.totalKills;
 
+    // Authoritative Boss state synchronization
+    if (msg.boss === null || (msg.boss && !msg.boss.isAlive)) {
+      if (this.enemyManager.activeBoss) {
+        this.enemyManager.activeBoss = null;
+      }
+      this.hud.resetBossUI();
+    } else if (msg.boss && this.enemyManager.activeBoss) {
+      this.enemyManager.activeBoss.hp = msg.boss.hp;
+      this.enemyManager.activeBoss.maxHp = msg.boss.maxHp;
+      this.enemyManager.activeBoss.isAlive = msg.boss.isAlive;
+    }
+
     for (const event of msg.events || []) {
       if (event.type === 'boss_spawn') {
         if (event.val === 'reaper' || this.gameTime >= 1800) {
           this.hud.triggerImmortalBossWarning(event.name);
         } else {
           this.hud.triggerBossWarning(event.name, typeof event.val === 'number' ? event.val : undefined);
+        }
+      } else if (event.type === 'boss_defeat') {
+        if (this.enemyManager.activeBoss) {
+          this.enemyManager.activeBoss = null;
+        }
+        this.hud.resetBossUI();
+      } else if (event.type === 'revive') {
+        const targetId = event.targetId || '';
+        const isTargetHost = targetId === 'p1' || targetId === 'host';
+        const isTargetMe = targetId === this.net.mySlotId || (this.net.role === 'host' && isTargetHost);
+        if (isTargetMe) {
+          if (this.player.isDowned) {
+            this.player.revive();
+          }
+        } else if (targetId) {
+          const remote = this.remotePlayers.get(targetId) || (isTargetHost ? this.remotePlayers.get('p1') : undefined);
+          if (remote) {
+            remote.isDowned = false;
+            remote.hp = Math.round(remote.maxHp * 0.45);
+            remote.reviveProgress = 0;
+            remote.redrawOverhead();
+          }
         }
       } else if (event.type === 'altar_captured' && event.altarType) {
         this.engine.altarManager.applyRemoteCapture(event.altarType);
@@ -1008,6 +1090,22 @@ class Game {
       st.revives = Math.max(st.revives, msg.clientStats.revives);
       st.level = Math.max(st.level, msg.clientPlayer.level);
       this.allPlayerStats.set(clientId, st);
+    }
+
+    // Sync revive progress reported by client
+    if (msg.revivingTargetId) {
+      const isTargetHost = msg.revivingTargetId === 'p1' || msg.revivingTargetId === 'host';
+      const progress = msg.reviveProgress ?? 0;
+      if (isTargetHost) {
+        if (this.player.isDowned) {
+          this.player.reviveProgress = Math.max(this.player.reviveProgress, progress);
+        }
+      } else {
+        const targetRemote = this.remotePlayers.get(msg.revivingTargetId);
+        if (targetRemote && targetRemote.isDowned) {
+          targetRemote.reviveProgress = Math.max(targetRemote.reviveProgress, progress);
+        }
+      }
     }
 
     // Spawn shots fired by client partner and forward to other clients
@@ -1188,8 +1286,16 @@ class Game {
               this.partnerReviveTimers.set(id, 0);
               remote.isDowned = false;
               remote.reviveProgress = 0;
+              remote.hp = Math.round(remote.maxHp * 0.45);
+              remote.redrawOverhead();
               this.player.revivesCount++;
-              this.net.send({ type: 'REVIVE_ACTION', targetId: id });
+              const mySlot = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+              const isTargetHost = id === 'p1' || id === 'host';
+              const normalizedTarget = isTargetHost ? 'p1' : id;
+              this.net.send({ type: 'REVIVE_ACTION', targetId: normalizedTarget, reviverId: mySlot });
+              if (this.net.role === 'host') {
+                this.pendingNetworkEvents.push({ type: 'revive', targetId: normalizedTarget, reviverId: mySlot });
+              }
             }
           } else {
             const currentTimer = Math.max(0, (this.partnerReviveTimers.get(id) || 0) - dt * 0.8);
@@ -1198,6 +1304,57 @@ class Game {
           }
         } else {
           this.partnerReviveTimers.set(id, 0);
+        }
+      }
+    }
+
+    // Host Authoritative Revive Check (ensures host-downed and client-to-client revives work even under lag)
+    if (this.net.role === 'host') {
+      // 1. If host player is downed, check if any alive remote player is reviving host
+      if (this.player.isDowned) {
+        let hostReviverId = '';
+        for (const [id, remote] of this.remotePlayers) {
+          if (!remote.isDowned && this.player.position.distanceTo(remote.position) <= 3.5) {
+            hostReviverId = id;
+            break;
+          }
+        }
+        if (hostReviverId) {
+          this.player.reviveProgress = Math.min(1, this.player.reviveProgress + dt / 3.0);
+          if (this.player.reviveProgress >= 1.0) {
+            this.player.revive();
+            this.net.send({ type: 'REVIVE_ACTION', targetId: 'p1', reviverId: hostReviverId });
+            this.pendingNetworkEvents.push({ type: 'revive', targetId: 'p1', reviverId: hostReviverId });
+            const st = this.allPlayerStats.get(hostReviverId);
+            if (st) st.revives++;
+          }
+        } else if (this.player.reviveProgress > 0) {
+          this.player.reviveProgress = Math.max(0, this.player.reviveProgress - dt * 0.8);
+        }
+      }
+
+      // 2. Check client-to-client revives on host
+      for (const [targetId, downedRemote] of this.remotePlayers) {
+        if (!downedRemote.isDowned) continue;
+        let reviverId = '';
+        for (const [otherId, aliveRemote] of this.remotePlayers) {
+          if (otherId !== targetId && !aliveRemote.isDowned && downedRemote.position.distanceTo(aliveRemote.position) <= 3.5) {
+            reviverId = otherId;
+            break;
+          }
+        }
+        if (reviverId) {
+          downedRemote.reviveProgress = Math.min(1.0, downedRemote.reviveProgress + dt / 3.0);
+          if (downedRemote.reviveProgress >= 1.0) {
+            downedRemote.isDowned = false;
+            downedRemote.reviveProgress = 0;
+            downedRemote.hp = Math.round(downedRemote.maxHp * 0.45);
+            downedRemote.redrawOverhead();
+            this.net.send({ type: 'REVIVE_ACTION', targetId, reviverId });
+            this.pendingNetworkEvents.push({ type: 'revive', targetId, reviverId });
+            const st = this.allPlayerStats.get(reviverId);
+            if (st) st.revives++;
+          }
         }
       }
     }
@@ -1503,6 +1660,7 @@ class Game {
         xp: this.player.xp,
         xpToNextLevel: this.player.xpToNextLevel,
         isDowned: this.player.isDowned,
+        reviveProgress: this.player.reviveProgress,
         charType: this.player.charType,
         kills: this.player.kills,
         damageDealt: Math.round(this.player.totalDamageDealt),
@@ -1529,6 +1687,7 @@ class Game {
           xp: remote.xp,
           xpToNextLevel: remote.xpToNextLevel,
           isDowned: remote.isDowned,
+          reviveProgress: remote.reviveProgress,
           charType: remote.charType,
           kills: this.allPlayerStats.get(id)?.kills || 0,
           damageDealt: this.allPlayerStats.get(id)?.damageDealt || 0,
@@ -1610,8 +1769,17 @@ class Game {
       };
 
       let isReviving = false;
-      for (const t of this.partnerReviveTimers.values()) {
-        if (t > 0) { isReviving = true; break; }
+      let revivingTargetId: string | undefined = undefined;
+      let highestReviveProgress = 0;
+      for (const [tId, t] of this.partnerReviveTimers) {
+        if (t > 0) {
+          isReviving = true;
+          if (t > highestReviveProgress) {
+            highestReviveProgress = t;
+            const isTargetHost = tId === 'p1' || tId === 'host';
+            revivingTargetId = isTargetHost ? 'p1' : tId;
+          }
+        }
       }
 
       const sync: ClientSyncMessage = {
@@ -1629,6 +1797,7 @@ class Game {
           xp: this.player.xp,
           xpToNextLevel: this.player.xpToNextLevel,
           isDowned: this.player.isDowned,
+          reviveProgress: this.player.reviveProgress,
           charType: this.player.charType,
           kills: this.player.kills,
           damageDealt: Math.round(this.player.totalDamageDealt),
@@ -1639,7 +1808,9 @@ class Game {
         damageDealt: [...this.pendingClientHits],
         collectedGemIds: [...this.pendingClientCollectedGems],
         shots: this.pendingLocalShots.splice(0),
-        isRevivingPartner: isReviving
+        isRevivingPartner: isReviving,
+        revivingTargetId,
+        reviveProgress: highestReviveProgress
       };
       this.pendingClientHits = [];
       this.pendingClientCollectedGems = [];

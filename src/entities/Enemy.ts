@@ -357,6 +357,7 @@ export class Enemy {
   }
 
   public destroy(scene: THREE.Scene) {
+    this.isAlive = false;
     scene.remove(this.mesh);
     this.spriteMaterial.dispose();
   }
