@@ -2039,7 +2039,7 @@ export class HUD {
           title: 'Новое: Священные Подковы',
           icon: '🧲',
           levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Призывает защитный вихрь из золотых подков вокруг вас',
+          description: 'Призывает защитный вихрь из золотых подков вокруг вас (урон, радиус и количество растут с уровнем)',
           apply: () => player.weapons.push(new OrbitingBarrierWeapon())
         });
       }

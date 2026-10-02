@@ -241,7 +241,7 @@ export type DualRevolversWeapon = KukriWeapon;
 export class OrbitingBarrierWeapon extends Weapon {
   private orbCount: number = 2;
   private orbs: Projectile[] = [];
-  private orbitRadius: number = 2.4;
+  private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
 
   constructor() {
@@ -267,7 +267,7 @@ export class OrbitingBarrierWeapon extends Weapon {
           damage: this.damage,
           pierce: 99999,
           lifetime: 999999,
-          radius: 0.32,
+          radius: Number((0.32 + (this.level - 1) * 0.012).toFixed(3)),
           color: 0xfbbf24,
           isOrbiting: true,
           orbitRadius: this.orbitRadius,
@@ -283,6 +283,8 @@ export class OrbitingBarrierWeapon extends Weapon {
       orb.orbitRadius = this.orbitRadius;
       orb.orbitSpeed = this.orbitSpeed;
       orb.damage = this.damage;
+      orb.radius = Number((0.32 + (this.level - 1) * 0.012).toFixed(3));
+      orb.mesh.scale.setScalar(orb.radius);
       if (Math.abs(orb.orbitSpeed) > 0) {
         orb.update(dt, playerPos);
       }
@@ -293,8 +295,8 @@ export class OrbitingBarrierWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 4;
-    this.orbitRadius = Number((this.orbitRadius + 0.08).toFixed(2));
-    this.orbitSpeed = Number((this.orbitSpeed + 0.15).toFixed(2));
+    this.orbitRadius = Number((this.orbitRadius + 0.35).toFixed(2));
+    this.orbitSpeed = Number((this.orbitSpeed + 0.12).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) {
       this.orbCount++;
     }
@@ -303,7 +305,7 @@ export class OrbitingBarrierWeapon extends Weapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+4 к урону', '+Скорость и радиус'];
+    const perks: string[] = ['+4 к урону', '+0.35м дальность орбиты'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 подкова (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
