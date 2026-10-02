@@ -279,16 +279,16 @@ export class GameCore {
 
   // Enemy configuration table
   private enemyConfigs: Record<EnemyType, SimEnemyConfig> = {
-    coyote: { type: 'coyote', name: 'Кровожадный койот', hp: 24, speed: 5.4, damage: 8, width: 2.1, height: 1.6, gemType: 'blue' },
-    crawler: { type: 'crawler', name: 'Ползучая тварь', hp: 20, speed: 6.0, damage: 10, width: 2.0, height: 1.2, gemType: 'blue' },
-    cactus: { type: 'cactus', name: 'Кактусовый зомби', hp: 44, speed: 3.5, damage: 14, width: 1.9, height: 2.3, gemType: 'blue' },
-    skeleton: { type: 'skeleton', name: 'Бандит-скелет', hp: 55, speed: 3.8, damage: 16, width: 1.9, height: 2.4, gemType: 'green' },
-    ghost: { type: 'ghost', name: 'Призрак ковбоя', hp: 70, speed: 4.0, damage: 18, width: 1.7, height: 2.5, gemType: 'green' },
-    scorpion: { type: 'scorpion', name: 'Скорпион-ползун', hp: 95, speed: 3.2, damage: 22, width: 2.3, height: 2.1, gemType: 'green' },
-    brute: { type: 'brute', name: 'Пустынный громила', hp: 160, speed: 2.6, damage: 32, width: 2.8, height: 3.2, gemType: 'red' },
-    bison: { type: 'bison', name: 'Бешеный бизон', hp: 260, speed: 4.4, damage: 38, width: 3.6, height: 3.0, gemType: 'red' },
-    boss: { type: 'boss', name: 'Повелитель Дюн', hp: 1200, speed: 2.8, damage: 45, width: 4.2, height: 4.5, gemType: 'red', isBoss: true },
-    hydra: { type: 'hydra', name: 'Трехглавая гидра', hp: 3500, speed: 2.3, damage: 65, width: 8.0, height: 8.0, gemType: 'red', isBoss: true }
+    coyote: { type: 'coyote', name: 'Кровожадный койот', hp: 48, speed: 5.4, damage: 16, width: 2.1, height: 1.6, gemType: 'blue' },
+    crawler: { type: 'crawler', name: 'Ползучая тварь', hp: 40, speed: 6.0, damage: 20, width: 2.0, height: 1.2, gemType: 'blue' },
+    cactus: { type: 'cactus', name: 'Кактусовый зомби', hp: 88, speed: 3.5, damage: 28, width: 1.9, height: 2.3, gemType: 'blue' },
+    skeleton: { type: 'skeleton', name: 'Бандит-скелет', hp: 110, speed: 3.8, damage: 32, width: 1.9, height: 2.4, gemType: 'green' },
+    ghost: { type: 'ghost', name: 'Призрак ковбоя', hp: 140, speed: 4.0, damage: 36, width: 1.7, height: 2.5, gemType: 'green' },
+    scorpion: { type: 'scorpion', name: 'Скорпион-ползун', hp: 190, speed: 3.2, damage: 44, width: 2.3, height: 2.1, gemType: 'green' },
+    brute: { type: 'brute', name: 'Пустынный громила', hp: 320, speed: 2.6, damage: 64, width: 2.8, height: 3.2, gemType: 'red' },
+    bison: { type: 'bison', name: 'Бешеный бизон', hp: 520, speed: 4.4, damage: 76, width: 3.6, height: 3.0, gemType: 'red' },
+    boss: { type: 'boss', name: 'Повелитель Дюн', hp: 2400, speed: 2.8, damage: 90, width: 4.2, height: 4.5, gemType: 'red', isBoss: true },
+    hydra: { type: 'hydra', name: 'Трехглавая гидра', hp: 7000, speed: 2.3, damage: 130, width: 8.0, height: 8.0, gemType: 'red', isBoss: true }
   };
 
   constructor(config: GameCoreConfig = {}) {
@@ -463,7 +463,7 @@ export class GameCore {
           (projData) => {
             this.projectiles.push(new SimProjectileInternal(projData));
           },
-          (enemyId, damage, sourcePos, knockbackDist = 0.4) => {
+          (enemyId, damage, sourcePos, knockbackDist = 0.2) => {
             this.damageEnemy(enemyId, damage, sourcePos, player.id, knockbackDist);
           },
           (duration) => {
@@ -768,7 +768,7 @@ export class GameCore {
 
         if (distSq <= totalRad * totalRad) {
           proj.hitEnemies.add(enemy.id);
-          this.damageEnemy(enemy.id, proj.damage, proj.position, proj.ownerId, 0.4);
+          this.damageEnemy(enemy.id, proj.damage, proj.position, proj.ownerId, 0.2);
 
           if (!proj.isOrbiting && !proj.isChakram) {
             proj.pierce--;
@@ -788,7 +788,7 @@ export class GameCore {
     damage: number,
     sourcePos?: SimVec3,
     attackerId: string = 'host',
-    knockbackStrength: number = 0.4
+    knockbackStrength: number = 0.2
   ) {
     const enemy = this.enemies.find(e => e.id === enemyId);
     if (!enemy || !enemy.isAlive) return;

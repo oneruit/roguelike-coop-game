@@ -289,7 +289,7 @@ export class SimWhirlwindSlashWeapon extends SimWeapon {
         const dx = enemy.position.x - player.position.x;
         const dz = enemy.position.z - player.position.z;
         if (dx * dx + dz * dz <= radSq) {
-          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.4);
+          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.2);
           hitCount++;
         }
       }
@@ -348,7 +348,7 @@ export class SimGreatswordWeapon extends SimWeapon {
         const dx = enemy.position.x - player.position.x;
         const dz = enemy.position.z - player.position.z;
         if (dx * dx + dz * dz <= radSq) {
-          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.7);
+          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.35);
           hitCount++;
         }
       }
@@ -407,7 +407,7 @@ export class SimFlailWeapon extends SimWeapon {
         const dx = enemy.position.x - player.position.x;
         const dz = enemy.position.z - player.position.z;
         if (dx * dx + dz * dz <= radSq) {
-          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.6);
+          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.3);
           hitCount++;
         }
       }
@@ -619,7 +619,7 @@ export class SimHolyAuraWeapon extends SimWeapon {
         const dx = enemy.position.x - player.position.x;
         const dz = enemy.position.z - player.position.z;
         if (dx * dx + dz * dz <= radSq) {
-          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.1);
+          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.05);
         }
       }
     }
@@ -670,7 +670,7 @@ export class SimKatanaSlashWeapon extends SimWeapon {
         const dx = enemy.position.x - player.position.x;
         const dz = enemy.position.z - player.position.z;
         if (dx * dx + dz * dz <= radSq) {
-          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.5);
+          onAreaDamage(enemy.id, this.damage * player.damageMultiplier, player.position, 0.25);
           hitCount++;
         }
       }

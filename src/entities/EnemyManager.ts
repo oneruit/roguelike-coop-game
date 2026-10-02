@@ -33,9 +33,9 @@ export class EnemyManager {
       type: 'coyote',
       name: 'Кровожадный койот',
       texturePrefix: '/textures/monster_coyote',
-      hp: 24,
+      hp: 48,
       speed: 5.4,
-      damage: 8,
+      damage: 16,
       width: 2.1,
       height: 1.6,
       gemType: 'blue'
@@ -44,9 +44,9 @@ export class EnemyManager {
       type: 'crawler',
       name: 'Ползучая тварь',
       texturePrefix: '/textures/monster_crawler',
-      hp: 20,
+      hp: 40,
       speed: 6.0,
-      damage: 10,
+      damage: 20,
       width: 2.0,
       height: 1.2,
       gemType: 'blue'
@@ -55,9 +55,9 @@ export class EnemyManager {
       type: 'cactus',
       name: 'Кактусовый зомби',
       texturePrefix: '/textures/monster_cactus',
-      hp: 44,
+      hp: 88,
       speed: 3.5,
-      damage: 14,
+      damage: 28,
       width: 1.9,
       height: 2.3,
       gemType: 'blue'
@@ -66,9 +66,9 @@ export class EnemyManager {
       type: 'skeleton',
       name: 'Бандит-скелет',
       texturePrefix: '/textures/monster_skeleton',
-      hp: 55,
+      hp: 110,
       speed: 3.8,
-      damage: 16,
+      damage: 32,
       width: 1.9,
       height: 2.4,
       gemType: 'green'
@@ -77,9 +77,9 @@ export class EnemyManager {
       type: 'ghost',
       name: 'Призрак ковбоя',
       texturePrefix: '/textures/monster_ghost',
-      hp: 70,
+      hp: 140,
       speed: 4.0,
-      damage: 18,
+      damage: 36,
       width: 1.7,
       height: 2.5,
       gemType: 'green'
@@ -88,9 +88,9 @@ export class EnemyManager {
       type: 'scorpion',
       name: 'Скорпион-ползун',
       texturePrefix: '/textures/monster_scorpion',
-      hp: 95,
+      hp: 190,
       speed: 3.2,
-      damage: 22,
+      damage: 44,
       width: 2.3,
       height: 2.1,
       gemType: 'green'
@@ -99,9 +99,9 @@ export class EnemyManager {
       type: 'brute',
       name: 'Пустынный громила',
       texturePrefix: '/textures/monster_brute',
-      hp: 175,
+      hp: 350,
       speed: 2.6,
-      damage: 28,
+      damage: 56,
       width: 2.5,
       height: 2.7,
       gemType: 'green'
@@ -110,9 +110,9 @@ export class EnemyManager {
       type: 'bison',
       name: 'Белый бизон-убийца',
       texturePrefix: '/textures/monster_bison',
-      hp: 360,
+      hp: 720,
       speed: 4.8,
-      damage: 35,
+      damage: 70,
       width: 3.4,
       height: 1.9,
       gemType: 'red'
@@ -121,9 +121,9 @@ export class EnemyManager {
       type: 'boss',
       name: 'Кровавый демон',
       texturePrefix: '/textures/boss_demon',
-      hp: 3800,
+      hp: 7600,
       speed: 2.4,
-      damage: 45,
+      damage: 90,
       width: 7.8,
       height: 7.8,
       gemType: 'red',
@@ -133,9 +133,9 @@ export class EnemyManager {
       type: 'hydra',
       name: 'Древняя трехглавая гидра',
       texturePrefix: '/textures/boss_hydra',
-      hp: 14000,
+      hp: 28000,
       speed: 2.3,
-      damage: 65,
+      damage: 130,
       width: 10.0,
       height: 10.0,
       gemType: 'red',
@@ -354,22 +354,22 @@ export class EnemyManager {
       playerPos.z + Math.sin(angle) * distance
     );
 
-    const baseHp = this.configs.boss.hp; // 3800
-    const baseDmg = this.configs.boss.damage; // 45
+    const baseHp = this.configs.boss.hp; // 7600
+    const baseDmg = this.configs.boss.damage; // 90
     const baseSpd = this.configs.boss.speed; // 2.4
 
-    // Tier 1 (5m): 3,800 HP, 45 dmg (Кровавый демон)
-    // Tier 2 (10m): 14,000 HP, 65 dmg (Древняя трехглавая гидра)
-    // Tier 3 (15m): ~25,000 HP, 105 dmg
-    // Tier 4 (20m): ~42,000 HP, 145 dmg
-    // Tier 5 (25m): ~65,000 HP, 190 dmg
+    // Tier 1 (5m): 7,600 HP, 90 dmg (Кровавый демон)
+    // Tier 2 (10m): 28,000 HP, 130 dmg (Древняя трехглавая гидра)
+    // Tier 3 (15m): ~50,000 HP, 210 dmg
+    // Tier 4 (20m): ~84,000 HP, 290 dmg
+    // Tier 5 (25m): ~130,000 HP, 380 dmg
     let bossConfig: EnemyConfig;
     if (tier === 2) {
       bossConfig = {
         ...this.configs.hydra,
         name: 'Древняя трехглавая гидра',
-        hp: 14000,
-        damage: 65,
+        hp: this.configs.hydra.hp,
+        damage: this.configs.hydra.damage,
         speed: 2.3
       };
     } else {

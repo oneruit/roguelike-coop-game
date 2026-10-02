@@ -345,7 +345,7 @@ export class Enemy {
       kbDir.y = 0;
       if (kbDir.lengthSq() > 0) {
         kbDir.normalize();
-        this.knockbackVelocity.addScaledVector(kbDir, 7.5);
+        this.knockbackVelocity.addScaledVector(kbDir, 3.75);
       }
     }
 
