@@ -542,7 +542,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
  */
 export class SimOrbitingBarrierWeapon extends SimWeapon {
   private orbCount: number = 2;
-  private orbitRadius: number = 2.4;
+  private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
   private activeOrbIds: string[] = [];
 
@@ -572,7 +572,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
           damage: this.damage * player.damageMultiplier,
           pierce: 99999,
           lifetime: 999999,
-          radius: 0.32,
+          radius: Number((0.32 + (this.level - 1) * 0.012).toFixed(3)),
           color: 0xfbbf24,
           isOrbiting: true,
           orbitRadius: this.orbitRadius,
@@ -589,15 +589,16 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 4;
-    this.orbitRadius = Number((this.orbitRadius + 0.08).toFixed(2));
-    this.orbitSpeed = Number((this.orbitSpeed + 0.15).toFixed(2));
+    this.orbitRadius = Number((this.orbitRadius + 0.35).toFixed(2));
+    this.orbitSpeed = Number((this.orbitSpeed + 0.12).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.orbCount++;
+    this.activeOrbIds = [];
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+4 к урону', '+Скорость и радиус'];
+    const perks: string[] = ['+4 к урону', '+0.35м дальность орбиты'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 подкова (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
