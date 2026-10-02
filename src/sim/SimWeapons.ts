@@ -99,7 +99,7 @@ export class SimBowWeapon extends SimWeapon {
   private pierce: number = 2;
 
   constructor() {
-    super('bow', 'Охотничий Лук', '🏹', 1.0, 24);
+    super('bow', 'Охотничий Лук', '🏹', 1.0, 36);
   }
 
   public update(
@@ -151,7 +151,7 @@ export class SimBowWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 8;
+    this.damage += 12;
     if ([4, 8, 12, 16, 20].includes(this.level)) this.projectileCount++;
     if ([3, 6, 9, 13, 17].includes(this.level)) this.pierce++;
     if ([2, 5, 7, 10, 14, 18].includes(this.level)) {
@@ -162,7 +162,7 @@ export class SimBowWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+8 к урону'];
+    const perks: string[] = ['+12 к урону'];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) perks.push('-7% перезарядки');
@@ -182,7 +182,7 @@ export class SimKukriWeapon extends SimWeapon {
   private pierce: number = 1;
 
   constructor() {
-    super('kukri', 'Нож Кукри', '🔪', 0.65, 14);
+    super('kukri', 'Нож Кукри', '🔪', 0.65, 21);
   }
 
   public update(
@@ -246,7 +246,7 @@ export class SimKukriWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 4;
+    this.damage += 6;
     if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(this.level)) this.burstCount++;
     if ([10, 20].includes(this.level)) this.pierce++;
     if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(this.level)) {
@@ -257,7 +257,7 @@ export class SimKukriWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+4 к урону'];
+    const perks: string[] = ['+6 к урону'];
     if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
     if ([10, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) perks.push('-6% перезарядки');
@@ -275,7 +275,7 @@ export class SimWhirlwindSlashWeapon extends SimWeapon {
   private slashRadius: number = 3.6;
 
   constructor() {
-    super('whirlwind_slash', 'Багровый Вихрь', '🌪️', 0.48, 30);
+    super('whirlwind_slash', 'Багровый Вихрь', '🌪️', 0.48, 45);
   }
 
   public update(
@@ -317,13 +317,13 @@ export class SimWhirlwindSlashWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.slashRadius = Number((this.slashRadius + 0.22).toFixed(2));
-    this.damage += 11;
+    this.damage += 16;
     this.cooldown = Math.max(0.22, Number((this.cooldown * 0.95).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.22м радиус взмаха, +11 урона, -5% перезарядки`;
+    return `+0.22м радиус взмаха, +16 урона, -5% перезарядки`;
   }
 }
 
@@ -334,7 +334,7 @@ export class SimGreatswordWeapon extends SimWeapon {
   private slashRadius: number = 4.2;
 
   constructor() {
-    super('greatsword', 'Двуручный Меч', '⚔️', 0.68, 48);
+    super('greatsword', 'Двуручный Меч', '⚔️', 0.68, 72);
   }
 
   public update(
@@ -376,13 +376,13 @@ export class SimGreatswordWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.slashRadius = Number((this.slashRadius + 0.28).toFixed(2));
-    this.damage += 16;
+    this.damage += 24;
     this.cooldown = Math.max(0.28, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.28м радиус взмаха, +16 урона, -4% перезарядки`;
+    return `+0.28м радиус взмаха, +24 урона, -4% перезарядки`;
   }
 }
 
@@ -393,7 +393,7 @@ export class SimFlailWeapon extends SimWeapon {
   private flailRadius: number = 3.9;
 
   constructor() {
-    super('flail', 'Боевой Цеп', '⛓️', 0.52, 42);
+    super('flail', 'Боевой Цеп', '⛓️', 0.52, 63);
   }
 
   public update(
@@ -435,13 +435,13 @@ export class SimFlailWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.flailRadius = Number((this.flailRadius + 0.26).toFixed(2));
-    this.damage += 14;
+    this.damage += 21;
     this.cooldown = Math.max(0.25, Number((this.cooldown * 0.95).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.26м радиус удара, +14 урона, -5% перезарядки`;
+    return `+0.26м радиус удара, +21 урона, -5% перезарядки`;
   }
 }
 
@@ -454,7 +454,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
   private pierceCount: number = 2;
 
   constructor() {
-    super('astral_staff', 'Звёздный Посох', '✨', 0.60, 23);
+    super('astral_staff', 'Звёздный Посох', '✨', 0.60, 34.5);
   }
 
   public update(
@@ -518,7 +518,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage = Number((this.damage + 8.18).toFixed(2));
+    this.damage = Number((this.damage + 12.27).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.projectileCount++;
     if ([4, 8, 12, 16, 20].includes(this.level)) this.pierceCount++;
     if ([2, 5, 7, 10, 14, 17].includes(this.level)) {
@@ -529,7 +529,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+8.2 к урону'];
+    const perks: string[] = ['+12.3 к урону'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 снаряд веером (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierceCount + 1})`);
     if ([2, 5, 7, 10, 14, 17].includes(nextLvl)) perks.push('-6% перезарядки');
@@ -547,7 +547,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   private activeOrbIds: string[] = [];
 
   constructor() {
-    super('orbiting_barrier', 'Священные Подковы', '🧲', 0, 8);
+    super('orbiting_barrier', 'Священные Подковы', '🧲', 0, 12);
   }
 
   public update(
@@ -588,7 +588,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage = Number((this.damage + 3.64).toFixed(2));
+    this.damage = Number((this.damage + 5.46).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.35).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.12).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.orbCount++;
@@ -598,7 +598,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+3.6 к урону', '+0.35м дальность орбиты'];
+    const perks: string[] = ['+5.5 к урону', '+0.35м дальность орбиты'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 подкова (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
@@ -611,7 +611,7 @@ export class SimHolyAuraWeapon extends SimWeapon {
   private radius: number = 3.5;
 
   constructor() {
-    super('holy_aura', 'Огненный Периметр', '🔥', 0.55, 10);
+    super('holy_aura', 'Огненный Периметр', '🔥', 0.55, 15);
   }
 
   public update(
@@ -640,13 +640,13 @@ export class SimHolyAuraWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.radius = Number((this.radius + 0.30).toFixed(2));
-    this.damage += 5;
+    this.damage += 7;
     this.cooldown = Math.max(0.25, Number((this.cooldown * 0.95).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.30м радиус, +5 урона, -5% перезарядки`;
+    return `+0.30м радиус, +7 урона, -5% перезарядки`;
   }
 }
 
@@ -657,7 +657,7 @@ export class SimKatanaSlashWeapon extends SimWeapon {
   private slashRadius: number = 3.8;
 
   constructor() {
-    super('katana_slash', 'Рассекающий Клинок', '🗡️', 0.72, 36);
+    super('katana_slash', 'Рассекающий Клинок', '🗡️', 0.72, 54);
   }
 
   public update(
@@ -699,13 +699,13 @@ export class SimKatanaSlashWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.slashRadius = Number((this.slashRadius + 0.25).toFixed(2));
-    this.damage += 12;
+    this.damage += 18;
     this.cooldown = Math.max(0.30, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.25м радиус взмаха, +12 урона, -4% перезарядки`;
+    return `+0.25м радиус взмаха, +18 урона, -4% перезарядки`;
   }
 }
 
@@ -719,7 +719,7 @@ export class SimChakramWeapon extends SimWeapon {
   private alternateSign: number = 1;
 
   constructor() {
-    super('chakram', 'Танцующий Чакрам', '🪃', 0.68, 36);
+    super('chakram', 'Танцующий Чакрам', '🪃', 0.68, 54);
   }
 
   public update(
@@ -795,7 +795,7 @@ export class SimChakramWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 8;
+    this.damage += 12;
     if ([4, 8, 12, 16, 20].includes(this.level)) {
       this.chakramCount++;
     }
@@ -810,7 +810,7 @@ export class SimChakramWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+8 к урону'];
+    const perks: string[] = ['+12 к урону'];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 возвращающийся чакрам (всего ${this.chakramCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-6% перезарядки');
     if ([2, 5, 10, 15].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
