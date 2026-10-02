@@ -6,7 +6,7 @@ import {
   FlailWeapon,
   AstralStaffWeapon,
   ChakramWeapon,
-  HeavyColtWeapon,
+  BowWeapon,
   DualRevolversWeapon,
   OrbitingBarrierWeapon,
   HolyAuraWeapon,
@@ -658,8 +658,8 @@ export class Player {
   }
 
   public giveAllWeapons(scene: THREE.Scene) {
-    const hasColt = this.weapons.some(w => w.id === 'heavy_colt');
-    if (!hasColt && this.weapons.length < 5) this.weapons.push(new HeavyColtWeapon());
+    const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
+    if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon());
 
     const hasRevolvers = this.weapons.some(w => w.id === 'dual_revolvers');
     if (!hasRevolvers && this.weapons.length < 5) this.weapons.push(new DualRevolversWeapon());

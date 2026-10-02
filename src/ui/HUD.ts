@@ -1,5 +1,5 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, HeavyColtWeapon, DualRevolversWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, DualRevolversWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon } from '../combat/Weapon';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
@@ -2019,15 +2019,15 @@ export class HUD {
 
     // 2. New western weapons if player has less than 5 weapons
     if (player.weapons.length < 5) {
-      const hasColt = player.weapons.some(w => w.id === 'heavy_colt');
-      if (!hasColt) {
+      const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
+      if (!hasBow) {
         pool.push({
-          id: 'new_heavy_colt',
-          title: 'Новое: Тяжелый Кольт',
-          icon: '🔫',
+          id: 'new_bow',
+          title: 'Новое: Охотничий Лук',
+          icon: '🏹',
           levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Тяжелые крупнокалиберные пули с мощным пробитием и отбросом',
-          apply: () => player.weapons.push(new HeavyColtWeapon())
+          description: 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов',
+          apply: () => player.weapons.push(new BowWeapon())
         });
       }
 

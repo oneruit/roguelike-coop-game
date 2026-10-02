@@ -28,6 +28,7 @@ export interface SimProjectileData {
   orbitRadius?: number;
   orbitSpeed?: number;
   orbitAngle?: number;
+  isArrow?: boolean;
 }
 
 export interface SimEnemyRef {
@@ -89,15 +90,15 @@ export abstract class SimWeapon {
 }
 
 /**
- * Heavy Colt (Тяжелый Кольт)
+ * Hunting Bow (Охотничий Лук)
  */
-export class SimHeavyColtWeapon extends SimWeapon {
+export class SimBowWeapon extends SimWeapon {
   private projectileCount: number = 1;
-  private projectileSpeed: number = 22;
+  private projectileSpeed: number = 24;
   private pierce: number = 2;
 
   constructor() {
-    super('heavy_colt', 'Тяжелый Кольт', '🔫', 1.0, 24);
+    super('bow', 'Охотничий Лук', '🏹', 1.0, 24);
   }
 
   public update(
@@ -136,7 +137,8 @@ export class SimHeavyColtWeapon extends SimWeapon {
           pierce: this.pierce,
           lifetime: 2.2,
           radius: 0.32,
-          color: 0xf59e0b
+          color: 0xf59e0b,
+          isArrow: true
         };
 
         spawnProjectile(proj);
@@ -160,12 +162,15 @@ export class SimHeavyColtWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+8 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 выстрел (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) perks.push('-7% перезарядки');
     return perks.join(', ');
   }
 }
+
+export const SimHeavyColtWeapon = SimBowWeapon;
+export type SimHeavyColtWeapon = SimBowWeapon;
 
 /**
  * Dual Revolvers (Парные Револьверы)
@@ -831,8 +836,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
  */
 export function createSimWeaponById(id: string): SimWeapon | null {
   switch (id) {
+    case 'bow':
     case 'heavy_colt':
-      return new SimHeavyColtWeapon();
+      return new SimBowWeapon();
     case 'dual_revolvers':
       return new SimDualRevolversWeapon();
     case 'whirlwind_slash':

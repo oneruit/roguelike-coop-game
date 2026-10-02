@@ -784,6 +784,7 @@ class Game {
       color: shot.col,
       isMagic: shot.mag,
       isOrbiting: shot.orb,
+      isArrow: shot.arr,
       orbitRadius: shot.orad,
       orbitSpeed: shot.ospd,
       isCosmetic: true,
@@ -791,7 +792,11 @@ class Game {
     });
     this.spawnProjectile(proj);
     if (!shot.orb) {
-      SoundManager.playShoot();
+      if (shot.arr) {
+        SoundManager.playBowShoot();
+      } else {
+        SoundManager.playShoot();
+      }
     }
   }
 
@@ -815,6 +820,7 @@ class Game {
         orb: proj.isOrbiting,
         orad: proj.orbitRadius,
         ospd: proj.orbitSpeed,
+        arr: proj.isArrow,
         ownerId: myId
       });
     }
