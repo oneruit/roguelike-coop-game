@@ -163,19 +163,19 @@ export class EnemyManager {
    */
   public getHpMultiplier(): number {
     const minute = this.gameTime / 60;
-    // Smooth progressive scaling: ~1.28x at 1m, ~2.5x at 4m, ~3.6x at 6m, ~8.5x at 12m, ~25x at 25m, ~35x at 30m
-    return 1 + minute * 0.28 + Math.pow(minute / 4.5, 1.7) * 0.4;
+    // Progressive scaling scaled up 1.5x across 0 to 30 min
+    return 1 + (minute * 0.28 + Math.pow(minute / 4.5, 1.7) * 0.4) * 1.5;
   }
 
   public getDamageMultiplier(): number {
     const minute = this.gameTime / 60;
-    // Damage scaling: ~1.12x at 1m, ~1.75x at 5m, ~2.7x at 10m, ~4.5x at 18m, ~7.5x at 28m
-    return 1 + minute * 0.12 + Math.pow(minute / 8, 1.4) * 0.25;
+    // Damage scaling scaled up 1.5x across 0 to 30 min
+    return 1 + (minute * 0.12 + Math.pow(minute / 8, 1.4) * 0.25) * 1.5;
   }
 
   public getSpeedMultiplier(): number {
     const minute = this.gameTime / 60;
-    return Math.min(1.35, 1 + minute * 0.012);
+    return Math.min(1.45, 1 + (minute * 0.012) * 1.5);
   }
 
   public update(
@@ -325,8 +325,8 @@ export class EnemyManager {
               );
               this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
             }
-            // Boss drops 2 guaranteed gold passive buff crystals
-            for (let p = 0; p < 2; p++) {
+            // Boss drops gold passive crystal (40% chance, reduced 5x from 2 guaranteed)
+            if (Math.random() < 0.40) {
               const pOffset = new THREE.Vector3(
                 (Math.random() - 0.5) * 2.0,
                 0,
@@ -343,9 +343,9 @@ export class EnemyManager {
         } else {
           this.dropManager.spawnGem(enemy.position, enemy.gemType);
 
-          // Random chance for passive buff drop together with XP: 15% for tough mobs, 5% for regular
+          // Random chance for passive buff drop reduced 5x: 3% for tough mobs (was 15%), 1% for regular (was 5%)
           const isTough = enemy.type === 'bison' || enemy.type === 'brute' || enemy.type === 'scorpion';
-          const passiveChance = isTough ? 0.15 : 0.05;
+          const passiveChance = isTough ? 0.03 : 0.01;
           if (Math.random() < passiveChance) {
             const pOffset = new THREE.Vector3(
               (Math.random() - 0.5) * 1.0,
@@ -394,9 +394,9 @@ export class EnemyManager {
         speed: 2.3
       };
     } else {
-      const tierHp = Math.round(baseHp * (1 + (tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0));
-      const tierDmg = Math.round(baseDmg * (1 + (tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2));
-      const tierSpd = Number((baseSpd + (tier - 1) * 0.18).toFixed(2));
+      const tierHp = Math.round(baseHp * (1 + ((tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0) * 1.5));
+      const tierDmg = Math.round(baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5));
+      const tierSpd = Number((baseSpd + (tier - 1) * 0.18 * 1.5).toFixed(2));
 
       bossConfig = {
         ...this.configs.boss,
