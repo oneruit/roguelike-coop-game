@@ -7,7 +7,7 @@ import {
   AstralStaffWeapon,
   ChakramWeapon,
   BowWeapon,
-  DualRevolversWeapon,
+  KukriWeapon,
   OrbitingBarrierWeapon,
   HolyAuraWeapon,
   KatanaSlashWeapon
@@ -661,8 +661,8 @@ export class Player {
     const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
     if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon());
 
-    const hasRevolvers = this.weapons.some(w => w.id === 'dual_revolvers');
-    if (!hasRevolvers && this.weapons.length < 5) this.weapons.push(new DualRevolversWeapon());
+    const hasKukri = this.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
+    if (!hasKukri && this.weapons.length < 5) this.weapons.push(new KukriWeapon());
 
     const hasOrbs = this.weapons.some(w => w.id === 'orbiting_barrier');
     if (!hasOrbs && this.weapons.length < 5) this.weapons.push(new OrbitingBarrierWeapon());

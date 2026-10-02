@@ -1,5 +1,5 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, BowWeapon, DualRevolversWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon } from '../combat/Weapon';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
@@ -2031,15 +2031,15 @@ export class HUD {
         });
       }
 
-      const hasRevolvers = player.weapons.some(w => w.id === 'dual_revolvers');
-      if (!hasRevolvers) {
+      const hasKukri = player.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
+      if (!hasKukri) {
         pool.push({
-          id: 'new_dual_revolvers',
-          title: 'Новое: Парные Револьверы',
-          icon: '⚔️',
+          id: 'new_kukri',
+          title: 'Новое: Нож Кукри',
+          icon: '🔪',
           levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Беглый скорострельный град пуль по ближайшим врагам',
-          apply: () => player.weapons.push(new DualRevolversWeapon())
+          description: 'Стремительные броски изогнутых клинков кукри в ближайших врагов',
+          apply: () => player.weapons.push(new KukriWeapon())
         });
       }
 
