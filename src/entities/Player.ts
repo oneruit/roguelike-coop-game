@@ -17,6 +17,7 @@ import { Enemy } from './Enemy';
 import { TextureManager, SpriteDirection, AnimatedCharacterTextures } from '../core/TextureManager';
 import { SoundManager } from '../core/SoundManager';
 import { ObstacleManager } from '../world/ObstacleManager';
+import { PassiveBuffId } from '../drops/PassiveBuffs';
 
 export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram';
 export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
@@ -66,6 +67,12 @@ export class Player {
   public passiveHpRegen: number = 0;
   public passiveDamageReduction: number = 0;
   public sheriffStarCount: number = 0;
+  public spursCount: number = 0;
+  public flaskCount: number = 0;
+  public lassoCount: number = 0;
+  public amuletCount: number = 0;
+  public vestCount: number = 0;
+  public watchCount: number = 0;
 
   // Active Shrine Buffs
   public activeBuffs: Map<BuffType, ActiveBuff> = new Map();
@@ -360,29 +367,71 @@ export class Player {
     this.damageMultiplier = baseDmg * (1 + dmgBonus);
   }
 
-  public addSheriffStarBonus(multiplier: number = 1.20) {
+  public addSheriffStarBonus(multiplier: number = 1.02) {
     this.passiveDamageMultiplier *= multiplier;
     this.sheriffStarCount++;
     this.recalculateStats();
   }
 
   public addSpeedBonus(multiplier: number = 1.15) {
-    this.passiveSpeedMultiplier *= multiplier;
+    this.passiveSpeedMultiplier = Math.min(2.5, this.passiveSpeedMultiplier * multiplier);
+    this.spursCount++;
     this.recalculateStats();
   }
 
   public addHpRegen(amount: number = 1.5) {
-    this.passiveHpRegen += amount;
+    this.passiveHpRegen = Math.min(30, this.passiveHpRegen + amount);
+    this.amuletCount++;
   }
 
   public addDamageReduction(pct: number = 0.10) {
     this.passiveDamageReduction = Math.min(0.70, this.passiveDamageReduction + pct);
+    this.vestCount++;
   }
 
   public addCooldownReduction(pct: number = 0.08) {
-    this.passiveCooldownMultiplier *= (1 - pct);
+    this.passiveCooldownMultiplier = Math.max(0.30, this.passiveCooldownMultiplier * (1 - pct));
+    this.watchCount++;
     for (const w of this.weapons) {
       (w as any).cooldown = Math.max(0.12, (w as any).cooldown * (1 - pct));
+    }
+  }
+
+  public addFlaskBonus(hpIncrease: number = 30) {
+    this.maxHp += hpIncrease;
+    this.heal(this.maxHp);
+    this.flaskCount++;
+    this.redrawOverhead();
+  }
+
+  public addLassoBonus(multiplier: number = 1.35) {
+    this.pickupRadius = Math.min(25, this.pickupRadius * multiplier);
+    this.lassoCount++;
+  }
+
+  public applyPassiveBuff(id: PassiveBuffId): string {
+    switch (id) {
+      case 'stat_sheriff_star':
+        this.addSheriffStarBonus(1.02);
+        return `⭐ +2% Урон (${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
+      case 'stat_spurs':
+        this.addSpeedBonus(1.15);
+        return `👢 +15% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)})`;
+      case 'stat_flask':
+        this.addFlaskBonus(30);
+        return `🍶 +30 Макс HP & Исцеление (${this.maxHp} HP)`;
+      case 'stat_lasso':
+        this.addLassoBonus(1.35);
+        return `➰ +35% Радиус магнита (${this.pickupRadius.toFixed(1)}м)`;
+      case 'stat_amulet':
+        this.addHpRegen(1.5);
+        return `🧿 +1.5 Реген HP/с (${this.passiveHpRegen.toFixed(1)}/с)`;
+      case 'stat_vest':
+        this.addDamageReduction(0.10);
+        return `🦺 -10% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
+      case 'stat_watch':
+        this.addCooldownReduction(0.08);
+        return `⏱️ +8% Скорость атаки (-${Math.round((1 - this.passiveCooldownMultiplier) * 100)}% кд)`;
     }
   }
 
@@ -724,6 +773,18 @@ export class Player {
     this.kills = 0;
     this.totalDamageDealt = 0;
     this.revivesCount = 0;
+    this.sheriffStarCount = 0;
+    this.spursCount = 0;
+    this.flaskCount = 0;
+    this.lassoCount = 0;
+    this.amuletCount = 0;
+    this.vestCount = 0;
+    this.watchCount = 0;
+    this.passiveDamageMultiplier = 1.0;
+    this.passiveSpeedMultiplier = 1.0;
+    this.passiveCooldownMultiplier = 1.0;
+    this.passiveHpRegen = 0;
+    this.passiveDamageReduction = 0;
     this.spriteMesh.rotation.z = 0;
     this.spriteMaterial.color.setHex(0xffffff);
     this.activeBuffs.clear();

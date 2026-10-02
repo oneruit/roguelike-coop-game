@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { PassiveBuffId, getPassiveBuffId } from './PassiveBuffs';
 
-export type GemType = 'blue' | 'green' | 'red';
+export type GemType = 'blue' | 'green' | 'red' | 'gold';
 
 export class Gem {
   public id: string;
@@ -8,6 +9,7 @@ export class Gem {
   public position: THREE.Vector3;
   public xpValue: number;
   public type: GemType;
+  public passiveBuffId?: PassiveBuffId;
   public isCollected = false;
   public isAttracted = false;
   private velocity = new THREE.Vector3();
@@ -15,16 +17,18 @@ export class Gem {
   private floatTime: number;
 
   // Static shared assets to avoid mid-game allocations and GC
-  private static outerGeometries: Record<GemType, THREE.OctahedronGeometry> = {
+  private static outerGeometries: Record<GemType, THREE.BufferGeometry> = {
     blue: new THREE.OctahedronGeometry(0.28, 0),
     green: new THREE.OctahedronGeometry(0.36, 0),
-    red: new THREE.OctahedronGeometry(0.45, 0)
+    red: new THREE.OctahedronGeometry(0.45, 0),
+    gold: new THREE.OctahedronGeometry(0.42, 0)
   };
 
-  private static innerGeometries: Record<GemType, THREE.OctahedronGeometry> = {
+  private static innerGeometries: Record<GemType, THREE.BufferGeometry> = {
     blue: new THREE.OctahedronGeometry(0.14, 0),
     green: new THREE.OctahedronGeometry(0.18, 0),
-    red: new THREE.OctahedronGeometry(0.225, 0)
+    red: new THREE.OctahedronGeometry(0.225, 0),
+    gold: new THREE.OctahedronGeometry(0.22, 0)
   };
 
   private static materials: Record<GemType, THREE.MeshStandardMaterial> = {
@@ -48,10 +52,23 @@ export class Gem {
       emissiveIntensity: 0.6,
       roughness: 0.2,
       metalness: 0.8
+    }),
+    gold: new THREE.MeshStandardMaterial({
+      color: 0xffd700,
+      emissive: 0xffaa00,
+      emissiveIntensity: 0.85,
+      roughness: 0.1,
+      metalness: 0.9
     })
   };
 
   private static coreMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  private static goldRingGeometry = new THREE.TorusGeometry(0.48, 0.035, 6, 20);
+  private static goldRingMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+
+  static {
+    Gem.goldRingGeometry.rotateX(Math.PI / 2);
+  }
 
   constructor(type: GemType, position: THREE.Vector3, id?: string) {
     this.id = id || Math.random().toString(36).substring(2, 9);
@@ -64,6 +81,9 @@ export class Gem {
       this.xpValue = 12;
     } else if (type === 'red') {
       this.xpValue = 40;
+    } else if (type === 'gold') {
+      this.xpValue = 20;
+      this.passiveBuffId = getPassiveBuffId(this.id);
     } else {
       this.xpValue = 3;
     }
@@ -77,6 +97,12 @@ export class Gem {
     // Inner glowing core
     const coreMesh = new THREE.Mesh(Gem.innerGeometries[type], Gem.coreMaterial);
     this.mesh.add(coreMesh);
+
+    // Golden halo ring for passive crystals
+    if (type === 'gold') {
+      const ringMesh = new THREE.Mesh(Gem.goldRingGeometry, Gem.goldRingMaterial);
+      this.mesh.add(ringMesh);
+    }
 
     this.mesh.position.copy(this.position);
     this.mesh.position.y = this.baseHeight;

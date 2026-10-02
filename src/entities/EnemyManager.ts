@@ -325,6 +325,15 @@ export class EnemyManager {
               );
               this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
             }
+            // Boss drops 2 guaranteed gold passive buff crystals
+            for (let p = 0; p < 2; p++) {
+              const pOffset = new THREE.Vector3(
+                (Math.random() - 0.5) * 2.0,
+                0,
+                (Math.random() - 0.5) * 2.0
+              );
+              this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
+            }
             if (this.onBossDefeat) this.onBossDefeat();
           }
 
@@ -333,6 +342,18 @@ export class EnemyManager {
           this.activeBoss = nextBoss || null;
         } else {
           this.dropManager.spawnGem(enemy.position, enemy.gemType);
+
+          // Random chance for passive buff drop together with XP: 15% for tough mobs, 5% for regular
+          const isTough = enemy.type === 'bison' || enemy.type === 'brute' || enemy.type === 'scorpion';
+          const passiveChance = isTough ? 0.15 : 0.05;
+          if (Math.random() < passiveChance) {
+            const pOffset = new THREE.Vector3(
+              (Math.random() - 0.5) * 1.0,
+              0,
+              (Math.random() - 0.5) * 1.0
+            );
+            this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
+          }
         }
 
         enemy.destroy(this.scene);

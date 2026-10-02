@@ -109,4 +109,33 @@ export class DamageNumberManager {
       }
     }, 1300);
   }
+
+  public spawnPassiveBuff(worldPos: THREE.Vector3, text: string, camera?: THREE.Camera) {
+    if (!DamageNumberManager.enabled) return;
+    const el = document.createElement('div');
+    el.className = 'dmg-number dmg-passive-buff';
+    el.innerText = text;
+
+    if (camera) {
+      const v = worldPos.clone().add(new THREE.Vector3(0, 1.6, 0));
+      v.project(camera);
+      if (v.z < -1 || v.z > 1 || v.x < -1.1 || v.x > 1.1 || v.y < -1.1 || v.y > 1.1) {
+        return;
+      }
+      const x = (v.x * 0.5 + 0.5) * window.innerWidth;
+      const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    } else {
+      el.style.left = '50%';
+      el.style.top = '40%';
+    }
+
+    this.container.appendChild(el);
+    setTimeout(() => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    }, 1350);
+  }
 }

@@ -19,7 +19,7 @@ const ENEMIES: EnemyType[] = [
   'bison',
   'boss'
 ];
-const GEMS: GemType[] = ['blue', 'green', 'red'];
+const GEMS: GemType[] = ['blue', 'green', 'red', 'gold'];
 
 // Fast text encoder/decoder
 const textEncoder = new TextEncoder();

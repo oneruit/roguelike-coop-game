@@ -22,9 +22,10 @@ export class DropManager {
   }
 
   public spawnGem(position: THREE.Vector3, type: GemType = 'blue', id?: string) {
-    // If ground is cluttered, discard oldest uncollected gem
+    // If ground is cluttered, discard oldest common uncollected gem
     if (this.gems.length >= DropManager.MAX_GEMS) {
-      const oldest = this.gems.shift();
+      const nonGoldIdx = this.gems.findIndex(g => g.type !== 'gold');
+      const oldest = nonGoldIdx !== -1 ? this.gems.splice(nonGoldIdx, 1)[0] : this.gems.shift();
       if (oldest) {
         oldest.destroy(this.scene);
       }
