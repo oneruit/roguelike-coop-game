@@ -600,7 +600,7 @@ export class GreatswordWeapon extends Weapon {
  */
 export class FlailWeapon extends Weapon {
   private flailRadius: number = 3.9;
-  private knockback: number = 0.6;
+  private knockback: number = 0.3;
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
@@ -662,7 +662,7 @@ export class FlailWeapon extends Weapon {
     this.level++;
     this.flailRadius = Number((this.flailRadius + 0.25).toFixed(2));
     this.damage += 14;
-    this.knockback = Number((this.knockback + 0.04).toFixed(2));
+    this.knockback = Number((this.knockback + 0.02).toFixed(2));
     this.cooldown = Math.max(0.22, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
