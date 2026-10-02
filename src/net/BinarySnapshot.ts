@@ -116,7 +116,10 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
     if (animIdx === -1) animIdx = 0;
     view.setUint8(offset, animIdx); offset += 1;
 
-    view.setUint8(offset, p.isDowned ? 1 : 0); offset += 1;
+    const downedVal = p.isDowned
+      ? (1 + Math.min(100, Math.max(0, Math.round((p.reviveProgress || 0) * 100))))
+      : 0;
+    view.setUint8(offset, downedVal); offset += 1;
     view.setUint8(offset, p.level); offset += 1;
 
     view.setFloat32(offset, p.x, true); offset += 4;
@@ -238,7 +241,9 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
     const charIdx = view.getUint8(offset); offset += 1;
     const dirIdx = view.getUint8(offset); offset += 1;
     const animIdx = view.getUint8(offset); offset += 1;
-    const isDowned = view.getUint8(offset) === 1; offset += 1;
+    const downedVal = view.getUint8(offset); offset += 1;
+    const isDowned = downedVal > 0;
+    const reviveProgress = downedVal > 1 ? Number(((downedVal - 1) / 100).toFixed(2)) : 0;
     const level = view.getUint8(offset); offset += 1;
 
     const x = view.getFloat32(offset, true); offset += 4;
@@ -269,6 +274,7 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
       xp,
       xpToNextLevel,
       isDowned,
+      reviveProgress,
       charType,
       kills,
       damageDealt
