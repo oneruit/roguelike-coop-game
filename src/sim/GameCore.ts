@@ -184,6 +184,7 @@ export class SimProjectileInternal {
   public isMagic: boolean;
   public isChakram: boolean;
   public isArrow: boolean;
+  public isKukri: boolean;
   public curveSign: number;
   public elapsedTime: number = 0;
   public hasTurnedBack: boolean = false;
@@ -209,6 +210,7 @@ export class SimProjectileInternal {
     this.isMagic = !!data.isMagic;
     this.isChakram = !!data.isChakram;
     this.isArrow = !!data.isArrow;
+    this.isKukri = !!data.isKukri;
     this.curveSign = data.curveSign || 1;
     this.isOrbiting = !!data.isOrbiting;
     this.orbitRadius = data.orbitRadius || 2.4;

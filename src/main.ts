@@ -785,6 +785,7 @@ class Game {
       isMagic: shot.mag,
       isOrbiting: shot.orb,
       isArrow: shot.arr,
+      isKukri: shot.kkr,
       orbitRadius: shot.orad,
       orbitSpeed: shot.ospd,
       isCosmetic: true,
@@ -794,6 +795,8 @@ class Game {
     if (!shot.orb) {
       if (shot.arr) {
         SoundManager.playBowShoot();
+      } else if (shot.kkr) {
+        SoundManager.playSlash();
       } else {
         SoundManager.playShoot();
       }
@@ -821,6 +824,7 @@ class Game {
         orad: proj.orbitRadius,
         ospd: proj.orbitSpeed,
         arr: proj.isArrow,
+        kkr: proj.isKukri,
         ownerId: myId
       });
     }

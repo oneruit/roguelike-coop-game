@@ -140,16 +140,16 @@ export const HeavyColtWeapon = BowWeapon;
 export type HeavyColtWeapon = BowWeapon;
 
 /**
- * Dual Revolvers (Парные Револьверы) - Hero 2 Female starting weapon
- * Rapid-fire bursts of bullets
+ * Kukri Knife (Нож Кукри)
+ * Rapid throws of spinning curved Gurkha kukri blades
  */
-export class DualRevolversWeapon extends Weapon {
+export class KukriWeapon extends Weapon {
   private burstCount: number = 2;
   private projectileSpeed: number = 24;
   private pierce: number = 1;
 
   constructor() {
-    super('dual_revolvers', 'Парные Револьверы', '⚔️', 0.65, 14);
+    super('kukri', 'Нож Кукри', '🔪', 0.65, 14);
   }
 
   public update(
@@ -181,7 +181,7 @@ export class DualRevolversWeapon extends Weapon {
           dir.y = 0;
           if (dir.lengthSq() > 0) {
             dir.normalize();
-            // slight spread angle for dual firing
+            // slight spread angle for dual throwing
             const spreadAngle = (i % 2 === 0 ? 0.08 : -0.08);
             dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), spreadAngle);
           }
@@ -193,12 +193,13 @@ export class DualRevolversWeapon extends Weapon {
             damage: this.damage,
             pierce: this.pierce,
             lifetime: 1.8,
-            radius: 0.24,
-            color: 0x38bdf8 // Cyan rapid flash
+            radius: 0.28,
+            color: 0x94a3b8,
+            isKukri: true
           });
 
           spawnProjectile(proj);
-          SoundManager.playShoot();
+          SoundManager.playSlash();
         }, i * 110);
       }
     }
@@ -223,12 +224,16 @@ export class DualRevolversWeapon extends Weapon {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+4 к урону'];
-    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 выстрел в очереди (всего ${this.burstCount + 1})`);
+    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
     if ([10, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) perks.push('-6% перезарядки');
     return perks.join(', ');
   }
 }
+
+// Backwards compatibility alias
+export const DualRevolversWeapon = KukriWeapon;
+export type DualRevolversWeapon = KukriWeapon;
 
 /**
  * Orbiting Shields / Holy Horseshoe Barrier

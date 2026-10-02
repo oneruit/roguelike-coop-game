@@ -29,6 +29,7 @@ export interface SimProjectileData {
   orbitSpeed?: number;
   orbitAngle?: number;
   isArrow?: boolean;
+  isKukri?: boolean;
 }
 
 export interface SimEnemyRef {
@@ -173,15 +174,15 @@ export const SimHeavyColtWeapon = SimBowWeapon;
 export type SimHeavyColtWeapon = SimBowWeapon;
 
 /**
- * Dual Revolvers (Парные Револьверы)
+ * Kukri Knife (Нож Кукри)
  */
-export class SimDualRevolversWeapon extends SimWeapon {
+export class SimKukriWeapon extends SimWeapon {
   private burstCount: number = 2;
   private projectileSpeed: number = 24;
   private pierce: number = 1;
 
   constructor() {
-    super('dual_revolvers', 'Парные Револьверы', '⚔️', 0.65, 14);
+    super('kukri', 'Нож Кукри', '🔪', 0.65, 14);
   }
 
   public update(
@@ -232,11 +233,12 @@ export class SimDualRevolversWeapon extends SimWeapon {
           pierce: this.pierce,
           lifetime: 1.8,
           radius: 0.28,
-          color: 0x38bdf8
+          color: 0x94a3b8,
+          isKukri: true
         };
 
         spawnProjectile(proj);
-        if (emitSound) emitSound('shoot');
+        if (emitSound) emitSound('slash');
       }
     }
   }
@@ -256,12 +258,15 @@ export class SimDualRevolversWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+4 к урону'];
-    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 выстрел в очереди (всего ${this.burstCount + 1})`);
+    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
     if ([10, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) perks.push('-6% перезарядки');
     return perks.join(', ');
   }
 }
+
+export const SimDualRevolversWeapon = SimKukriWeapon;
+export type SimDualRevolversWeapon = SimKukriWeapon;
 
 /**
  * Crimson Whirlwind (Багровый Вихрь) - Ronin
@@ -839,8 +844,9 @@ export function createSimWeaponById(id: string): SimWeapon | null {
     case 'bow':
     case 'heavy_colt':
       return new SimBowWeapon();
+    case 'kukri':
     case 'dual_revolvers':
-      return new SimDualRevolversWeapon();
+      return new SimKukriWeapon();
     case 'whirlwind_slash':
       return new SimWhirlwindSlashWeapon();
     case 'greatsword':

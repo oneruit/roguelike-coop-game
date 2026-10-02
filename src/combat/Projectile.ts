@@ -19,6 +19,7 @@ export interface ProjectileOptions {
   isCosmetic?: boolean;
   ownerId?: string;
   isArrow?: boolean;
+  isKukri?: boolean;
 }
 
 export class Projectile {
@@ -33,6 +34,7 @@ export class Projectile {
   public color: number;
   public isMagic: boolean;
   public isArrow = false;
+  public isKukri = false;
   public isCosmetic: boolean;
   public ownerId?: string;
   public isAlive = true;
@@ -60,6 +62,10 @@ export class Projectile {
   // Shared assets for Chakram (Spinning Blade Plane)
   private static chakramGeom: THREE.PlaneGeometry | null = null;
   private static chakramMaterial: THREE.MeshBasicMaterial | null = null;
+
+  // Shared assets for Kukri Knife (Curved Spinning Blade)
+  private static kukriGeom: THREE.PlaneGeometry | null = null;
+  private static kukriMaterial: THREE.MeshBasicMaterial | null = null;
 
   // Shared assets for Arrow Sprites
   private static arrowGeomA: THREE.PlaneGeometry | null = null;
@@ -102,6 +108,7 @@ export class Projectile {
     this.orbitSpeed = options.orbitSpeed ?? 4.0;
     this.isChakram = !!options.isChakram;
     this.isArrow = !!options.isArrow;
+    this.isKukri = !!options.isKukri;
     this.curveSign = options.curveSign ?? 1;
     this.maxLifetime = options.lifetime;
 
@@ -126,6 +133,27 @@ export class Projectile {
       this.mesh.add(bladeMesh);
 
       const scale = this.radius * 2.8;
+      this.mesh.scale.set(scale, scale, scale);
+    } else if (this.isKukri) {
+      if (!Projectile.kukriGeom || !Projectile.kukriMaterial) {
+        const aspect = 48 / 128; // 0.375
+        const geom = new THREE.PlaneGeometry(1.4, 1.4 * aspect);
+        geom.rotateX(-Math.PI / 2);
+        Projectile.kukriGeom = geom;
+
+        Projectile.kukriMaterial = new THREE.MeshBasicMaterial({
+          map: TextureManager.getKukriTexture(),
+          transparent: true,
+          alphaTest: 0.03,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+      }
+
+      const bladeMesh = new THREE.Mesh(Projectile.kukriGeom, Projectile.kukriMaterial);
+      this.mesh.add(bladeMesh);
+
+      const scale = this.radius * 3.5;
       this.mesh.scale.set(scale, scale, scale);
     } else if (this.isArrow) {
       if (!Projectile.arrowGeomA || !Projectile.arrowGeomB || !Projectile.arrowMaterial) {
@@ -255,6 +283,10 @@ export class Projectile {
           this.position.addScaledVector(this.direction, -this.speed * dt);
         }
       }
+      this.mesh.position.copy(this.position);
+    } else if (this.isKukri) {
+      this.mesh.rotation.y += dt * 25;
+      this.position.addScaledVector(this.direction, this.speed * dt);
       this.mesh.position.copy(this.position);
     } else {
       this.position.addScaledVector(this.direction, this.speed * dt);

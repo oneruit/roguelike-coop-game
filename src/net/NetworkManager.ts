@@ -103,6 +103,7 @@ export interface NetShotInfo {
   ospd?: number;
   ownerId: string;
   arr?: boolean;
+  kkr?: boolean;
 }
 
 export interface NetEvent {
