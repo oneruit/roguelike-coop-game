@@ -212,6 +212,8 @@ export class RemotePlayer {
         ? TextureManager.loadSorceressTextures()
         : charType === 'chakram'
         ? TextureManager.loadChakramTextures()
+        : charType === 'archer'
+        ? TextureManager.loadArcherTextures()
         : TextureManager.loadRoninTextures();
 
     // Clone textures so UV repeat and offset mutations never collide with player 1

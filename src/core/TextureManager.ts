@@ -90,12 +90,13 @@ export class TextureManager {
     this.getKukriTexture(renderer);
     this.getChakramTexture(renderer);
 
-    // Preload Ronin, Valkyrie, Flail, Sorceress and Chakram hero sprite sheets
+    // Preload Ronin, Valkyrie, Flail, Sorceress, Chakram and Archer hero sprite sheets
     this.loadRoninTextures(renderer);
     this.loadValkyrieTextures(renderer);
     this.loadFlailTextures(renderer);
     this.loadSorceressTextures(renderer);
     this.loadChakramTextures(renderer);
+    this.loadArcherTextures(renderer);
   }
 
   public static loadBossTextures(baseName: string, renderer?: THREE.WebGLRenderer): BossTextures {
@@ -150,6 +151,10 @@ export class TextureManager {
 
   public static loadChakramTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_chakram', renderer);
+  }
+
+  public static loadArcherTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_archer', renderer);
   }
 
   public static getBulletTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {

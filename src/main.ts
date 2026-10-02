@@ -345,6 +345,8 @@ class Game {
         ? 'sorceress'
         : this.player.charType === 'sorceress'
         ? 'chakram'
+        : this.player.charType === 'chakram'
+        ? 'archer'
         : 'ronin';
     this.hud.showJoinLobby(nextHero);
     this.startRoomPolling();

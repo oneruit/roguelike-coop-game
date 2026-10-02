@@ -19,7 +19,7 @@ import { SoundManager } from '../core/SoundManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 import { PassiveBuffId } from '../drops/PassiveBuffs';
 
-export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram';
+export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer';
 export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
 export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable';
 
@@ -253,6 +253,8 @@ export class Player {
         ? TextureManager.loadSorceressTextures()
         : charType === 'chakram'
         ? TextureManager.loadChakramTextures()
+        : charType === 'archer'
+        ? TextureManager.loadArcherTextures()
         : TextureManager.loadRoninTextures();
 
     this.animatedTextures = {
@@ -323,6 +325,14 @@ export class Player {
       this.hp = 115;
       this.baseSpeed = 8.7;
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
+    } else if (this.charType === 'archer') {
+      // Hero 6: Elf Archer (Эльф лучник «Охотничий Лук»)
+      // High swiftness, precise long-range piercing arrows, agile ranger stats
+      this.baseDamageMultiplier = 1.35;
+      this.maxHp = 110;
+      this.hp = 110;
+      this.baseSpeed = 8.9;
+      this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
     } else {
       // Hero 1: Ren Ronin (Рен «Багровый вихрь»)
       this.baseDamageMultiplier = 1.35;

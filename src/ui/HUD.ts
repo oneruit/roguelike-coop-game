@@ -945,7 +945,9 @@ export class HUD {
       ? 'Бригитта «Цеп»'
       : charType === 'sorceress'
       ? 'Ария «Посох»'
-      : 'Кира «Чакрам»';
+      : charType === 'chakram'
+      ? 'Кира «Чакрам»'
+      : 'Эльф-лучник «Лук»';
   }
 
   public getHeroAvatar(charType: CharacterType): string {
@@ -957,7 +959,9 @@ export class HUD {
       ? '/textures/hero_flail_front.png'
       : charType === 'sorceress'
       ? '/textures/hero_sorceress_front.png'
-      : '/textures/hero_chakram_front.png';
+      : charType === 'chakram'
+      ? '/textures/hero_chakram_front.png'
+      : '/textures/hero_archer_front.png';
   }
 
   public updateGuestReadyButtonUI() {

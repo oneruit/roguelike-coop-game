@@ -1852,11 +1852,11 @@ body, html {
 
 .lobby-hero-picker {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1080px) {
   .lobby-hero-picker { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -2608,13 +2608,13 @@ body, html {
 
 .character-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 14px;
   justify-content: center;
   margin-top: 10px;
 }
 
-@media (max-width: 1240px) {
+@media (max-width: 1400px) {
   .character-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
