@@ -454,7 +454,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
   private pierceCount: number = 2;
 
   constructor() {
-    super('astral_staff', 'Звёздный Посох', '✨', 0.60, 32);
+    super('astral_staff', 'Звёздный Посох', '✨', 0.60, 23);
   }
 
   public update(
@@ -518,7 +518,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 9;
+    this.damage = Number((this.damage + 8.18).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.projectileCount++;
     if ([4, 8, 12, 16, 20].includes(this.level)) this.pierceCount++;
     if ([2, 5, 7, 10, 14, 17].includes(this.level)) {
@@ -529,7 +529,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+9 к урону'];
+    const perks: string[] = ['+8.2 к урону'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 снаряд веером (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierceCount + 1})`);
     if ([2, 5, 7, 10, 14, 17].includes(nextLvl)) perks.push('-6% перезарядки');
@@ -547,7 +547,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   private activeOrbIds: string[] = [];
 
   constructor() {
-    super('orbiting_barrier', 'Священные Подковы', '🧲', 0, 12);
+    super('orbiting_barrier', 'Священные Подковы', '🧲', 0, 8);
   }
 
   public update(
@@ -588,7 +588,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 4;
+    this.damage = Number((this.damage + 3.64).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.35).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.12).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.orbCount++;
@@ -598,7 +598,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+4 к урону', '+0.35м дальность орбиты'];
+    const perks: string[] = ['+3.6 к урону', '+0.35м дальность орбиты'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 подкова (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
