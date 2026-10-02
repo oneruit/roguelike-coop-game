@@ -5,6 +5,7 @@ import { Player, CharacterType } from './entities/Player';
 import { EnemyManager, PlayerTargetInfo } from './entities/EnemyManager';
 import { DropManager } from './drops/DropManager';
 import { Gem } from './drops/Gem';
+import { getPassiveBuffId } from './drops/PassiveBuffs';
 import { DamageNumberManager } from './combat/DamageNumberManager';
 import { Projectile } from './combat/Projectile';
 import { HUD, DetailedPlayerResult } from './ui/HUD';
@@ -1329,6 +1330,16 @@ class Game {
         onCollect: (xp: number, gem: Gem) => {
           const levelsGained = this.player.gainXp(xp);
           this.damageNumbers.spawnXp(this.player.position, xp, this.engine.camera);
+
+          // Random mob passive drop collected!
+          if (gem.type === 'gold') {
+            const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
+            const toast = this.player.applyPassiveBuff(buffId);
+            this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
+            SoundManager.playBuffExpire();
+            this.hud.updatePassivesBar(this.player);
+          }
+
           if (this.net.role === 'client') {
             this.pendingClientCollectedGems.push(gem.id);
           }

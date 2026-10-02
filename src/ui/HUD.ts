@@ -51,6 +51,7 @@ export class HUD {
   private altarBanner: HTMLElement;
   private altarBannerText: HTMLElement;
   private buffsTray: HTMLElement;
+  private passivesBar: HTMLElement | null;
   private altarBannerTimeout: number | null = null;
 
   // Modals
@@ -211,6 +212,7 @@ export class HUD {
     this.altarBanner = document.getElementById('altar-notification-banner')!;
     this.altarBannerText = document.getElementById('altar-notification-text')!;
     this.buffsTray = document.getElementById('active-buffs-tray')!;
+    this.passivesBar = document.getElementById('active-passives-bar');
 
     // Modals
     this.mainMenuModal = document.getElementById('main-menu-modal')!;
@@ -1584,6 +1586,9 @@ export class HUD {
     // Active Weapons Bar
     this.updateWeaponsBar(player.weapons);
 
+    // Active Passives Bar
+    this.updatePassivesBar(player);
+
     // Active Shrine Buffs Tray
     this.updateBuffsTray(player.activeBuffs);
 
@@ -1752,6 +1757,9 @@ export class HUD {
     }
     this.altarBanner.classList.add('hidden');
     this.buffsTray.innerHTML = '';
+    if (this.passivesBar) {
+      this.passivesBar.innerHTML = '';
+    }
   }
 
   private updateWeaponsBar(weapons: Weapon[]) {
@@ -1795,20 +1803,34 @@ export class HUD {
     const weaponOptions = this.generateWeaponOptions(player);
 
     if (weaponOptions.length > 0) {
-      // Step 1: Choose 1 Active Weapon / Upgrade
       this.renderWeaponStep(weaponOptions, () => {
-        // Step 2: Choose 1 Passive Skill
-        this.renderPassiveStep(player, onSelect);
+        this.hideLevelUp();
+        onSelect();
       });
     } else {
-      // All 5 weapons are maxed at level 20: proceed directly to passive step
-      this.renderPassiveStep(player, onSelect);
+      // All 5 weapons are maxed at level 20: provide fallback reward
+      const fallbackOption: UpgradeOption = {
+        id: 'max_arsenal_reward',
+        title: 'Эликсир Героя',
+        icon: '💖',
+        levelTag: 'АРСЕНАЛ МАКСИМАЛЕН',
+        description: 'Все 5 оружий прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
+        apply: () => {
+          player.maxHp += 50;
+          player.heal(player.maxHp);
+          player.redrawOverhead();
+        }
+      };
+      this.renderWeaponStep([fallbackOption], () => {
+        this.hideLevelUp();
+        onSelect();
+      });
     }
   }
 
-  private renderWeaponStep(options: UpgradeOption[], onNextStep: () => void) {
+  private renderWeaponStep(options: UpgradeOption[], onChosen: () => void) {
     if (this.levelUpStepIndicator) {
-      this.levelUpStepIndicator.innerHTML = 'ШАГ 1 ИЗ 2 &bull; ВЫБОР ОРУЖИЯ';
+      this.levelUpStepIndicator.innerHTML = 'ПОВЫШЕНИЕ УРОВНЯ';
       this.levelUpStepIndicator.style.color = '#fbbf24';
     }
     if (this.levelUpTitle) {
@@ -1829,40 +1851,7 @@ export class HUD {
       card.addEventListener('click', () => {
         opt.apply();
         SoundManager.playShoot();
-        onNextStep();
-      });
-
-      this.upgradeCardsContainer.appendChild(card);
-    }
-  }
-
-  private renderPassiveStep(player: Player, onFinished: () => void) {
-    if (this.levelUpStepIndicator) {
-      this.levelUpStepIndicator.innerHTML = 'ШАГ 2 ИЗ 2 &bull; ПАССИВНЫЙ НАВЫК';
-      this.levelUpStepIndicator.style.color = '#38bdf8';
-    }
-    if (this.levelUpTitle) {
-      this.levelUpTitle.innerText = 'ВЫБЕРИТЕ ПАССИВНЫЙ НАВЫК';
-    }
-
-    this.upgradeCardsContainer.innerHTML = '';
-    const passiveOptions = this.generatePassiveOptions(player);
-
-    for (const opt of passiveOptions) {
-      const card = document.createElement('div');
-      card.className = 'upgrade-card card-passive-step';
-      card.innerHTML = `
-        <div class="card-icon">${opt.icon}</div>
-        <div class="card-title">${opt.title}</div>
-        <div class="card-level-tag passive-tag">${opt.levelTag}</div>
-        <div class="card-description">${opt.description}</div>
-      `;
-
-      card.addEventListener('click', () => {
-        opt.apply();
-        SoundManager.playBuffExpire();
-        this.hideLevelUp();
-        onFinished();
+        onChosen();
       });
 
       this.upgradeCardsContainer.appendChild(card);
@@ -2148,89 +2137,91 @@ export class HUD {
     return shuffled.slice(0, 3);
   }
 
-  private generatePassiveOptions(player: Player): UpgradeOption[] {
-    const pool: UpgradeOption[] = [];
+  public updatePassivesBar(player: Player) {
+    if (!this.passivesBar) return;
 
-    pool.push({
-      id: 'stat_sheriff_star',
-      title: 'Звезда Шерифа',
-      icon: '⭐',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '+2% к урону ВСЕХ оружий и способностей (складывается)',
-      apply: () => {
-        player.addSheriffStarBonus(1.02);
+    const passivesList = [
+      {
+        id: 'stat_sheriff_star',
+        icon: '⭐',
+        count: player.sheriffStarCount,
+        title: 'Звезда Шерифа',
+        desc: `+${Math.round((player.passiveDamageMultiplier - 1) * 100)}% к урону всех оружий`
+      },
+      {
+        id: 'stat_spurs',
+        icon: '👢',
+        count: player.spursCount,
+        title: 'Шпоры Скорохода',
+        desc: `x${player.passiveSpeedMultiplier.toFixed(2)} к скорости бега`
+      },
+      {
+        id: 'stat_flask',
+        icon: '🍶',
+        count: player.flaskCount,
+        title: 'Фляга с Виски',
+        desc: `+${player.flaskCount * 30} к макс HP (${player.maxHp} HP)`
+      },
+      {
+        id: 'stat_lasso',
+        icon: '➰',
+        count: player.lassoCount,
+        title: 'Магнитное Лассо',
+        desc: `${player.pickupRadius.toFixed(1)}м радиус магнита`
+      },
+      {
+        id: 'stat_amulet',
+        icon: '🧿',
+        count: player.amuletCount,
+        title: 'Охотничий Амулет',
+        desc: `+${player.passiveHpRegen.toFixed(1)} HP/с регенерации`
+      },
+      {
+        id: 'stat_vest',
+        icon: '🦺',
+        count: player.vestCount,
+        title: 'Кожаный Жилет',
+        desc: `-${Math.round(player.passiveDamageReduction * 100)}% получаемого урона`
+      },
+      {
+        id: 'stat_watch',
+        icon: '⏱️',
+        count: player.watchCount,
+        title: 'Карманные Часы',
+        desc: `-${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к перезарядке`
       }
-    });
+    ];
 
-    pool.push({
-      id: 'stat_spurs',
-      title: 'Шпоры Скорохода',
-      icon: '👢',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '+15% к скорости бега по прерии',
-      apply: () => {
-        player.addSpeedBonus(1.15);
+    const activeList = passivesList.filter(p => p.count > 0);
+    const activeIds = new Set(activeList.map(p => p.id));
+
+    for (const p of activeList) {
+      let slot = this.passivesBar.querySelector<HTMLElement>(`[data-passive-id="${p.id}"]`);
+      if (!slot) {
+        slot = document.createElement('div');
+        slot.className = 'passive-slot';
+        slot.setAttribute('data-passive-id', p.id);
+        slot.innerHTML = `
+          <span class="passive-icon">${p.icon}</span>
+          <span class="passive-count">x${p.count}</span>
+        `;
+        this.passivesBar.appendChild(slot);
+      } else {
+        const countEl = slot.querySelector<HTMLElement>('.passive-count');
+        if (countEl && countEl.innerText !== `x${p.count}`) {
+          countEl.innerText = `x${p.count}`;
+        }
       }
-    });
+      slot.title = `${p.title} (x${p.count})\n${p.desc}`;
+    }
 
-    pool.push({
-      id: 'stat_flask',
-      title: 'Фляга с Виски',
-      icon: '🍶',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '+30 к максимальному HP и полное исцеление',
-      apply: () => {
-        player.maxHp += 30;
-        player.heal(player.maxHp);
+    const slots = Array.from(this.passivesBar.querySelectorAll<HTMLElement>('.passive-slot'));
+    for (const slot of slots) {
+      const id = slot.getAttribute('data-passive-id');
+      if (id && !activeIds.has(id)) {
+        slot.remove();
       }
-    });
-
-    pool.push({
-      id: 'stat_lasso',
-      title: 'Магнитное Лассо',
-      icon: '➰',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '+35% к дальности притяжения кристаллов опыта',
-      apply: () => {
-        player.pickupRadius *= 1.35;
-      }
-    });
-
-    pool.push({
-      id: 'stat_amulet',
-      title: 'Охотничий Амулет',
-      icon: '🧿',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '+1.5 HP регенерации каждую секунду (складывается)',
-      apply: () => {
-        player.addHpRegen(1.5);
-      }
-    });
-
-    pool.push({
-      id: 'stat_vest',
-      title: 'Кожаный Жилет',
-      icon: '🦺',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '-10% к получаемому урону от монстров (до 70%)',
-      apply: () => {
-        player.addDamageReduction(0.10);
-      }
-    });
-
-    pool.push({
-      id: 'stat_watch',
-      title: 'Карманные Часы',
-      icon: '⏱️',
-      levelTag: 'ПАССИВНЫЙ НАВЫК',
-      description: '+8% к скорости атаки всех оружий (-8% перезарядки)',
-      apply: () => {
-        player.addCooldownReduction(0.08);
-      }
-    });
-
-    const shuffled = [...pool].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
+    }
   }
 
   /**
