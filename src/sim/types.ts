@@ -56,6 +56,9 @@ export interface SimPlayerState {
   damageDealt: number;
   revives: number;
   buffs: BuffType[];
+  credits?: number;
+  shield?: number;
+  maxShield?: number;
 }
 
 export interface SimEnemyState {
@@ -69,6 +72,7 @@ export interface SimEnemyState {
   dir: SpriteDirection;
   isBoss: boolean;
   isImmortal?: boolean;
+  eliteAffix?: 'blazing' | 'glacial' | 'overloading';
 }
 
 export interface SimProjectileState {
@@ -170,12 +174,26 @@ export type SimEvent =
   | {
       type: 'sound';
       sound: 'shoot' | 'slash' | 'magic' | 'hit' | 'gem' | 'level_up' | 'altar' | 'player_hurt';
+    }
+  | {
+      type: 'teleporter_activated';
+      stage: number;
+    }
+  | {
+      type: 'teleporter_charged';
+    }
+  | {
+      type: 'item_collected';
+      playerId: string;
+      itemId: string;
     };
 
 export interface SimSnapshot {
   tick: number;
   gameTime: number;
   totalKills: number;
+  stage?: number;
+  teleporter?: { state: string; chargeProgress: number; isPlayerInside: boolean } | null;
   players: Record<string, SimPlayerState>;
   stats: Record<string, SimPlayerStats>;
   enemies: SimEnemyState[];

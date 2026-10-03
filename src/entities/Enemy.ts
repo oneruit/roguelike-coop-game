@@ -28,6 +28,8 @@ export interface EnemyConfig {
   gemType: GemType;
   isBoss?: boolean;
   isImmortal?: boolean;
+  eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  creditsValue?: number;
 }
 
 export class Enemy {
@@ -45,6 +47,8 @@ export class Enemy {
   public gemType: GemType;
   public isBoss: boolean;
   public isImmortal: boolean;
+  public eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  public creditsValue: number = 3;
   public isAlive = true;
   public lastHitBy: string = 'p1';
   public boundingRadius: number;
@@ -82,10 +86,43 @@ export class Enemy {
     this.gemType = config.gemType;
     this.isBoss = !!config.isBoss;
     this.isImmortal = !!config.isImmortal;
+    this.eliteAffix = config.eliteAffix;
+    this.creditsValue = config.creditsValue ?? (this.isBoss ? 100 : (this.eliteAffix ? 16 : 3));
+
+    if (this.eliteAffix) {
+      this.hp = Math.round(this.hp * 2.2);
+      this.maxHp = this.hp;
+      this.damage = Math.round(this.damage * 1.35);
+      const affixNames = {
+        blazing: 'Пылающий',
+        glacial: 'Ледяной',
+        overloading: 'Перегруженный'
+      };
+      this.name = `${affixNames[this.eliteAffix]} ${this.name}`;
+    }
 
     this.position = spawnPos.clone();
     this.boundingRadius = Math.max(this.width, this.height) * 0.75 + 0.5;
     this.mesh = new THREE.Group();
+
+    if (this.eliteAffix) {
+      const auraColors = {
+        blazing: 0xef4444,
+        glacial: 0x38bdf8,
+        overloading: 0x818cf8
+      };
+      const ringGeom = new THREE.RingGeometry(this.width * 0.5, this.width * 0.75, 24);
+      ringGeom.rotateX(-Math.PI / 2);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: auraColors[this.eliteAffix],
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.7
+      });
+      const aura = new THREE.Mesh(ringGeom, ringMat);
+      aura.position.y = 0.08;
+      this.mesh.add(aura);
+    }
 
     // 1. Load Textures
     if (this.isBoss && !this.isImmortal) {

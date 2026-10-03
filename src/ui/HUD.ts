@@ -6,6 +6,8 @@ import { Enemy } from '../entities/Enemy';
 import { PlayerStats, LobbyPlayerInfo, PLAYER_COLORS, getPlayerSlotNumber } from '../net/NetworkManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
 import { PublicRoomInfo } from '../net/RoomDirectory';
+import { DifficultyDirector } from '../director/DifficultyDirector';
+import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
 import * as THREE from 'three';
 
 export interface UpgradeOption {
@@ -46,6 +48,21 @@ export class HUD {
   private bossNameText: HTMLElement | null;
   private bossWarningBanner: HTMLElement;
   private bossWarningText: HTMLElement | null;
+
+  // The Rift HUD Elements
+  private stageText: HTMLElement | null;
+  private plasmaCreditsText: HTMLElement | null;
+  private diffTierLabel: HTMLElement | null;
+  private diffBarFill: HTMLElement | null;
+  private teleporterEventContainer: HTMLElement | null;
+  private teleporterStatusText: HTMLElement | null;
+  private teleporterZoneText: HTMLElement | null;
+  private teleporterBarFill: HTMLElement | null;
+  private interactionPrompt: HTMLElement | null;
+  private interactionPromptText: HTMLElement | null;
+  private itemInventoryTray: HTMLElement | null;
+  private dashCooldownBadge: HTMLElement | null;
+  private dashCooldownText: HTMLElement | null;
 
   // Altar & Buffs HUD
   private altarBanner: HTMLElement;
@@ -213,6 +230,21 @@ export class HUD {
     this.altarBannerText = document.getElementById('altar-notification-text')!;
     this.buffsTray = document.getElementById('active-buffs-tray')!;
     this.passivesBar = document.getElementById('active-passives-bar');
+
+    // The Rift Elements
+    this.stageText = document.getElementById('stage-text');
+    this.plasmaCreditsText = document.getElementById('plasma-credits');
+    this.diffTierLabel = document.getElementById('diff-tier-label');
+    this.diffBarFill = document.getElementById('diff-bar-fill');
+    this.teleporterEventContainer = document.getElementById('teleporter-event-container');
+    this.teleporterStatusText = document.getElementById('teleporter-status-text');
+    this.teleporterZoneText = document.getElementById('teleporter-zone-text');
+    this.teleporterBarFill = document.getElementById('teleporter-bar-fill');
+    this.interactionPrompt = document.getElementById('interaction-prompt');
+    this.interactionPromptText = document.getElementById('interaction-prompt-text');
+    this.itemInventoryTray = document.getElementById('item-inventory-tray');
+    this.dashCooldownBadge = document.getElementById('dash-cooldown-badge');
+    this.dashCooldownText = document.getElementById('dash-cooldown-text');
 
     // Modals
     this.mainMenuModal = document.getElementById('main-menu-modal')!;
@@ -1614,6 +1646,124 @@ export class HUD {
       }
     } else {
       this.bossHpContainer.classList.add('hidden');
+    }
+
+    // --- The Rift: Credits, Difficulty, Items, Dash HUD ---
+    if (this.plasmaCreditsText) {
+      this.plasmaCreditsText.innerText = `⬡ ${player.credits}`;
+    }
+
+    // Difficulty Meter
+    const tier = DifficultyDirector.getCurrentTier(gameTime);
+    const progress = DifficultyDirector.getTierProgress(gameTime);
+    if (this.diffTierLabel) {
+      this.diffTierLabel.innerText = tier.name;
+      this.diffTierLabel.style.color = tier.color;
+    }
+    if (this.diffBarFill) {
+      this.diffBarFill.style.width = `${Math.round(progress * 100)}%`;
+      this.diffBarFill.style.backgroundColor = tier.color;
+    }
+
+    // Tactical Dash Badge
+    if (this.dashCooldownText) {
+      if (player.dashCooldown > 0) {
+        this.dashCooldownText.innerText = `${player.dashCooldown.toFixed(1)}s`;
+        this.dashCooldownBadge?.classList.add('cooling-down');
+      } else {
+        this.dashCooldownText.innerText = 'ГОТОВ';
+        this.dashCooldownBadge?.classList.remove('cooling-down');
+      }
+    }
+
+    // Item Inventory Tray
+    this.renderItemInventory(player.riftItems);
+  }
+
+  public updateStageText(stageNum: number, biomeName: string) {
+    if (this.stageText) {
+      this.stageText.innerText = `${stageNum}: ${biomeName.toUpperCase()}`;
+    }
+  }
+
+  public updateTeleporterHUD(isCharging: boolean, progress: number, isPlayerInside: boolean, isWarpReady: boolean) {
+    if (!this.teleporterEventContainer) return;
+
+    if (!isCharging && !isWarpReady) {
+      this.teleporterEventContainer.classList.add('hidden');
+      return;
+    }
+
+    this.teleporterEventContainer.classList.remove('hidden');
+
+    if (isWarpReady) {
+      if (this.teleporterStatusText) this.teleporterStatusText.innerText = 'РАЗЛОМ СТАБИЛИЗИРОВАН!';
+      if (this.teleporterZoneText) {
+        this.teleporterZoneText.innerText = 'ГОТОВ К ПЕРЕХОДУ [E]';
+        this.teleporterZoneText.style.color = '#10b981';
+      }
+      if (this.teleporterBarFill) {
+        this.teleporterBarFill.style.width = '100%';
+        this.teleporterBarFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+      }
+      return;
+    }
+
+    const pct = Math.min(100, Math.max(0, Math.round(progress * 100)));
+    if (this.teleporterStatusText) this.teleporterStatusText.innerText = `ЗАРЯДКА: ${pct}%`;
+    if (this.teleporterBarFill) {
+      this.teleporterBarFill.style.width = `${pct}%`;
+      this.teleporterBarFill.style.background = 'linear-gradient(90deg, #4f46e5, #818cf8)';
+    }
+
+    if (this.teleporterZoneText) {
+      if (isPlayerInside) {
+        this.teleporterZoneText.innerText = 'В ЗОНЕ';
+        this.teleporterZoneText.style.color = '#10b981';
+      } else {
+        this.teleporterZoneText.innerText = 'ВНЕ ЗОНЫ (ПАУЗА)';
+        this.teleporterZoneText.style.color = '#f43f5e';
+      }
+    }
+  }
+
+  public showInteractionPrompt(text: string) {
+    if (this.interactionPrompt && this.interactionPromptText) {
+      this.interactionPromptText.innerText = text;
+      this.interactionPrompt.classList.remove('hidden');
+    }
+  }
+
+  public hideInteractionPrompt() {
+    if (this.interactionPrompt) {
+      this.interactionPrompt.classList.add('hidden');
+    }
+  }
+
+  private lastRenderedItemsKey = '';
+  public renderItemInventory(items: Map<RiftItemId, number>) {
+    if (!this.itemInventoryTray) return;
+
+    let key = '';
+    for (const [id, count] of items) {
+      key += `${id}:${count},`;
+    }
+    if (key === this.lastRenderedItemsKey) return;
+    this.lastRenderedItemsKey = key;
+
+    this.itemInventoryTray.innerHTML = '';
+    for (const [id, count] of items) {
+      const def = RIFT_ITEMS[id];
+      if (!def) continue;
+
+      const card = document.createElement('div');
+      card.className = `rift-item-card ${def.rarity}`;
+      card.title = `${def.name} (${def.description})`;
+      card.innerHTML = `
+        <span>${def.icon}</span>
+        ${count > 1 ? `<span class="item-stack-badge">x${count}</span>` : ''}
+      `;
+      this.itemInventoryTray.appendChild(card);
     }
   }
 
