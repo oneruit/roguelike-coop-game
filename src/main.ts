@@ -999,7 +999,9 @@ class Game {
     // Initialize The Rift Stage 1
     this.biomeManager.reset();
     this.biomeManager.applyBiomeToScene(this.engine.scene);
-    this.chestManager.generateStageChests(0, 0, 14, 1);
+    if (this.net.role !== 'client') {
+      this.chestManager.generateStageChests(0, 0, 14, 1);
+    }
     this.riftTeleporter.resetForStage(new THREE.Vector3(75, 0, 75));
     this.player.credits = 0;
     this.player.riftItems.clear();
