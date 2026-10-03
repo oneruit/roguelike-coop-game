@@ -23,9 +23,21 @@
         </div>
 
         <div id="stats-panel">
+          <div class="stat-badge stage-badge">
+            <span class="stat-label">STAGE</span>
+            <span id="stage-text">1: ПУСТЫНЯ</span>
+          </div>
+          <div class="stat-badge credits-badge">
+            <span class="stat-label">CREDITS</span>
+            <span id="plasma-credits">⬡ 0</span>
+          </div>
           <div class="stat-badge timer-badge">
             <span class="stat-label">TIME</span>
             <span id="game-timer">00:00</span>
+          </div>
+          <div class="stat-badge difficulty-badge" id="difficulty-badge" title="Сложность мира растет с течением времени!">
+            <span class="stat-label" id="diff-tier-label">ЛЕГКО</span>
+            <div class="diff-bar-bg"><div id="diff-bar-fill"></div></div>
           </div>
           <div class="stat-badge kill-badge">
             <span class="stat-label">KILLS</span>
@@ -37,6 +49,18 @@
           <div id="coop-badge" class="stat-badge coop-badge hidden">
             <span class="stat-label">ONLINE</span>
             <span id="coop-room-name">КООП</span>
+          </div>
+        </div>
+
+        <!-- Teleporter Charge Event Bar (shown when teleporter is charging) -->
+        <div id="teleporter-event-container" class="hidden">
+          <div class="teleporter-header">
+            <span class="teleporter-tag">РАЗЛОМ</span>
+            <span class="teleporter-status" id="teleporter-status-text">ЗАРЯДКА: 0%</span>
+            <span class="teleporter-zone-status" id="teleporter-zone-text">В ЗОНЕ</span>
+          </div>
+          <div class="teleporter-bar">
+            <div id="teleporter-bar-fill"></div>
           </div>
         </div>
 
@@ -78,6 +102,21 @@
         <div id="altar-notification-text" class="altar-notif-text">АЛТАРЬ ЗАХВАЧЕН!</div>
       </div>
 
+      <!-- Interactive Object Tooltip Prompt (Chests, Teleporter) -->
+      <div id="interaction-prompt" class="hidden">
+        <span class="prompt-key">[E]</span>
+        <span id="interaction-prompt-text">Открыть контейнер (25 ⬡)</span>
+      </div>
+
+      <!-- Item Inventory Tray (Stacked passive items) -->
+      <div id="item-inventory-tray"></div>
+
+      <!-- Tactical Dash Cooldown Badge -->
+      <div id="dash-cooldown-badge" class="dash-cooldown-badge">
+        <span class="dash-key">ПРОБЕЛ</span>
+        <span id="dash-cooldown-text">РЫВОК</span>
+      </div>
+
       <!-- Top-Left HUD: Acquired Abilities, Altar Buffs & PoE Party List -->
       <div id="top-left-hud">
         <div id="active-weapons-bar" class="weapons-bar"></div>
@@ -89,17 +128,17 @@
 
       <!-- Controls Hint -->
       <div id="controls-hint">
-        <span>[W][A][S][D] / Стрелочки — Перемещение</span>
+        <span>[W][A][S][D] — Перемещение</span>
+        <span class="dot">•</span>
+        <span>[ПРОБЕЛ] — Рывок</span>
+        <span class="dot">•</span>
+        <span>[E] — Взаимодействие</span>
         <span class="dot">•</span>
         <span>Авто-атака включена</span>
         <span class="dot">•</span>
         <span class="key-tag">[TAB]</span> <span>Карта</span>
         <span class="dot">•</span>
         <span class="key-tag">[ESC]</span> <span>Пауза</span>
-        <span class="dot">•</span>
-        <span class="key-tag dev-tag">[P]</span> <span>Dev Mode</span>
-        <span class="dot">•</span>
-        <span class="key-tag debug-tag">[F3]</span> <span>Debug HUD</span>
       </div>
 
       <!-- Main Menu Modal (Start screen) -->

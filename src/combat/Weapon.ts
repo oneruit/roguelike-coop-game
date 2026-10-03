@@ -18,6 +18,7 @@ export abstract class Weapon {
   public icon: string;
   public level: number = 1;
   public maxLevel: number = 20;
+  public cooldownMultiplier: number = 1.0;
   protected cooldown: number;
   protected timer: number = 0;
   protected damage: number;

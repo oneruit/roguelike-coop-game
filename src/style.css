@@ -227,6 +227,211 @@ body, html {
   transition: width 0.2s ease-out;
 }
 
+/* ==========================================================================
+   THE RIFT: DIFFICULTY METER, CREDITS, STAGE & TELEPORTER HUD
+   ========================================================================== */
+.stage-badge {
+  color: #38bdf8;
+  border-color: #0369a1;
+}
+
+.credits-badge {
+  color: #fbbf24;
+  border-color: #b45309;
+}
+
+.difficulty-badge {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 130px;
+  padding: 3px 10px;
+}
+
+.diff-bar-bg {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#diff-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: #22c55e;
+  transition: width 0.3s ease-out, background-color 0.4s;
+}
+
+/* Teleporter Event Bar */
+#teleporter-event-container {
+  width: 75%;
+  max-width: 650px;
+  background: rgba(15, 10, 25, 0.92);
+  border: 1px solid #6366f1;
+  border-radius: 2px;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.teleporter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.teleporter-tag {
+  background: #4338ca;
+  color: #e0e7ff;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+.teleporter-status {
+  color: #818cf8;
+}
+
+.teleporter-zone-status {
+  font-size: 11px;
+  color: #10b981;
+}
+
+.teleporter-bar {
+  width: 100%;
+  height: 12px;
+  background: #1e1b4b;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid #3730a3;
+}
+
+#teleporter-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  transition: width 0.15s ease-out;
+}
+
+/* Interaction Prompt */
+#interaction-prompt {
+  position: absolute;
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(17, 24, 39, 0.94);
+  border: 1px solid #38bdf8;
+  padding: 8px 18px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
+}
+
+.prompt-key {
+  background: #0284c7;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* Item Inventory Tray */
+#item-inventory-tray {
+  position: absolute;
+  bottom: 18px;
+  left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 480px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.rift-item-card {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1.5px solid #64748b;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.rift-item-card.common {
+  border-color: #cbd5e1;
+}
+
+.rift-item-card.uncommon {
+  border-color: #22c55e;
+}
+
+.rift-item-card.legendary {
+  border-color: #ef4444;
+}
+
+.rift-item-card.boss {
+  border-color: #eab308;
+}
+
+.item-stack-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 0 3px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Dash Cooldown Badge */
+.dash-cooldown-badge {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid #38bdf8;
+  padding: 8px 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #f1f5f9;
+  z-index: 20;
+}
+
+.dash-key {
+  background: #0284c7;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
 /* Boss Warning Banner */
 #boss-warning-banner {
   position: absolute;

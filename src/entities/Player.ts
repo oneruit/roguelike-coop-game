@@ -18,6 +18,7 @@ import { TextureManager, SpriteDirection, AnimatedCharacterTextures } from '../c
 import { SoundManager } from '../core/SoundManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 import { PassiveBuffId } from '../drops/PassiveBuffs';
+import { RiftItemId, RiftItemDef } from '../items/RiftItemSystem';
 
 export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer';
 export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
@@ -73,6 +74,25 @@ export class Player {
   public amuletCount: number = 0;
   public vestCount: number = 0;
   public watchCount: number = 0;
+
+  // The Rift: Item Inventory & Economy
+  public riftItems: Map<RiftItemId, number> = new Map();
+  public credits: number = 0; // Plasma Credits currency
+  public shield: number = 0;
+  public maxShield: number = 0;
+  public shieldRegenDelay: number = 0;
+  public critChance: number = 0.05; // 5% base crit chance
+  public hasChronosReady: boolean = true;
+  public singularityKillCounter: number = 0;
+  public orbitalStrikeTimer: number = 12.0;
+
+  // Tactical Dash Ability
+  public isDashing: boolean = false;
+  public dashTimer: number = 0;
+  public dashDuration: number = 0.22;
+  public dashCooldown: number = 0;
+  public maxDashCooldown: number = 2.8;
+  public dashDirection: THREE.Vector3 = new THREE.Vector3();
 
   // Active Shrine Buffs
   public activeBuffs: Map<BuffType, ActiveBuff> = new Map();
@@ -358,6 +378,41 @@ export class Player {
     return this.activeBuffs.has(type);
   }
 
+  public getItemStacks(id: RiftItemId): number {
+    return this.riftItems.get(id) || 0;
+  }
+
+  public addRiftItem(itemDef: RiftItemDef) {
+    const cur = this.getItemStacks(itemDef.id);
+    this.riftItems.set(itemDef.id, cur + 1);
+    this.recalculateStats();
+  }
+
+  public triggerDash(moveDir: THREE.Vector3): boolean {
+    if (this.dashCooldown > 0 || this.isDashing || this.isDowned || !this.isAlive) {
+      return false;
+    }
+
+    this.isDashing = true;
+    this.dashTimer = this.dashDuration;
+    this.dashCooldown = this.maxDashCooldown;
+
+    if (moveDir.lengthSq() > 0.01) {
+      this.dashDirection.copy(moveDir).normalize();
+    } else {
+      const DIR_VEC_MAP: Record<SpriteDirection, THREE.Vector3> = {
+        front: new THREE.Vector3(0, 0, 1),
+        back: new THREE.Vector3(0, 0, -1),
+        left: new THREE.Vector3(-1, 0, 0),
+        right: new THREE.Vector3(1, 0, 0)
+      };
+      this.dashDirection.copy(DIR_VEC_MAP[this.currentDir]);
+    }
+
+    SoundManager.playDash();
+    return true;
+  }
+
   public recalculateStats() {
     let speedBonus = 0;
     let dmgBonus = 0;
@@ -367,6 +422,36 @@ export class Player {
 
     const dmgBuff = this.activeBuffs.get('damage');
     if (dmgBuff) dmgBonus += dmgBuff.value;
+
+    // Apply Rift items passives
+    const adrenalineStacks = this.getItemStacks('adrenaline_dart');
+    const injectorStacks = this.getItemStacks('kinetic_injector');
+    const vialStacks = this.getItemStacks('health_vial');
+    const aegisStacks = this.getItemStacks('aegis_battery');
+    const critStacks = this.getItemStacks('crit_visor');
+    const naniteStacks = this.getItemStacks('nanite_plating');
+
+    // Speed: +12% per Adrenaline Dart stack
+    speedBonus += adrenalineStacks * 0.12;
+
+    // HP Regen: +2.5 HP/s per Health Vial stack
+    this.passiveHpRegen = (this.amuletCount * 1.5) + (vialStacks * 2.5);
+
+    // Max Shield: +35 shield per Aegis Battery stack
+    this.maxShield = aegisStacks * 35;
+    if (this.shield > this.maxShield) this.shield = this.maxShield;
+
+    // Crit Chance: 5% base + 12% per Crit Visor stack
+    this.critChance = 0.05 + critStacks * 0.12;
+
+    // Flat armor reduction: Nanite Plating
+    this.passiveDamageReduction = Math.min(0.75, (this.vestCount * 0.1) + (naniteStacks * 0.08));
+
+    // Attack Cooldown Multiplier: -15% cooldown per Kinetic Injector stack
+    this.passiveCooldownMultiplier = Math.max(0.2, (1 - this.watchCount * 0.08) * Math.pow(0.85, injectorStacks));
+    for (const weapon of this.weapons) {
+      weapon.cooldownMultiplier = this.passiveCooldownMultiplier;
+    }
 
     // Apply speed cheat or base speed * passive multiplier + speed buff
     const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
@@ -455,7 +540,33 @@ export class Player {
   ) {
     if (!this.isAlive) return;
 
-    // Passive HP Regeneration from Hunter Amulet
+    // Tactical Dash Cooldown & Movement
+    if (this.dashCooldown > 0) {
+      this.dashCooldown = Math.max(0, this.dashCooldown - dt);
+    }
+    if (this.isDashing) {
+      this.dashTimer -= dt;
+      this.position.addScaledVector(this.dashDirection, this.speed * 2.5 * dt);
+      if (obstacleManager) {
+        obstacleManager.resolveEntityCollision(this.position, 0.45);
+      }
+      this.spriteMaterial.color.setHex(0x60a5fa);
+      if (this.dashTimer <= 0) {
+        this.isDashing = false;
+        this.spriteMaterial.color.setHex(0xffffff);
+      }
+    }
+
+    // Shield Regeneration (Aegis Battery)
+    if (this.maxShield > 0) {
+      if (this.shieldRegenDelay > 0) {
+        this.shieldRegenDelay -= dt;
+      } else if (this.shield < this.maxShield) {
+        this.shield = Math.min(this.maxShield, this.shield + (this.maxShield * 0.25) * dt);
+      }
+    }
+
+    // Passive HP Regeneration from Hunter Amulet & Bio-Injectors
     if (this.passiveHpRegen > 0 && !this.isDowned) {
       this.heal(this.passiveHpRegen * dt);
     }
@@ -651,14 +762,50 @@ export class Player {
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {
-    if (!this.isAlive || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable'))) || this.isDowned) {
+    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable'))) || this.isDowned) {
       return false;
     }
 
-    const finalAmount = ignoreInvuln ? amount : Math.max(1, amount * (1 - this.passiveDamageReduction));
-    this.hp = Math.max(0, this.hp - finalAmount);
-    this.flashTimer = 0.15;
-    this.spriteMaterial.color.setHex(0xff2222);
+    this.shieldRegenDelay = 3.5;
+
+    // Apply Nanite Plating flat reduction
+    const naniteStacks = this.getItemStacks('nanite_plating');
+    const flatReduction = naniteStacks * 4;
+    let finalAmount = ignoreInvuln ? amount : Math.max(1, (amount - flatReduction) * (1 - this.passiveDamageReduction));
+
+    // Absorb with shield first
+    if (this.shield > 0) {
+      if (this.shield >= finalAmount) {
+        this.shield -= finalAmount;
+        finalAmount = 0;
+      } else {
+        finalAmount -= this.shield;
+        this.shield = 0;
+      }
+    }
+
+    if (finalAmount > 0) {
+      this.hp = Math.max(0, this.hp - finalAmount);
+      this.flashTimer = 0.15;
+      this.spriteMaterial.color.setHex(0xff2222);
+    }
+
+    // Check Chronos Phylactery (Legendary Item) lethal protection
+    if (this.hp <= 0 && this.hasChronosReady && this.getItemStacks('chronos_phylactery') > 0) {
+      this.hasChronosReady = false;
+      this.hp = Math.round(this.maxHp * 0.5);
+      this.addBuff({
+        type: 'invulnerable',
+        name: 'Кристалл Времени',
+        icon: '⏳',
+        color: '#ef4444',
+        duration: 3.0,
+        maxDuration: 3.0,
+        value: 1
+      });
+      SoundManager.playTeleporterComplete();
+      return false;
+    }
 
     if (this.hp <= 0) {
       if (this.isCoop && !ignoreInvuln) {

@@ -12,6 +12,8 @@ export class InputManager {
   public onToggleDevMode?: () => void;
   public onToggleMap?: () => void;
   public onToggleDebugHud?: () => void;
+  public onInteract?: () => void;
+  public onDash?: () => void;
 
   constructor() {
     window.addEventListener('keydown', (e) => this.onKeyDown(e));
@@ -21,6 +23,18 @@ export class InputManager {
 
   private onKeyDown(e: KeyboardEvent) {
     this.keys[e.code] = true;
+
+    if (e.code === 'KeyE' || e.code === 'KeyF') {
+      if (this.onInteract) {
+        this.onInteract();
+      }
+    }
+
+    if (e.code === 'Space' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+      if (this.onDash) {
+        this.onDash();
+      }
+    }
 
     if (e.code === 'F3' || e.key === 'F3') {
       e.preventDefault();

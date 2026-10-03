@@ -17,6 +17,9 @@ import { RemotePlayer } from './entities/RemotePlayer';
 import { SoundManager } from './core/SoundManager';
 import { ALTAR_CONFIGS } from './world/Altar';
 import { RoomDirectory } from './net/RoomDirectory';
+import { BiomeManager } from './world/BiomeManager';
+import { ChestManager } from './world/ChestManager';
+import { RiftTeleporter } from './world/RiftTeleporter';
 
 enum GameState {
   MAIN_MENU,
@@ -75,6 +78,11 @@ class Game {
   private pendingLevelUps = 0;
   private isLevelUpActive = false;
 
+  // The Rift Managers
+  private biomeManager: BiomeManager;
+  private chestManager: ChestManager;
+  private riftTeleporter: RiftTeleporter;
+
   constructor() {
     this.engine = new Engine('game-container');
     this.input = new InputManager();
@@ -84,12 +92,65 @@ class Game {
     this.player = new Player(this.engine.scene, 'ronin');
     this.net = new NetworkManager();
 
-    // Monster killed attribution listener (credits accurate player ID)
-    this.enemyManager.onEnemyKilled = (_enemy, killer) => {
+    this.biomeManager = new BiomeManager();
+    this.chestManager = new ChestManager(this.engine.scene);
+    this.riftTeleporter = new RiftTeleporter(this.engine.scene, new THREE.Vector3(75, 0, 75));
+
+    this.input.onInteract = () => {
+      this.handleInteract();
+    };
+
+    this.input.onDash = () => {
+      if (this.gameState === GameState.PLAYING) {
+        this.player.triggerDash(this.input.moveDirection);
+      }
+    };
+
+    // Monster killed attribution listener (credits accurate player ID & The Rift economy)
+    this.enemyManager.onEnemyKilled = (enemy, killer) => {
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
       const hitterId = killer || 'p1';
       if (hitterId === myId) {
         this.player.kills++;
+        this.player.credits += (enemy.creditsValue || 3);
+
+        // Proc: Bio-Leech Syringe (Uncommon)
+        const leechStacks = this.player.getItemStacks('bio_leech');
+        if (leechStacks > 0) {
+          this.player.heal(leechStacks * 5);
+        }
+
+        // Proc: Plasma Detonator (Uncommon)
+        const detonatorStacks = this.player.getItemStacks('plasma_detonator');
+        if (detonatorStacks > 0) {
+          const aoeRadius = 3.5 + detonatorStacks * 1.0;
+          const aoeDamage = 35 * detonatorStacks;
+          for (const other of this.enemyManager.enemies) {
+            if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= aoeRadius) {
+              other.takeDamage(aoeDamage, enemy.position, myId);
+              this.damageNumbers.spawnDamage(other.position, aoeDamage, false, this.engine.camera);
+            }
+          }
+          SoundManager.playShoot();
+        }
+
+        // Proc: Singularity Core (Legendary)
+        const singularityStacks = this.player.getItemStacks('singularity_core');
+        if (singularityStacks > 0) {
+          this.player.singularityKillCounter++;
+          const targetKills = Math.max(4, 10 - singularityStacks * 2);
+          if (this.player.singularityKillCounter >= targetKills) {
+            this.player.singularityKillCounter = 0;
+            for (const other of this.enemyManager.enemies) {
+              if (other.isAlive && other.position.distanceTo(enemy.position) <= 12) {
+                other.position.lerp(enemy.position, 0.65);
+                other.takeDamage(120 * singularityStacks, enemy.position, myId);
+                this.damageNumbers.spawnDamage(other.position, 120 * singularityStacks, true, this.engine.camera);
+              }
+            }
+            SoundManager.playTeleporterActivate();
+          }
+        }
       }
       const st = this.allPlayerStats.get(hitterId) || { kills: 0, damageDealt: 0, level: 1, revives: 0 };
       st.kills++;
@@ -898,6 +959,19 @@ class Game {
     this.player.isSpeedCheat = false;
     this.player.isOneHitKill = false;
     this.player.recalculateStats();
+
+    // Initialize The Rift Stage 1
+    this.biomeManager.reset();
+    this.biomeManager.applyBiomeToScene(this.engine.scene);
+    this.chestManager.generateStageChests(0, 0, 14, 1);
+    this.riftTeleporter.resetForStage(new THREE.Vector3(75, 0, 75));
+    this.player.credits = 0;
+    this.player.riftItems.clear();
+    this.player.recalculateStats();
+    this.enemyManager.currentStage = 1;
+    this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
+    this.hud.updateTeleporterHUD(false, 0, false, false);
+
     this.engine.chunkManager.update(this.player.position);
     this.mapManager.clear();
     this.mapManager.close();
@@ -911,6 +985,88 @@ class Game {
     this.gameTime = 0;
     this.gameState = GameState.PLAYING;
     this.lastTime = performance.now();
+  }
+
+  private handleInteract() {
+    if (this.gameState !== GameState.PLAYING || !this.player.isAlive || this.player.isDowned) {
+      return;
+    }
+
+    // 1. Check Teleporter interaction
+    const teleInteraction = this.riftTeleporter.getInteraction(this.player.position);
+    if (teleInteraction.canInteract && teleInteraction.action) {
+      if (teleInteraction.action === 'activate') {
+        const activated = this.riftTeleporter.activate();
+        if (activated) {
+          SoundManager.playTeleporterActivate();
+          this.enemyManager.spawnTeleporterBoss(this.player.position, this.biomeManager.stageNumber);
+          this.hud.triggerBossWarning('ХРАНИТЕЛЬ РАЗЛОМА', this.biomeManager.stageNumber);
+          if (this.net.role === 'host') {
+            this.pendingNetworkEvents.push({
+              type: 'teleporter_activated' as any,
+              stage: this.biomeManager.stageNumber
+            } as any);
+          }
+        }
+        return;
+      }
+
+      if (teleInteraction.action === 'warp') {
+        // Warp to next biome!
+        const nextBiome = this.biomeManager.advanceStage();
+        this.biomeManager.applyBiomeToScene(this.engine.scene);
+        this.enemyManager.currentStage = this.biomeManager.stageNumber;
+        this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
+
+        // Reposition players to start
+        this.player.position.set(0, 0, 0);
+        this.player.mesh.position.set(0, 0, 0);
+
+        // Reset teleporter in next stage
+        const teleDist = 75 + Math.random() * 25;
+        const teleAngle = Math.random() * Math.PI * 2;
+        this.riftTeleporter.resetForStage(new THREE.Vector3(Math.cos(teleAngle) * teleDist, 0, Math.sin(teleAngle) * teleDist));
+
+        // Generate new chests
+        this.chestManager.generateStageChests(0, 0, 14 + this.biomeManager.stageNumber * 2, this.biomeManager.stageNumber);
+
+        // Revive all downed squad members
+        if (this.player.isDowned) {
+          this.player.revive(0.5);
+        }
+        for (const remote of this.remotePlayers.values()) {
+          if (remote.isDowned) {
+            remote.isDowned = false;
+            remote.hp = Math.round(remote.maxHp * 0.5);
+            remote.redrawOverhead();
+          }
+        }
+
+        SoundManager.playTeleporterComplete();
+        this.hud.triggerAltarNotification(`ЭТАП ${this.biomeManager.stageNumber}`, nextBiome.name, '🌀', '#38bdf8');
+        return;
+      }
+    }
+
+    // 2. Check Chest interaction
+    const chestData = this.chestManager.getClosestInteractableChest(
+      this.player.position,
+      this.gameTime,
+      this.biomeManager.stageNumber
+    );
+
+    if (chestData) {
+      if (this.player.credits >= chestData.cost) {
+        this.player.credits -= chestData.cost;
+        const item = this.chestManager.openChest(chestData.chest);
+        this.player.addRiftItem(item);
+        SoundManager.playChestOpen();
+        this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);
+        this.hud.triggerAltarNotification(item.name, item.description, item.icon, item.color);
+      } else {
+        SoundManager.playHit();
+      }
+    }
   }
 
   private handleHostSnapshot(msg: HostSnapshotMessage) {
@@ -1239,11 +1395,40 @@ class Game {
       this.spawnProjectile,
       this.engine.obstacleManager,
       (enemy, amount, sourcePos) => {
+        let finalDamage = amount;
+        let isCrit = false;
+
+        // Item Proc: Crit Visor (Uncommon)
+        if (Math.random() < this.player.critChance) {
+          finalDamage = Math.round(finalDamage * 2.0);
+          isCrit = true;
+          SoundManager.playCrit();
+        }
+
+        // Item Proc: Chain Lightning Coil (Uncommon)
+        const chainStacks = this.player.getItemStacks('chain_lightning');
+        if (chainStacks > 0 && Math.random() < 0.25) {
+          const maxTargets = 2 + chainStacks;
+          const chainDmg = Math.round(finalDamage * (1.2 + chainStacks * 0.3));
+          let hitCount = 0;
+          for (const other of this.enemyManager.enemies) {
+            if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= 8.5) {
+              other.takeDamage(chainDmg, enemy.position, this.net.mySlotId || 'p1');
+              this.damageNumbers.spawnDamage(other.position, chainDmg, false, this.engine.camera);
+              hitCount++;
+              if (hitCount >= maxTargets) break;
+            }
+          }
+          if (hitCount > 0) {
+            SoundManager.playChainLightning();
+          }
+        }
+
         if (this.net.role === 'client') {
-          const isDead = enemy.takeDamage(amount, sourcePos, this.net.mySlotId);
-          this.damageNumbers.spawnDamage(enemy.position, amount, amount > 28, this.engine.camera);
+          const isDead = enemy.takeDamage(finalDamage, sourcePos, this.net.mySlotId);
+          this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit || finalDamage > 28, this.engine.camera);
           SoundManager.playHit();
-          this.player.totalDamageDealt += amount;
+          this.player.totalDamageDealt += finalDamage;
 
           if (isDead) {
             this.player.kills++;
@@ -1258,14 +1443,14 @@ class Game {
           // Queue damage event for host
           this.pendingClientHits.push({
             enemyId: enemy.id,
-            damage: amount,
+            damage: finalDamage,
             sourceX: sourcePos ? sourcePos.x : this.player.position.x,
             sourceZ: sourcePos ? sourcePos.z : this.player.position.z,
             isFatal: isDead
           });
         } else {
-          this.player.totalDamageDealt += amount;
-          this.enemyManager.damageEnemy(enemy, amount, sourcePos, this.engine.camera, this.net.mySlotId || 'p1');
+          this.player.totalDamageDealt += finalDamage;
+          this.enemyManager.damageEnemy(enemy, finalDamage, sourcePos, this.engine.camera, this.net.mySlotId || 'p1');
         }
       }
     );
@@ -1405,6 +1590,53 @@ class Game {
 
     // Update Map & Minimap logic
     this.mapManager.update(dt);
+
+    // The Rift: Update Teleporter, Chests and Interaction Prompts
+    const { justCompleted } = this.riftTeleporter.update(dt, allPlayerPositions);
+    if (justCompleted) {
+      SoundManager.playTeleporterComplete();
+      if (this.player.credits > 0) {
+        const bonusXp = this.player.credits * 2;
+        this.player.gainXp(bonusXp);
+        this.player.credits = 0;
+      }
+      this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Активируйте портал для перехода!', '🌀', '#10b981');
+    }
+
+    if (this.riftTeleporter.state === 'CHARGING') {
+      if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
+        this.riftTeleporter.isBossDefeated = true;
+      }
+    }
+
+    this.chestManager.update(dt);
+
+    const telePrompt = this.riftTeleporter.getInteraction(this.player.position);
+    if (telePrompt.canInteract) {
+      this.hud.showInteractionPrompt(telePrompt.prompt);
+    } else {
+      const chestData = this.chestManager.getClosestInteractableChest(
+        this.player.position,
+        this.gameTime,
+        this.biomeManager.stageNumber
+      );
+      if (chestData) {
+        const canAfford = this.player.credits >= chestData.cost;
+        const msg = canAfford
+          ? `[E] Открыть контейнер (${chestData.cost} ⬡)`
+          : `[E] Недостаточно кредитов (${chestData.cost} ⬡, у вас ${this.player.credits} ⬡)`;
+        this.hud.showInteractionPrompt(msg);
+      } else {
+        this.hud.hideInteractionPrompt();
+      }
+    }
+
+    this.hud.updateTeleporterHUD(
+      this.riftTeleporter.state === 'CHARGING',
+      this.riftTeleporter.chargeProgress,
+      this.riftTeleporter.isPlayerInsideZone,
+      this.riftTeleporter.state === 'WARP_READY'
+    );
 
     // 4. Update Enemies Simulation (Host/Solo simulate movement, separation & AI)
     if (this.net.role !== 'client') {
