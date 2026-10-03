@@ -1,13 +1,23 @@
-import { HostSnapshotMessage, EnemySnapshot, DropSnapshot, PlayerNetState, PlayerStats, NetEvent } from './NetworkManager';
+import {
+  HostSnapshotMessage,
+  EnemySnapshot,
+  DropSnapshot,
+  PlayerNetState,
+  PlayerStats,
+  NetEvent,
+  ChestSyncInfo,
+  TeleporterSyncInfo
+} from './NetworkManager';
 import { SpriteDirection, CharacterType, HeroAnimState, EnemyType, GemType } from '../sim/types';
 
 const MAGIC_HEADER = 0x48534e50; // "HSNP" (Host Snapshot Network Packet)
-const PROTOCOL_VERSION = 1;
+const PROTOCOL_VERSION = 2;
 
 const SLOTS = ['p1', 'p2', 'p3', 'p4', 'p5'] as const;
 const DIRS: SpriteDirection[] = ['front', 'back', 'left', 'right'];
 const ANIMS: HeroAnimState[] = ['IDLE', 'WALK', 'ATTACK', 'WALK_ATTACK'];
 const CHARS: CharacterType[] = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer'];
+const CHEST_TIERS: ('small' | 'large' | 'legendary')[] = ['small', 'large', 'legendary'];
 const ENEMIES: EnemyType[] = [
   'coyote',
   'crawler',
@@ -52,6 +62,7 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
   const players = allPlayers.filter(([id]) => SLOTS.includes(id as any));
   const enemies = msg.enemies || [];
   const drops = msg.drops || [];
+  const chests = msg.chests || [];
   const damageTaken = Object.entries(msg.damageTakenByClient || {}).filter(([id]) => SLOTS.includes(id as any));
 
   // Events serialized as compact JSON utf8 bytes
@@ -60,16 +71,19 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
   const eventsLen = eventsBytes ? eventsBytes.byteLength : 0;
 
   // Header (4) + Version (1) + GameTime (4) + TotalKills (4) + Boss (11) = 24 bytes
-  // Players count (1) + Players (players.length * 36)
+  // Players count (1) + Players (players.length * 52)
   // Enemies count (2) + Enemies (enemies.length * 24)
   // Drops count (2) + Drops (drops.length * 18)
   // DamageTaken count (1) + DamageTaken (damageTaken.length * 3)
   // Events length (2) + Events bytes
+  // Chests count (2) + Chests (chests.length * 40)
+  // Teleporter (15)
   const bufferSize =
-    64 +
-    players.length * 48 +
+    128 +
+    players.length * 64 +
     enemies.length * 32 +
     drops.length * 24 +
+    chests.length * 40 +
     damageTaken.length * 8 +
     eventsLen +
     512;
@@ -128,6 +142,7 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
     view.setFloat32(offset, p.maxHp, true); offset += 4;
     view.setFloat32(offset, p.xp || 0, true); offset += 4;
     view.setFloat32(offset, p.xpToNextLevel || 10, true); offset += 4;
+    view.setUint32(offset, p.credits || 0, true); offset += 4;
 
     const stats = msg.stats ? msg.stats[id] : undefined;
     view.setUint16(offset, p.kills || (stats?.kills || 0), true); offset += 2;
@@ -194,6 +209,39 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
     offset += eventsLen;
   }
 
+  // 9. Chests
+  view.setUint16(offset, chests.length, true); offset += 2;
+  for (const chest of chests) {
+    const idBytes = textEncoder.encode(chest.id || '');
+    const idLen = Math.min(255, idBytes.byteLength);
+    view.setUint8(offset, idLen); offset += 1;
+    if (idLen > 0) {
+      u8.set(idBytes.subarray(0, idLen), offset);
+      offset += idLen;
+    }
+
+    let tierIdx = CHEST_TIERS.indexOf(chest.tier);
+    if (tierIdx === -1) tierIdx = 0;
+    view.setUint8(offset, tierIdx); offset += 1;
+
+    view.setUint16(offset, chest.baseCost || 25, true); offset += 2;
+    view.setFloat32(offset, chest.x, true); offset += 4;
+    view.setFloat32(offset, chest.z, true); offset += 4;
+    view.setUint8(offset, chest.isOpened ? 1 : 0); offset += 1;
+  }
+
+  // 10. Teleporter
+  if (msg.teleporter) {
+    view.setUint8(offset, 1); offset += 1;
+    view.setFloat32(offset, msg.teleporter.x, true); offset += 4;
+    view.setFloat32(offset, msg.teleporter.z, true); offset += 4;
+    view.setUint8(offset, msg.teleporter.isActivated ? 1 : 0); offset += 1;
+    view.setFloat32(offset, msg.teleporter.chargeProgress, true); offset += 4;
+    view.setUint8(offset, msg.teleporter.isCompleted ? 1 : 0); offset += 1;
+  } else {
+    view.setUint8(offset, 0); offset += 1;
+  }
+
   return buffer.slice(0, offset);
 }
 
@@ -213,7 +261,7 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
     throw new Error('Invalid binary snapshot magic header');
   }
   const version = view.getUint8(offset); offset += 1;
-  if (version !== PROTOCOL_VERSION) {
+  if (version !== PROTOCOL_VERSION && version !== 1) {
     console.warn(`Snapshot version mismatch: got ${version}, expected ${PROTOCOL_VERSION}`);
   }
 
@@ -252,6 +300,8 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
     const maxHp = view.getFloat32(offset, true); offset += 4;
     const xp = view.getFloat32(offset, true); offset += 4;
     const xpToNextLevel = view.getFloat32(offset, true); offset += 4;
+    const credits = version >= 2 ? view.getUint32(offset, true) : 0;
+    if (version >= 2) offset += 4;
 
     const kills = view.getUint16(offset, true); offset += 2;
     const damageDealt = view.getUint32(offset, true); offset += 4;
@@ -273,6 +323,7 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
       level,
       xp,
       xpToNextLevel,
+      credits,
       isDowned,
       reviveProgress,
       charType,
@@ -369,6 +420,49 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
     }
   }
 
+  // 9. Chests
+  let chests: ChestSyncInfo[] | undefined = undefined;
+  if (version >= 2 && offset + 2 <= buffer.byteLength) {
+    const chestsCount = view.getUint16(offset, true); offset += 2;
+    chests = new Array(chestsCount);
+    for (let i = 0; i < chestsCount; i++) {
+      const idLen = view.getUint8(offset); offset += 1;
+      let id = '';
+      if (idLen > 0) {
+        id = textDecoder.decode(u8.subarray(offset, offset + idLen));
+        offset += idLen;
+      }
+      const tierIdx = view.getUint8(offset); offset += 1;
+      const baseCost = view.getUint16(offset, true); offset += 2;
+      const x = view.getFloat32(offset, true); offset += 4;
+      const z = view.getFloat32(offset, true); offset += 4;
+      const isOpened = view.getUint8(offset) === 1; offset += 1;
+
+      chests[i] = {
+        id,
+        tier: CHEST_TIERS[tierIdx] || 'small',
+        baseCost,
+        x,
+        z,
+        isOpened
+      };
+    }
+  }
+
+  // 10. Teleporter
+  let teleporter: TeleporterSyncInfo | undefined = undefined;
+  if (version >= 2 && offset < buffer.byteLength) {
+    const hasTele = view.getUint8(offset); offset += 1;
+    if (hasTele === 1) {
+      const x = view.getFloat32(offset, true); offset += 4;
+      const z = view.getFloat32(offset, true); offset += 4;
+      const isActivated = view.getUint8(offset) === 1; offset += 1;
+      const chargeProgress = view.getFloat32(offset, true); offset += 4;
+      const isCompleted = view.getUint8(offset) === 1; offset += 1;
+      teleporter = { x, z, isActivated, chargeProgress, isCompleted };
+    }
+  }
+
   return {
     type: 'HOST_SNAPSHOT',
     players,
@@ -378,6 +472,8 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
     boss,
     enemies,
     drops,
+    chests,
+    teleporter,
     events,
     damageTakenByClient: Object.keys(damageTakenByClient).length > 0 ? damageTakenByClient : undefined,
     hostPlayer: players.p1 || players.host,
