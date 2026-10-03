@@ -3,6 +3,7 @@ import { Engine } from './core/Engine';
 import { InputManager } from './core/InputManager';
 import { Player, CharacterType } from './entities/Player';
 import { EnemyManager, PlayerTargetInfo } from './entities/EnemyManager';
+import { Enemy } from './entities/Enemy';
 import { DropManager } from './drops/DropManager';
 import { Gem } from './drops/Gem';
 import { getPassiveBuffId } from './drops/PassiveBuffs';
@@ -20,6 +21,15 @@ import { RoomDirectory } from './net/RoomDirectory';
 import { BiomeManager } from './world/BiomeManager';
 import { ChestManager } from './world/ChestManager';
 import { RiftTeleporter } from './world/RiftTeleporter';
+import { RIFT_ITEMS, RiftItemId } from './items/RiftItemSystem';
+
+const SPAWN_OFFSETS: Record<string, [number, number]> = {
+  p1: [0, 0],
+  p2: [2.5, 0.5],
+  p3: [-2.5, 0.5],
+  p4: [0.5, 2.5],
+  p5: [-0.5, 2.5]
+};
 
 enum GameState {
   MAIN_MENU,
@@ -112,14 +122,21 @@ class Game {
       const hitterId = killer || 'p1';
       const creditsVal = enemy.creditsValue || 3;
 
-      // In RoR2 co-op, ALL active squad members gain credits for every enemy death!
-      this.player.credits += creditsVal;
+      // In co-op mode, each player's credits are their own ("кредиты у каждого игрока свои")
+      if (hitterId === myId) {
+        this.player.credits += creditsVal;
+      } else {
+        const remote = this.remotePlayers.get(hitterId);
+        if (remote) {
+          remote.credits += creditsVal;
+        }
+      }
 
       if (this.net.role === 'host') {
         this.pendingNetworkEvents.push({
           type: 'credit_gain',
           val: creditsVal,
-          playerId: 'all',
+          playerId: hitterId,
           killer: hitterId
         });
 
@@ -130,45 +147,7 @@ class Game {
       }
 
       if (hitterId === myId) {
-        this.player.kills++;
-
-        // Proc: Bio-Leech Syringe (Uncommon)
-        const leechStacks = this.player.getItemStacks('bio_leech');
-        if (leechStacks > 0) {
-          this.player.heal(leechStacks * 5);
-        }
-
-        // Proc: Plasma Detonator (Uncommon)
-        const detonatorStacks = this.player.getItemStacks('plasma_detonator');
-        if (detonatorStacks > 0) {
-          const aoeRadius = 3.5 + detonatorStacks * 1.0;
-          const aoeDamage = 35 * detonatorStacks;
-          for (const other of this.enemyManager.enemies) {
-            if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= aoeRadius) {
-              other.takeDamage(aoeDamage, enemy.position, myId);
-              this.damageNumbers.spawnDamage(other.position, aoeDamage, false, this.engine.camera);
-            }
-          }
-          SoundManager.playShoot();
-        }
-
-        // Proc: Singularity Core (Legendary)
-        const singularityStacks = this.player.getItemStacks('singularity_core');
-        if (singularityStacks > 0) {
-          this.player.singularityKillCounter++;
-          const targetKills = Math.max(4, 10 - singularityStacks * 2);
-          if (this.player.singularityKillCounter >= targetKills) {
-            this.player.singularityKillCounter = 0;
-            for (const other of this.enemyManager.enemies) {
-              if (other.isAlive && other.position.distanceTo(enemy.position) <= 12) {
-                other.position.lerp(enemy.position, 0.65);
-                other.takeDamage(120 * singularityStacks, enemy.position, myId);
-                this.damageNumbers.spawnDamage(other.position, 120 * singularityStacks, true, this.engine.camera);
-              }
-            }
-            SoundManager.playTeleporterActivate();
-          }
-        }
+        this.onLocalPlayerEnemyKill(enemy);
       }
       const st = this.allPlayerStats.get(hitterId) || { kills: 0, damageDealt: 0, level: 1, revives: 0 };
       st.kills++;
@@ -270,6 +249,12 @@ class Game {
     );
 
     this.mapManager.onStateChange = (isOpen) => {
+      // In co-op mode, opening the map must NEVER pause the game!
+      const isCoop = this.net.role !== 'solo' || this.player.isCoop;
+      if (isCoop) {
+        return;
+      }
+
       if (isOpen) {
         if (this.gameState === GameState.PLAYING) {
           this.gameState = GameState.PAUSED;
@@ -518,18 +503,32 @@ class Game {
       }
     };
 
-    this.net.onChestOpenedReceived = (chestId, playerId) => {
+    this.net.onChestOpenedReceived = (chestId, playerId, itemId) => {
       const chest = this.chestManager.chests.find(c => c.id === chestId);
       if (chest && !chest.isOpened) {
         this.chestManager.openChest(chest);
         SoundManager.playChestOpen();
       }
+      const itemDef = itemId ? RIFT_ITEMS[itemId as RiftItemId] : undefined;
+      const playerName = getPlayerSlotDisplayName(playerId || 'p2', false);
+      if (itemDef) {
+        this.hud.triggerAltarNotification(`${playerName} открыл капсулу`, itemDef.name, itemDef.icon, itemDef.color);
+      }
       if (this.net.role === 'host') {
         this.pendingNetworkEvents.push({
           type: 'chest_opened',
           chestId,
-          playerId
+          playerId,
+          name: itemDef?.name,
+          icon: itemDef?.icon,
+          color: itemDef?.color
         });
+      }
+    };
+
+    this.net.onWarpRequestReceived = () => {
+      if (this.net.role === 'host' && this.riftTeleporter.state === 'WARP_READY') {
+        this.warpToNextStage();
       }
     };
 
@@ -1050,38 +1049,11 @@ class Game {
       }
 
       if (teleInteraction.action === 'warp') {
-        // Warp to next biome!
-        const nextBiome = this.biomeManager.advanceStage();
-        this.biomeManager.applyBiomeToScene(this.engine.scene);
-        this.enemyManager.currentStage = this.biomeManager.stageNumber;
-        this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
-
-        // Reposition players to start
-        this.player.position.set(0, 0, 0);
-        this.player.mesh.position.set(0, 0, 0);
-
-        // Reset teleporter in next stage
-        const teleDist = 75 + Math.random() * 25;
-        const teleAngle = Math.random() * Math.PI * 2;
-        this.riftTeleporter.resetForStage(new THREE.Vector3(Math.cos(teleAngle) * teleDist, 0, Math.sin(teleAngle) * teleDist));
-
-        // Generate new chests
-        this.chestManager.generateStageChests(0, 0, 14 + this.biomeManager.stageNumber * 2, this.biomeManager.stageNumber);
-
-        // Revive all downed squad members
-        if (this.player.isDowned) {
-          this.player.revive(0.5);
+        if (this.net.role === 'client') {
+          this.net.send({ type: 'WARP_REQUEST' as any });
+          return;
         }
-        for (const remote of this.remotePlayers.values()) {
-          if (remote.isDowned) {
-            remote.isDowned = false;
-            remote.hp = Math.round(remote.maxHp * 0.5);
-            remote.redrawOverhead();
-          }
-        }
-
-        SoundManager.playTeleporterComplete();
-        this.hud.triggerAltarNotification(`ЭТАП ${this.biomeManager.stageNumber}`, nextBiome.name, '🌀', '#38bdf8');
+        this.warpToNextStage();
         return;
       }
     }
@@ -1103,16 +1075,188 @@ class Game {
         this.hud.triggerAltarNotification(item.name, item.description, item.icon, item.color);
 
         if (this.net.role === 'client') {
-          this.net.notifyChestOpened(chestData.chest.id);
+          this.net.notifyChestOpened(chestData.chest.id, item.id);
         } else if (this.net.role === 'host') {
           this.pendingNetworkEvents.push({
             type: 'chest_opened',
             chestId: chestData.chest.id,
-            playerId: 'p1'
+            playerId: 'p1',
+            name: item.name,
+            icon: item.icon,
+            color: item.color
           });
         }
       } else {
         SoundManager.playHit();
+      }
+    }
+  }
+
+  private warpToNextStage() {
+    const nextBiome = this.biomeManager.advanceStage();
+    this.biomeManager.applyBiomeToScene(this.engine.scene);
+    this.enemyManager.currentStage = this.biomeManager.stageNumber;
+    this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
+
+    // Reposition host player to start
+    this.player.position.set(0, 0, 0);
+    this.player.mesh.position.set(0, 0, 0);
+    this.engine.chunkManager.update(this.player.position);
+
+    // Reset teleporter in next stage
+    const teleDist = 75 + Math.random() * 25;
+    const teleAngle = Math.random() * Math.PI * 2;
+    this.riftTeleporter.resetForStage(new THREE.Vector3(Math.cos(teleAngle) * teleDist, 0, Math.sin(teleAngle) * teleDist));
+
+    // Generate new chests
+    this.chestManager.generateStageChests(0, 0, 14 + this.biomeManager.stageNumber * 2, this.biomeManager.stageNumber);
+
+    // Revive all downed squad members
+    if (this.player.isDowned) {
+      this.player.revive(0.5);
+    }
+    for (const remote of this.remotePlayers.values()) {
+      if (remote.isDowned) {
+        remote.isDowned = false;
+        remote.hp = Math.round(remote.maxHp * 0.5);
+        remote.redrawOverhead();
+      }
+    }
+
+    SoundManager.playTeleporterComplete();
+    this.hud.triggerAltarNotification(`ЭТАП ${this.biomeManager.stageNumber}`, nextBiome.name, '🌀', '#38bdf8');
+
+    if (this.net.role === 'host') {
+      this.pendingNetworkEvents.push({
+        type: 'stage_warp',
+        stage: this.biomeManager.stageNumber,
+        biomeName: nextBiome.name
+      });
+    }
+  }
+
+  private applyStageTransition(stageNumber: number, biomeName?: string) {
+    const nextBiome = this.biomeManager.setStage(stageNumber);
+    this.biomeManager.applyBiomeToScene(this.engine.scene);
+    this.enemyManager.currentStage = stageNumber;
+    this.hud.updateStageText(stageNumber, biomeName || nextBiome.name);
+
+    // Reposition client player to start
+    const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
+    this.player.position.set(myOffset[0], 0, myOffset[1]);
+    this.player.mesh.position.set(myOffset[0], 0, myOffset[1]);
+    this.engine.chunkManager.update(this.player.position);
+
+    if (this.player.isDowned) {
+      this.player.revive(0.5);
+    }
+
+    SoundManager.playTeleporterComplete();
+    this.hud.triggerAltarNotification(`ЭТАП ${stageNumber}`, biomeName || nextBiome.name, '🌀', '#38bdf8');
+  }
+
+  private applyCombatProcOnEnemyHit(
+    enemy: Enemy,
+    baseDamage: number,
+    _sourcePos?: THREE.Vector3
+  ): { finalDamage: number; isCrit: boolean } {
+    let finalDamage = baseDamage;
+    let isCrit = false;
+
+    // Item Proc: Crit Visor (Uncommon)
+    if (Math.random() < this.player.critChance) {
+      finalDamage = Math.round(finalDamage * 2.0);
+      isCrit = true;
+      SoundManager.playCrit();
+    }
+
+    // Item Proc: Pulse Rounds (Common) - chance to inflict extra bleed/burst damage
+    const pulseStacks = this.player.getItemStacks('pulse_rounds');
+    if (pulseStacks > 0 && Math.random() < Math.min(0.8, pulseStacks * 0.15)) {
+      finalDamage = Math.round(finalDamage * 1.8);
+      isCrit = true;
+    }
+
+    // Item Proc: Chain Lightning Coil (Uncommon)
+    const chainStacks = this.player.getItemStacks('chain_lightning');
+    if (chainStacks > 0 && Math.random() < 0.25) {
+      const maxTargets = 2 + chainStacks;
+      const chainDmg = Math.round(finalDamage * (1.2 + chainStacks * 0.3));
+      let hitCount = 0;
+      const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      for (const other of this.enemyManager.enemies) {
+        if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= 8.5) {
+          if (this.net.role === 'client') {
+            const isChainDead = other.takeDamage(chainDmg, enemy.position, myId);
+            this.damageNumbers.spawnDamage(other.position, chainDmg, false, this.engine.camera);
+            if (isChainDead) {
+              this.player.kills++;
+              this.recentlyDeadEnemyIds.add(other.id);
+              this.onLocalPlayerEnemyKill(other);
+              other.destroy(this.engine.scene);
+              const oIdx = this.enemyManager.enemies.indexOf(other);
+              if (oIdx !== -1) this.enemyManager.enemies.splice(oIdx, 1);
+            }
+            this.pendingClientHits.push({
+              enemyId: other.id,
+              damage: chainDmg,
+              sourceX: enemy.position.x,
+              sourceZ: enemy.position.z,
+              isFatal: isChainDead
+            });
+          } else {
+            this.enemyManager.damageEnemy(other, chainDmg, enemy.position, this.engine.camera, myId);
+          }
+          hitCount++;
+          if (hitCount >= maxTargets) break;
+        }
+      }
+      if (hitCount > 0) {
+        SoundManager.playChainLightning();
+      }
+    }
+
+    return { finalDamage, isCrit };
+  }
+
+  private onLocalPlayerEnemyKill(enemy?: Enemy) {
+    // Item Proc: Bio-Leech (+5 HP per stack)
+    const leechStacks = this.player.getItemStacks('bio_leech');
+    if (leechStacks > 0) {
+      this.player.heal(leechStacks * 5);
+    }
+
+    // Item Proc: Plasma Detonator (AOE explosion on kill)
+    const detonatorStacks = this.player.getItemStacks('plasma_detonator');
+    if (detonatorStacks > 0 && enemy && enemy.position) {
+      SoundManager.playShoot();
+      const radius = 4.0 + detonatorStacks * 1.0;
+      const baseDmg = 25 * this.player.damageMultiplier;
+      const explosionDmg = Math.round(baseDmg * (2.0 + detonatorStacks * 0.5));
+      const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+
+      for (const other of this.enemyManager.enemies) {
+        if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= radius) {
+          if (this.net.role === 'client') {
+            const isDead = other.takeDamage(explosionDmg, enemy.position, myId);
+            this.damageNumbers.spawnDamage(other.position, explosionDmg, true, this.engine.camera);
+            if (isDead) {
+              this.recentlyDeadEnemyIds.add(other.id);
+              other.destroy(this.engine.scene);
+              const idx = this.enemyManager.enemies.indexOf(other);
+              if (idx !== -1) this.enemyManager.enemies.splice(idx, 1);
+            }
+            this.pendingClientHits.push({
+              enemyId: other.id,
+              damage: explosionDmg,
+              sourceX: enemy.position.x,
+              sourceZ: enemy.position.z,
+              isFatal: isDead
+            });
+          } else {
+            this.enemyManager.damageEnemy(other, explosionDmg, enemy.position, this.engine.camera, myId);
+          }
+        }
       }
     }
   }
@@ -1162,6 +1306,9 @@ class Game {
     }
 
     this.gameTime = msg.gameTime;
+    if (msg.stage && msg.stage !== this.biomeManager.stageNumber) {
+      this.applyStageTransition(msg.stage);
+    }
     this.enemyManager.applySnapshot(msg.enemies, this.recentlyDeadEnemyIds);
     this.dropManager.applySnapshot(msg.drops);
     if (msg.chests) {
@@ -1196,6 +1343,8 @@ class Game {
           this.enemyManager.activeBoss = null;
         }
         this.hud.resetBossUI();
+      } else if (event.type === 'stage_warp' && typeof event.stage === 'number') {
+        this.applyStageTransition(event.stage, event.biomeName);
       } else if (event.type === 'revive') {
         const targetId = event.targetId || '';
         const isTargetHost = targetId === 'p1' || targetId === 'host';
@@ -1230,16 +1379,13 @@ class Game {
           this.spawnCosmeticShot(event.shot);
         }
       } else if (event.type === 'credit_gain' && typeof event.val === 'number') {
-        this.player.credits += event.val;
-        if (event.killer === this.net.mySlotId) {
-          this.player.kills++;
-          const leechStacks = this.player.getItemStacks('bio_leech');
-          if (leechStacks > 0) {
-            this.player.heal(leechStacks * 5);
-          }
-          const detonatorStacks = this.player.getItemStacks('plasma_detonator');
-          if (detonatorStacks > 0) {
-            SoundManager.playShoot();
+        const targetId = event.playerId || event.killer;
+        if (targetId === this.net.mySlotId) {
+          this.player.credits += event.val;
+        } else if (targetId) {
+          const remote = this.remotePlayers.get(targetId);
+          if (remote) {
+            remote.credits += event.val;
           }
         }
       } else if (event.type === 'chest_opened' && event.chestId) {
@@ -1247,6 +1393,10 @@ class Game {
         if (chest && !chest.isOpened) {
           this.chestManager.openChest(chest);
           SoundManager.playChestOpen();
+        }
+        if (event.playerId && event.playerId !== this.net.mySlotId && event.name) {
+          const playerName = getPlayerSlotDisplayName(event.playerId, false);
+          this.hud.triggerAltarNotification(`${playerName} открыл капсулу`, event.name, event.icon || '📦', event.color || '#38bdf8');
         }
       } else if (event.type === 'teleporter_activated') {
         if (this.riftTeleporter.state === 'IDLE') {
@@ -1490,34 +1640,7 @@ class Game {
       this.spawnProjectile,
       this.engine.obstacleManager,
       (enemy, amount, sourcePos) => {
-        let finalDamage = amount;
-        let isCrit = false;
-
-        // Item Proc: Crit Visor (Uncommon)
-        if (Math.random() < this.player.critChance) {
-          finalDamage = Math.round(finalDamage * 2.0);
-          isCrit = true;
-          SoundManager.playCrit();
-        }
-
-        // Item Proc: Chain Lightning Coil (Uncommon)
-        const chainStacks = this.player.getItemStacks('chain_lightning');
-        if (chainStacks > 0 && Math.random() < 0.25) {
-          const maxTargets = 2 + chainStacks;
-          const chainDmg = Math.round(finalDamage * (1.2 + chainStacks * 0.3));
-          let hitCount = 0;
-          for (const other of this.enemyManager.enemies) {
-            if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= 8.5) {
-              other.takeDamage(chainDmg, enemy.position, this.net.mySlotId || 'p1');
-              this.damageNumbers.spawnDamage(other.position, chainDmg, false, this.engine.camera);
-              hitCount++;
-              if (hitCount >= maxTargets) break;
-            }
-          }
-          if (hitCount > 0) {
-            SoundManager.playChainLightning();
-          }
-        }
+        const { finalDamage, isCrit } = this.applyCombatProcOnEnemyHit(enemy, amount, sourcePos);
 
         if (this.net.role === 'client') {
           const isDead = enemy.takeDamage(finalDamage, sourcePos, this.net.mySlotId);
@@ -1528,6 +1651,7 @@ class Game {
           if (isDead) {
             this.player.kills++;
             this.recentlyDeadEnemyIds.add(enemy.id);
+            this.onLocalPlayerEnemyKill(enemy);
             enemy.destroy(this.engine.scene);
             const idx = this.enemyManager.enemies.indexOf(enemy);
             if (idx !== -1) {
@@ -1995,7 +2119,8 @@ class Game {
         kills: this.player.kills,
         damageDealt: Math.round(this.player.totalDamageDealt),
         weapons: this.player.getWeaponsNetState(),
-        buffs: this.player.getBuffsNetState()
+        buffs: this.player.getBuffsNetState(),
+        riftItems: Object.fromEntries(this.player.riftItems)
       };
 
       const allPlayersNetState: Record<string, PlayerNetState> = {
@@ -2030,7 +2155,8 @@ class Game {
             color: b.color,
             duration: Math.max(0, b.duration),
             maxDuration: b.maxDuration
-          }))
+          })),
+          riftItems: Object.fromEntries(remote.riftItems)
         };
       }
 
@@ -2069,6 +2195,7 @@ class Game {
 
       const snapshot: HostSnapshotMessage = {
         type: 'HOST_SNAPSHOT',
+        stage: this.biomeManager.stageNumber,
         players: allPlayersNetState,
         stats: allStatsRecord,
         damageTakenByClient: Object.keys(dmgRecord).length > 0 ? dmgRecord : undefined,
@@ -2136,7 +2263,8 @@ class Game {
           kills: this.player.kills,
           damageDealt: Math.round(this.player.totalDamageDealt),
           weapons: this.player.getWeaponsNetState(),
-          buffs: this.player.getBuffsNetState()
+          buffs: this.player.getBuffsNetState(),
+          riftItems: Object.fromEntries(this.player.riftItems)
         },
         clientStats,
         damageDealt: [...this.pendingClientHits],
@@ -2232,18 +2360,20 @@ class Game {
 
         if (dx * dx + dz * dz <= hitDist * hitDist) {
           proj.hitEnemies.add(enemy.id);
-          const dmg = proj.damage * this.player.damageMultiplier;
+          const baseDmg = proj.damage * this.player.damageMultiplier;
+          const { finalDamage, isCrit } = this.applyCombatProcOnEnemyHit(enemy, baseDmg, proj.position);
           const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
 
           if (this.net.role === 'client') {
-            const isDead = enemy.takeDamage(dmg, proj.position, myId);
-            this.damageNumbers.spawnDamage(enemy.position, dmg, dmg > 28, this.engine.camera);
+            const isDead = enemy.takeDamage(finalDamage, proj.position, myId);
+            this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit || finalDamage > 28, this.engine.camera);
             SoundManager.playHit();
-            this.player.totalDamageDealt += dmg;
+            this.player.totalDamageDealt += finalDamage;
 
             if (isDead) {
               this.player.kills++;
               this.recentlyDeadEnemyIds.add(enemy.id);
+              this.onLocalPlayerEnemyKill(enemy);
               enemy.destroy(this.engine.scene);
               const idx = this.enemyManager.enemies.indexOf(enemy);
               if (idx !== -1) {
@@ -2253,14 +2383,14 @@ class Game {
 
             this.pendingClientHits.push({
               enemyId: enemy.id,
-              damage: dmg,
+              damage: finalDamage,
               sourceX: proj.position.x,
               sourceZ: proj.position.z,
               isFatal: isDead
             });
           } else {
-            this.player.totalDamageDealt += dmg;
-            this.enemyManager.damageEnemy(enemy, dmg, proj.position, this.engine.camera, myId);
+            this.player.totalDamageDealt += finalDamage;
+            this.enemyManager.damageEnemy(enemy, finalDamage, proj.position, this.engine.camera, myId);
           }
 
           const destroyed = proj.onHit();

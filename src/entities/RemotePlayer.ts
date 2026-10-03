@@ -37,6 +37,7 @@ export class RemotePlayer {
 
   // Active Weapons / Abilities
   public weapons: NetWeaponInfo[] = [];
+  public riftItems: Map<string, number> = new Map();
 
   private animatedTextures!: AnimatedCharacterTextures;
   private animFrameTimer: number = 0;
@@ -262,6 +263,12 @@ export class RemotePlayer {
     }
     if (state.credits !== undefined) {
       this.credits = state.credits;
+    }
+    if (state.riftItems) {
+      this.riftItems.clear();
+      for (const [id, count] of Object.entries(state.riftItems)) {
+        this.riftItems.set(id, count);
+      }
     }
     if (state.buffs) {
       this.activeBuffs.clear();

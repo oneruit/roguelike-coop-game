@@ -1295,6 +1295,7 @@ export class HUD {
       credits?: number;
       weapons: { id: string; name: string; icon: string; level: number }[];
       buffs: { type: BuffType; icon: string; duration: number }[];
+      items: { id: string; count: number }[];
     }[] = [];
 
     // 1. Local Player
@@ -1322,7 +1323,8 @@ export class HUD {
       hasInvuln: localPlayer.hasBuff('invulnerable'),
       credits: localPlayer.credits,
       weapons: localPlayer.weapons.map(w => ({ id: w.id, name: w.name, icon: w.icon, level: w.level })),
-      buffs: localBuffs
+      buffs: localBuffs,
+      items: Array.from(localPlayer.riftItems.entries()).map(([id, count]) => ({ id, count }))
     });
 
     // 2. Remote Teammates
@@ -1350,7 +1352,8 @@ export class HUD {
         isLocal: false,
         hasInvuln: rp.activeBuffs.has('invulnerable'),
         weapons: rp.weapons,
-        buffs: rpBuffs
+        buffs: rpBuffs,
+        items: Array.from(rp.riftItems.entries()).map(([itemId, count]) => ({ id: itemId, count }))
       });
     }
 
@@ -1389,6 +1392,7 @@ export class HUD {
             </div>
             <div class="poe-meta-row">
               <div class="poe-member-weapons"></div>
+              <div class="poe-member-items"></div>
               <div class="poe-member-buffs"></div>
             </div>
           </div>
@@ -1485,6 +1489,21 @@ export class HUD {
         }
         if (weaponsRow.innerHTML !== weaponsHtml) {
           weaponsRow.innerHTML = weaponsHtml;
+        }
+      }
+
+      // Update items row
+      const itemsRow = el.querySelector<HTMLElement>('.poe-member-items');
+      if (itemsRow) {
+        let itemsHtml = '';
+        for (const it of m.items) {
+          const def = RIFT_ITEMS[it.id as RiftItemId];
+          if (def) {
+            itemsHtml += `<span class="poe-item-pill" title="${def.name}: ${def.description}"><span class="pill-icon">${def.icon}</span><span class="pill-lvl">x${it.count}</span></span>`;
+          }
+        }
+        if (itemsRow.innerHTML !== itemsHtml) {
+          itemsRow.innerHTML = itemsHtml;
         }
       }
 
