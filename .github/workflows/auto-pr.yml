@@ -34,17 +34,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="${GITHUB_REF#refs/heads/}"
-          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          TARGET_BRANCH="development"
 
-          echo "Branch: $BRANCH → $DEFAULT_BRANCH"
+          echo "Branch: $BRANCH → $TARGET_BRANCH"
 
-          if [ "$BRANCH" = "$DEFAULT_BRANCH" ]; then
+          if [ "$BRANCH" = "$TARGET_BRANCH" ]; then
             echo "Default branch detected, skipping."
             exit 0
           fi
 
           # Check if PR already exists (created by the agent locally)
-          EXISTING_PR=$(gh pr list --head "$BRANCH" --base "$DEFAULT_BRANCH" --json number --jq '.[0].number')
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --base "$TARGET_BRANCH" --json number --jq '.[0].number')
 
           if [ -z "$EXISTING_PR" ]; then
             echo "No existing PR found — creating fallback PR..."
@@ -53,10 +53,10 @@ jobs:
             COMMIT_BODY=$(git log -1 --pretty=%b)
 
             # Build a rich PR body with full commit list
-            COMMIT_LOG=$(git log origin/"$DEFAULT_BRANCH"..HEAD --pretty=format:"- \`%h\` %s" 2>/dev/null | head -20)
+            COMMIT_LOG=$(git log origin/"$TARGET_BRANCH"..HEAD --pretty=format:"- \`%h\` %s" 2>/dev/null | head -20)
 
             gh pr create \
-              --base "$DEFAULT_BRANCH" \
+              --base "$TARGET_BRANCH" \
               --head "$BRANCH" \
               --title "$COMMIT_TITLE" \
               --body "### Automated Pull Request (Fallback via GitHub Actions)
