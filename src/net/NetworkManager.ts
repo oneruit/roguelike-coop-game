@@ -70,6 +70,7 @@ export interface PlayerNetState {
   level: number;
   xp?: number;
   xpToNextLevel?: number;
+  credits?: number;
   isDowned: boolean;
   reviveProgress?: number;
   charType: CharacterType;
@@ -108,7 +109,7 @@ export interface NetShotInfo {
 }
 
 export interface NetEvent {
-  type: 'damage_num' | 'altar_captured' | 'boss_spawn' | 'boss_defeat' | 'revive' | 'sound' | 'level_up' | 'xp_gain' | 'shot';
+  type: 'damage_num' | 'altar_captured' | 'boss_spawn' | 'boss_defeat' | 'revive' | 'sound' | 'level_up' | 'xp_gain' | 'shot' | 'credit_gain' | 'chest_opened' | 'teleporter_activated';
   x?: number;
   z?: number;
   val?: number | string;
@@ -120,6 +121,9 @@ export interface NetEvent {
   buffDuration?: number;
   playerId?: string;
   targetId?: string;
+  killer?: string;
+  chestId?: string;
+  stage?: number;
   reviverId?: string;
   shot?: NetShotInfo;
 }
@@ -161,6 +165,23 @@ export function getPlayerSlotDisplayName(slotId: string, isLocal = false): strin
   return isLocal ? `Игрок ${num} (Вы)` : `Игрок ${num}`;
 }
 
+export interface ChestSyncInfo {
+  id: string;
+  tier: 'small' | 'large' | 'legendary';
+  baseCost: number;
+  x: number;
+  z: number;
+  isOpened: boolean;
+}
+
+export interface TeleporterSyncInfo {
+  x: number;
+  z: number;
+  isActivated: boolean;
+  chargeProgress: number;
+  isCompleted: boolean;
+}
+
 export interface HostSnapshotMessage {
   type: 'HOST_SNAPSHOT';
   players: Record<string, PlayerNetState>; // All players: p1 + all active clients
@@ -170,6 +191,8 @@ export interface HostSnapshotMessage {
   boss: { hp: number; maxHp: number; isAlive: boolean } | null;
   enemies: EnemySnapshot[];
   drops: DropSnapshot[];
+  chests?: ChestSyncInfo[];
+  teleporter?: TeleporterSyncInfo;
   events: NetEvent[];
   damageTakenByClient?: Record<string, number>; // clientId -> damage taken
   hostPlayer?: PlayerNetState;
@@ -185,6 +208,7 @@ export interface ClientSyncMessage {
   clientStats: PlayerStats;
   damageDealt: DamageDealtEvent[];
   collectedGemIds: string[];
+  openedChestIds?: string[];
   isRevivingPartner: boolean;
   revivingTargetId?: string;
   reviveProgress?: number;
@@ -217,6 +241,7 @@ export type NetMessage =
   | { type: 'HERO_SELECT'; playerId: string; hero: CharacterType }
   | { type: 'PLAYER_READY'; playerId: string; isReady: boolean }
   | { type: 'ALTAR_CAPTURED'; altarType: BuffType; playerId: string }
+  | { type: 'CHEST_OPENED'; chestId: string; playerId: string }
   | LobbyUpdateMessage
   | GameStartMessage
   | HostSnapshotMessage
@@ -271,6 +296,7 @@ export class NetworkManager {
   public onConnectionStatusChanged?: (status: string, isSuccess: boolean) => void;
   public onDevActionReceived?: (action: string, value?: any) => void;
   public onAltarCapturedReceived?: (altarType: BuffType, fromPlayerId: string) => void;
+  public onChestOpenedReceived?: (chestId: string, fromPlayerId: string) => void;
   public ping: number = 0;
   public jitter: number = 0;
   public packetLoss: number = 0;
@@ -954,6 +980,13 @@ export class NetworkManager {
         break;
       }
 
+      case 'CHEST_OPENED': {
+        if (this.onChestOpenedReceived) {
+          this.onChestOpenedReceived(msg.chestId, msg.playerId);
+        }
+        break;
+      }
+
       case 'LOBBY_UPDATE': {
         this.lobbyPlayers = msg.players;
         this.isConnected = true;
@@ -1173,6 +1206,10 @@ export class NetworkManager {
     if (this.role === 'client') {
       this.send({ type: 'ALTAR_CAPTURED', altarType, playerId: this.mySlotId });
     }
+  }
+
+  public notifyChestOpened(chestId: string) {
+    this.send({ type: 'CHEST_OPENED', chestId, playerId: this.mySlotId });
   }
 
   public startGame(seed = Math.floor(Math.random() * 1000000)) {

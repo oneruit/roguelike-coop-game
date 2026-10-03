@@ -1292,6 +1292,7 @@ export class HUD {
       reviveProgress: number;
       isLocal: boolean;
       hasInvuln: boolean;
+      credits?: number;
       weapons: { id: string; name: string; icon: string; level: number }[];
       buffs: { type: BuffType; icon: string; duration: number }[];
     }[] = [];
@@ -1319,6 +1320,7 @@ export class HUD {
       reviveProgress: localPlayer.reviveProgress,
       isLocal: true,
       hasInvuln: localPlayer.hasBuff('invulnerable'),
+      credits: localPlayer.credits,
       weapons: localPlayer.weapons.map(w => ({ id: w.id, name: w.name, icon: w.icon, level: w.level })),
       buffs: localBuffs
     });
@@ -1342,6 +1344,7 @@ export class HUD {
         level: rp.level,
         xp: rp.xp,
         xpToNextLevel: rp.xpToNextLevel,
+        credits: rp.credits,
         isDowned: rp.isDowned,
         reviveProgress: rp.reviveProgress,
         isLocal: false,
@@ -1371,6 +1374,7 @@ export class HUD {
               <span class="poe-member-name" style="color: ${m.colorCss};">${m.name}</span>
               <span class="poe-class-tag">${this.getHeroName(m.hero)}</span>
               <span class="poe-level-tag">L${m.level}</span>
+              <span class="poe-credits-tag" style="margin-left: 6px; font-size: 11px; color: #fbbf24; font-weight: bold;">⚡ ${m.credits ?? 0}</span>
             </div>
             <div class="poe-hp-frame">
               <div class="poe-hp-track">
@@ -1415,6 +1419,11 @@ export class HUD {
       const lvlEl = el.querySelector<HTMLElement>('.poe-level-tag');
       if (lvlEl && lvlEl.innerText !== `L${m.level}`) {
         lvlEl.innerText = `L${m.level}`;
+      }
+
+      const creditsEl = el.querySelector<HTMLElement>('.poe-credits-tag');
+      if (creditsEl && creditsEl.innerText !== `⚡ ${m.credits ?? 0}`) {
+        creditsEl.innerText = `⚡ ${m.credits ?? 0}`;
       }
 
       // Update HP

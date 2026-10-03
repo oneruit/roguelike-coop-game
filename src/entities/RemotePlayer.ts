@@ -24,6 +24,7 @@ export class RemotePlayer {
   public level: number = 1;
   public xp: number = 0;
   public xpToNextLevel: number = 10;
+  public credits: number = 0;
   public isDowned: boolean = false;
   public reviveProgress: number = 0; // 0 to 1
 
@@ -258,6 +259,9 @@ export class RemotePlayer {
     }
     if (state.weapons) {
       this.weapons = state.weapons;
+    }
+    if (state.credits !== undefined) {
+      this.credits = state.credits;
     }
     if (state.buffs) {
       this.activeBuffs.clear();

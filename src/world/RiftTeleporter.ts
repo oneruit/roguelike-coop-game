@@ -180,4 +180,31 @@ export class RiftTeleporter {
   public destroy() {
     this.scene.remove(this.mesh);
   }
+
+  public getSnapshot() {
+    return {
+      x: this.position.x,
+      z: this.position.z,
+      isActivated: this.state !== 'IDLE',
+      chargeProgress: this.chargeProgress,
+      isCompleted: this.state === 'WARP_READY'
+    };
+  }
+
+  public applySnapshot(snap: { x: number; z: number; isActivated: boolean; chargeProgress: number; isCompleted: boolean }) {
+    if (this.position.x !== snap.x || this.position.z !== snap.z) {
+      this.resetForStage(new THREE.Vector3(snap.x, 0, snap.z));
+    }
+    if (snap.isActivated && this.state === 'IDLE') {
+      this.activate();
+    }
+    this.chargeProgress = snap.chargeProgress;
+    if (snap.isCompleted) {
+      this.state = 'WARP_READY';
+      this.isBossDefeated = true;
+      this.zoneDome.visible = true;
+      this.zoneDomeMat.color.setHex(0x10b981);
+      this.zoneDomeMat.opacity = 0.6;
+    }
+  }
 }

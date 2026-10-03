@@ -110,9 +110,27 @@ class Game {
     this.enemyManager.onEnemyKilled = (enemy, killer) => {
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
       const hitterId = killer || 'p1';
+      const creditsVal = enemy.creditsValue || 3;
+
+      // In RoR2 co-op, ALL active squad members gain credits for every enemy death!
+      this.player.credits += creditsVal;
+
+      if (this.net.role === 'host') {
+        this.pendingNetworkEvents.push({
+          type: 'credit_gain',
+          val: creditsVal,
+          playerId: 'all',
+          killer: hitterId
+        });
+
+        const st = this.allPlayerStats.get(hitterId);
+        if (st) {
+          st.kills++;
+        }
+      }
+
       if (hitterId === myId) {
         this.player.kills++;
-        this.player.credits += (enemy.creditsValue || 3);
 
         // Proc: Bio-Leech Syringe (Uncommon)
         const leechStacks = this.player.getItemStacks('bio_leech');
@@ -246,7 +264,9 @@ class Game {
       this.enemyManager,
       this.dropManager,
       this.engine.altarManager,
-      this.engine.obstacleManager
+      this.engine.obstacleManager,
+      this.chestManager,
+      this.riftTeleporter
     );
 
     this.mapManager.onStateChange = (isOpen) => {
@@ -495,6 +515,21 @@ class Game {
     this.net.onClientSyncReceived = (msg) => {
       if (this.net.role === 'host') {
         this.handleClientSync(msg);
+      }
+    };
+
+    this.net.onChestOpenedReceived = (chestId, playerId) => {
+      const chest = this.chestManager.chests.find(c => c.id === chestId);
+      if (chest && !chest.isOpened) {
+        this.chestManager.openChest(chest);
+        SoundManager.playChestOpen();
+      }
+      if (this.net.role === 'host') {
+        this.pendingNetworkEvents.push({
+          type: 'chest_opened',
+          chestId,
+          playerId
+        });
       }
     };
 
@@ -787,6 +822,7 @@ class Game {
     this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
     this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]));
+    this.chestManager.clear();
   }
 
   private returnToMainMenu() {
@@ -1063,6 +1099,16 @@ class Game {
         SoundManager.playChestOpen();
         this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);
         this.hud.triggerAltarNotification(item.name, item.description, item.icon, item.color);
+
+        if (this.net.role === 'client') {
+          this.net.notifyChestOpened(chestData.chest.id);
+        } else if (this.net.role === 'host') {
+          this.pendingNetworkEvents.push({
+            type: 'chest_opened',
+            chestId: chestData.chest.id,
+            playerId: 'p1'
+          });
+        }
       } else {
         SoundManager.playHit();
       }
@@ -1116,6 +1162,12 @@ class Game {
     this.gameTime = msg.gameTime;
     this.enemyManager.applySnapshot(msg.enemies, this.recentlyDeadEnemyIds);
     this.dropManager.applySnapshot(msg.drops);
+    if (msg.chests) {
+      this.chestManager.applySnapshot(msg.chests);
+    }
+    if (msg.teleporter) {
+      this.riftTeleporter.applySnapshot(msg.teleporter);
+    }
     this.enemyManager.totalKills = msg.totalKills;
 
     // Authoritative Boss state synchronization
@@ -1174,6 +1226,31 @@ class Game {
       } else if (event.type === 'shot' && event.shot) {
         if (event.shot.ownerId !== this.net.mySlotId) {
           this.spawnCosmeticShot(event.shot);
+        }
+      } else if (event.type === 'credit_gain' && typeof event.val === 'number') {
+        this.player.credits += event.val;
+        if (event.killer === this.net.mySlotId) {
+          this.player.kills++;
+          const leechStacks = this.player.getItemStacks('bio_leech');
+          if (leechStacks > 0) {
+            this.player.heal(leechStacks * 5);
+          }
+          const detonatorStacks = this.player.getItemStacks('plasma_detonator');
+          if (detonatorStacks > 0) {
+            SoundManager.playShoot();
+          }
+        }
+      } else if (event.type === 'chest_opened' && event.chestId) {
+        const chest = this.chestManager.chests.find(c => c.id === event.chestId);
+        if (chest && !chest.isOpened) {
+          this.chestManager.openChest(chest);
+          SoundManager.playChestOpen();
+        }
+      } else if (event.type === 'teleporter_activated') {
+        if (this.riftTeleporter.state === 'IDLE') {
+          this.riftTeleporter.activate();
+          SoundManager.playTeleporterActivate();
+          this.hud.triggerBossWarning('ХРАНИТЕЛЬ РАЗЛОМА', event.stage || 1);
         }
       }
     }
@@ -1297,6 +1374,22 @@ class Game {
         g.destroy(this.engine.scene);
         const idx = this.dropManager.gems.indexOf(g);
         if (idx !== -1) this.dropManager.gems.splice(idx, 1);
+      }
+    }
+
+    // Apply chests opened by guest partner
+    if (msg.openedChestIds && msg.openedChestIds.length > 0) {
+      for (const chestId of msg.openedChestIds) {
+        const chest = this.chestManager.chests.find((c) => c.id === chestId);
+        if (chest && !chest.isOpened) {
+          this.chestManager.openChest(chest);
+          SoundManager.playChestOpen();
+          this.pendingNetworkEvents.push({
+            type: 'chest_opened',
+            chestId,
+            playerId: clientId
+          });
+        }
       }
     }
   }
@@ -1893,6 +1986,7 @@ class Game {
         level: this.player.level,
         xp: this.player.xp,
         xpToNextLevel: this.player.xpToNextLevel,
+        credits: this.player.credits,
         isDowned: this.player.isDowned,
         reviveProgress: this.player.reviveProgress,
         charType: this.player.charType,
@@ -1920,6 +2014,7 @@ class Game {
           level: remote.level,
           xp: remote.xp,
           xpToNextLevel: remote.xpToNextLevel,
+          credits: remote.credits,
           isDowned: remote.isDowned,
           reviveProgress: remote.reviveProgress,
           charType: remote.charType,
@@ -1991,6 +2086,8 @@ class Game {
           : null,
         enemies: this.enemyManager.getSnapshot(),
         drops: this.dropManager.getSnapshot(),
+        chests: this.chestManager.getSnapshot(),
+        teleporter: this.riftTeleporter.getSnapshot(),
         events: this.pendingNetworkEvents.splice(0)
       };
       this.net.send(snapshot);
@@ -2030,6 +2127,7 @@ class Game {
           level: this.player.level,
           xp: this.player.xp,
           xpToNextLevel: this.player.xpToNextLevel,
+          credits: this.player.credits,
           isDowned: this.player.isDowned,
           reviveProgress: this.player.reviveProgress,
           charType: this.player.charType,
