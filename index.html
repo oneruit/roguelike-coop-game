@@ -106,59 +106,89 @@
       <div id="main-menu-modal" class="modal main-menu-modal">
         <div class="modal-backdrop main-menu-backdrop"></div>
         <div class="modal-card main-menu-card">
+          <!-- Top HUD Accent Bracket -->
+          <div class="main-menu-hud-corner">
+            <div class="hud-corner-bracket"></div>
+            <div class="hud-corner-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
           <div class="main-menu-buttons">
-            <!-- 1. НОВАЯ ИГРА (СИНГЛ) -->
-            <button id="menu-btn-single" class="main-menu-nav-btn btn-single" type="button">
-              <div class="menu-icon-wrap">
-                <svg class="menu-icon-svg icon-play" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 7.2c0-1.2 1.3-1.95 2.35-1.35l14 8.8a1.56 1.56 0 0 1 0 2.7l-14 8.8c-1.05.6-2.35-.15-2.35-1.35V7.2z" fill="currentColor"/>
-                </svg>
-              </div>
-              <div class="menu-text-wrap">
-                <span class="menu-btn-title">НОВАЯ ИГРА</span>
-                <span class="menu-btn-sub">СИНГЛ</span>
+            <!-- 1. НОВАЯ ИГРА -->
+            <button id="menu-btn-single" class="main-menu-nav-btn main-menu-hex-btn btn-single" type="button">
+              <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
+                <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
+              </svg>
+              <div class="btn-content">
+                <div class="menu-icon-wrap">
+                  <svg class="menu-icon-svg icon-play" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 4.5v15a1 1 0 0 0 1.54.85l12-7.5a1 1 0 0 0 0-1.7l-12-7.5A1 1 0 0 0 7 4.5z"/>
+                  </svg>
+                </div>
+                <div class="menu-text-wrap">
+                  <span class="menu-btn-title">НОВАЯ ИГРА</span>
+                </div>
               </div>
             </button>
 
             <!-- 2. КООП НА 5 ЧЕЛОВЕК -->
-            <button id="menu-btn-coop" class="main-menu-nav-btn btn-coop" type="button">
-              <div class="menu-icon-wrap">
-                <svg class="menu-icon-svg icon-coop" viewBox="0 0 36 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="8" cy="11" r="3.5" fill="currentColor"/>
-                  <path d="M2 24c0-3.3 2.7-5.5 6-5.5 1.4 0 2.7.4 3.7 1.2-.8 1.2-1.2 2.7-1.2 4.3H2z" fill="currentColor"/>
-                  <circle cx="28" cy="11" r="3.5" fill="currentColor"/>
-                  <path d="M34 24h-8.5c0-1.6-.4-3.1-1.2-4.3 1-.8 2.3-1.2 3.7-1.2 3.3 0 6 2.2 6 5.5z" fill="currentColor"/>
-                  <circle cx="18" cy="9.5" r="4.2" fill="currentColor"/>
-                  <path d="M10.5 24c0-3.8 3.3-6.5 7.5-6.5s7.5 2.7 7.5 6.5h-15z" fill="currentColor"/>
-                </svg>
-              </div>
-              <div class="menu-text-wrap">
-                <span class="menu-btn-title">КООП НА 5 ЧЕЛОВЕК</span>
+            <button id="menu-btn-coop" class="main-menu-nav-btn main-menu-hex-btn btn-coop" type="button">
+              <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
+                <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
+              </svg>
+              <div class="btn-content">
+                <div class="menu-icon-wrap">
+                  <svg class="menu-icon-svg icon-coop" viewBox="0 0 32 24" fill="currentColor">
+                    <circle cx="8" cy="7.5" r="3.2"/>
+                    <path d="M2.5 18c0-2.8 2.5-4.5 5.5-4.5s5.5 1.7 5.5 4.5v1h-11v-1z"/>
+                    <circle cx="24" cy="7.5" r="3.2"/>
+                    <path d="M18.5 18c0-2.8 2.5-4.5 5.5-4.5s5.5 1.7 5.5 4.5v1h-11v-1z"/>
+                    <circle cx="16" cy="6" r="3.8"/>
+                    <path d="M9.5 18.5c0-3.4 2.9-5.5 6.5-5.5s6.5 2.1 6.5 5.5v1h-13v-1z"/>
+                  </svg>
+                </div>
+                <div class="menu-text-wrap">
+                  <span class="menu-btn-title">КООП НА 5 ЧЕЛОВЕК</span>
+                </div>
               </div>
             </button>
 
             <!-- 3. НАСТРОЙКИ -->
-            <button id="menu-btn-settings" class="main-menu-nav-btn btn-settings" type="button">
-              <div class="menu-icon-wrap">
-                <svg class="menu-icon-svg icon-settings" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M14.07 3.5a1.5 1.5 0 0 1 1.49-1.3h0.88a1.5 1.5 0 0 1 1.49 1.3l.3 2.14a11.1 11.1 0 0 1 2.22.92l1.83-1.16a1.5 1.5 0 0 1 1.95.34l.62.77a1.5 1.5 0 0 1 .15 1.97l-1.28 1.75c.5.68.9 1.43 1.18 2.22l2.12.4a1.5 1.5 0 0 1 1.23 1.55v.98a1.5 1.5 0 0 1-1.23 1.55l-2.12.4a10.9 10.9 0 0 1-1.18 2.22l1.28 1.75a1.5 1.5 0 0 1-.15 1.97l-.62.77a1.5 1.5 0 0 1-1.95.34l-1.83-1.16a11.1 11.1 0 0 1-2.22.92l-.3 2.14a1.5 1.5 0 0 1-1.49 1.3h-.88a1.5 1.5 0 0 1-1.49-1.3l-.3-2.14a11.1 11.1 0 0 1-2.22-.92l-1.83 1.16a1.5 1.5 0 0 1-1.95-.34l-.62-.77a1.5 1.5 0 0 1-.15-1.97l1.28-1.75a10.9 10.9 0 0 1-1.18-2.22l-2.12-.4A1.5 1.5 0 0 1 3.5 17.5v-.98a1.5 1.5 0 0 1 1.23-1.55l2.12-.4a10.9 10.9 0 0 1 1.18-2.22L6.75 10.6a1.5 1.5 0 0 1 .15-1.97l.62-.77a1.5 1.5 0 0 1 1.95-.34l1.83 1.16a11.1 11.1 0 0 1 2.22-.92l.3-2.14zM16 11.2a4.8 4.8 0 1 0 0 9.6 4.8 4.8 0 0 0 0-9.6z" fill="currentColor"/>
-                </svg>
-              </div>
-              <div class="menu-text-wrap">
-                <span class="menu-btn-title">НАСТРОЙКИ</span>
+            <button id="menu-btn-settings" class="main-menu-nav-btn main-menu-hex-btn btn-settings" type="button">
+              <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
+                <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
+              </svg>
+              <div class="btn-content">
+                <div class="menu-icon-wrap">
+                  <svg class="menu-icon-svg icon-settings" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.45.17-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/>
+                  </svg>
+                </div>
+                <div class="menu-text-wrap">
+                  <span class="menu-btn-title">НАСТРОЙКИ</span>
+                </div>
               </div>
             </button>
 
             <!-- 4. ВЫХОД -->
-            <button id="menu-btn-exit" class="main-menu-nav-btn btn-exit" type="button">
-              <div class="menu-icon-wrap">
-                <svg class="menu-icon-svg icon-exit" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14 6H7a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h7" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M12 16h15m-5-5l5 5-5 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <div class="menu-text-wrap">
-                <span class="menu-btn-title">ВЫХОД</span>
+            <button id="menu-btn-exit" class="main-menu-nav-btn main-menu-hex-btn btn-exit" type="button">
+              <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
+                <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
+              </svg>
+              <div class="btn-content">
+                <div class="menu-icon-wrap">
+                  <svg class="menu-icon-svg icon-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                </div>
+                <div class="menu-text-wrap">
+                  <span class="menu-btn-title">ВЫХОД</span>
+                </div>
               </div>
             </button>
           </div>
