@@ -56,25 +56,31 @@ export class ChestManager {
   /**
    * Spawns a chest at the given position.
    */
-  public spawnChest(x: number, z: number, tier: ChestTier = 'small'): ChestInstance {
-    const id = `chest_${ChestManager.nextId++}`;
+  public spawnChest(
+    x: number,
+    z: number,
+    tier: ChestTier = 'small',
+    customId?: string,
+    customBaseCost?: number
+  ): ChestInstance {
+    const id = customId || `chest_${ChestManager.nextId++}`;
     const group = new THREE.Group();
     group.position.set(x, 0, z);
 
-    let baseCost = 25;
+    let baseCost = customBaseCost ?? 25;
     let baseGeom = this.smallBaseGeom;
     let lidGeom = this.smallLidGeom;
     let mat = this.smallMat;
     let glowColor = 0x38bdf8;
 
     if (tier === 'large') {
-      baseCost = 50;
+      baseCost = customBaseCost ?? 50;
       baseGeom = this.largeBaseGeom;
       lidGeom = this.largeLidGeom;
       mat = this.largeMat;
       glowColor = 0x4ade80;
     } else if (tier === 'legendary') {
-      baseCost = 100;
+      baseCost = customBaseCost ?? 100;
       baseGeom = this.largeBaseGeom;
       lidGeom = this.largeLidGeom;
       mat = this.legendaryMat;
@@ -231,5 +237,51 @@ export class ChestManager {
       this.scene.remove(chest.mesh);
     }
     this.chests = [];
+  }
+
+  public getSnapshot(): { id: string; tier: ChestTier; baseCost: number; x: number; z: number; isOpened: boolean }[] {
+    return this.chests.map((c) => ({
+      id: c.id,
+      tier: c.tier,
+      baseCost: c.baseCost,
+      x: c.position.x,
+      z: c.position.z,
+      isOpened: c.isOpened
+    }));
+  }
+
+  public applySnapshot(
+    snapshots: { id: string; tier: ChestTier; baseCost: number; x: number; z: number; isOpened: boolean }[]
+  ) {
+    if (!snapshots || snapshots.length === 0) return;
+
+    const currentIds = new Set(this.chests.map((c) => c.id));
+    const isDifferent =
+      snapshots.length !== this.chests.length ||
+      snapshots.some((s) => !currentIds.has(s.id));
+
+    if (isDifferent) {
+      this.clear();
+      for (const snap of snapshots) {
+        const chest = this.spawnChest(snap.x, snap.z, snap.tier, snap.id, snap.baseCost);
+        if (snap.isOpened) {
+          chest.isOpened = true;
+          chest.hologramMesh.visible = false;
+          chest.glowMesh.visible = false;
+          chest.lidMesh.rotation.x = -Math.PI * 0.4;
+          chest.lidMesh.position.z -= 0.3;
+        }
+      }
+      return;
+    }
+
+    for (const snap of snapshots) {
+      if (snap.isOpened) {
+        const chest = this.chests.find((c) => c.id === snap.id);
+        if (chest && !chest.isOpened) {
+          this.openChest(chest);
+        }
+      }
+    }
   }
 }
