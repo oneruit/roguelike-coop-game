@@ -11,7 +11,7 @@ import {
 import { SpriteDirection, CharacterType, HeroAnimState, EnemyType, GemType } from '../sim/types';
 
 const MAGIC_HEADER = 0x48534e50; // "HSNP" (Host Snapshot Network Packet)
-const PROTOCOL_VERSION = 2;
+const PROTOCOL_VERSION = 3;
 
 const SLOTS = ['p1', 'p2', 'p3', 'p4', 'p5'] as const;
 const DIRS: SpriteDirection[] = ['front', 'back', 'left', 'right'];
@@ -93,9 +93,10 @@ export function packHostSnapshot(msg: HostSnapshotMessage): ArrayBuffer {
   const u8 = new Uint8Array(buffer);
   let offset = 0;
 
-  // 1. Header & Version
+  // 1. Header, Version & Stage
   view.setUint32(offset, MAGIC_HEADER, true); offset += 4;
   view.setUint8(offset, PROTOCOL_VERSION); offset += 1;
+  view.setUint8(offset, msg.stage || 1); offset += 1;
 
   // 2. Game Time & Total Kills
   view.setFloat32(offset, msg.gameTime, true); offset += 4;
@@ -261,9 +262,11 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
     throw new Error('Invalid binary snapshot magic header');
   }
   const version = view.getUint8(offset); offset += 1;
-  if (version !== PROTOCOL_VERSION && version !== 1) {
+  if (version !== PROTOCOL_VERSION && version !== 2 && version !== 1) {
     console.warn(`Snapshot version mismatch: got ${version}, expected ${PROTOCOL_VERSION}`);
   }
+  const stage = version >= 3 ? view.getUint8(offset) : 1;
+  if (version >= 3) offset += 1;
 
   // 2. Game Time & Total Kills
   const gameTime = view.getFloat32(offset, true); offset += 4;
@@ -465,6 +468,7 @@ export function unpackHostSnapshot(data: ArrayBuffer | ArrayBufferView): HostSna
 
   return {
     type: 'HOST_SNAPSHOT',
+    stage,
     players,
     stats,
     gameTime,

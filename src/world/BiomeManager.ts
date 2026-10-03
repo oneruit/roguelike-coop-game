@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TerrainMaterials } from './TerrainProps';
 
 export interface BiomeConfig {
   id: string;
@@ -146,6 +147,19 @@ export class BiomeManager {
         obj.groundColor.setHex(biome.hemiGroundColor);
       }
     });
+
+    // 3. Terrain Ground Tint
+    if (TerrainMaterials.sandMaterial) {
+      TerrainMaterials.sandMaterial.color.setHex(biome.groundTint);
+    }
+  }
+
+  /**
+   * Sets the current stage explicitly (1-based index).
+   */
+  public setStage(stageNumber: number): BiomeConfig {
+    this.currentStageIndex = Math.max(0, stageNumber - 1) % BIOMES.length;
+    return this.currentBiome;
   }
 
   /**

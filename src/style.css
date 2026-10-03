@@ -885,7 +885,7 @@ body, html {
   flex-wrap: wrap;
 }
 
-.poe-weapon-pill, .poe-buff-pill {
+.poe-weapon-pill, .poe-buff-pill, .poe-item-pill {
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -898,9 +898,9 @@ body, html {
   line-height: 1;
 }
 
-.poe-weapon-pill .pill-lvl {
+.poe-weapon-pill .pill-lvl, .poe-item-pill .pill-lvl {
   font-weight: 800;
-  color: var(--coral-primary);
+  color: #38bdf8;
 }
 
 .poe-buff-pill .pill-sec {

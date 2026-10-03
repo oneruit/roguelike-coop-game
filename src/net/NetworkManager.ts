@@ -78,6 +78,7 @@ export interface PlayerNetState {
   damageDealt: number;
   weapons?: NetWeaponInfo[];
   buffs?: NetBuffInfo[];
+  riftItems?: Record<string, number>;
 }
 
 export interface DamageDealtEvent {
@@ -109,7 +110,7 @@ export interface NetShotInfo {
 }
 
 export interface NetEvent {
-  type: 'damage_num' | 'altar_captured' | 'boss_spawn' | 'boss_defeat' | 'revive' | 'sound' | 'level_up' | 'xp_gain' | 'shot' | 'credit_gain' | 'chest_opened' | 'teleporter_activated';
+  type: 'damage_num' | 'altar_captured' | 'boss_spawn' | 'boss_defeat' | 'revive' | 'sound' | 'level_up' | 'xp_gain' | 'shot' | 'credit_gain' | 'chest_opened' | 'teleporter_activated' | 'stage_warp';
   x?: number;
   z?: number;
   val?: number | string;
@@ -124,6 +125,7 @@ export interface NetEvent {
   killer?: string;
   chestId?: string;
   stage?: number;
+  biomeName?: string;
   reviverId?: string;
   shot?: NetShotInfo;
 }
@@ -184,6 +186,7 @@ export interface TeleporterSyncInfo {
 
 export interface HostSnapshotMessage {
   type: 'HOST_SNAPSHOT';
+  stage?: number;
   players: Record<string, PlayerNetState>; // All players: p1 + all active clients
   stats: Record<string, PlayerStats>; // All player stats
   gameTime: number;
@@ -241,7 +244,8 @@ export type NetMessage =
   | { type: 'HERO_SELECT'; playerId: string; hero: CharacterType }
   | { type: 'PLAYER_READY'; playerId: string; isReady: boolean }
   | { type: 'ALTAR_CAPTURED'; altarType: BuffType; playerId: string }
-  | { type: 'CHEST_OPENED'; chestId: string; playerId: string }
+  | { type: 'CHEST_OPENED'; chestId: string; playerId: string; itemId?: string }
+  | { type: 'WARP_REQUEST'; playerId?: string }
   | LobbyUpdateMessage
   | GameStartMessage
   | HostSnapshotMessage
@@ -296,7 +300,8 @@ export class NetworkManager {
   public onConnectionStatusChanged?: (status: string, isSuccess: boolean) => void;
   public onDevActionReceived?: (action: string, value?: any) => void;
   public onAltarCapturedReceived?: (altarType: BuffType, fromPlayerId: string) => void;
-  public onChestOpenedReceived?: (chestId: string, fromPlayerId: string) => void;
+  public onChestOpenedReceived?: (chestId: string, fromPlayerId: string, itemId?: string) => void;
+  public onWarpRequestReceived?: () => void;
   public ping: number = 0;
   public jitter: number = 0;
   public packetLoss: number = 0;
@@ -982,7 +987,14 @@ export class NetworkManager {
 
       case 'CHEST_OPENED': {
         if (this.onChestOpenedReceived) {
-          this.onChestOpenedReceived(msg.chestId, msg.playerId);
+          this.onChestOpenedReceived(msg.chestId, msg.playerId, msg.itemId);
+        }
+        break;
+      }
+
+      case 'WARP_REQUEST': {
+        if (this.role === 'host' && this.onWarpRequestReceived) {
+          this.onWarpRequestReceived();
         }
         break;
       }
@@ -1208,8 +1220,8 @@ export class NetworkManager {
     }
   }
 
-  public notifyChestOpened(chestId: string) {
-    this.send({ type: 'CHEST_OPENED', chestId, playerId: this.mySlotId });
+  public notifyChestOpened(chestId: string, itemId?: string) {
+    this.send({ type: 'CHEST_OPENED', chestId, playerId: this.mySlotId, itemId });
   }
 
   public startGame(seed = Math.floor(Math.random() * 1000000)) {
