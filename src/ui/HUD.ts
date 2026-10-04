@@ -2041,15 +2041,18 @@ export class HUD {
     this.upgradeCardsContainer.innerHTML = '';
     for (const opt of options) {
       const card = document.createElement('div');
-      card.className = 'upgrade-card card-weapon-step';
+      card.className = 'character-card upgrade-card card-weapon-step';
       const iconHtml = opt.iconImage
-        ? `<div class="card-icon-wrap"><img src="${opt.iconImage}" class="card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
-        : `<div class="card-icon">${opt.icon}</div>`;
+        ? `<div class="char-portrait-wrapper upgrade-icon-wrapper"><img src="${opt.iconImage}" class="char-portrait card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
+        : `<div class="char-portrait-wrapper upgrade-icon-wrapper"><div class="card-icon">${opt.icon}</div></div>`;
       card.innerHTML = `
         ${iconHtml}
-        <div class="card-title">${opt.title}</div>
-        <div class="card-level-tag">${opt.levelTag}</div>
-        <div class="card-description">${opt.description}</div>
+        <div class="char-name card-title">${opt.title}</div>
+        <div class="char-type card-level-tag">${opt.levelTag}</div>
+        <div class="char-perks card-perks-box">
+          <div class="perk-tag card-description">${opt.description}</div>
+        </div>
+        <button class="action-btn select-btn upgrade-select-btn">ВЫБРАТЬ</button>
       `;
 
       card.addEventListener('click', () => {
@@ -2081,10 +2084,10 @@ export class HUD {
       this.victoryBadge.classList.remove('hidden');
       this.victoryStatsPrompt.classList.remove('hidden');
       this.gameOverTitle.innerText = 'ВЫ ПОБЕДИЛИ!';
-      this.gameOverTitle.className = 'death-title victory-title';
+      this.gameOverTitle.className = 'death-title modern-menu-title victory-title';
       this.gameOverSubtitle.innerText =
         'Вы выдержали легендарные 30 минут в беспощадной пустыне! Бессмертный Жнец забрал вашу душу, но легенда о вас будет жить вечно!';
-      this.gameOverSubtitle.className = 'death-subtitle victory-subtitle';
+      this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern victory-subtitle';
       this.btnRestart.innerText = 'Начать новую экспедицию';
     } else {
       SoundManager.playGameOver();
@@ -2092,18 +2095,23 @@ export class HUD {
       this.victoryBadge.classList.add('hidden');
       this.victoryStatsPrompt.classList.add('hidden');
       this.gameOverTitle.innerText = 'ВЫ ПОГИБЛИ';
-      this.gameOverTitle.className = 'death-title';
+      this.gameOverTitle.className = 'death-title modern-menu-title';
       this.gameOverSubtitle.innerText = 'Пустыня не прощает ошибок...';
-      this.gameOverSubtitle.className = 'death-subtitle';
+      this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern';
       this.btnRestart.innerText = 'Возродиться';
     }
 
     if (weapons && weapons.length > 0 && this.arsenalItemsList) {
       this.arsenalItemsList.innerHTML = weapons
-        .map(
-          (w) =>
-            `<div class="arsenal-tag"><span class="tag-icon">${w.icon}</span><span class="tag-name">${w.name}</span><span class="tag-lvl">lvl ${w.level}</span></div>`
-        )
+        .map((w) => {
+          const iconUrl = getWeaponIconUrl(w.id);
+          return `<div class="arsenal-tag">
+            <img src="${iconUrl}" class="arsenal-icon-img" alt="${w.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+            <span class="tag-icon" style="display:none">${w.icon}</span>
+            <span class="tag-name">${w.name}</span>
+            <span class="tag-lvl">L${w.level}</span>
+          </div>`;
+        })
         .join('');
     }
 

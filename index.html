@@ -744,32 +744,32 @@
 
       <!-- Pause Modal (ESC) -->
       <div id="pause-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card pause-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card pause-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">ПАУЗА</div>
-            <h2>ИГРА ПРИОСТАНОВЛЕНА</h2>
+            <div class="sub-title menu-badge-blue">ПАУЗА</div>
+            <h2 class="wild-west-title modern-menu-title">ИГРА ПРИОСТАНОВЛЕНА</h2>
           </div>
-          <p class="pause-hint">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
+          <p class="pause-hint menu-tagline-modern">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
           <div class="pause-actions">
-            <button id="btn-resume" class="action-btn">Продолжить</button>
-            <button id="btn-pause-settings" class="action-btn secondary-btn">Настройки</button>
-            <button id="btn-pause-restart" class="action-btn secondary-btn">Начать заново</button>
-            <button id="btn-pause-menu" class="action-btn secondary-btn">В главное меню</button>
+            <button id="btn-resume" class="action-btn select-btn">Продолжить</button>
+            <button id="btn-pause-settings" class="action-btn modern-back-btn">Настройки</button>
+            <button id="btn-pause-restart" class="action-btn modern-back-btn">Начать заново</button>
+            <button id="btn-pause-menu" class="action-btn modern-back-btn">В главное меню</button>
           </div>
         </div>
       </div>
 
       <!-- Desert Map Modal (TAB) -->
       <div id="map-modal" class="modal hidden">
-        <div class="modal-backdrop" id="map-backdrop"></div>
-        <div class="modal-card fullmap-card">
+        <div class="modal-backdrop menu-scenic-backdrop" id="map-backdrop"></div>
+        <div class="modal-card fullmap-card modern-glass-modal">
           <div class="map-modal-header">
             <div>
-              <div class="sub-title">КАРТОГРАФИЯ ДИКОГО ЗАПАДА</div>
-              <h2 class="map-title">КАРТА ПУСТЫНИ (ИССЛЕДОВАНО)</h2>
+              <div class="sub-title menu-badge-blue">КАРТОГРАФИЯ ДИКОГО ЗАПАДА</div>
+              <h2 class="map-title wild-west-title modern-menu-title">КАРТА ПУСТЫНИ (ИССЛЕДОВАНО)</h2>
             </div>
-            <button id="btn-close-map" class="close-x-btn">[X] [TAB]</button>
+            <button id="btn-close-map" class="modern-back-btn">[X] [TAB]</button>
           </div>
 
           <div id="fullmap-stats" class="fullmap-stats-bar">
@@ -806,11 +806,11 @@
 
       <!-- Level Up Modal -->
       <div id="level-up-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card level-up-card select-character-card modern-glass-modal">
           <div class="modal-header">
-            <div id="level-up-step-indicator" class="sub-title">ПОВЫШЕНИЕ УРОВНЯ</div>
-            <h2 id="level-up-title">ВЫБЕРИТЕ ОРУЖИЕ</h2>
+            <div id="level-up-step-indicator" class="sub-title menu-badge-yellow">ПОВЫШЕНИЕ УРОВНЯ</div>
+            <h2 id="level-up-title" class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ОРУЖИЕ</h2>
           </div>
           <div id="upgrade-cards" class="upgrade-grid">
             <!-- Dynamically populated cards -->
@@ -820,11 +820,11 @@
 
       <!-- Game Over / Victory Modal -->
       <div id="game-over-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card game-over-card" id="game-over-card">
-          <div id="victory-badge" class="victory-badge-pill hidden">ЛЕГЕНДА ДИКОГО ЗАПАДА • 30 МИНУТ</div>
-          <h1 id="game-over-title" class="death-title">ВЫ ПОГИБЛИ</h1>
-          <p id="game-over-subtitle" class="death-subtitle">Пустыня не прощает ошибок...</p>
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card game-over-card modern-glass-modal" id="game-over-card">
+          <div id="victory-badge" class="victory-badge-pill menu-badge-yellow hidden">ЛЕГЕНДА ДИКОГО ЗАПАДА • 30 МИНУТ</div>
+          <h1 id="game-over-title" class="death-title modern-menu-title">ВЫ ПОГИБЛИ</h1>
+          <p id="game-over-subtitle" class="death-subtitle menu-tagline-modern">Пустыня не прощает ошибок...</p>
 
           <!-- Victory Announcement & Stats Suggestion -->
           <div id="victory-stats-prompt" class="victory-stats-prompt hidden">
@@ -905,22 +905,22 @@
           </div>
 
           <div class="pause-actions" style="margin-top: 20px;">
-            <button id="btn-restart" class="action-btn">Возродиться</button>
-            <button id="btn-gameover-menu" class="action-btn secondary-btn">В главное меню</button>
+            <button id="btn-restart" class="action-btn select-btn">Возродиться</button>
+            <button id="btn-gameover-menu" class="action-btn modern-back-btn">В главное меню</button>
           </div>
         </div>
       </div>
 
       <!-- Developer Mode Console / Panel (P key) -->
       <div id="dev-panel-modal" class="modal hidden">
-        <div class="modal-backdrop" id="dev-backdrop"></div>
-        <div class="modal-card dev-card">
+        <div class="modal-backdrop menu-scenic-backdrop" id="dev-backdrop"></div>
+        <div class="modal-card dev-card modern-glass-modal">
           <div class="dev-header">
             <div class="dev-title-row">
-              <div class="terminal-badge">DEV CONSOLE</div>
-              <h2 class="dev-title">РЕЖИМ РАЗРАБОТЧИКА</h2>
+              <div class="terminal-badge menu-badge-blue">DEV CONSOLE</div>
+              <h2 class="dev-title wild-west-title modern-menu-title">РЕЖИМ РАЗРАБОТЧИКА</h2>
             </div>
-            <button id="btn-dev-close" class="close-x-btn">[X] [P]</button>
+            <button id="btn-dev-close" class="modern-back-btn">[X] [P]</button>
           </div>
 
           <!-- Co-op Host Control Banner -->
