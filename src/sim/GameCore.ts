@@ -198,6 +198,7 @@ export class SimProjectileInternal {
   public isChakram: boolean;
   public isArrow: boolean;
   public isKukri: boolean;
+  public isLightning: boolean;
   public curveSign: number;
   public elapsedTime: number = 0;
   public hasTurnedBack: boolean = false;
@@ -224,6 +225,7 @@ export class SimProjectileInternal {
     this.isChakram = !!data.isChakram;
     this.isArrow = !!data.isArrow;
     this.isKukri = !!data.isKukri;
+    this.isLightning = !!data.isLightning;
     this.curveSign = data.curveSign || 1;
     this.isOrbiting = !!data.isOrbiting;
     this.orbitRadius = data.orbitRadius || 2.4;
@@ -789,7 +791,7 @@ export class GameCore {
           proj.hitEnemies.add(enemy.id);
           this.damageEnemy(enemy.id, proj.damage, proj.position, proj.ownerId, 0.2);
 
-          if (!proj.isOrbiting && !proj.isChakram) {
+          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning) {
             proj.pierce--;
             if (proj.pierce <= 0) {
               proj.isAlive = false;

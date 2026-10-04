@@ -923,6 +923,7 @@ class Game {
       isOrbiting: shot.orb,
       isArrow: shot.arr,
       isKukri: shot.kkr,
+      isLightning: shot.ltg,
       orbitRadius: shot.orad,
       orbitSpeed: shot.ospd,
       isCosmetic: true,
@@ -930,7 +931,9 @@ class Game {
     });
     this.spawnProjectile(proj);
     if (!shot.orb) {
-      if (shot.arr) {
+      if (shot.ltg) {
+        SoundManager.playLightning();
+      } else if (shot.arr) {
         SoundManager.playBowShoot();
       } else if (shot.kkr) {
         SoundManager.playSlash();
@@ -962,6 +965,7 @@ class Game {
         ospd: proj.orbitSpeed,
         arr: proj.isArrow,
         kkr: proj.isKukri,
+        ltg: proj.isLightning,
         ownerId: myId
       });
     }
