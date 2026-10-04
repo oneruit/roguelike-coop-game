@@ -136,8 +136,7 @@ export class Projectile {
       this.mesh.scale.set(scale, scale, scale);
     } else if (this.isKukri) {
       if (!Projectile.kukriGeom || !Projectile.kukriMaterial) {
-        const aspect = 48 / 128; // 0.375
-        const geom = new THREE.PlaneGeometry(1.4, 1.4 * aspect);
+        const geom = new THREE.PlaneGeometry(1.4, 1.4);
         geom.rotateX(-Math.PI / 2);
         Projectile.kukriGeom = geom;
 
