@@ -5,6 +5,7 @@ export interface SimWeaponInfo {
   id: string;
   name: string;
   icon: string;
+  iconImage?: string;
   level: number;
   maxLevel: number;
   description: string;
@@ -51,16 +52,18 @@ export abstract class SimWeapon {
   public id: string;
   public name: string;
   public icon: string;
+  public iconImage: string;
   public level: number = 1;
   public maxLevel: number = 20;
   public cooldown: number;
   public timer: number = 0;
   public damage: number;
 
-  constructor(id: string, name: string, icon: string, cooldown: number, damage: number) {
+  constructor(id: string, name: string, icon: string, cooldown: number, damage: number, iconImage?: string) {
     this.id = id;
     this.name = name;
     this.icon = icon;
+    this.iconImage = iconImage || `/textures/weapon_${id}.png`;
     this.cooldown = cooldown;
     this.damage = damage;
   }
@@ -83,6 +86,7 @@ export abstract class SimWeapon {
       id: this.id,
       name: this.name,
       icon: this.icon,
+      iconImage: this.iconImage,
       level: this.level,
       maxLevel: this.maxLevel,
       description: this.getNextUpgradeDescription()

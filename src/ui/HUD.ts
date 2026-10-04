@@ -14,6 +14,7 @@ export interface UpgradeOption {
   id: string;
   title: string;
   icon: string;
+  iconImage?: string;
   levelTag: string;
   description: string;
   apply: () => void;
@@ -26,6 +27,22 @@ export interface DetailedPlayerResult {
   colorCss: string;
   stats: PlayerStats;
   isLocal: boolean;
+}
+
+export function getWeaponIconUrl(weaponId: string): string {
+  const map: Record<string, string> = {
+    chakram: '/textures/weapon_chakram.png',
+    bow: '/textures/weapon_bow.png',
+    kukri: '/textures/weapon_kukri.png',
+    katana_slash: '/textures/weapon_katana_slash.png',
+    greatsword: '/textures/weapon_greatsword.png',
+    flail: '/textures/weapon_flail.png',
+    astral_staff: '/textures/weapon_astral_staff.png',
+    orbiting_barrier: '/textures/weapon_orbiting_barrier.png',
+    holy_aura: '/textures/weapon_holy_aura.png',
+    whirlwind_slash: '/textures/weapon_whirlwind_slash.png'
+  };
+  return map[weaponId] || `/textures/weapon_${weaponId}.png`;
 }
 
 export class HUD {
@@ -1954,8 +1971,10 @@ export class HUD {
         slot.className = 'weapon-slot';
         slot.setAttribute('data-weapon-id', weapon.id);
         slot.title = `${weapon.name} (Ур. ${weapon.level})`;
+        const iconUrl = weapon.iconImage || getWeaponIconUrl(weapon.id);
         slot.innerHTML = `
-          <span class="weapon-icon">${weapon.icon}</span>
+          <img src="${iconUrl}" class="weapon-icon-img" alt="${weapon.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+          <span class="weapon-icon" style="display:none">${weapon.icon}</span>
           <span class="weapon-level">lvl ${weapon.level}</span>
         `;
         this.weaponsBar.appendChild(slot);
@@ -2023,8 +2042,11 @@ export class HUD {
     for (const opt of options) {
       const card = document.createElement('div');
       card.className = 'upgrade-card card-weapon-step';
+      const iconHtml = opt.iconImage
+        ? `<div class="card-icon-wrap"><img src="${opt.iconImage}" class="card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
+        : `<div class="card-icon">${opt.icon}</div>`;
       card.innerHTML = `
-        <div class="card-icon">${opt.icon}</div>
+        ${iconHtml}
         <div class="card-title">${opt.title}</div>
         <div class="card-level-tag">${opt.levelTag}</div>
         <div class="card-description">${opt.description}</div>
@@ -2181,6 +2203,7 @@ export class HUD {
           id: `upgrade_${weapon.id}`,
           title: `Улучшение: ${weapon.name}`,
           icon: weapon.icon,
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
           levelTag: `УРОВЕНЬ ${weapon.level + 1}`,
           description: weapon.getNextUpgradeDescription(),
           apply: () => weapon.upgrade()
@@ -2196,6 +2219,7 @@ export class HUD {
           id: 'new_bow',
           title: 'Новое: Охотничий Лук',
           icon: '🏹',
+          iconImage: getWeaponIconUrl('bow'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов',
           apply: () => player.weapons.push(new BowWeapon())
@@ -2208,6 +2232,7 @@ export class HUD {
           id: 'new_kukri',
           title: 'Новое: Нож Кукри',
           icon: '🔪',
+          iconImage: getWeaponIconUrl('kukri'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Стремительные броски изогнутых клинков кукри в ближайших врагов',
           apply: () => player.weapons.push(new KukriWeapon())
@@ -2220,6 +2245,7 @@ export class HUD {
           id: 'new_orbiting_barrier',
           title: 'Новое: Священные Подковы',
           icon: '🧲',
+          iconImage: getWeaponIconUrl('orbiting_barrier'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Призывает защитный вихрь из золотых подков вокруг вас (урон, радиус и количество растут с уровнем)',
           apply: () => player.weapons.push(new OrbitingBarrierWeapon())
@@ -2232,6 +2258,7 @@ export class HUD {
           id: 'new_holy_aura',
           title: 'Новое: Огненный Периметр',
           icon: '🔥',
+          iconImage: getWeaponIconUrl('holy_aura'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Окружает героя кольцом дикого огня, сжигающего монстров',
           apply: () => {
@@ -2248,6 +2275,7 @@ export class HUD {
           id: 'new_katana_slash',
           title: 'Новое: Рассекающий Клинок',
           icon: '🗡️',
+          iconImage: getWeaponIconUrl('katana_slash'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Рассекает окружающих врагов смертоносным круговым ударом',
           apply: () => player.weapons.push(new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)))
@@ -2260,6 +2288,7 @@ export class HUD {
           id: 'new_whirlwind_slash',
           title: 'Новое: Багровый Вихрь',
           icon: '🌪️',
+          iconImage: getWeaponIconUrl('whirlwind_slash'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью',
           apply: () => player.weapons.push(new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)))
@@ -2272,6 +2301,7 @@ export class HUD {
           id: 'new_greatsword',
           title: 'Новое: Двуручный Меч',
           icon: '⚔️',
+          iconImage: getWeaponIconUrl('greatsword'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом',
           apply: () => player.weapons.push(new GreatswordWeapon(() => player.triggerAttackAnim(0.5)))
@@ -2284,6 +2314,7 @@ export class HUD {
           id: 'new_flail',
           title: 'Новое: Боевой Цеп',
           icon: '⛓️',
+          iconImage: getWeaponIconUrl('flail'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров',
           apply: () => player.weapons.push(new FlailWeapon(() => player.triggerAttackAnim(0.45)))
@@ -2296,6 +2327,7 @@ export class HUD {
           id: 'new_astral_staff',
           title: 'Новое: Звёздный Посох',
           icon: '🔮',
+          iconImage: getWeaponIconUrl('astral_staff'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Магический посох, запускающий скоростные пробивающие звёздные снаряды',
           apply: () => player.weapons.push(new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)))
@@ -2308,6 +2340,7 @@ export class HUD {
           id: 'new_chakram',
           title: 'Новое: Танцующий Чакрам',
           icon: '🪃',
+          iconImage: getWeaponIconUrl('chakram'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением',
           apply: () => player.weapons.push(new ChakramWeapon(() => player.triggerAttackAnim(0.42)))
