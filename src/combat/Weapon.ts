@@ -7,6 +7,7 @@ export interface WeaponInfo {
   id: string;
   name: string;
   icon: string;
+  iconImage?: string;
   level: number;
   maxLevel: number;
   description: string;
@@ -16,16 +17,19 @@ export abstract class Weapon {
   public id: string;
   public name: string;
   public icon: string;
+  public iconImage: string;
   public level: number = 1;
   public maxLevel: number = 20;
+  public cooldownMultiplier: number = 1.0;
   protected cooldown: number;
   protected timer: number = 0;
   protected damage: number;
 
-  constructor(id: string, name: string, icon: string, cooldown: number, damage: number) {
+  constructor(id: string, name: string, icon: string, cooldown: number, damage: number, iconImage?: string) {
     this.id = id;
     this.name = name;
     this.icon = icon;
+    this.iconImage = iconImage || `/textures/weapon_${id}.png`;
     this.cooldown = cooldown;
     this.damage = damage;
   }
@@ -46,6 +50,7 @@ export abstract class Weapon {
       id: this.id,
       name: this.name,
       icon: this.icon,
+      iconImage: this.iconImage,
       level: this.level,
       maxLevel: this.maxLevel,
       description: this.getNextUpgradeDescription()
@@ -899,6 +904,107 @@ export class ChakramWeapon extends Weapon {
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 возвращающийся чакрам (всего ${this.chakramCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-6% перезарядки');
     if ([2, 5, 10, 15].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
+    return perks.join(', ');
+  }
+}
+
+/**
+ * Lightning Strike (Удар Молнии)
+ * Calls down devastating bolts of thunder from the sky onto enemies, triggering vertical electric strikes with splash damage.
+ */
+export class LightningStrikeWeapon extends Weapon {
+  private strikeCount: number = 1;
+  private strikeRadius: number = 2.2;
+  private range: number = 22;
+  private onTriggerAttack?: () => void;
+
+  constructor(onTriggerAttack?: () => void) {
+    super('lightning_strike', 'Удар Молнии', '⚡', 1.25, 65);
+    this.onTriggerAttack = onTriggerAttack;
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
+  }
+
+  public update(
+    dt: number,
+    playerPos: THREE.Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void
+  ) {
+    this.timer += dt;
+    const effectiveCd = this.cooldown * this.cooldownMultiplier;
+    if (this.timer >= effectiveCd) {
+      if (enemies.length === 0) return;
+
+      const candidates = enemies
+        .filter(e => e.isAlive)
+        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(playerPos) }))
+        .filter(c => c.distSq <= this.range * this.range)
+        .sort((a, b) => a.distSq - b.distSq);
+
+      if (candidates.length === 0) return;
+
+      this.timer = 0;
+      if (this.onTriggerAttack) {
+        this.onTriggerAttack();
+      }
+
+      // Pick targets (if fewer enemies than strikes, re-target existing enemies)
+      const strikeTargets: { x: number; z: number }[] = [];
+      for (let i = 0; i < this.strikeCount; i++) {
+        const targetCandidate = candidates[i % candidates.length];
+        strikeTargets.push({
+          x: targetCandidate.enemy.position.x,
+          z: targetCandidate.enemy.position.z
+        });
+      }
+
+      // Stagger each thunderbolt slightly for rapid cracking barrage
+      strikeTargets.forEach((pos, idx) => {
+        setTimeout(() => {
+          const proj = new Projectile({
+            position: new THREE.Vector3(pos.x, 0, pos.z),
+            direction: new THREE.Vector3(0, 0, 1),
+            speed: 0,
+            damage: this.damage,
+            pierce: 999,
+            lifetime: 0.24,
+            radius: this.strikeRadius,
+            color: 0x38bdf8,
+            isLightning: true
+          });
+
+          spawnProjectile(proj);
+          SoundManager.playLightning();
+        }, idx * 75);
+      });
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 16;
+    if ([4, 8, 12, 16, 20].includes(this.level)) {
+      this.strikeCount++;
+    }
+    if ([3, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
+    }
+    if ([5, 10, 15].includes(this.level)) {
+      this.strikeRadius = Number((this.strikeRadius + 0.35).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+16 к урону'];
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 разряд молнии (всего ${this.strikeCount + 1})`);
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.strikeRadius + 0.35).toFixed(2)}м)`);
     return perks.join(', ');
   }
 }
