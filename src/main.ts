@@ -218,6 +218,9 @@ class Game {
       () => this.resumeGame(),
       () => this.restartGame()
     );
+    this.hud.onResolutionScaleChanged = (scale: number) => {
+      this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
+    };
 
     // Setup Main Menu & Multiplayer HUD triggers
     this.setupMenuNavigation();
@@ -271,6 +274,8 @@ class Game {
     this.input.onToggleMap = () => {
       if (
         this.devManager.getIsOpen() ||
+        this.hud.isAnyMenuOpen() ||
+        this.gameState === GameState.PAUSED ||
         this.gameState === GameState.MAIN_MENU ||
         this.gameState === GameState.HOST_LOBBY ||
         this.gameState === GameState.JOIN_LOBBY ||
@@ -294,13 +299,36 @@ class Game {
         return;
       }
 
-      if (this.gameState === GameState.PLAYING) {
-        this.gameState = GameState.PAUSED;
-        this.hud.showPause();
-      } else if (this.gameState === GameState.PAUSED) {
-        this.gameState = GameState.PLAYING;
-        this.hud.hidePause();
-        this.lastTime = performance.now();
+      if (this.isLevelUpActive || this.gameState === GameState.GAME_OVER) {
+        return;
+      }
+
+      const escResult = this.hud.handleEscape();
+      if (escResult === 'resume') {
+        this.resumeGame();
+        return;
+      }
+      if (escResult === 'handled') {
+        if (this.gameState === GameState.CHARACTER_SELECT && !this.hud.isAnyMenuOpen()) {
+          this.gameState = GameState.MAIN_MENU;
+        } else if (this.gameState === GameState.HOST_LOBBY && !this.hud.isAnyMenuOpen()) {
+          this.net.reset();
+          this.gameState = GameState.MAIN_MENU;
+        } else if (this.gameState === GameState.JOIN_LOBBY && !this.hud.isAnyMenuOpen()) {
+          this.stopRoomPolling();
+          this.net.reset();
+          this.gameState = GameState.MAIN_MENU;
+        }
+        return;
+      }
+
+      if (escResult === 'noop') {
+        if (this.gameState === GameState.PLAYING) {
+          this.gameState = GameState.PAUSED;
+          this.hud.showPause();
+        } else if (this.gameState === GameState.PAUSED) {
+          this.resumeGame();
+        }
       }
     };
 
@@ -866,6 +894,7 @@ class Game {
   private resumeGame() {
     if (this.gameState === GameState.PAUSED) {
       this.gameState = GameState.PLAYING;
+      this.hud.hidePause();
       this.lastTime = performance.now();
     }
   }

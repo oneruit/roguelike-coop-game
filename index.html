@@ -168,7 +168,7 @@
                   </svg>
                 </div>
                 <div class="menu-text-wrap">
-                  <span class="menu-btn-title">НОВАЯ ИГРА</span>
+                  <span class="menu-btn-title">ОДИНОЧНЫЙ РЕЖИМ</span>
                 </div>
               </div>
             </button>
@@ -285,62 +285,103 @@
             <h2 class="modern-menu-title">НАСТРОЙКИ</h2>
           </div>
 
+          <!-- Settings Navigation Tabs -->
+          <div class="settings-nav-tabs">
+            <button id="settings-tab-btn-video" class="settings-tab-btn active" type="button" data-tab="video">
+              <span class="tab-icon">🖥️</span> Видео
+            </button>
+            <button id="settings-tab-btn-audio" class="settings-tab-btn" type="button" data-tab="audio">
+              <span class="tab-icon">🔊</span> Аудио
+            </button>
+            <button id="settings-tab-btn-ui" class="settings-tab-btn" type="button" data-tab="ui">
+              <span class="tab-icon">📊</span> Интерфейс
+            </button>
+            <button id="settings-tab-btn-controls" class="settings-tab-btn" type="button" data-tab="controls">
+              <span class="tab-icon">🎮</span> Управление
+            </button>
+          </div>
+
           <div class="settings-content">
-            <!-- Audio Settings -->
-            <div class="settings-section">
-              <div class="settings-section-title">Звук и Аудио / Audio</div>
-              <div class="settings-row">
-                <label for="settings-volume" class="settings-label">Громкость звуков:</label>
-                <div class="settings-control-row">
-                  <input type="range" id="settings-volume" min="0" max="100" value="80" class="settings-slider" />
-                  <span id="settings-volume-val" class="settings-val-badge">80%</span>
-                  <button id="settings-btn-test-sound" class="settings-mini-btn" title="Проверить громкость">Тест</button>
+            <!-- 1. Вкладка: ВИДЕО -->
+            <div id="settings-tab-video" class="settings-tab-pane">
+              <div class="settings-section">
+                <div class="settings-section-title">Графика и Экран / Display & Graphics</div>
+                <div class="settings-row">
+                  <label class="settings-label">Полноэкранный режим:</label>
+                  <button id="settings-btn-fullscreen" class="settings-mini-btn">Полный экран</button>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-resolution" class="settings-label">Качество графики (Рендер):</label>
+                  <div class="settings-control-row">
+                    <select id="settings-resolution" class="settings-select">
+                      <option value="1" selected>Высокое (100%)</option>
+                      <option value="0.85">Среднее (85%)</option>
+                      <option value="0.7">Низкое (70%)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-              <div class="settings-row">
-                <label for="settings-mute" class="settings-label">Отключить звук (Mute):</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settings-mute" />
-                  <span class="slider round"></span>
-                </label>
+            </div>
+
+            <!-- 2. Вкладка: АУДИО -->
+            <div id="settings-tab-audio" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Звук и Аудио / Audio</div>
+                <div class="settings-row">
+                  <label for="settings-volume" class="settings-label">Громкость звуков:</label>
+                  <div class="settings-control-row">
+                    <input type="range" id="settings-volume" min="0" max="100" value="80" class="settings-slider" />
+                    <span id="settings-volume-val" class="settings-val-badge">80%</span>
+                    <button id="settings-btn-test-sound" class="settings-mini-btn" title="Проверить громкость">Тест</button>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-mute" class="settings-label">Отключить звук (Mute):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-mute" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
               </div>
             </div>
 
-            <!-- Display Settings -->
-            <div class="settings-section">
-              <div class="settings-section-title">Графика и Экран / Display</div>
-              <div class="settings-row">
-                <label for="settings-perf-overlay" class="settings-label">Счетчик FPS и Пинг (Latency):</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settings-perf-overlay" checked />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-              <div class="settings-row">
-                <label for="settings-damage-numbers" class="settings-label">Урон над врагами (Damage numbers):</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settings-damage-numbers" checked />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">Полноэкранный режим:</label>
-                <button id="settings-btn-fullscreen" class="settings-mini-btn">Полный экран</button>
+            <!-- 3. Вкладка: ИНТЕРФЕЙС -->
+            <div id="settings-tab-ui" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Элементы интерфейса / Interface & HUD</div>
+                <div class="settings-row">
+                  <label for="settings-perf-overlay" class="settings-label">Счетчик FPS и Пинг (Latency):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-perf-overlay" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-damage-numbers" class="settings-label">Урон над врагами (Damage numbers):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-damage-numbers" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
               </div>
             </div>
 
-            <!-- Controls & Guide -->
-            <div class="settings-section">
-              <div class="settings-section-title">Управление и Правила / Controls</div>
-              <div class="settings-controls-summary">
-                <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
-                <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
-                <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза</span></div>
-                <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Режим разработчика</span></div>
+            <!-- 4. Вкладка: УПРАВЛЕНИЕ -->
+            <div id="settings-tab-controls" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Управление и Навигация / Controls</div>
+                <div class="settings-controls-summary">
+                  <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[ПРОБЕЛ] / [SHIFT]</span> <span>Рывок (Dash)</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза / Назад</span></div>
+                  <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Консоль разработчика</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[F3]</span> <span>Сетевая отладка</span></div>
+                </div>
+                <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 14px; width: 100%;">
+                  📖 Открыть справочник
+                </button>
               </div>
-              <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 10px; width: 100%;">
-                Открыть справочник
-              </button>
             </div>
           </div>
 
