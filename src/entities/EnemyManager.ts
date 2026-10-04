@@ -5,6 +5,7 @@ import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 import { EnemySnapshot } from '../net/NetworkManager';
+import { DifficultyDirector } from '../director/DifficultyDirector';
 
 export interface PlayerTargetInfo {
   id: string; // 'p1', 'p2', 'p3', 'p4', 'p5'
@@ -23,6 +24,7 @@ export class EnemyManager {
   public bossSpawned = false;
   public lastBossMinute = 0;
   public immortalBossSpawned = false;
+  public currentStage = 1;
 
   private spawnTimer = 0;
   private spawnInterval = 1.0;
@@ -419,6 +421,59 @@ export class EnemyManager {
   }
 
   /**
+   * Spawns a stage boss explicitly when the Teleporter event is activated.
+   */
+  public spawnTeleporterBoss(playerPos: THREE.Vector3, stage: number = 1): Enemy {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 16;
+    const spawnPos = new THREE.Vector3(
+      playerPos.x + Math.cos(angle) * distance,
+      0,
+      playerPos.z + Math.sin(angle) * distance
+    );
+
+    const baseHp = this.configs.boss.hp;
+    const baseDmg = this.configs.boss.damage;
+    const baseSpd = this.configs.boss.speed;
+
+    const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
+    const tierHp = Math.round(baseHp * (1.2 + (stage - 1) * 1.5) * diffCoeff);
+    const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.3) * (1 + (diffCoeff - 1) * 0.2));
+
+    const stageBossNames = [
+      'Кровавый Страж Разлома',
+      'Древняя трёхглавая гидра',
+      'Споровая Владычица Ксено-Леса',
+      'Магматический Колосс Кальдеры',
+      'Первородный Страж Предтеч',
+      'Архитектор Разлома'
+    ];
+
+    const bossName = stageBossNames[Math.min(stage - 1, stageBossNames.length - 1)];
+    const isHydra = stage === 2;
+
+    const bossConfig: EnemyConfig = {
+      ...(isHydra ? this.configs.hydra : this.configs.boss),
+      name: bossName,
+      hp: tierHp,
+      damage: tierDmg,
+      speed: Math.min(3.8, Number((baseSpd + (stage - 1) * 0.15).toFixed(2))),
+      creditsValue: 120 + stage * 30
+    };
+
+    const boss = new Enemy(bossConfig, spawnPos);
+    this.enemies.push(boss);
+    this.scene.add(boss.mesh);
+    this.activeBoss = boss;
+    this.bossSpawned = true;
+
+    if (this.onBossSpawn) {
+      this.onBossSpawn(boss, stage);
+    }
+    return boss;
+  }
+
+  /**
    * Spawns the inevitable 30-minute Immortal Boss (Death / Grim Reaper)
    */
   public spawnImmortalBoss(playerPos: THREE.Vector3) {
@@ -557,11 +612,17 @@ export class EnemyManager {
     const dmgMult = this.getDamageMultiplier();
     const spdMult = this.getSpeedMultiplier();
 
+    // Check elite spawn chance from Difficulty Director
+    const isElite = Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
+    const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
+    const chosenAffix = isElite ? affixes[Math.floor(Math.random() * affixes.length)] : undefined;
+
     const scaledConfig: EnemyConfig = {
       ...baseConfig,
       hp: Math.max(1, Math.round(baseConfig.hp * hpMult)),
       damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
-      speed: Number((baseConfig.speed * spdMult).toFixed(2))
+      speed: Number((baseConfig.speed * spdMult).toFixed(2)),
+      eliteAffix: chosenAffix
     };
 
     const enemy = new Enemy(scaledConfig, spawnPos);

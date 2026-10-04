@@ -1,17 +1,20 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon } from '../combat/Weapon';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
 import { PlayerStats, LobbyPlayerInfo, PLAYER_COLORS, getPlayerSlotNumber } from '../net/NetworkManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
 import { PublicRoomInfo } from '../net/RoomDirectory';
+import { DifficultyDirector } from '../director/DifficultyDirector';
+import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
 import * as THREE from 'three';
 
 export interface UpgradeOption {
   id: string;
   title: string;
   icon: string;
+  iconImage?: string;
   levelTag: string;
   description: string;
   apply: () => void;
@@ -24,6 +27,23 @@ export interface DetailedPlayerResult {
   colorCss: string;
   stats: PlayerStats;
   isLocal: boolean;
+}
+
+export function getWeaponIconUrl(weaponId: string): string {
+  const map: Record<string, string> = {
+    chakram: '/textures/weapon_chakram.png',
+    bow: '/textures/weapon_bow.png',
+    kukri: '/textures/weapon_kukri.png',
+    katana_slash: '/textures/weapon_katana_slash.png',
+    greatsword: '/textures/weapon_greatsword.png',
+    flail: '/textures/weapon_flail.png',
+    astral_staff: '/textures/weapon_astral_staff.png',
+    orbiting_barrier: '/textures/weapon_orbiting_barrier.png',
+    holy_aura: '/textures/weapon_holy_aura.png',
+    whirlwind_slash: '/textures/weapon_whirlwind_slash.png',
+    lightning_strike: '/textures/weapon_lightning_strike.png'
+  };
+  return map[weaponId] || `/textures/weapon_${weaponId}.png`;
 }
 
 export class HUD {
@@ -47,6 +67,21 @@ export class HUD {
   private bossWarningBanner: HTMLElement;
   private bossWarningText: HTMLElement | null;
 
+  // The Rift HUD Elements
+  private stageText: HTMLElement | null;
+  private plasmaCreditsText: HTMLElement | null;
+  private diffTierLabel: HTMLElement | null;
+  private diffBarFill: HTMLElement | null;
+  private teleporterEventContainer: HTMLElement | null;
+  private teleporterStatusText: HTMLElement | null;
+  private teleporterZoneText: HTMLElement | null;
+  private teleporterBarFill: HTMLElement | null;
+  private interactionPrompt: HTMLElement | null;
+  private interactionPromptText: HTMLElement | null;
+  private itemInventoryTray: HTMLElement | null;
+  private dashCooldownBadge: HTMLElement | null;
+  private dashCooldownText: HTMLElement | null;
+
   // Altar & Buffs HUD
   private altarBanner: HTMLElement;
   private altarBannerText: HTMLElement;
@@ -65,6 +100,18 @@ export class HUD {
   private charSelectModal: HTMLElement;
   private pauseModal: HTMLElement;
   private settingsFromPause = false;
+  private menuStack: (
+    | 'pause'
+    | 'settings'
+    | 'guide'
+    | 'exit'
+    | 'coop'
+    | 'host_lobby'
+    | 'join_lobby'
+    | 'password_prompt'
+    | 'char_select'
+  )[] = [];
+  public onResolutionScaleChanged?: (scale: number) => void;
   private levelUpModal: HTMLElement;
   private levelUpStepIndicator: HTMLElement;
   private levelUpTitle: HTMLElement;
@@ -214,6 +261,21 @@ export class HUD {
     this.buffsTray = document.getElementById('active-buffs-tray')!;
     this.passivesBar = document.getElementById('active-passives-bar');
 
+    // The Rift Elements
+    this.stageText = document.getElementById('stage-text');
+    this.plasmaCreditsText = document.getElementById('plasma-credits');
+    this.diffTierLabel = document.getElementById('diff-tier-label');
+    this.diffBarFill = document.getElementById('diff-bar-fill');
+    this.teleporterEventContainer = document.getElementById('teleporter-event-container');
+    this.teleporterStatusText = document.getElementById('teleporter-status-text');
+    this.teleporterZoneText = document.getElementById('teleporter-zone-text');
+    this.teleporterBarFill = document.getElementById('teleporter-bar-fill');
+    this.interactionPrompt = document.getElementById('interaction-prompt');
+    this.interactionPromptText = document.getElementById('interaction-prompt-text');
+    this.itemInventoryTray = document.getElementById('item-inventory-tray');
+    this.dashCooldownBadge = document.getElementById('dash-cooldown-badge');
+    this.dashCooldownText = document.getElementById('dash-cooldown-text');
+
     // Modals
     this.mainMenuModal = document.getElementById('main-menu-modal')!;
     this.coopModal = document.getElementById('coop-modal')!;
@@ -355,9 +417,7 @@ export class HUD {
     });
 
     document.getElementById('coop-btn-back')?.addEventListener('click', () => {
-      this.hideCoopMenu();
-      this.showMainMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Settings Controls
@@ -428,24 +488,40 @@ export class HUD {
       }
     });
 
+    // Settings Tabs switching
+    const settingsTabBtns = document.querySelectorAll<HTMLButtonElement>('.settings-tab-btn');
+    settingsTabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab') as 'video' | 'audio' | 'ui' | 'controls' | null;
+        if (tab) {
+          this.activateSettingsTab(tab);
+        }
+      });
+    });
+
+    const resolutionSelect = document.getElementById('settings-resolution') as HTMLSelectElement | null;
+    if (resolutionSelect) {
+      resolutionSelect.addEventListener('change', () => {
+        const scale = parseFloat(resolutionSelect.value) || 1;
+        if (this.onResolutionScaleChanged) {
+          this.onResolutionScaleChanged(scale);
+        }
+      });
+    }
+
     openGuideBtn?.addEventListener('click', () => {
       this.showGuide();
     });
 
     settingsBackBtn?.addEventListener('click', () => {
-      this.hideSettings();
-      if (this.settingsFromPause) {
-        this.showPause();
-      } else {
-        this.showMainMenu();
-      }
+      this.handleEscape();
     });
 
     // Exit Modal Buttons
     this.setupExitListeners();
 
     document.getElementById('btn-close-guide')?.addEventListener('click', () => {
-      this.hideGuide();
+      this.handleEscape();
     });
 
     // Host Lobby Hero Selector
@@ -482,9 +558,7 @@ export class HUD {
     });
 
     this.btnHostBack.addEventListener('click', () => {
-      this.hideHostLobby();
-      this.showCoopMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Guest Lobby Hero Selector
@@ -603,16 +677,12 @@ export class HUD {
     });
 
     this.btnJoinBack.addEventListener('click', () => {
-      this.hideJoinLobby();
-      this.showCoopMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Character Select Back Button
     this.btnCharSelectBack?.addEventListener('click', () => {
-      this.hideCharacterSelect();
-      this.showMainMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Bind Character Select Buttons
@@ -633,12 +703,10 @@ export class HUD {
     });
 
     document.getElementById('btn-pause-settings')?.addEventListener('click', () => {
-      this.hidePause();
       this.showSettings('pause');
     });
 
     this.btnPauseRestart.addEventListener('click', () => {
-      this.hidePause();
       this.showCharacterSelect();
     });
 
@@ -676,16 +744,14 @@ export class HUD {
       if (exitActions) {
         exitActions.innerHTML = '<button id="btn-exit-return" class="action-btn">Назад в меню / Return</button>';
         document.getElementById('btn-exit-return')?.addEventListener('click', () => {
-          this.hideExitModal();
-          this.showMainMenu();
+          this.handleEscape();
           this.resetExitModal();
         });
       }
     });
 
     document.getElementById('btn-cancel-exit')?.addEventListener('click', () => {
-      this.hideExitModal();
-      this.showMainMenu();
+      this.handleEscape();
       this.resetExitModal();
     });
   }
@@ -703,6 +769,7 @@ export class HUD {
   }
 
   public showMainMenu() {
+    this.menuStack = [];
     this.hideCoopMenu();
     this.hideSettings();
     this.hideExitModal();
@@ -712,6 +779,7 @@ export class HUD {
     this.hideGameOver();
     this.hideLevelUp();
     this.hideGuide();
+    this.hideCharacterSelect();
     this.mainMenuModal.classList.remove('hidden');
   }
 
@@ -720,32 +788,61 @@ export class HUD {
   }
 
   public showCoopMenu() {
+    this.hideMainMenu();
+    this.menuStack = ['coop'];
     this.coopModal.classList.remove('hidden');
   }
 
   public hideCoopMenu() {
     this.coopModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'coop');
   }
 
   public showSettings(from: 'main' | 'pause' = 'main') {
-    this.settingsFromPause = (from === 'pause');
+    this.settingsFromPause = (from === 'pause') || this.isPaused || this.menuStack.includes('pause');
+    if (this.settingsFromPause) {
+      this.pauseModal.classList.add('hidden');
+      if (!this.menuStack.includes('pause')) {
+        this.menuStack.push('pause');
+      }
+      if (this.menuStack[this.menuStack.length - 1] !== 'settings') {
+        this.menuStack.push('settings');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['settings'];
+    }
+
+    const backBtn = document.getElementById('settings-btn-back');
+    if (backBtn) {
+      backBtn.innerText = this.settingsFromPause ? '← Назад в меню паузы' : '← Назад в главное меню';
+    }
+
+    this.activateSettingsTab('video');
     this.settingsModal.classList.remove('hidden');
   }
 
   public hideSettings() {
     this.settingsModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'settings');
   }
 
   public showExitModal() {
     this.resetExitModal();
+    if (this.menuStack[this.menuStack.length - 1] !== 'exit') {
+      this.menuStack.push('exit');
+    }
     this.exitModal.classList.remove('hidden');
   }
 
   public hideExitModal() {
     this.exitModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'exit');
   }
 
   public showHostLobby(roomCode: string, hero: CharacterType) {
+    this.hideCoopMenu();
+    this.menuStack = ['coop', 'host_lobby'];
     this.hostRoomCodeText.innerText = roomCode;
     this.hostSelectedHero = hero;
     const hostHeroOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-host-hero]');
@@ -781,6 +878,7 @@ export class HUD {
 
   public hideHostLobby() {
     this.hostLobbyModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'host_lobby');
   }
 
   public setHostPartnerConnected(connected: boolean, hero?: CharacterType) {
@@ -1052,6 +1150,9 @@ export class HUD {
 
   public showPasswordPrompt(roomCode: string) {
     this.pendingPasswordRoomCode = roomCode;
+    if (this.menuStack[this.menuStack.length - 1] !== 'password_prompt') {
+      this.menuStack.push('password_prompt');
+    }
     if (this.pwdPromptRoomTitle) {
       this.pwdPromptRoomTitle.innerText = `КОМНАТА ${roomCode}`;
     }
@@ -1071,6 +1172,7 @@ export class HUD {
     if (this.pwdPromptError) {
       this.pwdPromptError.classList.add('hidden');
     }
+    this.menuStack = this.menuStack.filter((s) => s !== 'password_prompt');
   }
 
   public showPasswordPromptError(msg: string = 'Неверный пароль. Попробуйте снова.') {
@@ -1181,6 +1283,8 @@ export class HUD {
   }
 
   public showJoinLobby(defaultHero: CharacterType = 'valkyrie') {
+    this.hideCoopMenu();
+    this.menuStack = ['coop', 'join_lobby'];
     this.joinRoomInput.value = '';
     if (this.joinPasswordInput) {
       this.joinPasswordInput.value = '';
@@ -1212,6 +1316,7 @@ export class HUD {
     this.hidePasswordPrompt();
     this.setGuestConnectedMode(false);
     this.joinLobbyModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'join_lobby');
   }
 
   public setJoinStatus(text: string, isError: boolean = false) {
@@ -1220,11 +1325,26 @@ export class HUD {
   }
 
   public showGuide() {
+    if (!this.settingsModal.classList.contains('hidden')) {
+      this.settingsModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'guide') {
+        this.menuStack.push('guide');
+      }
+    } else if (!this.pauseModal.classList.contains('hidden')) {
+      this.pauseModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'guide') {
+        this.menuStack.push('guide');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['guide'];
+    }
     this.guideModal.classList.remove('hidden');
   }
 
   public hideGuide() {
     this.guideModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'guide');
   }
 
   public setCoopBadge(roomCode: string | null) {
@@ -1260,8 +1380,10 @@ export class HUD {
       reviveProgress: number;
       isLocal: boolean;
       hasInvuln: boolean;
+      credits?: number;
       weapons: { id: string; name: string; icon: string; level: number }[];
       buffs: { type: BuffType; icon: string; duration: number }[];
+      items: { id: string; count: number }[];
     }[] = [];
 
     // 1. Local Player
@@ -1287,8 +1409,10 @@ export class HUD {
       reviveProgress: localPlayer.reviveProgress,
       isLocal: true,
       hasInvuln: localPlayer.hasBuff('invulnerable'),
+      credits: localPlayer.credits,
       weapons: localPlayer.weapons.map(w => ({ id: w.id, name: w.name, icon: w.icon, level: w.level })),
-      buffs: localBuffs
+      buffs: localBuffs,
+      items: Array.from(localPlayer.riftItems.entries()).map(([id, count]) => ({ id, count }))
     });
 
     // 2. Remote Teammates
@@ -1310,12 +1434,14 @@ export class HUD {
         level: rp.level,
         xp: rp.xp,
         xpToNextLevel: rp.xpToNextLevel,
+        credits: rp.credits,
         isDowned: rp.isDowned,
         reviveProgress: rp.reviveProgress,
         isLocal: false,
         hasInvuln: rp.activeBuffs.has('invulnerable'),
         weapons: rp.weapons,
-        buffs: rpBuffs
+        buffs: rpBuffs,
+        items: Array.from(rp.riftItems.entries()).map(([itemId, count]) => ({ id: itemId, count }))
       });
     }
 
@@ -1339,6 +1465,7 @@ export class HUD {
               <span class="poe-member-name" style="color: ${m.colorCss};">${m.name}</span>
               <span class="poe-class-tag">${this.getHeroName(m.hero)}</span>
               <span class="poe-level-tag">L${m.level}</span>
+              <span class="poe-credits-tag" style="margin-left: 6px; font-size: 11px; color: #fbbf24; font-weight: bold;">⚡ ${m.credits ?? 0}</span>
             </div>
             <div class="poe-hp-frame">
               <div class="poe-hp-track">
@@ -1353,6 +1480,7 @@ export class HUD {
             </div>
             <div class="poe-meta-row">
               <div class="poe-member-weapons"></div>
+              <div class="poe-member-items"></div>
               <div class="poe-member-buffs"></div>
             </div>
           </div>
@@ -1383,6 +1511,11 @@ export class HUD {
       const lvlEl = el.querySelector<HTMLElement>('.poe-level-tag');
       if (lvlEl && lvlEl.innerText !== `L${m.level}`) {
         lvlEl.innerText = `L${m.level}`;
+      }
+
+      const creditsEl = el.querySelector<HTMLElement>('.poe-credits-tag');
+      if (creditsEl && creditsEl.innerText !== `⚡ ${m.credits ?? 0}`) {
+        creditsEl.innerText = `⚡ ${m.credits ?? 0}`;
       }
 
       // Update HP
@@ -1444,6 +1577,21 @@ export class HUD {
         }
         if (weaponsRow.innerHTML !== weaponsHtml) {
           weaponsRow.innerHTML = weaponsHtml;
+        }
+      }
+
+      // Update items row
+      const itemsRow = el.querySelector<HTMLElement>('.poe-member-items');
+      if (itemsRow) {
+        let itemsHtml = '';
+        for (const it of m.items) {
+          const def = RIFT_ITEMS[it.id as RiftItemId];
+          if (def) {
+            itemsHtml += `<span class="poe-item-pill" title="${def.name}: ${def.description}"><span class="pill-icon">${def.icon}</span><span class="pill-lvl">x${it.count}</span></span>`;
+          }
+        }
+        if (itemsRow.innerHTML !== itemsHtml) {
+          itemsRow.innerHTML = itemsHtml;
         }
       }
 
@@ -1518,21 +1666,156 @@ export class HUD {
   }
 
   public showCharacterSelect() {
+    if (this.isPaused || this.menuStack.includes('pause')) {
+      this.pauseModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'char_select') {
+        this.menuStack.push('char_select');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['char_select'];
+    }
     this.charSelectModal.classList.remove('hidden');
   }
 
   public hideCharacterSelect() {
     this.charSelectModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
   public showPause() {
     this.isPaused = true;
+    this.menuStack = ['pause'];
     this.pauseModal.classList.remove('hidden');
   }
 
   public hidePause() {
     this.isPaused = false;
     this.pauseModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'pause');
+  }
+
+  public activateSettingsTab(tabName: 'video' | 'audio' | 'ui' | 'controls') {
+    const tabs: ('video' | 'audio' | 'ui' | 'controls')[] = ['video', 'audio', 'ui', 'controls'];
+    for (const t of tabs) {
+      const btn = document.getElementById(`settings-tab-btn-${t}`);
+      const pane = document.getElementById(`settings-tab-${t}`);
+      if (btn) {
+        if (t === tabName) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      }
+      if (pane) {
+        if (t === tabName) {
+          pane.classList.remove('hidden');
+        } else {
+          pane.classList.add('hidden');
+        }
+      }
+    }
+  }
+
+  public isAnyMenuOpen(): boolean {
+    return this.menuStack.length > 0 || !this.mainMenuModal.classList.contains('hidden');
+  }
+
+  public handleEscape(): 'resume' | 'handled' | 'noop' {
+    if (this.menuStack.length === 0) {
+      return 'noop';
+    }
+
+    const current = this.menuStack.pop();
+
+    switch (current) {
+      case 'guide': {
+        this.guideModal.classList.add('hidden');
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'settings') {
+          this.settingsModal.classList.remove('hidden');
+        } else if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'settings': {
+        this.settingsModal.classList.add('hidden');
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'password_prompt': {
+        this.hidePasswordPrompt();
+        return 'handled';
+      }
+
+      case 'join_lobby': {
+        this.hideJoinLobby();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'coop') {
+          this.coopModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'host_lobby': {
+        this.hideHostLobby();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'coop') {
+          this.coopModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'coop': {
+        this.hideCoopMenu();
+        this.showMainMenu();
+        return 'handled';
+      }
+
+      case 'exit': {
+        this.hideExitModal();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'char_select': {
+        this.hideCharacterSelect();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'pause': {
+        this.hidePause();
+        return 'resume';
+      }
+
+      default:
+        return 'noop';
+    }
   }
 
   public togglePause(onResume: () => void, onPause: () => void) {
@@ -1614,6 +1897,124 @@ export class HUD {
       }
     } else {
       this.bossHpContainer.classList.add('hidden');
+    }
+
+    // --- The Rift: Credits, Difficulty, Items, Dash HUD ---
+    if (this.plasmaCreditsText) {
+      this.plasmaCreditsText.innerText = `⬡ ${player.credits}`;
+    }
+
+    // Difficulty Meter
+    const tier = DifficultyDirector.getCurrentTier(gameTime);
+    const progress = DifficultyDirector.getTierProgress(gameTime);
+    if (this.diffTierLabel) {
+      this.diffTierLabel.innerText = tier.name;
+      this.diffTierLabel.style.color = tier.color;
+    }
+    if (this.diffBarFill) {
+      this.diffBarFill.style.width = `${Math.round(progress * 100)}%`;
+      this.diffBarFill.style.backgroundColor = tier.color;
+    }
+
+    // Tactical Dash Badge
+    if (this.dashCooldownText) {
+      if (player.dashCooldown > 0) {
+        this.dashCooldownText.innerText = `${player.dashCooldown.toFixed(1)}s`;
+        this.dashCooldownBadge?.classList.add('cooling-down');
+      } else {
+        this.dashCooldownText.innerText = 'ГОТОВ';
+        this.dashCooldownBadge?.classList.remove('cooling-down');
+      }
+    }
+
+    // Item Inventory Tray
+    this.renderItemInventory(player.riftItems);
+  }
+
+  public updateStageText(stageNum: number, biomeName: string) {
+    if (this.stageText) {
+      this.stageText.innerText = `${stageNum}: ${biomeName.toUpperCase()}`;
+    }
+  }
+
+  public updateTeleporterHUD(isCharging: boolean, progress: number, isPlayerInside: boolean, isWarpReady: boolean) {
+    if (!this.teleporterEventContainer) return;
+
+    if (!isCharging && !isWarpReady) {
+      this.teleporterEventContainer.classList.add('hidden');
+      return;
+    }
+
+    this.teleporterEventContainer.classList.remove('hidden');
+
+    if (isWarpReady) {
+      if (this.teleporterStatusText) this.teleporterStatusText.innerText = 'РАЗЛОМ СТАБИЛИЗИРОВАН!';
+      if (this.teleporterZoneText) {
+        this.teleporterZoneText.innerText = 'ГОТОВ К ПЕРЕХОДУ [E]';
+        this.teleporterZoneText.style.color = '#10b981';
+      }
+      if (this.teleporterBarFill) {
+        this.teleporterBarFill.style.width = '100%';
+        this.teleporterBarFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+      }
+      return;
+    }
+
+    const pct = Math.min(100, Math.max(0, Math.round(progress * 100)));
+    if (this.teleporterStatusText) this.teleporterStatusText.innerText = `ЗАРЯДКА: ${pct}%`;
+    if (this.teleporterBarFill) {
+      this.teleporterBarFill.style.width = `${pct}%`;
+      this.teleporterBarFill.style.background = 'linear-gradient(90deg, #4f46e5, #818cf8)';
+    }
+
+    if (this.teleporterZoneText) {
+      if (isPlayerInside) {
+        this.teleporterZoneText.innerText = 'В ЗОНЕ';
+        this.teleporterZoneText.style.color = '#10b981';
+      } else {
+        this.teleporterZoneText.innerText = 'ВНЕ ЗОНЫ (ПАУЗА)';
+        this.teleporterZoneText.style.color = '#f43f5e';
+      }
+    }
+  }
+
+  public showInteractionPrompt(text: string) {
+    if (this.interactionPrompt && this.interactionPromptText) {
+      this.interactionPromptText.innerText = text;
+      this.interactionPrompt.classList.remove('hidden');
+    }
+  }
+
+  public hideInteractionPrompt() {
+    if (this.interactionPrompt) {
+      this.interactionPrompt.classList.add('hidden');
+    }
+  }
+
+  private lastRenderedItemsKey = '';
+  public renderItemInventory(items: Map<RiftItemId, number>) {
+    if (!this.itemInventoryTray) return;
+
+    let key = '';
+    for (const [id, count] of items) {
+      key += `${id}:${count},`;
+    }
+    if (key === this.lastRenderedItemsKey) return;
+    this.lastRenderedItemsKey = key;
+
+    this.itemInventoryTray.innerHTML = '';
+    for (const [id, count] of items) {
+      const def = RIFT_ITEMS[id];
+      if (!def) continue;
+
+      const card = document.createElement('div');
+      card.className = `rift-item-card ${def.rarity}`;
+      card.title = `${def.name} (${def.description})`;
+      card.innerHTML = `
+        <span>${def.icon}</span>
+        ${count > 1 ? `<span class="item-stack-badge">x${count}</span>` : ''}
+      `;
+      this.itemInventoryTray.appendChild(card);
     }
   }
 
@@ -1776,8 +2177,10 @@ export class HUD {
         slot.className = 'weapon-slot';
         slot.setAttribute('data-weapon-id', weapon.id);
         slot.title = `${weapon.name} (Ур. ${weapon.level})`;
+        const iconUrl = weapon.iconImage || getWeaponIconUrl(weapon.id);
         slot.innerHTML = `
-          <span class="weapon-icon">${weapon.icon}</span>
+          <img src="${iconUrl}" class="weapon-icon-img" alt="${weapon.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+          <span class="weapon-icon" style="display:none">${weapon.icon}</span>
           <span class="weapon-level">lvl ${weapon.level}</span>
         `;
         this.weaponsBar.appendChild(slot);
@@ -1844,12 +2247,18 @@ export class HUD {
     this.upgradeCardsContainer.innerHTML = '';
     for (const opt of options) {
       const card = document.createElement('div');
-      card.className = 'upgrade-card card-weapon-step';
+      card.className = 'character-card upgrade-card card-weapon-step';
+      const iconHtml = opt.iconImage
+        ? `<div class="char-portrait-wrapper upgrade-icon-wrapper"><img src="${opt.iconImage}" class="char-portrait card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
+        : `<div class="char-portrait-wrapper upgrade-icon-wrapper"><div class="card-icon">${opt.icon}</div></div>`;
       card.innerHTML = `
-        <div class="card-icon">${opt.icon}</div>
-        <div class="card-title">${opt.title}</div>
-        <div class="card-level-tag">${opt.levelTag}</div>
-        <div class="card-description">${opt.description}</div>
+        ${iconHtml}
+        <div class="char-name card-title">${opt.title}</div>
+        <div class="char-type card-level-tag">${opt.levelTag}</div>
+        <div class="char-perks card-perks-box">
+          <div class="perk-tag card-description">${opt.description}</div>
+        </div>
+        <button class="action-btn select-btn upgrade-select-btn">ВЫБРАТЬ</button>
       `;
 
       card.addEventListener('click', () => {
@@ -1881,10 +2290,10 @@ export class HUD {
       this.victoryBadge.classList.remove('hidden');
       this.victoryStatsPrompt.classList.remove('hidden');
       this.gameOverTitle.innerText = 'ВЫ ПОБЕДИЛИ!';
-      this.gameOverTitle.className = 'death-title victory-title';
+      this.gameOverTitle.className = 'death-title modern-menu-title victory-title';
       this.gameOverSubtitle.innerText =
         'Вы выдержали легендарные 30 минут в беспощадной пустыне! Бессмертный Жнец забрал вашу душу, но легенда о вас будет жить вечно!';
-      this.gameOverSubtitle.className = 'death-subtitle victory-subtitle';
+      this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern victory-subtitle';
       this.btnRestart.innerText = 'Начать новую экспедицию';
     } else {
       SoundManager.playGameOver();
@@ -1892,18 +2301,23 @@ export class HUD {
       this.victoryBadge.classList.add('hidden');
       this.victoryStatsPrompt.classList.add('hidden');
       this.gameOverTitle.innerText = 'ВЫ ПОГИБЛИ';
-      this.gameOverTitle.className = 'death-title';
+      this.gameOverTitle.className = 'death-title modern-menu-title';
       this.gameOverSubtitle.innerText = 'Пустыня не прощает ошибок...';
-      this.gameOverSubtitle.className = 'death-subtitle';
+      this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern';
       this.btnRestart.innerText = 'Возродиться';
     }
 
     if (weapons && weapons.length > 0 && this.arsenalItemsList) {
       this.arsenalItemsList.innerHTML = weapons
-        .map(
-          (w) =>
-            `<div class="arsenal-tag"><span class="tag-icon">${w.icon}</span><span class="tag-name">${w.name}</span><span class="tag-lvl">lvl ${w.level}</span></div>`
-        )
+        .map((w) => {
+          const iconUrl = getWeaponIconUrl(w.id);
+          return `<div class="arsenal-tag">
+            <img src="${iconUrl}" class="arsenal-icon-img" alt="${w.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+            <span class="tag-icon" style="display:none">${w.icon}</span>
+            <span class="tag-name">${w.name}</span>
+            <span class="tag-lvl">L${w.level}</span>
+          </div>`;
+        })
         .join('');
     }
 
@@ -2003,6 +2417,7 @@ export class HUD {
           id: `upgrade_${weapon.id}`,
           title: `Улучшение: ${weapon.name}`,
           icon: weapon.icon,
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
           levelTag: `УРОВЕНЬ ${weapon.level + 1}`,
           description: weapon.getNextUpgradeDescription(),
           apply: () => weapon.upgrade()
@@ -2018,6 +2433,7 @@ export class HUD {
           id: 'new_bow',
           title: 'Новое: Охотничий Лук',
           icon: '🏹',
+          iconImage: getWeaponIconUrl('bow'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов',
           apply: () => player.weapons.push(new BowWeapon())
@@ -2030,6 +2446,7 @@ export class HUD {
           id: 'new_kukri',
           title: 'Новое: Нож Кукри',
           icon: '🔪',
+          iconImage: getWeaponIconUrl('kukri'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Стремительные броски изогнутых клинков кукри в ближайших врагов',
           apply: () => player.weapons.push(new KukriWeapon())
@@ -2042,6 +2459,7 @@ export class HUD {
           id: 'new_orbiting_barrier',
           title: 'Новое: Священные Подковы',
           icon: '🧲',
+          iconImage: getWeaponIconUrl('orbiting_barrier'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Призывает защитный вихрь из золотых подков вокруг вас (урон, радиус и количество растут с уровнем)',
           apply: () => player.weapons.push(new OrbitingBarrierWeapon())
@@ -2054,6 +2472,7 @@ export class HUD {
           id: 'new_holy_aura',
           title: 'Новое: Огненный Периметр',
           icon: '🔥',
+          iconImage: getWeaponIconUrl('holy_aura'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Окружает героя кольцом дикого огня, сжигающего монстров',
           apply: () => {
@@ -2070,6 +2489,7 @@ export class HUD {
           id: 'new_katana_slash',
           title: 'Новое: Рассекающий Клинок',
           icon: '🗡️',
+          iconImage: getWeaponIconUrl('katana_slash'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Рассекает окружающих врагов смертоносным круговым ударом',
           apply: () => player.weapons.push(new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)))
@@ -2082,6 +2502,7 @@ export class HUD {
           id: 'new_whirlwind_slash',
           title: 'Новое: Багровый Вихрь',
           icon: '🌪️',
+          iconImage: getWeaponIconUrl('whirlwind_slash'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью',
           apply: () => player.weapons.push(new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)))
@@ -2094,6 +2515,7 @@ export class HUD {
           id: 'new_greatsword',
           title: 'Новое: Двуручный Меч',
           icon: '⚔️',
+          iconImage: getWeaponIconUrl('greatsword'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом',
           apply: () => player.weapons.push(new GreatswordWeapon(() => player.triggerAttackAnim(0.5)))
@@ -2106,6 +2528,7 @@ export class HUD {
           id: 'new_flail',
           title: 'Новое: Боевой Цеп',
           icon: '⛓️',
+          iconImage: getWeaponIconUrl('flail'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров',
           apply: () => player.weapons.push(new FlailWeapon(() => player.triggerAttackAnim(0.45)))
@@ -2118,6 +2541,7 @@ export class HUD {
           id: 'new_astral_staff',
           title: 'Новое: Звёздный Посох',
           icon: '🔮',
+          iconImage: getWeaponIconUrl('astral_staff'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Магический посох, запускающий скоростные пробивающие звёздные снаряды',
           apply: () => player.weapons.push(new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)))
@@ -2130,9 +2554,23 @@ export class HUD {
           id: 'new_chakram',
           title: 'Новое: Танцующий Чакрам',
           icon: '🪃',
+          iconImage: getWeaponIconUrl('chakram'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением',
           apply: () => player.weapons.push(new ChakramWeapon(() => player.triggerAttackAnim(0.42)))
+        });
+      }
+
+      const hasLightning = player.weapons.some(w => w.id === 'lightning_strike');
+      if (!hasLightning) {
+        pool.push({
+          id: 'new_lightning_strike',
+          title: 'Новое: Удар Молнии',
+          icon: '⚡',
+          iconImage: getWeaponIconUrl('lightning_strike'),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху',
+          apply: () => player.weapons.push(new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)))
         });
       }
     }

@@ -5,6 +5,8 @@ import { DropManager } from '../drops/DropManager';
 import { AltarManager } from '../world/AltarManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
+import { ChestManager } from '../world/ChestManager';
+import { RiftTeleporter } from '../world/RiftTeleporter';
 
 export interface DiscoveredAltar {
   type: BuffType;
@@ -21,6 +23,8 @@ export class MapManager {
   private dropManager: DropManager;
   private altarManager: AltarManager;
   private obstacleManager?: ObstacleManager;
+  public chestManager?: ChestManager;
+  public riftTeleporter?: RiftTeleporter;
   public partner: RemotePlayer | null = null;
   public partners: RemotePlayer[] = [];
 
@@ -58,13 +62,17 @@ export class MapManager {
     enemyManager: EnemyManager,
     dropManager: DropManager,
     altarManager: AltarManager,
-    obstacleManager?: ObstacleManager
+    obstacleManager?: ObstacleManager,
+    chestManager?: ChestManager,
+    riftTeleporter?: RiftTeleporter
   ) {
     this.player = player;
     this.enemyManager = enemyManager;
     this.dropManager = dropManager;
     this.altarManager = altarManager;
     this.obstacleManager = obstacleManager;
+    this.chestManager = chestManager;
+    this.riftTeleporter = riftTeleporter;
 
     // Minimap elements
     this.minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
@@ -177,6 +185,14 @@ export class MapManager {
     if (this.onStateChange) {
       this.onStateChange(false);
     }
+  }
+
+  public setChestManager(chestManager: ChestManager) {
+    this.chestManager = chestManager;
+  }
+
+  public setRiftTeleporter(riftTeleporter: RiftTeleporter) {
+    this.riftTeleporter = riftTeleporter;
   }
 
   public update(dt: number) {
@@ -327,6 +343,69 @@ export class MapManager {
         ctx.textBaseline = 'middle';
         ctx.fillText(altar.icon, drawX, drawY - 9);
       }
+    }
+
+    // 2b. Draw Chests (Loot Pods) on Minimap in visible range
+    if (this.chestManager) {
+      for (const chest of this.chestManager.chests) {
+        if (chest.isOpened) continue; // Unopened chests only
+        const relX = (chest.position.x - playerX) * scale;
+        const relZ = (chest.position.z - playerZ) * scale;
+        const distSq = relX * relX + relZ * relZ;
+
+        if (distSq <= radius * radius) {
+          const drawX = cx + relX;
+          const drawY = cy + relZ;
+
+          const color = chest.tier === 'legendary' ? '#f43f5e' : chest.tier === 'large' ? '#06b6d4' : '#fbbf24';
+          const pulse = 1 + Math.sin(this.animTimer * 4) * 0.15;
+
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, 5 * pulse, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, 3, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = '9px "Segoe UI", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('📦', drawX, drawY - 7);
+        }
+      }
+    }
+
+    // 2c. Draw Rift Teleporter on Minimap
+    if (this.riftTeleporter) {
+      const relX = (this.riftTeleporter.position.x - playerX) * scale;
+      const relZ = (this.riftTeleporter.position.z - playerZ) * scale;
+      const distSq = relX * relX + relZ * relZ;
+
+      let drawX = cx + relX;
+      let drawY = cy + relZ;
+      if (distSq > radius * radius) {
+        const d = Math.sqrt(distSq);
+        drawX = cx + (relX / d) * (radius - 8);
+        drawY = cy + (relZ / d) * (radius - 8);
+      }
+
+      const teleColor = this.riftTeleporter.state === 'WARP_READY' ? '#10b981' : this.riftTeleporter.state === 'CHARGING' ? '#f43f5e' : '#818cf8';
+      ctx.fillStyle = teleColor;
+      ctx.beginPath();
+      ctx.arc(drawX, drawY, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.font = '10px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🌀', drawX, drawY);
     }
 
     // 3. Draw Enemies (crimson dots, boss as glowing skull)
@@ -649,6 +728,93 @@ export class MapManager {
         ctx.fillStyle = altar.isCaptured ? '#888' : altar.color;
         const statusText = altar.isCaptured ? '[ПЕРЕЗАРЯДКА]' : '[АКТИВЕН]';
         ctx.fillText(statusText, ax, az + 34);
+      }
+    }
+
+    // 7b. Draw Chests on Full Map (in explored chunk or visible range)
+    if (this.chestManager) {
+      for (const chest of this.chestManager.chests) {
+        const chunkX = Math.floor(chest.position.x / 50);
+        const chunkZ = Math.floor(chest.position.z / 50);
+        const chunkKey = `${chunkX},${chunkZ}`;
+        const distToPlayer = chest.position.distanceTo(this.player.position);
+
+        const isVisible = this.exploredChunks.has(chunkKey) || distToPlayer < 65;
+        if (!isVisible) continue;
+
+        const screenX = cx + (chest.position.x - px) * mapScale;
+        const screenZ = cy + (chest.position.z - pz) * mapScale;
+
+        if (screenX >= 10 && screenX <= w - 10 && screenZ >= 10 && screenZ <= h - 10) {
+          const color = chest.tier === 'legendary' ? '#f43f5e' : chest.tier === 'large' ? '#06b6d4' : '#fbbf24';
+          const tierLabel = chest.tier === 'legendary' ? 'Легендарная капсула' : chest.tier === 'large' ? 'Большой контейнер' : 'Малый контейнер';
+
+          ctx.save();
+          if (chest.isOpened) {
+            ctx.fillStyle = 'rgba(30, 20, 15, 0.75)';
+            ctx.strokeStyle = 'rgba(140, 140, 140, 0.6)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.arc(screenX, screenZ, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.font = 'bold 9px sans-serif';
+            ctx.fillStyle = '#888888';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✓', screenX, screenZ);
+          } else {
+            ctx.fillStyle = 'rgba(20, 14, 10, 0.9)';
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(screenX, screenZ, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.font = '12px "Segoe UI", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('📦', screenX, screenZ);
+
+            ctx.font = 'bold 10px "Cinzel", serif';
+            ctx.fillStyle = '#2d180d';
+            ctx.fillText(tierLabel, screenX, screenZ + 18);
+          }
+          ctx.restore();
+        }
+      }
+    }
+
+    // 7c. Draw Teleporter on Full Map
+    if (this.riftTeleporter) {
+      const tx = cx + (this.riftTeleporter.position.x - px) * mapScale;
+      const tz = cy + (this.riftTeleporter.position.z - pz) * mapScale;
+      const chunkX = Math.floor(this.riftTeleporter.position.x / 50);
+      const chunkZ = Math.floor(this.riftTeleporter.position.z / 50);
+      const isVisible = this.exploredChunks.has(`${chunkX},${chunkZ}`) || this.riftTeleporter.position.distanceTo(this.player.position) < 80;
+
+      if (isVisible && tx >= 15 && tx <= w - 15 && tz >= 15 && tz <= h - 15) {
+        ctx.save();
+        const teleColor = this.riftTeleporter.state === 'WARP_READY' ? '#10b981' : this.riftTeleporter.state === 'CHARGING' ? '#f43f5e' : '#818cf8';
+        ctx.fillStyle = 'rgba(20, 14, 10, 0.92)';
+        ctx.strokeStyle = teleColor;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(tx, tz, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = '16px "Segoe UI", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🌀', tx, tz);
+
+        ctx.font = 'bold 11px "Cinzel", serif';
+        ctx.fillStyle = '#2d180d';
+        ctx.fillText('ТЕЛЕПОРТ РАЗЛОМА', tx, tz + 22);
+        ctx.restore();
       }
     }
 

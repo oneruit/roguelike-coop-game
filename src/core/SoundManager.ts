@@ -481,4 +481,204 @@ export class SoundManager {
     osc.start();
     osc.stop(ctx.currentTime + 2.3);
   }
+
+  /**
+   * Sound when opening a loot chest/capsule
+   */
+  public static playChestOpen() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // Mechanical unlatch click
+    const clickOsc = ctx.createOscillator();
+    const clickGain = ctx.createGain();
+    clickOsc.type = 'triangle';
+    clickOsc.frequency.setValueAtTime(420, ctx.currentTime);
+    clickOsc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.05);
+    clickGain.gain.setValueAtTime(0.2, ctx.currentTime);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    clickOsc.connect(clickGain);
+    clickGain.connect(this.getMasterGain());
+    clickOsc.start();
+    clickOsc.stop(ctx.currentTime + 0.06);
+
+    // High tech ascending chime
+    [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+      const chimeOsc = ctx.createOscillator();
+      const chimeGain = ctx.createGain();
+      chimeOsc.type = 'sine';
+      chimeOsc.frequency.setValueAtTime(freq, ctx.currentTime + 0.04 + idx * 0.05);
+      chimeGain.gain.setValueAtTime(0.15, ctx.currentTime + 0.04 + idx * 0.05);
+      chimeGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25 + idx * 0.05);
+      chimeOsc.connect(chimeGain);
+      chimeGain.connect(this.getMasterGain());
+      chimeOsc.start(ctx.currentTime + 0.04 + idx * 0.05);
+      chimeOsc.stop(ctx.currentTime + 0.3 + idx * 0.05);
+    });
+  }
+
+  /**
+   * Sound when activating the teleporter event
+   */
+  public static playTeleporterActivate() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.8);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.95);
+  }
+
+  /**
+   * Sound when teleporter charge reaches 100% and rift stabilizes
+   */
+  public static playTeleporterComplete() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.1);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + idx * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.1 + 0.6);
+      osc.connect(gain);
+      gain.connect(this.getMasterGain());
+      osc.start(ctx.currentTime + idx * 0.1);
+      osc.stop(ctx.currentTime + idx * 0.1 + 0.65);
+    });
+  }
+
+  /**
+   * Sound when player dashes
+   */
+  public static playDash() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(350, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.18);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.19);
+  }
+
+  /**
+   * Sound when chain lightning procs
+   */
+  public static playChainLightning() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.13);
+  }
+
+  /**
+   * Sound when lightning strikes from above (electric discharge snap + thunder boom)
+   */
+  public static playLightning() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // 1. Sharp electric arc / crackle snap
+    const snapOsc = ctx.createOscillator();
+    const snapGain = ctx.createGain();
+    snapOsc.type = 'sawtooth';
+    snapOsc.frequency.setValueAtTime(1400, ctx.currentTime);
+    snapOsc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.09);
+    snapGain.gain.setValueAtTime(0.24, ctx.currentTime);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+    snapOsc.connect(snapGain);
+    snapGain.connect(this.getMasterGain());
+    snapOsc.start();
+    snapOsc.stop(ctx.currentTime + 0.10);
+
+    // 2. Resonant sub-bass thunder boom
+    const boomOsc = ctx.createOscillator();
+    const boomGain = ctx.createGain();
+    boomOsc.type = 'triangle';
+    boomOsc.frequency.setValueAtTime(160, ctx.currentTime);
+    boomOsc.frequency.exponentialRampToValueAtTime(32, ctx.currentTime + 0.38);
+    boomGain.gain.setValueAtTime(0.32, ctx.currentTime);
+    boomGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+    boomOsc.connect(boomGain);
+    boomGain.connect(this.getMasterGain());
+    boomOsc.start();
+    boomOsc.stop(ctx.currentTime + 0.40);
+  }
+
+  /**
+   * Sound when critical strike hits
+   */
+  public static playCrit() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(700, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(280, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.11);
+  }
+
+  /**
+   * Sound when collecting an item
+   */
+  public static playItemPickup() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    [440, 660, 880].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.04);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.04 + 0.2);
+      osc.connect(gain);
+      gain.connect(this.getMasterGain());
+      osc.start(ctx.currentTime + idx * 0.04);
+      osc.stop(ctx.currentTime + idx * 0.04 + 0.22);
+    });
+  }
 }
+

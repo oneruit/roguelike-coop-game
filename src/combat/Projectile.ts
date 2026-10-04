@@ -20,6 +20,7 @@ export interface ProjectileOptions {
   ownerId?: string;
   isArrow?: boolean;
   isKukri?: boolean;
+  isLightning?: boolean;
 }
 
 export class Projectile {
@@ -35,6 +36,7 @@ export class Projectile {
   public isMagic: boolean;
   public isArrow = false;
   public isKukri = false;
+  public isLightning = false;
   public isCosmetic: boolean;
   public ownerId?: string;
   public isAlive = true;
@@ -53,11 +55,23 @@ export class Projectile {
   public elapsedTime = 0;
   public hasTurnedBack = false;
 
+  // Lightning specific visuals
+  private lightningMaterial?: THREE.MeshBasicMaterial;
+  private groundRingMesh?: THREE.Mesh;
+  private groundRingMat?: THREE.MeshBasicMaterial;
+  private groundDiscMat?: THREE.MeshBasicMaterial;
+
   // Shared assets for Orbiting Barrier (Holy Horseshoes)
   private static orbGeom = new THREE.SphereGeometry(1, 10, 10);
   private static orbCoreGeom = new THREE.SphereGeometry(0.5, 8, 8);
   private static orbCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   private static orbMatCache = new Map<number, THREE.MeshStandardMaterial>();
+
+  // Shared assets for Lightning Strike
+  private static lightningGeomA: THREE.PlaneGeometry | null = null;
+  private static lightningGeomB: THREE.PlaneGeometry | null = null;
+  private static lightningRingGeom: THREE.RingGeometry | null = null;
+  private static lightningDiscGeom: THREE.CircleGeometry | null = null;
 
   // Shared assets for Chakram (Spinning Blade Plane)
   private static chakramGeom: THREE.PlaneGeometry | null = null;
@@ -109,12 +123,75 @@ export class Projectile {
     this.isChakram = !!options.isChakram;
     this.isArrow = !!options.isArrow;
     this.isKukri = !!options.isKukri;
+    this.isLightning = !!options.isLightning;
     this.curveSign = options.curveSign ?? 1;
     this.maxLifetime = options.lifetime;
 
     this.mesh = new THREE.Group();
 
-    if (this.isChakram) {
+    if (this.isLightning) {
+      if (!Projectile.lightningGeomA || !Projectile.lightningGeomB || !Projectile.lightningRingGeom || !Projectile.lightningDiscGeom) {
+        const w = 2.6;
+        const h = 18.0;
+        const ga = new THREE.PlaneGeometry(w, h);
+        ga.translate(0, h / 2, 0);
+        Projectile.lightningGeomA = ga;
+
+        const gb = new THREE.PlaneGeometry(w, h);
+        gb.translate(0, h / 2, 0);
+        gb.rotateY(Math.PI / 2);
+        Projectile.lightningGeomB = gb;
+
+        const rg = new THREE.RingGeometry(0.15, 1.0, 24);
+        rg.rotateX(-Math.PI / 2);
+        Projectile.lightningRingGeom = rg;
+
+        const dg = new THREE.CircleGeometry(0.5, 16);
+        dg.rotateX(-Math.PI / 2);
+        Projectile.lightningDiscGeom = dg;
+      }
+
+      this.lightningMaterial = new THREE.MeshBasicMaterial({
+        map: TextureManager.getLightningTexture(),
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+
+      const boltA = new THREE.Mesh(Projectile.lightningGeomA, this.lightningMaterial);
+      const boltB = new THREE.Mesh(Projectile.lightningGeomB, this.lightningMaterial);
+      this.mesh.add(boltA);
+      this.mesh.add(boltB);
+
+      // Expanding ground impact shockwave ring
+      this.groundRingMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      this.groundRingMesh = new THREE.Mesh(Projectile.lightningRingGeom, this.groundRingMat);
+      this.groundRingMesh.position.y = 0.05;
+      this.groundRingMesh.scale.set(this.radius, this.radius, this.radius);
+      this.mesh.add(this.groundRingMesh);
+
+      // Bright ground impact spark disc
+      this.groundDiscMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const discMesh = new THREE.Mesh(Projectile.lightningDiscGeom, this.groundDiscMat);
+      discMesh.position.y = 0.06;
+      discMesh.scale.set(this.radius, this.radius, this.radius);
+      this.mesh.add(discMesh);
+    } else if (this.isChakram) {
       if (!Projectile.chakramGeom || !Projectile.chakramMaterial) {
         const geom = new THREE.PlaneGeometry(1.0, 1.0);
         geom.rotateX(-Math.PI / 2);
@@ -136,8 +213,7 @@ export class Projectile {
       this.mesh.scale.set(scale, scale, scale);
     } else if (this.isKukri) {
       if (!Projectile.kukriGeom || !Projectile.kukriMaterial) {
-        const aspect = 48 / 128; // 0.375
-        const geom = new THREE.PlaneGeometry(1.4, 1.4 * aspect);
+        const geom = new THREE.PlaneGeometry(1.4, 1.4);
         geom.rotateX(-Math.PI / 2);
         Projectile.kukriGeom = geom;
 
@@ -240,7 +316,23 @@ export class Projectile {
       return;
     }
 
-    if (this.isOrbiting && centerPos) {
+    if (this.isLightning) {
+      const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
+      const flicker = 0.8 + Math.random() * 0.2;
+      const alpha = Math.max(0, 1 - progress * progress) * flicker;
+      if (this.lightningMaterial) {
+        this.lightningMaterial.opacity = alpha;
+      }
+      if (this.groundRingMesh && this.groundRingMat) {
+        const ringScale = this.radius * (0.8 + progress * 1.6);
+        this.groundRingMesh.scale.set(ringScale, ringScale, ringScale);
+        this.groundRingMat.opacity = Math.max(0, (1 - progress) * 0.85);
+      }
+      if (this.groundDiscMat) {
+        this.groundDiscMat.opacity = Math.max(0, (1 - progress * 1.8) * 0.95);
+      }
+      return;
+    } else if (this.isOrbiting && centerPos) {
       this.orbitAngle += this.orbitSpeed * dt;
       this.position.x = centerPos.x + Math.cos(this.orbitAngle) * this.orbitRadius;
       this.position.z = centerPos.z + Math.sin(this.orbitAngle) * this.orbitRadius;
@@ -296,7 +388,7 @@ export class Projectile {
 
   public onHit(): boolean {
     this.pierce -= 1;
-    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram) {
+    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning) {
       this.isAlive = false;
       return true;
     }
@@ -313,5 +405,17 @@ export class Projectile {
 
   public destroy(scene: THREE.Scene) {
     scene.remove(this.mesh);
+    if (this.lightningMaterial) {
+      this.lightningMaterial.dispose();
+      this.lightningMaterial = undefined;
+    }
+    if (this.groundRingMat) {
+      this.groundRingMat.dispose();
+      this.groundRingMat = undefined;
+    }
+    if (this.groundDiscMat) {
+      this.groundDiscMat.dispose();
+      this.groundDiscMat = undefined;
+    }
   }
 }

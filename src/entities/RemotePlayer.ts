@@ -24,6 +24,7 @@ export class RemotePlayer {
   public level: number = 1;
   public xp: number = 0;
   public xpToNextLevel: number = 10;
+  public credits: number = 0;
   public isDowned: boolean = false;
   public reviveProgress: number = 0; // 0 to 1
 
@@ -36,6 +37,7 @@ export class RemotePlayer {
 
   // Active Weapons / Abilities
   public weapons: NetWeaponInfo[] = [];
+  public riftItems: Map<string, number> = new Map();
 
   private animatedTextures!: AnimatedCharacterTextures;
   private animFrameTimer: number = 0;
@@ -258,6 +260,15 @@ export class RemotePlayer {
     }
     if (state.weapons) {
       this.weapons = state.weapons;
+    }
+    if (state.credits !== undefined) {
+      this.credits = state.credits;
+    }
+    if (state.riftItems) {
+      this.riftItems.clear();
+      for (const [id, count] of Object.entries(state.riftItems)) {
+        this.riftItems.set(id, count);
+      }
     }
     if (state.buffs) {
       this.activeBuffs.clear();

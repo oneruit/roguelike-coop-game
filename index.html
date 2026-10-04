@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wild West 2.5D Survival</title>
+    <title>The Rift - Sci-Fi Roguelike Co-op</title>
     <link rel="stylesheet" href="/src/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,9 +23,21 @@
         </div>
 
         <div id="stats-panel">
+          <div class="stat-badge stage-badge">
+            <span class="stat-label">STAGE</span>
+            <span id="stage-text">1: ПУСТЫНЯ</span>
+          </div>
+          <div class="stat-badge credits-badge">
+            <span class="stat-label">CREDITS</span>
+            <span id="plasma-credits">⬡ 0</span>
+          </div>
           <div class="stat-badge timer-badge">
             <span class="stat-label">TIME</span>
             <span id="game-timer">00:00</span>
+          </div>
+          <div class="stat-badge difficulty-badge" id="difficulty-badge" title="Сложность мира растет с течением времени!">
+            <span class="stat-label" id="diff-tier-label">ЛЕГКО</span>
+            <div class="diff-bar-bg"><div id="diff-bar-fill"></div></div>
           </div>
           <div class="stat-badge kill-badge">
             <span class="stat-label">KILLS</span>
@@ -37,6 +49,18 @@
           <div id="coop-badge" class="stat-badge coop-badge hidden">
             <span class="stat-label">ONLINE</span>
             <span id="coop-room-name">КООП</span>
+          </div>
+        </div>
+
+        <!-- Teleporter Charge Event Bar (shown when teleporter is charging) -->
+        <div id="teleporter-event-container" class="hidden">
+          <div class="teleporter-header">
+            <span class="teleporter-tag">РАЗЛОМ</span>
+            <span class="teleporter-status" id="teleporter-status-text">ЗАРЯДКА: 0%</span>
+            <span class="teleporter-zone-status" id="teleporter-zone-text">В ЗОНЕ</span>
+          </div>
+          <div class="teleporter-bar">
+            <div id="teleporter-bar-fill"></div>
           </div>
         </div>
 
@@ -78,6 +102,21 @@
         <div id="altar-notification-text" class="altar-notif-text">АЛТАРЬ ЗАХВАЧЕН!</div>
       </div>
 
+      <!-- Interactive Object Tooltip Prompt (Chests, Teleporter) -->
+      <div id="interaction-prompt" class="hidden">
+        <span class="prompt-key">[E]</span>
+        <span id="interaction-prompt-text">Открыть контейнер (25 ⬡)</span>
+      </div>
+
+      <!-- Item Inventory Tray (Stacked passive items) -->
+      <div id="item-inventory-tray"></div>
+
+      <!-- Tactical Dash Cooldown Badge -->
+      <div id="dash-cooldown-badge" class="dash-cooldown-badge">
+        <span class="dash-key">ПРОБЕЛ</span>
+        <span id="dash-cooldown-text">РЫВОК</span>
+      </div>
+
       <!-- Top-Left HUD: Acquired Abilities, Altar Buffs & PoE Party List -->
       <div id="top-left-hud">
         <div id="active-weapons-bar" class="weapons-bar"></div>
@@ -89,17 +128,17 @@
 
       <!-- Controls Hint -->
       <div id="controls-hint">
-        <span>[W][A][S][D] / Стрелочки — Перемещение</span>
+        <span>[W][A][S][D] — Перемещение</span>
+        <span class="dot">•</span>
+        <span>[ПРОБЕЛ] — Рывок</span>
+        <span class="dot">•</span>
+        <span>[E] — Взаимодействие</span>
         <span class="dot">•</span>
         <span>Авто-атака включена</span>
         <span class="dot">•</span>
         <span class="key-tag">[TAB]</span> <span>Карта</span>
         <span class="dot">•</span>
         <span class="key-tag">[ESC]</span> <span>Пауза</span>
-        <span class="dot">•</span>
-        <span class="key-tag dev-tag">[P]</span> <span>Dev Mode</span>
-        <span class="dot">•</span>
-        <span class="key-tag debug-tag">[F3]</span> <span>Debug HUD</span>
       </div>
 
       <!-- Main Menu Modal (Start screen) -->
@@ -129,7 +168,7 @@
                   </svg>
                 </div>
                 <div class="menu-text-wrap">
-                  <span class="menu-btn-title">НОВАЯ ИГРА</span>
+                  <span class="menu-btn-title">ОДИНОЧНЫЙ РЕЖИМ</span>
                 </div>
               </div>
             </button>
@@ -246,62 +285,103 @@
             <h2 class="modern-menu-title">НАСТРОЙКИ</h2>
           </div>
 
+          <!-- Settings Navigation Tabs -->
+          <div class="settings-nav-tabs">
+            <button id="settings-tab-btn-video" class="settings-tab-btn active" type="button" data-tab="video">
+              <span class="tab-icon">🖥️</span> Видео
+            </button>
+            <button id="settings-tab-btn-audio" class="settings-tab-btn" type="button" data-tab="audio">
+              <span class="tab-icon">🔊</span> Аудио
+            </button>
+            <button id="settings-tab-btn-ui" class="settings-tab-btn" type="button" data-tab="ui">
+              <span class="tab-icon">📊</span> Интерфейс
+            </button>
+            <button id="settings-tab-btn-controls" class="settings-tab-btn" type="button" data-tab="controls">
+              <span class="tab-icon">🎮</span> Управление
+            </button>
+          </div>
+
           <div class="settings-content">
-            <!-- Audio Settings -->
-            <div class="settings-section">
-              <div class="settings-section-title">Звук и Аудио / Audio</div>
-              <div class="settings-row">
-                <label for="settings-volume" class="settings-label">Громкость звуков:</label>
-                <div class="settings-control-row">
-                  <input type="range" id="settings-volume" min="0" max="100" value="80" class="settings-slider" />
-                  <span id="settings-volume-val" class="settings-val-badge">80%</span>
-                  <button id="settings-btn-test-sound" class="settings-mini-btn" title="Проверить громкость">Тест</button>
+            <!-- 1. Вкладка: ВИДЕО -->
+            <div id="settings-tab-video" class="settings-tab-pane">
+              <div class="settings-section">
+                <div class="settings-section-title">Графика и Экран / Display & Graphics</div>
+                <div class="settings-row">
+                  <label class="settings-label">Полноэкранный режим:</label>
+                  <button id="settings-btn-fullscreen" class="settings-mini-btn">Полный экран</button>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-resolution" class="settings-label">Качество графики (Рендер):</label>
+                  <div class="settings-control-row">
+                    <select id="settings-resolution" class="settings-select">
+                      <option value="1" selected>Высокое (100%)</option>
+                      <option value="0.85">Среднее (85%)</option>
+                      <option value="0.7">Низкое (70%)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-              <div class="settings-row">
-                <label for="settings-mute" class="settings-label">Отключить звук (Mute):</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settings-mute" />
-                  <span class="slider round"></span>
-                </label>
+            </div>
+
+            <!-- 2. Вкладка: АУДИО -->
+            <div id="settings-tab-audio" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Звук и Аудио / Audio</div>
+                <div class="settings-row">
+                  <label for="settings-volume" class="settings-label">Громкость звуков:</label>
+                  <div class="settings-control-row">
+                    <input type="range" id="settings-volume" min="0" max="100" value="80" class="settings-slider" />
+                    <span id="settings-volume-val" class="settings-val-badge">80%</span>
+                    <button id="settings-btn-test-sound" class="settings-mini-btn" title="Проверить громкость">Тест</button>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-mute" class="settings-label">Отключить звук (Mute):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-mute" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
               </div>
             </div>
 
-            <!-- Display Settings -->
-            <div class="settings-section">
-              <div class="settings-section-title">Графика и Экран / Display</div>
-              <div class="settings-row">
-                <label for="settings-perf-overlay" class="settings-label">Счетчик FPS и Пинг (Latency):</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settings-perf-overlay" checked />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-              <div class="settings-row">
-                <label for="settings-damage-numbers" class="settings-label">Урон над врагами (Damage numbers):</label>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settings-damage-numbers" checked />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-              <div class="settings-row">
-                <label class="settings-label">Полноэкранный режим:</label>
-                <button id="settings-btn-fullscreen" class="settings-mini-btn">Полный экран</button>
+            <!-- 3. Вкладка: ИНТЕРФЕЙС -->
+            <div id="settings-tab-ui" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Элементы интерфейса / Interface & HUD</div>
+                <div class="settings-row">
+                  <label for="settings-perf-overlay" class="settings-label">Счетчик FPS и Пинг (Latency):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-perf-overlay" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-damage-numbers" class="settings-label">Урон над врагами (Damage numbers):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-damage-numbers" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
               </div>
             </div>
 
-            <!-- Controls & Guide -->
-            <div class="settings-section">
-              <div class="settings-section-title">Управление и Правила / Controls</div>
-              <div class="settings-controls-summary">
-                <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
-                <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
-                <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза</span></div>
-                <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Режим разработчика</span></div>
+            <!-- 4. Вкладка: УПРАВЛЕНИЕ -->
+            <div id="settings-tab-controls" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Управление и Навигация / Controls</div>
+                <div class="settings-controls-summary">
+                  <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[ПРОБЕЛ] / [SHIFT]</span> <span>Рывок (Dash)</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза / Назад</span></div>
+                  <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Консоль разработчика</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[F3]</span> <span>Сетевая отладка</span></div>
+                </div>
+                <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 14px; width: 100%;">
+                  📖 Открыть справочник
+                </button>
               </div>
-              <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 10px; width: 100%;">
-                Открыть справочник
-              </button>
             </div>
           </div>
 
@@ -705,32 +785,32 @@
 
       <!-- Pause Modal (ESC) -->
       <div id="pause-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card pause-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card pause-card modern-glass-modal">
           <div class="modal-header">
-            <div class="sub-title">ПАУЗА</div>
-            <h2>ИГРА ПРИОСТАНОВЛЕНА</h2>
+            <div class="sub-title menu-badge-blue">ПАУЗА</div>
+            <h2 class="wild-west-title modern-menu-title">ИГРА ПРИОСТАНОВЛЕНА</h2>
           </div>
-          <p class="pause-hint">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
+          <p class="pause-hint menu-tagline-modern">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
           <div class="pause-actions">
-            <button id="btn-resume" class="action-btn">Продолжить</button>
-            <button id="btn-pause-settings" class="action-btn secondary-btn">Настройки</button>
-            <button id="btn-pause-restart" class="action-btn secondary-btn">Начать заново</button>
-            <button id="btn-pause-menu" class="action-btn secondary-btn">В главное меню</button>
+            <button id="btn-resume" class="action-btn select-btn">Продолжить</button>
+            <button id="btn-pause-settings" class="action-btn modern-back-btn">Настройки</button>
+            <button id="btn-pause-restart" class="action-btn modern-back-btn">Начать заново</button>
+            <button id="btn-pause-menu" class="action-btn modern-back-btn">В главное меню</button>
           </div>
         </div>
       </div>
 
       <!-- Desert Map Modal (TAB) -->
       <div id="map-modal" class="modal hidden">
-        <div class="modal-backdrop" id="map-backdrop"></div>
-        <div class="modal-card fullmap-card">
+        <div class="modal-backdrop menu-scenic-backdrop" id="map-backdrop"></div>
+        <div class="modal-card fullmap-card modern-glass-modal">
           <div class="map-modal-header">
             <div>
-              <div class="sub-title">КАРТОГРАФИЯ ДИКОГО ЗАПАДА</div>
-              <h2 class="map-title">КАРТА ПУСТЫНИ (ИССЛЕДОВАНО)</h2>
+              <div class="sub-title menu-badge-blue">КАРТОГРАФИЯ ДИКОГО ЗАПАДА</div>
+              <h2 class="map-title wild-west-title modern-menu-title">КАРТА ПУСТЫНИ (ИССЛЕДОВАНО)</h2>
             </div>
-            <button id="btn-close-map" class="close-x-btn">[X] [TAB]</button>
+            <button id="btn-close-map" class="modern-back-btn">[X] [TAB]</button>
           </div>
 
           <div id="fullmap-stats" class="fullmap-stats-bar">
@@ -767,11 +847,11 @@
 
       <!-- Level Up Modal -->
       <div id="level-up-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card level-up-card select-character-card modern-glass-modal">
           <div class="modal-header">
-            <div id="level-up-step-indicator" class="sub-title">ПОВЫШЕНИЕ УРОВНЯ</div>
-            <h2 id="level-up-title">ВЫБЕРИТЕ ОРУЖИЕ</h2>
+            <div id="level-up-step-indicator" class="sub-title menu-badge-yellow">ПОВЫШЕНИЕ УРОВНЯ</div>
+            <h2 id="level-up-title" class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ОРУЖИЕ</h2>
           </div>
           <div id="upgrade-cards" class="upgrade-grid">
             <!-- Dynamically populated cards -->
@@ -781,11 +861,11 @@
 
       <!-- Game Over / Victory Modal -->
       <div id="game-over-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-card game-over-card" id="game-over-card">
-          <div id="victory-badge" class="victory-badge-pill hidden">ЛЕГЕНДА ДИКОГО ЗАПАДА • 30 МИНУТ</div>
-          <h1 id="game-over-title" class="death-title">ВЫ ПОГИБЛИ</h1>
-          <p id="game-over-subtitle" class="death-subtitle">Пустыня не прощает ошибок...</p>
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card game-over-card modern-glass-modal" id="game-over-card">
+          <div id="victory-badge" class="victory-badge-pill menu-badge-yellow hidden">ЛЕГЕНДА ДИКОГО ЗАПАДА • 30 МИНУТ</div>
+          <h1 id="game-over-title" class="death-title modern-menu-title">ВЫ ПОГИБЛИ</h1>
+          <p id="game-over-subtitle" class="death-subtitle menu-tagline-modern">Пустыня не прощает ошибок...</p>
 
           <!-- Victory Announcement & Stats Suggestion -->
           <div id="victory-stats-prompt" class="victory-stats-prompt hidden">
@@ -866,22 +946,22 @@
           </div>
 
           <div class="pause-actions" style="margin-top: 20px;">
-            <button id="btn-restart" class="action-btn">Возродиться</button>
-            <button id="btn-gameover-menu" class="action-btn secondary-btn">В главное меню</button>
+            <button id="btn-restart" class="action-btn select-btn">Возродиться</button>
+            <button id="btn-gameover-menu" class="action-btn modern-back-btn">В главное меню</button>
           </div>
         </div>
       </div>
 
       <!-- Developer Mode Console / Panel (P key) -->
       <div id="dev-panel-modal" class="modal hidden">
-        <div class="modal-backdrop" id="dev-backdrop"></div>
-        <div class="modal-card dev-card">
+        <div class="modal-backdrop menu-scenic-backdrop" id="dev-backdrop"></div>
+        <div class="modal-card dev-card modern-glass-modal">
           <div class="dev-header">
             <div class="dev-title-row">
-              <div class="terminal-badge">DEV CONSOLE</div>
-              <h2 class="dev-title">РЕЖИМ РАЗРАБОТЧИКА</h2>
+              <div class="terminal-badge menu-badge-blue">DEV CONSOLE</div>
+              <h2 class="dev-title wild-west-title modern-menu-title">РЕЖИМ РАЗРАБОТЧИКА</h2>
             </div>
-            <button id="btn-dev-close" class="close-x-btn">[X] [P]</button>
+            <button id="btn-dev-close" class="modern-back-btn">[X] [P]</button>
           </div>
 
           <!-- Co-op Host Control Banner -->

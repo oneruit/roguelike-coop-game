@@ -44,6 +44,7 @@ export interface SimEnemyConfig {
   gemType: GemType;
   isBoss?: boolean;
   isImmortal?: boolean;
+  eliteAffix?: 'blazing' | 'glacial' | 'overloading';
 }
 
 export class SimPlayerInternal {
@@ -70,6 +71,11 @@ export class SimPlayerInternal {
   public passiveCooldownMultiplier: number = 1.0;
   public passiveHpRegen: number = 0;
   public passiveDamageReduction: number = 0;
+
+  // The Rift Economy & Shields
+  public credits: number = 0;
+  public shield: number = 0;
+  public maxShield: number = 0;
 
   public isAlive: boolean = true;
   public isDowned: boolean = false;
@@ -152,6 +158,7 @@ export class SimEnemyInternal {
   public gemType: GemType;
   public isBoss: boolean;
   public isImmortal: boolean;
+  public eliteAffix?: 'blazing' | 'glacial' | 'overloading';
   public isAlive: boolean = true;
   public currentDir: SpriteDirection = 'front';
   public knockback: SimVec3 = new SimVec3();
@@ -171,6 +178,7 @@ export class SimEnemyInternal {
     this.gemType = cfg.gemType;
     this.isBoss = !!cfg.isBoss;
     this.isImmortal = !!cfg.isImmortal;
+    this.eliteAffix = cfg.eliteAffix;
   }
 }
 
@@ -190,6 +198,7 @@ export class SimProjectileInternal {
   public isChakram: boolean;
   public isArrow: boolean;
   public isKukri: boolean;
+  public isLightning: boolean;
   public curveSign: number;
   public elapsedTime: number = 0;
   public hasTurnedBack: boolean = false;
@@ -216,6 +225,7 @@ export class SimProjectileInternal {
     this.isChakram = !!data.isChakram;
     this.isArrow = !!data.isArrow;
     this.isKukri = !!data.isKukri;
+    this.isLightning = !!data.isLightning;
     this.curveSign = data.curveSign || 1;
     this.isOrbiting = !!data.isOrbiting;
     this.orbitRadius = data.orbitRadius || 2.4;
@@ -270,6 +280,8 @@ export class GameCore {
   public currentTick: number = 0;
   public gameTime: number = 0;
   public totalKills: number = 0;
+  public currentStage: number = 1;
+  public teleporterState: { state: string; chargeProgress: number; isPlayerInside: boolean } | null = null;
 
   // Simulation Entities
   public players = new Map<string, SimPlayerInternal>();
@@ -779,7 +791,7 @@ export class GameCore {
           proj.hitEnemies.add(enemy.id);
           this.damageEnemy(enemy.id, proj.damage, proj.position, proj.ownerId, 0.2);
 
-          if (!proj.isOrbiting && !proj.isChakram) {
+          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning) {
             proj.pierce--;
             if (proj.pierce <= 0) {
               proj.isAlive = false;
@@ -1061,7 +1073,10 @@ export class GameCore {
         kills: p.kills,
         damageDealt: Math.round(p.totalDamageDealt),
         revives: p.revivesCount,
-        buffs: Array.from(p.activeBuffs.keys())
+        buffs: Array.from(p.activeBuffs.keys()),
+        credits: p.credits,
+        shield: p.shield,
+        maxShield: p.maxShield
       };
 
       statsRecord[id] = {
@@ -1082,7 +1097,8 @@ export class GameCore {
       maxHp: e.maxHp,
       dir: e.currentDir,
       isBoss: e.isBoss,
-      isImmortal: e.isImmortal
+      isImmortal: e.isImmortal,
+      eliteAffix: e.eliteAffix
     }));
 
     const projectilesArray: SimProjectileState[] = this.projectiles.map(p => ({
@@ -1122,6 +1138,8 @@ export class GameCore {
       tick: this.currentTick,
       gameTime: this.gameTime,
       totalKills: this.totalKills,
+      stage: this.currentStage,
+      teleporter: this.teleporterState,
       players: playersRecord,
       stats: statsRecord,
       enemies: enemiesArray,

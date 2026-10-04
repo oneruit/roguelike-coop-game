@@ -5,6 +5,7 @@ export interface SimWeaponInfo {
   id: string;
   name: string;
   icon: string;
+  iconImage?: string;
   level: number;
   maxLevel: number;
   description: string;
@@ -30,6 +31,7 @@ export interface SimProjectileData {
   orbitAngle?: number;
   isArrow?: boolean;
   isKukri?: boolean;
+  isLightning?: boolean;
 }
 
 export interface SimEnemyRef {
@@ -51,16 +53,18 @@ export abstract class SimWeapon {
   public id: string;
   public name: string;
   public icon: string;
+  public iconImage: string;
   public level: number = 1;
   public maxLevel: number = 20;
   public cooldown: number;
   public timer: number = 0;
   public damage: number;
 
-  constructor(id: string, name: string, icon: string, cooldown: number, damage: number) {
+  constructor(id: string, name: string, icon: string, cooldown: number, damage: number, iconImage?: string) {
     this.id = id;
     this.name = name;
     this.icon = icon;
+    this.iconImage = iconImage || `/textures/weapon_${id}.png`;
     this.cooldown = cooldown;
     this.damage = damage;
   }
@@ -83,6 +87,7 @@ export abstract class SimWeapon {
       id: this.id,
       name: this.name,
       icon: this.icon,
+      iconImage: this.iconImage,
       level: this.level,
       maxLevel: this.maxLevel,
       description: this.getNextUpgradeDescription()
@@ -823,6 +828,89 @@ export class SimChakramWeapon extends SimWeapon {
 }
 
 /**
+ * Lightning Strike (Удар Молнии) simulation weapon
+ */
+export class SimLightningStrikeWeapon extends SimWeapon {
+  private strikeCount: number = 1;
+  private strikeRadius: number = 2.2;
+  private range: number = 22;
+
+  constructor() {
+    super('lightning_strike', 'Удар Молнии', '⚡', 1.25, 65);
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    spawnProjectile: (p: SimProjectileData) => void,
+    _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.cooldown) {
+      if (enemies.length === 0) return;
+
+      const candidates = enemies
+        .filter(e => e.isAlive)
+        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(player.position) }))
+        .filter(c => c.distSq <= this.range * this.range)
+        .sort((a, b) => a.distSq - b.distSq);
+
+      if (candidates.length === 0) return;
+
+      this.timer = 0;
+      if (triggerAnim) triggerAnim(0.40);
+      if (emitSound) emitSound('magic');
+
+      for (let i = 0; i < this.strikeCount; i++) {
+        const targetCandidate = candidates[i % candidates.length];
+        const proj: SimProjectileData = {
+          id: `sim_lightning_${Math.random().toString(36).substring(2, 9)}`,
+          ownerId: player.id,
+          position: targetCandidate.enemy.position.clone(),
+          direction: new SimVec3(0, 0, 1),
+          speed: 0,
+          damage: this.damage * player.damageMultiplier,
+          pierce: 999,
+          lifetime: 0.24,
+          radius: this.strikeRadius,
+          color: 0x38bdf8,
+          isLightning: true
+        };
+        spawnProjectile(proj);
+      }
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 16;
+    if ([4, 8, 12, 16, 20].includes(this.level)) {
+      this.strikeCount++;
+    }
+    if ([3, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
+    }
+    if ([5, 10, 15].includes(this.level)) {
+      this.strikeRadius = Number((this.strikeRadius + 0.35).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+16 к урону'];
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 разряд молнии (всего ${this.strikeCount + 1})`);
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.strikeRadius + 0.35).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}
+
+/**
  * Creates weapon for character selection
  */
 export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon {
@@ -864,6 +952,8 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimAstralStaffWeapon();
     case 'chakram':
       return new SimChakramWeapon();
+    case 'lightning_strike':
+      return new SimLightningStrikeWeapon();
     case 'orbiting_barrier':
       return new SimOrbitingBarrierWeapon();
     case 'holy_aura':
