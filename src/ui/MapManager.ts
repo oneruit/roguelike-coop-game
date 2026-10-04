@@ -101,6 +101,10 @@ export class MapManager {
       this.close();
     });
 
+    document.getElementById('map-backdrop')?.addEventListener('click', () => {
+      this.close();
+    });
+
     document.getElementById('minimap-container')?.addEventListener('click', () => {
       this.toggle();
     });

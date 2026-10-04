@@ -272,7 +272,13 @@ class Game {
 
     // TAB Key Map Toggle Handler
     this.input.onToggleMap = () => {
+      if (this.mapManager.isOpen) {
+        this.mapManager.close();
+        return;
+      }
+
       if (
+        this.isLevelUpActive ||
         this.devManager.getIsOpen() ||
         this.hud.isAnyMenuOpen() ||
         this.gameState === GameState.PAUSED ||
@@ -284,7 +290,7 @@ class Game {
       ) {
         return;
       }
-      this.mapManager.toggle();
+      this.mapManager.open();
     };
 
     // ESC Key Pause Handler
