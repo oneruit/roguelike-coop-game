@@ -100,6 +100,18 @@ export class HUD {
   private charSelectModal: HTMLElement;
   private pauseModal: HTMLElement;
   private settingsFromPause = false;
+  private menuStack: (
+    | 'pause'
+    | 'settings'
+    | 'guide'
+    | 'exit'
+    | 'coop'
+    | 'host_lobby'
+    | 'join_lobby'
+    | 'password_prompt'
+    | 'char_select'
+  )[] = [];
+  public onResolutionScaleChanged?: (scale: number) => void;
   private levelUpModal: HTMLElement;
   private levelUpStepIndicator: HTMLElement;
   private levelUpTitle: HTMLElement;
@@ -405,9 +417,7 @@ export class HUD {
     });
 
     document.getElementById('coop-btn-back')?.addEventListener('click', () => {
-      this.hideCoopMenu();
-      this.showMainMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Settings Controls
@@ -478,24 +488,40 @@ export class HUD {
       }
     });
 
+    // Settings Tabs switching
+    const settingsTabBtns = document.querySelectorAll<HTMLButtonElement>('.settings-tab-btn');
+    settingsTabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab') as 'video' | 'audio' | 'ui' | 'controls' | null;
+        if (tab) {
+          this.activateSettingsTab(tab);
+        }
+      });
+    });
+
+    const resolutionSelect = document.getElementById('settings-resolution') as HTMLSelectElement | null;
+    if (resolutionSelect) {
+      resolutionSelect.addEventListener('change', () => {
+        const scale = parseFloat(resolutionSelect.value) || 1;
+        if (this.onResolutionScaleChanged) {
+          this.onResolutionScaleChanged(scale);
+        }
+      });
+    }
+
     openGuideBtn?.addEventListener('click', () => {
       this.showGuide();
     });
 
     settingsBackBtn?.addEventListener('click', () => {
-      this.hideSettings();
-      if (this.settingsFromPause) {
-        this.showPause();
-      } else {
-        this.showMainMenu();
-      }
+      this.handleEscape();
     });
 
     // Exit Modal Buttons
     this.setupExitListeners();
 
     document.getElementById('btn-close-guide')?.addEventListener('click', () => {
-      this.hideGuide();
+      this.handleEscape();
     });
 
     // Host Lobby Hero Selector
@@ -532,9 +558,7 @@ export class HUD {
     });
 
     this.btnHostBack.addEventListener('click', () => {
-      this.hideHostLobby();
-      this.showCoopMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Guest Lobby Hero Selector
@@ -653,16 +677,12 @@ export class HUD {
     });
 
     this.btnJoinBack.addEventListener('click', () => {
-      this.hideJoinLobby();
-      this.showCoopMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Character Select Back Button
     this.btnCharSelectBack?.addEventListener('click', () => {
-      this.hideCharacterSelect();
-      this.showMainMenu();
-      if (this.onReturnToMenu) this.onReturnToMenu();
+      this.handleEscape();
     });
 
     // Bind Character Select Buttons
@@ -683,12 +703,10 @@ export class HUD {
     });
 
     document.getElementById('btn-pause-settings')?.addEventListener('click', () => {
-      this.hidePause();
       this.showSettings('pause');
     });
 
     this.btnPauseRestart.addEventListener('click', () => {
-      this.hidePause();
       this.showCharacterSelect();
     });
 
@@ -726,16 +744,14 @@ export class HUD {
       if (exitActions) {
         exitActions.innerHTML = '<button id="btn-exit-return" class="action-btn">Назад в меню / Return</button>';
         document.getElementById('btn-exit-return')?.addEventListener('click', () => {
-          this.hideExitModal();
-          this.showMainMenu();
+          this.handleEscape();
           this.resetExitModal();
         });
       }
     });
 
     document.getElementById('btn-cancel-exit')?.addEventListener('click', () => {
-      this.hideExitModal();
-      this.showMainMenu();
+      this.handleEscape();
       this.resetExitModal();
     });
   }
@@ -753,6 +769,7 @@ export class HUD {
   }
 
   public showMainMenu() {
+    this.menuStack = [];
     this.hideCoopMenu();
     this.hideSettings();
     this.hideExitModal();
@@ -762,6 +779,7 @@ export class HUD {
     this.hideGameOver();
     this.hideLevelUp();
     this.hideGuide();
+    this.hideCharacterSelect();
     this.mainMenuModal.classList.remove('hidden');
   }
 
@@ -770,32 +788,61 @@ export class HUD {
   }
 
   public showCoopMenu() {
+    this.hideMainMenu();
+    this.menuStack = ['coop'];
     this.coopModal.classList.remove('hidden');
   }
 
   public hideCoopMenu() {
     this.coopModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'coop');
   }
 
   public showSettings(from: 'main' | 'pause' = 'main') {
-    this.settingsFromPause = (from === 'pause');
+    this.settingsFromPause = (from === 'pause') || this.isPaused || this.menuStack.includes('pause');
+    if (this.settingsFromPause) {
+      this.pauseModal.classList.add('hidden');
+      if (!this.menuStack.includes('pause')) {
+        this.menuStack.push('pause');
+      }
+      if (this.menuStack[this.menuStack.length - 1] !== 'settings') {
+        this.menuStack.push('settings');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['settings'];
+    }
+
+    const backBtn = document.getElementById('settings-btn-back');
+    if (backBtn) {
+      backBtn.innerText = this.settingsFromPause ? '← Назад в меню паузы' : '← Назад в главное меню';
+    }
+
+    this.activateSettingsTab('video');
     this.settingsModal.classList.remove('hidden');
   }
 
   public hideSettings() {
     this.settingsModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'settings');
   }
 
   public showExitModal() {
     this.resetExitModal();
+    if (this.menuStack[this.menuStack.length - 1] !== 'exit') {
+      this.menuStack.push('exit');
+    }
     this.exitModal.classList.remove('hidden');
   }
 
   public hideExitModal() {
     this.exitModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'exit');
   }
 
   public showHostLobby(roomCode: string, hero: CharacterType) {
+    this.hideCoopMenu();
+    this.menuStack = ['coop', 'host_lobby'];
     this.hostRoomCodeText.innerText = roomCode;
     this.hostSelectedHero = hero;
     const hostHeroOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-host-hero]');
@@ -831,6 +878,7 @@ export class HUD {
 
   public hideHostLobby() {
     this.hostLobbyModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'host_lobby');
   }
 
   public setHostPartnerConnected(connected: boolean, hero?: CharacterType) {
@@ -1102,6 +1150,9 @@ export class HUD {
 
   public showPasswordPrompt(roomCode: string) {
     this.pendingPasswordRoomCode = roomCode;
+    if (this.menuStack[this.menuStack.length - 1] !== 'password_prompt') {
+      this.menuStack.push('password_prompt');
+    }
     if (this.pwdPromptRoomTitle) {
       this.pwdPromptRoomTitle.innerText = `КОМНАТА ${roomCode}`;
     }
@@ -1121,6 +1172,7 @@ export class HUD {
     if (this.pwdPromptError) {
       this.pwdPromptError.classList.add('hidden');
     }
+    this.menuStack = this.menuStack.filter((s) => s !== 'password_prompt');
   }
 
   public showPasswordPromptError(msg: string = 'Неверный пароль. Попробуйте снова.') {
@@ -1231,6 +1283,8 @@ export class HUD {
   }
 
   public showJoinLobby(defaultHero: CharacterType = 'valkyrie') {
+    this.hideCoopMenu();
+    this.menuStack = ['coop', 'join_lobby'];
     this.joinRoomInput.value = '';
     if (this.joinPasswordInput) {
       this.joinPasswordInput.value = '';
@@ -1262,6 +1316,7 @@ export class HUD {
     this.hidePasswordPrompt();
     this.setGuestConnectedMode(false);
     this.joinLobbyModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'join_lobby');
   }
 
   public setJoinStatus(text: string, isError: boolean = false) {
@@ -1270,11 +1325,26 @@ export class HUD {
   }
 
   public showGuide() {
+    if (!this.settingsModal.classList.contains('hidden')) {
+      this.settingsModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'guide') {
+        this.menuStack.push('guide');
+      }
+    } else if (!this.pauseModal.classList.contains('hidden')) {
+      this.pauseModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'guide') {
+        this.menuStack.push('guide');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['guide'];
+    }
     this.guideModal.classList.remove('hidden');
   }
 
   public hideGuide() {
     this.guideModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'guide');
   }
 
   public setCoopBadge(roomCode: string | null) {
@@ -1596,21 +1666,156 @@ export class HUD {
   }
 
   public showCharacterSelect() {
+    if (this.isPaused || this.menuStack.includes('pause')) {
+      this.pauseModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'char_select') {
+        this.menuStack.push('char_select');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['char_select'];
+    }
     this.charSelectModal.classList.remove('hidden');
   }
 
   public hideCharacterSelect() {
     this.charSelectModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
   public showPause() {
     this.isPaused = true;
+    this.menuStack = ['pause'];
     this.pauseModal.classList.remove('hidden');
   }
 
   public hidePause() {
     this.isPaused = false;
     this.pauseModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'pause');
+  }
+
+  public activateSettingsTab(tabName: 'video' | 'audio' | 'ui' | 'controls') {
+    const tabs: ('video' | 'audio' | 'ui' | 'controls')[] = ['video', 'audio', 'ui', 'controls'];
+    for (const t of tabs) {
+      const btn = document.getElementById(`settings-tab-btn-${t}`);
+      const pane = document.getElementById(`settings-tab-${t}`);
+      if (btn) {
+        if (t === tabName) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      }
+      if (pane) {
+        if (t === tabName) {
+          pane.classList.remove('hidden');
+        } else {
+          pane.classList.add('hidden');
+        }
+      }
+    }
+  }
+
+  public isAnyMenuOpen(): boolean {
+    return this.menuStack.length > 0 || !this.mainMenuModal.classList.contains('hidden');
+  }
+
+  public handleEscape(): 'resume' | 'handled' | 'noop' {
+    if (this.menuStack.length === 0) {
+      return 'noop';
+    }
+
+    const current = this.menuStack.pop();
+
+    switch (current) {
+      case 'guide': {
+        this.guideModal.classList.add('hidden');
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'settings') {
+          this.settingsModal.classList.remove('hidden');
+        } else if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'settings': {
+        this.settingsModal.classList.add('hidden');
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'password_prompt': {
+        this.hidePasswordPrompt();
+        return 'handled';
+      }
+
+      case 'join_lobby': {
+        this.hideJoinLobby();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'coop') {
+          this.coopModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'host_lobby': {
+        this.hideHostLobby();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'coop') {
+          this.coopModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'coop': {
+        this.hideCoopMenu();
+        this.showMainMenu();
+        return 'handled';
+      }
+
+      case 'exit': {
+        this.hideExitModal();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'char_select': {
+        this.hideCharacterSelect();
+        const next = this.menuStack[this.menuStack.length - 1];
+        if (next === 'pause') {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
+      case 'pause': {
+        this.hidePause();
+        return 'resume';
+      }
+
+      default:
+        return 'noop';
+    }
   }
 
   public togglePause(onResume: () => void, onPause: () => void) {
