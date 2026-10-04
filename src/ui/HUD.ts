@@ -1,5 +1,5 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon } from '../combat/Weapon';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
@@ -40,7 +40,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     astral_staff: '/textures/weapon_astral_staff.png',
     orbiting_barrier: '/textures/weapon_orbiting_barrier.png',
     holy_aura: '/textures/weapon_holy_aura.png',
-    whirlwind_slash: '/textures/weapon_whirlwind_slash.png'
+    whirlwind_slash: '/textures/weapon_whirlwind_slash.png',
+    lightning_strike: '/textures/weapon_lightning_strike.png'
   };
   return map[weaponId] || `/textures/weapon_${weaponId}.png`;
 }
@@ -2352,6 +2353,19 @@ export class HUD {
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением',
           apply: () => player.weapons.push(new ChakramWeapon(() => player.triggerAttackAnim(0.42)))
+        });
+      }
+
+      const hasLightning = player.weapons.some(w => w.id === 'lightning_strike');
+      if (!hasLightning) {
+        pool.push({
+          id: 'new_lightning_strike',
+          title: 'Новое: Удар Молнии',
+          icon: '⚡',
+          iconImage: getWeaponIconUrl('lightning_strike'),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху',
+          apply: () => player.weapons.push(new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)))
         });
       }
     }

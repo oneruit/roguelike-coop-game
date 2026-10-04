@@ -604,6 +604,41 @@ export class SoundManager {
   }
 
   /**
+   * Sound when lightning strikes from above (electric discharge snap + thunder boom)
+   */
+  public static playLightning() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // 1. Sharp electric arc / crackle snap
+    const snapOsc = ctx.createOscillator();
+    const snapGain = ctx.createGain();
+    snapOsc.type = 'sawtooth';
+    snapOsc.frequency.setValueAtTime(1400, ctx.currentTime);
+    snapOsc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.09);
+    snapGain.gain.setValueAtTime(0.24, ctx.currentTime);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+    snapOsc.connect(snapGain);
+    snapGain.connect(this.getMasterGain());
+    snapOsc.start();
+    snapOsc.stop(ctx.currentTime + 0.10);
+
+    // 2. Resonant sub-bass thunder boom
+    const boomOsc = ctx.createOscillator();
+    const boomGain = ctx.createGain();
+    boomOsc.type = 'triangle';
+    boomOsc.frequency.setValueAtTime(160, ctx.currentTime);
+    boomOsc.frequency.exponentialRampToValueAtTime(32, ctx.currentTime + 0.38);
+    boomGain.gain.setValueAtTime(0.32, ctx.currentTime);
+    boomGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+    boomOsc.connect(boomGain);
+    boomGain.connect(this.getMasterGain());
+    boomOsc.start();
+    boomOsc.stop(ctx.currentTime + 0.40);
+  }
+
+  /**
    * Sound when critical strike hits
    */
   public static playCrit() {

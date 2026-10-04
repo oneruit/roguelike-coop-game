@@ -89,6 +89,7 @@ export class TextureManager {
     this.getArrowTexture(renderer);
     this.getKukriTexture(renderer);
     this.getChakramTexture(renderer);
+    this.getLightningTexture(renderer);
 
     const weaponUrls = [
       '/textures/weapon_chakram.png',
@@ -100,7 +101,9 @@ export class TextureManager {
       '/textures/weapon_astral_staff.png',
       '/textures/weapon_orbiting_barrier.png',
       '/textures/weapon_holy_aura.png',
-      '/textures/weapon_whirlwind_slash.png'
+      '/textures/weapon_whirlwind_slash.png',
+      '/textures/weapon_lightning_strike.png',
+      '/textures/vfx_lightning.png'
     ];
     for (const url of weaponUrls) {
       this.load(url, renderer);
@@ -270,6 +273,13 @@ export class TextureManager {
 
   public static getChakramTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
     const tex = this.load('/textures/weapon_chakram.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getLightningTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_lightning.png', renderer);
     tex.magFilter = THREE.LinearFilter;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     return tex;
