@@ -206,6 +206,7 @@ export class SimProjectileInternal {
   public orbitRadius: number;
   public orbitSpeed: number;
   public orbitAngle: number;
+  public orbitHitTimer: number = 0;
   public isAlive: boolean = true;
   public hitEnemies = new Set<string>();
 
@@ -725,6 +726,11 @@ export class GameCore {
             0.6,
             owner.position.z + Math.sin(proj.orbitAngle) * proj.orbitRadius
           );
+          proj.orbitHitTimer += dt;
+          if (proj.orbitHitTimer >= 0.40) {
+            proj.orbitHitTimer = 0;
+            proj.hitEnemies.clear();
+          }
         } else {
           proj.isAlive = false;
           this.projectiles.splice(i, 1);

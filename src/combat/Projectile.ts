@@ -47,6 +47,7 @@ export class Projectile {
   public orbitRadius = 2.5;
   public orbitSpeed = 4.0;
   public orbitAngle = 0;
+  private orbitHitTimer = 0;
 
   // Chakram specific
   public isChakram = false;
@@ -339,6 +340,11 @@ export class Projectile {
       this.position.y = centerPos.y + 0.6;
       this.mesh.position.copy(this.position);
       this.mesh.rotation.y += dt * 6;
+      this.orbitHitTimer += dt;
+      if (this.orbitHitTimer >= 0.40) {
+        this.orbitHitTimer = 0;
+        this.hitEnemies.clear();
+      }
     } else if (this.isChakram) {
       this.elapsedTime += dt;
       this.mesh.rotation.y -= dt * 17; // Clockwise blade spin (avoids stroboscopic wagon-wheel aliasing)
