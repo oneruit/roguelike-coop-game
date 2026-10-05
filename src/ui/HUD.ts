@@ -1786,6 +1786,7 @@ export class HUD {
       const p = prog.getHeroProgress(h);
       const fillEl = document.getElementById(`quest-prog-bar-${h}`);
       const textEl = document.getElementById(`quest-prog-text-${h}`);
+      const ribbonTextEl = document.getElementById(`quest-ribbon-text-${h}`);
       if (fillEl) {
         const pct = Math.max(0, Math.min(100, Math.round((p.current / p.max) * 100)));
         fillEl.style.width = `${pct}%`;
@@ -1797,6 +1798,21 @@ export class HUD {
       }
       if (textEl) {
         textEl.innerText = p.label;
+      }
+      if (ribbonTextEl) {
+        if (p.isComplete) {
+          ribbonTextEl.innerText = '100% (COMPLETE)';
+        } else if (h === 'archer') {
+          const canAchieve = prog.canUnlockElfByAchievement();
+          const canAfford = prog.data.walletCoins >= 100;
+          if (canAchieve || canAfford) {
+            ribbonTextEl.innerText = 'ДОСТУПНО К ПОКУПКЕ';
+          } else {
+            ribbonTextEl.innerText = '0/1 (НЕДОСТУПНО)';
+          }
+        } else {
+          ribbonTextEl.innerText = `${Math.round((p.current / p.max) * 100)}% (В ПРОЦЕССЕ)`;
+        }
       }
     });
 
