@@ -166,8 +166,9 @@ export class BowWeapon extends Weapon {
         const target = candidates[index % candidates.length];
         setTimeout(() => {
           if (!target || !target.isAlive) return;
-          const dir = new THREE.Vector3().subVectors(target.position, playerPos);
-          dir.y = 0;
+          const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.7, 0));
+          const targetPos = target.position.clone().add(new THREE.Vector3(0, 0.4, 0));
+          const dir = new THREE.Vector3().subVectors(targetPos, spawnPos);
           if (dir.lengthSq() > 0) dir.normalize();
 
           // slight spread if multiple arrows are fired at fewer targets (e.g. against a lone boss)
@@ -177,7 +178,7 @@ export class BowWeapon extends Weapon {
           }
 
           const proj = new Projectile({
-            position: playerPos.clone().add(new THREE.Vector3(0, 0.7, 0)),
+            position: spawnPos,
             direction: dir,
             speed: this.projectileSpeed,
             damage: this.damage,
@@ -258,8 +259,9 @@ export class KukriWeapon extends Weapon {
           const target = sorted[i % sorted.length];
           if (!target || !target.isAlive) return;
 
-          const dir = new THREE.Vector3().subVectors(target.position, playerPos);
-          dir.y = 0;
+          const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.7, 0));
+          const targetPos = target.position.clone().add(new THREE.Vector3(0, 0.4, 0));
+          const dir = new THREE.Vector3().subVectors(targetPos, spawnPos);
           if (dir.lengthSq() > 0) {
             dir.normalize();
             // slight spread angle for dual throwing
@@ -268,7 +270,7 @@ export class KukriWeapon extends Weapon {
           }
 
           const proj = new Projectile({
-            position: playerPos.clone().add(new THREE.Vector3(0, 0.7, 0)),
+            position: spawnPos,
             direction: dir,
             speed: this.projectileSpeed,
             damage: this.damage,
@@ -800,8 +802,9 @@ export class AstralStaffWeapon extends Weapon {
       }
 
       const baseTarget = targets[0];
-      const baseDir = new THREE.Vector3().subVectors(baseTarget.position, playerPos);
-      baseDir.y = 0;
+      const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.8, 0));
+      const targetPos = baseTarget.position.clone().add(new THREE.Vector3(0, 0.4, 0));
+      const baseDir = new THREE.Vector3().subVectors(targetPos, spawnPos);
       if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
       baseDir.normalize();
 
@@ -813,7 +816,7 @@ export class AstralStaffWeapon extends Weapon {
         const dir = baseDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
 
         const proj = new Projectile({
-          position: playerPos.clone().add(new THREE.Vector3(0, 0.8, 0)),
+          position: spawnPos,
           direction: dir,
           speed: this.projectileSpeed,
           damage: this.damage,
@@ -896,8 +899,9 @@ export class ChakramWeapon extends Weapon {
       }
 
       const target = targets[0];
-      const baseDir = new THREE.Vector3().subVectors(target.position, playerPos);
-      baseDir.y = 0;
+      const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.6, 0));
+      const targetPos = target.position.clone().add(new THREE.Vector3(0, 0.4, 0));
+      const baseDir = new THREE.Vector3().subVectors(targetPos, spawnPos);
       if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
       baseDir.normalize();
 
@@ -915,7 +919,7 @@ export class ChakramWeapon extends Weapon {
         const throwDir = baseDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angleOffset);
 
         const proj = new Projectile({
-          position: playerPos.clone().add(new THREE.Vector3(0, 0.6, 0)),
+          position: spawnPos,
           direction: throwDir,
           speed: this.flightSpeed,
           damage: this.damage,

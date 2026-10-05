@@ -62,11 +62,12 @@ export class ChestManager {
     z: number,
     tier: ChestTier = 'small',
     customId?: string,
-    customBaseCost?: number
+    customBaseCost?: number,
+    y: number = 0
   ): ChestInstance {
     const id = customId || `chest_${ChestManager.nextId++}`;
     const group = new THREE.Group();
-    group.position.set(x, 0, z);
+    group.position.set(x, y, z);
 
     let baseCost = customBaseCost ?? 25;
     let baseGeom = this.smallBaseGeom;
@@ -128,7 +129,7 @@ export class ChestManager {
       id,
       tier,
       baseCost,
-      position: new THREE.Vector3(x, 0, z),
+      position: new THREE.Vector3(x, y, z),
       isOpened: false,
       mesh: group,
       lidMesh,
@@ -151,7 +152,8 @@ export class ChestManager {
     count: number = 16,
     stage: number = 1,
     rng?: SeededRNG,
-    forbiddenZones?: { x: number; z: number; radius: number }[]
+    forbiddenZones?: { x: number; z: number; radius: number }[],
+    getElevation?: (x: number, z: number) => number
   ): { x: number; z: number; radius: number }[] {
     this.clear();
     const prng = rng || new SeededRNG(stage * 7919);
@@ -216,7 +218,8 @@ export class ChestManager {
         tier = 'large';
       }
 
-      this.spawnChest(chosenX, chosenZ, tier);
+      const chosenY = getElevation ? getElevation(chosenX, chosenZ) : 0;
+      this.spawnChest(chosenX, chosenZ, tier, undefined, undefined, chosenY);
       placedZones.push({ x: chosenX, z: chosenZ, radius: 4.5 });
     }
 

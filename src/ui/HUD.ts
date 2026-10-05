@@ -116,6 +116,7 @@ export class HUD {
     | 'quests'
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
+  public onShadowQualityChanged?: (quality: number) => void;
   private levelUpModal: HTMLElement;
   private levelUpStepIndicator: HTMLElement;
   private levelUpTitle: HTMLElement;
@@ -540,6 +541,19 @@ export class HUD {
         const scale = parseFloat(resolutionSelect.value) || 1;
         if (this.onResolutionScaleChanged) {
           this.onResolutionScaleChanged(scale);
+        }
+      });
+    }
+
+    const shadowQualitySelect = document.getElementById('settings-shadow-quality') as HTMLSelectElement | null;
+    if (shadowQualitySelect) {
+      const savedQuality = localStorage.getItem('wildwest_shadow_quality') || '1024';
+      shadowQualitySelect.value = savedQuality;
+      shadowQualitySelect.addEventListener('change', () => {
+        const val = parseInt(shadowQualitySelect.value, 10);
+        localStorage.setItem('wildwest_shadow_quality', String(val));
+        if (this.onShadowQualityChanged) {
+          this.onShadowQualityChanged(val);
         }
       });
     }

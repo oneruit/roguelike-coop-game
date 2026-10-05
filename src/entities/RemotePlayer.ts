@@ -38,6 +38,7 @@ export class RemotePlayer {
   // Active Weapons / Abilities
   public weapons: NetWeaponInfo[] = [];
   public riftItems: Map<string, number> = new Map();
+  public getElevation?: (x: number, z: number) => number;
 
   private animatedTextures!: AnimatedCharacterTextures;
   private animFrameTimer: number = 0;
@@ -340,6 +341,9 @@ export class RemotePlayer {
 
     // Smooth position interpolation (lerp)
     this.position.lerp(this.targetPosition, Math.min(1, dt * 18));
+    if (this.getElevation) {
+      this.position.y = this.getElevation(this.position.x, this.position.z);
+    }
     this.mesh.position.copy(this.position);
 
     // Downed visual state

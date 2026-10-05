@@ -12,6 +12,7 @@ export class Gem {
   public passiveBuffId?: PassiveBuffId;
   public isCollected = false;
   public isAttracted = false;
+  public getElevation?: (x: number, z: number) => number;
   private velocity = new THREE.Vector3();
   private baseHeight: number;
   private floatTime: number;
@@ -156,7 +157,8 @@ export class Gem {
     this.floatTime += dt * 3;
     this.mesh.position.x = this.position.x;
     this.mesh.position.z = this.position.z;
-    this.mesh.position.y = this.baseHeight + Math.sin(this.floatTime) * 0.12;
+    const groundY = this.getElevation ? this.getElevation(this.position.x, this.position.z) : this.position.y;
+    this.mesh.position.y = groundY + this.baseHeight + Math.sin(this.floatTime) * 0.12;
     this.mesh.rotation.y += dt * 2.5;
   }
 
