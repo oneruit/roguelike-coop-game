@@ -605,9 +605,9 @@ export class EnemyManager {
     const angle = Math.random() * Math.PI * 2;
     const distance = 18 + Math.random() * 5;
     const spawnPos = new THREE.Vector3(
-      playerPos.x + Math.cos(angle) * distance,
+      Math.max(-244, Math.min(244, playerPos.x + Math.cos(angle) * distance)),
       0,
-      playerPos.z + Math.sin(angle) * distance
+      Math.max(-244, Math.min(244, playerPos.z + Math.sin(angle) * distance))
     );
 
     // Dynamic progressive scaling for regular monsters

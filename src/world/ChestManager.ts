@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { rollRiftItem, RiftItemDef } from '../items/RiftItemSystem';
 import { DifficultyDirector } from '../director/DifficultyDirector';
+import { SeededRNG } from '../core/SeededRNG';
 
 export type ChestTier = 'small' | 'large' | 'legendary';
 
@@ -141,19 +142,73 @@ export class ChestManager {
   }
 
   /**
-   * Generates scattered chests across a stage area.
+   * Generates scattered chests across the fixed 500x500 map area using deterministic PRNG.
+   * Guarantees healthy clearance from spawn, altars, teleporter, and other chests.
    */
-  public generateStageChests(centerX: number, centerZ: number, count: number = 14, stage: number = 1) {
+  public generateStageChests(
+    centerX: number = 0,
+    centerZ: number = 0,
+    count: number = 16,
+    stage: number = 1,
+    rng?: SeededRNG,
+    forbiddenZones?: { x: number; z: number; radius: number }[]
+  ): { x: number; z: number; radius: number }[] {
     this.clear();
+    const prng = rng || new SeededRNG(stage * 7919);
+    const placedZones: { x: number; z: number; radius: number }[] = [];
 
+    // Attempt to scatter chests across the 500x500 map (-215 to +215)
     for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
-      const dist = 20 + Math.random() * 85;
-      const x = centerX + Math.cos(angle) * dist;
-      const z = centerZ + Math.sin(angle) * dist;
+      let chosenX = 0;
+      let chosenZ = 0;
+      let valid = false;
 
-      // Tier weights
-      const roll = Math.random();
+      for (let attempt = 0; attempt < 45; attempt++) {
+        // Sample candidate
+        const candX = prng.range(-215, 215);
+        const candZ = prng.range(-215, 215);
+
+        // Distance from spawn (0, 0)
+        if (Math.hypot(candX, candZ) < 26.0) continue;
+
+        // Distance from forbidden zones (altars, teleporter)
+        let tooCloseToZone = false;
+        if (forbiddenZones) {
+          for (const zone of forbiddenZones) {
+            if (Math.hypot(candX - zone.x, candZ - zone.z) < zone.radius + 6.0) {
+              tooCloseToZone = true;
+              break;
+            }
+          }
+        }
+        if (tooCloseToZone) continue;
+
+        // Distance from already placed chests (min 28m)
+        let tooCloseToChest = false;
+        for (const placed of placedZones) {
+          if (Math.hypot(candX - placed.x, candZ - placed.z) < 28.0) {
+            tooCloseToChest = true;
+            break;
+          }
+        }
+        if (tooCloseToChest) continue;
+
+        chosenX = candX;
+        chosenZ = candZ;
+        valid = true;
+        break;
+      }
+
+      if (!valid) {
+        // Fallback with radial distribution if random box attempts were dense
+        const ang = (i / count) * Math.PI * 2 + prng.range(-0.2, 0.2);
+        const dist = 35 + prng.range(15, 170);
+        chosenX = centerX + Math.cos(ang) * dist;
+        chosenZ = centerZ + Math.sin(ang) * dist;
+      }
+
+      // Deterministic tier weights
+      const roll = prng.next();
       let tier: ChestTier = 'small';
       if (stage >= 2 && roll < 0.15) {
         tier = 'legendary';
@@ -161,8 +216,11 @@ export class ChestManager {
         tier = 'large';
       }
 
-      this.spawnChest(x, z, tier);
+      this.spawnChest(chosenX, chosenZ, tier);
+      placedZones.push({ x: chosenX, z: chosenZ, radius: 4.5 });
     }
+
+    return placedZones;
   }
 
   /**
