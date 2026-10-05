@@ -23,6 +23,8 @@ import { ChestManager } from './world/ChestManager';
 import { RiftTeleporter } from './world/RiftTeleporter';
 import { RIFT_ITEMS, RiftItemId } from './items/RiftItemSystem';
 import { ProgressionManager } from './core/ProgressionManager';
+import { TextureManager } from './core/TextureManager';
+import { SeededRNG } from './core/SeededRNG';
 
 const SPAWN_OFFSETS: Record<string, [number, number]> = {
   p1: [0, 0],
