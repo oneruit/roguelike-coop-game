@@ -7,6 +7,7 @@ import { BuffType } from '../entities/Player';
 import { SeededRNG } from '../core/SeededRNG';
 import { ChestManager } from './ChestManager';
 import { RiftTeleporter } from './RiftTeleporter';
+import { TerrainElevation } from './TerrainElevation';
 
 export interface OccupiedArea {
   x: number;
@@ -30,20 +31,28 @@ export class ChunkManager {
   public currentSeed: number = 1337;
   public currentSeedString: string = '1337';
 
+  public elevation: TerrainElevation = new TerrainElevation(1337);
   private activeChunks = new Map<string, THREE.Group>();
-  private sharedFloorGeometry: THREE.PlaneGeometry;
 
   constructor(scene: THREE.Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
     this.scene = scene;
     this.altarManager = altarManager;
     this.obstacleManager = obstacleManager;
     TerrainMaterials.init();
+  }
 
-    // Reusable single floor geometry for all chunks with slight overlap to prevent seam gaps
-    this.sharedFloorGeometry = new THREE.PlaneGeometry(
-      ChunkManager.CHUNK_SIZE + 0.6,
-      ChunkManager.CHUNK_SIZE + 0.6
-    );
+  /**
+   * Returns terrain elevation Y at world coordinate (x, z).
+   */
+  public getElevation(x: number, z: number): number {
+    return this.elevation.getElevation(x, z);
+  }
+
+  /**
+   * Returns surface normal vector at world coordinate (x, z).
+   */
+  public getNormal(x: number, z: number, target?: THREE.Vector3): THREE.Vector3 {
+    return this.elevation.getNormal(x, z, target);
   }
 
   /**
@@ -71,6 +80,9 @@ export class ChunkManager {
       this.currentSeedString = trimmed || '1337';
     }
 
+    // Configure randomized elevation topography for current seed & stage
+    this.elevation.setSeed(this.currentSeed);
+
     const rng = new SeededRNG(this.currentSeed);
 
     // List of occupied clearance zones (spawn, teleporter, altars, chests)
@@ -88,7 +100,8 @@ export class ChunkManager {
       const teleDist = rng.range(110, 165);
       teleX = Math.cos(teleAngle) * teleDist;
       teleZ = Math.sin(teleAngle) * teleDist;
-      riftTeleporter.resetForStage(new THREE.Vector3(teleX, 0, teleZ));
+      const teleY = this.elevation.getElevation(teleX, teleZ);
+      riftTeleporter.resetForStage(new THREE.Vector3(teleX, teleY, teleZ));
       occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
     }
 
@@ -103,8 +116,9 @@ export class ChunkManager {
       const dist = rng.range(85, 160);
       const ax = Math.cos(sectorAngle) * dist;
       const az = Math.sin(sectorAngle) * dist;
+      const aY = this.elevation.getElevation(ax, az);
 
-      const altar = new Altar(chosenBuffs[i], new THREE.Vector3(ax, 0, az));
+      const altar = new Altar(chosenBuffs[i], new THREE.Vector3(ax, aY, az));
       this.altarManager.registerAltar(altar);
 
       const altarChunkKey = `${Math.floor(ax / ChunkManager.CHUNK_SIZE)},${Math.floor(az / ChunkManager.CHUNK_SIZE)}`;
@@ -120,7 +134,15 @@ export class ChunkManager {
 
     // 4. Chests Placement (deterministic, non-overlapping)
     if (chestManager) {
-      const placedChests = chestManager.generateStageChests(0, 0, 16, 1, rng, occupied);
+      const placedChests = chestManager.generateStageChests(
+        0,
+        0,
+        16,
+        1,
+        rng,
+        occupied,
+        (x, z) => this.elevation.getElevation(x, z)
+      );
       for (const c of placedChests) {
         occupied.push(c);
       }
@@ -129,6 +151,7 @@ export class ChunkManager {
     // 5. Environmental Obstacles across all 100 chunks
     // Guarantee that obstacles do NOT cluster and have minimum 6.5m distance between each other
     const placedObstaclePositions: { x: number; z: number }[] = [];
+    const normalVec = new THREE.Vector3();
 
     for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
       for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
@@ -144,14 +167,47 @@ export class ChunkManager {
         const maxZ = (cz + 1) * ChunkManager.CHUNK_SIZE + 1;
 
         (chunkGroup as any).boundingBox = new THREE.Box3(
-          new THREE.Vector3(minX, -2, minZ),
-          new THREE.Vector3(maxX, 16, maxZ)
+          new THREE.Vector3(minX, -6, minZ),
+          new THREE.Vector3(maxX, 22, maxZ)
         );
 
-        // Floor Mesh
-        const floorMesh = new THREE.Mesh(this.sharedFloorGeometry, TerrainMaterials.sandMaterial);
-        floorMesh.rotation.x = -Math.PI / 2;
+        // Subdivided 3D Floor Geometry for realistic relief
+        const segs = 20; // 20x20 quads = 2.5m resolution
+        const floorGeom = new THREE.PlaneGeometry(
+          ChunkManager.CHUNK_SIZE,
+          ChunkManager.CHUNK_SIZE,
+          segs,
+          segs
+        );
+        floorGeom.rotateX(-Math.PI / 2);
+
+        const posAttr = floorGeom.attributes.position;
+        const normAttr = floorGeom.attributes.normal;
+        const uvAttr = floorGeom.attributes.uv;
+
+        for (let i = 0; i < posAttr.count; i++) {
+          const lx = posAttr.getX(i);
+          const lz = posAttr.getZ(i);
+          const wx = worldCenterX + lx;
+          const wz = worldCenterZ + lz;
+
+          const wy = this.elevation.getElevation(wx, wz);
+          posAttr.setY(i, wy);
+
+          this.elevation.getNormal(wx, wz, normalVec);
+          normAttr.setXYZ(i, normalVec.x, normalVec.y, normalVec.z);
+
+          // Continuous world-space UV coordinates across all chunks (12m per texture repeat)
+          uvAttr.setXY(i, wx / 12.0, wz / 12.0);
+        }
+
+        posAttr.needsUpdate = true;
+        normAttr.needsUpdate = true;
+        uvAttr.needsUpdate = true;
+
+        const floorMesh = new THREE.Mesh(floorGeom, TerrainMaterials.sandMaterial);
         floorMesh.position.set(worldCenterX, 0, worldCenterZ);
+        floorMesh.castShadow = true;
         floorMesh.receiveShadow = true;
         chunkGroup.add(floorMesh);
 
@@ -212,7 +268,8 @@ export class ChunkManager {
             obsType = 'landmark';
           }
 
-          prop.position.set(candX, 0, candZ);
+          const candY = this.elevation.getElevation(candX, candZ);
+          prop.position.set(candX, candY, candZ);
           chunkGroup.add(prop);
 
           this.obstacleManager.addObstacle(key, {
@@ -233,8 +290,9 @@ export class ChunkManager {
           const sz = cz * ChunkManager.CHUNK_SIZE + rng.range(4.0, 46.0);
           if (Math.hypot(sx, sz) < 10.0) continue;
 
+          const sy = this.elevation.getElevation(sx, sz);
           const scrub = TerrainProps.createScrub(() => rng.next());
-          scrub.position.set(sx, 0, sz);
+          scrub.position.set(sx, sy, sz);
           chunkGroup.add(scrub);
         }
 
@@ -275,7 +333,8 @@ export class ChunkManager {
     const boulder = TerrainProps.createBoulder(() => rng.next());
     const scale = 1.35 + rng.range(0, 0.45);
     boulder.scale.set(scale, scale * 1.2, scale);
-    boulder.position.set(x, 0, z);
+    const by = this.elevation.getElevation(x, z);
+    boulder.position.set(x, by, z);
     chunkGroup.add(boulder);
 
     this.obstacleManager.addObstacle(key, {
@@ -314,7 +373,7 @@ export class ChunkManager {
     for (const group of this.activeChunks.values()) {
       this.scene.remove(group);
       group.traverse((obj) => {
-        if (obj instanceof THREE.Mesh && obj.geometry !== this.sharedFloorGeometry) {
+        if (obj instanceof THREE.Mesh) {
           obj.geometry.dispose();
         }
       });

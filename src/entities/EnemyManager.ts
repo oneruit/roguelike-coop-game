@@ -154,6 +154,7 @@ export class EnemyManager {
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
 
   public activePlayerCount: number = 1;
+  public getElevation?: (x: number, z: number) => number;
   private lastTargetHitTimes: Map<string, number> = new Map();
 
   constructor(scene: THREE.Scene, dropManager: DropManager, damageNumbers: DamageNumberManager) {
@@ -288,6 +289,10 @@ export class EnemyManager {
       if (obstacleManager && enemy.type !== 'ghost' && closestDistSq <= 32 * 32) {
         const rad = (enemy.width + enemy.height) * 0.16;
         obstacleManager.resolveEntityCollision(enemy.position, rad, 1);
+      }
+
+      if (this.getElevation) {
+        enemy.position.y = this.getElevation(enemy.position.x, enemy.position.z);
       }
 
       // Check collision with targeted player
@@ -435,6 +440,9 @@ export class EnemyManager {
       0,
       playerPos.z + Math.sin(angle) * distance
     );
+    if (this.getElevation) {
+      spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+    }
 
     const baseHp = this.configs.boss.hp;
     const baseDmg = this.configs.boss.damage;
@@ -609,6 +617,9 @@ export class EnemyManager {
       0,
       Math.max(-244, Math.min(244, playerPos.z + Math.sin(angle) * distance))
     );
+    if (this.getElevation) {
+      spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+    }
 
     // Dynamic progressive scaling for regular monsters
     const baseConfig = this.configs[type];
@@ -739,7 +750,8 @@ export class EnemyManager {
           config.damage = 99999;
           config.speed = 7.6;
         }
-        enemy = new Enemy(config, new THREE.Vector3(s.x, 0, s.z));
+        const initY = this.getElevation ? this.getElevation(s.x, s.z) : 0;
+        enemy = new Enemy(config, new THREE.Vector3(s.x, initY, s.z));
         enemy.id = s.id;
         this.enemies.push(enemy);
         this.scene.add(enemy.mesh);
@@ -750,7 +762,9 @@ export class EnemyManager {
       // Lerp position towards snapshot
       enemy.position.x += (s.x - enemy.position.x) * 0.4;
       enemy.position.z += (s.z - enemy.position.z) * 0.4;
-      enemy.mesh.position.set(enemy.position.x, 0, enemy.position.z);
+      const ey = this.getElevation ? this.getElevation(enemy.position.x, enemy.position.z) : 0;
+      enemy.position.y = ey;
+      enemy.mesh.position.set(enemy.position.x, ey, enemy.position.z);
       enemy.hp = s.hp;
       enemy.maxHp = s.maxHp;
       if (s.dir !== enemy.currentDir) {

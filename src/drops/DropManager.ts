@@ -15,6 +15,7 @@ export interface GemCollector {
 export class DropManager {
   private scene: THREE.Scene;
   public gems: Gem[] = [];
+  public getElevation?: (x: number, z: number) => number;
   private static readonly MAX_GEMS = 120;
 
   constructor(scene: THREE.Scene) {
@@ -32,6 +33,7 @@ export class DropManager {
     }
 
     const gem = new Gem(type, position, id);
+    gem.getElevation = this.getElevation;
     this.gems.push(gem);
     this.scene.add(gem.mesh);
     return gem;

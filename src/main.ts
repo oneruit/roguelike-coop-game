@@ -230,6 +230,17 @@ class Game {
     this.hud.onResolutionScaleChanged = (scale: number) => {
       this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     };
+    this.hud.onShadowQualityChanged = (quality: number) => {
+      this.engine.setShadowQuality(quality);
+    };
+    const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
+    this.engine.setShadowQuality(savedShadowQuality);
+
+    // Bind terrain elevation to player, enemies, and drops
+    const elevationFn = (x: number, z: number) => this.engine.chunkManager.getElevation(x, z);
+    this.player.getElevation = elevationFn;
+    this.enemyManager.getElevation = elevationFn;
+    this.dropManager.getElevation = elevationFn;
 
     // Setup Main Menu & Multiplayer HUD triggers
     this.setupMenuNavigation();
@@ -831,6 +842,12 @@ class Game {
     this.restartGame(undefined, true);
   }
 
+  private createRemotePlayer(id: string, name: string, hero: CharacterType, color: number | string): RemotePlayer {
+    const remote = new RemotePlayer(this.engine.scene, id, name, hero, color);
+    remote.getElevation = (x, z) => this.engine.chunkManager.getElevation(x, z);
+    return remote;
+  }
+
   private startCoopGameAsHost(seedInput?: string) {
     if (this.net.role !== 'host') return;
     this.hud.hideHostLobby();
@@ -852,8 +869,9 @@ class Game {
       const offset = spawnOffsets[p.id] || [2.5, 0.5];
       const hero = p.hero || p.charType || 'valkyrie';
       const color = p.colorCss || p.colorHex || '#06b6d4';
-      const remote = new RemotePlayer(this.engine.scene, p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
-      remote.position.set(offset[0], 0, offset[1]);
+      const remote = this.createRemotePlayer(p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
+      const ey = this.engine.chunkManager.getElevation(offset[0], offset[1]);
+      remote.position.set(offset[0], ey, offset[1]);
       this.remotePlayers.set(p.id, remote);
     }
 
@@ -907,8 +925,9 @@ class Game {
       const isP1 = p.id === 'p1' || p.id === 'host';
       const hero = p.hero || p.charType || (isP1 ? 'ronin' : 'valkyrie');
       const color = p.colorCss || p.colorHex || (isP1 ? '#f59e0b' : '#06b6d4');
-      const remote = new RemotePlayer(this.engine.scene, p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
-      remote.position.set(offset[0], 0, offset[1]);
+      const remote = this.createRemotePlayer(p.id, getPlayerSlotDisplayName(p.id, false), hero, color);
+      const ey = this.engine.chunkManager.getElevation(offset[0], offset[1]);
+      remote.position.set(offset[0], ey, offset[1]);
       this.remotePlayers.set(p.id, remote);
     }
 
@@ -1099,14 +1118,6 @@ class Game {
       p5: [-1.5, 2.0]
     };
     const myOffset = spawnOffsets[this.net.mySlotId] || (this.net.role === 'client' ? [2.5, 0.5] : [0, 0]);
-    const initialPos = pos || new THREE.Vector3(myOffset[0], 0, myOffset[1]);
-
-    this.player.reset(initialPos);
-    this.devManager.reset();
-    this.player.isGodMode = false;
-    this.player.isSpeedCheat = false;
-    this.player.isOneHitKill = false;
-    this.player.recalculateStats();
 
     // Initialize The Rift Stage 1
     this.biomeManager.reset();
@@ -1117,6 +1128,16 @@ class Game {
     } else {
       this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter);
     }
+
+    const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
+    const initialPos = pos || new THREE.Vector3(myOffset[0], spawnY, myOffset[1]);
+
+    this.player.reset(initialPos);
+    this.devManager.reset();
+    this.player.isGodMode = false;
+    this.player.isSpeedCheat = false;
+    this.player.isOneHitKill = false;
+    this.player.recalculateStats();
 
     this.player.credits = 0;
     this.player.riftItems.clear();
@@ -1214,10 +1235,6 @@ class Game {
     this.enemyManager.currentStage = this.biomeManager.stageNumber;
     this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
 
-    // Reposition host player to start
-    this.player.position.set(0, 0, 0);
-    this.player.mesh.position.set(0, 0, 0);
-
     // Derive deterministic stage seed
     const numBase = typeof this.currentSeed === 'number'
       ? this.currentSeed
@@ -1228,6 +1245,11 @@ class Game {
     this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
+
+    // Reposition host player to start on ground elevation
+    const spawnY = this.engine.chunkManager.getElevation(0, 0);
+    this.player.position.set(0, spawnY, 0);
+    this.player.mesh.position.set(0, spawnY, 0);
 
     // Revive all downed squad members
     if (this.player.isDowned) {
@@ -1259,11 +1281,6 @@ class Game {
     this.enemyManager.currentStage = stageNumber;
     this.hud.updateStageText(stageNumber, biomeName || nextBiome.name);
 
-    // Reposition client player to start
-    const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
-    this.player.position.set(myOffset[0], 0, myOffset[1]);
-    this.player.mesh.position.set(myOffset[0], 0, myOffset[1]);
-
     const numBase = typeof this.currentSeed === 'number'
       ? this.currentSeed
       : SeededRNG.hashString(this.currentSeed.toString());
@@ -1272,6 +1289,12 @@ class Game {
     this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
+
+    // Reposition client player to start on ground elevation
+    const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
+    const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
+    this.player.position.set(myOffset[0], spawnY, myOffset[1]);
+    this.player.mesh.position.set(myOffset[0], spawnY, myOffset[1]);
 
     if (this.player.isDowned) {
       this.player.revive(0.5);
@@ -1410,7 +1433,7 @@ class Game {
         const hero = pState.charType || pInfo?.hero || (isP1 ? 'ronin' : 'valkyrie');
         const color = pInfo?.colorCss || (PLAYER_COLORS[id]?.css || (isP1 ? '#f59e0b' : '#38bdf8'));
         const name = getPlayerSlotDisplayName(id, false);
-        remote = new RemotePlayer(this.engine.scene, id, name, hero, color);
+        remote = this.createRemotePlayer(id, name, hero, color);
         this.remotePlayers.set(id, remote);
         this.syncMapManagerPartners();
       }
@@ -1591,7 +1614,7 @@ class Game {
       const hero = msg.clientPlayer.charType || pInfo?.hero || 'valkyrie';
       const color = pInfo?.colorCss || (PLAYER_COLORS[clientId]?.css || '#38bdf8');
       const name = getPlayerSlotDisplayName(clientId, false);
-      remote = new RemotePlayer(this.engine.scene, clientId, name, hero, color);
+      remote = this.createRemotePlayer(clientId, name, hero, color);
       this.remotePlayers.set(clientId, remote);
       this.syncMapManagerPartners();
     }
