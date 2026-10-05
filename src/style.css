@@ -3345,7 +3345,7 @@ body, html {
   flex-direction: column !important;
   align-items: stretch !important;
   justify-content: space-between !important;
-  gap: 8px !important;
+  gap: 10px !important;
   cursor: pointer;
   position: relative;
   overflow: hidden;
