@@ -37,7 +37,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_coyote',
       hp: 48,
       speed: 5.4,
-      damage: 16,
+      damage: 8,
       width: 2.1,
       height: 1.6,
       gemType: 'blue'
@@ -48,7 +48,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_crawler',
       hp: 40,
       speed: 6.0,
-      damage: 20,
+      damage: 10,
       width: 2.0,
       height: 1.2,
       gemType: 'blue'
@@ -59,7 +59,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_cactus',
       hp: 88,
       speed: 3.5,
-      damage: 28,
+      damage: 14,
       width: 1.9,
       height: 2.3,
       gemType: 'blue'
@@ -70,7 +70,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_skeleton',
       hp: 110,
       speed: 3.8,
-      damage: 32,
+      damage: 16,
       width: 1.9,
       height: 2.4,
       gemType: 'green'
@@ -81,7 +81,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_ghost',
       hp: 140,
       speed: 4.0,
-      damage: 36,
+      damage: 18,
       width: 1.7,
       height: 2.5,
       gemType: 'green'
@@ -92,7 +92,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_scorpion',
       hp: 190,
       speed: 3.2,
-      damage: 44,
+      damage: 22,
       width: 2.3,
       height: 2.1,
       gemType: 'green'
@@ -103,7 +103,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_brute',
       hp: 350,
       speed: 2.6,
-      damage: 56,
+      damage: 28,
       width: 2.5,
       height: 2.7,
       gemType: 'green'
@@ -114,7 +114,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_bison',
       hp: 720,
       speed: 4.8,
-      damage: 70,
+      damage: 35,
       width: 3.4,
       height: 1.9,
       gemType: 'red'
@@ -125,7 +125,7 @@ export class EnemyManager {
       texturePrefix: '/textures/boss_demon',
       hp: 7600,
       speed: 2.4,
-      damage: 90,
+      damage: 45,
       width: 7.8,
       height: 7.8,
       gemType: 'red',
@@ -137,7 +137,7 @@ export class EnemyManager {
       texturePrefix: '/textures/boss_hydra',
       hp: 28000,
       speed: 2.3,
-      damage: 130,
+      damage: 65,
       width: 10.0,
       height: 10.0,
       gemType: 'red',
@@ -350,9 +350,9 @@ export class EnemyManager {
           const passiveChance = isTough ? 0.03 : 0.01;
           if (Math.random() < passiveChance) {
             const pOffset = new THREE.Vector3(
-              (Math.random() - 0.5) * 1.0,
+              (Math.random() - 0.5),
               0,
-              (Math.random() - 0.5) * 1.0
+              (Math.random() - 0.5)
             );
             this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
           }
