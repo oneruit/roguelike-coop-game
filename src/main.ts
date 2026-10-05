@@ -81,6 +81,7 @@ class Game {
   private lastClientLocalHitTime = 0;
   private pendingDamageToClients: Map<string, number> = new Map();
   private pendingNetworkEvents: NetEvent[] = [];
+  private scratchNearbyEnemies: Enemy[] = [];
 
   private projectiles: Projectile[] = [];
   private gameState: GameState = GameState.MAIN_MENU;
@@ -93,6 +94,7 @@ class Game {
   private biomeManager: BiomeManager;
   private chestManager: ChestManager;
   private riftTeleporter: RiftTeleporter;
+  private currentSeed: number | string = 1337;
 
   constructor() {
     this.engine = new Engine('game-container');
@@ -218,10 +220,11 @@ class Game {
     // HUD with callbacks
     this.hud = new HUD(
       this.engine.scene,
-      (charType: CharacterType) => this.startSinglePlayerWithHero(charType),
+      (charType: CharacterType, seedInput?: string) => this.startSinglePlayerWithHero(charType, seedInput),
       () => this.resumeGame(),
-      () => this.restartGame()
+      () => this.restartGame(undefined, false)
     );
+    this.hud.onRestartSameSeed = () => this.restartGame(undefined, true);
     this.hud.onResolutionScaleChanged = (scale: number) => {
       this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     };
@@ -335,7 +338,7 @@ class Game {
       if (escResult === 'noop') {
         if (this.gameState === GameState.PLAYING) {
           this.gameState = GameState.PAUSED;
-          this.hud.showPause();
+          this.hud.showPause(this.currentSeed);
         } else if (this.gameState === GameState.PAUSED) {
           this.resumeGame();
         }
@@ -372,7 +375,49 @@ class Game {
     this.gameState = GameState.MAIN_MENU;
     this.hud.showMainMenu();
 
+    this.initAssetPreloader();
+
     this.loop();
+  }
+
+  private initAssetPreloader() {
+    const loaderContainer = document.getElementById('game-loader-container');
+    const loaderTitle = document.getElementById('game-loader-title');
+    const loaderFill = document.getElementById('game-loader-fill');
+    const loaderPercent = document.getElementById('game-loader-percentage');
+    const loaderDetails = document.getElementById('game-loader-details');
+    const loaderCounter = document.getElementById('game-loader-counter');
+
+    if (!loaderContainer || !loaderFill || !loaderPercent) return;
+
+    TextureManager.preloadAllWithProgress(this.engine.renderer, (loaded, total, item) => {
+      const pct = Math.min(100, Math.round((loaded / total) * 100));
+      loaderFill.style.width = `${pct}%`;
+      loaderPercent.textContent = `${pct}%`;
+      if (loaderCounter) {
+        loaderCounter.textContent = `${loaded} / ${total}`;
+      }
+      if (loaderDetails) {
+        loaderDetails.textContent = `Загрузка: ${item}`;
+      }
+    })
+      .then(() => {
+        loaderFill.style.width = '100%';
+        if (loaderTitle) {
+          loaderTitle.textContent = 'ВСЕ РЕСУРСЫ И КАРТА ГОТОВЫ';
+        }
+        if (loaderDetails) {
+          loaderDetails.textContent = 'Текстуры, иконки оружия и карта 500x500м загружены';
+        }
+        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter);
+        this.mapManager.setSeed(this.currentSeed);
+        setTimeout(() => {
+          loaderContainer.classList.add('loaded');
+        }, 550);
+      })
+      .catch(() => {
+        loaderContainer.classList.add('loaded');
+      });
   }
 
   private setupMenuNavigation() {
@@ -408,8 +453,8 @@ class Game {
       }
     };
 
-    this.hud.onHostStartExpedition = () => {
-      this.startCoopGameAsHost();
+    this.hud.onHostStartExpedition = (seedInput) => {
+      this.startCoopGameAsHost(seedInput);
     };
 
     this.hud.onHostPasswordChanged = (pwd) => {
@@ -523,9 +568,9 @@ class Game {
       }
     };
 
-    this.net.onGameStartReceived = () => {
+    this.net.onGameStartReceived = (msg) => {
       if (this.net.role === 'client') {
-        this.startCoopGameAsClient();
+        this.startCoopGameAsClient(msg?.seed);
       }
     };
 
@@ -751,7 +796,7 @@ class Game {
     this.mapManager.partner = this.mapManager.partners[0] || null;
   }
 
-  private startSinglePlayerWithHero(charType: CharacterType) {
+  private startSinglePlayerWithHero(charType: CharacterType, seedInput?: string) {
     this.net.reset();
     for (const rp of this.remotePlayers.values()) {
       rp.destroy(this.engine.scene);
@@ -774,10 +819,17 @@ class Game {
     this.hud.setCoopBadge(null);
     this.hud.clearTeammates();
     this.hud.hidePartnerHp();
-    this.restartGame();
+
+    if (seedInput && seedInput.trim().length > 0) {
+      this.currentSeed = seedInput.trim();
+    } else {
+      this.currentSeed = Math.floor(Math.random() * 1000000);
+    }
+
+    this.restartGame(undefined, true);
   }
 
-  private startCoopGameAsHost() {
+  private startCoopGameAsHost(seedInput?: string) {
     if (this.net.role !== 'host') return;
     this.hud.hideHostLobby();
 
@@ -812,13 +864,24 @@ class Game {
     this.player.isCoop = true;
     this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
-    this.restartGame(new THREE.Vector3(0, 0, 0));
 
-    // Notify all guests to start
-    this.net.startGame();
+    if (seedInput && seedInput.trim().length > 0) {
+      this.currentSeed = seedInput.trim();
+    } else {
+      this.currentSeed = Math.floor(Math.random() * 1000000);
+    }
+
+    this.restartGame(new THREE.Vector3(0, 0, 0), true);
+
+    const numericSeed = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(this.currentSeed.toString());
+
+    // Notify all guests to start with identical seed
+    this.net.startGame(numericSeed);
   }
 
-  private startCoopGameAsClient() {
+  private startCoopGameAsClient(seed?: number) {
     this.hud.hideJoinLobby();
 
     for (const rp of this.remotePlayers.values()) {
@@ -858,8 +921,9 @@ class Game {
     this.player.isCoop = true;
     this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
-    this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]));
-    this.chestManager.clear();
+
+    this.currentSeed = seed ?? 1337;
+    this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]), true);
   }
 
   private returnToMainMenu() {
@@ -1010,7 +1074,7 @@ class Game {
     }
   };
 
-  private restartGame(pos?: THREE.Vector3) {
+  private restartGame(pos?: THREE.Vector3, keepSeed: boolean = false) {
     for (const p of this.projectiles) {
       p.destroy(this.engine.scene);
     }
@@ -1019,6 +1083,10 @@ class Game {
     this.enemyManager.clear();
     this.dropManager.clear();
     this.engine.chunkManager.clear();
+
+    if (!keepSeed && this.net.role !== 'client') {
+      this.currentSeed = Math.floor(Math.random() * 1000000);
+    }
 
     const spawnOffsets: Record<string, [number, number]> = {
       p1: [0, 0],
@@ -1041,10 +1109,13 @@ class Game {
     // Initialize The Rift Stage 1
     this.biomeManager.reset();
     this.biomeManager.applyBiomeToScene(this.engine.scene);
+
     if (this.net.role !== 'client') {
-      this.chestManager.generateStageChests(0, 0, 14, 1);
+      this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter);
+    } else {
+      this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter);
     }
-    this.riftTeleporter.resetForStage(new THREE.Vector3(75, 0, 75));
+
     this.player.credits = 0;
     this.player.riftItems.clear();
     this.player.recalculateStats();
@@ -1052,7 +1123,7 @@ class Game {
     this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
     this.hud.updateTeleporterHUD(false, 0, false, false);
 
-    this.engine.chunkManager.update(this.player.position);
+    this.mapManager.setSeed(this.currentSeed);
     this.mapManager.clear();
     this.mapManager.close();
     this.allPlayerStats.clear();
@@ -1144,15 +1215,17 @@ class Game {
     // Reposition host player to start
     this.player.position.set(0, 0, 0);
     this.player.mesh.position.set(0, 0, 0);
-    this.engine.chunkManager.update(this.player.position);
 
-    // Reset teleporter in next stage
-    const teleDist = 75 + Math.random() * 25;
-    const teleAngle = Math.random() * Math.PI * 2;
-    this.riftTeleporter.resetForStage(new THREE.Vector3(Math.cos(teleAngle) * teleDist, 0, Math.sin(teleAngle) * teleDist));
+    // Derive deterministic stage seed
+    const numBase = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(this.currentSeed.toString());
+    const stageSeed = numBase + this.biomeManager.stageNumber * 10007;
 
-    // Generate new chests
-    this.chestManager.generateStageChests(0, 0, 14 + this.biomeManager.stageNumber * 2, this.biomeManager.stageNumber);
+    // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
+    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter);
+    this.mapManager.setSeed(stageSeed);
+    this.mapManager.clear();
 
     // Revive all downed squad members
     if (this.player.isDowned) {
@@ -1188,7 +1261,15 @@ class Game {
     const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
     this.player.position.set(myOffset[0], 0, myOffset[1]);
     this.player.mesh.position.set(myOffset[0], 0, myOffset[1]);
-    this.engine.chunkManager.update(this.player.position);
+
+    const numBase = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(this.currentSeed.toString());
+    const stageSeed = numBase + stageNumber * 10007;
+
+    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter);
+    this.mapManager.setSeed(stageSeed);
+    this.mapManager.clear();
 
     if (this.player.isDowned) {
       this.player.revive(0.5);
@@ -1227,7 +1308,8 @@ class Game {
       const chainDmg = Math.round(finalDamage * (1.2 + chainStacks * 0.3));
       let hitCount = 0;
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
-      for (const other of this.enemyManager.enemies) {
+      const nearby = this.enemyManager.getNearbyEnemies(enemy.position.x, enemy.position.z, 8.5, this.scratchNearbyEnemies);
+      for (const other of nearby) {
         if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= 8.5) {
           if (this.net.role === 'client') {
             const isChainDead = other.takeDamage(chainDmg, enemy.position, myId);
@@ -1277,8 +1359,9 @@ class Game {
       const baseDmg = 25 * this.player.damageMultiplier;
       const explosionDmg = Math.round(baseDmg * (2.0 + detonatorStacks * 0.5));
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      const nearby = this.enemyManager.getNearbyEnemies(enemy.position.x, enemy.position.z, radius, this.scratchNearbyEnemies);
 
-      for (const other of this.enemyManager.enemies) {
+      for (const other of nearby) {
         if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= radius) {
           if (this.net.role === 'client') {
             const isDead = other.takeDamage(explosionDmg, enemy.position, myId);
@@ -1951,7 +2034,13 @@ class Game {
       if (this.player.isAlive && !this.player.isDowned) {
         const now = performance.now();
         if (now - this.lastClientLocalHitTime > 380) {
-          for (const enemy of this.enemyManager.enemies) {
+          const nearby = this.enemyManager.getNearbyEnemies(
+            this.player.position.x,
+            this.player.position.z,
+            3.5,
+            this.scratchNearbyEnemies
+          );
+          for (const enemy of nearby) {
             if (!enemy.isAlive) continue;
             const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
             const dx = enemy.position.x - this.player.position.x;
@@ -2049,7 +2138,7 @@ class Game {
     if (this.gameState === GameState.PLAYING) {
       // 3. Viewport / Frustum Culling & Visual Updates (Do NOT draw what is not visible!)
       this.engine.chunkManager.cull(this.cameraFrustum);
-      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum);
+      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum, this.player.position);
       this.dropManager.updateVisuals(rawDt, this.cameraFrustum);
       this.updateProjectileVisuals(this.cameraFrustum);
       this.engine.altarManager.updateVisuals(rawDt, this.engine.camera, this.cameraFrustum);
@@ -2396,8 +2485,14 @@ class Game {
         continue;
       }
 
-      // Check collision with enemies
-      for (const enemy of this.enemyManager.enemies) {
+      // Check collision with enemies using localized spatial grid search
+      const nearbyEnemies = this.enemyManager.getNearbyEnemies(
+        proj.position.x,
+        proj.position.z,
+        proj.radius + 2.5,
+        this.scratchNearbyEnemies
+      );
+      for (const enemy of nearbyEnemies) {
         if (!enemy.isAlive) continue;
         if (proj.hitEnemies.has(enemy.id)) continue;
 

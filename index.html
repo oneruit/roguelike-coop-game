@@ -833,6 +833,17 @@
             <p class="code-hint">Оставьте пустым, чтобы любой игрок мог присоединиться из списка, либо задайте пароль.</p>
           </div>
 
+          <div class="room-seed-section" style="margin-bottom: 16px;">
+            <div class="password-label-row">
+              <span class="code-label">SEED КАРТЫ (МИР ЭКСПЕДИЦИИ):</span>
+            </div>
+            <div class="password-input-row">
+              <input id="host-seed-input" type="text" class="room-code-input" placeholder="Случайный (или введите seed)" maxlength="24" autocomplete="off" />
+              <button id="btn-host-random-seed" class="pwd-visibility-btn" title="Сгенерировать случайный seed" type="button">🎲</button>
+            </div>
+            <p class="code-hint">Одинаковый seed сгенерирует точно такую же карту с одинаковыми сундуками, алтарями и скалами.</p>
+          </div>
+
           <div class="lobby-heroes-section">
             <div class="section-label">ВАШ ГЕРОЙ:</div>
             <div class="lobby-hero-picker">
@@ -1078,6 +1089,13 @@
           <div class="modal-header">
             <div class="sub-title menu-badge-blue">ОДИНОЧНЫЙ РЕЖИМ</div>
             <h1 class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
+          </div>
+
+          <!-- Seed Control Bar -->
+          <div class="seed-control-bar">
+            <span class="seed-control-label">SEED КАРТЫ:</span>
+            <input id="single-seed-input" type="text" class="seed-input-field" placeholder="Случайный (или введите свой seed)" maxlength="24" autocomplete="off" />
+            <button id="btn-single-random-seed" class="seed-random-btn" title="Сгенерировать случайный seed" type="button">🎲 Случайный</button>
           </div>
           <!-- SVG Definitions for Cave Dungeon Character Cards -->
           <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
@@ -1569,10 +1587,15 @@
             <h2 class="wild-west-title modern-menu-title">ИГРА ПРИОСТАНОВЛЕНА</h2>
           </div>
           <p class="pause-hint menu-tagline-modern">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
+          <div class="pause-seed-row" id="pause-seed-container">
+            <span>SEED КАРТЫ: <strong id="pause-seed-text" style="color: #f59e0b;">#1337</strong></span>
+            <button id="btn-pause-copy-seed" class="copy-seed-small-btn" title="Скопировать seed" type="button">📋 Копировать</button>
+          </div>
           <div class="pause-actions">
             <button id="btn-resume" class="action-btn select-btn">Продолжить</button>
+            <button id="btn-pause-restart-same" class="action-btn select-btn" style="background: rgba(245, 158, 11, 0.25); border-color: #f59e0b;">Заново (тот же seed)</button>
             <button id="btn-pause-settings" class="action-btn modern-back-btn">Настройки</button>
-            <button id="btn-pause-restart" class="action-btn modern-back-btn">Начать заново</button>
+            <button id="btn-pause-restart" class="action-btn modern-back-btn">Выбрать героя</button>
             <button id="btn-pause-menu" class="action-btn modern-back-btn">В главное меню</button>
           </div>
         </div>
@@ -1916,6 +1939,24 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    <!-- Bottom Asset Preloader Progress Bar -->
+    <div id="game-loader-container" class="game-loader-container">
+      <div class="game-loader-content">
+        <div class="game-loader-header">
+          <div class="game-loader-title-wrap">
+            <span class="game-loader-badge">PRELOAD</span>
+            <span id="game-loader-title" class="game-loader-title">ЗАГРУЗКА РЕСУРСОВ ИГРЫ</span>
+          </div>
+          <span id="game-loader-percentage" class="game-loader-percentage">0%</span>
+        </div>
+        <div class="game-loader-track">
+          <div id="game-loader-fill" class="game-loader-fill" style="width: 0%;"></div>
+        </div>
+        <div class="game-loader-footer">
+          <span id="game-loader-details" class="game-loader-details">Подготовка текстур и иконок...</span>
+          <span id="game-loader-counter" class="game-loader-counter">0 / 0</span>
         </div>
       </div>
     </div>
