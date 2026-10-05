@@ -1709,7 +1709,29 @@ body, html {
   filter: drop-shadow(0 0 6px #00c853);
 }
 
-/* 3. Settings (Warm Amber / Gold) */
+/* 3. Quests (Neon Violet / Purple) */
+.main-menu-hex-btn.btn-quests {
+  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.65)) drop-shadow(0 0 2px #a855f7);
+}
+.main-menu-hex-btn.btn-quests:hover {
+  filter: drop-shadow(0 0 24px rgba(192, 132, 252, 0.95)) drop-shadow(0 0 5px #c084fc);
+}
+.main-menu-hex-btn.btn-quests .btn-hex-poly {
+  fill: rgba(36, 12, 54, 0.88);
+  stroke: #a855f7;
+  stroke-width: 2.2;
+}
+.main-menu-hex-btn.btn-quests:hover .btn-hex-poly {
+  fill: rgba(54, 16, 80, 0.95);
+  stroke: #c084fc;
+  stroke-width: 2.5;
+}
+.main-menu-hex-btn.btn-quests .menu-icon-svg {
+  color: #c084fc;
+  filter: drop-shadow(0 0 6px #a855f7);
+}
+
+/* 4. Settings (Warm Amber / Gold) */
 .main-menu-hex-btn.btn-settings {
   filter: drop-shadow(0 0 12px rgba(255, 145, 0, 0.65)) drop-shadow(0 0 2px #ff9100);
 }
@@ -1892,7 +1914,21 @@ body, html {
   box-shadow: 0 0 30px rgba(34, 197, 94, 0.55), inset 0 0 20px rgba(34, 197, 94, 0.16);
 }
 
-/* 3. Settings (Amber / Warm Gold) */
+/* 3. Quests (Neon Violet / Purple) */
+.main-menu-nav-btn.btn-quests {
+  background: rgba(28, 12, 42, 0.76);
+  border-color: #a855f7;
+  color: #c084fc;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.25), inset 0 0 14px rgba(168, 85, 247, 0.08);
+}
+
+.main-menu-nav-btn.btn-quests:hover {
+  background: rgba(44, 18, 66, 0.88);
+  border-color: #c084fc;
+  box-shadow: 0 0 30px rgba(192, 132, 252, 0.55), inset 0 0 20px rgba(192, 132, 252, 0.16);
+}
+
+/* 4. Settings (Amber / Warm Gold) */
 .main-menu-nav-btn.btn-settings {
   background: rgba(30, 22, 8, 0.76);
   border-color: #f59e0b;
@@ -4637,5 +4673,692 @@ body, html {
 .settings-select:focus {
   border-color: rgba(245, 158, 11, 0.6);
 }
+
+/* ==========================================================================
+   QUESTS GRIMOIRE BOOK MODAL & PROGRESSION SYSTEM
+   ========================================================================== */
+
+#quests-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#quests-modal.hidden {
+  display: none !important;
+}
+
+.quest-modal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 95vw;
+  max-width: 980px;
+  max-height: 94vh;
+  z-index: 1001;
+  animation: questModalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes questModalPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.quest-modal-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 0 6px;
+}
+
+.quest-modal-main-title {
+  font-family: 'Cinzel', serif, 'Montserrat', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: #f3e8ff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(192, 132, 252, 0.7), 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.quest-account-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(24, 10, 38, 0.88);
+  border: 1.5px solid rgba(192, 132, 252, 0.4);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f3e8ff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+  backdrop-filter: blur(8px);
+}
+
+.quest-acc-lvl {
+  color: #c084fc;
+}
+
+.quest-acc-xp {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.quest-acc-coins {
+  color: #fbbf24;
+  font-size: 14px;
+}
+
+/* The Ornate Grimoire Book Card */
+.quest-book-card {
+  position: relative;
+  width: 100%;
+  height: 570px;
+  background: #200d30;
+  border: 6px solid #7e22ce;
+  outline: 2px solid #a855f7;
+  border-radius: 18px;
+  box-shadow:
+    0 16px 45px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(168, 85, 247, 0.45),
+    inset 0 0 30px rgba(0, 0, 0, 0.7);
+  padding: 14px;
+  box-sizing: border-box;
+  display: flex;
+}
+
+/* 4 Corner Ornate Filigrees */
+.book-corner {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.book-corner-tl {
+  top: -4px;
+  left: -4px;
+}
+
+.book-corner-tr {
+  top: -4px;
+  right: -4px;
+  transform: scaleX(-1);
+}
+
+.book-corner-bl {
+  bottom: -4px;
+  left: -4px;
+  transform: scaleY(-1);
+}
+
+.book-corner-br {
+  bottom: -4px;
+  right: -4px;
+  transform: scale(-1);
+}
+
+.corner-flourish-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 6px #c084fc);
+}
+
+/* Two-Page Open Book Spread */
+.quest-book-spread {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e8dbbf 0%, #dec9a5 50%, #d3bc95 100%);
+  border-radius: 10px;
+  box-shadow: inset 0 0 25px rgba(90, 60, 25, 0.28);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Central Book Spine */
+.quest-book-spine {
+  width: 24px;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.38) 46%,
+    rgba(0, 0, 0, 0.48) 50%,
+    rgba(0, 0, 0, 0.38) 54%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* Individual Pages */
+.quest-book-page {
+  flex: 1;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Left Page: Hero List */
+.quest-page-left {
+  padding: 16px 14px 16px 38px;
+}
+
+.book-back-btn {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #2b221d;
+  border: 1.5px solid #6b5344;
+  border-radius: 8px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  transition: all 0.18s ease;
+  z-index: 15;
+  outline: none;
+}
+
+.book-back-btn .back-arrow {
+  color: #e2d8cd;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.book-back-btn .back-label {
+  color: #a89e90;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.book-back-btn:hover {
+  background: #3e3129;
+  border-color: #9c7b64;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.book-back-btn:hover .back-arrow,
+.book-back-btn:hover .back-label {
+  color: #ffffff;
+}
+
+/* Quest Hero Items List */
+.quest-heroes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.quest-hero-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(206, 189, 159, 0.65);
+  border: 1.5px solid #947b5e;
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+}
+
+.quest-hero-item:hover {
+  background: rgba(226, 212, 185, 0.88);
+  border-color: #6e4f35;
+  transform: translateX(3px);
+}
+
+.quest-hero-item.active {
+  background: rgba(238, 226, 203, 0.98);
+  border: 2px solid #582f0e;
+  box-shadow: 0 3px 12px rgba(88, 47, 14, 0.3);
+  transform: translateX(5px);
+}
+
+.hero-item-avatar-frame {
+  width: 44px;
+  height: 44px;
+  border-radius: 7px;
+  background: #231b15;
+  border: 1.5px solid #5a4436;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-item-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-item-middle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-item-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #2b1a0f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.2px;
+}
+
+.hero-item-progress-track {
+  height: 16px;
+  background: #2a2019;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #48372b;
+}
+
+.hero-item-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  transition: width 0.3s ease;
+}
+
+.hero-item-progress-fill.complete {
+  background: linear-gradient(90deg, #15803d, #22c55e);
+}
+
+.hero-item-progress-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #f3e8ff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  letter-spacing: 0.5px;
+}
+
+.hero-item-weapon-frame {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: #231b15;
+  border: 1.5px solid #5a4436;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-item-weapon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Right Page: Details */
+.quest-page-right {
+  padding: 22px 28px;
+}
+
+.quest-detail-title {
+  font-family: 'Cinzel', serif, 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: #251408;
+  text-align: center;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.quest-detail-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 12px 0;
+}
+
+.quest-detail-divider .divider-line {
+  height: 1.5px;
+  flex: 1;
+  max-width: 90px;
+  background: linear-gradient(90deg, transparent, #855f3e, transparent);
+}
+
+.quest-detail-divider .divider-gem {
+  color: #785028;
+  font-size: 13px;
+}
+
+.quest-detail-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #382416;
+  margin: 0 0 14px 0;
+  text-align: left;
+  font-weight: 600;
+}
+
+.quest-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.quest-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #251408;
+  line-height: 1.4;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.quest-step-item.done {
+  color: #15803d;
+  opacity: 0.9;
+}
+
+.quest-step-item .step-num {
+  font-weight: 800;
+  color: #582f0e;
+  min-width: 16px;
+}
+
+.quest-step-item .step-text {
+  flex: 1;
+}
+
+.quest-step-item .step-check {
+  font-weight: 800;
+  color: #16a34a;
+}
+
+/* Rewards Grid */
+.quest-rewards-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+}
+
+.quest-rewards-heading {
+  font-size: 15px;
+  font-weight: 800;
+  color: #251408;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.quest-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 58px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.reward-slot {
+  width: 58px;
+  height: 58px;
+  background: rgba(206, 189, 159, 0.75);
+  border: 2px solid #8c6f50;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 8px rgba(90, 60, 20, 0.2);
+}
+
+.reward-slot-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.reward-slot-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #1f140a;
+  text-shadow: 0 0 3px #fff;
+}
+
+/* Action Footer */
+.quest-action-footer {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.quest-status-text {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #582f0e;
+  text-align: center;
+}
+
+.quest-buttons-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.quest-btn-claim {
+  background: linear-gradient(135deg, #15803d, #22c55e);
+  border: 1.5px solid #4ade80;
+  color: #ffffff;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.4);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.quest-btn-claim:hover {
+  background: linear-gradient(135deg, #16a34a, #4ade80);
+  box-shadow: 0 0 22px rgba(34, 197, 94, 0.7);
+  transform: scale(1.03);
+}
+
+.quest-btn-buy {
+  background: linear-gradient(135deg, #ca8a04, #eab308);
+  border: 1.5px solid #fef08a;
+  color: #422006;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(234, 179, 8, 0.4);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.quest-btn-buy:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706, #facc15);
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.65);
+  transform: scale(1.03);
+}
+
+.quest-btn-buy:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.quest-btn-step {
+  background: #3a2b22;
+  border: 1.5px solid #785a44;
+  color: #f3e8ff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.quest-btn-step:hover {
+  background: #503c30;
+  border-color: #a88060;
+}
+
+.quest-btn-unlocked-badge {
+  background: rgba(22, 101, 52, 0.15);
+  border: 1.5px solid #16a34a;
+  color: #15803d;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Folded Dog-Ear Corner at Bottom-Right */
+.book-corner-curl {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 34px 34px;
+  border-color: transparent transparent #c5ad84 transparent;
+  filter: drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.25));
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   CHARACTER SELECT & LOBBY LOCKED STATES
+   ========================================================================== */
+
+.character-card.card-locked {
+  position: relative;
+  border-color: rgba(168, 85, 247, 0.45) !important;
+}
+
+.character-card.card-locked .char-portrait {
+  filter: brightness(0.6) contrast(1.1) grayscale(0.3);
+}
+
+.card-lock-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(26, 10, 44, 0.94);
+  border: 1.5px solid #a855f7;
+  color: #f3e8ff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.card-lock-badge .lock-icon {
+  font-size: 12px;
+}
+
+.character-card.card-locked .char-select-btn {
+  background: rgba(48, 16, 72, 0.85);
+  border: 1px solid #a855f7;
+}
+
+.character-card.card-locked .char-select-btn .char-btn-poly {
+  fill: rgba(42, 12, 64, 0.9);
+  stroke: #a855f7;
+}
+
+.character-card.card-locked .char-select-btn .char-btn-label {
+  color: #d8b4fe;
+}
+
+.character-card.card-locked:hover .char-select-btn {
+  background: rgba(64, 22, 96, 0.95);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
+}
+
+/* Co-op Hero Option Locked States */
+.lobby-hero-opt.locked-hero {
+  position: relative;
+  opacity: 0.65;
+  cursor: pointer;
+}
+
+.lobby-hero-opt.locked-hero .hero-opt-img {
+  filter: brightness(0.55) grayscale(0.4);
+}
+
+.lobby-hero-opt.locked-hero::after {
+  content: '🔒';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 14px;
+  filter: drop-shadow(0 0 4px #000);
+}
+
 
 

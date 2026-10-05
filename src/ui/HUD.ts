@@ -8,6 +8,7 @@ import { RemotePlayer } from '../entities/RemotePlayer';
 import { PublicRoomInfo } from '../net/RoomDirectory';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
+import { ProgressionManager } from '../core/ProgressionManager';
 import * as THREE from 'three';
 
 export interface UpgradeOption {
@@ -98,6 +99,8 @@ export class HUD {
   private joinLobbyModal: HTMLElement;
   private guideModal: HTMLElement;
   private charSelectModal: HTMLElement;
+  private questsModal: HTMLElement;
+  private activeQuestHero: CharacterType = 'chakram';
   private pauseModal: HTMLElement;
   private settingsFromPause = false;
   private menuStack: (
@@ -110,6 +113,7 @@ export class HUD {
     | 'join_lobby'
     | 'password_prompt'
     | 'char_select'
+    | 'quests'
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   private levelUpModal: HTMLElement;
@@ -285,6 +289,7 @@ export class HUD {
     this.joinLobbyModal = document.getElementById('join-lobby-modal')!;
     this.guideModal = document.getElementById('guide-modal')!;
     this.charSelectModal = document.getElementById('character-select-modal')!;
+    this.questsModal = document.getElementById('quests-modal')!;
     this.pauseModal = document.getElementById('pause-modal')!;
     this.levelUpModal = document.getElementById('level-up-modal')!;
     this.levelUpStepIndicator = document.getElementById('level-up-step-indicator')!;
@@ -391,6 +396,35 @@ export class HUD {
       this.hideMainMenu();
       this.showCoopMenu();
     });
+
+    document.getElementById('menu-btn-quests')?.addEventListener('click', () => {
+      this.hideMainMenu();
+      this.showQuestsModal('chakram');
+    });
+
+    document.getElementById('quests-btn-back')?.addEventListener('click', () => {
+      this.handleEscape();
+    });
+
+    // Left page hero quest selection items
+    const questHeroItems = document.querySelectorAll<HTMLElement>('.quest-hero-item[data-quest-hero]');
+    questHeroItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const hero = item.getAttribute('data-quest-hero') as CharacterType;
+        if (hero) {
+          this.renderQuestsModal(hero);
+        }
+      });
+    });
+
+    // Progression change listener to keep UI reactive
+    ProgressionManager.getInstance().onProgressionChanged = () => {
+      this.updateCharacterSelectLockStatus();
+      this.updateLobbyHeroesLockStatus();
+      if (!this.questsModal.classList.contains('hidden')) {
+        this.renderQuestsModal(this.activeQuestHero);
+      }
+    };
 
     document.getElementById('menu-btn-settings')?.addEventListener('click', () => {
       this.hideMainMenu();
@@ -528,9 +562,13 @@ export class HUD {
     const hostHeroOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-host-hero]');
     hostHeroOpts.forEach((opt) => {
       opt.addEventListener('click', () => {
+        const hero = opt.getAttribute('data-host-hero') as CharacterType;
+        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
+          this.triggerAltarNotification('Герой заблокирован', 'Откройте в книге заданий!', '🔒', '#a855f7');
+          return;
+        }
         hostHeroOpts.forEach((o) => o.classList.remove('active'));
         opt.classList.add('active');
-        const hero = opt.getAttribute('data-host-hero') as CharacterType;
         this.hostSelectedHero = hero;
         if (this.onHostHeroChanged) {
           this.onHostHeroChanged(hero);
@@ -565,9 +603,14 @@ export class HUD {
     const guestHeroOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-guest-hero]');
     guestHeroOpts.forEach((opt) => {
       opt.addEventListener('click', () => {
+        const hero = opt.getAttribute('data-guest-hero') as CharacterType;
+        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
+          this.triggerAltarNotification('Герой заблокирован', 'Откройте в книге заданий!', '🔒', '#a855f7');
+          return;
+        }
         guestHeroOpts.forEach((o) => o.classList.remove('active'));
         opt.classList.add('active');
-        this.guestSelectedHero = opt.getAttribute('data-guest-hero') as CharacterType;
+        this.guestSelectedHero = hero;
         if (this.onGuestHeroChanged) {
           this.onGuestHeroChanged(this.guestSelectedHero);
         }
@@ -691,6 +734,11 @@ export class HUD {
       card.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLElement;
         const hero = (target.getAttribute('data-hero') || 'ronin') as CharacterType;
+        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
+          this.hideCharacterSelect();
+          this.showQuestsModal(hero);
+          return;
+        }
         this.hideCharacterSelect();
         onSelectHero(hero);
       });
@@ -844,7 +892,11 @@ export class HUD {
     this.hideCoopMenu();
     this.menuStack = ['coop', 'host_lobby'];
     this.hostRoomCodeText.innerText = roomCode;
+    if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
+      hero = 'ronin';
+    }
     this.hostSelectedHero = hero;
+    this.updateLobbyHeroesLockStatus();
     const hostHeroOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-host-hero]');
     hostHeroOpts.forEach((opt) => {
       if (opt.getAttribute('data-host-hero') === hero) {
@@ -1297,7 +1349,11 @@ export class HUD {
     if (this.joinRosterSection) {
       this.joinRosterSection.classList.add('hidden');
     }
+    if (!ProgressionManager.getInstance().isHeroUnlocked(defaultHero)) {
+      defaultHero = 'ronin';
+    }
     this.guestSelectedHero = defaultHero;
+    this.updateLobbyHeroesLockStatus();
     const guestHeroOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-guest-hero]');
     guestHeroOpts.forEach((opt) => {
       if (opt.getAttribute('data-guest-hero') === defaultHero) {
@@ -1666,6 +1722,7 @@ export class HUD {
   }
 
   public showCharacterSelect() {
+    this.updateCharacterSelectLockStatus();
     if (this.isPaused || this.menuStack.includes('pause')) {
       this.pauseModal.classList.add('hidden');
       if (this.menuStack[this.menuStack.length - 1] !== 'char_select') {
@@ -1681,6 +1738,272 @@ export class HUD {
   public hideCharacterSelect() {
     this.charSelectModal.classList.add('hidden');
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
+  }
+
+  public showQuestsModal(selectedHero: CharacterType = 'chakram') {
+    if (this.isPaused || this.menuStack.includes('pause')) {
+      this.pauseModal.classList.add('hidden');
+      if (this.menuStack[this.menuStack.length - 1] !== 'quests') {
+        this.menuStack.push('quests');
+      }
+    } else {
+      this.hideMainMenu();
+      this.menuStack = ['quests'];
+    }
+    this.renderQuestsModal(selectedHero);
+    this.questsModal.classList.remove('hidden');
+  }
+
+  public hideQuestsModal() {
+    this.questsModal.classList.add('hidden');
+    this.menuStack = this.menuStack.filter((s) => s !== 'quests');
+  }
+
+  public renderQuestsModal(selectedHero: CharacterType = 'chakram') {
+    this.activeQuestHero = selectedHero;
+    const prog = ProgressionManager.getInstance();
+
+    // 1. Account Info Badge in header
+    const lvlEl = document.getElementById('quest-acc-lvl-text');
+    if (lvlEl) lvlEl.innerText = `УРОВЕНЬ АККАУНТА: ${prog.data.accountLevel}`;
+    const xpEl = document.getElementById('quest-acc-xp-text');
+    if (xpEl) xpEl.innerText = `(${prog.data.accountXp} / ${prog.data.accountXpToNext} XP)`;
+    const coinsEl = document.getElementById('quest-acc-coins-text');
+    if (coinsEl) coinsEl.innerText = `🪙 ${prog.data.walletCoins}`;
+
+    // 2. Left Page: Heroes List
+    const heroList: CharacterType[] = ['valkyrie', 'flail', 'sorceress', 'chakram', 'archer'];
+    heroList.forEach((h) => {
+      const itemEl = document.querySelector<HTMLElement>(`.quest-hero-item[data-quest-hero="${h}"]`);
+      if (itemEl) {
+        if (h === selectedHero) {
+          itemEl.classList.add('active');
+        } else {
+          itemEl.classList.remove('active');
+        }
+      }
+
+      const p = prog.getHeroProgress(h);
+      const fillEl = document.getElementById(`quest-prog-bar-${h}`);
+      const textEl = document.getElementById(`quest-prog-text-${h}`);
+      if (fillEl) {
+        const pct = Math.max(0, Math.min(100, Math.round((p.current / p.max) * 100)));
+        fillEl.style.width = `${pct}%`;
+        if (p.isComplete) {
+          fillEl.classList.add('complete');
+        } else {
+          fillEl.classList.remove('complete');
+        }
+      }
+      if (textEl) {
+        textEl.innerText = p.label;
+      }
+    });
+
+    // 3. Right Page: Selected Hero Quest Details
+    const def = prog.getHeroQuestDefinition(selectedHero);
+    const titleEl = document.getElementById('quest-right-title');
+    if (titleEl) titleEl.innerText = def.questTitle;
+    const descEl = document.getElementById('quest-right-desc');
+    if (descEl) descEl.innerText = def.questDesc;
+
+    // Steps
+    const stepsContainer = document.getElementById('quest-right-steps');
+    if (stepsContainer) {
+      stepsContainer.innerHTML = '';
+      def.steps.forEach((stepText, idx) => {
+        const stepRow = document.createElement('div');
+        stepRow.className = 'quest-step-item';
+
+        let isDone = false;
+        if (selectedHero === 'chakram') {
+          isDone = Boolean(prog.data.questLeshySteps[idx]);
+        } else if (prog.isHeroUnlocked(selectedHero)) {
+          isDone = true;
+        } else {
+          const p = prog.getHeroProgress(selectedHero);
+          if (p.isComplete) isDone = true;
+        }
+
+        if (isDone) stepRow.classList.add('done');
+
+        stepRow.innerHTML = `
+          <span class="step-num">${idx + 1}.</span>
+          <span class="step-text">${stepText}</span>
+          <span class="step-check">${isDone ? '✓' : '○'}</span>
+        `;
+        stepsContainer.appendChild(stepRow);
+      });
+    }
+
+    // Rewards
+    const potEl = document.getElementById('reward-val-potions');
+    if (potEl) potEl.innerText = String(def.rewards.potions);
+    const coinEl = document.getElementById('reward-val-coins');
+    if (coinEl) coinEl.innerText = String(def.rewards.coins);
+    const ringEl = document.getElementById('reward-val-rings');
+    if (ringEl) ringEl.innerText = String(def.rewards.rings);
+    const crystEl = document.getElementById('reward-val-crystals');
+    if (crystEl) crystEl.innerText = String(def.rewards.crystals);
+
+    // Status & Action buttons
+    const statusEl = document.getElementById('quest-action-status-text');
+    const actionsEl = document.getElementById('quest-action-buttons');
+    if (statusEl && actionsEl) {
+      actionsEl.innerHTML = '';
+      const isUnlocked = prog.isHeroUnlocked(selectedHero);
+
+      if (isUnlocked) {
+        statusEl.innerText = `Герой ${def.heroName} ${def.heroSubtitle} успешно разблокирован(а) и доступен(на) в игре!`;
+        actionsEl.innerHTML = `<div class="quest-btn-unlocked-badge">✓ РАЗБЛОКИРОВАНО</div>`;
+      } else {
+        if (selectedHero === 'archer') {
+          const canAfford = prog.data.walletCoins >= 100;
+          const canAchieve = prog.canUnlockElfByAchievement();
+
+          statusEl.innerText = `Условия: 100 🪙 в кошельке (баланс: ${prog.data.walletCoins} 🪙) ИЛИ 100 убийств монстров (убито: ${prog.data.enemiesKilled}/100)`;
+
+          const buyBtn = document.createElement('button');
+          buyBtn.className = 'quest-btn-buy';
+          buyBtn.type = 'button';
+          buyBtn.innerText = `КУПИТЬ ЗА 100 🪙`;
+          buyBtn.disabled = !canAfford;
+          buyBtn.title = canAfford ? 'Купить охотника за накопленные монеты' : 'Недостаточно монет в кошельке';
+          buyBtn.addEventListener('click', () => {
+            if (prog.buyElf()) {
+              SoundManager.playLevelUp();
+              this.triggerAltarNotification('Герой Разблокирован!', 'Эльф лучник доступен для игры!', '🏹', '#10b981');
+              this.renderQuestsModal('archer');
+            }
+          });
+          actionsEl.appendChild(buyBtn);
+
+          if (canAchieve) {
+            const achieveBtn = document.createElement('button');
+            achieveBtn.className = 'quest-btn-claim';
+            achieveBtn.type = 'button';
+            achieveBtn.innerText = 'ОТКРЫТЬ ПО ДОСТИЖЕНИЮ';
+            achieveBtn.addEventListener('click', () => {
+              if (prog.unlockElfByAchievement()) {
+                SoundManager.playLevelUp();
+                this.triggerAltarNotification('Достижение Выполнено!', 'Эльф лучник разблокирован!', '🏹', '#10b981');
+                this.renderQuestsModal('archer');
+              }
+            });
+            actionsEl.appendChild(achieveBtn);
+          }
+        } else if (selectedHero === 'chakram') {
+          const stepsDone = prog.data.questLeshySteps.filter(Boolean).length;
+          if (prog.data.questLeshyCompleted || stepsDone === 3) {
+            statusEl.innerText = 'Задание «Охота на Лешего» выполнено! Заберите награду.';
+            const claimBtn = document.createElement('button');
+            claimBtn.className = 'quest-btn-claim';
+            claimBtn.type = 'button';
+            claimBtn.innerText = 'ЗАБРАТЬ НАГРАДУ / РАЗБЛОКИРОВАТЬ';
+            claimBtn.addEventListener('click', () => {
+              prog.unlockHero('chakram');
+              SoundManager.playLevelUp();
+              this.triggerAltarNotification('Квест Завершён!', 'Кира «Танцующий Чакрам» разблокирована!', '🪃', '#10b981');
+              this.renderQuestsModal('chakram');
+            });
+            actionsEl.appendChild(claimBtn);
+          } else {
+            statusEl.innerText = `Выполнено шагов: ${stepsDone} / 3. Завершите этапы в игре или подтвердите выполнение ниже.`;
+            const nextStepIdx = prog.data.questLeshySteps.findIndex((s) => !s);
+            if (nextStepIdx >= 0 && nextStepIdx <= 2) {
+              const validStepIdx = nextStepIdx as 0 | 1 | 2;
+              const stepBtn = document.createElement('button');
+              stepBtn.className = 'quest-btn-step';
+              stepBtn.type = 'button';
+              stepBtn.innerText = `ВЫПОЛНИТЬ ШАГ ${validStepIdx + 1}`;
+              stepBtn.addEventListener('click', () => {
+                prog.progressLeshyStep(validStepIdx);
+                SoundManager.playChestOpen();
+                this.renderQuestsModal('chakram');
+              });
+              actionsEl.appendChild(stepBtn);
+            }
+          }
+        } else {
+          // Valkyrie (Kael), Flail (Brigitta), Sorceress (Aria)
+          const p = prog.getHeroProgress(selectedHero);
+          if (p.isComplete) {
+            statusEl.innerText = 'Условие выполнено! Заберите награду и разблокируйте героя.';
+            const claimBtn = document.createElement('button');
+            claimBtn.className = 'quest-btn-claim';
+            claimBtn.type = 'button';
+            claimBtn.innerText = 'ЗАБРАТЬ НАГРАДУ / РАЗБЛОКИРОВАТЬ';
+            claimBtn.addEventListener('click', () => {
+              prog.unlockHero(selectedHero);
+              SoundManager.playLevelUp();
+              this.triggerAltarNotification('Герой Разблокирован!', `${def.heroName} доступен(на) для игры!`, '⭐', '#10b981');
+              this.renderQuestsModal(selectedHero);
+            });
+            actionsEl.appendChild(claimBtn);
+          } else {
+            statusEl.innerText = def.unlockConditionHint + ` (Текущий прогресс: ${p.label}).`;
+          }
+        }
+      }
+    }
+  }
+
+  public updateCharacterSelectLockStatus() {
+    const prog = ProgressionManager.getInstance();
+    const charCards = document.querySelectorAll<HTMLElement>('.character-card[data-hero]');
+    charCards.forEach((card) => {
+      const hero = (card.getAttribute('data-hero') || 'ronin') as CharacterType;
+      const isUnlocked = prog.isHeroUnlocked(hero);
+      const btnLabel = card.querySelector<HTMLElement>('.char-btn-label');
+      let badge = card.querySelector<HTMLElement>('.card-lock-badge');
+
+      if (isUnlocked) {
+        card.classList.remove('card-locked');
+        if (badge) badge.remove();
+        if (btnLabel) btnLabel.innerText = 'ВЫБРАТЬ';
+      } else {
+        card.classList.add('card-locked');
+        const heroProgress = prog.getHeroProgress(hero);
+        if (!badge) {
+          badge = document.createElement('div');
+          badge.className = 'card-lock-badge';
+          card.appendChild(badge);
+        }
+        badge.innerHTML = `<span class="lock-icon">🔒</span><span>${heroProgress.label}</span>`;
+        if (btnLabel) btnLabel.innerText = '🔒 ЗАБЛОКИРОВАНО';
+      }
+    });
+  }
+
+  public updateLobbyHeroesLockStatus() {
+    const prog = ProgressionManager.getInstance();
+    const hostOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-host-hero]');
+    hostOpts.forEach((opt) => {
+      const hero = opt.getAttribute('data-host-hero') as CharacterType;
+      const isUnlocked = prog.isHeroUnlocked(hero);
+      if (isUnlocked) {
+        opt.classList.remove('locked-hero');
+        opt.title = '';
+      } else {
+        opt.classList.add('locked-hero');
+        const def = prog.getHeroQuestDefinition(hero);
+        opt.title = `🔒 ${def.unlockConditionHint}`;
+      }
+    });
+
+    const guestOpts = document.querySelectorAll<HTMLElement>('.lobby-hero-opt[data-guest-hero]');
+    guestOpts.forEach((opt) => {
+      const hero = opt.getAttribute('data-guest-hero') as CharacterType;
+      const isUnlocked = prog.isHeroUnlocked(hero);
+      if (isUnlocked) {
+        opt.classList.remove('locked-hero');
+        opt.title = '';
+      } else {
+        opt.classList.add('locked-hero');
+        const def = prog.getHeroQuestDefinition(hero);
+        opt.title = `🔒 ${def.unlockConditionHint}`;
+      }
+    });
   }
 
   public showPause() {
@@ -1805,6 +2128,12 @@ export class HUD {
         } else {
           this.showMainMenu();
         }
+        return 'handled';
+      }
+
+      case 'quests': {
+        this.hideQuestsModal();
+        this.showMainMenu();
         return 'handled';
       }
 
