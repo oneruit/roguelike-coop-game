@@ -22,6 +22,7 @@ import { BiomeManager } from './world/BiomeManager';
 import { ChestManager } from './world/ChestManager';
 import { RiftTeleporter } from './world/RiftTeleporter';
 import { RIFT_ITEMS, RiftItemId } from './items/RiftItemSystem';
+import { ProgressionManager } from './core/ProgressionManager';
 
 const SPAWN_OFFSETS: Record<string, [number, number]> = {
   p1: [0, 0],
@@ -125,6 +126,8 @@ class Game {
       // In co-op mode, each player's credits are their own ("кредиты у каждого игрока свои")
       if (hitterId === myId) {
         this.player.credits += creditsVal;
+        ProgressionManager.getInstance().addCoins(creditsVal);
+        ProgressionManager.getInstance().recordEnemyKilled();
       } else {
         const remote = this.remotePlayers.get(hitterId);
         if (remote) {
@@ -181,6 +184,7 @@ class Game {
     // Boss defeat event listener
     this.enemyManager.onBossDefeat = () => {
       this.hud.resetBossUI();
+      ProgressionManager.getInstance().recordBossKilled();
       if (this.net.role === 'host') {
         this.pendingNetworkEvents.push({
           type: 'boss_defeat'
@@ -1382,6 +1386,7 @@ class Game {
           this.enemyManager.activeBoss = null;
         }
         this.hud.resetBossUI();
+        ProgressionManager.getInstance().recordBossKilled();
       } else if (event.type === 'stage_warp' && typeof event.stage === 'number') {
         this.applyStageTransition(event.stage, event.biomeName);
       } else if (event.type === 'revive') {
@@ -1421,6 +1426,7 @@ class Game {
         const targetId = event.playerId || event.killer;
         if (targetId === this.net.mySlotId) {
           this.player.credits += event.val;
+          ProgressionManager.getInstance().addCoins(event.val);
         } else if (targetId) {
           const remote = this.remotePlayers.get(targetId);
           if (remote) {
@@ -1978,6 +1984,7 @@ class Game {
         isDowned: this.player.isDowned,
         onCollect: (xp: number, gem: Gem) => {
           const levelsGained = this.player.gainXp(xp);
+          ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
           this.damageNumbers.spawnXp(this.player.position, xp, this.engine.camera);
 
           // Random mob passive drop collected!
@@ -2330,6 +2337,9 @@ class Game {
       level: this.player.level,
       revives: this.player.revivesCount
     };
+
+    ProgressionManager.getInstance().addAccountXp(50 + Math.floor(this.gameTime / 5));
+    ProgressionManager.getInstance().save();
 
     const allPlayersResults: DetailedPlayerResult[] = [];
     const mySlot = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');

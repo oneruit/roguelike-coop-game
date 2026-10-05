@@ -195,7 +195,24 @@
               </div>
             </button>
 
-            <!-- 3. НАСТРОЙКИ -->
+            <!-- 3. ЗАДАНИЯ -->
+            <button id="menu-btn-quests" class="main-menu-nav-btn main-menu-hex-btn btn-quests" type="button">
+              <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
+                <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
+              </svg>
+              <div class="btn-content">
+                <div class="menu-icon-wrap">
+                  <svg class="menu-icon-svg icon-quests" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.5 3.5c-.83 0-1.5.67-1.5 1.5v1h-12c-1.1 0-2 .9-2 2s.9 2 2 2h1v8c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5c0-.83-.67-1.5-1.5-1.5zM6 8c-.55 0-1-.45-1-1s.45-1 1-1h12v2H6zm11 9H9V9h8v8zm-4.5-6.5h1.5v3.5h-1.5v-3.5zm0 5h1.5v1.5h-1.5V15.5z"/>
+                  </svg>
+                </div>
+                <div class="menu-text-wrap">
+                  <span class="menu-btn-title">ЗАДАНИЯ</span>
+                </div>
+              </div>
+            </button>
+
+            <!-- 4. НАСТРОЙКИ -->
             <button id="menu-btn-settings" class="main-menu-nav-btn main-menu-hex-btn btn-settings" type="button">
               <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
                 <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
@@ -406,6 +423,235 @@
           <div id="exit-actions-row" class="exit-actions-row" style="margin-top: 24px;">
             <button id="btn-confirm-exit" class="exit-confirm-btn">Выйти / Exit</button>
             <button id="btn-cancel-exit" class="modern-back-btn">Отмена</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quests Modal (Grimoire Book Screen) -->
+      <div id="quests-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="quest-modal-container">
+          <div class="quest-modal-top-header">
+            <h1 class="quest-modal-main-title">Задания</h1>
+            <div class="quest-account-badge">
+              <span class="quest-acc-lvl" id="quest-acc-lvl-text">УРОВЕНЬ АККАУНТА: 1</span>
+              <span class="quest-acc-xp" id="quest-acc-xp-text">(0 / 200 XP)</span>
+              <span class="quest-acc-coins" id="quest-acc-coins-text">🪙 0</span>
+            </div>
+          </div>
+
+          <!-- Open Book Frame with Purple Ornate Corners -->
+          <div class="quest-book-card">
+            <!-- 4 Ornate Glowing Purple Corner Flourishes -->
+            <div class="book-corner book-corner-tl">
+              <svg viewBox="0 0 48 48" class="corner-flourish-svg">
+                <path d="M4 4 h 34 c -4 6 -10 10 -16 12 c 6 2 12 8 14 16 l -6 2 c -2 -8 -8 -14 -16 -16 v 14 h -10 v -28 z" fill="#c084fc"/>
+                <circle cx="8" cy="8" r="3.5" fill="#f3e8ff"/>
+              </svg>
+            </div>
+            <div class="book-corner book-corner-tr">
+              <svg viewBox="0 0 48 48" class="corner-flourish-svg">
+                <path d="M4 4 h 34 c -4 6 -10 10 -16 12 c 6 2 12 8 14 16 l -6 2 c -2 -8 -8 -14 -16 -16 v 14 h -10 v -28 z" fill="#c084fc"/>
+                <circle cx="8" cy="8" r="3.5" fill="#f3e8ff"/>
+              </svg>
+            </div>
+            <div class="book-corner book-corner-bl">
+              <svg viewBox="0 0 48 48" class="corner-flourish-svg">
+                <path d="M4 4 h 34 c -4 6 -10 10 -16 12 c 6 2 12 8 14 16 l -6 2 c -2 -8 -8 -14 -16 -16 v 14 h -10 v -28 z" fill="#c084fc"/>
+                <circle cx="8" cy="8" r="3.5" fill="#f3e8ff"/>
+              </svg>
+            </div>
+            <div class="book-corner book-corner-br">
+              <svg viewBox="0 0 48 48" class="corner-flourish-svg">
+                <path d="M4 4 h 34 c -4 6 -10 10 -16 12 c 6 2 12 8 14 16 l -6 2 c -2 -8 -8 -14 -16 -16 v 14 h -10 v -28 z" fill="#c084fc"/>
+                <circle cx="8" cy="8" r="3.5" fill="#f3e8ff"/>
+              </svg>
+            </div>
+
+            <!-- Two-Page Spread -->
+            <div class="quest-book-spread">
+              <!-- Left Page -->
+              <div class="quest-book-page quest-page-left">
+                <!-- Floating Back Button on Outer Edge -->
+                <button id="quests-btn-back" class="book-back-btn" type="button" title="Назад в главное меню">
+                  <span class="back-arrow">←</span>
+                  <span class="back-label">НАЗАД</span>
+                </button>
+
+                <!-- Hero Quests List (5 heroes) -->
+                <div class="quest-heroes-list">
+                  <!-- 1. Kael (Valkyrie) -->
+                  <div class="quest-hero-item active" data-quest-hero="valkyrie">
+                    <div class="hero-item-avatar-frame">
+                      <img src="/textures/hero_valkyrie_front.png" class="hero-item-avatar" alt="Каэла" />
+                    </div>
+                    <div class="hero-item-middle">
+                      <div class="hero-item-name">Каэла «Стальной вихрь»</div>
+                      <div class="hero-item-progress-track">
+                        <div class="hero-item-progress-fill" id="quest-prog-bar-valkyrie" style="width: 0%;"></div>
+                        <span class="hero-item-progress-text" id="quest-prog-text-valkyrie">0/1</span>
+                      </div>
+                    </div>
+                    <div class="hero-item-weapon-frame">
+                      <img src="/textures/weapon_greatsword.png" class="hero-item-weapon" alt="Двуручный меч" />
+                    </div>
+                  </div>
+
+                  <!-- 2. Brigitta (Flail) -->
+                  <div class="quest-hero-item" data-quest-hero="flail">
+                    <div class="hero-item-avatar-frame">
+                      <img src="/textures/hero_flail_front.png" class="hero-item-avatar" alt="Бригитта" />
+                    </div>
+                    <div class="hero-item-middle">
+                      <div class="hero-item-name">Бригитта «Громовой Цеп»</div>
+                      <div class="hero-item-progress-track">
+                        <div class="hero-item-progress-fill" id="quest-prog-bar-flail" style="width: 0%;"></div>
+                        <span class="hero-item-progress-text" id="quest-prog-text-flail">0/1</span>
+                      </div>
+                    </div>
+                    <div class="hero-item-weapon-frame">
+                      <img src="/textures/weapon_flail.png" class="hero-item-weapon" alt="Громовой цеп" />
+                    </div>
+                  </div>
+
+                  <!-- 3. Aria (Sorceress) -->
+                  <div class="quest-hero-item" data-quest-hero="sorceress">
+                    <div class="hero-item-avatar-frame">
+                      <img src="/textures/hero_sorceress_front.png" class="hero-item-avatar" alt="Ария" />
+                    </div>
+                    <div class="hero-item-middle">
+                      <div class="hero-item-name">Ария «Звёздный Посох»</div>
+                      <div class="hero-item-progress-track">
+                        <div class="hero-item-progress-fill" id="quest-prog-bar-sorceress" style="width: 0%;"></div>
+                        <span class="hero-item-progress-text" id="quest-prog-text-sorceress">0/1</span>
+                      </div>
+                    </div>
+                    <div class="hero-item-weapon-frame">
+                      <img src="/textures/weapon_astral_staff.png" class="hero-item-weapon" alt="Звёздный посох" />
+                    </div>
+                  </div>
+
+                  <!-- 4. Kira (Chakram) -->
+                  <div class="quest-hero-item" data-quest-hero="chakram">
+                    <div class="hero-item-avatar-frame">
+                      <img src="/textures/hero_chakram_front.png" class="hero-item-avatar" alt="Кира" />
+                    </div>
+                    <div class="hero-item-middle">
+                      <div class="hero-item-name">Кира «Танцующий Чакрам»</div>
+                      <div class="hero-item-progress-track">
+                        <div class="hero-item-progress-fill" id="quest-prog-bar-chakram" style="width: 0%;"></div>
+                        <span class="hero-item-progress-text" id="quest-prog-text-chakram">0/1</span>
+                      </div>
+                    </div>
+                    <div class="hero-item-weapon-frame">
+                      <img src="/textures/weapon_chakram.png" class="hero-item-weapon" alt="Чакрам" />
+                    </div>
+                  </div>
+
+                  <!-- 5. Elf (Archer) -->
+                  <div class="quest-hero-item" data-quest-hero="archer">
+                    <div class="hero-item-avatar-frame">
+                      <img src="/textures/hero_archer_front.png" class="hero-item-avatar" alt="Эльф" />
+                    </div>
+                    <div class="hero-item-middle">
+                      <div class="hero-item-name">Эльф «Охотничий Лук»</div>
+                      <div class="hero-item-progress-track">
+                        <div class="hero-item-progress-fill" id="quest-prog-bar-archer" style="width: 0%;"></div>
+                        <span class="hero-item-progress-text" id="quest-prog-text-archer">0/1</span>
+                      </div>
+                    </div>
+                    <div class="hero-item-weapon-frame">
+                      <img src="/textures/weapon_bow.png" class="hero-item-weapon" alt="Охотничий лук" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Center Spine Crease & Shadow -->
+              <div class="quest-book-spine"></div>
+
+              <!-- Right Page -->
+              <div class="quest-book-page quest-page-right">
+                <h2 id="quest-right-title" class="quest-detail-title">Охота на Лешего</h2>
+                <div class="quest-detail-divider">
+                  <span class="divider-line"></span>
+                  <span class="divider-gem">✦</span>
+                  <span class="divider-line"></span>
+                </div>
+
+                <p id="quest-right-desc" class="quest-detail-desc">Найти следы в чаще. Собрать 3 корня аконита. Победить Лешего.</p>
+
+                <!-- Step Checklist -->
+                <div id="quest-right-steps" class="quest-steps-list">
+                  <!-- Generated dynamically -->
+                </div>
+
+                <!-- Rewards Grid Section -->
+                <div class="quest-rewards-block">
+                  <div class="quest-rewards-heading">Наград:</div>
+                  <div class="quest-rewards-grid" id="quest-rewards-grid">
+                    <!-- 1. Potion -->
+                    <div class="reward-slot reward-slot-potion" title="Зелье">
+                      <div class="reward-slot-icon">
+                        <svg viewBox="0 0 32 32" class="reward-svg">
+                          <path d="M12 4h8v3h-2v4l6 10c1 2 0 5-3 5H11c-3 0-4-3-3-5l6-10V7h-2V4z" fill="#22c55e" opacity="0.85"/>
+                          <path d="M14 6h4v3h-4z" fill="#86efac"/>
+                          <circle cx="16" cy="20" r="3" fill="#ecfdf5" opacity="0.6"/>
+                        </svg>
+                      </div>
+                      <span class="reward-slot-badge" id="reward-val-potions">2</span>
+                    </div>
+
+                    <!-- 2. Gold Coins -->
+                    <div class="reward-slot reward-slot-coins" title="Золотые монеты">
+                      <div class="reward-slot-icon">
+                        <svg viewBox="0 0 32 32" class="reward-svg">
+                          <circle cx="16" cy="16" r="12" fill="#eab308" stroke="#ca8a04" stroke-width="2"/>
+                          <circle cx="16" cy="16" r="8" fill="none" stroke="#fef08a" stroke-width="1.5"/>
+                          <text x="16" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#713f12">⬡</text>
+                        </svg>
+                      </div>
+                      <span class="reward-slot-badge" id="reward-val-coins">2000</span>
+                    </div>
+
+                    <!-- 3. Ring -->
+                    <div class="reward-slot reward-slot-ring" title="Кольцо">
+                      <div class="reward-slot-icon">
+                        <svg viewBox="0 0 32 32" class="reward-svg">
+                          <circle cx="16" cy="16" r="10" fill="none" stroke="#d97706" stroke-width="3"/>
+                          <circle cx="16" cy="16" r="7" fill="none" stroke="#fef3c7" stroke-width="1"/>
+                          <polygon points="16,4 19,8 16,11 13,8" fill="#ec4899"/>
+                        </svg>
+                      </div>
+                      <span class="reward-slot-badge" id="reward-val-rings">3</span>
+                    </div>
+
+                    <!-- 4. Crystal -->
+                    <div class="reward-slot reward-slot-crystal" title="Кристаллы Разлома">
+                      <div class="reward-slot-icon">
+                        <svg viewBox="0 0 32 32" class="reward-svg">
+                          <polygon points="16,3 24,12 16,29 8,12" fill="#38bdf8"/>
+                          <polygon points="16,3 20,12 16,29" fill="#0284c7" opacity="0.6"/>
+                          <polygon points="16,3 16,29 12,12" fill="#7dd3fc" opacity="0.8"/>
+                        </svg>
+                      </div>
+                      <span class="reward-slot-badge" id="reward-val-crystals">26</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer Status & Action Buttons -->
+                <div class="quest-action-footer">
+                  <div id="quest-action-status-text" class="quest-status-text"></div>
+                  <div id="quest-action-buttons" class="quest-buttons-row">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+
+                <!-- Folded Page Corner (dog-ear curl) -->
+                <div class="book-corner-curl"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
