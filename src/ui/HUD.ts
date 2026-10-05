@@ -1922,7 +1922,7 @@ export class HUD {
         this.dashCooldownText.innerText = `${player.dashCooldown.toFixed(1)}s`;
         this.dashCooldownBadge?.classList.add('cooling-down');
       } else {
-        this.dashCooldownText.innerText = 'ГОТОВ';
+        this.dashCooldownText.innerText = 'РЫВОК';
         this.dashCooldownBadge?.classList.remove('cooling-down');
       }
     }
