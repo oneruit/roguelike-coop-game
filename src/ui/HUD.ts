@@ -773,6 +773,8 @@ export class HUD {
           this.showQuestsModal(hero);
           return;
         }
+        const singleSeedInput = document.getElementById('single-seed-input') as HTMLInputElement | null;
+        const seedVal = singleSeedInput?.value?.trim();
         this.hideCharacterSelect();
         onSelectHero(hero, seedVal);
       });
@@ -2081,7 +2083,7 @@ export class HUD {
     });
   }
 
-  public showPause() {
+  public showPause(activeSeed?: number | string) {
     this.isPaused = true;
     this.menuStack = ['pause'];
     if (activeSeed !== undefined) {
@@ -2332,7 +2334,7 @@ export class HUD {
         this.dashCooldownText.innerText = `${player.dashCooldown.toFixed(1)}s`;
         this.dashCooldownBadge?.classList.add('cooling-down');
       } else {
-        this.dashCooldownText.innerText = 'ГОТОВ';
+        this.dashCooldownText.innerText = 'РЫВОК';
         this.dashCooldownBadge?.classList.remove('cooling-down');
       }
     }
