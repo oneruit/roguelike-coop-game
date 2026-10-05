@@ -49,6 +49,69 @@ export interface SimPlayerRef {
   damageMultiplier: number;
 }
 
+export function findClosestSimEnemies(
+  enemies: SimEnemyRef[],
+  pos: SimVec3,
+  count: number,
+  maxDistSq: number = Infinity
+): SimEnemyRef[] {
+  if (count <= 0 || enemies.length === 0) return [];
+  if (count === 1) {
+    let closest: SimEnemyRef | null = null;
+    let minDistSq = maxDistSq;
+    const px = pos.x;
+    const pz = pos.z;
+    for (let i = 0; i < enemies.length; i++) {
+      const e = enemies[i];
+      if (!e.isAlive) continue;
+      const dx = e.position.x - px;
+      const dz = e.position.z - pz;
+      const dSq = dx * dx + dz * dz;
+      if (dSq < minDistSq) {
+        minDistSq = dSq;
+        closest = e;
+      }
+    }
+    return closest ? [closest] : [];
+  }
+
+  const result: SimEnemyRef[] = [];
+  const dists: number[] = [];
+  const px = pos.x;
+  const pz = pos.z;
+
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    if (!e.isAlive) continue;
+    const dx = e.position.x - px;
+    const dz = e.position.z - pz;
+    const dSq = dx * dx + dz * dz;
+    if (dSq > maxDistSq) continue;
+
+    if (result.length < count) {
+      result.push(e);
+      dists.push(dSq);
+      for (let k = result.length - 1; k > 0; k--) {
+        if (dists[k] < dists[k - 1]) {
+          const td = dists[k]; dists[k] = dists[k - 1]; dists[k - 1] = td;
+          const te = result[k]; result[k] = result[k - 1]; result[k - 1] = te;
+        } else break;
+      }
+    } else if (dSq < dists[count - 1]) {
+      dists[count - 1] = dSq;
+      result[count - 1] = e;
+      for (let k = count - 1; k > 0; k--) {
+        if (dists[k] < dists[k - 1]) {
+          const td = dists[k]; dists[k] = dists[k - 1]; dists[k - 1] = td;
+          const te = result[k]; result[k] = result[k - 1]; result[k - 1] = te;
+        } else break;
+      }
+    }
+  }
+
+  return result;
+}
+
 export abstract class SimWeapon {
   public id: string;
   public name: string;
@@ -121,25 +184,21 @@ export class SimBowWeapon extends SimWeapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(player.position) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
+      const targets = findClosestSimEnemies(enemies, player.position, this.projectileCount);
+      if (targets.length === 0) return;
 
       if (_triggerAnim) _triggerAnim(0.40);
       if (emitSound) emitSound('shoot');
 
       for (let i = 0; i < this.projectileCount; i++) {
-        const target = candidates[i % candidates.length].enemy;
+        const target = targets[i % targets.length];
         if (!target || !target.isAlive) continue;
 
         const dir = new SimVec3().subVectors(target.position, player.position);
         dir.y = 0;
         dir.normalize();
 
-        if (this.projectileCount > 1 && candidates.length < this.projectileCount) {
+        if (this.projectileCount > 1 && targets.length < this.projectileCount) {
           const spreadAngle = (i - (this.projectileCount - 1) / 2) * 0.08;
           const cos = Math.cos(spreadAngle);
           const sin = Math.sin(spreadAngle);
@@ -219,13 +278,8 @@ export class SimKukriWeapon extends SimWeapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(player.position) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
-      const sorted = candidates.map(c => c.enemy);
+      const sorted = findClosestSimEnemies(enemies, player.position, this.burstCount);
+      if (sorted.length === 0) return;
 
       for (let i = 0; i < this.burstCount; i++) {
         const target = sorted[i % sorted.length];
@@ -491,13 +545,9 @@ export class SimAstralStaffWeapon extends SimWeapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(player.position) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
-      const target = candidates[0].enemy;
+      const targets = findClosestSimEnemies(enemies, player.position, 1, 22 * 22);
+      if (targets.length === 0) return;
+      const target = targets[0];
 
       const baseDir = new SimVec3().subVectors(target.position, player.position);
       baseDir.y = 0;
@@ -755,18 +805,13 @@ export class SimChakramWeapon extends SimWeapon {
     if (this.timer >= this.cooldown) {
       if (enemies.length === 0) return;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(player.position) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
-      if (candidates[0].distSq > 20 * 20) return;
+      const targets = findClosestSimEnemies(enemies, player.position, 1, 20 * 20);
+      if (targets.length === 0) return;
 
       this.timer = 0;
       onTriggerAttack?.(0.44);
 
-      const target = candidates[0].enemy;
+      const target = targets[0];
       const baseDir = new SimVec3(
         target.position.x - player.position.x,
         0,
@@ -863,24 +908,19 @@ export class SimLightningStrikeWeapon extends SimWeapon {
     if (this.timer >= this.cooldown) {
       if (enemies.length === 0) return;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(player.position) }))
-        .filter(c => c.distSq <= this.range * this.range)
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
+      const targets = findClosestSimEnemies(enemies, player.position, this.strikeCount, this.range * this.range);
+      if (targets.length === 0) return;
 
       this.timer = 0;
       if (triggerAnim) triggerAnim(0.40);
       if (emitSound) emitSound('magic');
 
       for (let i = 0; i < this.strikeCount; i++) {
-        const targetCandidate = candidates[i % candidates.length];
+        const targetCandidate = targets[i % targets.length];
         const proj: SimProjectileData = {
           id: `sim_lightning_${Math.random().toString(36).substring(2, 9)}`,
           ownerId: player.id,
-          position: targetCandidate.enemy.position.clone(),
+          position: targetCandidate.position.clone(),
           direction: new SimVec3(0, 0, 1),
           speed: 0,
           damage: this.damage * player.damageMultiplier,

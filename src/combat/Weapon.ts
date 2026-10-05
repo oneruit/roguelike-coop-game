@@ -13,6 +13,73 @@ export interface WeaponInfo {
   description: string;
 }
 
+/**
+ * Zero-allocation fast O(N) lookup for the top K closest alive enemies.
+ * Avoids creating intermediate object wrappers or running O(N log N) Array.prototype.sort.
+ */
+export function findClosestEnemies(
+  enemies: Enemy[],
+  pos: THREE.Vector3,
+  count: number,
+  maxDistSq: number = Infinity
+): Enemy[] {
+  if (count <= 0 || enemies.length === 0) return [];
+  if (count === 1) {
+    let closest: Enemy | null = null;
+    let minDistSq = maxDistSq;
+    const px = pos.x;
+    const pz = pos.z;
+    for (let i = 0; i < enemies.length; i++) {
+      const e = enemies[i];
+      if (!e.isAlive) continue;
+      const dx = e.position.x - px;
+      const dz = e.position.z - pz;
+      const dSq = dx * dx + dz * dz;
+      if (dSq < minDistSq) {
+        minDistSq = dSq;
+        closest = e;
+      }
+    }
+    return closest ? [closest] : [];
+  }
+
+  const result: Enemy[] = [];
+  const dists: number[] = [];
+  const px = pos.x;
+  const pz = pos.z;
+
+  for (let i = 0; i < enemies.length; i++) {
+    const e = enemies[i];
+    if (!e.isAlive) continue;
+    const dx = e.position.x - px;
+    const dz = e.position.z - pz;
+    const dSq = dx * dx + dz * dz;
+    if (dSq > maxDistSq) continue;
+
+    if (result.length < count) {
+      result.push(e);
+      dists.push(dSq);
+      for (let k = result.length - 1; k > 0; k--) {
+        if (dists[k] < dists[k - 1]) {
+          const td = dists[k]; dists[k] = dists[k - 1]; dists[k - 1] = td;
+          const te = result[k]; result[k] = result[k - 1]; result[k - 1] = te;
+        } else break;
+      }
+    } else if (dSq < dists[count - 1]) {
+      dists[count - 1] = dSq;
+      result[count - 1] = e;
+      for (let k = count - 1; k > 0; k--) {
+        if (dists[k] < dists[k - 1]) {
+          const td = dists[k]; dists[k] = dists[k - 1]; dists[k - 1] = td;
+          const te = result[k]; result[k] = result[k - 1]; result[k - 1] = te;
+        } else break;
+      }
+    }
+  }
+
+  return result;
+}
+
 export abstract class Weapon {
   public id: string;
   public name: string;
@@ -88,11 +155,7 @@ export class BowWeapon extends Weapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(playerPos) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
+      const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount);
       if (candidates.length === 0) return;
 
       if (this.onTriggerAttack) {
@@ -100,7 +163,7 @@ export class BowWeapon extends Weapon {
       }
 
       for (let index = 0; index < this.projectileCount; index++) {
-        const target = candidates[index % candidates.length].enemy;
+        const target = candidates[index % candidates.length];
         setTimeout(() => {
           if (!target || !target.isAlive) return;
           const dir = new THREE.Vector3().subVectors(target.position, playerPos);
@@ -186,13 +249,8 @@ export class KukriWeapon extends Weapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(playerPos) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
-      const sorted = candidates.map(c => c.enemy);
+      const sorted = findClosestEnemies(enemies, playerPos, this.burstCount);
+      if (sorted.length === 0) return;
 
       for (let i = 0; i < this.burstCount; i++) {
         setTimeout(() => {
@@ -272,7 +330,7 @@ export class OrbitingBarrierWeapon extends Weapon {
   }
 
   public update(
-    dt: number,
+    _dt: number,
     playerPos: THREE.Vector3,
     _enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
@@ -308,9 +366,6 @@ export class OrbitingBarrierWeapon extends Weapon {
       orb.damage = this.damage;
       orb.radius = Number((0.32 + (this.level - 1) * 0.012).toFixed(3));
       orb.mesh.scale.setScalar(orb.radius);
-      if (Math.abs(orb.orbitSpeed) > 0) {
-        orb.update(dt, playerPos);
-      }
     });
   }
 
@@ -736,21 +791,15 @@ export class AstralStaffWeapon extends Weapon {
     if (this.timer >= this.cooldown) {
       if (enemies.length === 0) return;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(playerPos) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
-      // Only shoot if nearest enemy is within 22 meters
-      if (candidates[0].distSq > 22 * 22) return;
+      const targets = findClosestEnemies(enemies, playerPos, 1, 22 * 22);
+      if (targets.length === 0) return;
 
       this.timer = 0;
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
-      const baseTarget = candidates[0].enemy;
+      const baseTarget = targets[0];
       const baseDir = new THREE.Vector3().subVectors(baseTarget.position, playerPos);
       baseDir.y = 0;
       if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
@@ -838,20 +887,15 @@ export class ChakramWeapon extends Weapon {
     if (this.timer >= this.cooldown) {
       if (enemies.length === 0) return;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(playerPos) }))
-        .sort((a, b) => a.distSq - b.distSq);
-
-      if (candidates.length === 0) return;
-      if (candidates[0].distSq > 20 * 20) return;
+      const targets = findClosestEnemies(enemies, playerPos, 1, 20 * 20);
+      if (targets.length === 0) return;
 
       this.timer = 0;
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
-      const target = candidates[0].enemy;
+      const target = targets[0];
       const baseDir = new THREE.Vector3().subVectors(target.position, playerPos);
       baseDir.y = 0;
       if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
@@ -946,12 +990,7 @@ export class LightningStrikeWeapon extends Weapon {
     if (this.timer >= effectiveCd) {
       if (enemies.length === 0) return;
 
-      const candidates = enemies
-        .filter(e => e.isAlive)
-        .map(e => ({ enemy: e, distSq: e.position.distanceToSquared(playerPos) }))
-        .filter(c => c.distSq <= this.range * this.range)
-        .sort((a, b) => a.distSq - b.distSq);
-
+      const candidates = findClosestEnemies(enemies, playerPos, this.strikeCount, this.range * this.range);
       if (candidates.length === 0) return;
 
       this.timer = 0;
@@ -964,8 +1003,8 @@ export class LightningStrikeWeapon extends Weapon {
       for (let i = 0; i < this.strikeCount; i++) {
         const targetCandidate = candidates[i % candidates.length];
         strikeTargets.push({
-          x: targetCandidate.enemy.position.x,
-          z: targetCandidate.enemy.position.z
+          x: targetCandidate.position.x,
+          z: targetCandidate.position.z
         });
       }
 
