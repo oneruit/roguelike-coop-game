@@ -29,8 +29,13 @@ export class MapManager {
   public partners: RemotePlayer[] = [];
 
   // Exploration state
+  public currentSeed: number | string = 1337;
   public exploredChunks = new Set<string>();
   public discoveredAltars = new Map<string, DiscoveredAltar>();
+
+  public setSeed(seed: number | string) {
+    this.currentSeed = seed;
+  }
 
   // Minimap DOM & Canvas
   private minimapCanvas: HTMLCanvasElement;
@@ -973,13 +978,30 @@ export class MapManager {
     // 11. Update Header Stats Bar
     if (this.elFullMapStats) {
       const exploredAreaM2 = this.exploredChunks.size * 2500;
+      const percent = Math.min(100, Math.round((this.exploredChunks.size / 100) * 100));
       this.elFullMapStats.innerHTML = `
-        <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} чанков</strong> (${exploredAreaM2} м²)</div>
-        <div class="map-stat-item">Святилищ: <strong>${this.discoveredAltars.size}</strong></div>
-        <div class="map-stat-item">Предметов на карте: <strong>${this.dropManager.gems.length}</strong></div>
-        <div class="map-stat-item">Масштаб: <strong>${Math.round((this.mapZoom / 1.4) * 100)}%</strong></div>
+        <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} / 100 чанков</strong> (${percent}%, ${exploredAreaM2} м²)</div>
+        <div class="map-stat-item">Алтари: <strong>${this.discoveredAltars.size} / 3</strong></div>
+        <div class="map-stat-item">Предметов: <strong>${this.dropManager.gems.length}</strong></div>
+        <div class="map-stat-item" id="btn-copy-seed-stat" style="cursor: pointer; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); padding: 2px 8px; border-radius: 4px;" title="Нажмите, чтобы скопировать seed карты">Seed: <strong style="color: #f59e0b;">#${this.currentSeed}</strong> 📋</div>
         <div class="map-stat-item">Координаты: <strong>${Math.round(px)}, ${Math.round(pz)}</strong></div>
       `;
+
+      const btnCopy = document.getElementById('btn-copy-seed-stat');
+      if (btnCopy) {
+        btnCopy.onclick = (e) => {
+          e.stopPropagation();
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(this.currentSeed.toString());
+          }
+          btnCopy.innerHTML = `Seed: <strong style="color: #10b981;">Скопировано!</strong> ✓`;
+          setTimeout(() => {
+            if (btnCopy) {
+              btnCopy.innerHTML = `Seed: <strong style="color: #f59e0b;">#${this.currentSeed}</strong> 📋`;
+            }
+          }, 1500);
+        };
+      }
     }
   }
 

@@ -677,6 +677,10 @@ export class Player {
       obstacleManager.resolveEntityCollision(this.position, 0.45);
     }
 
+    // Clamp to 500x500 map bounds (-243 to 243)
+    this.position.x = Math.max(-243, Math.min(243, this.position.x));
+    this.position.z = Math.max(-243, Math.min(243, this.position.z));
+
     this.mesh.position.copy(this.position);
 
     // Hit flash handling

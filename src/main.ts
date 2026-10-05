@@ -24,6 +24,7 @@ import { RiftTeleporter } from './world/RiftTeleporter';
 import { RIFT_ITEMS, RiftItemId } from './items/RiftItemSystem';
 import { ProgressionManager } from './core/ProgressionManager';
 import { TextureManager } from './core/TextureManager';
+import { SeededRNG } from './core/SeededRNG';
 
 const SPAWN_OFFSETS: Record<string, [number, number]> = {
   p1: [0, 0],
@@ -95,6 +96,7 @@ class Game {
   private biomeManager: BiomeManager;
   private chestManager: ChestManager;
   private riftTeleporter: RiftTeleporter;
+  private currentSeed: number | string = 1337;
 
   constructor() {
     this.engine = new Engine('game-container');
@@ -220,10 +222,11 @@ class Game {
     // HUD with callbacks
     this.hud = new HUD(
       this.engine.scene,
-      (charType: CharacterType) => this.startSinglePlayerWithHero(charType),
+      (charType: CharacterType, seedInput?: string) => this.startSinglePlayerWithHero(charType, seedInput),
       () => this.resumeGame(),
-      () => this.restartGame()
+      () => this.restartGame(undefined, false)
     );
+    this.hud.onRestartSameSeed = () => this.restartGame(undefined, true);
     this.hud.onResolutionScaleChanged = (scale: number) => {
       this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     };
@@ -337,7 +340,7 @@ class Game {
       if (escResult === 'noop') {
         if (this.gameState === GameState.PLAYING) {
           this.gameState = GameState.PAUSED;
-          this.hud.showPause();
+          this.hud.showPause(this.currentSeed);
         } else if (this.gameState === GameState.PAUSED) {
           this.resumeGame();
         }
@@ -402,13 +405,14 @@ class Game {
     })
       .then(() => {
         loaderFill.style.width = '100%';
-        loaderPercent.textContent = '100%';
         if (loaderTitle) {
-          loaderTitle.textContent = 'ВСЕ РЕСУРСЫ ГОТОВЫ К БОЮ';
+          loaderTitle.textContent = 'ВСЕ РЕСУРСЫ И КАРТА ГОТОВЫ';
         }
         if (loaderDetails) {
-          loaderDetails.textContent = 'Текстуры, иконки оружия и модели загружены в память';
+          loaderDetails.textContent = 'Текстуры, иконки оружия и карта 500x500м загружены';
         }
+        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter);
+        this.mapManager.setSeed(this.currentSeed);
         setTimeout(() => {
           loaderContainer.classList.add('loaded');
         }, 550);
@@ -451,8 +455,8 @@ class Game {
       }
     };
 
-    this.hud.onHostStartExpedition = () => {
-      this.startCoopGameAsHost();
+    this.hud.onHostStartExpedition = (seedInput) => {
+      this.startCoopGameAsHost(seedInput);
     };
 
     this.hud.onHostPasswordChanged = (pwd) => {
@@ -566,9 +570,9 @@ class Game {
       }
     };
 
-    this.net.onGameStartReceived = () => {
+    this.net.onGameStartReceived = (msg) => {
       if (this.net.role === 'client') {
-        this.startCoopGameAsClient();
+        this.startCoopGameAsClient(msg?.seed);
       }
     };
 
@@ -794,7 +798,7 @@ class Game {
     this.mapManager.partner = this.mapManager.partners[0] || null;
   }
 
-  private startSinglePlayerWithHero(charType: CharacterType) {
+  private startSinglePlayerWithHero(charType: CharacterType, seedInput?: string) {
     this.net.reset();
     for (const rp of this.remotePlayers.values()) {
       rp.destroy(this.engine.scene);
@@ -817,10 +821,17 @@ class Game {
     this.hud.setCoopBadge(null);
     this.hud.clearTeammates();
     this.hud.hidePartnerHp();
-    this.restartGame();
+
+    if (seedInput && seedInput.trim().length > 0) {
+      this.currentSeed = seedInput.trim();
+    } else {
+      this.currentSeed = Math.floor(Math.random() * 1000000);
+    }
+
+    this.restartGame(undefined, true);
   }
 
-  private startCoopGameAsHost() {
+  private startCoopGameAsHost(seedInput?: string) {
     if (this.net.role !== 'host') return;
     this.hud.hideHostLobby();
 
@@ -855,13 +866,24 @@ class Game {
     this.player.isCoop = true;
     this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
-    this.restartGame(new THREE.Vector3(0, 0, 0));
 
-    // Notify all guests to start
-    this.net.startGame();
+    if (seedInput && seedInput.trim().length > 0) {
+      this.currentSeed = seedInput.trim();
+    } else {
+      this.currentSeed = Math.floor(Math.random() * 1000000);
+    }
+
+    this.restartGame(new THREE.Vector3(0, 0, 0), true);
+
+    const numericSeed = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(this.currentSeed.toString());
+
+    // Notify all guests to start with identical seed
+    this.net.startGame(numericSeed);
   }
 
-  private startCoopGameAsClient() {
+  private startCoopGameAsClient(seed?: number) {
     this.hud.hideJoinLobby();
 
     for (const rp of this.remotePlayers.values()) {
@@ -901,8 +923,9 @@ class Game {
     this.player.isCoop = true;
     this.player.redrawOverhead();
     this.hud.setCoopBadge(this.net.roomCode);
-    this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]));
-    this.chestManager.clear();
+
+    this.currentSeed = seed ?? 1337;
+    this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]), true);
   }
 
   private returnToMainMenu() {
@@ -1053,7 +1076,7 @@ class Game {
     }
   };
 
-  private restartGame(pos?: THREE.Vector3) {
+  private restartGame(pos?: THREE.Vector3, keepSeed: boolean = false) {
     for (const p of this.projectiles) {
       p.destroy(this.engine.scene);
     }
@@ -1062,6 +1085,10 @@ class Game {
     this.enemyManager.clear();
     this.dropManager.clear();
     this.engine.chunkManager.clear();
+
+    if (!keepSeed && this.net.role !== 'client') {
+      this.currentSeed = Math.floor(Math.random() * 1000000);
+    }
 
     const spawnOffsets: Record<string, [number, number]> = {
       p1: [0, 0],
@@ -1084,10 +1111,13 @@ class Game {
     // Initialize The Rift Stage 1
     this.biomeManager.reset();
     this.biomeManager.applyBiomeToScene(this.engine.scene);
+
     if (this.net.role !== 'client') {
-      this.chestManager.generateStageChests(0, 0, 14, 1);
+      this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter);
+    } else {
+      this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter);
     }
-    this.riftTeleporter.resetForStage(new THREE.Vector3(75, 0, 75));
+
     this.player.credits = 0;
     this.player.riftItems.clear();
     this.player.recalculateStats();
@@ -1095,7 +1125,7 @@ class Game {
     this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
     this.hud.updateTeleporterHUD(false, 0, false, false);
 
-    this.engine.chunkManager.update(this.player.position);
+    this.mapManager.setSeed(this.currentSeed);
     this.mapManager.clear();
     this.mapManager.close();
     this.allPlayerStats.clear();
@@ -1187,15 +1217,17 @@ class Game {
     // Reposition host player to start
     this.player.position.set(0, 0, 0);
     this.player.mesh.position.set(0, 0, 0);
-    this.engine.chunkManager.update(this.player.position);
 
-    // Reset teleporter in next stage
-    const teleDist = 75 + Math.random() * 25;
-    const teleAngle = Math.random() * Math.PI * 2;
-    this.riftTeleporter.resetForStage(new THREE.Vector3(Math.cos(teleAngle) * teleDist, 0, Math.sin(teleAngle) * teleDist));
+    // Derive deterministic stage seed
+    const numBase = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(this.currentSeed.toString());
+    const stageSeed = numBase + this.biomeManager.stageNumber * 10007;
 
-    // Generate new chests
-    this.chestManager.generateStageChests(0, 0, 14 + this.biomeManager.stageNumber * 2, this.biomeManager.stageNumber);
+    // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
+    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter);
+    this.mapManager.setSeed(stageSeed);
+    this.mapManager.clear();
 
     // Revive all downed squad members
     if (this.player.isDowned) {
@@ -1231,7 +1263,15 @@ class Game {
     const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
     this.player.position.set(myOffset[0], 0, myOffset[1]);
     this.player.mesh.position.set(myOffset[0], 0, myOffset[1]);
-    this.engine.chunkManager.update(this.player.position);
+
+    const numBase = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(this.currentSeed.toString());
+    const stageSeed = numBase + stageNumber * 10007;
+
+    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter);
+    this.mapManager.setSeed(stageSeed);
+    this.mapManager.clear();
 
     if (this.player.isDowned) {
       this.player.revive(0.5);

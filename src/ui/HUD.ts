@@ -225,7 +225,8 @@ export class HUD {
   public onSinglePlayerSelected?: () => void;
   public onCreateRoomClicked?: () => void;
   public onJoinRoomClicked?: () => void;
-  public onHostStartExpedition?: () => void;
+  public onHostStartExpedition?: (seedInput?: string) => void;
+  public onRestartSameSeed?: () => void;
   public onHostHeroChanged?: (hero: CharacterType) => void;
   public onGuestHeroChanged?: (hero: CharacterType) => void;
   public onGuestConnectClicked?: (roomCode: string, hero: CharacterType, password?: string) => void;
@@ -235,7 +236,7 @@ export class HUD {
 
   constructor(
     scene: THREE.Scene,
-    onSelectHero: (charType: CharacterType) => void,
+    onSelectHero: (charType: CharacterType, seedInput?: string) => void,
     onResume: () => void,
     onRestart: () => void
   ) {
@@ -590,8 +591,10 @@ export class HUD {
 
     // Host Start Expedition Button
     this.btnHostStart.addEventListener('click', () => {
+      const seedInput = document.getElementById('host-seed-input') as HTMLInputElement | null;
+      const seedVal = seedInput?.value?.trim();
       if (this.onHostStartExpedition) {
-        this.onHostStartExpedition();
+        this.onHostStartExpedition(seedVal);
       }
     });
 
@@ -728,6 +731,23 @@ export class HUD {
       this.handleEscape();
     });
 
+    // Random Seed Buttons
+    document.getElementById('btn-single-random-seed')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const input = document.getElementById('single-seed-input') as HTMLInputElement | null;
+      if (input) {
+        input.value = Math.floor(Math.random() * 1000000).toString();
+      }
+    });
+
+    document.getElementById('btn-host-random-seed')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const input = document.getElementById('host-seed-input') as HTMLInputElement | null;
+      if (input) {
+        input.value = Math.floor(Math.random() * 1000000).toString();
+      }
+    });
+
     // Bind Character Select Buttons
     const charCards = document.querySelectorAll('.character-card');
     charCards.forEach((card) => {
@@ -739,8 +759,10 @@ export class HUD {
           this.showQuestsModal(hero);
           return;
         }
+        const singleSeedInput = document.getElementById('single-seed-input') as HTMLInputElement | null;
+        const seedVal = singleSeedInput?.value?.trim();
         this.hideCharacterSelect();
-        onSelectHero(hero);
+        onSelectHero(hero, seedVal);
       });
     });
 
@@ -750,11 +772,36 @@ export class HUD {
       onResume();
     });
 
+    document.getElementById('btn-pause-restart-same')?.addEventListener('click', () => {
+      this.hidePause();
+      if (this.onRestartSameSeed) {
+        this.onRestartSameSeed();
+      } else {
+        onRestart();
+      }
+    });
+
+    document.getElementById('btn-pause-copy-seed')?.addEventListener('click', () => {
+      const textElem = document.getElementById('pause-seed-text');
+      const seedVal = textElem?.textContent?.replace('#', '').trim() || '';
+      if (navigator.clipboard && seedVal) {
+        navigator.clipboard.writeText(seedVal);
+      }
+      const btn = document.getElementById('btn-pause-copy-seed');
+      if (btn) {
+        btn.textContent = '✓ Скопировано';
+        setTimeout(() => {
+          if (btn) btn.textContent = '📋 Копировать';
+        }, 1500);
+      }
+    });
+
     document.getElementById('btn-pause-settings')?.addEventListener('click', () => {
       this.showSettings('pause');
     });
 
     this.btnPauseRestart.addEventListener('click', () => {
+      this.hidePause();
       this.showCharacterSelect();
     });
 
@@ -2006,9 +2053,15 @@ export class HUD {
     });
   }
 
-  public showPause() {
+  public showPause(activeSeed?: number | string) {
     this.isPaused = true;
     this.menuStack = ['pause'];
+    if (activeSeed !== undefined) {
+      const textElem = document.getElementById('pause-seed-text');
+      if (textElem) {
+        textElem.textContent = `#${activeSeed}`;
+      }
+    }
     this.pauseModal.classList.remove('hidden');
   }
 

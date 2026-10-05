@@ -5490,6 +5490,98 @@ body, html {
   color: #cbd5e1;
 }
 
+/* Seed Input & Display Styles */
+.seed-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+  padding: 8px 16px;
+  margin: 0 auto 16px auto;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.seed-control-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.seed-input-field {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 6px;
+  color: #f8fafc;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.seed-input-field:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.seed-random-btn {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 6px;
+  color: #fbbf24;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.seed-random-btn:hover {
+  background: rgba(245, 158, 11, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.pause-seed-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 6px 0 16px 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.copy-seed-small-btn {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copy-seed-small-btn:hover {
+  background: rgba(245, 158, 11, 0.3);
+  color: #ffffff;
+}
+
+
 
 
 
