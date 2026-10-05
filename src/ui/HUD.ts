@@ -100,7 +100,7 @@ export class HUD {
   private guideModal: HTMLElement;
   private charSelectModal: HTMLElement;
   private questsModal: HTMLElement;
-  private activeQuestHero: CharacterType = 'chakram';
+  private activeQuestHero: CharacterType = 'archer';
   private pauseModal: HTMLElement;
   private settingsFromPause = false;
   private menuStack: (
@@ -400,7 +400,7 @@ export class HUD {
 
     document.getElementById('menu-btn-quests')?.addEventListener('click', () => {
       this.hideMainMenu();
-      this.showQuestsModal('chakram');
+      this.showQuestsModal('archer');
     });
 
     document.getElementById('quests-btn-back')?.addEventListener('click', () => {
@@ -759,8 +759,6 @@ export class HUD {
           this.showQuestsModal(hero);
           return;
         }
-        const singleSeedInput = document.getElementById('single-seed-input') as HTMLInputElement | null;
-        const seedVal = singleSeedInput?.value?.trim();
         this.hideCharacterSelect();
         onSelectHero(hero, seedVal);
       });
@@ -1787,7 +1785,7 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
-  public showQuestsModal(selectedHero: CharacterType = 'chakram') {
+  public showQuestsModal(selectedHero: CharacterType = 'archer') {
     if (this.isPaused || this.menuStack.includes('pause')) {
       this.pauseModal.classList.add('hidden');
       if (this.menuStack[this.menuStack.length - 1] !== 'quests') {
@@ -1806,7 +1804,7 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'quests');
   }
 
-  public renderQuestsModal(selectedHero: CharacterType = 'chakram') {
+  public renderQuestsModal(selectedHero: CharacterType = 'archer') {
     this.activeQuestHero = selectedHero;
     const prog = ProgressionManager.getInstance();
 
@@ -1833,6 +1831,7 @@ export class HUD {
       const p = prog.getHeroProgress(h);
       const fillEl = document.getElementById(`quest-prog-bar-${h}`);
       const textEl = document.getElementById(`quest-prog-text-${h}`);
+      const ribbonTextEl = document.getElementById(`quest-ribbon-text-${h}`);
       if (fillEl) {
         const pct = Math.max(0, Math.min(100, Math.round((p.current / p.max) * 100)));
         fillEl.style.width = `${pct}%`;
@@ -1844,6 +1843,21 @@ export class HUD {
       }
       if (textEl) {
         textEl.innerText = p.label;
+      }
+      if (ribbonTextEl) {
+        if (p.isComplete) {
+          ribbonTextEl.innerText = '100% (COMPLETE)';
+        } else if (h === 'archer') {
+          const canAchieve = prog.canUnlockElfByAchievement();
+          const canAfford = prog.data.walletCoins >= 100;
+          if (canAchieve || canAfford) {
+            ribbonTextEl.innerText = 'ДОСТУПНО К ПОКУПКЕ';
+          } else {
+            ribbonTextEl.innerText = '0/1 (НЕДОСТУПНО)';
+          }
+        } else {
+          ribbonTextEl.innerText = `${Math.round((p.current / p.max) * 100)}% (В ПРОЦЕССЕ)`;
+        }
       }
     });
 
@@ -2053,7 +2067,7 @@ export class HUD {
     });
   }
 
-  public showPause(activeSeed?: number | string) {
+  public showPause() {
     this.isPaused = true;
     this.menuStack = ['pause'];
     if (activeSeed !== undefined) {

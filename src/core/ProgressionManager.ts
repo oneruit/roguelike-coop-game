@@ -38,7 +38,7 @@ export interface HeroQuestDefinition {
   unlockConditionHint: string;
 }
 
-const STORAGE_KEY = 'rift_progression_save_v1';
+const STORAGE_KEY = 'rift_progression_save_v2';
 
 export class ProgressionManager {
   private static instance: ProgressionManager | null = null;
@@ -67,15 +67,15 @@ export class ProgressionManager {
       walletCoins: 0,
       bossesKilled: 0,
       enemiesKilled: 0,
-      questLeshySteps: [false, false, false],
-      questLeshyCompleted: false,
+      questLeshySteps: [true, true, true],
+      questLeshyCompleted: true,
       unlockedHeroes: {
-        ronin: true,     // Ren starting hero
-        valkyrie: false,  // Kael: Account Lvl >= 5
-        flail: false,     // Brigitta: 100 coins
-        sorceress: false, // Aria: Defeat Boss
-        chakram: false,   // Kira: Complete Quest
-        archer: false     // Elf: Buy / Achievement
+        ronin: true,     // Ren (unlocked)
+        valkyrie: true,  // Kael (unlocked)
+        flail: true,     // Brigitta (unlocked)
+        sorceress: true, // Aria (unlocked)
+        chakram: true,   // Kira (unlocked)
+        archer: false    // Elf: Locked! (Buy / Achievement)
       }
     };
   }
@@ -97,13 +97,13 @@ export class ProgressionManager {
           questLeshySteps: Array.isArray(parsed.questLeshySteps) && parsed.questLeshySteps.length === 3
             ? [Boolean(parsed.questLeshySteps[0]), Boolean(parsed.questLeshySteps[1]), Boolean(parsed.questLeshySteps[2])]
             : defaults.questLeshySteps,
-          questLeshyCompleted: Boolean(parsed.questLeshyCompleted),
+          questLeshyCompleted: Boolean(parsed.questLeshyCompleted ?? defaults.questLeshyCompleted),
           unlockedHeroes: {
             ronin: true,
-            valkyrie: Boolean(parsed.unlockedHeroes?.valkyrie),
-            flail: Boolean(parsed.unlockedHeroes?.flail),
-            sorceress: Boolean(parsed.unlockedHeroes?.sorceress),
-            chakram: Boolean(parsed.unlockedHeroes?.chakram),
+            valkyrie: parsed.unlockedHeroes?.valkyrie ?? true,
+            flail: parsed.unlockedHeroes?.flail ?? true,
+            sorceress: parsed.unlockedHeroes?.sorceress ?? true,
+            chakram: parsed.unlockedHeroes?.chakram ?? true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
           }
         };
@@ -127,6 +127,14 @@ export class ProgressionManager {
 
   public isHeroUnlocked(hero: CharacterType): boolean {
     if (hero === 'ronin') return true;
+    if (hero === 'archer') {
+      return Boolean(this.data.unlockedHeroes.archer);
+    }
+    // Existing base heroes are unlocked by default
+    if (hero === 'valkyrie' || hero === 'flail' || hero === 'sorceress' || hero === 'chakram') {
+      return this.data.unlockedHeroes[hero] ?? true;
+    }
+    // For future heroes added to the game, read their unlocked status
     return Boolean(this.data.unlockedHeroes[hero]);
   }
 
@@ -142,26 +150,20 @@ export class ProgressionManager {
   public checkAutoUnlocks() {
     let changed = false;
 
-    // Kael: opens after 5th account level
-    if (this.data.accountLevel >= 5 && !this.data.unlockedHeroes.valkyrie) {
+    // Existing heroes are unlocked; only Elf is locked
+    if (!this.data.unlockedHeroes.valkyrie) {
       this.data.unlockedHeroes.valkyrie = true;
       changed = true;
     }
-
-    // Brigitta: opens after 100 coins collected
-    if (this.data.totalCoinsEarned >= 100 && !this.data.unlockedHeroes.flail) {
+    if (!this.data.unlockedHeroes.flail) {
       this.data.unlockedHeroes.flail = true;
       changed = true;
     }
-
-    // Aria: opens after defeating a boss
-    if (this.data.bossesKilled >= 1 && !this.data.unlockedHeroes.sorceress) {
+    if (!this.data.unlockedHeroes.sorceress) {
       this.data.unlockedHeroes.sorceress = true;
       changed = true;
     }
-
-    // Kira: opens after completing quest
-    if (this.data.questLeshyCompleted && !this.data.unlockedHeroes.chakram) {
+    if (!this.data.unlockedHeroes.chakram) {
       this.data.unlockedHeroes.chakram = true;
       changed = true;
     }

@@ -4764,15 +4764,16 @@ body, html {
 .quest-book-card {
   position: relative;
   width: 100%;
-  height: 570px;
-  background: #200d30;
-  border: 6px solid #7e22ce;
-  outline: 2px solid #a855f7;
-  border-radius: 18px;
+  max-width: 1020px;
+  height: 610px;
+  background: radial-gradient(circle at center, #240b3b 0%, #170624 70%, #0d0214 100%);
+  border: 6px solid #6b21a8;
+  outline: 2.5px solid #a855f7;
+  border-radius: 20px;
   box-shadow:
-    0 16px 45px rgba(0, 0, 0, 0.9),
-    0 0 35px rgba(168, 85, 247, 0.45),
-    inset 0 0 30px rgba(0, 0, 0, 0.7);
+    0 22px 55px rgba(0, 0, 0, 0.95),
+    0 0 40px rgba(168, 85, 247, 0.5),
+    inset 0 0 35px rgba(0, 0, 0, 0.85);
   padding: 14px;
   box-sizing: border-box;
   display: flex;
@@ -4781,39 +4782,54 @@ body, html {
 /* 4 Corner Ornate Filigrees */
 .book-corner {
   position: absolute;
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
   pointer-events: none;
-  z-index: 20;
+  z-index: 25;
 }
 
 .book-corner-tl {
-  top: -4px;
-  left: -4px;
+  top: -8px;
+  left: -8px;
 }
 
 .book-corner-tr {
-  top: -4px;
-  right: -4px;
+  top: -8px;
+  right: -8px;
   transform: scaleX(-1);
 }
 
 .book-corner-bl {
-  bottom: -4px;
-  left: -4px;
-  transform: scaleY(-1);
+  bottom: -8px;
+  left: -8px;
 }
 
 .book-corner-br {
-  bottom: -4px;
-  right: -4px;
+  bottom: -8px;
+  right: -8px;
   transform: scale(-1);
 }
 
 .corner-flourish-svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 6px #c084fc);
+}
+
+/* Bottom Center Glowing Rune Seal */
+.book-seal-bottom {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.bottom-rune-svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* Two-Page Open Book Spread */
@@ -4821,9 +4837,9 @@ body, html {
   display: flex;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #e8dbbf 0%, #dec9a5 50%, #d3bc95 100%);
-  border-radius: 10px;
-  box-shadow: inset 0 0 25px rgba(90, 60, 25, 0.28);
+  background: linear-gradient(135deg, #ede2cb 0%, #e2d2b5 50%, #d8c39e 100%);
+  border-radius: 12px;
+  box-shadow: inset 0 0 30px rgba(90, 60, 25, 0.32);
   overflow: hidden;
   position: relative;
 }
@@ -4834,13 +4850,13 @@ body, html {
   height: 100%;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.15) 0%,
-    rgba(0, 0, 0, 0.38) 46%,
+    rgba(0, 0, 0, 0.12) 0%,
+    rgba(0, 0, 0, 0.35) 45%,
     rgba(0, 0, 0, 0.48) 50%,
-    rgba(0, 0, 0, 0.38) 54%,
-    rgba(0, 0, 0, 0.15) 100%
+    rgba(0, 0, 0, 0.35) 55%,
+    rgba(0, 0, 0, 0.12) 100%
   );
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
   z-index: 10;
 }
@@ -4857,143 +4873,234 @@ body, html {
 
 /* Left Page: Hero List */
 .quest-page-left {
-  padding: 16px 14px 16px 38px;
+  padding: 12px 14px 12px 42px;
 }
 
+/* Fantasy Parchment Background Illustrations */
+.quest-page-decor-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.72;
+}
+
+/* Floating Stone Plaque Back Button on Outer Edge */
 .book-back-btn {
   position: absolute;
-  left: 4px;
+  left: 2px;
   top: 50%;
   transform: translateY(-50%);
-  background: #2b221d;
-  border: 1.5px solid #6b5344;
-  border-radius: 8px;
-  padding: 12px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
+  background: transparent;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
-  transition: all 0.18s ease;
-  z-index: 15;
+  z-index: 20;
   outline: none;
-}
-
-.book-back-btn .back-arrow {
-  color: #e2d8cd;
-  font-size: 16px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.book-back-btn .back-label {
-  color: #a89e90;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .book-back-btn:hover {
-  background: #3e3129;
-  border-color: #9c7b64;
   transform: translateY(-50%) scale(1.05);
 }
 
-.book-back-btn:hover .back-arrow,
-.book-back-btn:hover .back-label {
-  color: #ffffff;
+.back-btn-plaque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  padding: 12px 4px 10px 4px;
+  background: linear-gradient(145deg, #dcd0bd 0%, #bfaf95 100%);
+  border: 2px solid #5c422c;
+  outline: 1.5px solid #8e6d46;
+  border-radius: 9px;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.6),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 5px rgba(50, 30, 15, 0.45);
+  gap: 4px;
+  position: relative;
+}
+
+.back-btn-plaque::before,
+.back-btn-plaque::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #735438;
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+.back-btn-plaque::before { top: 3px; left: 3px; }
+.back-btn-plaque::after { bottom: 3px; right: 3px; }
+
+.back-btn-arrow-glow {
+  width: 24px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-arrow-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.back-label {
+  color: #27190d;
+  font-family: 'Cinzel', 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1;
 }
 
 /* Quest Hero Items List */
 .quest-heroes-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   height: 100%;
   justify-content: space-between;
+  position: relative;
+  z-index: 2;
 }
 
+/* The Individual Hero Card */
 .quest-hero-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(206, 189, 159, 0.65);
-  border: 1.5px solid #947b5e;
-  border-radius: 8px;
-  padding: 7px 10px;
+  background: linear-gradient(90deg, rgba(238, 226, 206, 0.85) 0%, rgba(248, 241, 230, 0.95) 50%, rgba(238, 226, 206, 0.85) 100%);
+  border: 1.5px solid #ba9f77;
+  border-radius: 9px;
+  padding: 6px 10px;
   cursor: pointer;
   transition: all 0.18s ease;
   box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(80, 50, 20, 0.14);
+  position: relative;
 }
 
 .quest-hero-item:hover {
-  background: rgba(226, 212, 185, 0.88);
-  border-color: #6e4f35;
+  background: linear-gradient(90deg, rgba(246, 236, 218, 0.96) 0%, rgba(255, 250, 242, 1) 50%, rgba(246, 236, 218, 0.96) 100%);
+  border-color: #966f43;
   transform: translateX(3px);
+  box-shadow: 0 4px 10px rgba(90, 50, 20, 0.22);
 }
 
 .quest-hero-item.active {
-  background: rgba(238, 226, 203, 0.98);
-  border: 2px solid #582f0e;
-  box-shadow: 0 3px 12px rgba(88, 47, 14, 0.3);
-  transform: translateX(5px);
+  background: linear-gradient(90deg, rgba(253, 246, 234, 0.98) 0%, #fffdf8 50%, rgba(253, 246, 234, 0.98) 100%);
+  border: 2px solid #78350f;
+  box-shadow: 0 4px 14px rgba(120, 53, 15, 0.28);
+  transform: translateX(4px);
 }
 
+/* Left: Vertical Rounded Rect Avatar Frame */
 .hero-item-avatar-frame {
-  width: 44px;
-  height: 44px;
-  border-radius: 7px;
-  background: #231b15;
-  border: 1.5px solid #5a4436;
+  width: 48px;
+  height: 66px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #6c533f 0%, #463426 100%);
+  border: 2px solid #8e6f47;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-item-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 44px;
+  height: 58px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
+/* Middle: Name + Fancy Progress Bar + Ribbon */
 .hero-item-middle {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 2px;
 }
 
 .hero-item-name {
-  font-size: 13px;
+  width: 100%;
+  font-family: 'Cinzel', 'Montserrat', sans-serif;
+  font-size: 14px;
   font-weight: 800;
-  color: #2b1a0f;
+  color: #231508;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: 0.2px;
+  text-align: left;
+}
+
+/* Progress Bar with Wing Caps */
+.hero-item-progress-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 16px;
+  margin: 1px 0;
+}
+
+.bar-cap-l, .bar-cap-r {
+  width: 6px;
+  height: 14px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #d4af37 0%, #8c6a2e 100%);
+  border: 1px solid #5a4016;
+  position: relative;
+  z-index: 3;
+}
+
+.bar-cap-l {
+  border-radius: 4px 0 0 4px;
+  border-right: none;
+  clip-path: polygon(0% 50%, 100% 0%, 100% 100%);
+}
+
+.bar-cap-r {
+  border-radius: 0 4px 4px 0;
+  border-left: none;
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
 }
 
 .hero-item-progress-track {
-  height: 16px;
-  background: #2a2019;
-  border-radius: 4px;
+  flex: 1;
+  height: 15px;
+  background: #142315;
+  border-radius: 999px;
   position: relative;
   overflow: hidden;
-  border: 1px solid #48372b;
+  border: 1.5px solid #9e7943;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
 }
 
 .hero-item-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  background: linear-gradient(180deg, #7c3aed 0%, #a855f7 100%);
   transition: width 0.3s ease;
+  border-radius: 999px;
 }
 
 .hero-item-progress-fill.complete {
-  background: linear-gradient(90deg, #15803d, #22c55e);
+  background: linear-gradient(180deg, #86efac 0%, #22c55e 48%, #15803d 100%);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.7);
 }
 
 .hero-item-progress-text {
@@ -5002,29 +5109,111 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #f3e8ff;
+  font-size: 11px;
+  font-weight: 900;
+  color: #ffffff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
   letter-spacing: 0.5px;
+  pointer-events: none;
+  z-index: 2;
 }
 
+/* Golden Parchment Under-Bar Ribbon */
+.hero-item-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(180deg, #f0e3cc 0%, #dbc6a3 100%);
+  border: 1px solid #a3824f;
+  border-radius: 3px;
+  padding: 1px 12px;
+  box-shadow: 0 2px 4px rgba(70, 45, 20, 0.22);
+  margin-top: 1px;
+}
+
+.hero-item-ribbon .ribbon-tail-l,
+.hero-item-ribbon .ribbon-tail-r {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 10px;
+  background: linear-gradient(180deg, #dbc6a3 0%, #bf9f73 100%);
+  border: 1px solid #a3824f;
+}
+
+.hero-item-ribbon .ribbon-tail-l {
+  left: -6px;
+  clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
+  border-right: none;
+}
+
+.hero-item-ribbon .ribbon-tail-r {
+  right: -6px;
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+  border-left: none;
+}
+
+.hero-item-ribbon .ribbon-text {
+  font-size: 10px;
+  font-weight: 800;
+  color: #3b220d;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Right: Weapon Square Frame with Magic Colored Themes */
 .hero-item-weapon-frame {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  background: #231b15;
-  border: 1.5px solid #5a4436;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #1a120c;
+  border: 2px solid #8e6f47;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-item-weapon-frame.weapon-theme-sword {
+  background: radial-gradient(circle, #0e7490 0%, #155e75 60%, #082f49 100%);
+  border-color: #38bdf8;
+  box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-item-weapon-frame.weapon-theme-flail {
+  background: radial-gradient(circle, #2563eb 0%, #1d4ed8 60%, #0b132b 100%);
+  border-color: #60a5fa;
+  box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-item-weapon-frame.weapon-theme-staff {
+  background: radial-gradient(circle, #3b82f6 0%, #312e81 60%, #030712 100%);
+  border-color: #818cf8;
+  box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-item-weapon-frame.weapon-theme-chakram {
+  background: radial-gradient(circle, #6b21a8 0%, #1e112a 70%, #000000 100%);
+  border-color: #c084fc;
+  box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-item-weapon-frame.weapon-theme-bow {
+  background: radial-gradient(circle, #78350f 0%, #451a03 60%, #120904 100%);
+  border-color: #d97706;
+  box-shadow: inset 0 0 10px rgba(217, 119, 6, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .hero-item-weapon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
 }
 
 /* Right Page: Details */
@@ -5359,229 +5548,6 @@ body, html {
   font-size: 14px;
   filter: drop-shadow(0 0 4px #000);
 }
-
-/* ==========================================================================
-   GAME ASSET PRELOADER (BOTTOM LOADING BAR)
-   ========================================================================== */
-.game-loader-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 12px 24px 16px;
-  background: linear-gradient(180deg, rgba(12, 10, 16, 0) 0%, rgba(15, 12, 22, 0.90) 30%, rgba(10, 8, 15, 0.98) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.7), 0 -1px 0 rgba(245, 158, 11, 0.15) inset;
-  z-index: 99999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: none;
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.game-loader-container.loaded {
-  opacity: 0;
-  transform: translateY(28px);
-  pointer-events: none;
-}
-
-.game-loader-content {
-  width: 100%;
-  max-width: 680px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.game-loader-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.game-loader-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.game-loader-badge {
-  font-family: 'Outfit', sans-serif;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #0f172a;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  padding: 2px 6px;
-  border-radius: 3px;
-  text-transform: uppercase;
-}
-
-.game-loader-title {
-  font-family: 'Outfit', 'Montserrat', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: #f1f5f9;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-}
-
-.game-loader-percentage {
-  font-family: 'Cinzel', 'Outfit', monospace;
-  font-size: 14px;
-  font-weight: 800;
-  color: #fbbf24;
-  letter-spacing: 1px;
-}
-
-.game-loader-track {
-  width: 100%;
-  height: 8px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8) inset;
-}
-
-.game-loader-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 60%, #38bdf8 100%);
-  border-radius: 3px;
-  transition: width 0.1s ease-out;
-  position: relative;
-  box-shadow: 0 0 14px rgba(251, 191, 36, 0.7);
-}
-
-.game-loader-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 16px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75));
-}
-
-.game-loader-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.game-loader-details {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 75%;
-}
-
-.game-loader-counter {
-  font-variant-numeric: tabular-nums;
-  color: #cbd5e1;
-}
-
-/* Seed Input & Display Styles */
-.seed-control-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  border-radius: 10px;
-  padding: 8px 16px;
-  margin: 0 auto 16px auto;
-  max-width: 480px;
-  width: 90%;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-}
-
-.seed-control-label {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px;
-  font-weight: 800;
-  color: #f59e0b;
-  letter-spacing: 1px;
-  white-space: nowrap;
-}
-
-.seed-input-field {
-  flex: 1;
-  background: rgba(30, 41, 59, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: 6px;
-  color: #f8fafc;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  padding: 6px 10px;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.seed-input-field:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-}
-
-.seed-random-btn {
-  background: rgba(245, 158, 11, 0.2);
-  border: 1px solid rgba(245, 158, 11, 0.5);
-  border-radius: 6px;
-  color: #fbbf24;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.seed-random-btn:hover {
-  background: rgba(245, 158, 11, 0.4);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.pause-seed-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin: 6px 0 16px 0;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-.copy-seed-small-btn {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #f59e0b;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 11px;
-  font-family: 'Montserrat', sans-serif;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.copy-seed-small-btn:hover {
-  background: rgba(245, 158, 11, 0.3);
-  color: #ffffff;
-}
-
-
 
 
 
