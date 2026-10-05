@@ -100,7 +100,7 @@ export class HUD {
   private guideModal: HTMLElement;
   private charSelectModal: HTMLElement;
   private questsModal: HTMLElement;
-  private activeQuestHero: CharacterType = 'chakram';
+  private activeQuestHero: CharacterType = 'archer';
   private pauseModal: HTMLElement;
   private settingsFromPause = false;
   private menuStack: (
@@ -399,7 +399,7 @@ export class HUD {
 
     document.getElementById('menu-btn-quests')?.addEventListener('click', () => {
       this.hideMainMenu();
-      this.showQuestsModal('chakram');
+      this.showQuestsModal('archer');
     });
 
     document.getElementById('quests-btn-back')?.addEventListener('click', () => {
@@ -1740,7 +1740,7 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
-  public showQuestsModal(selectedHero: CharacterType = 'chakram') {
+  public showQuestsModal(selectedHero: CharacterType = 'archer') {
     if (this.isPaused || this.menuStack.includes('pause')) {
       this.pauseModal.classList.add('hidden');
       if (this.menuStack[this.menuStack.length - 1] !== 'quests') {
@@ -1759,7 +1759,7 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'quests');
   }
 
-  public renderQuestsModal(selectedHero: CharacterType = 'chakram') {
+  public renderQuestsModal(selectedHero: CharacterType = 'archer') {
     this.activeQuestHero = selectedHero;
     const prog = ProgressionManager.getInstance();
 
