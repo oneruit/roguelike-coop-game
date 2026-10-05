@@ -76,9 +76,17 @@ export class ObstacleManager {
     const cz = Math.floor(position.z / 50);
 
     for (let iter = 0; iter < iterations; iter++) {
-      for (let dx = -1; dx <= 1; dx++) {
+      const relX = position.x - cx * 50;
+      const relZ = position.z - cz * 50;
+      const margin = entityRadius + 3.0; // max obstacle radius is ~2.5
+      const minDx = relX < margin ? -1 : 0;
+      const maxDx = relX > 50 - margin ? 1 : 0;
+      const minDz = relZ < margin ? -1 : 0;
+      const maxDz = relZ > 50 - margin ? 1 : 0;
+
+      for (let dx = minDx; dx <= maxDx; dx++) {
         const curX = cx + dx;
-        for (let dz = -1; dz <= 1; dz++) {
+        for (let dz = minDz; dz <= maxDz; dz++) {
           const curZ = cz + dz;
           const hash = ObstacleManager.toHash(curX, curZ);
           const obstacles = this.chunkObstacles.get(hash);

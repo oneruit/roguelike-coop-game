@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { ChunkManager } from '../world/ChunkManager';
 import { AltarManager } from '../world/AltarManager';
 import { ObstacleManager } from '../world/ObstacleManager';
-import { TextureManager } from './TextureManager';
 
 export class Engine {
   public scene: THREE.Scene;
@@ -50,9 +49,6 @@ export class Engine {
     this.chunkManager = new ChunkManager(this.scene, this.altarManager, this.obstacleManager);
     this.chunkManager.update(new THREE.Vector3(0, 0, 0));
 
-    // Preload & GPU pre-warm all 44 entity textures upfront (zero loading hitch on new monsters!)
-    TextureManager.preloadAll(this.renderer);
-
     window.addEventListener('resize', () => this.onWindowResize());
   }
 
@@ -61,25 +57,55 @@ export class Engine {
     const ambientLight = new THREE.AmbientLight(0x8a4216, 0.95);
     this.scene.add(ambientLight);
 
-    // Directional Sun Key Light with Shadows
+    // Directional Sun Key Light with Shadows (1024x1024 default resolution)
     this.dirLight = new THREE.DirectionalLight(0xffedd5, 1.4);
     this.dirLight.position.set(18, 28, 14);
     this.dirLight.castShadow = true;
-    this.dirLight.shadow.mapSize.width = 2048;
-    this.dirLight.shadow.mapSize.height = 2048;
+    this.dirLight.shadow.mapSize.width = 1024;
+    this.dirLight.shadow.mapSize.height = 1024;
     this.dirLight.shadow.camera.near = 0.5;
     this.dirLight.shadow.camera.far = 70;
-    this.dirLight.shadow.camera.left = -28;
-    this.dirLight.shadow.camera.right = 28;
-    this.dirLight.shadow.camera.top = 28;
-    this.dirLight.shadow.camera.bottom = -28;
-    this.dirLight.shadow.bias = -0.0005;
+    this.dirLight.shadow.camera.left = -30;
+    this.dirLight.shadow.camera.right = 30;
+    this.dirLight.shadow.camera.top = 30;
+    this.dirLight.shadow.camera.bottom = -30;
+    this.dirLight.shadow.bias = -0.0008;
+    this.dirLight.shadow.normalBias = 0.04;
     this.scene.add(this.dirLight);
     this.scene.add(this.dirLight.target);
 
     // Hemisphere light: sunset orange sky to rich umber ground
     const hemiLight = new THREE.HemisphereLight(0xfb923c, 0x241209, 0.7);
     this.scene.add(hemiLight);
+  }
+
+  /**
+   * Configures shadow map resolution or disables shadows (0, 512, 1024, 2048).
+   */
+  public setShadowQuality(resolution: number) {
+    if (resolution <= 0) {
+      this.renderer.shadowMap.enabled = false;
+      this.dirLight.castShadow = false;
+    } else {
+      this.renderer.shadowMap.enabled = true;
+      this.dirLight.castShadow = true;
+      this.dirLight.shadow.mapSize.width = resolution;
+      this.dirLight.shadow.mapSize.height = resolution;
+      if (this.dirLight.shadow.map) {
+        this.dirLight.shadow.map.dispose();
+        (this.dirLight.shadow.map as any) = null;
+      }
+    }
+    this.renderer.shadowMap.needsUpdate = true;
+    this.scene.traverse((obj) => {
+      if (obj instanceof THREE.Mesh && obj.material) {
+        if (Array.isArray(obj.material)) {
+          obj.material.forEach((m) => (m.needsUpdate = true));
+        } else {
+          obj.material.needsUpdate = true;
+        }
+      }
+    });
   }
 
   public updateCamera(playerPos: THREE.Vector3, dt: number) {

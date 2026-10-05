@@ -44,7 +44,7 @@ export class InputManager {
       return;
     }
 
-    if (e.code === 'Tab') {
+    if (e.code === 'Tab' || e.key === 'Tab') {
       e.preventDefault();
       if (this.onToggleMap) {
         this.onToggleMap();

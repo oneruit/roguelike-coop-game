@@ -4,326 +4,358 @@ import { Altar } from './Altar';
 import { AltarManager } from './AltarManager';
 import { ObstacleManager } from './ObstacleManager';
 import { BuffType } from '../entities/Player';
+import { SeededRNG } from '../core/SeededRNG';
+import { ChestManager } from './ChestManager';
+import { RiftTeleporter } from './RiftTeleporter';
+import { TerrainElevation } from './TerrainElevation';
+
+export interface OccupiedArea {
+  x: number;
+  z: number;
+  radius: number;
+}
 
 export class ChunkManager {
   private scene: THREE.Scene;
   private altarManager: AltarManager;
   private obstacleManager: ObstacleManager;
-  public static readonly CHUNK_SIZE = 50;
-  public static readonly VIEW_RADIUS = 2; // 5x5 chunks around player (250x250 unit visible area)
-  public static readonly UNLOAD_RADIUS = 3;
 
+  // Fixed World Dimensions: 500x500 meters (10x10 chunks of 50m each)
+  public static readonly CHUNK_SIZE = 50;
+  public static readonly GRID_SIZE = 10;
+  public static readonly MAP_SIZE = 500;
+  public static readonly HALF_MAP = 250;
+  public static readonly MIN_CHUNK = -5;
+  public static readonly MAX_CHUNK = 4; // -5 to 4 inclusive = 10 chunks
+
+  public currentSeed: number = 1337;
+  public currentSeedString: string = '1337';
+
+  public elevation: TerrainElevation = new TerrainElevation(1337);
   private activeChunks = new Map<string, THREE.Group>();
-  private chunkAltars = new Map<string, Altar[]>();
-  private sharedFloorGeometry: THREE.PlaneGeometry;
 
   constructor(scene: THREE.Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
     this.scene = scene;
     this.altarManager = altarManager;
     this.obstacleManager = obstacleManager;
     TerrainMaterials.init();
-
-    // Reusable single floor geometry for all chunks with slight overlap to prevent seam gaps
-    this.sharedFloorGeometry = new THREE.PlaneGeometry(
-      ChunkManager.CHUNK_SIZE + 0.6,
-      ChunkManager.CHUNK_SIZE + 0.6
-    );
   }
 
   /**
-   * Deterministic 2D integer coordinate hash.
+   * Returns terrain elevation Y at world coordinate (x, z).
    */
-  private hash2D(x: number, z: number): number {
-    let h = (x * 374761393 + z * 668265263) ^ 0x5bf03635;
-    h = Math.imul(h ^ (h >>> 13), 1274126177);
-    return (h ^ (h >>> 16)) >>> 0;
+  public getElevation(x: number, z: number): number {
+    return this.elevation.getElevation(x, z);
   }
 
   /**
-   * Fast, deterministic Mulberry32 PRNG.
+   * Returns surface normal vector at world coordinate (x, z).
    */
-  private createRng(seed: number): () => number {
-    let s = seed;
-    return function() {
-      s |= 0;
-      s = (s + 0x6d2b79f5) | 0;
-      let t = Math.imul(s ^ (s >>> 15), 1 | s);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  public getNormal(x: number, z: number, target?: THREE.Vector3): THREE.Vector3 {
+    return this.elevation.getNormal(x, z, target);
   }
 
   /**
-   * Updates chunks centered around player position.
+   * Generates the entire fixed 500x500m world upfront based on a deterministic seed.
+   * Completely eliminates runtime stutter and allocation during player movement.
    */
-  public update(playerPos: THREE.Vector3 | THREE.Vector3[]) {
-    const positions = Array.isArray(playerPos) ? playerPos : [playerPos];
-    if (positions.length === 0) return;
+  public generateMap(
+    seedInput: number | string = 1337,
+    chestManager?: ChestManager,
+    riftTeleporter?: RiftTeleporter
+  ) {
+    this.clear();
 
-    // 1. Generate / keep chunks in view radius of ALL players
-    const currentKeys = new Set<string>();
-
-    for (const pos of positions) {
-      const cx = Math.floor(pos.x / ChunkManager.CHUNK_SIZE);
-      const cz = Math.floor(pos.z / ChunkManager.CHUNK_SIZE);
-
-      for (let dx = -ChunkManager.VIEW_RADIUS; dx <= ChunkManager.VIEW_RADIUS; dx++) {
-        for (let dz = -ChunkManager.VIEW_RADIUS; dz <= ChunkManager.VIEW_RADIUS; dz++) {
-          const curX = cx + dx;
-          const curZ = cz + dz;
-          const key = `${curX},${curZ}`;
-          currentKeys.add(key);
-
-          if (!this.activeChunks.has(key)) {
-            const chunkGroup = this.generateChunk(curX, curZ, key);
-            this.activeChunks.set(key, chunkGroup);
-            this.scene.add(chunkGroup);
-          }
-        }
+    if (typeof seedInput === 'number') {
+      this.currentSeed = seedInput >>> 0 || 1337;
+      this.currentSeedString = this.currentSeed.toString();
+    } else {
+      const trimmed = seedInput.trim();
+      const parsed = parseInt(trimmed, 10);
+      if (!isNaN(parsed) && parsed.toString() === trimmed) {
+        this.currentSeed = parsed >>> 0 || 1337;
+      } else {
+        this.currentSeed = SeededRNG.hashString(trimmed || '1337');
       }
+      this.currentSeedString = trimmed || '1337';
     }
 
-    // 2. Unload chunks beyond unload radius from ALL players
-    for (const [key, group] of this.activeChunks.entries()) {
-      const [kx, kz] = key.split(',').map(Number);
-      let nearAnyPlayer = false;
+    // Configure randomized elevation topography for current seed & stage
+    this.elevation.setSeed(this.currentSeed);
 
-      for (const pos of positions) {
-        const cx = Math.floor(pos.x / ChunkManager.CHUNK_SIZE);
-        const cz = Math.floor(pos.z / ChunkManager.CHUNK_SIZE);
-        const distX = Math.abs(kx - cx);
-        const distZ = Math.abs(kz - cz);
+    const rng = new SeededRNG(this.currentSeed);
 
-        if (distX <= ChunkManager.UNLOAD_RADIUS && distZ <= ChunkManager.UNLOAD_RADIUS) {
-          nearAnyPlayer = true;
-          break;
-        }
-      }
+    // List of occupied clearance zones (spawn, teleporter, altars, chests)
+    const occupied: OccupiedArea[] = [];
 
-      if (!nearAnyPlayer) {
-        this.scene.remove(group);
-        this.disposeChunk(group);
-        this.activeChunks.delete(key);
+    // 1. Safe zone around world spawn origin (0, 0)
+    occupied.push({ x: 0, z: 0, radius: 15.0 });
 
-        // Unregister any altars belonging to this unloaded chunk
-        const altars = this.chunkAltars.get(key);
-        if (altars) {
-          for (const altar of altars) {
-            this.altarManager.unregisterAltar(altar);
-          }
-          this.chunkAltars.delete(key);
-        }
-
-        // Remove obstacles for this chunk
-        this.obstacleManager.removeChunkObstacles(key);
-      }
-    }
-  }
-
-  /**
-   * Procedurally generates a single chunk with floor and scattered desert props.
-   */
-  private generateChunk(cx: number, cz: number, key: string): THREE.Group {
-    const chunkGroup = new THREE.Group();
-    const seed = this.hash2D(cx, cz);
-    const rng = this.createRng(seed);
-
-    const worldCenterX = cx * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
-    const worldCenterZ = cz * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
-
-    const minX = cx * ChunkManager.CHUNK_SIZE - 1;
-    const minZ = cz * ChunkManager.CHUNK_SIZE - 1;
-    const maxX = (cx + 1) * ChunkManager.CHUNK_SIZE + 1;
-    const maxZ = (cz + 1) * ChunkManager.CHUNK_SIZE + 1;
-    (chunkGroup as any).boundingBox = new THREE.Box3(
-      new THREE.Vector3(minX, -2, minZ),
-      new THREE.Vector3(maxX, 16, maxZ)
-    );
-
-    // Floor Mesh (receives dynamic shadows)
-    const floorMesh = new THREE.Mesh(this.sharedFloorGeometry, TerrainMaterials.sandMaterial);
-    floorMesh.rotation.x = -Math.PI / 2;
-    floorMesh.position.set(worldCenterX, 0, worldCenterZ);
-    floorMesh.receiveShadow = true;
-    chunkGroup.add(floorMesh);
-
-    // Check for Altar generation in this chunk
-    let altarPos: THREE.Vector3 | null = null;
-    let altarType: BuffType | null = null;
-
-    // Guaranteed starter altars in immediate neighboring chunks for quick discovery
-    if (cx === 0 && cz === 1) {
-      altarType = 'damage'; // South: Wrath Altar
-      altarPos = new THREE.Vector3(worldCenterX - 4, 0, worldCenterZ);
-    } else if (cx === -1 && cz === 0) {
-      altarType = 'speed'; // West: Wind Altar
-      altarPos = new THREE.Vector3(worldCenterX, 0, worldCenterZ + 5);
-    } else if (cx === 1 && cz === -1) {
-      altarType = 'regen'; // North-East: Vitality Altar
-      altarPos = new THREE.Vector3(worldCenterX + 3, 0, worldCenterZ - 3);
-    } else if (cx === 0 && cz === -1) {
-      altarType = 'invulnerable'; // North: Aegis Altar
-      altarPos = new THREE.Vector3(worldCenterX - 3, 0, worldCenterZ - 5);
-    } else if (Math.abs(cx) > 1 || Math.abs(cz) > 1) {
-      // Procedural chance for farther chunks (~30% chance)
-      const altarRoll = this.hash2D(cx * 19, cz * 37) % 100;
-      if (altarRoll < 30) {
-        const types: BuffType[] = ['damage', 'speed', 'regen', 'invulnerable'];
-        altarType = types[this.hash2D(cx + 43, cz + 97) % 4];
-        altarPos = new THREE.Vector3(
-          worldCenterX + (rng() - 0.5) * 24,
-          0,
-          worldCenterZ + (rng() - 0.5) * 24
-        );
-      }
+    // 2. Teleporter Placement
+    let teleX = 75;
+    let teleZ = 75;
+    if (riftTeleporter) {
+      // Pick deterministic sector away from spawn
+      const teleAngle = rng.range(0, Math.PI * 2);
+      const teleDist = rng.range(110, 165);
+      teleX = Math.cos(teleAngle) * teleDist;
+      teleZ = Math.sin(teleAngle) * teleDist;
+      const teleY = this.elevation.getElevation(teleX, teleZ);
+      riftTeleporter.resetForStage(new THREE.Vector3(teleX, teleY, teleZ));
+      occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
     }
 
-    if (altarType && altarPos) {
-      const altar = new Altar(altarType, altarPos);
+    // 3. Exactly 3 Altars (radially distributed, never close to each other)
+    const buffPool: BuffType[] = ['damage', 'speed', 'regen', 'invulnerable'];
+    rng.shuffle(buffPool);
+    const chosenBuffs = buffPool.slice(0, 3);
+
+    const baseAltarAngle = rng.range(0, Math.PI * 2);
+    for (let i = 0; i < 3; i++) {
+      const sectorAngle = baseAltarAngle + (i * (Math.PI * 2 / 3)) + rng.range(-0.25, 0.25);
+      const dist = rng.range(85, 160);
+      const ax = Math.cos(sectorAngle) * dist;
+      const az = Math.sin(sectorAngle) * dist;
+      const aY = this.elevation.getElevation(ax, az);
+
+      const altar = new Altar(chosenBuffs[i], new THREE.Vector3(ax, aY, az));
       this.altarManager.registerAltar(altar);
 
-      if (!this.chunkAltars.has(key)) {
-        this.chunkAltars.set(key, []);
-      }
-      this.chunkAltars.get(key)!.push(altar);
-
-      // Altar solid stone base collider (capture radius is 4.2, solid center is 1.5)
-      this.obstacleManager.addObstacle(key, {
-        x: altarPos.x,
-        z: altarPos.z,
+      const altarChunkKey = `${Math.floor(ax / ChunkManager.CHUNK_SIZE)},${Math.floor(az / ChunkManager.CHUNK_SIZE)}`;
+      this.obstacleManager.addObstacle(altarChunkKey, {
+        x: ax,
+        z: az,
         radius: 1.5,
         type: 'altar'
       });
+
+      occupied.push({ x: ax, z: az, radius: 9.5 });
     }
 
-    // Scattered 3D Props
-    // Divide the 50x50 chunk into 3x3 cells (each ~16.6x16.6 units)
-    const cellSize = ChunkManager.CHUNK_SIZE / 3;
-
-    for (let ix = 0; ix < 3; ix++) {
-      for (let iz = 0; iz < 3; iz++) {
-        if (rng() > 0.65) continue;
-
-        const localX = (ix + 0.2 + rng() * 0.6) * cellSize - ChunkManager.CHUNK_SIZE / 2;
-        const localZ = (iz + 0.2 + rng() * 0.6) * cellSize - ChunkManager.CHUNK_SIZE / 2;
-
-        const propWorldX = worldCenterX + localX;
-        const propWorldZ = worldCenterZ + localZ;
-
-        // Keep 8.0 unit safe clearing around world origin (0, 0)
-        if (Math.hypot(propWorldX, propWorldZ) < 8.0) continue;
-
-        // Keep 6.0 unit clearing around any altar so the capture zone is open
-        if (altarPos && Math.hypot(propWorldX - altarPos.x, propWorldZ - altarPos.z) < 6.0) {
-          continue;
-        }
-
-        const propRoll = rng();
-        let prop: THREE.Group;
-
-        if (propRoll < 0.42) {
-          prop = TerrainProps.createCactus(rng);
-          this.obstacleManager.addObstacle(key, {
-            x: propWorldX,
-            z: propWorldZ,
-            radius: 0.55,
-            type: 'cactus'
-          });
-        } else if (propRoll < 0.72) {
-          prop = TerrainProps.createTree(rng);
-          this.obstacleManager.addObstacle(key, {
-            x: propWorldX,
-            z: propWorldZ,
-            radius: 0.70,
-            type: 'tree'
-          });
-        } else if (propRoll < 0.90) {
-          prop = TerrainProps.createBoulder(rng);
-          this.obstacleManager.addObstacle(key, {
-            x: propWorldX,
-            z: propWorldZ,
-            radius: 0.95,
-            type: 'boulder'
-          });
-        } else {
-          prop = TerrainProps.createScrub(rng);
-        }
-
-        prop.position.set(propWorldX, 0, propWorldZ);
-        chunkGroup.add(prop);
+    // 4. Chests Placement (deterministic, non-overlapping)
+    if (chestManager) {
+      const placedChests = chestManager.generateStageChests(
+        0,
+        0,
+        16,
+        1,
+        rng,
+        occupied,
+        (x, z) => this.elevation.getElevation(x, z)
+      );
+      for (const c of placedChests) {
+        occupied.push(c);
       }
     }
 
-    // Secondary layer: 2 to 4 small dry grass / sagebrush tufts per chunk
-    const scrubCount = 2 + Math.floor(rng() * 3);
-    for (let s = 0; s < scrubCount; s++) {
-      const localX = (rng() - 0.5) * (ChunkManager.CHUNK_SIZE - 6);
-      const localZ = (rng() - 0.5) * (ChunkManager.CHUNK_SIZE - 6);
-      const scrubWorldX = worldCenterX + localX;
-      const scrubWorldZ = worldCenterZ + localZ;
+    // 5. Environmental Obstacles across all 100 chunks
+    // Guarantee that obstacles do NOT cluster and have minimum 6.5m distance between each other
+    const placedObstaclePositions: { x: number; z: number }[] = [];
+    const normalVec = new THREE.Vector3();
 
-      if (Math.hypot(scrubWorldX, scrubWorldZ) < 6.0) continue;
-      if (altarPos && Math.hypot(scrubWorldX - altarPos.x, scrubWorldZ - altarPos.z) < 4.5) continue;
+    for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
+      for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
+        const key = `${cx},${cz}`;
+        const chunkGroup = new THREE.Group();
 
-      const scrub = TerrainProps.createScrub(rng);
-      scrub.position.set(scrubWorldX, 0, scrubWorldZ);
-      chunkGroup.add(scrub);
-    }
+        const worldCenterX = cx * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
+        const worldCenterZ = cz * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
 
-    // Rare Wild West Landmarks (~22% chance per chunk)
-    if (rng() < 0.22) {
-      const landmarkRoll = rng();
-      let landmark: THREE.Group;
+        const minX = cx * ChunkManager.CHUNK_SIZE - 1;
+        const minZ = cz * ChunkManager.CHUNK_SIZE - 1;
+        const maxX = (cx + 1) * ChunkManager.CHUNK_SIZE + 1;
+        const maxZ = (cz + 1) * ChunkManager.CHUNK_SIZE + 1;
 
-      const lx = worldCenterX + (rng() - 0.5) * (ChunkManager.CHUNK_SIZE - 12);
-      const lz = worldCenterZ + (rng() - 0.5) * (ChunkManager.CHUNK_SIZE - 12);
+        (chunkGroup as any).boundingBox = new THREE.Box3(
+          new THREE.Vector3(minX, -6, minZ),
+          new THREE.Vector3(maxX, 22, maxZ)
+        );
 
-      const tooCloseToAltar = altarPos && Math.hypot(lx - altarPos.x, lz - altarPos.z) < 6.0;
-      if (Math.hypot(lx, lz) > 7.0 && !tooCloseToAltar) {
-        if (landmarkRoll < 0.45) {
-          landmark = TerrainProps.createWagonWheel(rng);
-          this.obstacleManager.addObstacle(key, {
-            x: lx,
-            z: lz,
-            radius: 0.65,
-            type: 'landmark'
-          });
-        } else if (landmarkRoll < 0.78) {
-          landmark = TerrainProps.createSteerSkull(rng);
-        } else {
-          landmark = TerrainProps.createTrailPost(rng);
-          this.obstacleManager.addObstacle(key, {
-            x: lx,
-            z: lz,
-            radius: 0.35,
-            type: 'landmark'
-          });
+        // Subdivided 3D Floor Geometry for realistic relief
+        const segs = 20; // 20x20 quads = 2.5m resolution
+        const floorGeom = new THREE.PlaneGeometry(
+          ChunkManager.CHUNK_SIZE,
+          ChunkManager.CHUNK_SIZE,
+          segs,
+          segs
+        );
+        floorGeom.rotateX(-Math.PI / 2);
+
+        const posAttr = floorGeom.attributes.position;
+        const normAttr = floorGeom.attributes.normal;
+        const uvAttr = floorGeom.attributes.uv;
+
+        for (let i = 0; i < posAttr.count; i++) {
+          const lx = posAttr.getX(i);
+          const lz = posAttr.getZ(i);
+          const wx = worldCenterX + lx;
+          const wz = worldCenterZ + lz;
+
+          const wy = this.elevation.getElevation(wx, wz);
+          posAttr.setY(i, wy);
+
+          this.elevation.getNormal(wx, wz, normalVec);
+          normAttr.setXYZ(i, normalVec.x, normalVec.y, normalVec.z);
+
+          // Continuous world-space UV coordinates across all chunks (12m per texture repeat)
+          uvAttr.setXY(i, wx / 12.0, wz / 12.0);
         }
 
-        landmark.position.set(lx, 0, lz);
-        chunkGroup.add(landmark);
+        posAttr.needsUpdate = true;
+        normAttr.needsUpdate = true;
+        uvAttr.needsUpdate = true;
+
+        const floorMesh = new THREE.Mesh(floorGeom, TerrainMaterials.sandMaterial);
+        floorMesh.position.set(worldCenterX, 0, worldCenterZ);
+        floorMesh.castShadow = true;
+        floorMesh.receiveShadow = true;
+        chunkGroup.add(floorMesh);
+
+        // Scattered 3D Props with strict separation
+        const candidateCount = 8;
+        let chunkObstaclesCount = 0;
+
+        for (let a = 0; a < candidateCount && chunkObstaclesCount < 4; a++) {
+          const candX = cx * ChunkManager.CHUNK_SIZE + rng.range(5.0, 45.0);
+          const candZ = cz * ChunkManager.CHUNK_SIZE + rng.range(5.0, 45.0);
+
+          // Boundary safe margin
+          if (Math.abs(candX) > 235 || Math.abs(candZ) > 235) continue;
+
+          // Distance check to all occupied zones (spawn, teleporter, altars, chests)
+          let overlapsOccupied = false;
+          for (const occ of occupied) {
+            if (Math.hypot(candX - occ.x, candZ - occ.z) < occ.radius + 3.0) {
+              overlapsOccupied = true;
+              break;
+            }
+          }
+          if (overlapsOccupied) continue;
+
+          // Strict separation from all existing obstacles (minimum 6.8m)
+          let tooCloseToOtherObstacle = false;
+          for (const obs of placedObstaclePositions) {
+            if (Math.hypot(candX - obs.x, candZ - obs.z) < 6.8) {
+              tooCloseToOtherObstacle = true;
+              break;
+            }
+          }
+          if (tooCloseToOtherObstacle) continue;
+
+          // Valid placement! Choose prop type
+          const propRoll = rng.next();
+          let prop: THREE.Group;
+          let obsRadius = 0.55;
+          let obsType: 'cactus' | 'tree' | 'boulder' | 'landmark' = 'cactus';
+
+          if (propRoll < 0.40) {
+            prop = TerrainProps.createCactus(() => rng.next());
+            obsRadius = 0.55;
+            obsType = 'cactus';
+          } else if (propRoll < 0.70) {
+            prop = TerrainProps.createTree(() => rng.next());
+            obsRadius = 0.70;
+            obsType = 'tree';
+          } else if (propRoll < 0.88) {
+            prop = TerrainProps.createBoulder(() => rng.next());
+            obsRadius = 0.95;
+            obsType = 'boulder';
+          } else {
+            prop = rng.next() < 0.5
+              ? TerrainProps.createWagonWheel(() => rng.next())
+              : TerrainProps.createTrailPost(() => rng.next());
+            obsRadius = 0.50;
+            obsType = 'landmark';
+          }
+
+          const candY = this.elevation.getElevation(candX, candZ);
+          prop.position.set(candX, candY, candZ);
+          chunkGroup.add(prop);
+
+          this.obstacleManager.addObstacle(key, {
+            x: candX,
+            z: candZ,
+            radius: obsRadius,
+            type: obsType
+          });
+
+          placedObstaclePositions.push({ x: candX, z: candZ });
+          chunkObstaclesCount++;
+        }
+
+        // Secondary purely visual sagebrush tufts (no collision, 2-3 per chunk)
+        const scrubCount = 2 + rng.rangeInt(0, 1);
+        for (let s = 0; s < scrubCount; s++) {
+          const sx = cx * ChunkManager.CHUNK_SIZE + rng.range(4.0, 46.0);
+          const sz = cz * ChunkManager.CHUNK_SIZE + rng.range(4.0, 46.0);
+          if (Math.hypot(sx, sz) < 10.0) continue;
+
+          const sy = this.elevation.getElevation(sx, sz);
+          const scrub = TerrainProps.createScrub(() => rng.next());
+          scrub.position.set(sx, sy, sz);
+          chunkGroup.add(scrub);
+        }
+
+        this.activeChunks.set(key, chunkGroup);
+        this.scene.add(chunkGroup);
       }
     }
 
-    return chunkGroup;
+    // 6. Natural Perimeter Canyon Boulders along the 500x500 map borders
+    this.generatePerimeterBoulders(rng);
   }
 
   /**
-   * Deep cleanup of geometry instances when a chunk is unloaded.
+   * Generates decorative and solid perimeter rock formations along boundaries.
    */
-  private disposeChunk(group: THREE.Group) {
-    group.traverse((obj) => {
-      if (obj instanceof THREE.Mesh) {
-        if (obj.geometry !== this.sharedFloorGeometry) {
-          obj.geometry.dispose();
-        }
-      }
+  private generatePerimeterBoulders(rng: SeededRNG) {
+    const margin = 244;
+    const step = 9.5;
+
+    for (let coord = -margin; coord <= margin; coord += step) {
+      // North & South walls
+      this.placeBoundaryRock(coord, margin, rng);
+      this.placeBoundaryRock(coord, -margin, rng);
+
+      // East & West walls
+      this.placeBoundaryRock(margin, coord, rng);
+      this.placeBoundaryRock(-margin, coord, rng);
+    }
+  }
+
+  private placeBoundaryRock(x: number, z: number, rng: SeededRNG) {
+    const cx = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(x / ChunkManager.CHUNK_SIZE)));
+    const cz = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(z / ChunkManager.CHUNK_SIZE)));
+    const key = `${cx},${cz}`;
+    const chunkGroup = this.activeChunks.get(key);
+    if (!chunkGroup) return;
+
+    const boulder = TerrainProps.createBoulder(() => rng.next());
+    const scale = 1.35 + rng.range(0, 0.45);
+    boulder.scale.set(scale, scale * 1.2, scale);
+    const by = this.elevation.getElevation(x, z);
+    boulder.position.set(x, by, z);
+    chunkGroup.add(boulder);
+
+    this.obstacleManager.addObstacle(key, {
+      x,
+      z,
+      radius: 2.2 * scale,
+      type: 'boulder'
     });
   }
 
   /**
-   * Rendering phase: Culls entire chunks that are outside the camera frustum.
-   * Completely skips rendering terrain sand floors and 20-30 props per culled chunk!
+   * With the fixed preloaded map, update does not need to stream or unload chunks.
+   * Runs in 0ms without runtime memory allocation.
+   */
+  public update(_playerPos: THREE.Vector3 | THREE.Vector3[]) {
+    // Fixed preloaded map: zero runtime streaming overhead!
+  }
+
+  /**
+   * Frustum Culling: Hides chunks that are completely outside the camera view.
+   * Keeps active rendering to only the 6-9 chunks in front of the camera.
    */
   public cull(frustum: THREE.Frustum) {
     for (const group of this.activeChunks.values()) {
@@ -335,15 +367,18 @@ export class ChunkManager {
   }
 
   /**
-   * Clears all loaded chunks and altars.
+   * Deep cleanup of all chunk geometries and entities.
    */
   public clear() {
     for (const group of this.activeChunks.values()) {
       this.scene.remove(group);
-      this.disposeChunk(group);
+      group.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry.dispose();
+        }
+      });
     }
     this.activeChunks.clear();
-    this.chunkAltars.clear();
     this.altarManager.clear();
     this.obstacleManager.clear();
   }

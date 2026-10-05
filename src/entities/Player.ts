@@ -49,6 +49,7 @@ export class Player {
   private roninGeom!: THREE.PlaneGeometry;
 
   public currentDir: SpriteDirection = 'front';
+  public getElevation?: (x: number, z: number) => number;
 
   // Stats
   public charType: CharacterType = 'ronin';
@@ -536,8 +537,12 @@ export class Player {
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
     obstacleManager?: ObstacleManager,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void,
+    getElevation?: (x: number, z: number) => number
   ) {
+    if (getElevation) {
+      this.getElevation = getElevation;
+    }
     if (!this.isAlive) return;
 
     // Tactical Dash Cooldown & Movement
@@ -621,6 +626,9 @@ export class Player {
     if (this.isDowned || !this.isAlive) {
       this.spriteMesh.rotation.z = Math.PI / 2.3;
       this.spriteMaterial.color.setHex(0xff6666);
+      if (this.getElevation) {
+        this.position.y = this.getElevation(this.position.x, this.position.z);
+      }
       this.mesh.position.copy(this.position);
       return;
     }
@@ -675,6 +683,14 @@ export class Player {
     // Smooth collision sliding against surrounding obstacles (cacti, trees, boulders, altars)
     if (obstacleManager) {
       obstacleManager.resolveEntityCollision(this.position, 0.45);
+    }
+
+    // Clamp to 500x500 map bounds (-243 to 243)
+    this.position.x = Math.max(-243, Math.min(243, this.position.x));
+    this.position.z = Math.max(-243, Math.min(243, this.position.z));
+
+    if (this.getElevation) {
+      this.position.y = this.getElevation(this.position.x, this.position.z);
     }
 
     this.mesh.position.copy(this.position);
@@ -919,7 +935,10 @@ export class Player {
 
   public reset(pos: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
     this.position.copy(pos);
-    this.mesh.position.copy(pos);
+    if (this.getElevation) {
+      this.position.y = this.getElevation(this.position.x, this.position.z);
+    }
+    this.mesh.position.copy(this.position);
     this.xp = 0;
     this.level = 1;
     this.xpToNextLevel = this.calculateXpToNextLevel(1);

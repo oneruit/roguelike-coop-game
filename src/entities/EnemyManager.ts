@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Enemy, EnemyConfig, EnemyType } from './Enemy';
+import { SpatialGrid } from './SpatialGrid';
 import { DropManager } from '../drops/DropManager';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
@@ -18,6 +19,7 @@ export class EnemyManager {
   private scene: THREE.Scene;
   private dropManager: DropManager;
   private damageNumbers: DamageNumberManager;
+  private spatialGrid = new SpatialGrid(4.0);
   public enemies: Enemy[] = [];
   public totalKills = 0;
   public activeBoss: Enemy | null = null;
@@ -37,7 +39,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_coyote',
       hp: 48,
       speed: 5.4,
-      damage: 16,
+      damage: 8,
       width: 2.1,
       height: 1.6,
       gemType: 'blue'
@@ -48,7 +50,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_crawler',
       hp: 40,
       speed: 6.0,
-      damage: 20,
+      damage: 10,
       width: 2.0,
       height: 1.2,
       gemType: 'blue'
@@ -59,7 +61,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_cactus',
       hp: 88,
       speed: 3.5,
-      damage: 28,
+      damage: 14,
       width: 1.9,
       height: 2.3,
       gemType: 'blue'
@@ -70,7 +72,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_skeleton',
       hp: 110,
       speed: 3.8,
-      damage: 32,
+      damage: 16,
       width: 1.9,
       height: 2.4,
       gemType: 'green'
@@ -81,7 +83,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_ghost',
       hp: 140,
       speed: 4.0,
-      damage: 36,
+      damage: 18,
       width: 1.7,
       height: 2.5,
       gemType: 'green'
@@ -92,7 +94,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_scorpion',
       hp: 190,
       speed: 3.2,
-      damage: 44,
+      damage: 22,
       width: 2.3,
       height: 2.1,
       gemType: 'green'
@@ -103,7 +105,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_brute',
       hp: 350,
       speed: 2.6,
-      damage: 56,
+      damage: 28,
       width: 2.5,
       height: 2.7,
       gemType: 'green'
@@ -114,7 +116,7 @@ export class EnemyManager {
       texturePrefix: '/textures/monster_bison',
       hp: 720,
       speed: 4.8,
-      damage: 70,
+      damage: 35,
       width: 3.4,
       height: 1.9,
       gemType: 'red'
@@ -125,7 +127,7 @@ export class EnemyManager {
       texturePrefix: '/textures/boss_demon',
       hp: 7600,
       speed: 2.4,
-      damage: 90,
+      damage: 45,
       width: 7.8,
       height: 7.8,
       gemType: 'red',
@@ -137,7 +139,7 @@ export class EnemyManager {
       texturePrefix: '/textures/boss_hydra',
       hp: 28000,
       speed: 2.3,
-      damage: 130,
+      damage: 65,
       width: 10.0,
       height: 10.0,
       gemType: 'red',
@@ -152,6 +154,7 @@ export class EnemyManager {
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
 
   public activePlayerCount: number = 1;
+  public getElevation?: (x: number, z: number) => number;
   private lastTargetHitTimes: Map<string, number> = new Map();
 
   constructor(scene: THREE.Scene, dropManager: DropManager, damageNumbers: DamageNumberManager) {
@@ -230,8 +233,10 @@ export class EnemyManager {
       this.spawnWave(targetSpawn);
     }
 
-    // Soft separation
-    this.applySeparation();
+    // High performance O(N) spatial partitioning & separation
+    this.spatialGrid.clear();
+    this.spatialGrid.insertAll(this.enemies);
+    this.spatialGrid.resolveSeparation();
 
     // Update enemies
     for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -284,6 +289,10 @@ export class EnemyManager {
       if (obstacleManager && enemy.type !== 'ghost' && closestDistSq <= 32 * 32) {
         const rad = (enemy.width + enemy.height) * 0.16;
         obstacleManager.resolveEntityCollision(enemy.position, rad, 1);
+      }
+
+      if (this.getElevation) {
+        enemy.position.y = this.getElevation(enemy.position.x, enemy.position.z);
       }
 
       // Check collision with targeted player
@@ -350,9 +359,9 @@ export class EnemyManager {
           const passiveChance = isTough ? 0.03 : 0.01;
           if (Math.random() < passiveChance) {
             const pOffset = new THREE.Vector3(
-              (Math.random() - 0.5) * 1.0,
+              (Math.random() - 0.5),
               0,
-              (Math.random() - 0.5) * 1.0
+              (Math.random() - 0.5)
             );
             this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
           }
@@ -431,6 +440,9 @@ export class EnemyManager {
       0,
       playerPos.z + Math.sin(angle) * distance
     );
+    if (this.getElevation) {
+      spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+    }
 
     const baseHp = this.configs.boss.hp;
     const baseDmg = this.configs.boss.damage;
@@ -601,10 +613,13 @@ export class EnemyManager {
     const angle = Math.random() * Math.PI * 2;
     const distance = 18 + Math.random() * 5;
     const spawnPos = new THREE.Vector3(
-      playerPos.x + Math.cos(angle) * distance,
+      Math.max(-244, Math.min(244, playerPos.x + Math.cos(angle) * distance)),
       0,
-      playerPos.z + Math.sin(angle) * distance
+      Math.max(-244, Math.min(244, playerPos.z + Math.sin(angle) * distance))
     );
+    if (this.getElevation) {
+      spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+    }
 
     // Dynamic progressive scaling for regular monsters
     const baseConfig = this.configs[type];
@@ -630,36 +645,11 @@ export class EnemyManager {
     this.scene.add(enemy.mesh);
   }
 
-  private applySeparation() {
-    const len = this.enemies.length;
-    for (let i = 0; i < len; i++) {
-      const e1 = this.enemies[i];
-      if (e1.type === 'ghost') continue;
-      const p1 = e1.position;
-
-      for (let j = i + 1; j < len; j++) {
-        const e2 = this.enemies[j];
-        if (e2.type === 'ghost') continue;
-
-        const minDist = (e1.width + e2.width) * 0.32;
-        const dx = p1.x - e2.position.x;
-        if (Math.abs(dx) > minDist) continue;
-        const dz = p1.z - e2.position.z;
-        if (Math.abs(dz) > minDist) continue;
-
-        const distSq = dx * dx + dz * dz;
-        if (distSq < minDist * minDist && distSq > 0.0001) {
-          const dist = Math.sqrt(distSq);
-          const overlap = (minDist - dist) * 0.5;
-          const pushX = (dx / dist) * overlap;
-          const pushZ = (dz / dist) * overlap;
-          p1.x += pushX;
-          p1.z += pushZ;
-          e2.position.x -= pushX;
-          e2.position.z -= pushZ;
-        }
-      }
-    }
+  /**
+   * Fast query for enemies within radius using the Spatial Grid.
+   */
+  public getNearbyEnemies(x: number, z: number, radius: number, out?: Enemy[]): Enemy[] {
+    return this.spatialGrid.queryRadius(x, z, radius, out);
   }
 
   public damageEnemy(
@@ -760,7 +750,8 @@ export class EnemyManager {
           config.damage = 99999;
           config.speed = 7.6;
         }
-        enemy = new Enemy(config, new THREE.Vector3(s.x, 0, s.z));
+        const initY = this.getElevation ? this.getElevation(s.x, s.z) : 0;
+        enemy = new Enemy(config, new THREE.Vector3(s.x, initY, s.z));
         enemy.id = s.id;
         this.enemies.push(enemy);
         this.scene.add(enemy.mesh);
@@ -771,7 +762,9 @@ export class EnemyManager {
       // Lerp position towards snapshot
       enemy.position.x += (s.x - enemy.position.x) * 0.4;
       enemy.position.z += (s.z - enemy.position.z) * 0.4;
-      enemy.mesh.position.set(enemy.position.x, 0, enemy.position.z);
+      const ey = this.getElevation ? this.getElevation(enemy.position.x, enemy.position.z) : 0;
+      enemy.position.y = ey;
+      enemy.mesh.position.set(enemy.position.x, ey, enemy.position.z);
       enemy.hp = s.hp;
       enemy.maxHp = s.maxHp;
       if (s.dir !== enemy.currentDir) {
@@ -817,13 +810,27 @@ export class EnemyManager {
    * Rendering phase: Viewport/Frustum culling across all active enemies.
    * Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls).
    */
-  public updateVisuals(dt: number, frustum: THREE.Frustum) {
+  public updateVisuals(dt: number, frustum: THREE.Frustum, cameraPos?: THREE.Vector3) {
+    const maxDistSq = 52 * 52;
+    const cx = cameraPos ? cameraPos.x : 0;
+    const cz = cameraPos ? cameraPos.z : 0;
+
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
       if (!enemy.isAlive) {
         enemy.mesh.visible = false;
         continue;
       }
+
+      if (cameraPos) {
+        const dx = enemy.position.x - cx;
+        const dz = enemy.position.z - cz;
+        if (dx * dx + dz * dz > maxDistSq) {
+          enemy.updateVisuals(dt, false);
+          continue;
+        }
+      }
+
       this.tempSphere.center.set(enemy.position.x, enemy.height * 0.5, enemy.position.z);
       this.tempSphere.radius = enemy.boundingRadius;
       const inFrustum = frustum.intersectsSphere(this.tempSphere);
@@ -832,6 +839,7 @@ export class EnemyManager {
   }
 
   public clear() {
+    this.spatialGrid.clear();
     for (const enemy of this.enemies) {
       enemy.destroy(this.scene);
     }
