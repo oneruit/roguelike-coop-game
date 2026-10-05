@@ -260,16 +260,17 @@ export class Enemy {
     }
 
     // Knockback handling (Immortal Reaper is completely immune to knockback)
-    if (this.knockbackVelocity.lengthSq() > 0.01) {
+    const kbSq = this.knockbackVelocity.lengthSq();
+    if (kbSq > 0.01) {
       const resistance = this.isImmortal ? 0 : (this.isBoss ? 0.05 : 1.0);
       this.position.addScaledVector(this.knockbackVelocity, dt * resistance);
       this.knockbackVelocity.multiplyScalar(Math.pow(0.08, dt * 5));
     }
 
-    // Move towards player
-    const toPlayer = new THREE.Vector3().subVectors(playerPos, this.position);
-    toPlayer.y = 0;
-    const dist = toPlayer.length();
+    // Move towards player (zero Vector3 heap allocations)
+    const dx = playerPos.x - this.position.x;
+    const dz = playerPos.z - this.position.z;
+    const distSq = dx * dx + dz * dz;
 
     if (this.isBoss && this.bossTextures) {
       if (this.attackCooldownTimer > 0) {
@@ -277,20 +278,24 @@ export class Enemy {
       }
 
       const attackDist = this.type === 'hydra' ? 5.2 : 4.8;
-      if (dist <= attackDist && this.attackCooldownTimer <= 0 && this.animState !== 'ATTACK') {
+      if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.animState !== 'ATTACK') {
         this.triggerAttack();
       }
 
-      if (dist > 0.25) {
-        toPlayer.normalize();
+      if (distSq > 0.0625) { // 0.25m squared
+        const dist = Math.sqrt(distSq);
+        const invDist = 1 / dist;
+        const normX = dx * invDist;
+        const normZ = dz * invDist;
         const moveSpeed = this.animState === 'ATTACK' ? this.speed * 0.35 : this.speed;
-        this.position.addScaledVector(toPlayer, moveSpeed * dt);
+        this.position.x += normX * moveSpeed * dt;
+        this.position.z += normZ * moveSpeed * dt;
 
         let newDir: SpriteDirection = this.currentDir;
-        if (Math.abs(toPlayer.x) >= Math.abs(toPlayer.z)) {
-          newDir = toPlayer.x < 0 ? 'left' : 'right';
+        if (Math.abs(dx) >= Math.abs(dz)) {
+          newDir = dx < 0 ? 'left' : 'right';
         } else {
-          newDir = toPlayer.z < 0 ? 'back' : 'front';
+          newDir = dz < 0 ? 'back' : 'front';
         }
 
         if (newDir !== this.currentDir && this.animState !== 'ATTACK') {
@@ -298,16 +303,20 @@ export class Enemy {
         }
       }
     } else {
-      if (dist > 0.25) {
-        toPlayer.normalize();
-        this.position.addScaledVector(toPlayer, this.speed * dt);
+      if (distSq > 0.0625) { // 0.25m squared
+        const dist = Math.sqrt(distSq);
+        const invDist = 1 / dist;
+        const normX = dx * invDist;
+        const normZ = dz * invDist;
+        this.position.x += normX * this.speed * dt;
+        this.position.z += normZ * this.speed * dt;
 
         // Determine 4-directional sprite based on movement towards player
         let newDir: SpriteDirection = this.currentDir;
-        if (Math.abs(toPlayer.x) >= Math.abs(toPlayer.z)) {
-          newDir = toPlayer.x < 0 ? 'left' : 'right';
+        if (Math.abs(dx) >= Math.abs(dz)) {
+          newDir = dx < 0 ? 'left' : 'right';
         } else {
-          newDir = toPlayer.z < 0 ? 'back' : 'front';
+          newDir = dz < 0 ? 'back' : 'front';
         }
 
         if (newDir !== this.currentDir) {
@@ -378,11 +387,13 @@ export class Enemy {
     this.spriteMaterial.color.setHex(0xff3333);
 
     if (sourcePos && !this.isBoss) {
-      const kbDir = new THREE.Vector3().subVectors(this.position, sourcePos);
-      kbDir.y = 0;
-      if (kbDir.lengthSq() > 0) {
-        kbDir.normalize();
-        this.knockbackVelocity.addScaledVector(kbDir, 3.75);
+      const kbx = this.position.x - sourcePos.x;
+      const kbz = this.position.z - sourcePos.z;
+      const klenSq = kbx * kbx + kbz * kbz;
+      if (klenSq > 0.0001) {
+        const invLen = 1 / Math.sqrt(klenSq);
+        this.knockbackVelocity.x += kbx * invLen * 3.75;
+        this.knockbackVelocity.z += kbz * invLen * 3.75;
       }
     }
 

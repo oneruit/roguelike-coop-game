@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { ChunkManager } from '../world/ChunkManager';
 import { AltarManager } from '../world/AltarManager';
 import { ObstacleManager } from '../world/ObstacleManager';
-import { TextureManager } from './TextureManager';
 
 export class Engine {
   public scene: THREE.Scene;
@@ -49,9 +48,6 @@ export class Engine {
     this.altarManager = new AltarManager(this.scene);
     this.chunkManager = new ChunkManager(this.scene, this.altarManager, this.obstacleManager);
     this.chunkManager.update(new THREE.Vector3(0, 0, 0));
-
-    // Preload & GPU pre-warm all 44 entity textures upfront (zero loading hitch on new monsters!)
-    TextureManager.preloadAll(this.renderer);
 
     window.addEventListener('resize', () => this.onWindowResize());
   }

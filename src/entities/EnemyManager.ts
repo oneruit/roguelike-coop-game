@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Enemy, EnemyConfig, EnemyType } from './Enemy';
+import { SpatialGrid } from './SpatialGrid';
 import { DropManager } from '../drops/DropManager';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
@@ -18,6 +19,7 @@ export class EnemyManager {
   private scene: THREE.Scene;
   private dropManager: DropManager;
   private damageNumbers: DamageNumberManager;
+  private spatialGrid = new SpatialGrid(4.0);
   public enemies: Enemy[] = [];
   public totalKills = 0;
   public activeBoss: Enemy | null = null;
@@ -230,8 +232,10 @@ export class EnemyManager {
       this.spawnWave(targetSpawn);
     }
 
-    // Soft separation
-    this.applySeparation();
+    // High performance O(N) spatial partitioning & separation
+    this.spatialGrid.clear();
+    this.spatialGrid.insertAll(this.enemies);
+    this.spatialGrid.resolveSeparation();
 
     // Update enemies
     for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -630,36 +634,11 @@ export class EnemyManager {
     this.scene.add(enemy.mesh);
   }
 
-  private applySeparation() {
-    const len = this.enemies.length;
-    for (let i = 0; i < len; i++) {
-      const e1 = this.enemies[i];
-      if (e1.type === 'ghost') continue;
-      const p1 = e1.position;
-
-      for (let j = i + 1; j < len; j++) {
-        const e2 = this.enemies[j];
-        if (e2.type === 'ghost') continue;
-
-        const minDist = (e1.width + e2.width) * 0.32;
-        const dx = p1.x - e2.position.x;
-        if (Math.abs(dx) > minDist) continue;
-        const dz = p1.z - e2.position.z;
-        if (Math.abs(dz) > minDist) continue;
-
-        const distSq = dx * dx + dz * dz;
-        if (distSq < minDist * minDist && distSq > 0.0001) {
-          const dist = Math.sqrt(distSq);
-          const overlap = (minDist - dist) * 0.5;
-          const pushX = (dx / dist) * overlap;
-          const pushZ = (dz / dist) * overlap;
-          p1.x += pushX;
-          p1.z += pushZ;
-          e2.position.x -= pushX;
-          e2.position.z -= pushZ;
-        }
-      }
-    }
+  /**
+   * Fast query for enemies within radius using the Spatial Grid.
+   */
+  public getNearbyEnemies(x: number, z: number, radius: number, out?: Enemy[]): Enemy[] {
+    return this.spatialGrid.queryRadius(x, z, radius, out);
   }
 
   public damageEnemy(
@@ -817,13 +796,27 @@ export class EnemyManager {
    * Rendering phase: Viewport/Frustum culling across all active enemies.
    * Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls).
    */
-  public updateVisuals(dt: number, frustum: THREE.Frustum) {
+  public updateVisuals(dt: number, frustum: THREE.Frustum, cameraPos?: THREE.Vector3) {
+    const maxDistSq = 52 * 52;
+    const cx = cameraPos ? cameraPos.x : 0;
+    const cz = cameraPos ? cameraPos.z : 0;
+
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
       if (!enemy.isAlive) {
         enemy.mesh.visible = false;
         continue;
       }
+
+      if (cameraPos) {
+        const dx = enemy.position.x - cx;
+        const dz = enemy.position.z - cz;
+        if (dx * dx + dz * dz > maxDistSq) {
+          enemy.updateVisuals(dt, false);
+          continue;
+        }
+      }
+
       this.tempSphere.center.set(enemy.position.x, enemy.height * 0.5, enemy.position.z);
       this.tempSphere.radius = enemy.boundingRadius;
       const inFrustum = frustum.intersectsSphere(this.tempSphere);
@@ -832,6 +825,7 @@ export class EnemyManager {
   }
 
   public clear() {
+    this.spatialGrid.clear();
     for (const enemy of this.enemies) {
       enemy.destroy(this.scene);
     }

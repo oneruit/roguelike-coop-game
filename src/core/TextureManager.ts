@@ -58,64 +58,221 @@ export class TextureManager {
     };
   }
 
+  public static readonly ALL_ASSET_URLS: string[] = [
+    // Weapons & Combat
+    '/textures/weapon_astral_staff.png',
+    '/textures/weapon_bow.png',
+    '/textures/weapon_chakram.png',
+    '/textures/weapon_flail.png',
+    '/textures/weapon_greatsword.png',
+    '/textures/weapon_holy_aura.png',
+    '/textures/weapon_katana_slash.png',
+    '/textures/weapon_kukri.png',
+    '/textures/weapon_lightning_strike.png',
+    '/textures/weapon_orbiting_barrier.png',
+    '/textures/weapon_whirlwind_slash.png',
+    '/textures/bullet_revolver.png',
+    '/textures/vfx_lightning.png',
+
+    // Heroes - 6 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
+    '/textures/hero_ronin_front.png',
+    '/textures/hero_ronin_idle.png',
+    '/textures/hero_ronin_walk.png',
+    '/textures/hero_ronin_attack.png',
+    '/textures/hero_ronin_walk_attack.png',
+
+    '/textures/hero_valkyrie_front.png',
+    '/textures/hero_valkyrie_idle.png',
+    '/textures/hero_valkyrie_walk.png',
+    '/textures/hero_valkyrie_attack.png',
+    '/textures/hero_valkyrie_walk_attack.png',
+
+    '/textures/hero_flail_front.png',
+    '/textures/hero_flail_idle.png',
+    '/textures/hero_flail_walk.png',
+    '/textures/hero_flail_attack.png',
+    '/textures/hero_flail_walk_attack.png',
+
+    '/textures/hero_sorceress_front.png',
+    '/textures/hero_sorceress_idle.png',
+    '/textures/hero_sorceress_walk.png',
+    '/textures/hero_sorceress_attack.png',
+    '/textures/hero_sorceress_walk_attack.png',
+
+    '/textures/hero_chakram_front.png',
+    '/textures/hero_chakram_idle.png',
+    '/textures/hero_chakram_walk.png',
+    '/textures/hero_chakram_attack.png',
+    '/textures/hero_chakram_walk_attack.png',
+
+    '/textures/hero_archer_front.png',
+    '/textures/hero_archer_idle.png',
+    '/textures/hero_archer_walk.png',
+    '/textures/hero_archer_attack.png',
+    '/textures/hero_archer_walk_attack.png',
+
+    // Legacy Hero Avatars
+    '/textures/hero_male_front.png',
+    '/textures/hero_male_back.png',
+    '/textures/hero_male_left.png',
+    '/textures/hero_male_right.png',
+    '/textures/hero_female_front.png',
+    '/textures/hero_female_back.png',
+    '/textures/hero_female_left.png',
+    '/textures/hero_female_right.png',
+
+    // Bosses
+    '/textures/boss_demon_walk.png',
+    '/textures/boss_demon_attack.png',
+    '/textures/boss_demon_front.png',
+    '/textures/boss_demon_back.png',
+    '/textures/boss_demon_left.png',
+    '/textures/boss_demon_right.png',
+
+    '/textures/boss_hydra_walk.png',
+    '/textures/boss_hydra_attack.png',
+    '/textures/boss_hydra_front.png',
+    '/textures/boss_hydra_back.png',
+    '/textures/boss_hydra_left.png',
+    '/textures/boss_hydra_right.png',
+
+    '/textures/boss_sheriff_front.png',
+    '/textures/boss_sheriff_back.png',
+    '/textures/boss_sheriff_left.png',
+    '/textures/boss_sheriff_right.png',
+
+    // Monsters (4 Directions)
+    '/textures/monster_coyote_front.png',
+    '/textures/monster_coyote_back.png',
+    '/textures/monster_coyote_left.png',
+    '/textures/monster_coyote_right.png',
+
+    '/textures/monster_crawler_front.png',
+    '/textures/monster_crawler_back.png',
+    '/textures/monster_crawler_left.png',
+    '/textures/monster_crawler_right.png',
+
+    '/textures/monster_cactus_front.png',
+    '/textures/monster_cactus_back.png',
+    '/textures/monster_cactus_left.png',
+    '/textures/monster_cactus_right.png',
+
+    '/textures/monster_skeleton_front.png',
+    '/textures/monster_skeleton_back.png',
+    '/textures/monster_skeleton_left.png',
+    '/textures/monster_skeleton_right.png',
+
+    '/textures/monster_ghost_front.png',
+    '/textures/monster_ghost_back.png',
+    '/textures/monster_ghost_left.png',
+    '/textures/monster_ghost_right.png',
+
+    '/textures/monster_scorpion_front.png',
+    '/textures/monster_scorpion_back.png',
+    '/textures/monster_scorpion_left.png',
+    '/textures/monster_scorpion_right.png',
+
+    '/textures/monster_brute_front.png',
+    '/textures/monster_brute_back.png',
+    '/textures/monster_brute_left.png',
+    '/textures/monster_brute_right.png',
+
+    '/textures/monster_bison_front.png',
+    '/textures/monster_bison_back.png',
+    '/textures/monster_bison_left.png',
+    '/textures/monster_bison_right.png',
+
+    // UI & Environment
+    '/textures/menu_background.jpg'
+  ];
+
+  /**
+   * Comprehensive asset preloader with progress callback.
+   * Loads and decodes all images into browser cache (preventing UI hitch on weapon/character choice)
+   * and compiles/uploads textures to the WebGL GPU memory upfront.
+   */
+  public static async preloadAllWithProgress(
+    renderer?: THREE.WebGLRenderer,
+    onProgress?: (loaded: number, total: number, item: string) => void
+  ): Promise<void> {
+    const urls = this.ALL_ASSET_URLS;
+    const total = urls.length + 2; // +2 for procedural arrow and shadow
+    let loaded = 0;
+
+    const report = (item: string) => {
+      loaded++;
+      if (onProgress) {
+        onProgress(loaded, total, item);
+      }
+    };
+
+    // Preload procedural textures
+    this.getArrowTexture(renderer);
+    report('arrow_texture');
+    this.createShadowMesh(1.0);
+    report('shadow_texture');
+
+    // Concurrently load and decode images in batches of 6
+    const batchSize = 6;
+    for (let i = 0; i < urls.length; i += batchSize) {
+      const batch = urls.slice(i, i + batchSize);
+      await Promise.all(
+        batch.map(async (url) => {
+          try {
+            // 1. Browser DOM Image cache and asynchronous bitmap decoding
+            const img = new Image();
+            img.src = url;
+            if (img.decode) {
+              await img.decode().catch(() => {});
+            }
+
+            // 2. Three.js Texture cache & GPU texture upload
+            await new Promise<void>((resolve) => {
+              this.loader.load(
+                url,
+                (tex) => {
+                  tex.colorSpace = THREE.SRGBColorSpace;
+                  if (
+                    url.includes('_walk.png') ||
+                    url.includes('_attack.png') ||
+                    url.includes('_idle.png') ||
+                    url.includes('bullet_')
+                  ) {
+                    tex.magFilter = THREE.NearestFilter;
+                  } else {
+                    tex.magFilter = THREE.LinearFilter;
+                  }
+                  tex.minFilter = THREE.LinearMipmapLinearFilter;
+                  this.cache.set(url, tex);
+                  if (renderer) {
+                    try {
+                      renderer.initTexture(tex);
+                    } catch {}
+                  }
+                  resolve();
+                },
+                undefined,
+                () => {
+                  resolve();
+                }
+              );
+            });
+          } catch {
+            // Graceful fallback
+          } finally {
+            const fileName = url.substring(url.lastIndexOf('/') + 1);
+            report(fileName);
+          }
+        })
+      );
+    }
+  }
+
   /**
    * Preloads all entity sprite sheets upfront to eliminate mid-game texture loading hitch.
    */
   public static preloadAll(renderer?: THREE.WebGLRenderer) {
-    const prefixes = [
-      '/textures/monster_coyote',
-      '/textures/monster_crawler',
-      '/textures/monster_cactus',
-      '/textures/monster_skeleton',
-      '/textures/monster_ghost',
-      '/textures/monster_scorpion',
-      '/textures/monster_brute',
-      '/textures/monster_bison',
-      '/textures/boss_sheriff',
-      '/textures/boss_demon',
-      '/textures/boss_hydra'
-    ];
-
-    for (const prefix of prefixes) {
-      this.loadDirectional(prefix, renderer);
-    }
-
-    // Preload animated Boss textures
-    this.loadBossTextures('boss_demon', renderer);
-    this.loadBossTextures('boss_hydra', renderer);
-
-    // Preload revolver bullet, arrow, kukri and all weapon textures
-    this.getBulletTexture(renderer);
-    this.getArrowTexture(renderer);
-    this.getKukriTexture(renderer);
-    this.getChakramTexture(renderer);
-    this.getLightningTexture(renderer);
-
-    const weaponUrls = [
-      '/textures/weapon_chakram.png',
-      '/textures/weapon_bow.png',
-      '/textures/weapon_kukri.png',
-      '/textures/weapon_katana_slash.png',
-      '/textures/weapon_greatsword.png',
-      '/textures/weapon_flail.png',
-      '/textures/weapon_astral_staff.png',
-      '/textures/weapon_orbiting_barrier.png',
-      '/textures/weapon_holy_aura.png',
-      '/textures/weapon_whirlwind_slash.png',
-      '/textures/weapon_lightning_strike.png',
-      '/textures/vfx_lightning.png'
-    ];
-    for (const url of weaponUrls) {
-      this.load(url, renderer);
-    }
-
-    // Preload Ronin, Valkyrie, Flail, Sorceress, Chakram and Archer hero sprite sheets
-    this.loadRoninTextures(renderer);
-    this.loadValkyrieTextures(renderer);
-    this.loadFlailTextures(renderer);
-    this.loadSorceressTextures(renderer);
-    this.loadChakramTextures(renderer);
-    this.loadArcherTextures(renderer);
+    this.preloadAllWithProgress(renderer).catch(() => {});
   }
 
   public static loadBossTextures(baseName: string, renderer?: THREE.WebGLRenderer): BossTextures {

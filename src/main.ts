@@ -23,6 +23,7 @@ import { ChestManager } from './world/ChestManager';
 import { RiftTeleporter } from './world/RiftTeleporter';
 import { RIFT_ITEMS, RiftItemId } from './items/RiftItemSystem';
 import { ProgressionManager } from './core/ProgressionManager';
+import { TextureManager } from './core/TextureManager';
 
 const SPAWN_OFFSETS: Record<string, [number, number]> = {
   p1: [0, 0],
@@ -81,6 +82,7 @@ class Game {
   private lastClientLocalHitTime = 0;
   private pendingDamageToClients: Map<string, number> = new Map();
   private pendingNetworkEvents: NetEvent[] = [];
+  private scratchNearbyEnemies: Enemy[] = [];
 
   private projectiles: Projectile[] = [];
   private gameState: GameState = GameState.MAIN_MENU;
@@ -372,7 +374,48 @@ class Game {
     this.gameState = GameState.MAIN_MENU;
     this.hud.showMainMenu();
 
+    this.initAssetPreloader();
+
     this.loop();
+  }
+
+  private initAssetPreloader() {
+    const loaderContainer = document.getElementById('game-loader-container');
+    const loaderTitle = document.getElementById('game-loader-title');
+    const loaderFill = document.getElementById('game-loader-fill');
+    const loaderPercent = document.getElementById('game-loader-percentage');
+    const loaderDetails = document.getElementById('game-loader-details');
+    const loaderCounter = document.getElementById('game-loader-counter');
+
+    if (!loaderContainer || !loaderFill || !loaderPercent) return;
+
+    TextureManager.preloadAllWithProgress(this.engine.renderer, (loaded, total, item) => {
+      const pct = Math.min(100, Math.round((loaded / total) * 100));
+      loaderFill.style.width = `${pct}%`;
+      loaderPercent.textContent = `${pct}%`;
+      if (loaderCounter) {
+        loaderCounter.textContent = `${loaded} / ${total}`;
+      }
+      if (loaderDetails) {
+        loaderDetails.textContent = `Загрузка: ${item}`;
+      }
+    })
+      .then(() => {
+        loaderFill.style.width = '100%';
+        loaderPercent.textContent = '100%';
+        if (loaderTitle) {
+          loaderTitle.textContent = 'ВСЕ РЕСУРСЫ ГОТОВЫ К БОЮ';
+        }
+        if (loaderDetails) {
+          loaderDetails.textContent = 'Текстуры, иконки оружия и модели загружены в память';
+        }
+        setTimeout(() => {
+          loaderContainer.classList.add('loaded');
+        }, 550);
+      })
+      .catch(() => {
+        loaderContainer.classList.add('loaded');
+      });
   }
 
   private setupMenuNavigation() {
@@ -1227,7 +1270,8 @@ class Game {
       const chainDmg = Math.round(finalDamage * (1.2 + chainStacks * 0.3));
       let hitCount = 0;
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
-      for (const other of this.enemyManager.enemies) {
+      const nearby = this.enemyManager.getNearbyEnemies(enemy.position.x, enemy.position.z, 8.5, this.scratchNearbyEnemies);
+      for (const other of nearby) {
         if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= 8.5) {
           if (this.net.role === 'client') {
             const isChainDead = other.takeDamage(chainDmg, enemy.position, myId);
@@ -1277,8 +1321,9 @@ class Game {
       const baseDmg = 25 * this.player.damageMultiplier;
       const explosionDmg = Math.round(baseDmg * (2.0 + detonatorStacks * 0.5));
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      const nearby = this.enemyManager.getNearbyEnemies(enemy.position.x, enemy.position.z, radius, this.scratchNearbyEnemies);
 
-      for (const other of this.enemyManager.enemies) {
+      for (const other of nearby) {
         if (other.isAlive && other !== enemy && other.position.distanceTo(enemy.position) <= radius) {
           if (this.net.role === 'client') {
             const isDead = other.takeDamage(explosionDmg, enemy.position, myId);
@@ -1951,7 +1996,13 @@ class Game {
       if (this.player.isAlive && !this.player.isDowned) {
         const now = performance.now();
         if (now - this.lastClientLocalHitTime > 380) {
-          for (const enemy of this.enemyManager.enemies) {
+          const nearby = this.enemyManager.getNearbyEnemies(
+            this.player.position.x,
+            this.player.position.z,
+            3.5,
+            this.scratchNearbyEnemies
+          );
+          for (const enemy of nearby) {
             if (!enemy.isAlive) continue;
             const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
             const dx = enemy.position.x - this.player.position.x;
@@ -2049,7 +2100,7 @@ class Game {
     if (this.gameState === GameState.PLAYING) {
       // 3. Viewport / Frustum Culling & Visual Updates (Do NOT draw what is not visible!)
       this.engine.chunkManager.cull(this.cameraFrustum);
-      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum);
+      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum, this.player.position);
       this.dropManager.updateVisuals(rawDt, this.cameraFrustum);
       this.updateProjectileVisuals(this.cameraFrustum);
       this.engine.altarManager.updateVisuals(rawDt, this.engine.camera, this.cameraFrustum);
@@ -2396,8 +2447,14 @@ class Game {
         continue;
       }
 
-      // Check collision with enemies
-      for (const enemy of this.enemyManager.enemies) {
+      // Check collision with enemies using localized spatial grid search
+      const nearbyEnemies = this.enemyManager.getNearbyEnemies(
+        proj.position.x,
+        proj.position.z,
+        proj.radius + 2.5,
+        this.scratchNearbyEnemies
+      );
+      for (const enemy of nearbyEnemies) {
         if (!enemy.isAlive) continue;
         if (proj.hitEnemies.has(enemy.id)) continue;
 
