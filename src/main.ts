@@ -233,12 +233,17 @@ class Game {
     this.hud.onShadowQualityChanged = (quality: number) => {
       this.engine.setShadowQuality(quality);
     };
+    this.hud.onTimeOfDayChanged = (mode: 'day' | 'night' | 'cycle') => {
+      this.engine.setTimeOfDay(mode);
+      this.biomeManager.applyBiomeToScene(this.engine.scene, mode);
+    };
     const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
     this.engine.setShadowQuality(savedShadowQuality);
 
-    // Bind terrain elevation to player, enemies, and drops
+    // Bind terrain elevation and dune rough slowdown to player
     const elevationFn = (x: number, z: number) => this.engine.chunkManager.getElevation(x, z);
     this.player.getElevation = elevationFn;
+    this.player.getTerrainSlowFactor = (x: number, z: number) => this.engine.chunkManager.getSlowFactor(x, z);
     this.enemyManager.getElevation = elevationFn;
     this.dropManager.getElevation = elevationFn;
 
@@ -1121,12 +1126,12 @@ class Game {
 
     // Initialize The Rift Stage 1
     this.biomeManager.reset();
-    this.biomeManager.applyBiomeToScene(this.engine.scene);
+    this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
 
     if (this.net.role !== 'client') {
-      this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter);
+      this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1);
     } else {
-      this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter);
+      this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1);
     }
 
     const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
@@ -1231,7 +1236,7 @@ class Game {
 
   private warpToNextStage() {
     const nextBiome = this.biomeManager.advanceStage();
-    this.biomeManager.applyBiomeToScene(this.engine.scene);
+    this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
     this.enemyManager.currentStage = this.biomeManager.stageNumber;
     this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
 
@@ -1242,7 +1247,7 @@ class Game {
     const stageSeed = numBase + this.biomeManager.stageNumber * 10007;
 
     // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
-    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter);
+    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
 
@@ -1277,7 +1282,7 @@ class Game {
 
   private applyStageTransition(stageNumber: number, biomeName?: string) {
     const nextBiome = this.biomeManager.setStage(stageNumber);
-    this.biomeManager.applyBiomeToScene(this.engine.scene);
+    this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
     this.enemyManager.currentStage = stageNumber;
     this.hud.updateStageText(stageNumber, biomeName || nextBiome.name);
 
@@ -1286,7 +1291,7 @@ class Game {
       : SeededRNG.hashString(this.currentSeed.toString());
     const stageSeed = numBase + stageNumber * 10007;
 
-    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter);
+    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
 

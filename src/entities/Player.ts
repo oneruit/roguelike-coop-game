@@ -50,6 +50,8 @@ export class Player {
 
   public currentDir: SpriteDirection = 'front';
   public getElevation?: (x: number, z: number) => number;
+  public getTerrainSlowFactor?: (x: number, z: number) => number;
+  public isTerrainSlowed: boolean = false;
 
   // Stats
   public charType: CharacterType = 'ronin';
@@ -626,9 +628,7 @@ export class Player {
     if (this.isDowned || !this.isAlive) {
       this.spriteMesh.rotation.z = Math.PI / 2.3;
       this.spriteMaterial.color.setHex(0xff6666);
-      if (this.getElevation) {
-        this.position.y = this.getElevation(this.position.x, this.position.z);
-      }
+      this.position.y = 0;
       this.mesh.position.copy(this.position);
       return;
     }
@@ -641,9 +641,14 @@ export class Player {
       this.attackAnimTimer -= dt;
     }
 
+    // Rough terrain / Sand dunes slowdown (slows by 35% on dunes)
+    const terrainSlow = this.getTerrainSlowFactor ? this.getTerrainSlowFactor(this.position.x, this.position.z) : 1.0;
+    this.isTerrainSlowed = terrainSlow < 0.99;
+
     if (isMoving) {
-      this.position.addScaledVector(moveDir, this.speed * dt);
-      this.animTimer += dt * 12;
+      const effectiveSpeed = this.speed * terrainSlow;
+      this.position.addScaledVector(moveDir, effectiveSpeed * dt);
+      this.animTimer += dt * 12 * terrainSlow;
 
       let newDir: SpriteDirection = this.currentDir;
       if (Math.abs(moveDir.x) >= Math.abs(moveDir.z)) {
@@ -680,7 +685,7 @@ export class Player {
     this.spriteMesh.position.y = 0.05;
     this.spriteMesh.rotation.z = 0;
 
-    // Smooth collision sliding against surrounding obstacles (cacti, trees, boulders, altars)
+    // Smooth collision sliding against surrounding obstacles (cacti, trees, boulders, altars, oasis)
     if (obstacleManager) {
       obstacleManager.resolveEntityCollision(this.position, 0.45);
     }
@@ -688,10 +693,7 @@ export class Player {
     // Clamp to 500x500 map bounds (-243 to 243)
     this.position.x = Math.max(-243, Math.min(243, this.position.x));
     this.position.z = Math.max(-243, Math.min(243, this.position.z));
-
-    if (this.getElevation) {
-      this.position.y = this.getElevation(this.position.x, this.position.z);
-    }
+    this.position.y = 0;
 
     this.mesh.position.copy(this.position);
 

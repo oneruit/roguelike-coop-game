@@ -118,6 +118,7 @@ export class HUD {
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
+  public onTimeOfDayChanged?: (mode: 'day' | 'night' | 'cycle') => void;
   public isAutoLevelUp = false;
   private levelUpKeyHandler: ((e: KeyboardEvent) => void) | null = null;
   private levelUpModal: HTMLElement;
@@ -623,6 +624,19 @@ export class HUD {
         localStorage.setItem('wildwest_shadow_quality', String(val));
         if (this.onShadowQualityChanged) {
           this.onShadowQualityChanged(val);
+        }
+      });
+    }
+
+    const timeOfDaySelect = document.getElementById('settings-time-of-day') as HTMLSelectElement | null;
+    if (timeOfDaySelect) {
+      const savedTime = localStorage.getItem('settings_time_of_day') || 'day';
+      timeOfDaySelect.value = savedTime;
+      timeOfDaySelect.addEventListener('change', () => {
+        const val = (timeOfDaySelect.value as 'day' | 'night' | 'cycle') || 'day';
+        localStorage.setItem('settings_time_of_day', val);
+        if (this.onTimeOfDayChanged) {
+          this.onTimeOfDayChanged(val);
         }
       });
     }

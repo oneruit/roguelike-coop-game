@@ -8,6 +8,7 @@ import { SeededRNG } from '../core/SeededRNG';
 import { ChestManager } from './ChestManager';
 import { RiftTeleporter } from './RiftTeleporter';
 import { TerrainElevation } from './TerrainElevation';
+import { RoughTerrainManager } from './RoughTerrainManager';
 
 export interface OccupiedArea {
   x: number;
@@ -32,20 +33,30 @@ export class ChunkManager {
   public currentSeedString: string = '1337';
 
   public elevation: TerrainElevation = new TerrainElevation(1337);
+  public roughTerrainManager: RoughTerrainManager;
+  private oasisGroups: THREE.Group[] = [];
   private activeChunks = new Map<string, THREE.Group>();
 
   constructor(scene: THREE.Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
     this.scene = scene;
     this.altarManager = altarManager;
     this.obstacleManager = obstacleManager;
+    this.roughTerrainManager = new RoughTerrainManager(this.scene);
     TerrainMaterials.init();
   }
 
   /**
-   * Returns terrain elevation Y at world coordinate (x, z).
+   * Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5D pixel art consistency).
    */
   public getElevation(x: number, z: number): number {
     return this.elevation.getElevation(x, z);
+  }
+
+  /**
+   * Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 normally).
+   */
+  public getSlowFactor(x: number, z: number): number {
+    return this.roughTerrainManager.getSlowFactor(x, z);
   }
 
   /**
@@ -62,7 +73,8 @@ export class ChunkManager {
   public generateMap(
     seedInput: number | string = 1337,
     chestManager?: ChestManager,
-    riftTeleporter?: RiftTeleporter
+    riftTeleporter?: RiftTeleporter,
+    stageNumber: number = 1
   ) {
     this.clear();
 
@@ -80,12 +92,12 @@ export class ChunkManager {
       this.currentSeedString = trimmed || '1337';
     }
 
-    // Configure randomized elevation topography for current seed & stage
+    // Flat terrain (elevation Y = 0 everywhere)
     this.elevation.setSeed(this.currentSeed);
 
     const rng = new SeededRNG(this.currentSeed);
 
-    // List of occupied clearance zones (spawn, teleporter, altars, chests)
+    // List of occupied clearance zones (spawn, teleporter, altars, chests, oasis)
     const occupied: OccupiedArea[] = [];
 
     // 1. Safe zone around world spawn origin (0, 0)
@@ -100,8 +112,7 @@ export class ChunkManager {
       const teleDist = rng.range(110, 165);
       teleX = Math.cos(teleAngle) * teleDist;
       teleZ = Math.sin(teleAngle) * teleDist;
-      const teleY = this.elevation.getElevation(teleX, teleZ);
-      riftTeleporter.resetForStage(new THREE.Vector3(teleX, teleY, teleZ));
+      riftTeleporter.resetForStage(new THREE.Vector3(teleX, 0, teleZ));
       occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
     }
 
@@ -116,9 +127,8 @@ export class ChunkManager {
       const dist = rng.range(85, 160);
       const ax = Math.cos(sectorAngle) * dist;
       const az = Math.sin(sectorAngle) * dist;
-      const aY = this.elevation.getElevation(ax, az);
 
-      const altar = new Altar(chosenBuffs[i], new THREE.Vector3(ax, aY, az));
+      const altar = new Altar(chosenBuffs[i], new THREE.Vector3(ax, 0, az));
       this.altarManager.registerAltar(altar);
 
       const altarChunkKey = `${Math.floor(ax / ChunkManager.CHUNK_SIZE)},${Math.floor(az / ChunkManager.CHUNK_SIZE)}`;
@@ -130,6 +140,34 @@ export class ChunkManager {
       });
 
       occupied.push({ x: ax, z: az, radius: 9.5 });
+    }
+
+    // 3.5. Oases Placement (Majestic desert oasis sanctuary with water & palms; solid collision)
+    const oasisCount = 2;
+    for (let o = 0; o < oasisCount; o++) {
+      const oasisAngle = (o * Math.PI) + rng.range(0.35, 0.85);
+      const oasisDist = rng.range(80, 140);
+      const ox = Math.cos(oasisAngle) * oasisDist;
+      const oz = Math.sin(oasisAngle) * oasisDist;
+
+      const oasis = TerrainProps.createOasis(() => rng.next());
+      oasis.group.position.set(ox, 0, oz);
+      this.scene.add(oasis.group);
+      this.oasisGroups.push(oasis.group);
+
+      const chunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(ox / ChunkManager.CHUNK_SIZE)));
+      const chunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(oz / ChunkManager.CHUNK_SIZE)));
+      const chunkKey = `${chunkX},${chunkZ}`;
+
+      this.obstacleManager.addObstacle(chunkKey, {
+        x: ox,
+        z: oz,
+        radius: oasis.radius,
+        type: 'oasis'
+      });
+
+      // Clearance area to prevent overlapping props, chests, or dunes
+      occupied.push({ x: ox, z: oz, radius: oasis.radius + 6.0 });
     }
 
     // 4. Chests Placement (deterministic, non-overlapping)
@@ -151,7 +189,6 @@ export class ChunkManager {
     // 5. Environmental Obstacles across all 100 chunks
     // Guarantee that obstacles do NOT cluster and have minimum 6.5m distance between each other
     const placedObstaclePositions: { x: number; z: number }[] = [];
-    const normalVec = new THREE.Vector3();
 
     for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
       for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
@@ -171,13 +208,12 @@ export class ChunkManager {
           new THREE.Vector3(maxX, 22, maxZ)
         );
 
-        // Subdivided 3D Floor Geometry for realistic relief
-        const segs = 20; // 20x20 quads = 2.5m resolution
+        // Flat 2D/2.5D Floor Geometry with continuous world UVs
         const floorGeom = new THREE.PlaneGeometry(
           ChunkManager.CHUNK_SIZE,
           ChunkManager.CHUNK_SIZE,
-          segs,
-          segs
+          1,
+          1
         );
         floorGeom.rotateX(-Math.PI / 2);
 
@@ -191,11 +227,8 @@ export class ChunkManager {
           const wx = worldCenterX + lx;
           const wz = worldCenterZ + lz;
 
-          const wy = this.elevation.getElevation(wx, wz);
-          posAttr.setY(i, wy);
-
-          this.elevation.getNormal(wx, wz, normalVec);
-          normAttr.setXYZ(i, normalVec.x, normalVec.y, normalVec.z);
+          posAttr.setY(i, 0);
+          normAttr.setXYZ(i, 0, 1, 0);
 
           // Continuous world-space UV coordinates across all chunks (12m per texture repeat)
           uvAttr.setXY(i, wx / 12.0, wz / 12.0);
@@ -207,7 +240,6 @@ export class ChunkManager {
 
         const floorMesh = new THREE.Mesh(floorGeom, TerrainMaterials.sandMaterial);
         floorMesh.position.set(worldCenterX, 0, worldCenterZ);
-        floorMesh.castShadow = true;
         floorMesh.receiveShadow = true;
         chunkGroup.add(floorMesh);
 
@@ -268,8 +300,7 @@ export class ChunkManager {
             obsType = 'landmark';
           }
 
-          const candY = this.elevation.getElevation(candX, candZ);
-          prop.position.set(candX, candY, candZ);
+          prop.position.set(candX, 0, candZ);
           chunkGroup.add(prop);
 
           this.obstacleManager.addObstacle(key, {
@@ -290,9 +321,8 @@ export class ChunkManager {
           const sz = cz * ChunkManager.CHUNK_SIZE + rng.range(4.0, 46.0);
           if (Math.hypot(sx, sz) < 10.0) continue;
 
-          const sy = this.elevation.getElevation(sx, sz);
           const scrub = TerrainProps.createScrub(() => rng.next());
-          scrub.position.set(sx, sy, sz);
+          scrub.position.set(sx, 0, sz);
           chunkGroup.add(scrub);
         }
 
@@ -303,6 +333,21 @@ export class ChunkManager {
 
     // 6. Natural Perimeter Canyon Boulders along the 500x500 map borders
     this.generatePerimeterBoulders(rng);
+
+    // 7. Procedural Rough Terrain Zones (Dunes & Barchans in Desert, Biome equivalents)
+    this.roughTerrainManager.generateForStage(
+      stageNumber,
+      rng,
+      occupied,
+      (key, mesh) => {
+        const chunkGroup = this.activeChunks.get(key);
+        if (chunkGroup) {
+          chunkGroup.add(mesh);
+        } else {
+          this.scene.add(mesh);
+        }
+      }
+    );
   }
 
   /**
@@ -333,8 +378,7 @@ export class ChunkManager {
     const boulder = TerrainProps.createBoulder(() => rng.next());
     const scale = 1.35 + rng.range(0, 0.45);
     boulder.scale.set(scale, scale * 1.2, scale);
-    const by = this.elevation.getElevation(x, z);
-    boulder.position.set(x, by, z);
+    boulder.position.set(x, 0, z);
     chunkGroup.add(boulder);
 
     this.obstacleManager.addObstacle(key, {
@@ -379,6 +423,18 @@ export class ChunkManager {
       });
     }
     this.activeChunks.clear();
+
+    for (const oasis of this.oasisGroups) {
+      this.scene.remove(oasis);
+      oasis.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry.dispose();
+        }
+      });
+    }
+    this.oasisGroups = [];
+
+    this.roughTerrainManager.clear();
     this.altarManager.clear();
     this.obstacleManager.clear();
   }
