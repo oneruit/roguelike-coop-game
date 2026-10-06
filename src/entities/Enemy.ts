@@ -32,6 +32,12 @@ export interface EnemyConfig {
   creditsValue?: number;
 }
 
+export interface BleedStack {
+  dps: number;
+  remainingTime: number;
+  hitter: string;
+}
+
 export class Enemy {
   public id: string;
   public type: EnemyType;
@@ -52,6 +58,11 @@ export class Enemy {
   public isAlive = true;
   public lastHitBy: string = 'p1';
   public boundingRadius: number;
+
+  // Stacking Bleed System
+  public bleedStacks: BleedStack[] = [];
+  private bleedTickTimer = 0;
+  public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string) => void;
 
   // 4-Directional Sprites
   private textures: DirectionalTextures;
@@ -255,6 +266,10 @@ export class Enemy {
   public updateSimulation(dt: number, playerPos: THREE.Vector3) {
     if (!this.isAlive) return;
 
+    if (this.bleedStacks.length > 0) {
+      this.updateBleed(dt);
+    }
+
     if (this.flashTimer > 0) {
       this.flashTimer -= dt;
     }
@@ -408,8 +423,52 @@ export class Enemy {
     return false;
   }
 
+  public addBleed(dps: number, duration: number = 3.0, hitter: string = 'p1'): void {
+    if (this.isImmortal || !this.isAlive) return;
+    this.bleedStacks.push({ dps, remainingTime: duration, hitter });
+    if (this.bleedStacks.length > 50) {
+      this.bleedStacks.shift();
+    }
+  }
+
+  private updateBleed(dt: number): void {
+    if (!this.isAlive || this.bleedStacks.length === 0) return;
+    this.bleedTickTimer += dt;
+    if (this.bleedTickTimer >= 0.33) {
+      const elapsed = this.bleedTickTimer;
+      this.bleedTickTimer = 0;
+      let totalDmg = 0;
+      let lastHitter = 'p1';
+
+      for (let i = this.bleedStacks.length - 1; i >= 0; i--) {
+        const stack = this.bleedStacks[i];
+        stack.remainingTime -= elapsed;
+        totalDmg += stack.dps * elapsed;
+        lastHitter = stack.hitter;
+        if (stack.remainingTime <= 0) {
+          this.bleedStacks.splice(i, 1);
+        }
+      }
+
+      const tickAmount = Math.max(1, Math.round(totalDmg));
+      if (!this.isImmortal) {
+        this.hp -= tickAmount;
+        this.flashTimer = 0.08;
+        this.lastHitBy = lastHitter;
+        const isDead = this.hp <= 0;
+        if (isDead) {
+          this.isAlive = false;
+        }
+        if (this.onBleedDamage) {
+          this.onBleedDamage(this, tickAmount, isDead, lastHitter);
+        }
+      }
+    }
+  }
+
   public destroy(scene: THREE.Scene) {
     this.isAlive = false;
+    this.bleedStacks = [];
     scene.remove(this.mesh);
     this.spriteMaterial.dispose();
   }

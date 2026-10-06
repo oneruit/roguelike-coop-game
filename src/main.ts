@@ -249,6 +249,22 @@ class Game {
     this.player.getTerrainSlowFactor = (x: number, z: number) => this.engine.chunkManager.getSlowFactor(x, z);
     this.enemyManager.getElevation = elevationFn;
     this.dropManager.getElevation = elevationFn;
+    this.enemyManager.camera = this.engine.camera;
+    this.enemyManager.onBleedDamage = (enemy, dmg, isDead, hitter) => {
+      const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      if (hitter === myId) {
+        this.player.totalDamageDealt += dmg;
+      }
+      if (this.net.role === 'client') {
+        this.pendingClientHits.push({
+          enemyId: enemy.id,
+          damage: dmg,
+          sourceX: enemy.position.x,
+          sourceZ: enemy.position.z,
+          isFatal: isDead
+        });
+      }
+    };
 
     // Setup Main Menu & Multiplayer HUD triggers
     this.setupMenuNavigation();
@@ -2618,6 +2634,11 @@ class Game {
           const baseDmg = proj.damage * this.player.damageMultiplier;
           const { finalDamage, isCrit } = this.applyCombatProcOnEnemyHit(enemy, baseDmg, proj.position);
           const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+
+          if (proj.isOrbiting) {
+            const bleedDps = (proj.bleedDps || 8) * this.player.damageMultiplier;
+            enemy.addBleed(bleedDps, 3.0, myId);
+          }
 
           if (this.net.role === 'client') {
             const isDead = enemy.takeDamage(finalDamage, proj.position, myId);

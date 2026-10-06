@@ -34,6 +34,7 @@ export interface SimProjectileData {
   isLightning?: boolean;
   isIceSpike?: boolean;
   isFireball?: boolean;
+  bleedDps?: number;
 }
 
 export interface SimEnemyRef {
@@ -616,10 +617,11 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   private orbCount: number = 2;
   private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
+  private bleedDps: number = 8;
   private activeOrbIds: string[] = [];
 
   constructor() {
-    super('orbiting_barrier', 'Священные Подковы', '🧲', 0, 12);
+    super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4);
   }
 
   public update(
@@ -642,10 +644,11 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
           direction: new SimVec3(1, 0, 0),
           speed: 0,
           damage: this.damage * player.damageMultiplier,
+          bleedDps: this.bleedDps * player.damageMultiplier,
           pierce: 99999,
           lifetime: 999999,
           radius: Number((0.32 + (this.level - 1) * 0.012).toFixed(3)),
-          color: 0xfbbf24,
+          color: 0xef4444,
           isOrbiting: true,
           orbitRadius: this.orbitRadius,
           orbitSpeed: this.orbitSpeed,
@@ -660,7 +663,8 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage = Number((this.damage + 3).toFixed(2));
+    this.damage = Number((this.damage + 1).toFixed(2));
+    this.bleedDps = Number((this.bleedDps + 2).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.20).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.08).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.orbCount++;
@@ -670,20 +674,20 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+3 к урону', '+0.20м дальность орбиты'];
-    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 подкова (всего ${this.orbCount + 1})`);
+    const perks: string[] = ['+1 к прямому урону', '+2 к урону кровотечения/сек', '+0.20м дальность орбиты'];
+    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
 }
 
 /**
- * Holy Aura (Огненный Периметр)
+ * Holy Aura (Огненное Кольцо)
  */
 export class SimHolyAuraWeapon extends SimWeapon {
   private radius: number = 3.5;
 
   constructor() {
-    super('holy_aura', 'Огненный Периметр', '🔥', 0.50, 16);
+    super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16);
   }
 
   public update(

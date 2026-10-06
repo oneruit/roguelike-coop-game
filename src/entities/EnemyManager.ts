@@ -152,6 +152,8 @@ export class EnemyManager {
   public onImmortalBossSpawn?: (boss: Enemy) => void;
   public onBossDefeat?: () => void;
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
+  public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string) => void;
+  public camera?: THREE.Camera;
 
   public activePlayerCount: number = 1;
   public getElevation?: (x: number, z: number) => number;
@@ -161,6 +163,18 @@ export class EnemyManager {
     this.scene = scene;
     this.dropManager = dropManager;
     this.damageNumbers = damageNumbers;
+  }
+
+  private registerEnemy(enemy: Enemy): Enemy {
+    enemy.onBleedDamage = (e, tickDamage, isDead, hitter) => {
+      if (this.camera) {
+        this.damageNumbers.spawnDamage(e.position, tickDamage, false, this.camera, true);
+      }
+      if (this.onBleedDamage) {
+        this.onBleedDamage(e, tickDamage, isDead, hitter);
+      }
+    };
+    return enemy;
   }
 
   /**
@@ -418,7 +432,7 @@ export class EnemyManager {
       };
     }
 
-    const boss = new Enemy(bossConfig, spawnPos);
+    const boss = this.registerEnemy(new Enemy(bossConfig, spawnPos));
     this.enemies.push(boss);
     this.scene.add(boss.mesh);
     this.activeBoss = boss;
@@ -473,7 +487,7 @@ export class EnemyManager {
       creditsValue: 120 + stage * 30
     };
 
-    const boss = new Enemy(bossConfig, spawnPos);
+    const boss = this.registerEnemy(new Enemy(bossConfig, spawnPos));
     this.enemies.push(boss);
     this.scene.add(boss.mesh);
     this.activeBoss = boss;
@@ -511,7 +525,7 @@ export class EnemyManager {
       isImmortal: true
     };
 
-    const reaper = new Enemy(reaperConfig, spawnPos);
+    const reaper = this.registerEnemy(new Enemy(reaperConfig, spawnPos));
     this.enemies.push(reaper);
     this.scene.add(reaper.mesh);
     this.activeBoss = reaper;
@@ -640,7 +654,7 @@ export class EnemyManager {
       eliteAffix: chosenAffix
     };
 
-    const enemy = new Enemy(scaledConfig, spawnPos);
+    const enemy = this.registerEnemy(new Enemy(scaledConfig, spawnPos));
     this.enemies.push(enemy);
     this.scene.add(enemy.mesh);
   }
@@ -751,7 +765,7 @@ export class EnemyManager {
           config.speed = 7.6;
         }
         const initY = this.getElevation ? this.getElevation(s.x, s.z) : 0;
-        enemy = new Enemy(config, new THREE.Vector3(s.x, initY, s.z));
+        enemy = this.registerEnemy(new Enemy(config, new THREE.Vector3(s.x, initY, s.z)));
         enemy.id = s.id;
         this.enemies.push(enemy);
         this.scene.add(enemy.mesh);
