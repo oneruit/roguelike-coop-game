@@ -205,7 +205,7 @@ export const BIOMES: BiomeConfig[] = [
 
 export class BiomeManager {
   public currentStageIndex: number = 0;
-  public currentTimeOfDay: 'day' | 'night' | 'cycle' = 'day';
+  public currentTimeOfDay: 'day' | 'night' = 'day';
   private static biomeTextures = new Map<string, THREE.Texture>();
   private static textureLoader = new THREE.TextureLoader();
 
@@ -235,7 +235,7 @@ export class BiomeManager {
   /**
    * Applies the current biome's atmosphere, lighting, fog, textures and materials to the Three.js scene.
    */
-  public applyBiomeToScene(scene: THREE.Scene, timeOfDay: 'day' | 'night' | 'cycle' = this.currentTimeOfDay) {
+  public applyBiomeToScene(scene: THREE.Scene, timeOfDay: 'day' | 'night' = this.currentTimeOfDay) {
     this.currentTimeOfDay = timeOfDay;
     const biome = this.currentBiome;
     const isNight = timeOfDay === 'night';

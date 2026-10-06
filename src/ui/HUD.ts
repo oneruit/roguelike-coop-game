@@ -118,7 +118,9 @@ export class HUD {
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
-  public onTimeOfDayChanged?: (mode: 'day' | 'night' | 'cycle') => void;
+  public onTimeOfDayChanged?: (mode: 'day' | 'night') => void;
+  public isTrainingModeActive: boolean = false;
+  public onToggleDevMode?: () => void;
   public isAutoLevelUp = false;
   private levelUpKeyHandler: ((e: KeyboardEvent) => void) | null = null;
   private levelUpModal: HTMLElement;
@@ -241,7 +243,7 @@ export class HUD {
 
   constructor(
     scene: THREE.Scene,
-    onSelectHero: (charType: CharacterType, seedInput?: string) => void,
+    onSelectHero: (charType: CharacterType, seedInput?: string, isTrainingMode?: boolean, timeOfDay?: 'random' | 'day' | 'night') => void,
     onResume: () => void,
     onRestart: () => void
   ) {
@@ -628,19 +630,6 @@ export class HUD {
       });
     }
 
-    const timeOfDaySelect = document.getElementById('settings-time-of-day') as HTMLSelectElement | null;
-    if (timeOfDaySelect) {
-      const savedTime = localStorage.getItem('settings_time_of_day') || 'day';
-      timeOfDaySelect.value = savedTime;
-      timeOfDaySelect.addEventListener('change', () => {
-        const val = (timeOfDaySelect.value as 'day' | 'night' | 'cycle') || 'day';
-        localStorage.setItem('settings_time_of_day', val);
-        if (this.onTimeOfDayChanged) {
-          this.onTimeOfDayChanged(val);
-        }
-      });
-    }
-
     openGuideBtn?.addEventListener('click', () => {
       this.showGuide();
     });
@@ -688,10 +677,8 @@ export class HUD {
 
     // Host Start Expedition Button
     this.btnHostStart.addEventListener('click', () => {
-      const seedInput = document.getElementById('host-seed-input') as HTMLInputElement | null;
-      const seedVal = seedInput?.value?.trim();
       if (this.onHostStartExpedition) {
-        this.onHostStartExpedition(seedVal);
+        this.onHostStartExpedition();
       }
     });
 
@@ -828,23 +815,6 @@ export class HUD {
       this.handleEscape();
     });
 
-    // Random Seed Buttons
-    document.getElementById('btn-single-random-seed')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const input = document.getElementById('single-seed-input') as HTMLInputElement | null;
-      if (input) {
-        input.value = Math.floor(Math.random() * 1000000).toString();
-      }
-    });
-
-    document.getElementById('btn-host-random-seed')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const input = document.getElementById('host-seed-input') as HTMLInputElement | null;
-      if (input) {
-        input.value = Math.floor(Math.random() * 1000000).toString();
-      }
-    });
-
     // Bind Character Select Buttons
     const charCards = document.querySelectorAll('.character-card');
     charCards.forEach((card) => {
@@ -856,11 +826,24 @@ export class HUD {
           this.showQuestsModal(hero);
           return;
         }
-        const singleSeedInput = document.getElementById('single-seed-input') as HTMLInputElement | null;
-        const seedVal = singleSeedInput?.value?.trim();
+        const trainingCheckbox = document.getElementById('training-mode-toggle') as HTMLInputElement | null;
+        const isTraining = Boolean(trainingCheckbox?.checked);
+        const timeOfDaySelect = document.getElementById('select-time-of-day') as HTMLSelectElement | null;
+        const timeOfDay = (timeOfDaySelect?.value as 'random' | 'day' | 'night') || 'random';
+
         this.hideCharacterSelect();
-        onSelectHero(hero, seedVal);
+        onSelectHero(hero, undefined, isTraining, timeOfDay);
       });
+    });
+
+    // Mobile & Pause Dev Mode Buttons
+    document.getElementById('btn-dev-mobile-trigger')?.addEventListener('click', () => {
+      this.onToggleDevMode?.();
+    });
+
+    document.getElementById('btn-pause-dev')?.addEventListener('click', () => {
+      this.hidePause();
+      this.onToggleDevMode?.();
     });
 
     // Pause Resume & Settings & Restart & Menu
@@ -3315,6 +3298,22 @@ export class HUD {
       } else {
         this.perfPing.classList.add('hidden');
       }
+    }
+  }
+
+  /**
+   * Toggles visibility of on-screen dev console buttons based on training mode state
+   */
+  public setTrainingModeActive(active: boolean) {
+    this.isTrainingModeActive = active;
+    const mobileDevBtn = document.getElementById('btn-dev-mobile-trigger');
+    const pauseDevBtn = document.getElementById('btn-pause-dev');
+    if (active) {
+      mobileDevBtn?.classList.remove('hidden');
+      pauseDevBtn?.classList.remove('hidden');
+    } else {
+      mobileDevBtn?.classList.add('hidden');
+      pauseDevBtn?.classList.add('hidden');
     }
   }
 }

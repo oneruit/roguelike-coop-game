@@ -36,6 +36,10 @@ export class DevManager {
   public isHost: () => boolean = () => true;
   public isCoop: () => boolean = () => false;
   public onBroadcastDevAction?: (action: string, value?: any) => void;
+  public onApplySeed?: (seed: string | number) => void;
+
+  // Seed controls
+  private elSeedInput: HTMLInputElement | null = null;
 
   constructor(
     player: Player,
@@ -66,6 +70,7 @@ export class DevManager {
     this.elGodStatus = document.getElementById('dev-god-status')!;
     this.elSpeedStatus = document.getElementById('dev-speed-status')!;
     this.elOnehitStatus = document.getElementById('dev-onehit-status')!;
+    this.elSeedInput = document.getElementById('dev-seed-input') as HTMLInputElement | null;
 
     this.bindEvents();
   }
@@ -74,6 +79,39 @@ export class DevManager {
     // Close button
     document.getElementById('btn-dev-close')?.addEventListener('click', () => this.toggle());
     document.getElementById('dev-backdrop')?.addEventListener('click', () => this.toggle());
+
+    // 0. Seed Controls
+    document.getElementById('dev-btn-apply-seed')?.addEventListener('click', () => {
+      if (this.isCoop() && !this.isHost()) return;
+      const seedVal = this.elSeedInput?.value?.trim();
+      if (seedVal && seedVal.length > 0) {
+        this.onApplySeed?.(seedVal);
+      } else {
+        const randSeed = Math.floor(Math.random() * 1000000);
+        if (this.elSeedInput) this.elSeedInput.value = String(randSeed);
+        this.onApplySeed?.(randSeed);
+      }
+    });
+
+    document.getElementById('dev-btn-random-seed')?.addEventListener('click', () => {
+      if (this.isCoop() && !this.isHost()) return;
+      const randSeed = Math.floor(Math.random() * 1000000);
+      if (this.elSeedInput) this.elSeedInput.value = String(randSeed);
+      this.onApplySeed?.(randSeed);
+    });
+
+    document.getElementById('dev-btn-copy-seed')?.addEventListener('click', () => {
+      const seedVal = this.elSeedInput?.value?.trim();
+      if (seedVal && navigator.clipboard) {
+        navigator.clipboard.writeText(seedVal);
+        const btn = document.getElementById('dev-btn-copy-seed');
+        if (btn) {
+          const oldText = btn.innerHTML;
+          btn.innerHTML = '<span class="btn-icon">✓</span><span>Скопировано!</span>';
+          setTimeout(() => { if (btn) btn.innerHTML = oldText; }, 1500);
+        }
+      }
+    });
 
     // 1. Hero Cheats
     document.getElementById('dev-btn-god')?.addEventListener('click', () => {
@@ -389,6 +427,15 @@ export class DevManager {
 
     if (this.isVisible) {
       this.toggle();
+    }
+  }
+
+  /**
+   * Updates the seed input field with the current active world seed
+   */
+  public setCurrentSeed(seed: string | number) {
+    if (this.elSeedInput) {
+      this.elSeedInput.value = String(seed);
     }
   }
 }
