@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 import { TerrainMaterials } from './TerrainProps';
 
+export interface BiomeLightingConfig {
+  fogColor: number;
+  fogDensity: number;
+  backgroundColor: number;
+  ambientColor: number;
+  lightColor: number;
+  hemiSkyColor: number;
+  hemiGroundColor: number;
+}
+
 export interface BiomeConfig {
   id: string;
   stageNumber: number;
@@ -19,6 +29,7 @@ export interface BiomeConfig {
   metalness?: number;
   rockColor?: number;
   foliageColor?: number;
+  night?: Partial<BiomeLightingConfig>;
 }
 
 export const BIOMES: BiomeConfig[] = [
@@ -39,7 +50,16 @@ export const BIOMES: BiomeConfig[] = [
     roughness: 0.90,
     metalness: 0.04,
     rockColor: 0x8a5433,
-    foliageColor: 0x5a6336
+    foliageColor: 0x5a6336,
+    night: {
+      fogColor: 0x0c1424,
+      fogDensity: 0.015,
+      backgroundColor: 0x0c1424,
+      ambientColor: 0x2c4166,
+      lightColor: 0xa5cbf5,
+      hemiSkyColor: 0x38bdf8,
+      hemiGroundColor: 0x111827
+    }
   },
   {
     id: 'derelict_sector',
@@ -58,7 +78,16 @@ export const BIOMES: BiomeConfig[] = [
     roughness: 0.55,
     metalness: 0.35,
     rockColor: 0x334155,
-    foliageColor: 0x1e293b
+    foliageColor: 0x1e293b,
+    night: {
+      fogColor: 0x050c18,
+      fogDensity: 0.017,
+      backgroundColor: 0x050c18,
+      ambientColor: 0x152942,
+      lightColor: 0x60a5fa,
+      hemiSkyColor: 0x2563eb,
+      hemiGroundColor: 0x020617
+    }
   },
   {
     id: 'bioluminescent_wilds',
@@ -77,7 +106,16 @@ export const BIOMES: BiomeConfig[] = [
     roughness: 0.75,
     metalness: 0.08,
     rockColor: 0x2e1065,
-    foliageColor: 0x10b981
+    foliageColor: 0x10b981,
+    night: {
+      fogColor: 0x0a0518,
+      fogDensity: 0.018,
+      backgroundColor: 0x0a0518,
+      ambientColor: 0x3b156b,
+      lightColor: 0x67e8f9,
+      hemiSkyColor: 0x06b6d4,
+      hemiGroundColor: 0x1e0836
+    }
   },
   {
     id: 'volcanic_caldera',
@@ -96,7 +134,16 @@ export const BIOMES: BiomeConfig[] = [
     roughness: 0.85,
     metalness: 0.15,
     rockColor: 0x18181b,
-    foliageColor: 0xd97706
+    foliageColor: 0xd97706,
+    night: {
+      fogColor: 0x120406,
+      fogDensity: 0.017,
+      backgroundColor: 0x120406,
+      ambientColor: 0x450a0a,
+      lightColor: 0xf87171,
+      hemiSkyColor: 0xdc2626,
+      hemiGroundColor: 0x0f0203
+    }
   },
   {
     id: 'primordial_ruins',
@@ -115,7 +162,16 @@ export const BIOMES: BiomeConfig[] = [
     roughness: 0.70,
     metalness: 0.20,
     rockColor: 0x475569,
-    foliageColor: 0xca8a04
+    foliageColor: 0xca8a04,
+    night: {
+      fogColor: 0x0f0a20,
+      fogDensity: 0.016,
+      backgroundColor: 0x0f0a20,
+      ambientColor: 0x381861,
+      lightColor: 0xc084fc,
+      hemiSkyColor: 0xa855f7,
+      hemiGroundColor: 0x1a0933
+    }
   },
   {
     id: 'rift_core',
@@ -134,12 +190,22 @@ export const BIOMES: BiomeConfig[] = [
     roughness: 0.60,
     metalness: 0.28,
     rockColor: 0x180838,
-    foliageColor: 0xec4899
+    foliageColor: 0xec4899,
+    night: {
+      fogColor: 0x07021a,
+      fogDensity: 0.020,
+      backgroundColor: 0x07021a,
+      ambientColor: 0x4c1178,
+      lightColor: 0xf472b6,
+      hemiSkyColor: 0xdb2777,
+      hemiGroundColor: 0x0d0221
+    }
   }
 ];
 
 export class BiomeManager {
   public currentStageIndex: number = 0;
+  public currentTimeOfDay: 'day' | 'night' | 'cycle' = 'day';
   private static biomeTextures = new Map<string, THREE.Texture>();
   private static textureLoader = new THREE.TextureLoader();
 
@@ -169,27 +235,37 @@ export class BiomeManager {
   /**
    * Applies the current biome's atmosphere, lighting, fog, textures and materials to the Three.js scene.
    */
-  public applyBiomeToScene(scene: THREE.Scene) {
+  public applyBiomeToScene(scene: THREE.Scene, timeOfDay: 'day' | 'night' | 'cycle' = this.currentTimeOfDay) {
+    this.currentTimeOfDay = timeOfDay;
     const biome = this.currentBiome;
+    const isNight = timeOfDay === 'night';
+
+    const fogColor = isNight && biome.night?.fogColor !== undefined ? biome.night.fogColor : biome.fogColor;
+    const fogDensity = isNight && biome.night?.fogDensity !== undefined ? biome.night.fogDensity : biome.fogDensity;
+    const bgColor = isNight && biome.night?.backgroundColor !== undefined ? biome.night.backgroundColor : biome.backgroundColor;
+    const ambColor = isNight && biome.night?.ambientColor !== undefined ? biome.night.ambientColor : biome.ambientColor;
+    const dirColor = isNight && biome.night?.lightColor !== undefined ? biome.night.lightColor : biome.sunColor;
+    const hemiSky = isNight && biome.night?.hemiSkyColor !== undefined ? biome.night.hemiSkyColor : biome.hemiSkyColor;
+    const hemiGnd = isNight && biome.night?.hemiGroundColor !== undefined ? biome.night.hemiGroundColor : biome.hemiGroundColor;
 
     // 1. Fog & Background
-    scene.background = new THREE.Color(biome.backgroundColor);
+    scene.background = new THREE.Color(bgColor);
     if (scene.fog instanceof THREE.FogExp2) {
-      scene.fog.color.setHex(biome.fogColor);
-      scene.fog.density = biome.fogDensity;
+      scene.fog.color.setHex(fogColor);
+      scene.fog.density = fogDensity;
     } else {
-      scene.fog = new THREE.FogExp2(biome.fogColor, biome.fogDensity);
+      scene.fog = new THREE.FogExp2(fogColor, fogDensity);
     }
 
     // 2. Lights in the scene
     scene.traverse((obj) => {
       if (obj instanceof THREE.AmbientLight) {
-        obj.color.setHex(biome.ambientColor);
+        obj.color.setHex(ambColor);
       } else if (obj instanceof THREE.DirectionalLight) {
-        obj.color.setHex(biome.sunColor);
+        obj.color.setHex(dirColor);
       } else if (obj instanceof THREE.HemisphereLight) {
-        obj.color.setHex(biome.hemiSkyColor);
-        obj.groundColor.setHex(biome.hemiGroundColor);
+        obj.color.setHex(hemiSky);
+        obj.groundColor.setHex(hemiGnd);
       }
     });
 
