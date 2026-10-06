@@ -443,6 +443,37 @@ class Game {
       });
   }
 
+  public showMapLoadingProgress(title: string = 'ГЕНЕРАЦИЯ КАРТЫ...') {
+    const loaderContainer = document.getElementById('game-loader-container');
+    const loaderTitle = document.getElementById('game-loader-title');
+    const loaderFill = document.getElementById('game-loader-fill');
+    const loaderPercent = document.getElementById('game-loader-percentage');
+    const loaderDetails = document.getElementById('game-loader-details');
+    const loaderCounter = document.getElementById('game-loader-counter');
+    if (!loaderContainer || !loaderFill) return;
+
+    loaderContainer.classList.remove('loaded');
+    if (loaderTitle) loaderTitle.textContent = title;
+    if (loaderDetails) loaderDetails.textContent = 'Построение ландшафта, дюн и препятствий...';
+    if (loaderCounter) loaderCounter.textContent = '100%';
+    loaderFill.style.width = '0%';
+    if (loaderPercent) loaderPercent.textContent = '0%';
+
+    let step = 0;
+    const interval = setInterval(() => {
+      step += 25;
+      const pct = Math.min(100, step);
+      loaderFill.style.width = `${pct}%`;
+      if (loaderPercent) loaderPercent.textContent = `${pct}%`;
+      if (pct >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          loaderContainer.classList.add('loaded');
+        }, 350);
+      }
+    }, 40);
+  }
+
   private setupMenuNavigation() {
     this.hud.onSinglePlayerSelected = () => {
       this.net.reset();
@@ -1075,7 +1106,7 @@ class Game {
   private spawnCosmeticShot(shot: NetShotInfo) {
     const proj = new Projectile({
       position: new THREE.Vector3(shot.x, shot.y, shot.z),
-      direction: new THREE.Vector3(shot.dx, 0, shot.dz),
+      direction: new THREE.Vector3(shot.dx, shot.dy ?? 0, shot.dz),
       speed: shot.spd,
       damage: 0,
       pierce: 9999,
@@ -1087,6 +1118,8 @@ class Game {
       isArrow: shot.arr,
       isKukri: shot.kkr,
       isLightning: shot.ltg,
+      isIceSpike: shot.ice,
+      isFireball: shot.fb,
       orbitRadius: shot.orad,
       orbitSpeed: shot.ospd,
       isCosmetic: true,
@@ -1096,6 +1129,10 @@ class Game {
     if (!shot.orb) {
       if (shot.ltg) {
         SoundManager.playLightning();
+      } else if (shot.ice) {
+        SoundManager.playIceSpike();
+      } else if (shot.fb) {
+        SoundManager.playFireballLaunch();
       } else if (shot.arr) {
         SoundManager.playBowShoot();
       } else if (shot.kkr) {
@@ -1117,6 +1154,7 @@ class Game {
         y: proj.position.y,
         z: proj.position.z,
         dx: proj.direction.x,
+        dy: proj.direction.y,
         dz: proj.direction.z,
         spd: proj.speed,
         lt: proj.lifetime,
@@ -1129,6 +1167,8 @@ class Game {
         arr: proj.isArrow,
         kkr: proj.isKukri,
         ltg: proj.isLightning,
+        ice: proj.isIceSpike,
+        fb: proj.isFireball,
         ownerId: myId
       });
     }
@@ -1282,6 +1322,7 @@ class Game {
     const stageSeed = numBase + this.biomeManager.stageNumber * 10007;
 
     // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
+    this.showMapLoadingProgress(`ПЕРЕХОД: ${nextBiome.name.toUpperCase()}`);
     this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
@@ -1325,7 +1366,7 @@ class Game {
       ? this.currentSeed
       : SeededRNG.hashString(this.currentSeed.toString());
     const stageSeed = numBase + stageNumber * 10007;
-
+    this.showMapLoadingProgress(`ПЕРЕХОД: ${(biomeName || nextBiome.name).toUpperCase()}`);
     this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
@@ -2547,6 +2588,11 @@ class Game {
 
       // Cosmetic projectiles (from teammates) fly purely as visual and audio effects
       if (proj.isCosmetic || proj.damage === 0) {
+        continue;
+      }
+
+      // Fireball does not hit enemies until it impacts the ground
+      if (proj.isFireball && !proj.hasImpacted) {
         continue;
       }
 

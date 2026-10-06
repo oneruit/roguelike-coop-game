@@ -199,6 +199,9 @@ export class SimProjectileInternal {
   public isArrow: boolean;
   public isKukri: boolean;
   public isLightning: boolean;
+  public isIceSpike: boolean;
+  public isFireball: boolean;
+  public hasImpacted: boolean = false;
   public curveSign: number;
   public elapsedTime: number = 0;
   public hasTurnedBack: boolean = false;
@@ -227,6 +230,8 @@ export class SimProjectileInternal {
     this.isArrow = !!data.isArrow;
     this.isKukri = !!data.isKukri;
     this.isLightning = !!data.isLightning;
+    this.isIceSpike = !!data.isIceSpike;
+    this.isFireball = !!data.isFireball;
     this.curveSign = data.curveSign || 1;
     this.isOrbiting = !!data.isOrbiting;
     this.orbitRadius = data.orbitRadius || 2.4;
@@ -779,9 +784,25 @@ export class GameCore {
             proj.position.z -= proj.direction.z * proj.speed * dt;
           }
         }
+      } else if (proj.isFireball) {
+        if (!proj.hasImpacted) {
+          proj.position.x += proj.direction.x * proj.speed * dt;
+          proj.position.y += proj.direction.y * proj.speed * dt;
+          proj.position.z += proj.direction.z * proj.speed * dt;
+          if (proj.position.y <= 0.25) {
+            proj.hasImpacted = true;
+            proj.position.y = 0;
+            proj.lifetime = 0.24;
+          }
+        }
       } else {
         proj.position.x += proj.direction.x * proj.speed * dt;
         proj.position.z += proj.direction.z * proj.speed * dt;
+      }
+
+      // Fireball does not damage enemies until it impacts the ground
+      if (proj.isFireball && !proj.hasImpacted) {
+        continue;
       }
 
       // Check collision against enemies
@@ -797,7 +818,7 @@ export class GameCore {
           proj.hitEnemies.add(enemy.id);
           this.damageEnemy(enemy.id, proj.damage, proj.position, proj.ownerId, 0.2);
 
-          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning) {
+          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning && !proj.isIceSpike && !proj.isFireball) {
             proj.pierce--;
             if (proj.pierce <= 0) {
               proj.isAlive = false;

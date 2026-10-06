@@ -32,6 +32,8 @@ export interface SimProjectileData {
   isArrow?: boolean;
   isKukri?: boolean;
   isLightning?: boolean;
+  isIceSpike?: boolean;
+  isFireball?: boolean;
 }
 
 export interface SimEnemyRef {
@@ -962,6 +964,171 @@ export class SimLightningStrikeWeapon extends SimWeapon {
 }
 
 /**
+ * Ice Spike (Ледяной Шип) simulation weapon
+ */
+export class SimIceSpikeWeapon extends SimWeapon {
+  private spikeCount: number = 1;
+  private spikeRadius: number = 2.0;
+  private range: number = 18;
+
+  constructor() {
+    super('ice_spike', 'Ледяной Шип', '🧊', 1.10, 38);
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    spawnProjectile: (p: SimProjectileData) => void,
+    _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.cooldown) {
+      if (enemies.length === 0) return;
+
+      const targets = findClosestSimEnemies(enemies, player.position, this.spikeCount, this.range * this.range);
+      if (targets.length === 0) return;
+
+      this.timer = 0;
+      if (triggerAnim) triggerAnim(0.38);
+      if (emitSound) emitSound('magic');
+
+      for (let i = 0; i < this.spikeCount; i++) {
+        const targetCandidate = targets[i % targets.length];
+        const proj: SimProjectileData = {
+          id: `sim_icespike_${Math.random().toString(36).substring(2, 9)}`,
+          ownerId: player.id,
+          position: targetCandidate.position.clone(),
+          direction: new SimVec3(0, 1, 0),
+          speed: 0,
+          damage: this.damage * player.damageMultiplier,
+          pierce: 999,
+          lifetime: 0.38,
+          radius: this.spikeRadius,
+          color: 0x38bdf8,
+          isIceSpike: true
+        };
+        spawnProjectile(proj);
+      }
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 7;
+    if ([4, 8, 12, 16, 20].includes(this.level)) {
+      this.spikeCount++;
+    }
+    if ([3, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.35, Number((this.cooldown * 0.93).toFixed(3)));
+    }
+    if ([5, 10, 15].includes(this.level)) {
+      this.spikeRadius = Number((this.spikeRadius + 0.25).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+7 к урону'];
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 ледяной шип (всего ${this.spikeCount + 1})`);
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}
+
+/**
+ * Fireball (Огненный Шар) simulation weapon
+ */
+export class SimFireballWeapon extends SimWeapon {
+  private fireballCount: number = 1;
+  private explosionRadius: number = 2.5;
+  private range: number = 22;
+  private fallSpeed: number = 28;
+
+  constructor() {
+    super('fireball', 'Огненный Шар', '☄️', 1.35, 55);
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    spawnProjectile: (p: SimProjectileData) => void,
+    _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.cooldown) {
+      if (enemies.length === 0) return;
+
+      const targets = findClosestSimEnemies(enemies, player.position, this.fireballCount, this.range * this.range);
+      if (targets.length === 0) return;
+
+      this.timer = 0;
+      if (triggerAnim) triggerAnim(0.42);
+      if (emitSound) emitSound('magic');
+
+      for (let i = 0; i < this.fireballCount; i++) {
+        const targetCandidate = targets[i % targets.length];
+        const startHeight = 15.0;
+        const offsetDist = 2.8;
+        const startPos = new SimVec3(targetCandidate.position.x - offsetDist, startHeight, targetCandidate.position.z - offsetDist);
+        const targetPos = new SimVec3(targetCandidate.position.x, 0, targetCandidate.position.z);
+        const dir = targetPos.clone().sub(startPos).normalize();
+        const dist = startPos.distanceTo(targetPos);
+        const flightTime = dist / this.fallSpeed;
+
+        const proj: SimProjectileData = {
+          id: `sim_fireball_${Math.random().toString(36).substring(2, 9)}`,
+          ownerId: player.id,
+          position: startPos,
+          direction: dir,
+          speed: this.fallSpeed,
+          damage: this.damage * player.damageMultiplier,
+          pierce: 999,
+          lifetime: flightTime + 0.35,
+          radius: this.explosionRadius,
+          color: 0xf97316,
+          isFireball: true
+        };
+        spawnProjectile(proj);
+      }
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 10;
+    if ([4, 8, 12, 16, 20].includes(this.level)) {
+      this.fireballCount++;
+    }
+    if ([3, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
+    }
+    if ([5, 10, 15].includes(this.level)) {
+      this.explosionRadius = Number((this.explosionRadius + 0.35).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+10 к урону'];
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 огненный шар (всего ${this.fireballCount + 1})`);
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}
+
+/**
  * Creates weapon for character selection
  */
 export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon {
@@ -1005,6 +1172,10 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimChakramWeapon();
     case 'lightning_strike':
       return new SimLightningStrikeWeapon();
+    case 'ice_spike':
+      return new SimIceSpikeWeapon();
+    case 'fireball':
+      return new SimFireballWeapon();
     case 'orbiting_barrier':
       return new SimOrbitingBarrierWeapon();
     case 'holy_aura':

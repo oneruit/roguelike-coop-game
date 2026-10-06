@@ -1,5 +1,5 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
@@ -10,6 +10,7 @@ import { PublicRoomInfo } from '../net/RoomDirectory';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
 import { ProgressionManager } from '../core/ProgressionManager';
+import { TextureManager } from '../core/TextureManager';
 import * as THREE from 'three';
 
 export interface UpgradeOption {
@@ -43,9 +44,12 @@ export function getWeaponIconUrl(weaponId: string): string {
     orbiting_barrier: '/textures/weapon_orbiting_barrier.png',
     holy_aura: '/textures/weapon_holy_aura.png',
     whirlwind_slash: '/textures/weapon_whirlwind_slash.png',
-    lightning_strike: '/textures/weapon_lightning_strike.png'
+    lightning_strike: '/textures/weapon_lightning_strike.png',
+    ice_spike: '/textures/weapon_ice_spike.png',
+    fireball: '/textures/weapon_fireball.png'
   };
-  return map[weaponId] || `/textures/weapon_${weaponId}.png`;
+  const path = map[weaponId] || `/textures/weapon_${weaponId}.png`;
+  return TextureManager.getWeaponBlobUrl(path);
 }
 
 export class HUD {
@@ -600,7 +604,7 @@ export class HUD {
     const settingsTabBtns = document.querySelectorAll<HTMLButtonElement>('.settings-tab-btn');
     settingsTabBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-tab') as 'video' | 'audio' | 'ui' | 'controls' | null;
+        const tab = btn.getAttribute('data-tab') as 'video' | 'audio' | 'ui' | 'controls' | 'data' | null;
         if (tab) {
           this.activateSettingsTab(tab);
         }
@@ -626,6 +630,25 @@ export class HUD {
         localStorage.setItem('wildwest_shadow_quality', String(val));
         if (this.onShadowQualityChanged) {
           this.onShadowQualityChanged(val);
+        }
+      });
+    }
+
+    const clearDataBtn = document.getElementById('settings-btn-clear-data') as HTMLButtonElement | null;
+    if (clearDataBtn) {
+      clearDataBtn.addEventListener('click', () => {
+        const confirmClear = window.confirm(
+          'Вы действительно хотите удалить все сохранённые данные игры?\n\n' +
+          'Это действие безвозвратно сбросит уровень аккаунта, открытых героев, золото, выполненные квесты и настройки.'
+        );
+        if (confirmClear) {
+          try {
+            localStorage.clear();
+            sessionStorage.clear();
+          } catch (e) {
+            console.error('Failed to clear storage:', e);
+          }
+          window.location.reload();
         }
       });
     }
@@ -2224,8 +2247,8 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'pause');
   }
 
-  public activateSettingsTab(tabName: 'video' | 'audio' | 'ui' | 'controls') {
-    const tabs: ('video' | 'audio' | 'ui' | 'controls')[] = ['video', 'audio', 'ui', 'controls'];
+  public activateSettingsTab(tabName: 'video' | 'audio' | 'ui' | 'controls' | 'data') {
+    const tabs: ('video' | 'audio' | 'ui' | 'controls' | 'data')[] = ['video', 'audio', 'ui', 'controls', 'data'];
     for (const t of tabs) {
       const btn = document.getElementById(`settings-tab-btn-${t}`);
       const pane = document.getElementById(`settings-tab-${t}`);
@@ -2712,7 +2735,7 @@ export class HUD {
         slot.className = 'weapon-slot';
         slot.setAttribute('data-weapon-id', weapon.id);
         slot.title = `${weapon.name} (Ур. ${weapon.level})`;
-        const iconUrl = weapon.iconImage || getWeaponIconUrl(weapon.id);
+        const iconUrl = TextureManager.getWeaponBlobUrl(weapon.iconImage || getWeaponIconUrl(weapon.id));
         slot.innerHTML = `
           <img src="${iconUrl}" class="weapon-icon-img" alt="${weapon.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
           <span class="weapon-icon" style="display:none">${weapon.icon}</span>
@@ -3166,6 +3189,32 @@ export class HUD {
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху',
           apply: () => player.weapons.push(new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)))
+        });
+      }
+
+      const hasIceSpike = player.weapons.some(w => w.id === 'ice_spike');
+      if (!hasIceSpike) {
+        pool.push({
+          id: 'new_ice_spike',
+          title: 'Новое: Ледяной Шип',
+          icon: '🧊',
+          iconImage: getWeaponIconUrl('ice_spike'),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском',
+          apply: () => player.weapons.push(new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)))
+        });
+      }
+
+      const hasFireball = player.weapons.some(w => w.id === 'fireball');
+      if (!hasFireball) {
+        pool.push({
+          id: 'new_fireball',
+          title: 'Новое: Огненный Шар',
+          icon: '☄️',
+          iconImage: getWeaponIconUrl('fireball'),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области',
+          apply: () => player.weapons.push(new FireballWeapon(() => player.triggerAttackAnim(0.42)))
         });
       }
     }

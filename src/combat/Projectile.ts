@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { TextureManager } from '../core/TextureManager';
+import { SoundManager } from '../core/SoundManager';
 
 export interface ProjectileOptions {
   position: THREE.Vector3;
@@ -21,6 +22,8 @@ export interface ProjectileOptions {
   isArrow?: boolean;
   isKukri?: boolean;
   isLightning?: boolean;
+  isIceSpike?: boolean;
+  isFireball?: boolean;
 }
 
 export class Projectile {
@@ -37,6 +40,9 @@ export class Projectile {
   public isArrow = false;
   public isKukri = false;
   public isLightning = false;
+  public isIceSpike = false;
+  public isFireball = false;
+  public hasImpacted = false;
   public isCosmetic: boolean;
   public ownerId?: string;
   public isAlive = true;
@@ -61,6 +67,23 @@ export class Projectile {
   private groundRingMesh?: THREE.Mesh;
   private groundRingMat?: THREE.MeshBasicMaterial;
   private groundDiscMat?: THREE.MeshBasicMaterial;
+
+  // Ice Spike specific visuals
+  private iceSpikeGroup?: THREE.Group;
+  private iceSpikeMaterial?: THREE.MeshStandardMaterial;
+  private iceGroundRingMesh?: THREE.Mesh;
+  private iceGroundRingMat?: THREE.MeshBasicMaterial;
+
+  // Fireball specific visuals
+  private fireballMesh?: THREE.Mesh;
+  private fireballTailMesh?: THREE.Mesh;
+  private fireballImpactRing?: THREE.Mesh;
+  private fireballImpactDisc?: THREE.Mesh;
+  private fireballMaterial?: THREE.MeshStandardMaterial;
+  private fireballTailMat?: THREE.MeshBasicMaterial;
+  private fireballRingMat?: THREE.MeshBasicMaterial;
+  private fireballDiscMat?: THREE.MeshBasicMaterial;
+  private impactLifetime = 0.24;
 
   // Weapon VFX Opacity control
   public static vfxOpacity: number = 1.0;
@@ -110,6 +133,30 @@ export class Projectile {
         p.groundDiscMat.opacity = 0.95 * clamped;
         p.groundDiscMat.visible = clamped > 0.005;
       }
+      if (p.iceSpikeMaterial) {
+        p.iceSpikeMaterial.opacity = 0.95 * clamped;
+        p.iceSpikeMaterial.visible = clamped > 0.005;
+      }
+      if (p.iceGroundRingMat) {
+        p.iceGroundRingMat.opacity = 0.9 * clamped;
+        p.iceGroundRingMat.visible = clamped > 0.005;
+      }
+      if (p.fireballMaterial) {
+        p.fireballMaterial.opacity = clamped;
+        p.fireballMaterial.visible = clamped > 0.005;
+      }
+      if (p.fireballTailMat) {
+        p.fireballTailMat.opacity = 0.85 * clamped;
+        p.fireballTailMat.visible = clamped > 0.005;
+      }
+      if (p.fireballRingMat) {
+        p.fireballRingMat.opacity = 0.95 * clamped;
+        p.fireballRingMat.visible = clamped > 0.005;
+      }
+      if (p.fireballDiscMat) {
+        p.fireballDiscMat.opacity = 0.9 * clamped;
+        p.fireballDiscMat.visible = clamped > 0.005;
+      }
     }
   }
 
@@ -124,6 +171,18 @@ export class Projectile {
   private static lightningGeomB: THREE.PlaneGeometry | null = null;
   private static lightningRingGeom: THREE.RingGeometry | null = null;
   private static lightningDiscGeom: THREE.CircleGeometry | null = null;
+
+  // Shared assets for Ice Spike
+  private static iceSpikeMainGeom: THREE.ConeGeometry | null = null;
+  private static iceSpikeLeftGeom: THREE.ConeGeometry | null = null;
+  private static iceSpikeRightGeom: THREE.ConeGeometry | null = null;
+  private static iceGroundRingGeom: THREE.RingGeometry | null = null;
+
+  // Shared assets for Fireball
+  private static fireballSphereGeom: THREE.SphereGeometry | null = null;
+  private static fireballTailGeom: THREE.CylinderGeometry | null = null;
+  private static fireballRingGeom: THREE.RingGeometry | null = null;
+  private static fireballDiscGeom: THREE.CircleGeometry | null = null;
 
   // Shared assets for Chakram (Spinning Blade Plane)
   private static chakramGeom: THREE.PlaneGeometry | null = null;
@@ -180,12 +239,112 @@ export class Projectile {
     this.isArrow = !!options.isArrow;
     this.isKukri = !!options.isKukri;
     this.isLightning = !!options.isLightning;
+    this.isIceSpike = !!options.isIceSpike;
+    this.isFireball = !!options.isFireball;
     this.curveSign = options.curveSign ?? 1;
     this.maxLifetime = options.lifetime;
 
     this.mesh = new THREE.Group();
 
-    if (this.isLightning) {
+    if (this.isIceSpike) {
+      if (!Projectile.iceSpikeMainGeom || !Projectile.iceSpikeLeftGeom || !Projectile.iceSpikeRightGeom || !Projectile.iceGroundRingGeom) {
+        const m = new THREE.ConeGeometry(0.48, 2.9, 5, 1);
+        m.translate(0, 1.45, 0);
+        Projectile.iceSpikeMainGeom = m;
+
+        const l = new THREE.ConeGeometry(0.30, 1.7, 5, 1);
+        l.translate(0, 0.85, 0);
+        l.rotateZ(0.26);
+        Projectile.iceSpikeLeftGeom = l;
+
+        const r = new THREE.ConeGeometry(0.28, 1.5, 5, 1);
+        r.translate(0, 0.75, 0);
+        r.rotateZ(-0.24);
+        Projectile.iceSpikeRightGeom = r;
+
+        const ring = new THREE.RingGeometry(0.15, 1.0, 20);
+        ring.rotateX(-Math.PI / 2);
+        Projectile.iceGroundRingGeom = ring;
+      }
+
+      this.iceSpikeMaterial = new THREE.MeshStandardMaterial({
+        color: 0xa5f3fc,
+        emissive: 0x0891b2,
+        emissiveIntensity: 1.4 * Projectile.vfxOpacity,
+        roughness: 0.1,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0.95 * Projectile.vfxOpacity,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+
+      this.iceSpikeGroup = new THREE.Group();
+      const mMesh = new THREE.Mesh(Projectile.iceSpikeMainGeom, this.iceSpikeMaterial);
+      const lMesh = new THREE.Mesh(Projectile.iceSpikeLeftGeom!, this.iceSpikeMaterial);
+      lMesh.position.set(-0.35, 0, 0.2);
+      const rMesh = new THREE.Mesh(Projectile.iceSpikeRightGeom!, this.iceSpikeMaterial);
+      rMesh.position.set(0.32, 0, -0.22);
+      this.iceSpikeGroup.add(mMesh, lMesh, rMesh);
+      // Start buried below ground
+      this.iceSpikeGroup.position.y = -2.9;
+      this.mesh.add(this.iceSpikeGroup);
+
+      this.iceGroundRingMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.9 * Projectile.vfxOpacity,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      this.iceGroundRingMesh = new THREE.Mesh(Projectile.iceGroundRingGeom!, this.iceGroundRingMat);
+      this.iceGroundRingMesh.position.y = 0.04;
+      this.iceGroundRingMesh.scale.set(this.radius, this.radius, this.radius);
+      this.mesh.add(this.iceGroundRingMesh);
+    } else if (this.isFireball) {
+      if (!Projectile.fireballSphereGeom || !Projectile.fireballTailGeom || !Projectile.fireballRingGeom || !Projectile.fireballDiscGeom) {
+        Projectile.fireballSphereGeom = new THREE.SphereGeometry(0.38, 12, 12);
+        const tail = new THREE.CylinderGeometry(0.35, 0.05, 1.8, 8, 1, true);
+        tail.translate(0, 0.9, 0);
+        Projectile.fireballTailGeom = tail;
+        const r = new THREE.RingGeometry(0.2, 1.0, 24);
+        r.rotateX(-Math.PI / 2);
+        Projectile.fireballRingGeom = r;
+        const d = new THREE.CircleGeometry(0.5, 16);
+        d.rotateX(-Math.PI / 2);
+        Projectile.fireballDiscGeom = d;
+      }
+
+      this.fireballMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffedd5,
+        emissive: 0xf97316,
+        emissiveIntensity: 2.2 * Projectile.vfxOpacity,
+        roughness: 0.2,
+        transparent: true,
+        opacity: Projectile.vfxOpacity,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      this.fireballMesh = new THREE.Mesh(Projectile.fireballSphereGeom, this.fireballMaterial);
+      this.mesh.add(this.fireballMesh);
+
+      this.fireballTailMat = new THREE.MeshBasicMaterial({
+        color: 0xfbbf24,
+        transparent: true,
+        opacity: 0.85 * Projectile.vfxOpacity,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      this.fireballTailMesh = new THREE.Mesh(Projectile.fireballTailGeom!, this.fireballTailMat);
+      this.mesh.add(this.fireballTailMesh);
+
+      // Orient tail backwards along negative fall direction
+      const up = new THREE.Vector3(0, 1, 0);
+      const negDir = this.direction.clone().negate().normalize();
+      this.fireballTailMesh.quaternion.setFromUnitVectors(up, negDir);
+    } else if (this.isLightning) {
       if (!Projectile.lightningGeomA || !Projectile.lightningGeomB || !Projectile.lightningRingGeom || !Projectile.lightningDiscGeom) {
         const w = 2.6;
         const h = 18.0;
@@ -384,7 +543,95 @@ export class Projectile {
       return;
     }
 
-    if (this.isLightning) {
+    if (this.isIceSpike) {
+      const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
+      if (this.iceSpikeGroup) {
+        if (progress < 0.28) {
+          // Rapidly thrust upwards from underneath the ground (-2.9 to 0)
+          const t = progress / 0.28;
+          const easeOut = Math.sin((t * Math.PI) / 2);
+          this.iceSpikeGroup.position.y = -2.9 * (1 - easeOut);
+        } else if (progress < 0.65) {
+          // Peak extension with subtle crystalline tremor
+          this.iceSpikeGroup.position.y = 0.0 + (Math.random() - 0.5) * 0.04;
+        } else {
+          // Shatter and dissolve
+          const t = (progress - 0.65) / 0.35;
+          const fade = Math.max(0, 1 - t);
+          this.iceSpikeGroup.scale.set(fade, fade, fade);
+          if (this.iceSpikeMaterial) {
+            this.iceSpikeMaterial.opacity = fade * 0.95 * Projectile.vfxOpacity;
+            this.iceSpikeMaterial.visible = Projectile.vfxOpacity > 0.005;
+          }
+        }
+      }
+      if (this.iceGroundRingMesh && this.iceGroundRingMat) {
+        const ringScale = this.radius * (0.6 + progress * 0.9);
+        this.iceGroundRingMesh.scale.set(ringScale, ringScale, ringScale);
+        this.iceGroundRingMat.opacity = Math.max(0, (1 - progress) * 0.9) * Projectile.vfxOpacity;
+        this.iceGroundRingMat.visible = Projectile.vfxOpacity > 0.005;
+      }
+      return;
+    } else if (this.isFireball) {
+      if (!this.hasImpacted) {
+        // Descending along trajectory towards impact point
+        this.position.addScaledVector(this.direction, this.speed * dt);
+        this.mesh.position.copy(this.position);
+
+        if (this.position.y <= 0.25) {
+          this.hasImpacted = true;
+          this.position.y = 0.05;
+          this.mesh.position.copy(this.position);
+          this.lifetime = this.impactLifetime;
+          this.maxLifetime = this.impactLifetime;
+
+          if (this.fireballMesh) this.fireballMesh.visible = false;
+          if (this.fireballTailMesh) this.fireballTailMesh.visible = false;
+
+          this.fireballRingMat = new THREE.MeshBasicMaterial({
+            color: 0xf97316,
+            transparent: true,
+            opacity: 0.95 * Projectile.vfxOpacity,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+            visible: Projectile.vfxOpacity > 0.005
+          });
+          this.fireballImpactRing = new THREE.Mesh(Projectile.fireballRingGeom!, this.fireballRingMat);
+          this.fireballImpactRing.position.y = 0.04;
+          this.mesh.add(this.fireballImpactRing);
+
+          this.fireballDiscMat = new THREE.MeshBasicMaterial({
+            color: 0xfef08a,
+            transparent: true,
+            opacity: 0.9 * Projectile.vfxOpacity,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+            visible: Projectile.vfxOpacity > 0.005
+          });
+          this.fireballImpactDisc = new THREE.Mesh(Projectile.fireballDiscGeom!, this.fireballDiscMat);
+          this.fireballImpactDisc.position.y = 0.05;
+          this.mesh.add(this.fireballImpactDisc);
+
+          SoundManager.playFireballImpact();
+        }
+      } else {
+        // Detonation explosion expansion phase
+        const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
+        if (this.fireballImpactRing && this.fireballRingMat) {
+          const ringScale = this.radius * (0.4 + progress * 1.6);
+          this.fireballImpactRing.scale.set(ringScale, ringScale, ringScale);
+          this.fireballRingMat.opacity = Math.max(0, (1 - progress) * 0.95) * Projectile.vfxOpacity;
+          this.fireballRingMat.visible = Projectile.vfxOpacity > 0.005;
+        }
+        if (this.fireballImpactDisc && this.fireballDiscMat) {
+          this.fireballDiscMat.opacity = Math.max(0, (1 - progress * 1.7) * 0.9) * Projectile.vfxOpacity;
+          this.fireballDiscMat.visible = Projectile.vfxOpacity > 0.005;
+        }
+      }
+      return;
+    } else if (this.isLightning) {
       const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
       const flicker = 0.8 + Math.random() * 0.2;
       const alpha = Math.max(0, 1 - progress * progress) * flicker * Projectile.vfxOpacity;
@@ -464,7 +711,7 @@ export class Projectile {
 
   public onHit(): boolean {
     this.pierce -= 1;
-    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning) {
+    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning && !this.isIceSpike && !this.isFireball) {
       this.isAlive = false;
       return true;
     }
@@ -493,6 +740,30 @@ export class Projectile {
     if (this.groundDiscMat) {
       this.groundDiscMat.dispose();
       this.groundDiscMat = undefined;
+    }
+    if (this.iceSpikeMaterial) {
+      this.iceSpikeMaterial.dispose();
+      this.iceSpikeMaterial = undefined;
+    }
+    if (this.iceGroundRingMat) {
+      this.iceGroundRingMat.dispose();
+      this.iceGroundRingMat = undefined;
+    }
+    if (this.fireballMaterial) {
+      this.fireballMaterial.dispose();
+      this.fireballMaterial = undefined;
+    }
+    if (this.fireballTailMat) {
+      this.fireballTailMat.dispose();
+      this.fireballTailMat = undefined;
+    }
+    if (this.fireballRingMat) {
+      this.fireballRingMat.dispose();
+      this.fireballRingMat = undefined;
+    }
+    if (this.fireballDiscMat) {
+      this.fireballDiscMat.dispose();
+      this.fireballDiscMat = undefined;
     }
   }
 }
