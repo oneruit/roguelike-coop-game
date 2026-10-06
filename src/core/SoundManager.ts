@@ -680,5 +680,25 @@ export class SoundManager {
       osc.stop(ctx.currentTime + idx * 0.04 + 0.22);
     });
   }
+
+  /**
+   * Sound when clicking UI buttons/cards
+   */
+  public static playButtonClick() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(520, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.06);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.08);
+  }
 }
 

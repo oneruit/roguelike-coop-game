@@ -1512,6 +1512,277 @@ body, html {
   pointer-events: none;
 }
 
+/* Game Title Logo Banner (Top Center) */
+.main-menu-game-title {
+  position: absolute;
+  top: clamp(14px, 2.5vh, 28px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.main-menu-logo-img {
+  width: clamp(240px, 26vw, 360px);
+  height: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.75)) drop-shadow(0 0 25px rgba(0, 168, 255, 0.45));
+  animation: riftLightningFlicker 6.5s infinite ease-in-out;
+}
+
+@keyframes riftLightningFlicker {
+  0%, 46%, 50%, 54%, 100% {
+    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.65)) drop-shadow(0 0 22px rgba(0, 168, 255, 0.4));
+    transform: scale(1);
+  }
+  48%, 52% {
+    filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.98)) drop-shadow(0 0 42px rgba(0, 229, 255, 0.88)) brightness(1.2);
+    transform: scale(1.02);
+  }
+  49% {
+    filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.7)) drop-shadow(0 0 26px rgba(0, 168, 255, 0.45));
+    transform: scale(1.005);
+  }
+}
+
+/* Right Side: Quests Sidebar (Daily & Weekly) */
+.main-menu-quests-sidebar {
+  position: absolute;
+  right: clamp(20px, 4.2vw, 60px);
+  top: clamp(35px, 6vh, 60px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: clamp(285px, 23vw, 345px);
+  pointer-events: auto;
+}
+
+.main-menu-quest-card {
+  position: relative;
+  background: rgba(22, 27, 33, 0.93);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2.5px solid #4a5462;
+  border-radius: 12px;
+  padding: 10px 12px 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12),
+              inset 0 0 14px rgba(0, 0, 0, 0.6);
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  user-select: none;
+}
+
+.main-menu-quest-card:hover {
+  transform: translateY(-2px);
+  border-color: #64748b;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.9),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2),
+              0 0 18px rgba(56, 189, 248, 0.12);
+}
+
+/* Metal Corner Screw Rivets */
+.panel-rivet {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #cbd5e1, #64748b 60%, #1e293b);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), inset 0 0 1px #ffffff;
+  pointer-events: none;
+}
+
+.panel-rivet.rivet-tl { top: 6px; left: 6px; }
+.panel-rivet.rivet-tr { top: 6px; right: 6px; }
+.panel-rivet.rivet-bl { bottom: 6px; left: 6px; }
+.panel-rivet.rivet-br { bottom: 6px; right: 6px; }
+
+/* Header Plaques */
+.quest-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6.5px 12px;
+  margin-bottom: 9px;
+  border-radius: 6px;
+  text-align: center;
+  font-family: 'Cinzel', 'Montserrat', sans-serif;
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.quest-card-header:hover {
+  filter: brightness(1.1);
+}
+
+.quest-card-header.header-daily {
+  background: linear-gradient(180deg, #44372c 0%, #30261e 100%);
+  border: 1.5px solid #6c5440;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.quest-card-header.header-weekly {
+  background: linear-gradient(180deg, #53331f 0%, #3a2213 100%);
+  border: 1.5px solid #7c4b2a;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.quest-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Individual Quest Item Rows */
+.menu-quest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  background: rgba(13, 17, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+
+.menu-quest-item:hover {
+  background: rgba(22, 29, 38, 0.9);
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateX(-2px);
+}
+
+.quest-item-icon-box {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: #0f1318;
+  border: 1.5px solid #3c4656;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.quest-svg-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.quest-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quest-item-title {
+  font-family: 'Montserrat', 'Outfit', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.quest-item-bar-wrap {
+  position: relative;
+  width: 100%;
+  height: 13px;
+  background: #0d1014;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.quest-item-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c2410c 0%, #ea580c 50%, #f97316 100%);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.55);
+  border-radius: 5px;
+  transition: width 0.35s ease;
+}
+
+.quest-item-bar-fill.completed {
+  background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.quest-item-bar-val {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', monospace, sans-serif;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.6px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}
+
+.quest-item-reward-box {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: #0f1318;
+  border: 1.5px solid #3c4656;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.quest-item-reward-box:hover {
+  border-color: #f59e0b;
+  transform: scale(1.08);
+}
+
+.reward-svg-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.reward-amount {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 3px #000;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .main-menu-card {
   position: relative;
   z-index: 10;
@@ -1775,6 +2046,12 @@ body, html {
   filter: drop-shadow(0 0 6px #ff1744);
 }
 
+@media (max-width: 950px) {
+  .main-menu-quests-sidebar {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .main-menu-modal {
     align-items: center !important;
@@ -1795,6 +2072,54 @@ body, html {
   }
   .main-menu-hud-corner {
     margin-left: 0;
+  }
+  .main-menu-game-title {
+    top: 12px;
+  }
+  .main-menu-logo-img {
+    width: 220px;
+  }
+}
+
+@media (max-height: 560px) {
+  .main-menu-game-title {
+    top: 8px;
+  }
+  .main-menu-logo-img {
+    width: 200px;
+  }
+  .main-menu-quests-sidebar {
+    top: 10px;
+    gap: 8px;
+    width: 270px;
+  }
+  .main-menu-quest-card {
+    padding: 6px 8px 8px;
+  }
+  .quest-card-header {
+    padding: 4px 8px;
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+  .menu-quest-item {
+    padding: 4px 6px;
+    gap: 6px;
+  }
+  .quest-item-icon-box,
+  .quest-item-reward-box {
+    width: 30px;
+    height: 30px;
+  }
+  .quest-svg-icon {
+    width: 22px;
+    height: 22px;
+  }
+  .reward-svg-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .quest-item-title {
+    font-size: 11px;
   }
 }
 
