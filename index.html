@@ -563,6 +563,9 @@
             <button id="settings-tab-btn-controls" class="settings-tab-btn" type="button" data-tab="controls">
               <span class="tab-icon">🎮</span> Управление
             </button>
+            <button id="settings-tab-btn-data" class="settings-tab-btn" type="button" data-tab="data">
+              <span class="tab-icon">💾</span> Данные
+            </button>
           </div>
 
           <div class="settings-content">
@@ -678,6 +681,21 @@
                 <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 14px; width: 100%;">
                   📖 Открыть справочник
                 </button>
+              </div>
+            </div>
+
+            <!-- 5. Вкладка: ДАННЫЕ -->
+            <div id="settings-tab-data" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Хранилище и Прогресс / Storage & Data</div>
+                <div class="settings-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                  <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.45; margin: 0;">
+                    Сброс данных удаляет весь локальный прогресс игры: уровни аккаунта, открытых героев, золото, выполненные квесты Лешего и пользовательские настройки.
+                  </p>
+                  <button id="settings-btn-clear-data" class="settings-danger-btn" style="margin-top: 8px; width: 100%;">
+                    🗑️ Очистить данные / Clear Data
+                  </button>
+                </div>
               </div>
             </div>
           </div>

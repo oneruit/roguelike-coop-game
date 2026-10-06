@@ -26,6 +26,50 @@ export type SwordsmanTextures = AnimatedCharacterTextures;
 export class TextureManager {
   private static loader = new THREE.TextureLoader();
   private static cache: Map<string, THREE.Texture> = new Map();
+  private static weaponBlobUrls: Map<string, string> = new Map();
+
+  public static readonly WEAPON_ICON_URLS: string[] = [
+    '/textures/weapon_astral_staff.png',
+    '/textures/weapon_bow.png',
+    '/textures/weapon_chakram.png',
+    '/textures/weapon_flail.png',
+    '/textures/weapon_greatsword.png',
+    '/textures/weapon_holy_aura.png',
+    '/textures/weapon_katana_slash.png',
+    '/textures/weapon_kukri.png',
+    '/textures/weapon_lightning_strike.png',
+    '/textures/weapon_ice_spike.png',
+    '/textures/weapon_fireball.png',
+    '/textures/weapon_orbiting_barrier.png',
+    '/textures/weapon_reaper_scythe.png',
+    '/textures/weapon_whirlwind_slash.png'
+  ];
+
+  public static getWeaponBlobUrl(pathOrId: string): string {
+    if (!pathOrId) return '';
+    if (pathOrId.startsWith('blob:') || pathOrId.startsWith('data:')) {
+      return pathOrId;
+    }
+    const cleanId = pathOrId.replace('/textures/weapon_', '').replace('.png', '');
+    const standardPath = `/textures/weapon_${cleanId}.png`;
+    return this.weaponBlobUrls.get(standardPath) || this.weaponBlobUrls.get(pathOrId) || pathOrId;
+  }
+
+  public static initWeaponBlobs(): void {
+    if (typeof window === 'undefined' || typeof fetch === 'undefined') return;
+    this.WEAPON_ICON_URLS.forEach(async (url) => {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          this.weaponBlobUrls.set(url, blobUrl);
+          const id = url.replace('/textures/weapon_', '').replace('.png', '');
+          this.weaponBlobUrls.set(id, blobUrl);
+        }
+      } catch {}
+    });
+  }
 
   // Shared shadow resources (created once, shared across thousands of entities)
   private static sharedShadowTexture: THREE.CanvasTexture | null = null;
@@ -69,10 +113,17 @@ export class TextureManager {
     '/textures/weapon_katana_slash.png',
     '/textures/weapon_kukri.png',
     '/textures/weapon_lightning_strike.png',
+    '/textures/weapon_ice_spike.png',
+    '/textures/weapon_fireball.png',
     '/textures/weapon_orbiting_barrier.png',
     '/textures/weapon_whirlwind_slash.png',
+    '/textures/weapon_reaper_scythe.png',
     '/textures/bullet_revolver.png',
     '/textures/vfx_lightning.png',
+    '/textures/vfx_fire_ring.png',
+    '/textures/vfx_ice_spike.png',
+    '/textures/vfx_fireball.png',
+    '/textures/vfx_scythe.png',
 
     // Heroes - 6 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
     '/textures/hero_ronin_front.png',
@@ -211,6 +262,24 @@ export class TextureManager {
     report('arrow_texture');
     this.createShadowMesh(1.0);
     report('shadow_texture');
+
+    // Preload and convert all weapon icons to memory Blob URLs (completely avoids 304 network requests)
+    await Promise.all(
+      this.WEAPON_ICON_URLS.map(async (url) => {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            const blob = await res.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            this.weaponBlobUrls.set(url, blobUrl);
+            const id = url.replace('/textures/weapon_', '').replace('.png', '');
+            this.weaponBlobUrls.set(id, blobUrl);
+          }
+        } catch {
+          // Graceful fallback
+        }
+      })
+    );
 
     // Concurrently load and decode images in batches of 6
     const batchSize = 6;
@@ -442,28 +511,69 @@ export class TextureManager {
     return tex;
   }
 
+  public static getIceSpikeTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_ice_spike.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getFireballTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_fireball.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getScytheTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_scythe.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getFireRingTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_fire_ring.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
   /**
    * High-performance contact shadow mesh sharing a single texture and material.
    */
   public static createShadowMesh(radius: number): THREE.Mesh {
     if (!this.sharedShadowTexture) {
       const canvas = document.createElement('canvas');
-      canvas.width = 64;
-      canvas.height = 64;
+      canvas.width = 128;
+      canvas.height = 128;
       const ctx = canvas.getContext('2d')!;
-      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-      grad.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
-      grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.35)');
+      const cx = 64;
+      const cy = 64;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0.72)');
+      grad.addColorStop(0.35, 'rgba(0, 0, 0, 0.45)');
+      grad.addColorStop(0.7, 'rgba(0, 0, 0, 0.18)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1.0, 0.65);
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 64, 64);
+      ctx.beginPath();
+      ctx.arc(0, 0, 60, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
 
       this.sharedShadowTexture = new THREE.CanvasTexture(canvas);
       this.sharedShadowTexture.minFilter = THREE.LinearFilter;
       this.sharedShadowMaterial = new THREE.MeshBasicMaterial({
         map: this.sharedShadowTexture,
         transparent: true,
-        depthWrite: false
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
       });
     }
 
@@ -475,3 +585,7 @@ export class TextureManager {
     return shadow;
   }
 }
+
+// Immediately initiate background prefetch of weapon icon blobs
+TextureManager.initWeaponBlobs();
+

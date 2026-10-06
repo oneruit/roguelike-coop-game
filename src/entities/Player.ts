@@ -39,6 +39,7 @@ export class Player {
   public position: THREE.Vector3;
   private spriteMesh: THREE.Mesh;
   private spriteMaterial: THREE.MeshBasicMaterial;
+  private customDepthMaterial!: THREE.MeshDepthMaterial;
   private shadowMesh: THREE.Mesh;
 
   // Directional Textures & Animated State Machine
@@ -157,16 +158,23 @@ export class Player {
     this.spriteMaterial = new THREE.MeshBasicMaterial({
       map: this.animatedTextures.idle,
       transparent: true,
-      alphaTest: 0.05,
+      alphaTest: 0.25,
       side: THREE.DoubleSide,
-      depthWrite: false,
-      depthTest: false
+      depthWrite: true,
+      depthTest: true
     });
 
     this.spriteMesh = new THREE.Mesh(this.roninGeom, this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
     this.spriteMesh.position.y = 0.05;
-    this.spriteMesh.renderOrder = 25;
+    this.spriteMesh.renderOrder = 0;
+    this.customDepthMaterial = new THREE.MeshDepthMaterial({
+      depthPacking: THREE.RGBADepthPacking,
+      map: this.spriteMaterial.map,
+      alphaTest: 0.25
+    });
+    this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
+    this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
 
     // Ground Shadow
@@ -297,6 +305,10 @@ export class Player {
     this.loadCharacterTextures(this.charType);
     this.spriteMesh.geometry = this.roninGeom;
     this.spriteMaterial.map = this.animatedTextures.idle;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.animatedTextures.idle;
+      this.customDepthMaterial.needsUpdate = true;
+    }
     this.animState = 'IDLE';
     this.animFrameTimer = 0;
     this.attackAnimTimer = 0;
@@ -772,6 +784,10 @@ export class Player {
 
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = tex;
+        this.customDepthMaterial.needsUpdate = true;
+      }
     }
 
     // Three.js UV repeat and offset mapping

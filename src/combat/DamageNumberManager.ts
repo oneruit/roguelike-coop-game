@@ -18,11 +18,16 @@ export class DamageNumberManager {
     this.container = document.getElementById('damage-numbers-layer') || document.body;
   }
 
-  public spawnDamage(worldPos: THREE.Vector3, amount: number, isCrit = false, camera?: THREE.Camera) {
+  public spawnDamage(worldPos: THREE.Vector3, amount: number, isCrit = false, camera?: THREE.Camera, isBleed = false) {
     if (!DamageNumberManager.damageEnabled) return;
     const el = document.createElement('div');
-    el.className = `dmg-number ${isCrit ? 'dmg-crit' : ''}`;
-    el.innerText = `${Math.round(amount)}${isCrit ? '!' : ''}`;
+    el.className = `dmg-number ${isCrit ? 'dmg-crit' : ''} ${isBleed ? 'dmg-bleed' : ''}`;
+    el.innerText = `${Math.round(amount)}${isCrit ? '!' : (isBleed ? '🩸' : '')}`;
+    if (isBleed) {
+      el.style.color = '#f87171';
+      el.style.textShadow = '0 0 6px #991b1b, 0 1px 2px #000';
+      el.style.fontWeight = '800';
+    }
 
     if (camera) {
       const v = worldPos.clone().add(new THREE.Vector3(
