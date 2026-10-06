@@ -395,8 +395,23 @@ export class OrbitingBarrierWeapon extends Weapon {
  * Holy Aura / Dynamite Aura
  */
 export class HolyAuraWeapon extends Weapon {
+  private static vfxOpacity: number = 1.0;
+  private static instances = new Set<HolyAuraWeapon>();
+
+  public static setVfxOpacity(val: number) {
+    const clamped = Math.max(0, Math.min(1, val));
+    HolyAuraWeapon.vfxOpacity = clamped;
+    for (const inst of HolyAuraWeapon.instances) {
+      if (inst.auraMat) {
+        inst.auraMat.opacity = 0.4 * clamped;
+        inst.auraMat.visible = clamped > 0.005;
+      }
+    }
+  }
+
   private radius: number = 3.5;
   private auraMesh: THREE.Mesh | null = null;
+  private auraMat: THREE.MeshBasicMaterial | null = null;
 
   constructor() {
     super('holy_aura', 'Огненный Периметр', '🔥', 0.50, 16);
@@ -436,23 +451,29 @@ export class HolyAuraWeapon extends Weapon {
 
   public initVisual(scene: THREE.Scene, playerPos: THREE.Vector3) {
     const geom = new THREE.RingGeometry(this.radius * 0.85, this.radius, 32);
-    const mat = new THREE.MeshBasicMaterial({
+    this.auraMat = new THREE.MeshBasicMaterial({
       color: 0xf97316,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.4
+      opacity: 0.4 * HolyAuraWeapon.vfxOpacity,
+      visible: HolyAuraWeapon.vfxOpacity > 0.005
     });
-    this.auraMesh = new THREE.Mesh(geom, mat);
+    this.auraMesh = new THREE.Mesh(geom, this.auraMat);
     this.auraMesh.rotation.x = -Math.PI / 2;
     this.auraMesh.position.set(playerPos.x, 0.08, playerPos.z);
     scene.add(this.auraMesh);
+    HolyAuraWeapon.instances.add(this);
   }
 
   public destroy(scene: THREE.Scene) {
+    HolyAuraWeapon.instances.delete(this);
     if (this.auraMesh) {
       scene.remove(this.auraMesh);
       this.auraMesh.geometry.dispose();
-      (this.auraMesh.material as THREE.Material).dispose();
+      if (this.auraMat) {
+        this.auraMat.dispose();
+        this.auraMat = null;
+      }
       this.auraMesh = null;
     }
   }

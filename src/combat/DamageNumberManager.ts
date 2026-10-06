@@ -1,7 +1,17 @@
 import * as THREE from 'three';
 
 export class DamageNumberManager {
-  public static enabled = true;
+  public static damageEnabled = true;
+  public static xpEnabled = true;
+
+  // Backward compatibility alias
+  public static get enabled(): boolean {
+    return DamageNumberManager.damageEnabled;
+  }
+  public static set enabled(val: boolean) {
+    DamageNumberManager.damageEnabled = val;
+  }
+
   private container: HTMLElement;
 
   constructor() {
@@ -9,7 +19,7 @@ export class DamageNumberManager {
   }
 
   public spawnDamage(worldPos: THREE.Vector3, amount: number, isCrit = false, camera?: THREE.Camera) {
-    if (!DamageNumberManager.enabled) return;
+    if (!DamageNumberManager.damageEnabled) return;
     const el = document.createElement('div');
     el.className = `dmg-number ${isCrit ? 'dmg-crit' : ''}`;
     el.innerText = `${Math.round(amount)}${isCrit ? '!' : ''}`;
@@ -47,7 +57,7 @@ export class DamageNumberManager {
   }
 
   public spawnXp(worldPos: THREE.Vector3, amount: number, camera?: THREE.Camera) {
-    if (!DamageNumberManager.enabled) return;
+    if (!DamageNumberManager.xpEnabled) return;
     const el = document.createElement('div');
     el.className = 'dmg-number dmg-xp';
     el.innerText = `+${amount} XP`;
