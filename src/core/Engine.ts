@@ -12,9 +12,7 @@ export class Engine {
   public chunkManager: ChunkManager;
   private container: HTMLElement;
 
-  public timeOfDay: 'day' | 'night' | 'cycle' = 'day';
-  private cycleTimer: number = 0;
-  private readonly CYCLE_DURATION: number = 180; // 3 minutes full day/night cycle
+  public timeOfDay: 'day' | 'night' = 'day';
 
   private ambientLight!: THREE.AmbientLight;
   private dirLight!: THREE.DirectionalLight;
@@ -54,8 +52,8 @@ export class Engine {
 
     // 4. Lighting & Infinite Procedural World
     this.setupLighting();
-    const savedTime = (localStorage.getItem('settings_time_of_day') as 'day' | 'night' | 'cycle') || 'day';
-    this.setTimeOfDay(savedTime);
+    const savedTime = (localStorage.getItem('settings_time_of_day') as 'day' | 'night') || 'day';
+    this.setTimeOfDay(savedTime === 'night' ? 'night' : 'day');
 
     this.obstacleManager = new ObstacleManager();
     this.altarManager = new AltarManager(this.scene);
@@ -93,9 +91,9 @@ export class Engine {
   }
 
   /**
-   * Switches lighting between Day (Sun), Night (Moon), and dynamic Day/Night Cycle.
+   * Switches lighting between Day (Sun) and Night (Moon).
    */
-  public setTimeOfDay(mode: 'day' | 'night' | 'cycle') {
+  public setTimeOfDay(mode: 'day' | 'night') {
     this.timeOfDay = mode;
     try {
       localStorage.setItem('settings_time_of_day', mode);
@@ -177,41 +175,6 @@ export class Engine {
 
     this.cameraTarget.lerp(playerPos, factor);
     this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y + 0.6, this.cameraTarget.z);
-
-    // Dynamic Day/Night Cycle interpolation
-    if (this.timeOfDay === 'cycle') {
-      this.cycleTimer = (this.cycleTimer + dt) % this.CYCLE_DURATION;
-      // 0 = pure night, 1 = pure day
-      const t = (Math.sin((this.cycleTimer / this.CYCLE_DURATION) * Math.PI * 2 - Math.PI / 2) + 1) / 2;
-      this.currentLightOffset.lerpVectors(this.moonOffset, this.sunOffset, t);
-
-      // Smooth color transitions
-      const daySunColor = new THREE.Color(0xffedd5);
-      const nightMoonColor = new THREE.Color(0xa5cbf5);
-      this.dirLight.color.copy(nightMoonColor).lerp(daySunColor, t);
-      this.dirLight.intensity = THREE.MathUtils.lerp(1.20, 1.45, t);
-
-      const dayAmb = new THREE.Color(0x8a5530);
-      const nightAmb = new THREE.Color(0x2b3d63);
-      this.ambientLight.color.copy(nightAmb).lerp(dayAmb, t);
-
-      const dayHemiSky = new THREE.Color(0xfb923c);
-      const nightHemiSky = new THREE.Color(0x38bdf8);
-      this.hemiLight.color.copy(nightHemiSky).lerp(dayHemiSky, t);
-
-      const dayHemiGnd = new THREE.Color(0x241209);
-      const nightHemiGnd = new THREE.Color(0x111827);
-      this.hemiLight.groundColor.copy(nightHemiGnd).lerp(dayHemiGnd, t);
-
-      const dayBg = new THREE.Color(0x23140e);
-      const nightBg = new THREE.Color(0x0c1322);
-      if (this.scene.background instanceof THREE.Color) {
-        this.scene.background.copy(nightBg).lerp(dayBg, t);
-      }
-      if (this.scene.fog instanceof THREE.FogExp2) {
-        this.scene.fog.color.copy(nightBg).lerp(dayBg, t);
-      }
-    }
 
     // Keep sun/moon & shadow camera aligned with player position
     if (this.dirLight) {

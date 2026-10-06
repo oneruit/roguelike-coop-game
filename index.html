@@ -83,6 +83,9 @@
         <span id="perf-ping" class="perf-badge perf-ping hidden">0 ms</span>
       </div>
 
+      <!-- Floating Mobile Dev Trigger Button (Training Mode Only) -->
+      <button id="btn-dev-mobile-trigger" class="btn-dev-mobile-trigger hidden" title="Панель разработчика">DEV</button>
+
       <!-- Minimap Radar in top-right corner -->
       <div id="minimap-container" title="Нажмите, чтобы открыть карту [TAB]">
         <canvas id="minimap-canvas" width="170" height="170"></canvas>
@@ -165,7 +168,7 @@
 
           <div class="main-menu-buttons">
             <!-- 1. НОВАЯ ИГРА -->
-            <button id="menu-btn-single" class="main-menu-nav-btn main-menu-hex-btn btn-single" type="button">
+            <button id="menu-btn-single" class="main-menu-hex-btn btn-single" type="button">
               <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
                 <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
               </svg>
@@ -182,7 +185,7 @@
             </button>
 
             <!-- 2. КООП НА 5 ЧЕЛОВЕК -->
-            <button id="menu-btn-coop" class="main-menu-nav-btn main-menu-hex-btn btn-coop" type="button">
+            <button id="menu-btn-coop" class="main-menu-hex-btn btn-coop" type="button">
               <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
                 <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
               </svg>
@@ -204,7 +207,7 @@
             </button>
 
             <!-- 3. ЗАДАНИЯ -->
-            <button id="menu-btn-quests" class="main-menu-nav-btn main-menu-hex-btn btn-quests" type="button">
+            <button id="menu-btn-quests" class="main-menu-hex-btn btn-quests" type="button">
               <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
                 <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
               </svg>
@@ -221,7 +224,7 @@
             </button>
 
             <!-- 4. НАСТРОЙКИ -->
-            <button id="menu-btn-settings" class="main-menu-nav-btn main-menu-hex-btn btn-settings" type="button">
+            <button id="menu-btn-settings" class="main-menu-hex-btn btn-settings" type="button">
               <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
                 <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
               </svg>
@@ -237,8 +240,8 @@
               </div>
             </button>
 
-            <!-- 4. ВЫХОД -->
-            <button id="menu-btn-exit" class="main-menu-nav-btn main-menu-hex-btn btn-exit" type="button">
+            <!-- 5. ВЫХОД -->
+            <button id="menu-btn-exit" class="main-menu-hex-btn btn-exit" type="button">
               <svg class="btn-hex-svg" viewBox="0 0 380 62" preserveAspectRatio="none">
                 <polygon class="btn-hex-poly" points="26,2 354,2 377,31 354,60 26,60 3,31" />
               </svg>
@@ -589,16 +592,6 @@
                       <option value="512">Низкое (512)</option>
                       <option value="1024" selected>Среднее (1024)</option>
                       <option value="2048">Высокое (2048)</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="settings-row">
-                  <label for="settings-time-of-day" class="settings-label">Освещение (Время суток):</label>
-                  <div class="settings-control-row">
-                    <select id="settings-time-of-day" class="settings-select">
-                      <option value="day" selected>День (Солнечный свет)</option>
-                      <option value="night">Ночь (Лунный свет)</option>
-                      <option value="cycle">Цикл День/Ночь (Авто)</option>
                     </select>
                   </div>
                 </div>
@@ -1120,17 +1113,6 @@
             <p class="code-hint">Оставьте пустым, чтобы любой игрок мог присоединиться из списка, либо задайте пароль.</p>
           </div>
 
-          <div class="room-seed-section" style="margin-bottom: 16px;">
-            <div class="password-label-row">
-              <span class="code-label">SEED КАРТЫ (МИР ЭКСПЕДИЦИИ):</span>
-            </div>
-            <div class="password-input-row">
-              <input id="host-seed-input" type="text" class="room-code-input" placeholder="Случайный (или введите seed)" maxlength="24" autocomplete="off" />
-              <button id="btn-host-random-seed" class="pwd-visibility-btn" title="Сгенерировать случайный seed" type="button">🎲</button>
-            </div>
-            <p class="code-hint">Одинаковый seed сгенерирует точно такую же карту с одинаковыми сундуками, алтарями и скалами.</p>
-          </div>
-
           <div class="lobby-heroes-section">
             <div class="section-label">ВАШ ГЕРОЙ:</div>
             <div class="lobby-hero-picker">
@@ -1378,11 +1360,29 @@
             <h1 class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
           </div>
 
-          <!-- Seed Control Bar -->
-          <div class="seed-control-bar">
-            <span class="seed-control-label">SEED КАРТЫ:</span>
-            <input id="single-seed-input" type="text" class="seed-input-field" placeholder="Случайный (или введите свой seed)" maxlength="24" autocomplete="off" />
-            <button id="btn-single-random-seed" class="seed-random-btn" title="Сгенерировать случайный seed" type="button">🎲 Случайный</button>
+          <!-- Run Options Bar: Training Mode & Time of Day -->
+          <div class="char-select-options-bar">
+            <!-- Training Mode Toggle -->
+            <div class="training-mode-control" title="В тренировочном режиме статистика и прохождение заданий не учитываются, но доступен Dev-режим">
+              <label class="toggle-switch">
+                <input type="checkbox" id="training-mode-toggle" />
+                <span class="slider round"></span>
+              </label>
+              <div class="training-mode-info">
+                <span class="training-mode-title">ТРЕНИРОВОЧНЫЙ РЕЖИМ</span>
+                <span class="training-mode-sub">Статистика не сохраняется • Доступен Dev Panel</span>
+              </div>
+            </div>
+
+            <!-- Time of Day Select -->
+            <div class="time-of-day-control">
+              <label for="select-time-of-day" class="time-of-day-label">ОСВЕЩЕНИЕ:</label>
+              <select id="select-time-of-day" class="time-of-day-select">
+                <option value="random" selected>🎲 Случайно (По умолчанию)</option>
+                <option value="day">☀️ День (Солнечный свет)</option>
+                <option value="night">🌙 Ночь (Лунный свет)</option>
+              </select>
+            </div>
           </div>
           <!-- SVG Definitions for Cave Dungeon Character Cards -->
           <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
@@ -1880,6 +1880,7 @@
           </div>
           <div class="pause-actions">
             <button id="btn-resume" class="action-btn select-btn">Продолжить</button>
+            <button id="btn-pause-dev" class="action-btn modern-back-btn hidden" style="border-color: #38bdf8; color: #38bdf8;">Консоль разработчика [P]</button>
             <button id="btn-pause-restart-same" class="action-btn select-btn" style="background: rgba(245, 158, 11, 0.25); border-color: #f59e0b;">Заново (тот же seed)</button>
             <button id="btn-pause-settings" class="action-btn modern-back-btn">Настройки</button>
             <button id="btn-pause-restart" class="action-btn modern-back-btn">Выбрать героя</button>
@@ -2074,6 +2075,28 @@
 
           <!-- Dev Control Sections -->
           <div class="dev-sections-container">
+            <!-- Section 0: Seed & World Generation -->
+            <div class="dev-section dev-full-section">
+              <div class="section-title">СИД КАРТЫ (SEED)</div>
+              <div class="dev-seed-controls">
+                <input id="dev-seed-input" type="text" class="dev-seed-input" placeholder="Введите сид карты..." maxlength="24" autocomplete="off" />
+                <div class="dev-seed-btn-row">
+                  <button id="dev-btn-apply-seed" class="dev-btn dev-seed-apply-btn" title="Применить сид и перезапустить генерацию">
+                    <span class="btn-icon">⚡</span>
+                    <span>Применить сид</span>
+                  </button>
+                  <button id="dev-btn-random-seed" class="dev-btn" title="Сгенерировать случайный сид">
+                    <span class="btn-icon">🎲</span>
+                    <span>Случайный</span>
+                  </button>
+                  <button id="dev-btn-copy-seed" class="dev-btn" title="Скопировать сид в буфер обмена">
+                    <span class="btn-icon">📋</span>
+                    <span>Копировать</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Section 1: Hero & Cheats -->
             <div class="dev-section">
               <div class="section-title">ПЕРСОНАЖ & ЧИТЫ</div>

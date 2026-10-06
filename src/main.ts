@@ -58,6 +58,7 @@ class Game {
   private mapManager: MapManager;
   private net: NetworkManager;
   private roomPollingTimer: number | null = null;
+  public isTrainingMode: boolean = false;
 
   // Performance Telemetry EMA smoothers
   private simTimeEma: number = 0;
@@ -222,18 +223,20 @@ class Game {
     // HUD with callbacks
     this.hud = new HUD(
       this.engine.scene,
-      (charType: CharacterType, seedInput?: string) => this.startSinglePlayerWithHero(charType, seedInput),
+      (charType: CharacterType, seedInput?: string, isTrainingMode?: boolean, timeOfDay?: 'random' | 'day' | 'night') =>
+        this.startSinglePlayerWithHero(charType, seedInput, isTrainingMode, timeOfDay),
       () => this.resumeGame(),
       () => this.restartGame(undefined, false)
     );
     this.hud.onRestartSameSeed = () => this.restartGame(undefined, true);
+    this.hud.onToggleDevMode = () => this.toggleDevMode();
     this.hud.onResolutionScaleChanged = (scale: number) => {
       this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     };
     this.hud.onShadowQualityChanged = (quality: number) => {
       this.engine.setShadowQuality(quality);
     };
-    this.hud.onTimeOfDayChanged = (mode: 'day' | 'night' | 'cycle') => {
+    this.hud.onTimeOfDayChanged = (mode: 'day' | 'night') => {
       this.engine.setTimeOfDay(mode);
       this.biomeManager.applyBiomeToScene(this.engine.scene, mode);
     };
@@ -264,6 +267,11 @@ class Game {
     );
     this.devManager.isHost = () => this.net.role !== 'client';
     this.devManager.isCoop = () => this.player.isCoop;
+    this.devManager.onApplySeed = (seed) => {
+      this.currentSeed = seed;
+      this.restartGame(undefined, true);
+      this.devManager.setCurrentSeed(seed);
+    };
 
     // Map Manager (Minimap & Full Desert Map on TAB)
     this.mapManager = new MapManager(
@@ -363,12 +371,9 @@ class Game {
       }
     };
 
-    // P Key Dev Mode Handler (Host only in Co-op)
+    // P Key Dev Mode Handler (Host only in Co-op; Training mode only)
     this.input.onToggleDevMode = () => {
-      if (this.net.role === 'client') {
-        return;
-      }
-      this.devManager.toggle();
+      this.toggleDevMode();
     };
 
     // F3 Key Debug Network / Performance HUD Handler
@@ -814,7 +819,35 @@ class Game {
     this.mapManager.partner = this.mapManager.partners[0] || null;
   }
 
-  private startSinglePlayerWithHero(charType: CharacterType, seedInput?: string) {
+  private toggleDevMode() {
+    if (!this.isTrainingMode) {
+      return;
+    }
+    if (this.net.role === 'client') {
+      return;
+    }
+    this.devManager.toggle();
+  }
+
+  private startSinglePlayerWithHero(
+    charType: CharacterType,
+    seedInput?: string,
+    isTrainingMode: boolean = false,
+    timeOfDayOption: 'random' | 'day' | 'night' = 'random'
+  ) {
+    this.isTrainingMode = isTrainingMode;
+    ProgressionManager.getInstance().isTrainingMode = isTrainingMode;
+    this.hud.setTrainingModeActive(isTrainingMode);
+
+    // Resolve Day / Night lighting
+    const chosenTimeOfDay: 'day' | 'night' =
+      timeOfDayOption === 'random'
+        ? Math.random() < 0.5 ? 'day' : 'night'
+        : timeOfDayOption;
+
+    this.engine.setTimeOfDay(chosenTimeOfDay);
+    this.biomeManager.applyBiomeToScene(this.engine.scene, chosenTimeOfDay);
+
     this.net.reset();
     for (const rp of this.remotePlayers.values()) {
       rp.destroy(this.engine.scene);
@@ -843,6 +876,7 @@ class Game {
     } else {
       this.currentSeed = Math.floor(Math.random() * 1000000);
     }
+    this.devManager.setCurrentSeed(this.currentSeed);
 
     this.restartGame(undefined, true);
   }
@@ -1113,6 +1147,7 @@ class Game {
     if (!keepSeed && this.net.role !== 'client') {
       this.currentSeed = Math.floor(Math.random() * 1000000);
     }
+    this.devManager.setCurrentSeed(this.currentSeed);
 
     const spawnOffsets: Record<string, [number, number]> = {
       p1: [0, 0],
