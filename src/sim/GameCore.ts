@@ -163,6 +163,8 @@ export class SimEnemyInternal {
   public currentDir: SpriteDirection = 'front';
   public knockback: SimVec3 = new SimVec3();
   public lastHitBy: string = 'host';
+  public bleedStacks: { dps: number; remainingTime: number; hitter: string }[] = [];
+  public bleedTimer: number = 0;
 
   constructor(cfg: SimEnemyConfig, pos: SimVec3, id?: string) {
     this.id = id || Math.random().toString(36).substring(2, 9);
@@ -180,6 +182,10 @@ export class SimEnemyInternal {
     this.isImmortal = !!cfg.isImmortal;
     this.eliteAffix = cfg.eliteAffix;
   }
+
+  public addBleed(dps: number, duration: number, hitter: string): void {
+    this.bleedStacks.push({ dps, remainingTime: duration, hitter });
+  }
 }
 
 export class SimProjectileInternal {
@@ -189,6 +195,7 @@ export class SimProjectileInternal {
   public direction: SimVec3;
   public speed: number;
   public damage: number;
+  public bleedDps: number = 0;
   public pierce: number;
   public lifetime: number;
   public maxLifetime: number;
@@ -220,6 +227,7 @@ export class SimProjectileInternal {
     this.direction = data.direction.clone();
     this.speed = data.speed;
     this.damage = data.damage;
+    this.bleedDps = data.bleedDps || 0;
     this.pierce = data.pierce;
     this.lifetime = data.lifetime;
     this.maxLifetime = data.lifetime;
@@ -624,6 +632,32 @@ export class GameCore {
     for (const enemy of this.enemies) {
       if (!enemy.isAlive) continue;
 
+      // Process bleed ticks
+      if (enemy.bleedStacks.length > 0) {
+        enemy.bleedTimer += dt;
+        if (enemy.bleedTimer >= 0.33) {
+          const elapsed = enemy.bleedTimer;
+          enemy.bleedTimer = 0;
+          let totalDps = 0;
+          let primaryHitter = enemy.lastHitBy;
+          for (let b = enemy.bleedStacks.length - 1; b >= 0; b--) {
+            const stack = enemy.bleedStacks[b];
+            stack.remainingTime -= elapsed;
+            if (stack.remainingTime <= 0) {
+              enemy.bleedStacks.splice(b, 1);
+            } else {
+              totalDps += stack.dps;
+              primaryHitter = stack.hitter;
+            }
+          }
+          if (totalDps > 0) {
+            const tickDamage = Math.max(1, Math.round(totalDps * elapsed));
+            this.damageEnemy(enemy.id, tickDamage, undefined, primaryHitter, 0);
+            if (!enemy.isAlive) continue;
+          }
+        }
+      }
+
       // Knockback damping
       if (enemy.knockback.lengthSq() > 0.001) {
         enemy.position.add(enemy.knockback);
@@ -817,6 +851,9 @@ export class GameCore {
         if (distSq <= totalRad * totalRad) {
           proj.hitEnemies.add(enemy.id);
           this.damageEnemy(enemy.id, proj.damage, proj.position, proj.ownerId, 0.2);
+          if (proj.isOrbiting && proj.bleedDps > 0) {
+            enemy.addBleed(proj.bleedDps, 3.0, proj.ownerId);
+          }
 
           if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning && !proj.isIceSpike && !proj.isFireball) {
             proj.pierce--;

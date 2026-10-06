@@ -41,6 +41,7 @@ export class TextureManager {
     '/textures/weapon_ice_spike.png',
     '/textures/weapon_fireball.png',
     '/textures/weapon_orbiting_barrier.png',
+    '/textures/weapon_reaper_scythe.png',
     '/textures/weapon_whirlwind_slash.png'
   ];
 
@@ -116,8 +117,13 @@ export class TextureManager {
     '/textures/weapon_fireball.png',
     '/textures/weapon_orbiting_barrier.png',
     '/textures/weapon_whirlwind_slash.png',
+    '/textures/weapon_reaper_scythe.png',
     '/textures/bullet_revolver.png',
     '/textures/vfx_lightning.png',
+    '/textures/vfx_fire_ring.png',
+    '/textures/vfx_ice_spike.png',
+    '/textures/vfx_fireball.png',
+    '/textures/vfx_scythe.png',
 
     // Heroes - 6 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
     '/textures/hero_ronin_front.png',
@@ -500,6 +506,34 @@ export class TextureManager {
 
   public static getLightningTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
     const tex = this.load('/textures/vfx_lightning.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getIceSpikeTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_ice_spike.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getFireballTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_fireball.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getScytheTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_scythe.png', renderer);
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getFireRingTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const tex = this.load('/textures/vfx_fire_ring.png', renderer);
     tex.magFilter = THREE.LinearFilter;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     return tex;

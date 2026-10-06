@@ -326,16 +326,22 @@ export const DualRevolversWeapon = KukriWeapon;
 export type DualRevolversWeapon = KukriWeapon;
 
 /**
- * Orbiting Shields / Holy Horseshoe Barrier
+ * Reaper's Scythe (Коса Жнеца) - previously Orbiting Barrier
+ * Rotating scythes circle the hero, cutting through monsters to deal base damage and apply stacking bleed DoT.
  */
 export class OrbitingBarrierWeapon extends Weapon {
   private orbCount: number = 2;
   private orbs: Projectile[] = [];
   private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
+  private bleedDps: number = 8;
 
   constructor() {
-    super('orbiting_barrier', 'Священные Подковы', '🧲', 0, 12);
+    super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4);
+  }
+
+  public getBleedDps(): number {
+    return this.bleedDps;
   }
 
   public update(
@@ -355,10 +361,11 @@ export class OrbitingBarrierWeapon extends Weapon {
           direction: new THREE.Vector3(1, 0, 0),
           speed: 0,
           damage: this.damage,
+          bleedDps: this.bleedDps,
           pierce: 99999,
           lifetime: 999999,
           radius: Number((0.32 + (this.level - 1) * 0.012).toFixed(3)),
-          color: 0xfbbf24,
+          color: 0xef4444,
           isOrbiting: true,
           orbitRadius: this.orbitRadius,
           orbitSpeed: this.orbitSpeed
@@ -373,15 +380,17 @@ export class OrbitingBarrierWeapon extends Weapon {
       orb.orbitRadius = this.orbitRadius;
       orb.orbitSpeed = this.orbitSpeed;
       orb.damage = this.damage;
+      orb.bleedDps = this.bleedDps;
       orb.radius = Number((0.32 + (this.level - 1) * 0.012).toFixed(3));
-      orb.mesh.scale.setScalar(orb.radius);
+      orb.mesh.scale.setScalar(orb.radius * 3.4);
     });
   }
 
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage = Number((this.damage + 3).toFixed(2));
+    this.damage = Number((this.damage + 1).toFixed(2));
+    this.bleedDps = Number((this.bleedDps + 2).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.20).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.08).toFixed(2));
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) {
@@ -392,14 +401,15 @@ export class OrbitingBarrierWeapon extends Weapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+3 к урону', '+0.20м дальность орбиты'];
-    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 подкова (всего ${this.orbCount + 1})`);
+    const perks: string[] = ['+1 к прямому урону', '+2 к урону кровотечения/сек', '+0.20м радиус орбиты'];
+    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
 }
 
 /**
- * Holy Aura / Dynamite Aura
+ * Fire Ring (Огненное Кольцо) - previously Holy Aura
+ * Fiery ring of blazing animated flames surrounding the hero, searing all monsters within its perimeter.
  */
 export class HolyAuraWeapon extends Weapon {
   private static vfxOpacity: number = 1.0;
@@ -410,7 +420,7 @@ export class HolyAuraWeapon extends Weapon {
     HolyAuraWeapon.vfxOpacity = clamped;
     for (const inst of HolyAuraWeapon.instances) {
       if (inst.auraMat) {
-        inst.auraMat.opacity = 0.4 * clamped;
+        inst.auraMat.opacity = 0.95 * clamped;
         inst.auraMat.visible = clamped > 0.005;
       }
     }
@@ -419,9 +429,11 @@ export class HolyAuraWeapon extends Weapon {
   private radius: number = 3.5;
   private auraMesh: THREE.Mesh | null = null;
   private auraMat: THREE.MeshBasicMaterial | null = null;
+  private fireTex: THREE.Texture | null = null;
+  private animFrameTimer: number = 0;
 
   constructor() {
-    super('holy_aura', 'Огненный Периметр', '🔥', 0.50, 16);
+    super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16);
   }
 
   public update(
@@ -431,9 +443,14 @@ export class HolyAuraWeapon extends Weapon {
     _spawnProjectile: (p: Projectile) => void,
     damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
   ) {
-    if (this.auraMesh) {
+    if (this.auraMesh && this.fireTex) {
       this.auraMesh.position.set(playerPos.x, 0.08, playerPos.z);
-      this.auraMesh.rotation.z += dt * 0.8;
+      this.auraMesh.rotation.z += dt * 0.45;
+      this.animFrameTimer += dt * 18;
+      const frame = Math.floor(this.animFrameTimer) % 16;
+      const col = frame % 4;
+      const row = Math.floor(frame / 4);
+      this.fireTex.offset.set(col * 0.25, (3 - row) * 0.25);
     }
 
     this.timer += dt;
@@ -457,12 +474,18 @@ export class HolyAuraWeapon extends Weapon {
   }
 
   public initVisual(scene: THREE.Scene, playerPos: THREE.Vector3) {
-    const geom = new THREE.RingGeometry(this.radius * 0.85, this.radius, 32);
+    this.fireTex = TextureManager.getFireRingTexture().clone();
+    this.fireTex.needsUpdate = true;
+    this.fireTex.repeat.set(0.25, 0.25);
+
+    const geom = new THREE.PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
     this.auraMat = new THREE.MeshBasicMaterial({
-      color: 0xf97316,
+      map: this.fireTex,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.4 * HolyAuraWeapon.vfxOpacity,
+      opacity: 0.95 * HolyAuraWeapon.vfxOpacity,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
       visible: HolyAuraWeapon.vfxOpacity > 0.005
     });
     this.auraMesh = new THREE.Mesh(geom, this.auraMat);
@@ -483,6 +506,10 @@ export class HolyAuraWeapon extends Weapon {
       }
       this.auraMesh = null;
     }
+    if (this.fireTex) {
+      this.fireTex.dispose();
+      this.fireTex = null;
+    }
   }
 
   public upgrade() {
@@ -493,13 +520,13 @@ export class HolyAuraWeapon extends Weapon {
     this.cooldown = Math.max(0.22, Number((this.cooldown * 0.96).toFixed(3)));
     if (this.auraMesh) {
       this.auraMesh.geometry.dispose();
-      this.auraMesh.geometry = new THREE.RingGeometry(this.radius * 0.85, this.radius, 32);
+      this.auraMesh.geometry = new THREE.PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
     }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.20м радиус, +4 урона, -4% перезарядки`;
+    return `+0.20м радиус кольца, +4 урона, -4% перезарядки`;
   }
 }
 

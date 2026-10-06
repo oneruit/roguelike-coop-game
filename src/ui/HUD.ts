@@ -3075,11 +3075,11 @@ export class HUD {
       if (!hasOrbs) {
         pool.push({
           id: 'new_orbiting_barrier',
-          title: 'Новое: Священные Подковы',
-          icon: '🧲',
+          title: 'Новое: Коса Жнеца',
+          icon: '🌙',
           iconImage: getWeaponIconUrl('orbiting_barrier'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Призывает защитный вихрь из золотых подков вокруг вас (урон, радиус и количество растут с уровнем)',
+          description: 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение',
           apply: () => player.weapons.push(new OrbitingBarrierWeapon())
         });
       }
@@ -3088,11 +3088,11 @@ export class HUD {
       if (!hasAura) {
         pool.push({
           id: 'new_holy_aura',
-          title: 'Новое: Огненный Периметр',
+          title: 'Новое: Огненное Кольцо',
           icon: '🔥',
           iconImage: getWeaponIconUrl('holy_aura'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Окружает героя кольцом дикого огня, сжигающего монстров',
+          description: 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров',
           apply: () => {
             const aura = new HolyAuraWeapon();
             aura.initVisual(this.scene, player.position);
