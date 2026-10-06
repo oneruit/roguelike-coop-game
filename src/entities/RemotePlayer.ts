@@ -56,6 +56,7 @@ export class RemotePlayer {
   // Downed red pulse light
   private pulseTimer: number = 0;
   private downedAuraMesh: THREE.Mesh;
+  private customDepthMaterial!: THREE.MeshDepthMaterial;
 
   constructor(
     scene: THREE.Scene,
@@ -88,16 +89,23 @@ export class RemotePlayer {
     this.spriteMaterial = new THREE.MeshBasicMaterial({
       map: this.animatedTextures.idle,
       transparent: true,
-      alphaTest: 0.05,
+      alphaTest: 0.25,
       side: THREE.DoubleSide,
-      depthWrite: false,
-      depthTest: false
+      depthWrite: true,
+      depthTest: true
     });
 
     this.spriteMesh = new THREE.Mesh(this.roninGeom, this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
     this.spriteMesh.position.y = 0.05;
-    this.spriteMesh.renderOrder = 24;
+    this.spriteMesh.renderOrder = 0;
+    this.customDepthMaterial = new THREE.MeshDepthMaterial({
+      depthPacking: THREE.RGBADepthPacking,
+      map: this.spriteMaterial.map,
+      alphaTest: 0.25
+    });
+    this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
+    this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
 
     // Ground Shadow
@@ -237,6 +245,10 @@ export class RemotePlayer {
     this.charType = charType;
     this.loadCharacterTextures(charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.animatedTextures.idle;
+      this.customDepthMaterial.needsUpdate = true;
+    }
     this.lastDrawnHp = -1;
     this.redrawOverhead();
   }
@@ -396,6 +408,10 @@ export class RemotePlayer {
 
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = tex;
+        this.customDepthMaterial.needsUpdate = true;
+      }
     }
 
     tex.repeat.set(1 / cfg.cols, 1 / 4);
