@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Projectile } from './Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { Enemy } from '../entities/Enemy';
+import { TextureManager } from '../core/TextureManager';
 
 export interface WeaponInfo {
   id: string;
@@ -84,7 +85,13 @@ export abstract class Weapon {
   public id: string;
   public name: string;
   public icon: string;
-  public iconImage: string;
+  private _iconImage: string;
+  public get iconImage(): string {
+    return TextureManager.getWeaponBlobUrl(this._iconImage);
+  }
+  public set iconImage(val: string) {
+    this._iconImage = val;
+  }
   public level: number = 1;
   public maxLevel: number = 20;
   public cooldownMultiplier: number = 1.0;
@@ -96,7 +103,7 @@ export abstract class Weapon {
     this.id = id;
     this.name = name;
     this.icon = icon;
-    this.iconImage = iconImage || `/textures/weapon_${id}.png`;
+    this._iconImage = iconImage || `/textures/weapon_${id}.png`;
     this.cooldown = cooldown;
     this.damage = damage;
   }
@@ -1080,3 +1087,201 @@ export class LightningStrikeWeapon extends Weapon {
     return perks.join(', ');
   }
 }
+
+/**
+ * Ice Spike (Ледяной Шип)
+ * Piercing glacial spikes erupt from beneath the earth under monsters, impaling them from below.
+ */
+export class IceSpikeWeapon extends Weapon {
+  private spikeCount: number = 1;
+  private spikeRadius: number = 2.0;
+  private range: number = 18;
+  private onTriggerAttack?: () => void;
+
+  constructor(onTriggerAttack?: () => void) {
+    super('ice_spike', 'Ледяной Шип', '🧊', 1.10, 38);
+    this.onTriggerAttack = onTriggerAttack;
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
+  }
+
+  public update(
+    dt: number,
+    playerPos: THREE.Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void
+  ) {
+    this.timer += dt;
+    const effectiveCd = this.cooldown * this.cooldownMultiplier;
+    if (this.timer >= effectiveCd) {
+      if (enemies.length === 0) return;
+
+      const candidates = findClosestEnemies(enemies, playerPos, this.spikeCount, this.range * this.range);
+      if (candidates.length === 0) return;
+
+      this.timer = 0;
+      if (this.onTriggerAttack) {
+        this.onTriggerAttack();
+      }
+
+      const strikeTargets: { x: number; z: number }[] = [];
+      for (let i = 0; i < this.spikeCount; i++) {
+        const targetCandidate = candidates[i % candidates.length];
+        strikeTargets.push({
+          x: targetCandidate.position.x,
+          z: targetCandidate.position.z
+        });
+      }
+
+      strikeTargets.forEach((pos, idx) => {
+        setTimeout(() => {
+          const proj = new Projectile({
+            position: new THREE.Vector3(pos.x, -2.9, pos.z),
+            direction: new THREE.Vector3(0, 1, 0),
+            speed: 0,
+            damage: this.damage,
+            pierce: 999,
+            lifetime: 0.38,
+            radius: this.spikeRadius,
+            color: 0x38bdf8,
+            isIceSpike: true
+          });
+
+          spawnProjectile(proj);
+          SoundManager.playIceSpike();
+        }, idx * 60);
+      });
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 7;
+    if ([4, 8, 12, 16, 20].includes(this.level)) {
+      this.spikeCount++;
+    }
+    if ([3, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.35, Number((this.cooldown * 0.93).toFixed(3)));
+    }
+    if ([5, 10, 15].includes(this.level)) {
+      this.spikeRadius = Number((this.spikeRadius + 0.25).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+7 к урону'];
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 ледяной шип (всего ${this.spikeCount + 1})`);
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}
+
+/**
+ * Fireball (Огненный Шар)
+ * Calls down flaming meteors from the sky that plummet and detonate on monsters with a fiery explosion.
+ */
+export class FireballWeapon extends Weapon {
+  private fireballCount: number = 1;
+  private explosionRadius: number = 2.5;
+  private range: number = 22;
+  private fallSpeed: number = 28;
+  private onTriggerAttack?: () => void;
+
+  constructor(onTriggerAttack?: () => void) {
+    super('fireball', 'Огненный Шар', '☄️', 1.35, 55);
+    this.onTriggerAttack = onTriggerAttack;
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
+  }
+
+  public update(
+    dt: number,
+    playerPos: THREE.Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void
+  ) {
+    this.timer += dt;
+    const effectiveCd = this.cooldown * this.cooldownMultiplier;
+    if (this.timer >= effectiveCd) {
+      if (enemies.length === 0) return;
+
+      const candidates = findClosestEnemies(enemies, playerPos, this.fireballCount, this.range * this.range);
+      if (candidates.length === 0) return;
+
+      this.timer = 0;
+      if (this.onTriggerAttack) {
+        this.onTriggerAttack();
+      }
+
+      const strikeTargets: { x: number; z: number }[] = [];
+      for (let i = 0; i < this.fireballCount; i++) {
+        const targetCandidate = candidates[i % candidates.length];
+        strikeTargets.push({
+          x: targetCandidate.position.x,
+          z: targetCandidate.position.z
+        });
+      }
+
+      strikeTargets.forEach((pos, idx) => {
+        setTimeout(() => {
+          const startHeight = 15.0;
+          const offsetDist = 2.8;
+          const startPos = new THREE.Vector3(pos.x - offsetDist, startHeight, pos.z - offsetDist);
+          const targetPos = new THREE.Vector3(pos.x, 0, pos.z);
+          const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
+          const dist = startPos.distanceTo(targetPos);
+          const flightTime = dist / this.fallSpeed;
+
+          const proj = new Projectile({
+            position: startPos,
+            direction: dir,
+            speed: this.fallSpeed,
+            damage: this.damage,
+            pierce: 999,
+            lifetime: flightTime + 0.35,
+            radius: this.explosionRadius,
+            color: 0xf97316,
+            isFireball: true
+          });
+
+          spawnProjectile(proj);
+          SoundManager.playFireballLaunch();
+        }, idx * 85);
+      });
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 10;
+    if ([4, 8, 12, 16, 20].includes(this.level)) {
+      this.fireballCount++;
+    }
+    if ([3, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
+    }
+    if ([5, 10, 15].includes(this.level)) {
+      this.explosionRadius = Number((this.explosionRadius + 0.35).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+10 к урону'];
+    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 огненный шар (всего ${this.fireballCount + 1})`);
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}
+

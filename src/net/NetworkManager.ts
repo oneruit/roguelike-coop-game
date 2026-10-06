@@ -95,6 +95,7 @@ export interface NetShotInfo {
   y: number;
   z: number;
   dx: number;
+  dy?: number;
   dz: number;
   spd: number;
   lt: number;
@@ -108,6 +109,8 @@ export interface NetShotInfo {
   arr?: boolean;
   kkr?: boolean;
   ltg?: boolean;
+  ice?: boolean;
+  fb?: boolean;
 }
 
 export interface NetEvent {

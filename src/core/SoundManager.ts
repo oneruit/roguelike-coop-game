@@ -639,6 +639,97 @@ export class SoundManager {
   }
 
   /**
+   * Sound when ice spike bursts from beneath the ground (sharp frost crack + crystalline chime)
+   */
+  public static playIceSpike() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // 1. Crystalline frost chime
+    const chimeOsc = ctx.createOscillator();
+    const chimeGain = ctx.createGain();
+    chimeOsc.type = 'triangle';
+    chimeOsc.frequency.setValueAtTime(1850, ctx.currentTime);
+    chimeOsc.frequency.exponentialRampToValueAtTime(520, ctx.currentTime + 0.16);
+    chimeGain.gain.setValueAtTime(0.20, ctx.currentTime);
+    chimeGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+    chimeOsc.connect(chimeGain);
+    chimeGain.connect(this.getMasterGain());
+    chimeOsc.start();
+    chimeOsc.stop(ctx.currentTime + 0.17);
+
+    // 2. Heavy ground earth & ice fracture crack
+    const crackOsc = ctx.createOscillator();
+    const crackGain = ctx.createGain();
+    crackOsc.type = 'sawtooth';
+    crackOsc.frequency.setValueAtTime(740, ctx.currentTime);
+    crackOsc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.11);
+    crackGain.gain.setValueAtTime(0.24, ctx.currentTime);
+    crackGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.11);
+    crackOsc.connect(crackGain);
+    crackGain.connect(this.getMasterGain());
+    crackOsc.start();
+    crackOsc.stop(ctx.currentTime + 0.12);
+  }
+
+  /**
+   * Sound when fireball descends from the sky (whistling fiery fall whoosh)
+   */
+  public static playFireballLaunch() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(240, ctx.currentTime + 0.28);
+    gain.gain.setValueAtTime(0.14, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.30);
+  }
+
+  /**
+   * Sound when falling fireball impacts ground and explodes
+   */
+  public static playFireballImpact() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // 1. Resonant sub-bass fiery detonation blast
+    const boomOsc = ctx.createOscillator();
+    const boomGain = ctx.createGain();
+    boomOsc.type = 'triangle';
+    boomOsc.frequency.setValueAtTime(190, ctx.currentTime);
+    boomOsc.frequency.exponentialRampToValueAtTime(38, ctx.currentTime + 0.35);
+    boomGain.gain.setValueAtTime(0.35, ctx.currentTime);
+    boomGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    boomOsc.connect(boomGain);
+    boomGain.connect(this.getMasterGain());
+    boomOsc.start();
+    boomOsc.stop(ctx.currentTime + 0.37);
+
+    // 2. High fiery scorch sizzle
+    const scorchOsc = ctx.createOscillator();
+    const scorchGain = ctx.createGain();
+    scorchOsc.type = 'sawtooth';
+    scorchOsc.frequency.setValueAtTime(620, ctx.currentTime);
+    scorchOsc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.15);
+    scorchGain.gain.setValueAtTime(0.22, ctx.currentTime);
+    scorchGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    scorchOsc.connect(scorchGain);
+    scorchGain.connect(this.getMasterGain());
+    scorchOsc.start();
+    scorchOsc.stop(ctx.currentTime + 0.16);
+  }
+
+  /**
    * Sound when critical strike hits
    */
   public static playCrit() {
