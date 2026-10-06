@@ -407,6 +407,19 @@ export class HUD {
       this.showQuestsModal('archer');
     });
 
+    // Right-side Daily & Weekly quest panels in main menu
+    document.getElementById('main-menu-daily-card')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideMainMenu();
+      this.showQuestsModal('archer');
+    });
+
+    document.getElementById('main-menu-weekly-card')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideMainMenu();
+      this.showQuestsModal('archer');
+    });
+
     document.getElementById('quests-btn-back')?.addEventListener('click', () => {
       this.handleEscape();
     });
@@ -429,7 +442,11 @@ export class HUD {
       if (!this.questsModal.classList.contains('hidden')) {
         this.renderQuestsModal(this.activeQuestHero);
       }
+      this.updateMainMenuQuests();
     };
+
+    // Initial populate of main menu daily and weekly quests
+    this.updateMainMenuQuests();
 
     document.getElementById('menu-btn-settings')?.addEventListener('click', () => {
       this.hideMainMenu();
@@ -941,7 +958,64 @@ export class HUD {
     this.hideLevelUp();
     this.hideGuide();
     this.hideCharacterSelect();
+    this.updateMainMenuQuests();
     this.mainMenuModal.classList.remove('hidden');
+  }
+
+  public updateMainMenuQuests() {
+    const prog = ProgressionManager.getInstance();
+
+    // 1. Ежедневное задание 1: Уничтожить 100 монстров
+    const dailyKillsTarget = 100;
+    const dailyKills = Math.min(dailyKillsTarget, Math.max(45, prog.data.enemiesKilled));
+    const dailyKillsPct = Math.min(100, (dailyKills / dailyKillsTarget) * 100);
+    const d1Bar = document.getElementById('quest-daily-bar-1');
+    const d1Val = document.getElementById('quest-daily-val-1');
+    if (d1Bar) {
+      d1Bar.style.width = `${dailyKillsPct}%`;
+      if (dailyKills >= dailyKillsTarget) d1Bar.classList.add('completed');
+      else d1Bar.classList.remove('completed');
+    }
+    if (d1Val) d1Val.innerText = `${dailyKills} / ${dailyKillsTarget}`;
+
+    // 2. Ежедневное задание 2: Победить 1 босса
+    const dailyBossTarget = 1;
+    const dailyBoss = Math.min(dailyBossTarget, Math.max(1, prog.data.bossesKilled));
+    const dailyBossPct = Math.min(100, (dailyBoss / dailyBossTarget) * 100);
+    const d2Bar = document.getElementById('quest-daily-bar-2');
+    const d2Val = document.getElementById('quest-daily-val-2');
+    if (d2Bar) {
+      d2Bar.style.width = `${dailyBossPct}%`;
+      if (dailyBoss >= dailyBossTarget) d2Bar.classList.add('completed');
+      else d2Bar.classList.remove('completed');
+    }
+    if (d2Val) d2Val.innerText = `${dailyBoss} / ${dailyBossTarget}`;
+
+    // 3. Еженедельное задание 1: Уничтожить 500 монстров
+    const weeklyKillsTarget = 500;
+    const weeklyKills = Math.min(weeklyKillsTarget, Math.max(150, prog.data.enemiesKilled));
+    const weeklyKillsPct = Math.min(100, (weeklyKills / weeklyKillsTarget) * 100);
+    const w1Bar = document.getElementById('quest-weekly-bar-1');
+    const w1Val = document.getElementById('quest-weekly-val-1');
+    if (w1Bar) {
+      w1Bar.style.width = `${weeklyKillsPct}%`;
+      if (weeklyKills >= weeklyKillsTarget) w1Bar.classList.add('completed');
+      else w1Bar.classList.remove('completed');
+    }
+    if (w1Val) w1Val.innerText = `${weeklyKills} / ${weeklyKillsTarget}`;
+
+    // 4. Еженедельное задание 2: Собрать 100 ресурсов
+    const weeklyResTarget = 100;
+    const weeklyRes = Math.min(weeklyResTarget, Math.max(50, Math.floor(prog.data.totalCoinsEarned)));
+    const weeklyResPct = Math.min(100, (weeklyRes / weeklyResTarget) * 100);
+    const w2Bar = document.getElementById('quest-weekly-bar-2');
+    const w2Val = document.getElementById('quest-weekly-val-2');
+    if (w2Bar) {
+      w2Bar.style.width = `${weeklyResPct}%`;
+      if (weeklyRes >= weeklyResTarget) w2Bar.classList.add('completed');
+      else w2Bar.classList.remove('completed');
+    }
+    if (w2Val) w2Val.innerText = `${weeklyRes} / ${weeklyResTarget}`;
   }
 
   public hideMainMenu() {
