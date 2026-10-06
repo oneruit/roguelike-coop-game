@@ -45,6 +45,7 @@ export class ProgressionManager {
 
   public data: ProgressionData;
   public onProgressionChanged?: () => void;
+  public isTrainingMode: boolean = false;
 
   private constructor() {
     this.data = this.loadFromStorage();
@@ -115,6 +116,7 @@ export class ProgressionManager {
   }
 
   public save() {
+    if (this.isTrainingMode) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
     } catch (e) {
@@ -174,7 +176,7 @@ export class ProgressionManager {
   }
 
   public addAccountXp(amount: number) {
-    if (amount <= 0) return;
+    if (this.isTrainingMode || amount <= 0) return;
     this.data.accountXp += amount;
 
     while (this.data.accountXp >= this.data.accountXpToNext) {
@@ -188,7 +190,7 @@ export class ProgressionManager {
   }
 
   public addCoins(amount: number) {
-    if (amount <= 0) return;
+    if (this.isTrainingMode || amount <= 0) return;
     this.data.totalCoinsEarned += amount;
     this.data.walletCoins += amount;
     this.checkAutoUnlocks();
@@ -196,6 +198,7 @@ export class ProgressionManager {
   }
 
   public recordBossKilled() {
+    if (this.isTrainingMode) return;
     this.data.bossesKilled += 1;
     // Step 3 of Leshy quest can also progress when a boss is defeated
     if (this.data.questLeshySteps[0] && this.data.questLeshySteps[1] && !this.data.questLeshySteps[2]) {
@@ -208,6 +211,7 @@ export class ProgressionManager {
   }
 
   public recordEnemyKilled() {
+    if (this.isTrainingMode) return;
     this.data.enemiesKilled += 1;
     // Step 1 of Leshy quest auto triggers after 10 kills if not done
     if (!this.data.questLeshySteps[0] && this.data.enemiesKilled >= 10) {
@@ -222,7 +226,7 @@ export class ProgressionManager {
   }
 
   public progressLeshyStep(stepIndex: 0 | 1 | 2): boolean {
-    if (stepIndex < 0 || stepIndex > 2) return false;
+    if (this.isTrainingMode || stepIndex < 0 || stepIndex > 2) return false;
     this.data.questLeshySteps[stepIndex] = true;
     if (this.data.questLeshySteps[0] && this.data.questLeshySteps[1] && this.data.questLeshySteps[2]) {
       this.data.questLeshyCompleted = true;
@@ -233,6 +237,7 @@ export class ProgressionManager {
   }
 
   public completeLeshyQuest(): boolean {
+    if (this.isTrainingMode) return false;
     this.data.questLeshySteps = [true, true, true];
     this.data.questLeshyCompleted = true;
     this.data.unlockedHeroes.chakram = true;

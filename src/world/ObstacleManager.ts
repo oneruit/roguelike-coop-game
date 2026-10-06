@@ -1,4 +1,4 @@
-export type ObstacleType = 'cactus' | 'tree' | 'boulder' | 'altar' | 'landmark';
+export type ObstacleType = 'cactus' | 'tree' | 'boulder' | 'altar' | 'landmark' | 'oasis';
 
 export interface Obstacle {
   x: number;
@@ -78,7 +78,7 @@ export class ObstacleManager {
     for (let iter = 0; iter < iterations; iter++) {
       const relX = position.x - cx * 50;
       const relZ = position.z - cz * 50;
-      const margin = entityRadius + 3.0; // max obstacle radius is ~2.5
+      const margin = entityRadius + 6.0; // covers up to 5.5m radius obstacles (e.g. oasis)
       const minDx = relX < margin ? -1 : 0;
       const maxDx = relX > 50 - margin ? 1 : 0;
       const minDz = relZ < margin ? -1 : 0;

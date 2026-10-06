@@ -118,6 +118,9 @@ export class HUD {
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
+  public onTimeOfDayChanged?: (mode: 'day' | 'night') => void;
+  public isTrainingModeActive: boolean = false;
+  public onToggleDevMode?: () => void;
   public isAutoLevelUp = false;
   private levelUpKeyHandler: ((e: KeyboardEvent) => void) | null = null;
   private levelUpModal: HTMLElement;
@@ -240,7 +243,7 @@ export class HUD {
 
   constructor(
     scene: THREE.Scene,
-    onSelectHero: (charType: CharacterType, seedInput?: string) => void,
+    onSelectHero: (charType: CharacterType, seedInput?: string, isTrainingMode?: boolean, timeOfDay?: 'random' | 'day' | 'night') => void,
     onResume: () => void,
     onRestart: () => void
   ) {
@@ -407,6 +410,19 @@ export class HUD {
       this.showQuestsModal('archer');
     });
 
+    // Right-side Daily & Weekly quest panels in main menu
+    document.getElementById('main-menu-daily-card')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideMainMenu();
+      this.showQuestsModal('archer');
+    });
+
+    document.getElementById('main-menu-weekly-card')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideMainMenu();
+      this.showQuestsModal('archer');
+    });
+
     document.getElementById('quests-btn-back')?.addEventListener('click', () => {
       this.handleEscape();
     });
@@ -429,7 +445,11 @@ export class HUD {
       if (!this.questsModal.classList.contains('hidden')) {
         this.renderQuestsModal(this.activeQuestHero);
       }
+      this.updateMainMenuQuests();
     };
+
+    // Initial populate of main menu daily and weekly quests
+    this.updateMainMenuQuests();
 
     document.getElementById('menu-btn-settings')?.addEventListener('click', () => {
       this.hideMainMenu();
@@ -657,10 +677,8 @@ export class HUD {
 
     // Host Start Expedition Button
     this.btnHostStart.addEventListener('click', () => {
-      const seedInput = document.getElementById('host-seed-input') as HTMLInputElement | null;
-      const seedVal = seedInput?.value?.trim();
       if (this.onHostStartExpedition) {
-        this.onHostStartExpedition(seedVal);
+        this.onHostStartExpedition();
       }
     });
 
@@ -797,23 +815,6 @@ export class HUD {
       this.handleEscape();
     });
 
-    // Random Seed Buttons
-    document.getElementById('btn-single-random-seed')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const input = document.getElementById('single-seed-input') as HTMLInputElement | null;
-      if (input) {
-        input.value = Math.floor(Math.random() * 1000000).toString();
-      }
-    });
-
-    document.getElementById('btn-host-random-seed')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const input = document.getElementById('host-seed-input') as HTMLInputElement | null;
-      if (input) {
-        input.value = Math.floor(Math.random() * 1000000).toString();
-      }
-    });
-
     // Bind Character Select Buttons
     const charCards = document.querySelectorAll('.character-card');
     charCards.forEach((card) => {
@@ -825,11 +826,24 @@ export class HUD {
           this.showQuestsModal(hero);
           return;
         }
-        const singleSeedInput = document.getElementById('single-seed-input') as HTMLInputElement | null;
-        const seedVal = singleSeedInput?.value?.trim();
+        const trainingCheckbox = document.getElementById('training-mode-toggle') as HTMLInputElement | null;
+        const isTraining = Boolean(trainingCheckbox?.checked);
+        const timeOfDaySelect = document.getElementById('select-time-of-day') as HTMLSelectElement | null;
+        const timeOfDay = (timeOfDaySelect?.value as 'random' | 'day' | 'night') || 'random';
+
         this.hideCharacterSelect();
-        onSelectHero(hero, seedVal);
+        onSelectHero(hero, undefined, isTraining, timeOfDay);
       });
+    });
+
+    // Mobile & Pause Dev Mode Buttons
+    document.getElementById('btn-dev-mobile-trigger')?.addEventListener('click', () => {
+      this.onToggleDevMode?.();
+    });
+
+    document.getElementById('btn-pause-dev')?.addEventListener('click', () => {
+      this.hidePause();
+      this.onToggleDevMode?.();
     });
 
     // Pause Resume & Settings & Restart & Menu
@@ -941,7 +955,64 @@ export class HUD {
     this.hideLevelUp();
     this.hideGuide();
     this.hideCharacterSelect();
+    this.updateMainMenuQuests();
     this.mainMenuModal.classList.remove('hidden');
+  }
+
+  public updateMainMenuQuests() {
+    const prog = ProgressionManager.getInstance();
+
+    // 1. Ежедневное задание 1: Уничтожить 100 монстров
+    const dailyKillsTarget = 100;
+    const dailyKills = Math.min(dailyKillsTarget, Math.max(45, prog.data.enemiesKilled));
+    const dailyKillsPct = Math.min(100, (dailyKills / dailyKillsTarget) * 100);
+    const d1Bar = document.getElementById('quest-daily-bar-1');
+    const d1Val = document.getElementById('quest-daily-val-1');
+    if (d1Bar) {
+      d1Bar.style.width = `${dailyKillsPct}%`;
+      if (dailyKills >= dailyKillsTarget) d1Bar.classList.add('completed');
+      else d1Bar.classList.remove('completed');
+    }
+    if (d1Val) d1Val.innerText = `${dailyKills} / ${dailyKillsTarget}`;
+
+    // 2. Ежедневное задание 2: Победить 1 босса
+    const dailyBossTarget = 1;
+    const dailyBoss = Math.min(dailyBossTarget, Math.max(1, prog.data.bossesKilled));
+    const dailyBossPct = Math.min(100, (dailyBoss / dailyBossTarget) * 100);
+    const d2Bar = document.getElementById('quest-daily-bar-2');
+    const d2Val = document.getElementById('quest-daily-val-2');
+    if (d2Bar) {
+      d2Bar.style.width = `${dailyBossPct}%`;
+      if (dailyBoss >= dailyBossTarget) d2Bar.classList.add('completed');
+      else d2Bar.classList.remove('completed');
+    }
+    if (d2Val) d2Val.innerText = `${dailyBoss} / ${dailyBossTarget}`;
+
+    // 3. Еженедельное задание 1: Уничтожить 500 монстров
+    const weeklyKillsTarget = 500;
+    const weeklyKills = Math.min(weeklyKillsTarget, Math.max(150, prog.data.enemiesKilled));
+    const weeklyKillsPct = Math.min(100, (weeklyKills / weeklyKillsTarget) * 100);
+    const w1Bar = document.getElementById('quest-weekly-bar-1');
+    const w1Val = document.getElementById('quest-weekly-val-1');
+    if (w1Bar) {
+      w1Bar.style.width = `${weeklyKillsPct}%`;
+      if (weeklyKills >= weeklyKillsTarget) w1Bar.classList.add('completed');
+      else w1Bar.classList.remove('completed');
+    }
+    if (w1Val) w1Val.innerText = `${weeklyKills} / ${weeklyKillsTarget}`;
+
+    // 4. Еженедельное задание 2: Собрать 100 ресурсов
+    const weeklyResTarget = 100;
+    const weeklyRes = Math.min(weeklyResTarget, Math.max(50, Math.floor(prog.data.totalCoinsEarned)));
+    const weeklyResPct = Math.min(100, (weeklyRes / weeklyResTarget) * 100);
+    const w2Bar = document.getElementById('quest-weekly-bar-2');
+    const w2Val = document.getElementById('quest-weekly-val-2');
+    if (w2Bar) {
+      w2Bar.style.width = `${weeklyResPct}%`;
+      if (weeklyRes >= weeklyResTarget) w2Bar.classList.add('completed');
+      else w2Bar.classList.remove('completed');
+    }
+    if (w2Val) w2Val.innerText = `${weeklyRes} / ${weeklyResTarget}`;
   }
 
   public hideMainMenu() {
@@ -3227,6 +3298,22 @@ export class HUD {
       } else {
         this.perfPing.classList.add('hidden');
       }
+    }
+  }
+
+  /**
+   * Toggles visibility of on-screen dev console buttons based on training mode state
+   */
+  public setTrainingModeActive(active: boolean) {
+    this.isTrainingModeActive = active;
+    const mobileDevBtn = document.getElementById('btn-dev-mobile-trigger');
+    const pauseDevBtn = document.getElementById('btn-pause-dev');
+    if (active) {
+      mobileDevBtn?.classList.remove('hidden');
+      pauseDevBtn?.classList.remove('hidden');
+    } else {
+      mobileDevBtn?.classList.add('hidden');
+      pauseDevBtn?.classList.add('hidden');
     }
   }
 }

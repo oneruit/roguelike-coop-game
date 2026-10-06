@@ -12,7 +12,15 @@ export class Engine {
   public chunkManager: ChunkManager;
   private container: HTMLElement;
 
+  public timeOfDay: 'day' | 'night' = 'day';
+
+  private ambientLight!: THREE.AmbientLight;
   private dirLight!: THREE.DirectionalLight;
+  private hemiLight!: THREE.HemisphereLight;
+
+  private sunOffset = new THREE.Vector3(18, 28, 14);
+  private moonOffset = new THREE.Vector3(-14, 26, -14);
+  private currentLightOffset = new THREE.Vector3(18, 28, 14);
 
   // Camera settings for 2.5D
   private cameraOffset = new THREE.Vector3(0, 16, 12);
@@ -44,6 +52,9 @@ export class Engine {
 
     // 4. Lighting & Infinite Procedural World
     this.setupLighting();
+    const savedTime = (localStorage.getItem('settings_time_of_day') as 'day' | 'night') || 'day';
+    this.setTimeOfDay(savedTime === 'night' ? 'night' : 'day');
+
     this.obstacleManager = new ObstacleManager();
     this.altarManager = new AltarManager(this.scene);
     this.chunkManager = new ChunkManager(this.scene, this.altarManager, this.obstacleManager);
@@ -53,12 +64,12 @@ export class Engine {
   }
 
   private setupLighting() {
-    // Ambient Light (warm dusty desert glow)
-    const ambientLight = new THREE.AmbientLight(0x8a4216, 0.95);
-    this.scene.add(ambientLight);
+    // Ambient Light
+    this.ambientLight = new THREE.AmbientLight(0x8a5530, 0.95);
+    this.scene.add(this.ambientLight);
 
-    // Directional Sun Key Light with Shadows (1024x1024 default resolution)
-    this.dirLight = new THREE.DirectionalLight(0xffedd5, 1.4);
+    // Directional Sun / Moon Key Light with Shadows (1024x1024 default resolution)
+    this.dirLight = new THREE.DirectionalLight(0xffedd5, 1.45);
     this.dirLight.position.set(18, 28, 14);
     this.dirLight.castShadow = true;
     this.dirLight.shadow.mapSize.width = 1024;
@@ -74,9 +85,52 @@ export class Engine {
     this.scene.add(this.dirLight);
     this.scene.add(this.dirLight.target);
 
-    // Hemisphere light: sunset orange sky to rich umber ground
-    const hemiLight = new THREE.HemisphereLight(0xfb923c, 0x241209, 0.7);
-    this.scene.add(hemiLight);
+    // Hemisphere light
+    this.hemiLight = new THREE.HemisphereLight(0xfb923c, 0x241209, 0.70);
+    this.scene.add(this.hemiLight);
+  }
+
+  /**
+   * Switches lighting between Day (Sun) and Night (Moon).
+   */
+  public setTimeOfDay(mode: 'day' | 'night') {
+    this.timeOfDay = mode;
+    try {
+      localStorage.setItem('settings_time_of_day', mode);
+    } catch {}
+
+    if (mode === 'day') {
+      this.currentLightOffset.copy(this.sunOffset);
+      this.dirLight.color.setHex(0xffedd5);
+      this.dirLight.intensity = 1.45;
+      this.ambientLight.color.setHex(0x8a5530);
+      this.ambientLight.intensity = 0.95;
+      this.hemiLight.color.setHex(0xfb923c);
+      this.hemiLight.groundColor.setHex(0x241209);
+      this.hemiLight.intensity = 0.70;
+      this.scene.background = new THREE.Color(0x23140e);
+      if (this.scene.fog instanceof THREE.FogExp2) {
+        this.scene.fog.color.setHex(0x23140e);
+        this.scene.fog.density = 0.016;
+      }
+    } else if (mode === 'night') {
+      this.currentLightOffset.copy(this.moonOffset);
+      // Soft silvery-cyan moonlight
+      this.dirLight.color.setHex(0xa5cbf5);
+      this.dirLight.intensity = 1.20;
+      // Bright cool moonlight ambient for clear readability
+      this.ambientLight.color.setHex(0x2b3d63);
+      this.ambientLight.intensity = 0.95;
+      this.hemiLight.color.setHex(0x38bdf8);
+      this.hemiLight.groundColor.setHex(0x111827);
+      this.hemiLight.intensity = 0.65;
+      // Deep midnight indigo sky
+      this.scene.background = new THREE.Color(0x0c1322);
+      if (this.scene.fog instanceof THREE.FogExp2) {
+        this.scene.fog.color.setHex(0x0c1322);
+        this.scene.fog.density = 0.015;
+      }
+    }
   }
 
   /**
@@ -122,9 +176,13 @@ export class Engine {
     this.cameraTarget.lerp(playerPos, factor);
     this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y + 0.6, this.cameraTarget.z);
 
-    // Keep sun & shadow camera aligned with player position in the infinite desert
+    // Keep sun/moon & shadow camera aligned with player position
     if (this.dirLight) {
-      this.dirLight.position.set(playerPos.x + 18, playerPos.y + 28, playerPos.z + 14);
+      this.dirLight.position.set(
+        playerPos.x + this.currentLightOffset.x,
+        playerPos.y + this.currentLightOffset.y,
+        playerPos.z + this.currentLightOffset.z
+      );
       this.dirLight.target.position.copy(playerPos);
       this.dirLight.target.updateMatrixWorld();
     }

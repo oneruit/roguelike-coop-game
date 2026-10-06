@@ -13,6 +13,11 @@ export class TerrainMaterials {
   public static boneMaterial: THREE.MeshStandardMaterial;
   public static woodMaterial: THREE.MeshStandardMaterial;
   public static ironMaterial: THREE.MeshStandardMaterial;
+  public static waterMaterial: THREE.MeshStandardMaterial;
+  public static wetSandMaterial: THREE.MeshStandardMaterial;
+  public static palmBarkMaterial: THREE.MeshStandardMaterial;
+  public static palmLeafMaterial: THREE.MeshStandardMaterial;
+  public static coconutMaterial: THREE.MeshStandardMaterial;
 
   private static initialized = false;
 
@@ -152,6 +157,42 @@ export class TerrainMaterials {
       color: 0x3a251e,
       roughness: 0.7,
       metalness: 0.35
+    });
+
+    // 10. Oasis Shimmering Water Material
+    this.waterMaterial = new THREE.MeshStandardMaterial({
+      color: 0x0ea5e9,
+      roughness: 0.12,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.88
+    });
+
+    // 11. Wet Dark Sand (Oasis Shoreline)
+    this.wetSandMaterial = new THREE.MeshStandardMaterial({
+      color: 0x854d0e,
+      roughness: 0.85,
+      metalness: 0.04
+    });
+
+    // 12. Palm Tree Materials
+    this.palmBarkMaterial = new THREE.MeshStandardMaterial({
+      color: 0x78350f,
+      roughness: 0.82,
+      metalness: 0.05
+    });
+
+    this.palmLeafMaterial = new THREE.MeshStandardMaterial({
+      color: 0x16a34a,
+      roughness: 0.6,
+      metalness: 0.05,
+      side: THREE.DoubleSide
+    });
+
+    this.coconutMaterial = new THREE.MeshStandardMaterial({
+      color: 0x451a03,
+      roughness: 0.7,
+      metalness: 0.05
     });
   }
 }
@@ -536,5 +577,154 @@ export class TerrainProps {
 
     group.rotation.y = rng() * Math.PI * 2;
     return group;
+  }
+
+  /**
+   * Builds an authentic desert palm tree with curved segmented trunk, radiating fronds and coconuts.
+   */
+  public static createPalmTree(rng: () => number): THREE.Group {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+
+    // Curved trunk consisting of 4 slightly leaning segments
+    const segHeight = 1.1;
+    let currY = 0;
+    let currX = 0;
+    let currZ = 0;
+    const leanAngle = (rng() - 0.5) * 0.25;
+    const leanDir = rng() * Math.PI * 2;
+    const dx = Math.cos(leanDir) * leanAngle;
+    const dz = Math.sin(leanDir) * leanAngle;
+
+    for (let s = 0; s < 4; s++) {
+      const bottomR = 0.22 - s * 0.025;
+      const topR = 0.20 - s * 0.025;
+      const geom = new THREE.CylinderGeometry(topR, bottomR, segHeight, 6);
+      const mesh = new THREE.Mesh(geom, TerrainMaterials.palmBarkMaterial);
+      mesh.position.set(currX + dx * 0.5, currY + segHeight * 0.5, currZ + dz * 0.5);
+      mesh.rotation.x = dz;
+      mesh.rotation.z = -dx;
+      mesh.castShadow = true;
+      group.add(mesh);
+
+      currY += segHeight;
+      currX += dx;
+      currZ += dz;
+    }
+
+    // Crown of spreading palm fronds (8 fronds radiating outwards and drooping)
+    const frondCount = 8;
+    for (let f = 0; f < frondCount; f++) {
+      const angle = (f / frondCount) * Math.PI * 2 + (rng() - 0.5) * 0.2;
+      const frondGeom = new THREE.PlaneGeometry(0.7, 2.4, 2, 4);
+      frondGeom.translate(0, 1.2, 0);
+
+      // Droop the tip downwards
+      const posAttr = frondGeom.attributes.position;
+      for (let i = 0; i < posAttr.count; i++) {
+        const y = posAttr.getY(i);
+        if (y > 1.2) {
+          posAttr.setZ(i, -Math.pow((y - 1.2) / 1.2, 2) * 0.6);
+        }
+      }
+      frondGeom.computeVertexNormals();
+
+      const frondMesh = new THREE.Mesh(frondGeom, TerrainMaterials.palmLeafMaterial);
+      frondMesh.position.set(currX, currY, currZ);
+      frondMesh.rotation.y = angle;
+      frondMesh.rotation.x = Math.PI / 3.2; // drooping tilt
+      frondMesh.castShadow = true;
+      group.add(frondMesh);
+    }
+
+    // Small cluster of coconuts
+    const coconutCount = 3 + Math.floor(rng() * 2);
+    for (let c = 0; c < coconutCount; c++) {
+      const cAngle = (c / coconutCount) * Math.PI * 2;
+      const coconutGeom = new THREE.SphereGeometry(0.14, 5, 5);
+      const coconutMesh = new THREE.Mesh(coconutGeom, TerrainMaterials.coconutMaterial);
+      coconutMesh.position.set(
+        currX + Math.cos(cAngle) * 0.22,
+        currY - 0.15,
+        currZ + Math.sin(cAngle) * 0.22
+      );
+      coconutMesh.castShadow = true;
+      group.add(coconutMesh);
+    }
+
+    return group;
+  }
+
+  /**
+   * Builds an expansive desert oasis landmark with turquoise pool, wet sand shoreline,
+   * perimeter palm trees, smooth river stones and reeds.
+   * Player and enemies cannot enter the water (solid collision registered via ObstacleManager).
+   */
+  public static createOasis(rng: () => number): { group: THREE.Group; radius: number } {
+    TerrainMaterials.init();
+    const group = new THREE.Group();
+    const radius = 5.0; // 5 meter radius water pool
+
+    // 1. Shimmering turquoise water disc
+    const waterGeom = new THREE.CircleGeometry(radius, 32);
+    waterGeom.rotateX(-Math.PI / 2);
+    const waterMesh = new THREE.Mesh(waterGeom, TerrainMaterials.waterMaterial);
+    waterMesh.position.y = 0.03;
+    waterMesh.receiveShadow = true;
+    group.add(waterMesh);
+
+    // 2. Wet damp dark sand shoreline ring
+    const shoreGeom = new THREE.RingGeometry(radius - 0.2, radius + 1.2, 32);
+    shoreGeom.rotateX(-Math.PI / 2);
+    const shoreMesh = new THREE.Mesh(shoreGeom, TerrainMaterials.wetSandMaterial);
+    shoreMesh.position.y = 0.02;
+    shoreMesh.receiveShadow = true;
+    group.add(shoreMesh);
+
+    // 3. Palm trees lining the shoreline (4-5 palms around the perimeter)
+    const palmCount = 4 + (rng() < 0.5 ? 1 : 0);
+    for (let p = 0; p < palmCount; p++) {
+      const palmAngle = (p / palmCount) * Math.PI * 2 + (rng() - 0.5) * 0.4;
+      const dist = radius + rng() * 0.6;
+      const px = Math.cos(palmAngle) * dist;
+      const pz = Math.sin(palmAngle) * dist;
+
+      const palm = TerrainProps.createPalmTree(rng);
+      palm.position.set(px, 0, pz);
+      const scale = 0.9 + rng() * 0.35;
+      palm.scale.set(scale, scale, scale);
+      group.add(palm);
+    }
+
+    // 4. Smooth shoreline river stones & desert bushes
+    for (let s = 0; s < 10; s++) {
+      const stoneAngle = rng() * Math.PI * 2;
+      const dist = radius + 0.2 + rng() * 0.9;
+      const sx = Math.cos(stoneAngle) * dist;
+      const sz = Math.sin(stoneAngle) * dist;
+
+      const stoneGeom = new THREE.DodecahedronGeometry(0.35 + rng() * 0.3, 0);
+      const stoneMesh = new THREE.Mesh(stoneGeom, TerrainMaterials.rockMaterial);
+      stoneMesh.position.set(sx, 0.15, sz);
+      stoneMesh.scale.set(1.4, 0.7, 1.1);
+      stoneMesh.rotation.set(rng() * Math.PI, rng() * Math.PI, rng() * Math.PI);
+      stoneMesh.castShadow = true;
+      group.add(stoneMesh);
+    }
+
+    // 5. Desert reeds / green shrubs
+    for (let r = 0; r < 8; r++) {
+      const reedAngle = rng() * Math.PI * 2;
+      const dist = radius + 0.1 + rng() * 0.7;
+      const rx = Math.cos(reedAngle) * dist;
+      const rz = Math.sin(reedAngle) * dist;
+
+      const reed = TerrainProps.createScrub(rng);
+      reed.position.set(rx, 0, rz);
+      reed.scale.set(1.2, 1.5, 1.2);
+      group.add(reed);
+    }
+
+    return { group, radius };
   }
 }
