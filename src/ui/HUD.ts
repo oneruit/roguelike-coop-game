@@ -1,5 +1,6 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
 import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon } from '../combat/Weapon';
+import { Projectile } from '../combat/Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { Enemy } from '../entities/Enemy';
@@ -117,6 +118,8 @@ export class HUD {
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
+  public isAutoLevelUp = false;
+  private levelUpKeyHandler: ((e: KeyboardEvent) => void) | null = null;
   private levelUpModal: HTMLElement;
   private levelUpStepIndicator: HTMLElement;
   private levelUpTitle: HTMLElement;
@@ -462,6 +465,10 @@ export class HUD {
     const muteCheckbox = document.getElementById('settings-mute') as HTMLInputElement | null;
     const testSoundBtn = document.getElementById('settings-btn-test-sound');
     const dmgNumbersCheckbox = document.getElementById('settings-damage-numbers') as HTMLInputElement | null;
+    const xpNumbersCheckbox = document.getElementById('settings-xp-numbers') as HTMLInputElement | null;
+    const autoLevelupCheckbox = document.getElementById('settings-auto-levelup') as HTMLInputElement | null;
+    const vfxOpacitySlider = document.getElementById('settings-vfx-opacity') as HTMLInputElement | null;
+    const vfxOpacityVal = document.getElementById('settings-vfx-opacity-val');
     const fullscreenBtn = document.getElementById('settings-btn-fullscreen');
     const openGuideBtn = document.getElementById('settings-btn-open-guide');
     const settingsBackBtn = document.getElementById('settings-btn-back');
@@ -485,9 +492,54 @@ export class HUD {
       setTimeout(() => SoundManager.playGem(), 120);
     });
 
+    if (vfxOpacitySlider) {
+      const savedVfx = localStorage.getItem('wildwest_vfx_opacity');
+      const initialVfx = savedVfx !== null ? parseInt(savedVfx, 10) : 100;
+      vfxOpacitySlider.value = String(initialVfx);
+      if (vfxOpacityVal) vfxOpacityVal.innerText = `${initialVfx}%`;
+      const normVal = initialVfx / 100;
+      Projectile.setVfxOpacity(normVal);
+      HolyAuraWeapon.setVfxOpacity(normVal);
+
+      vfxOpacitySlider.addEventListener('input', () => {
+        const val = parseInt(vfxOpacitySlider.value, 10);
+        if (vfxOpacityVal) vfxOpacityVal.innerText = `${val}%`;
+        const nVal = val / 100;
+        Projectile.setVfxOpacity(nVal);
+        HolyAuraWeapon.setVfxOpacity(nVal);
+        localStorage.setItem('wildwest_vfx_opacity', String(val));
+      });
+    }
+
     if (dmgNumbersCheckbox) {
+      const savedDmg = localStorage.getItem('wildwest_show_damage');
+      const dmgEnabled = savedDmg !== 'false';
+      dmgNumbersCheckbox.checked = dmgEnabled;
+      DamageNumberManager.damageEnabled = dmgEnabled;
       dmgNumbersCheckbox.addEventListener('change', () => {
-        DamageNumberManager.enabled = dmgNumbersCheckbox.checked;
+        DamageNumberManager.damageEnabled = dmgNumbersCheckbox.checked;
+        localStorage.setItem('wildwest_show_damage', dmgNumbersCheckbox.checked ? 'true' : 'false');
+      });
+    }
+
+    if (xpNumbersCheckbox) {
+      const savedXp = localStorage.getItem('wildwest_show_xp');
+      const xpEnabled = savedXp !== 'false';
+      xpNumbersCheckbox.checked = xpEnabled;
+      DamageNumberManager.xpEnabled = xpEnabled;
+      xpNumbersCheckbox.addEventListener('change', () => {
+        DamageNumberManager.xpEnabled = xpNumbersCheckbox.checked;
+        localStorage.setItem('wildwest_show_xp', xpNumbersCheckbox.checked ? 'true' : 'false');
+      });
+    }
+
+    if (autoLevelupCheckbox) {
+      const savedAuto = localStorage.getItem('wildwest_auto_levelup');
+      this.isAutoLevelUp = savedAuto === 'true'; // Default is disabled (false)
+      autoLevelupCheckbox.checked = this.isAutoLevelUp;
+      autoLevelupCheckbox.addEventListener('change', () => {
+        this.isAutoLevelUp = autoLevelupCheckbox.checked;
+        localStorage.setItem('wildwest_auto_levelup', this.isAutoLevelUp ? 'true' : 'false');
       });
     }
 
@@ -2616,6 +2668,24 @@ export class HUD {
   }
 
   public showLevelUp(player: Player, onSelect: () => void) {
+    if (this.isAutoLevelUp) {
+      const weaponOptions = this.generateWeaponOptions(player);
+      if (weaponOptions.length > 0) {
+        weaponOptions[0].apply();
+      } else {
+        // All 5 weapons are maxed at level 20: provide fallback reward
+        player.maxHp += 50;
+        player.heal(player.maxHp);
+        player.redrawOverhead();
+      }
+      this.updateWeaponsBar(player.weapons);
+      this.updatePassivesBar(player);
+      SoundManager.playLevelUp();
+      this.hideLevelUp();
+      setTimeout(() => onSelect(), 30);
+      return;
+    }
+
     SoundManager.playLevelUp();
     this.levelUpModal.classList.remove('hidden');
 
@@ -2653,37 +2723,79 @@ export class HUD {
       this.levelUpStepIndicator.style.color = '#fbbf24';
     }
     if (this.levelUpTitle) {
-      this.levelUpTitle.innerText = 'ВЫБЕРИТЕ ОРУЖИЕ';
+      this.levelUpTitle.innerText = 'ВЫБЕРИТЕ ОРУЖИЕ [1 - 3]';
     }
 
     this.upgradeCardsContainer.innerHTML = '';
-    for (const opt of options) {
+    let chosen = false;
+
+    if (this.levelUpKeyHandler) {
+      window.removeEventListener('keydown', this.levelUpKeyHandler);
+      this.levelUpKeyHandler = null;
+    }
+
+    const selectOptionByIndex = (index: number) => {
+      if (chosen || index < 0 || index >= options.length) return;
+      chosen = true;
+      if (this.levelUpKeyHandler) {
+        window.removeEventListener('keydown', this.levelUpKeyHandler);
+        this.levelUpKeyHandler = null;
+      }
+      options[index].apply();
+      SoundManager.playShoot();
+      onChosen();
+    };
+
+    options.forEach((opt, idx) => {
       const card = document.createElement('div');
       card.className = 'character-card upgrade-card card-weapon-step';
       const iconHtml = opt.iconImage
         ? `<div class="char-portrait-wrapper upgrade-icon-wrapper"><img src="${opt.iconImage}" class="char-portrait card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
         : `<div class="char-portrait-wrapper upgrade-icon-wrapper"><div class="card-icon">${opt.icon}</div></div>`;
       card.innerHTML = `
+        <div class="card-hotkey-badge">[${idx + 1}]</div>
         ${iconHtml}
         <div class="char-name card-title">${opt.title}</div>
         <div class="char-type card-level-tag">${opt.levelTag}</div>
         <div class="char-perks card-perks-box">
           <div class="perk-tag card-description">${opt.description}</div>
         </div>
-        <button class="action-btn select-btn upgrade-select-btn">ВЫБРАТЬ</button>
+        <button class="action-btn select-btn upgrade-select-btn"><span class="btn-hotkey">[${idx + 1}]</span> ВЫБРАТЬ</button>
       `;
 
       card.addEventListener('click', () => {
-        opt.apply();
-        SoundManager.playShoot();
-        onChosen();
+        selectOptionByIndex(idx);
       });
 
       this.upgradeCardsContainer.appendChild(card);
-    }
+    });
+
+    this.levelUpKeyHandler = (e: KeyboardEvent) => {
+      if (chosen) return;
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+      if (this.levelUpModal.classList.contains('hidden')) return;
+
+      if (e.code === 'Digit1' || e.code === 'Numpad1' || e.key === '1') {
+        e.preventDefault();
+        selectOptionByIndex(0);
+      } else if (e.code === 'Digit2' || e.code === 'Numpad2' || e.key === '2') {
+        e.preventDefault();
+        selectOptionByIndex(1);
+      } else if (e.code === 'Digit3' || e.code === 'Numpad3' || e.key === '3') {
+        e.preventDefault();
+        selectOptionByIndex(2);
+      }
+    };
+
+    window.addEventListener('keydown', this.levelUpKeyHandler);
   }
 
   private hideLevelUp() {
+    if (this.levelUpKeyHandler) {
+      window.removeEventListener('keydown', this.levelUpKeyHandler);
+      this.levelUpKeyHandler = null;
+    }
     this.levelUpModal.classList.add('hidden');
   }
 

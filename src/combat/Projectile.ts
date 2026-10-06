@@ -62,10 +62,61 @@ export class Projectile {
   private groundRingMat?: THREE.MeshBasicMaterial;
   private groundDiscMat?: THREE.MeshBasicMaterial;
 
+  // Weapon VFX Opacity control
+  public static vfxOpacity: number = 1.0;
+  private static activeProjectiles = new Set<Projectile>();
+
+  public static setVfxOpacity(val: number) {
+    const clamped = Math.max(0, Math.min(1, val));
+    Projectile.vfxOpacity = clamped;
+
+    if (Projectile.bulletMaterial) {
+      Projectile.bulletMaterial.opacity = clamped;
+      Projectile.bulletMaterial.visible = clamped > 0.005;
+    }
+    if (Projectile.arrowMaterial) {
+      Projectile.arrowMaterial.opacity = clamped;
+      Projectile.arrowMaterial.visible = clamped > 0.005;
+    }
+    if (Projectile.kukriMaterial) {
+      Projectile.kukriMaterial.opacity = clamped;
+      Projectile.kukriMaterial.visible = clamped > 0.005;
+    }
+    if (Projectile.chakramMaterial) {
+      Projectile.chakramMaterial.opacity = clamped;
+      Projectile.chakramMaterial.visible = clamped > 0.005;
+    }
+    if (Projectile.orbCoreMat) {
+      Projectile.orbCoreMat.transparent = true;
+      Projectile.orbCoreMat.opacity = clamped;
+      Projectile.orbCoreMat.visible = clamped > 0.005;
+    }
+    for (const mat of Projectile.orbMatCache.values()) {
+      mat.transparent = true;
+      mat.opacity = clamped;
+      mat.emissiveIntensity = 1.2 * clamped;
+      mat.visible = clamped > 0.005;
+    }
+    for (const p of Projectile.activeProjectiles) {
+      if (p.lightningMaterial) {
+        p.lightningMaterial.opacity = clamped;
+        p.lightningMaterial.visible = clamped > 0.005;
+      }
+      if (p.groundRingMat) {
+        p.groundRingMat.opacity = 0.9 * clamped;
+        p.groundRingMat.visible = clamped > 0.005;
+      }
+      if (p.groundDiscMat) {
+        p.groundDiscMat.opacity = 0.95 * clamped;
+        p.groundDiscMat.visible = clamped > 0.005;
+      }
+    }
+  }
+
   // Shared assets for Orbiting Barrier (Holy Horseshoes)
   private static orbGeom = new THREE.SphereGeometry(1, 10, 10);
   private static orbCoreGeom = new THREE.SphereGeometry(0.5, 8, 8);
-  private static orbCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  private static orbCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0 });
   private static orbMatCache = new Map<number, THREE.MeshStandardMaterial>();
 
   // Shared assets for Lightning Strike
@@ -98,8 +149,11 @@ export class Projectile {
       mat = new THREE.MeshStandardMaterial({
         color,
         emissive: color,
-        emissiveIntensity: 1.2,
-        roughness: 0.1
+        emissiveIntensity: 1.2 * Projectile.vfxOpacity,
+        roughness: 0.1,
+        transparent: true,
+        opacity: Projectile.vfxOpacity,
+        visible: Projectile.vfxOpacity > 0.005
       });
       Projectile.orbMatCache.set(color, mat);
     }
@@ -107,6 +161,7 @@ export class Projectile {
   }
 
   constructor(options: ProjectileOptions) {
+    Projectile.activeProjectiles.add(this);
     this.position = options.position.clone();
     this.direction = options.direction.clone().normalize();
     this.speed = options.speed;
@@ -155,9 +210,11 @@ export class Projectile {
       this.lightningMaterial = new THREE.MeshBasicMaterial({
         map: TextureManager.getLightningTexture(),
         transparent: true,
+        opacity: Projectile.vfxOpacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        visible: Projectile.vfxOpacity > 0.005
       });
 
       const boltA = new THREE.Mesh(Projectile.lightningGeomA, this.lightningMaterial);
@@ -169,10 +226,11 @@ export class Projectile {
       this.groundRingMat = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.9 * Projectile.vfxOpacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        visible: Projectile.vfxOpacity > 0.005
       });
       this.groundRingMesh = new THREE.Mesh(Projectile.lightningRingGeom, this.groundRingMat);
       this.groundRingMesh.position.y = 0.05;
@@ -183,10 +241,11 @@ export class Projectile {
       this.groundDiscMat = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
-        opacity: 0.95,
+        opacity: 0.95 * Projectile.vfxOpacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        visible: Projectile.vfxOpacity > 0.005
       });
       const discMesh = new THREE.Mesh(Projectile.lightningDiscGeom, this.groundDiscMat);
       discMesh.position.y = 0.06;
@@ -201,9 +260,11 @@ export class Projectile {
         Projectile.chakramMaterial = new THREE.MeshBasicMaterial({
           map: TextureManager.getChakramTexture(),
           transparent: true,
+          opacity: Projectile.vfxOpacity,
           alphaTest: 0.02,
           side: THREE.DoubleSide,
-          depthWrite: false
+          depthWrite: false,
+          visible: Projectile.vfxOpacity > 0.005
         });
       }
 
@@ -221,9 +282,11 @@ export class Projectile {
         Projectile.kukriMaterial = new THREE.MeshBasicMaterial({
           map: TextureManager.getKukriTexture(),
           transparent: true,
+          opacity: Projectile.vfxOpacity,
           alphaTest: 0.03,
           side: THREE.DoubleSide,
-          depthWrite: false
+          depthWrite: false,
+          visible: Projectile.vfxOpacity > 0.005
         });
       }
 
@@ -246,9 +309,11 @@ export class Projectile {
         Projectile.arrowMaterial = new THREE.MeshBasicMaterial({
           map: TextureManager.getArrowTexture(),
           transparent: true,
+          opacity: Projectile.vfxOpacity,
           alphaTest: 0.03,
           side: THREE.DoubleSide,
-          depthWrite: false
+          depthWrite: false,
+          visible: Projectile.vfxOpacity > 0.005
         });
       }
 
@@ -285,9 +350,11 @@ export class Projectile {
         Projectile.bulletMaterial = new THREE.MeshBasicMaterial({
           map: TextureManager.getBulletTexture(),
           transparent: true,
+          opacity: Projectile.vfxOpacity,
           alphaTest: 0.04,
           side: THREE.DoubleSide,
-          depthWrite: false
+          depthWrite: false,
+          visible: Projectile.vfxOpacity > 0.005
         });
       }
 
@@ -320,17 +387,20 @@ export class Projectile {
     if (this.isLightning) {
       const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
       const flicker = 0.8 + Math.random() * 0.2;
-      const alpha = Math.max(0, 1 - progress * progress) * flicker;
+      const alpha = Math.max(0, 1 - progress * progress) * flicker * Projectile.vfxOpacity;
       if (this.lightningMaterial) {
         this.lightningMaterial.opacity = alpha;
+        this.lightningMaterial.visible = Projectile.vfxOpacity > 0.005;
       }
       if (this.groundRingMesh && this.groundRingMat) {
         const ringScale = this.radius * (0.8 + progress * 1.6);
         this.groundRingMesh.scale.set(ringScale, ringScale, ringScale);
-        this.groundRingMat.opacity = Math.max(0, (1 - progress) * 0.85);
+        this.groundRingMat.opacity = Math.max(0, (1 - progress) * 0.85) * Projectile.vfxOpacity;
+        this.groundRingMat.visible = Projectile.vfxOpacity > 0.005;
       }
       if (this.groundDiscMat) {
-        this.groundDiscMat.opacity = Math.max(0, (1 - progress * 1.8) * 0.95);
+        this.groundDiscMat.opacity = Math.max(0, (1 - progress * 1.8) * 0.95) * Projectile.vfxOpacity;
+        this.groundDiscMat.visible = Projectile.vfxOpacity > 0.005;
       }
       return;
     } else if (this.isOrbiting && centerPos) {
@@ -410,6 +480,7 @@ export class Projectile {
   }
 
   public destroy(scene: THREE.Scene) {
+    Projectile.activeProjectiles.delete(this);
     scene.remove(this.mesh);
     if (this.lightningMaterial) {
       this.lightningMaterial.dispose();

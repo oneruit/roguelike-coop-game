@@ -348,6 +348,13 @@
                     </select>
                   </div>
                 </div>
+                <div class="settings-row">
+                  <label for="settings-vfx-opacity" class="settings-label">Прозрачность эффектов оружия (VFX):</label>
+                  <div class="settings-control-row">
+                    <input type="range" id="settings-vfx-opacity" min="0" max="100" value="100" class="settings-slider" />
+                    <span id="settings-vfx-opacity-val" class="settings-val-badge">100%</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -385,9 +392,23 @@
                   </label>
                 </div>
                 <div class="settings-row">
-                  <label for="settings-damage-numbers" class="settings-label">Урон над врагами (Damage numbers):</label>
+                  <label for="settings-damage-numbers" class="settings-label">Числа урона над врагами (Damage):</label>
                   <label class="toggle-switch">
                     <input type="checkbox" id="settings-damage-numbers" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-xp-numbers" class="settings-label">Числа получения опыта (XP):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-xp-numbers" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-auto-levelup" class="settings-label">Автовыбор оружия (автопрокачка):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-auto-levelup" />
                     <span class="slider round"></span>
                   </label>
                 </div>
@@ -400,6 +421,7 @@
                 <div class="settings-section-title">Управление и Навигация / Controls</div>
                 <div class="settings-controls-summary">
                   <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[1] [2] [3]</span> <span>Выбор оружия при повышении уровня</span></div>
                   <div class="ctrl-item"><span class="key-tag">[ПРОБЕЛ] / [SHIFT]</span> <span>Рывок (Dash)</span></div>
                   <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
                   <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза / Назад</span></div>
