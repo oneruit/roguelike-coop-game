@@ -100,24 +100,28 @@ export class RoughTerrainManager {
     const secondaryTex = secondaryTexName ? RoughTerrainManager.getTexture(secondaryTexName) : null;
 
     // Plane geometry laying flat on the ground plane at y = 0.02
-    // We create separate materials for primary and secondary sprites
+    // We create separate materials for primary and secondary sprites with smooth alpha blending and zero z-fighting
     const primaryMat = new THREE.MeshStandardMaterial({
       map: primaryTex,
       transparent: true,
-      alphaTest: 0.04,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1,
       roughness: 0.95,
-      metalness: 0.02,
-      depthWrite: false
+      metalness: 0.02
     });
 
     const secondaryMat = secondaryTex
       ? new THREE.MeshStandardMaterial({
           map: secondaryTex,
           transparent: true,
-          alphaTest: 0.04,
+          depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
           roughness: 0.95,
-          metalness: 0.02,
-          depthWrite: false
+          metalness: 0.02
         })
       : null;
 
@@ -165,8 +169,20 @@ export class RoughTerrainManager {
           geom.rotateX(-Math.PI / 2);
 
           const mesh = new THREE.Mesh(geom, mat);
-          mesh.position.set(px, 0.025, pz); // slightly above flat floor to prevent z-fighting
-          mesh.rotation.y = rng.range(0, Math.PI * 2);
+          mesh.position.set(px, 0.02, pz);
+
+          if (stageNumber === 1) {
+            // Align with prevailing desert wind and ground ripple angle (~-0.52 rad)
+            // with subtle organic fluctuation (±18°) so dunes blend seamlessly with the terrain flow
+            mesh.rotation.y = -0.52 + rng.range(-0.32, 0.32);
+            // Random mirroring along transverse axis preserves solar shading while varying crescent orientation
+            if (rng.next() < 0.5) {
+              mesh.scale.x = -1;
+            }
+          } else {
+            mesh.rotation.y = rng.range(0, Math.PI * 2);
+          }
+
           mesh.receiveShadow = true;
 
           if (addMeshToChunk) {
@@ -178,7 +194,7 @@ export class RoughTerrainManager {
           const zone: RoughZone = {
             x: px,
             z: pz,
-            radius: actualRadius,
+            radius: actualRadius * 0.85, // matches dense dune sand body
             mesh
           };
           this.zones.push(zone);
