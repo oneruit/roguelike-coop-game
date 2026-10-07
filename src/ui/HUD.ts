@@ -1308,7 +1308,7 @@ export class HUD {
   }
 
   public getHeroAvatar(charType: CharacterType): string {
-    return charType === 'ronin'
+    const avatar = charType === 'ronin'
       ? '/textures/hero_ronin_front.png'
       : charType === 'valkyrie'
       ? '/textures/hero_valkyrie_front.png'
@@ -1319,6 +1319,7 @@ export class HUD {
       : charType === 'chakram'
       ? '/textures/hero_chakram_front.png'
       : '/textures/hero_archer_front.png';
+    return TextureManager.getAssetUrl(avatar);
   }
 
   public updateGuestReadyButtonUI() {
@@ -1499,7 +1500,7 @@ export class HUD {
       card.innerHTML = `
         <div class="room-card-left">
           <div class="room-host-avatar" title="${heroName}">
-            <img src="/textures/hero_${r.hostHero}_front.png" alt="${heroName}" />
+            <img src="${this.getHeroAvatar(r.hostHero)}" alt="${heroName}" />
           </div>
           <div class="room-card-info">
             <div class="room-card-title-row">
