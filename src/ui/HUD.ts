@@ -411,7 +411,7 @@ export class HUD {
 
     document.getElementById('menu-btn-quests')?.addEventListener('click', () => {
       this.hideMainMenu();
-      this.showQuestsModal('archer');
+      this.showQuestsModal('chakram');
     });
 
     // Right-side Daily & Weekly quest panels in main menu
@@ -429,6 +429,26 @@ export class HUD {
 
     document.getElementById('quests-btn-back')?.addEventListener('click', () => {
       this.handleEscape();
+    });
+
+    document.getElementById('quests-btn-close')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.handleEscape();
+    });
+
+    document.getElementById('quest-tab-scroll')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+    });
+
+    document.getElementById('quest-tab-chest')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.triggerAltarNotification('Награды', 'Выполняйте задания для получения трофеев и наград!', '🎁', '#f59e0b');
+    });
+
+    document.getElementById('quest-tab-gear')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideQuestsModal();
+      this.showSettings('main');
     });
 
     // Left page hero quest selection items
@@ -1948,7 +1968,7 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
-  public showQuestsModal(selectedHero: CharacterType = 'archer') {
+  public showQuestsModal(selectedHero: CharacterType = 'chakram') {
     if (this.isPaused || this.menuStack.includes('pause')) {
       this.pauseModal.classList.add('hidden');
       if (this.menuStack[this.menuStack.length - 1] !== 'quests') {
@@ -1967,7 +1987,7 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'quests');
   }
 
-  public renderQuestsModal(selectedHero: CharacterType = 'archer') {
+  public renderQuestsModal(selectedHero: CharacterType = 'chakram') {
     this.activeQuestHero = selectedHero;
     const prog = ProgressionManager.getInstance();
 
@@ -1994,7 +2014,6 @@ export class HUD {
       const p = prog.getHeroProgress(h);
       const fillEl = document.getElementById(`quest-prog-bar-${h}`);
       const textEl = document.getElementById(`quest-prog-text-${h}`);
-      const ribbonTextEl = document.getElementById(`quest-ribbon-text-${h}`);
       if (fillEl) {
         const pct = Math.max(0, Math.min(100, Math.round((p.current / p.max) * 100)));
         fillEl.style.width = `${pct}%`;
@@ -2007,19 +2026,21 @@ export class HUD {
       if (textEl) {
         textEl.innerText = p.label;
       }
-      if (ribbonTextEl) {
-        if (p.isComplete) {
-          ribbonTextEl.innerText = '100% (COMPLETE)';
+      const titleTextEl = document.getElementById(`quest-title-${h}`);
+      if (titleTextEl) {
+        if (h === 'chakram') {
+          titleTextEl.innerText = `Охота на Лешего (${p.label})`;
+        } else if (h === 'valkyrie') {
+          titleTextEl.innerText = `Глава 1: Пробуждение (${p.label})`;
+        } else if (h === 'flail') {
+          titleTextEl.innerText = `Сбор Ресурсов (5/10)`;
+        } else if (h === 'sorceress') {
+          titleTextEl.innerText = `Глава на Лешена (${p.label})`;
         } else if (h === 'archer') {
-          const canAchieve = prog.canUnlockElfByAchievement();
-          const canAfford = prog.data.walletCoins >= 100;
-          if (canAchieve || canAfford) {
-            ribbonTextEl.innerText = 'ДОСТУПНО К ПОКУПКЕ';
-          } else {
-            ribbonTextEl.innerText = '0/1 (НЕДОСТУПНО)';
-          }
+          titleTextEl.innerText = `Сбор Ресурсов (5/1)`;
         } else {
-          ribbonTextEl.innerText = `${Math.round((p.current / p.max) * 100)}% (В ПРОЦЕССЕ)`;
+          const hDef = prog.getHeroQuestDefinition(h);
+          titleTextEl.innerText = `${hDef.heroName} «${hDef.heroSubtitle.replace(/[«»]/g, '')}» (${p.label})`;
         }
       }
     });
@@ -2030,6 +2051,16 @@ export class HUD {
     if (titleEl) titleEl.innerText = def.questTitle;
     const descEl = document.getElementById('quest-right-desc');
     if (descEl) descEl.innerText = def.questDesc;
+
+    // Target avatar portrait (Leshy for chakram quest, or hero avatar)
+    const targetAvatarEl = document.getElementById('quest-target-avatar') as HTMLImageElement | null;
+    if (targetAvatarEl) {
+      if (selectedHero === 'chakram') {
+        targetAvatarEl.src = '/textures/quest_target_leshy.png';
+      } else {
+        targetAvatarEl.src = def.avatarIcon || '/textures/quest_target_leshy.png';
+      }
+    }
 
     // Steps
     const stepsContainer = document.getElementById('quest-right-steps');
@@ -2062,13 +2093,11 @@ export class HUD {
 
     // Rewards
     const potEl = document.getElementById('reward-val-potions');
-    if (potEl) potEl.innerText = String(def.rewards.potions);
+    if (potEl) potEl.innerText = `x${def.rewards.potions}`;
     const coinEl = document.getElementById('reward-val-coins');
     if (coinEl) coinEl.innerText = String(def.rewards.coins);
-    const ringEl = document.getElementById('reward-val-rings');
-    if (ringEl) ringEl.innerText = String(def.rewards.rings);
-    const crystEl = document.getElementById('reward-val-crystals');
-    if (crystEl) crystEl.innerText = String(def.rewards.crystals);
+    const chestEl = document.getElementById('reward-val-chest');
+    if (chestEl) chestEl.innerText = '1';
 
     // Status & Action buttons
     const statusEl = document.getElementById('quest-action-status-text');
