@@ -1,9 +1,12 @@
-name: Auto PR & Auto-Merge (Fallback)
+name: Auto PR (Fallback)
 
 # NOTE: This workflow is the FALLBACK mechanism.
 # The primary PR creation is performed by the agent locally via `gh pr create`.
 # This workflow triggers automatically on push to agent branches in case
 # the agent's local `gh` command failed or was skipped.
+#
+# Auto-merge is intentionally DISABLED. All PRs require manual review
+# and approval by the developer before merging into development.
 
 on:
   push:
@@ -16,12 +19,12 @@ on:
       - 'test/**'
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
   auto-pr:
-    name: Auto-Create PR and Queue Auto-Merge
+    name: Auto-Create PR (No Auto-Merge)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -29,7 +32,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Auto-create PR & queue auto-merge
+      - name: Auto-create PR (review required)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -60,22 +63,22 @@ jobs:
               --head "$BRANCH" \
               --title "$COMMIT_TITLE" \
               --body "### Automated Pull Request (Fallback via GitHub Actions)
-            **Branch:** \`$BRANCH\`
-            **Pushed by:** \`${{ github.actor }}\`
-            
-            $COMMIT_BODY
-            
-            #### Commits in this PR
-            $COMMIT_LOG
-            
-            ---
-            *Created automatically by the fallback workflow. The agent's local \`gh pr create\` was not executed or failed.*
-            *Auto-merge is enabled and will trigger once CI passes with no conflicts.*"
+          **Branch:** \`$BRANCH\`
+          **Pushed by:** \`${{ github.actor }}\`
+
+          $COMMIT_BODY
+
+          #### Commits in this PR
+          $COMMIT_LOG
+
+          ---
+          *Created automatically by the fallback workflow. The agent's local \`gh pr create\` was not executed or failed.*
+          *⚠️ This PR requires manual review and approval before merging.*"
+
+            echo "✅ PR created. Awaiting manual review by the developer."
           else
             echo "PR #$EXISTING_PR already exists (created by agent). Skipping PR creation."
           fi
 
-          echo "Enabling auto-merge..."
-          gh pr merge "$BRANCH" --auto --merge \
-            || gh pr merge "$BRANCH" --auto --squash \
-            || echo "⚠️ Auto-merge queueing failed — check repository settings (auto-merge must be enabled)."
+          # Auto-merge is intentionally NOT enabled.
+          # The developer must review and merge this PR manually.
