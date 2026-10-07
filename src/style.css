@@ -1538,11 +1538,11 @@ body, html {
 }
 
 .main-menu-logo-img {
-  width: clamp(240px, 26vw, 360px);
+  width: clamp(380px, 42vw, 560px);
   height: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.75)) drop-shadow(0 0 25px rgba(0, 168, 255, 0.45));
+  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.85)) drop-shadow(0 0 35px rgba(0, 168, 255, 0.55));
   animation: riftLightningFlicker 6.5s infinite ease-in-out;
 }
 
@@ -2108,7 +2108,7 @@ body, html {
     top: clamp(10px, 2vh, 20px) !important;
   }
   .main-menu-logo-img {
-    width: min(230px, 65vw) !important;
+    width: min(340px, 85vw) !important;
   }
 }
 
@@ -2143,7 +2143,7 @@ body, html {
     letter-spacing: 0.8px !important;
   }
   .main-menu-logo-img {
-    width: min(190px, 58vw) !important;
+    width: min(270px, 78vw) !important;
   }
 }
 
@@ -2152,7 +2152,7 @@ body, html {
     top: 8px;
   }
   .main-menu-logo-img {
-    width: 200px;
+    width: 280px;
   }
   .main-menu-quests-sidebar {
     top: 10px;
@@ -5134,38 +5134,67 @@ body, html {
   }
 }
 
-.quest-modal-top-header {
+/* Top Centered Faceted Purple Plaque Header */
+.quest-book-top-plaque {
+  position: absolute;
+  top: -19px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 0 6px;
+  justify-content: center;
+  gap: 16px;
+  min-width: 250px;
+  height: 44px;
+  padding: 0 32px;
+  background: linear-gradient(180deg, #4d1872 0%, #2f0b47 100%);
+  border: 2.5px solid #8e3ebf;
+  outline: 2px solid #1a0528;
+  clip-path: polygon(18px 0%, calc(100% - 18px) 0%, 100% 50%, calc(100% - 18px) 100%, 18px 100%, 0% 50%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75), 0 0 14px rgba(142, 62, 191, 0.5);
+  box-sizing: border-box;
 }
 
-.quest-modal-main-title {
-  font-family: 'Cinzel', serif, 'Montserrat', sans-serif;
-  font-size: 32px;
+.plaque-diamond-l,
+.plaque-diamond-r {
+  color: #c084fc;
+  font-size: 13px;
+  text-shadow: 0 0 8px #a855f7;
+}
+
+.plaque-title-text {
+  font-family: 'Montserrat', 'Cinzel', sans-serif;
+  font-size: 18.5px;
   font-weight: 900;
-  color: #f3e8ff;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin: 0;
-  text-shadow: 0 0 20px rgba(192, 132, 252, 0.7), 0 2px 6px rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95);
+}
+
+/* Top-Right Close Button and Account Badge */
+.quest-top-controls {
+  position: absolute;
+  top: -46px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 50;
 }
 
 .quest-account-badge {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: rgba(24, 10, 38, 0.88);
-  border: 1.5px solid rgba(192, 132, 252, 0.4);
+  gap: 10px;
+  background: rgba(22, 9, 36, 0.92);
+  border: 1.5px solid rgba(168, 85, 247, 0.45);
   border-radius: 20px;
-  padding: 6px 18px;
-  font-size: 13px;
+  padding: 5px 16px;
+  font-size: 12px;
   font-weight: 700;
   color: #f3e8ff;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
 }
 
@@ -5175,84 +5204,152 @@ body, html {
 
 .quest-acc-xp {
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .quest-acc-coins {
   color: #fbbf24;
-  font-size: 14px;
+  font-size: 13px;
 }
 
-/* The Ornate Grimoire Book Card */
+.quest-book-close-btn {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(180deg, #7e22ce 0%, #4c1d95 100%);
+  border: 2px solid #c084fc;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65), 0 0 10px rgba(168, 85, 247, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.quest-book-close-btn:hover {
+  transform: scale(1.08);
+  background: linear-gradient(180deg, #9333ea 0%, #581c87 100%);
+  border-color: #f5d0fe;
+}
+
+/* Outer Book Frame Wrapper */
+.quest-book-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 95vw;
+  max-width: 940px;
+  margin-top: 14px;
+}
+
+/* Left Sidebar Tabs (Bookmark shape protruding to the left) */
+.quest-book-tabs-sidebar {
+  position: absolute;
+  left: -48px;
+  top: 76px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 5;
+}
+
+.quest-book-tab {
+  width: 52px;
+  height: 48px;
+  border-radius: 10px 0 0 10px;
+  border: 2.5px solid #451566;
+  border-right: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  transition: transform 0.16s ease, filter 0.16s ease;
+  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.65);
+}
+
+.quest-book-tab:hover {
+  transform: translateX(-4px);
+  filter: brightness(1.15);
+}
+
+.quest-book-tab.tab-purple {
+  background: linear-gradient(135deg, #7c2bb2 0%, #4a156e 100%);
+  border-color: #a855f7;
+}
+
+.quest-book-tab.tab-purple.active {
+  background: linear-gradient(135deg, #9834db 0%, #601c8c 100%);
+  border-color: #d8b4fe;
+  box-shadow: -6px 4px 14px rgba(168, 85, 247, 0.55);
+  transform: translateX(-6px);
+}
+
+.quest-book-tab.tab-brown {
+  background: linear-gradient(135deg, #753b1b 0%, #49210c 100%);
+  border-color: #9d5a2f;
+}
+
+.tab-svg-icon {
+  width: 25px;
+  height: 25px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+}
+
+/* Pixel Art Grimoire Card */
 .quest-book-card {
   position: relative;
   width: 100%;
-  max-width: 1020px;
-  height: 610px;
-  background: radial-gradient(circle at center, #240b3b 0%, #170624 70%, #0d0214 100%);
+  height: 590px;
+  background: #2a0b3f;
   border: 6px solid #6b21a8;
-  outline: 2.5px solid #a855f7;
-  border-radius: 20px;
+  outline: 3px solid #180326;
+  border-radius: 18px;
   box-shadow:
-    0 22px 55px rgba(0, 0, 0, 0.95),
-    0 0 40px rgba(168, 85, 247, 0.5),
-    inset 0 0 35px rgba(0, 0, 0, 0.85);
-  padding: 14px;
+    0 22px 60px rgba(0, 0, 0, 0.95),
+    0 0 35px rgba(147, 51, 234, 0.5),
+    inset 0 0 25px rgba(0, 0, 0, 0.85);
+  padding: 13px;
   box-sizing: border-box;
   display: flex;
 }
 
-/* 4 Corner Ornate Filigrees */
-.book-corner {
+/* Stepped Pixel Corners */
+.pixel-book-corner {
   position: absolute;
-  width: 54px;
-  height: 54px;
+  width: 14px;
+  height: 14px;
+  background: #a855f7;
   pointer-events: none;
   z-index: 25;
 }
 
-.book-corner-tl {
-  top: -8px;
-  left: -8px;
+.pixel-book-corner.corner-tl {
+  top: 5px;
+  left: 5px;
+  box-shadow: 4px 4px 0 #2a0b3f;
 }
 
-.book-corner-tr {
-  top: -8px;
-  right: -8px;
-  transform: scaleX(-1);
+.pixel-book-corner.corner-tr {
+  top: 5px;
+  right: 5px;
+  box-shadow: -4px 4px 0 #2a0b3f;
 }
 
-.book-corner-bl {
-  bottom: -8px;
-  left: -8px;
+.pixel-book-corner.corner-bl {
+  bottom: 5px;
+  left: 5px;
+  box-shadow: 4px -4px 0 #2a0b3f;
 }
 
-.book-corner-br {
-  bottom: -8px;
-  right: -8px;
-  transform: scale(-1);
-}
-
-.corner-flourish-svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Bottom Center Glowing Rune Seal */
-.book-seal-bottom {
-  position: absolute;
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
-  z-index: 30;
-  pointer-events: none;
-}
-
-.bottom-rune-svg {
-  width: 100%;
-  height: 100%;
+.pixel-book-corner.corner-br {
+  bottom: 5px;
+  right: 5px;
+  box-shadow: -4px -4px 0 #2a0b3f;
 }
 
 /* Two-Page Open Book Spread */
@@ -5260,26 +5357,30 @@ body, html {
   display: flex;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #ede2cb 0%, #e2d2b5 50%, #d8c39e 100%);
+  background: linear-gradient(135deg, #efe2c8 0%, #e6d3ac 50%, #debfa4 100%);
+  border: 2.5px solid #8e734c;
+  outline: 1.5px solid #4a3820;
   border-radius: 12px;
-  box-shadow: inset 0 0 30px rgba(90, 60, 25, 0.32);
+  box-shadow:
+    inset 0 0 36px rgba(110, 80, 40, 0.35),
+    0 4px 14px rgba(0, 0, 0, 0.65);
   overflow: hidden;
   position: relative;
 }
 
-/* Central Book Spine */
+/* Central Book Crease Spine */
 .quest-book-spine {
-  width: 24px;
+  width: 22px;
   height: 100%;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.12) 0%,
-    rgba(0, 0, 0, 0.35) 45%,
-    rgba(0, 0, 0, 0.48) 50%,
-    rgba(0, 0, 0, 0.35) 55%,
-    rgba(0, 0, 0, 0.12) 100%
+    rgba(80, 50, 20, 0.08) 0%,
+    rgba(80, 50, 20, 0.3) 45%,
+    rgba(50, 28, 10, 0.48) 50%,
+    rgba(80, 50, 20, 0.3) 55%,
+    rgba(80, 50, 20, 0.08) 100%
   );
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.35);
   flex-shrink: 0;
   z-index: 10;
 }
@@ -5292,426 +5393,262 @@ body, html {
   display: flex;
   flex-direction: column;
   position: relative;
+  padding: 14px 18px;
 }
 
-/* Left Page: Hero List */
+/* Left Page: Quest Items List */
 .quest-page-left {
-  padding: 12px 14px 12px 42px;
+  padding: 14px 14px 14px 16px;
 }
 
-/* Fantasy Parchment Background Illustrations */
-.quest-page-decor-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.72;
-}
-
-/* Floating Stone Plaque Back Button on Outer Edge */
-.book-back-btn {
-  position: absolute;
-  left: 2px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  z-index: 20;
-  outline: none;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.book-back-btn:hover {
-  transform: translateY(-50%) scale(1.05);
-}
-
-.back-btn-plaque {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  padding: 12px 4px 10px 4px;
-  background: linear-gradient(145deg, #dcd0bd 0%, #bfaf95 100%);
-  border: 2px solid #5c422c;
-  outline: 1.5px solid #8e6d46;
-  border-radius: 9px;
-  box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.6),
-    inset 0 1px 2px rgba(255, 255, 255, 0.8),
-    inset 0 -2px 5px rgba(50, 30, 15, 0.45);
-  gap: 4px;
-  position: relative;
-}
-
-.back-btn-plaque::before,
-.back-btn-plaque::after {
-  content: "";
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #735438;
-  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
-}
-.back-btn-plaque::before { top: 3px; left: 3px; }
-.back-btn-plaque::after { bottom: 3px; right: 3px; }
-
-.back-btn-arrow-glow {
-  width: 24px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-arrow-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.back-label {
-  color: #27190d;
-  font-family: 'Cinzel', 'Montserrat', sans-serif;
-  font-size: 10.5px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  line-height: 1;
-}
-
-/* Quest Hero Items List */
 .quest-heroes-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   height: 100%;
   justify-content: space-between;
-  position: relative;
-  z-index: 2;
 }
 
-/* The Individual Hero Card */
+/* The Individual Quest Row Card */
 .quest-hero-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: linear-gradient(90deg, rgba(238, 226, 206, 0.85) 0%, rgba(248, 241, 230, 0.95) 50%, rgba(238, 226, 206, 0.85) 100%);
-  border: 1.5px solid #ba9f77;
+  gap: 12px;
+  background: linear-gradient(90deg, #5c4737 0%, #4a3729 100%);
+  border: 2px solid #36261c;
   border-radius: 9px;
-  padding: 6px 10px;
+  padding: 6px 12px 6px 8px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
   box-sizing: border-box;
-  box-shadow: 0 2px 6px rgba(80, 50, 20, 0.14);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
 }
 
 .quest-hero-item:hover {
-  background: linear-gradient(90deg, rgba(246, 236, 218, 0.96) 0%, rgba(255, 250, 242, 1) 50%, rgba(246, 236, 218, 0.96) 100%);
-  border-color: #966f43;
+  background: linear-gradient(90deg, #6b5341 0%, #543f30 100%);
   transform: translateX(3px);
-  box-shadow: 0 4px 10px rgba(90, 50, 20, 0.22);
+  border-color: #6d4e37;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
+/* ACTIVE SELECTED QUEST (Row 4 in reference) */
 .quest-hero-item.active {
-  background: linear-gradient(90deg, rgba(253, 246, 234, 0.98) 0%, #fffdf8 50%, rgba(253, 246, 234, 0.98) 100%);
-  border: 2px solid #78350f;
-  box-shadow: 0 4px 14px rgba(120, 53, 15, 0.28);
+  background: linear-gradient(90deg, #614634 0%, #4b3424 100%);
+  border: 2.5px solid #a855f7 !important;
+  outline: 1.5px solid #c084fc;
+  box-shadow:
+    0 0 14px rgba(168, 85, 247, 0.75),
+    inset 0 0 8px rgba(168, 85, 247, 0.35);
   transform: translateX(4px);
 }
 
-/* Left: Vertical Rounded Rect Avatar Frame */
-.hero-item-avatar-frame {
-  width: 48px;
-  height: 66px;
+/* Quest Item Icon Box */
+.quest-item-icon-box {
+  width: 52px;
+  height: 52px;
   border-radius: 8px;
-  background: linear-gradient(180deg, #6c533f 0%, #463426 100%);
-  border: 2px solid #8e6f47;
+  background: #1b120c;
+  border: 2px solid #4a3424;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.hero-item-avatar {
+.quest-hero-item.active .quest-item-icon-box {
+  border-color: #a855f7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.quest-item-avatar {
   width: 44px;
-  height: 58px;
+  height: 44px;
   object-fit: contain;
   image-rendering: pixelated;
 }
 
-/* Middle: Name + Fancy Progress Bar + Ribbon */
-.hero-item-middle {
+/* Quest Item Info & Progress Bar */
+.quest-item-info {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  gap: 5px;
+  justify-content: center;
 }
 
-.hero-item-name {
-  width: 100%;
-  font-family: 'Cinzel', 'Montserrat', sans-serif;
-  font-size: 14px;
+.quest-item-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13.5px;
   font-weight: 800;
-  color: #231508;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: 0.2px;
   text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 
-/* Progress Bar with Wing Caps */
-.hero-item-progress-wrapper {
+.quest-item-bar-wrap {
   position: relative;
-  display: flex;
-  align-items: center;
   width: 100%;
-  height: 16px;
-  margin: 1px 0;
-}
-
-.bar-cap-l, .bar-cap-r {
-  width: 6px;
   height: 14px;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, #d4af37 0%, #8c6a2e 100%);
-  border: 1px solid #5a4016;
-  position: relative;
-  z-index: 3;
-}
-
-.bar-cap-l {
-  border-radius: 4px 0 0 4px;
-  border-right: none;
-  clip-path: polygon(0% 50%, 100% 0%, 100% 100%);
-}
-
-.bar-cap-r {
-  border-radius: 0 4px 4px 0;
-  border-left: none;
-  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-}
-
-.hero-item-progress-track {
-  flex: 1;
-  height: 15px;
-  background: #142315;
-  border-radius: 999px;
-  position: relative;
+  background: #160f0a;
+  border: 1.5px solid #2a1a11;
+  border-radius: 7px;
   overflow: hidden;
-  border: 1.5px solid #9e7943;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
 }
 
-.hero-item-progress-fill {
+.quest-item-bar-fill {
   height: 100%;
-  background: linear-gradient(180deg, #7c3aed 0%, #a855f7 100%);
+  background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
+  border-radius: 7px;
   transition: width 0.3s ease;
-  border-radius: 999px;
 }
 
-.hero-item-progress-fill.complete {
-  background: linear-gradient(180deg, #86efac 0%, #22c55e 48%, #15803d 100%);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+.quest-item-bar-fill.bar-cyan {
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%) !important;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
 }
 
-.hero-item-progress-text {
+.quest-item-bar-fill.bar-orange {
+  background: linear-gradient(90deg, #ea580c 0%, #f97316 100%) !important;
+  box-shadow: 0 0 6px rgba(249, 115, 22, 0.5);
+}
+
+.quest-item-bar-fill.complete {
+  background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%) !important;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+}
+
+.quest-item-bar-val {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 900;
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
-  letter-spacing: 0.5px;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Golden Parchment Under-Bar Ribbon */
-.hero-item-ribbon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background: linear-gradient(180deg, #f0e3cc 0%, #dbc6a3 100%);
-  border: 1px solid #a3824f;
-  border-radius: 3px;
-  padding: 1px 12px;
-  box-shadow: 0 2px 4px rgba(70, 45, 20, 0.22);
-  margin-top: 1px;
-}
-
-.hero-item-ribbon .ribbon-tail-l,
-.hero-item-ribbon .ribbon-tail-r {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 10px;
-  background: linear-gradient(180deg, #dbc6a3 0%, #bf9f73 100%);
-  border: 1px solid #a3824f;
-}
-
-.hero-item-ribbon .ribbon-tail-l {
-  left: -6px;
-  clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
-  border-right: none;
-}
-
-.hero-item-ribbon .ribbon-tail-r {
-  right: -6px;
-  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-  border-left: none;
-}
-
-.hero-item-ribbon .ribbon-text {
-  font-size: 10px;
+  right: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
   font-weight: 800;
-  color: #3b220d;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+  line-height: 1;
 }
 
-/* Right: Weapon Square Frame with Magic Colored Themes */
-.hero-item-weapon-frame {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background: #1a120c;
-  border: 2px solid #8e6f47;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-item-weapon-frame.weapon-theme-sword {
-  background: radial-gradient(circle, #0e7490 0%, #155e75 60%, #082f49 100%);
-  border-color: #38bdf8;
-  box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-.hero-item-weapon-frame.weapon-theme-flail {
-  background: radial-gradient(circle, #2563eb 0%, #1d4ed8 60%, #0b132b 100%);
-  border-color: #60a5fa;
-  box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-.hero-item-weapon-frame.weapon-theme-staff {
-  background: radial-gradient(circle, #3b82f6 0%, #312e81 60%, #030712 100%);
-  border-color: #818cf8;
-  box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-.hero-item-weapon-frame.weapon-theme-chakram {
-  background: radial-gradient(circle, #6b21a8 0%, #1e112a 70%, #000000 100%);
-  border-color: #c084fc;
-  box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-.hero-item-weapon-frame.weapon-theme-bow {
-  background: radial-gradient(circle, #78350f 0%, #451a03 60%, #120904 100%);
-  border-color: #d97706;
-  box-shadow: inset 0 0 10px rgba(217, 119, 6, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-.hero-item-weapon {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
-}
-
-/* Right Page: Details */
+/* ==========================================================================
+   Right Page: Details
+   ========================================================================== */
 .quest-page-right {
-  padding: 22px 28px;
+  padding: 16px 22px 14px 22px;
 }
 
 .quest-detail-title {
-  font-family: 'Cinzel', serif, 'Montserrat', sans-serif;
-  font-size: 24px;
+  font-family: 'Montserrat', 'Cinzel', serif, sans-serif;
+  font-size: 21px;
   font-weight: 900;
-  color: #251408;
+  color: #1c1815;
   text-align: center;
-  margin: 0;
-  letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.4px;
 }
 
+/* Target Monster / Hero Row */
+.quest-detail-target-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.quest-target-avatar-frame {
+  width: 78px;
+  height: 78px;
+  border-radius: 8px;
+  background: #251b14;
+  border: 2.5px solid #483323;
+  outline: 1.5px solid #20140d;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8), 0 3px 6px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.quest-target-avatar-img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.quest-target-desc-wrap {
+  flex: 1;
+}
+
+.quest-detail-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #1a1612;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Decorative Divider */
 .quest-detail-divider {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: 8px 0 12px 0;
+  margin: 10px 0 12px 0;
 }
 
 .quest-detail-divider .divider-line {
   height: 1.5px;
   flex: 1;
-  max-width: 90px;
-  background: linear-gradient(90deg, transparent, #855f3e, transparent);
+  max-width: 110px;
+  background: linear-gradient(90deg, transparent, #8e734c, transparent);
 }
 
 .quest-detail-divider .divider-gem {
-  color: #785028;
-  font-size: 13px;
+  color: #7b5832;
+  font-size: 12px;
 }
 
-.quest-detail-desc {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #382416;
-  margin: 0 0 14px 0;
-  text-align: left;
-  font-weight: 600;
-}
-
+/* Step Checklist (1. 2. 3.) */
 .quest-steps-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .quest-step-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #251408;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f1a15;
   line-height: 1.4;
-  padding: 4px 6px;
-  border-radius: 4px;
-  transition: background 0.15s ease;
+  padding: 2px 0;
 }
 
 .quest-step-item.done {
   color: #15803d;
-  opacity: 0.9;
 }
 
 .quest-step-item .step-num {
   font-weight: 800;
-  color: #582f0e;
-  min-width: 16px;
+  color: #1f1a15;
+  min-width: 18px;
 }
 
 .quest-step-item .step-text {
@@ -5719,111 +5656,127 @@ body, html {
 }
 
 .quest-step-item .step-check {
-  font-weight: 800;
+  font-weight: 900;
   color: #16a34a;
+  font-size: 14px;
 }
 
-/* Rewards Grid */
+/* Rewards Block */
 .quest-rewards-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: auto;
+  margin-bottom: 6px;
 }
 
 .quest-rewards-heading {
-  font-size: 15px;
-  font-weight: 800;
-  color: #251408;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #271a10;
+  letter-spacing: 1px;
   margin-bottom: 8px;
-  letter-spacing: 0.5px;
+}
+
+.rewards-wing-l,
+.rewards-wing-r {
+  color: #836746;
+  font-size: 12px;
+}
+
+.rewards-heading-title {
+  color: #271a10;
 }
 
 .quest-rewards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 58px);
-  gap: 10px;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 14px;
 }
 
 .reward-slot {
-  width: 58px;
-  height: 58px;
-  background: rgba(206, 189, 159, 0.75);
-  border: 2px solid #8c6f50;
-  border-radius: 8px;
   position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 7px;
+  background: #3f2e22;
+  border: 2px solid #231710;
+  outline: 1.5px solid #5a4231;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 8px rgba(90, 60, 20, 0.2);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, outline-color 0.15s ease;
 }
 
-.reward-slot-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.reward-slot:hover {
+  transform: scale(1.06);
+  outline-color: #f59e0b;
 }
 
-.reward-svg {
-  width: 100%;
-  height: 100%;
+.reward-pixel-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .reward-slot-badge {
   position: absolute;
   bottom: 2px;
-  right: 4px;
+  right: 3px;
+  font-family: 'Montserrat', sans-serif;
   font-size: 11px;
   font-weight: 900;
-  color: #1f140a;
-  text-shadow: 0 0 3px #fff;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 4px #000;
+  line-height: 1;
 }
 
-/* Action Footer */
+/* Footer Status & Action Buttons */
 .quest-action-footer {
-  margin-top: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  width: 100%;
+  gap: 6px;
 }
 
 .quest-status-text {
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 700;
-  color: #582f0e;
+  color: #4a3321;
   text-align: center;
+  min-height: 14px;
 }
 
 .quest-buttons-row {
   display: flex;
   gap: 10px;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
 }
 
 .quest-btn-claim {
   background: linear-gradient(135deg, #15803d, #22c55e);
   border: 1.5px solid #4ade80;
   color: #ffffff;
-  padding: 8px 20px;
+  padding: 6px 18px;
   border-radius: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0 14px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
   text-transform: uppercase;
   transition: all 0.2s ease;
 }
 
 .quest-btn-claim:hover {
   background: linear-gradient(135deg, #16a34a, #4ade80);
-  box-shadow: 0 0 22px rgba(34, 197, 94, 0.7);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.7);
   transform: scale(1.03);
 }
 
@@ -5831,19 +5784,19 @@ body, html {
   background: linear-gradient(135deg, #ca8a04, #eab308);
   border: 1.5px solid #fef08a;
   color: #422006;
-  padding: 8px 18px;
+  padding: 6px 16px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0 14px rgba(234, 179, 8, 0.4);
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.4);
   text-transform: uppercase;
   transition: all 0.2s ease;
 }
 
 .quest-btn-buy:hover:not(:disabled) {
   background: linear-gradient(135deg, #d97706, #facc15);
-  box-shadow: 0 0 20px rgba(234, 179, 8, 0.65);
+  box-shadow: 0 0 18px rgba(234, 179, 8, 0.65);
   transform: scale(1.03);
 }
 
@@ -5853,37 +5806,20 @@ body, html {
   filter: grayscale(0.5);
 }
 
-.quest-btn-step {
-  background: #3a2b22;
-  border: 1.5px solid #785a44;
-  color: #f3e8ff;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.quest-btn-step:hover {
-  background: #503c30;
-  border-color: #a88060;
-}
-
 .quest-btn-unlocked-badge {
   background: rgba(22, 101, 52, 0.15);
   border: 1.5px solid #16a34a;
   color: #15803d;
-  padding: 6px 16px;
+  padding: 4px 14px;
   border-radius: 20px;
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 800;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-/* Folded Dog-Ear Corner at Bottom-Right */
+/* Folded Page Corner (dog-ear curl) */
 .book-corner-curl {
   position: absolute;
   bottom: 0;
@@ -6279,28 +6215,39 @@ body, html {
     max-height: 94vh !important;
   }
 
-  .quest-modal-top-header {
-    margin-bottom: 8px !important;
+  .quest-book-top-plaque {
+    min-width: 190px !important;
+    height: 38px !important;
+    top: -16px !important;
+    padding: 0 16px !important;
   }
 
-  .quest-modal-main-title {
-    font-size: 22px !important;
+  .plaque-title-text {
+    font-size: 15px !important;
+  }
+
+  .quest-top-controls {
+    top: -40px !important;
   }
 
   .quest-account-badge {
-    padding: 4px 10px !important;
-    font-size: 11px !important;
-    gap: 8px !important;
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+    gap: 6px !important;
+  }
+
+  .quest-book-tabs-sidebar {
+    display: none !important;
   }
 
   .quest-book-card {
     height: auto !important;
-    max-height: 82vh !important;
-    padding: 6px !important;
+    max-height: 84vh !important;
+    padding: 8px !important;
     flex-direction: column !important;
   }
 
-  .book-corner {
+  .pixel-book-corner {
     display: none !important;
   }
 
@@ -6308,7 +6255,7 @@ body, html {
     flex-direction: column !important;
     height: auto !important;
     overflow-y: auto !important;
-    max-height: 78vh !important;
+    max-height: 80vh !important;
   }
 
   .quest-book-spine {
@@ -6318,20 +6265,16 @@ body, html {
   .quest-book-page {
     width: 100% !important;
     height: auto !important;
-    min-height: 260px !important;
-    padding: 14px 10px !important;
-  }
-
-  .quest-page-decor-bg {
-    opacity: 0.12 !important;
+    min-height: 240px !important;
+    padding: 12px 10px !important;
   }
 
   .quest-heroes-list {
-    gap: 8px !important;
+    gap: 7px !important;
   }
 
   .quest-hero-item {
-    padding: 8px 10px !important;
+    padding: 5px 8px !important;
   }
 
   /* Settings Modal */
