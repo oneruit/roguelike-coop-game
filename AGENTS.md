@@ -22,7 +22,8 @@ This document defines the mandatory Git workflow for AI agents contributing to t
 5. Agent PRs must always use `development` as the base branch.
 6. Never automatically merge `development` into `master`.
 7. `development → master` is a manual developer-controlled release.
-8. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
+8. **Never enable auto-merge.** All PRs require manual review and approval by the developer before merging.
+9. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
 
 ## Workflow
 
@@ -102,33 +103,36 @@ if (-not $EXISTING) {
 }
 ```
 
-### 8. Enable Auto-Merge
+> **Do NOT call `gh pr merge` or enable auto-merge in any form.**
+> The PR must remain open and await manual review by the developer.
 
-```powershell
-gh pr merge $BRANCH --auto --merge
-```
+### 8. Report Result
 
-If repository settings do not allow merge commits:
+After the PR is created, report the following to the developer:
 
-```powershell
-gh pr merge $BRANCH --auto --squash
-```
+* PR number and URL.
+* Summary of changes made.
+* Any caveats, limitations, or open questions.
 
-Do not bypass required checks.
+Then **stop and wait** for the developer to review, request changes, or approve the PR.
 
-### 9. Result
-
-If CI passes and the PR has no conflicts:
-
-* The PR may automatically merge into `development`.
-* Report the PR number and result to the developer.
-
-If CI fails or conflicts occur:
+### 9. If CI Fails or Conflicts Occur
 
 * Stop immediately.
 * Report the failing checks or conflicting files.
 * Include the relevant error messages.
 * Wait for developer instructions.
+
+## Review & Merge
+
+**All merging is done manually by the developer.**
+
+The developer will:
+1. Review the PR diff and CI results.
+2. Request changes if needed (the agent addresses them in the same branch).
+3. Approve and merge the PR into `development` when satisfied.
+
+Agents must never merge, close, or otherwise finalize a PR without explicit developer instruction.
 
 ## Release
 
