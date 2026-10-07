@@ -1,4 +1,5 @@
 import { CharacterType } from '../sim/types';
+import { getAssetUrl } from '../utils/assetPath';
 
 export interface ProgressionData {
   accountLevel: number;
@@ -282,9 +283,9 @@ export class ProgressionManager {
           hero: 'valkyrie',
           heroName: 'Каэла',
           heroSubtitle: '«Стальной вихрь»',
-          weaponIcon: '/textures/weapon_greatsword.png',
+          weaponIcon: getAssetUrl('/textures/weapon_greatsword.png'),
           weaponName: 'Двуручный меч',
-          avatarIcon: '/textures/hero_valkyrie_front.png',
+          avatarIcon: getAssetUrl('/textures/hero_valkyrie_front.png'),
           questTitle: 'Испытание ветерана',
           questDesc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
           steps: [
@@ -305,9 +306,9 @@ export class ProgressionManager {
           hero: 'flail',
           heroName: 'Бригитта',
           heroSubtitle: '«Громовой Цеп»',
-          weaponIcon: '/textures/weapon_flail.png',
+          weaponIcon: getAssetUrl('/textures/weapon_flail.png'),
           weaponName: 'Громовой цеп',
-          avatarIcon: '/textures/hero_flail_front.png',
+          avatarIcon: getAssetUrl('/textures/hero_flail_front.png'),
           questTitle: 'Золотая лихорадка',
           questDesc: 'Бригитта собирает редкие металлы и монеты для закалки цепей своего сокрушительного оружия. Соберите 100 монет в битвах.',
           steps: [
@@ -328,9 +329,9 @@ export class ProgressionManager {
           hero: 'sorceress',
           heroName: 'Ария',
           heroSubtitle: '«Звёздный Посох»',
-          weaponIcon: '/textures/weapon_astral_staff.png',
+          weaponIcon: getAssetUrl('/textures/weapon_astral_staff.png'),
           weaponName: 'Звёздный посох',
-          avatarIcon: '/textures/hero_sorceress_front.png',
+          avatarIcon: getAssetUrl('/textures/hero_sorceress_front.png'),
           questTitle: 'Охота на Стража Разлома',
           questDesc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
           steps: [
@@ -351,9 +352,9 @@ export class ProgressionManager {
           hero: 'chakram',
           heroName: 'Кира',
           heroSubtitle: '«Танцующий Чакрам»',
-          weaponIcon: '/textures/weapon_chakram.png',
+          weaponIcon: getAssetUrl('/textures/weapon_chakram.png'),
           weaponName: 'Танцующий чакрам',
-          avatarIcon: '/textures/hero_chakram_front.png',
+          avatarIcon: getAssetUrl('/textures/hero_chakram_front.png'),
           questTitle: 'Охота на Лешего',
           questDesc: 'Найти следы в чаще. Собрать 3 корня аконита. Победить Лешего.',
           steps: [
@@ -376,9 +377,9 @@ export class ProgressionManager {
           hero: 'archer',
           heroName: 'Эльф',
           heroSubtitle: '«Охотничий Лук»',
-          weaponIcon: '/textures/weapon_bow.png',
+          weaponIcon: getAssetUrl('/textures/weapon_bow.png'),
           weaponName: 'Охотничий лук',
-          avatarIcon: '/textures/hero_archer_front.png',
+          avatarIcon: getAssetUrl('/textures/hero_archer_front.png'),
           questTitle: 'Контракт Следопыта',
           questDesc: 'Эльфийский мастер стрельбы готов присоединиться к отряду по контракту за 100 монет либо за выдающееся достижение охотника.',
           steps: [

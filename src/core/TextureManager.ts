@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { getAssetUrl } from '../utils/assetPath';
 
 export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
 
@@ -28,6 +29,10 @@ export class TextureManager {
   private static cache: Map<string, THREE.Texture> = new Map();
   private static weaponBlobUrls: Map<string, string> = new Map();
 
+  public static getAssetUrl(path: string): string {
+    return getAssetUrl(path);
+  }
+
   public static readonly WEAPON_ICON_URLS: string[] = [
     '/textures/weapon_astral_staff.png',
     '/textures/weapon_bow.png',
@@ -50,20 +55,29 @@ export class TextureManager {
     if (pathOrId.startsWith('blob:') || pathOrId.startsWith('data:')) {
       return pathOrId;
     }
-    const cleanId = pathOrId.replace('/textures/weapon_', '').replace('.png', '');
+    const cleanId = pathOrId.replace(/.*\/textures\/weapon_/, '').replace('.png', '');
     const standardPath = `/textures/weapon_${cleanId}.png`;
-    return this.weaponBlobUrls.get(standardPath) || this.weaponBlobUrls.get(pathOrId) || pathOrId;
+    const resolvedPath = getAssetUrl(standardPath);
+    return (
+      this.weaponBlobUrls.get(standardPath) ||
+      this.weaponBlobUrls.get(resolvedPath) ||
+      this.weaponBlobUrls.get(cleanId) ||
+      this.weaponBlobUrls.get(pathOrId) ||
+      resolvedPath
+    );
   }
 
   public static initWeaponBlobs(): void {
     if (typeof window === 'undefined' || typeof fetch === 'undefined') return;
     this.WEAPON_ICON_URLS.forEach(async (url) => {
       try {
-        const res = await fetch(url);
+        const resolvedUrl = getAssetUrl(url);
+        const res = await fetch(resolvedUrl);
         if (res.ok) {
           const blob = await res.blob();
           const blobUrl = URL.createObjectURL(blob);
           this.weaponBlobUrls.set(url, blobUrl);
+          this.weaponBlobUrls.set(resolvedUrl, blobUrl);
           const id = url.replace('/textures/weapon_', '').replace('.png', '');
           this.weaponBlobUrls.set(id, blobUrl);
         }
@@ -77,11 +91,15 @@ export class TextureManager {
   private static sharedShadowMaterial: THREE.MeshBasicMaterial | null = null;
 
   public static load(url: string, renderer?: THREE.WebGLRenderer): THREE.Texture {
+    const resolvedUrl = getAssetUrl(url);
     if (this.cache.has(url)) {
       return this.cache.get(url)!;
     }
+    if (this.cache.has(resolvedUrl)) {
+      return this.cache.get(resolvedUrl)!;
+    }
 
-    const tex = this.loader.load(url, (loadedTex) => {
+    const tex = this.loader.load(resolvedUrl, (loadedTex) => {
       if (renderer) {
         renderer.initTexture(loadedTex);
       }
@@ -90,6 +108,7 @@ export class TextureManager {
     tex.magFilter = THREE.LinearFilter;
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     this.cache.set(url, tex);
+    this.cache.set(resolvedUrl, tex);
     return tex;
   }
 
@@ -267,11 +286,13 @@ export class TextureManager {
     await Promise.all(
       this.WEAPON_ICON_URLS.map(async (url) => {
         try {
-          const res = await fetch(url);
+          const resolvedUrl = getAssetUrl(url);
+          const res = await fetch(resolvedUrl);
           if (res.ok) {
             const blob = await res.blob();
             const blobUrl = URL.createObjectURL(blob);
             this.weaponBlobUrls.set(url, blobUrl);
+            this.weaponBlobUrls.set(resolvedUrl, blobUrl);
             const id = url.replace('/textures/weapon_', '').replace('.png', '');
             this.weaponBlobUrls.set(id, blobUrl);
           }
@@ -288,9 +309,10 @@ export class TextureManager {
       await Promise.all(
         batch.map(async (url) => {
           try {
+            const resolvedUrl = getAssetUrl(url);
             // 1. Browser DOM Image cache and asynchronous bitmap decoding
             const img = new Image();
-            img.src = url;
+            img.src = resolvedUrl;
             if (img.decode) {
               await img.decode().catch(() => {});
             }
@@ -298,7 +320,7 @@ export class TextureManager {
             // 2. Three.js Texture cache & GPU texture upload
             await new Promise<void>((resolve) => {
               this.loader.load(
-                url,
+                resolvedUrl,
                 (tex) => {
                   tex.colorSpace = THREE.SRGBColorSpace;
                   if (
@@ -313,6 +335,7 @@ export class TextureManager {
                   }
                   tex.minFilter = THREE.LinearMipmapLinearFilter;
                   this.cache.set(url, tex);
+                  this.cache.set(resolvedUrl, tex);
                   if (renderer) {
                     try {
                       renderer.initTexture(tex);

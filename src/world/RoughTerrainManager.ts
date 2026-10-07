@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SeededRNG } from '../core/SeededRNG';
 import { OccupiedArea } from './ChunkManager';
+import { getAssetUrl } from '../utils/assetPath';
 
 export interface RoughZone {
   x: number;
@@ -29,7 +30,7 @@ export class RoughTerrainManager {
   private static getTexture(filename: string): THREE.Texture {
     let tex = this.cachedTextures.get(filename);
     if (!tex) {
-      tex = this.textureLoader.load(`/textures/dunes/${filename}`);
+      tex = this.textureLoader.load(getAssetUrl(`/textures/dunes/${filename}`));
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.magFilter = THREE.NearestFilter;
       tex.minFilter = THREE.LinearMipmapLinearFilter;
