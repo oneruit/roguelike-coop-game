@@ -264,20 +264,50 @@
         <!-- Right Side: Daily & Weekly Quests Sidebar -->
         <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий">
           <!-- 1. ЕЖЕДНЕВНЫЕ ЗАДАНИЯ (2 задания) -->
-          <div class="main-menu-quest-card quest-panel-daily" id="main-menu-daily-card">
-            <!-- Corner Rivets -->
-            <div class="panel-rivet rivet-tl"></div>
-            <div class="panel-rivet rivet-tr"></div>
-            <div class="panel-rivet rivet-bl"></div>
-            <div class="panel-rivet rivet-br"></div>
-
-            <div class="quest-card-header header-daily" title="Ежедневные задания обновляются каждые 24 часа">
-              <span class="quest-card-title">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</span>
+          <div class="main-menu-quest-card quest-panel-daily" id="main-menu-daily-card" title="Нажмите, чтобы открыть книгу заданий">
+            <!-- 4 Corner L-Brackets with Rivets -->
+            <div class="panel-bracket bracket-tl">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
+            </div>
+            <div class="panel-bracket bracket-tr">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
+            </div>
+            <div class="panel-bracket bracket-bl">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
+            </div>
+            <div class="panel-bracket bracket-br">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
             </div>
 
+            <!-- Wooden Plaque Header -->
+            <div class="quest-card-header header-daily">
+              <span class="quest-card-title">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</span>
+            </div>
+            <div class="quest-card-subtitle">Бессрочные ежедневные задания.</div>
+
             <div class="quest-card-body">
-              <!-- Задание 1: Уничтожить 100 монстров -->
-              <div class="menu-quest-item" id="menu-quest-daily-1" title="Уничтожайте монстров в экспедициях">
+              <!-- Задание 1: Убить 2 гоблинов -->
+              <div class="menu-quest-item" id="menu-quest-daily-1">
                 <div class="quest-item-icon-box">
                   <svg class="quest-svg-icon icon-goblin" viewBox="0 0 32 32">
                     <defs>
@@ -310,13 +340,13 @@
                   </svg>
                 </div>
                 <div class="quest-item-info">
-                  <div class="quest-item-title">Уничтожить 100 монстров</div>
+                  <div class="quest-item-title">Убить 2 гоблинов</div>
                   <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill" id="quest-daily-bar-1" style="width: 45%;"></div>
-                    <span class="quest-item-bar-val" id="quest-daily-val-1">45 / 100</span>
+                    <div class="quest-item-bar-fill" id="quest-daily-bar-1" style="width: 100%;"></div>
+                    <span class="quest-item-bar-val" id="quest-daily-val-1">2/2</span>
                   </div>
                 </div>
-                <div class="quest-item-reward-box" title="Награда: 2 плазменных кристалла">
+                <div class="quest-item-reward-box" title="Награда: 4 изумруда">
                   <svg class="reward-svg-icon icon-gem" viewBox="0 0 24 24">
                     <defs>
                       <linearGradient id="emeraldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -332,12 +362,12 @@
                     <polygon points="12,22 18,19 15,11 12,18" fill="#065f46" opacity="0.9"/>
                     <polygon points="12,22 6,19 9,11 12,18" fill="#047857" opacity="0.8"/>
                   </svg>
-                  <span class="reward-amount">2</span>
+                  <span class="reward-amount">4</span>
                 </div>
               </div>
 
-              <!-- Задание 2: Победить 1 босса -->
-              <div class="menu-quest-item" id="menu-quest-daily-2" title="Победите Кровавого Шерифа или Гидру">
+              <!-- Задание 2: Победить 2 боссов -->
+              <div class="menu-quest-item" id="menu-quest-daily-2">
                 <div class="quest-item-icon-box">
                   <svg class="quest-svg-icon icon-boss" viewBox="0 0 32 32">
                     <defs>
@@ -360,13 +390,13 @@
                   </svg>
                 </div>
                 <div class="quest-item-info">
-                  <div class="quest-item-title">Победить 1 босса</div>
+                  <div class="quest-item-title">Победить 2 боссов</div>
                   <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill completed" id="quest-daily-bar-2" style="width: 100%;"></div>
-                    <span class="quest-item-bar-val" id="quest-daily-val-2">1 / 1</span>
+                    <div class="quest-item-bar-fill" id="quest-daily-bar-2" style="width: 100%;"></div>
+                    <span class="quest-item-bar-val" id="quest-daily-val-2">2/2</span>
                   </div>
                 </div>
-                <div class="quest-item-reward-box" title="Награда: 1 золотой жетон">
+                <div class="quest-item-reward-box" title="Награда: 2 золотые монеты">
                   <svg class="reward-svg-icon icon-coin" viewBox="0 0 24 24">
                     <defs>
                       <linearGradient id="goldCoinGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -379,27 +409,57 @@
                     <circle cx="12" cy="12" r="7.5" fill="none" stroke="#78350f" stroke-dasharray="1.5 1.5" stroke-width="0.8"/>
                     <polygon points="12,6.5 13.5,10 17,10.5 14.5,13 15,16.5 12,15 9,16.5 9.5,13 7,10.5 10.5,10" fill="#fde047" stroke="#b45309" stroke-width="0.6"/>
                   </svg>
-                  <span class="reward-amount">1</span>
+                  <span class="reward-amount">2</span>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- 2. ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ (2 задания) -->
-          <div class="main-menu-quest-card quest-panel-weekly" id="main-menu-weekly-card">
-            <!-- Corner Rivets -->
-            <div class="panel-rivet rivet-tl"></div>
-            <div class="panel-rivet rivet-tr"></div>
-            <div class="panel-rivet rivet-bl"></div>
-            <div class="panel-rivet rivet-br"></div>
-
-            <div class="quest-card-header header-weekly" title="Еженедельные задания обновляются каждый понедельник">
-              <span class="quest-card-title">ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ</span>
+          <div class="main-menu-quest-card quest-panel-weekly" id="main-menu-weekly-card" title="Нажмите, чтобы открыть книгу заданий">
+            <!-- 4 Corner L-Brackets with Rivets -->
+            <div class="panel-bracket bracket-tl">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
+            </div>
+            <div class="panel-bracket bracket-tr">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
+            </div>
+            <div class="panel-bracket bracket-bl">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
+            </div>
+            <div class="panel-bracket bracket-br">
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M0,0 L24,0 L24,7 L7,7 L7,24 L0,24 Z" fill="#525d67" stroke="#232a30" stroke-width="1.2"/>
+                <path d="M1,1 L23,1 L23,2.5 L2.5,2.5 L2.5,23 L1,23 Z" fill="#8898a6"/>
+                <circle cx="5" cy="5" r="2.5" fill="#94a3b8" stroke="#1f252b" stroke-width="0.8"/>
+                <circle cx="4.3" cy="4.3" r="0.8" fill="#f8fafc"/>
+              </svg>
             </div>
 
+            <!-- Wooden Plaque Header -->
+            <div class="quest-card-header header-weekly">
+              <span class="quest-card-title multiline">ЕЖЕНЕДЕЛЬНЫЕ<br>ЗАДАНИЯ</span>
+            </div>
+            <div class="quest-card-subtitle">Постоянные еженедельные задания.</div>
+
             <div class="quest-card-body">
-              <!-- Задание 1: Уничтожить 500 монстров -->
-              <div class="menu-quest-item" id="menu-quest-weekly-1" title="Истребляйте орды монстров Разлома">
+              <!-- Задание 1: Убить 2 гоблинов -->
+              <div class="menu-quest-item" id="menu-quest-weekly-1">
                 <div class="quest-item-icon-box">
                   <svg class="quest-svg-icon icon-goblin" viewBox="0 0 32 32">
                     <path d="M5 25 C7 20 12 18 16 18 C20 18 25 20 27 25 C25 28 20 30 16 30 C12 30 7 28 5 25 Z" fill="#7c2d12" stroke="#271104" stroke-width="1"/>
@@ -416,13 +476,13 @@
                   </svg>
                 </div>
                 <div class="quest-item-info">
-                  <div class="quest-item-title">Уничтожить 500 монстров</div>
+                  <div class="quest-item-title">Убить 2 гоблинов</div>
                   <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill" id="quest-weekly-bar-1" style="width: 30%;"></div>
-                    <span class="quest-item-bar-val" id="quest-weekly-val-1">150 / 500</span>
+                    <div class="quest-item-bar-fill" id="quest-weekly-bar-1" style="width: 100%;"></div>
+                    <span class="quest-item-bar-val" id="quest-weekly-val-1">2/2</span>
                   </div>
                 </div>
-                <div class="quest-item-reward-box" title="Награда: 5 плазменных кристаллов">
+                <div class="quest-item-reward-box" title="Награда: 10 изумрудов">
                   <svg class="reward-svg-icon icon-gem" viewBox="0 0 24 24">
                     <polygon points="12,2 20,8 18,19 12,22 6,19 4,8" fill="#10b981" stroke="#a7f3d0" stroke-width="1"/>
                     <polygon points="12,2 20,8 15,11 12,5" fill="#6ee7b7" opacity="0.7"/>
@@ -431,65 +491,59 @@
                     <polygon points="12,22 18,19 15,11 12,18" fill="#065f46" opacity="0.9"/>
                     <polygon points="12,22 6,19 9,11 12,18" fill="#047857" opacity="0.8"/>
                   </svg>
-                  <span class="reward-amount">5</span>
+                  <span class="reward-amount">10</span>
                 </div>
               </div>
 
-              <!-- Задание 2: Собрать 100 ресурсов -->
-              <div class="menu-quest-item" id="menu-quest-weekly-2" title="Собирайте плазму и трофеи в бою">
+              <!-- Задание 2: Собрать 2 ресурса -->
+              <div class="menu-quest-item" id="menu-quest-weekly-2">
                 <div class="quest-item-icon-box">
-                  <svg class="quest-svg-icon icon-resource" viewBox="0 0 32 32">
+                  <svg class="quest-svg-icon icon-wood-logs" viewBox="0 0 32 32">
                     <defs>
-                      <linearGradient id="ingotGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#d97706"/>
-                        <stop offset="60%" stop-color="#92400e"/>
-                        <stop offset="100%" stop-color="#451a03"/>
+                      <linearGradient id="logBark" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#935e38"/>
+                        <stop offset="50%" stop-color="#643b1f"/>
+                        <stop offset="100%" stop-color="#3a200e"/>
                       </linearGradient>
-                      <linearGradient id="woodGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#b45309"/>
-                        <stop offset="50%" stop-color="#78350f"/>
-                        <stop offset="100%" stop-color="#3e1a06"/>
-                      </linearGradient>
+                      <radialGradient id="logRings" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#deb887"/>
+                        <stop offset="45%" stop-color="#c69563"/>
+                        <stop offset="80%" stop-color="#9c663b"/>
+                        <stop offset="100%" stop-color="#5c381c"/>
+                      </radialGradient>
                     </defs>
-                    <polygon points="6,20 16,16 26,20 16,24" fill="url(#ingotGrad1)" stroke="#451a03" stroke-width="0.8"/>
-                    <polygon points="6,20 16,24 16,28 6,24" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
-                    <polygon points="26,20 16,24 16,28 26,24" fill="#451a03" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="10,13 18,10 26,13 18,16" fill="url(#woodGrad1)" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="10,13 18,16 18,20 10,17" fill="#92400e" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="26,13 18,16 18,20 26,17" fill="#451a03" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="4,11 12,8 20,11 12,14" fill="#fbbf24" opacity="0.85" stroke="#b45309" stroke-width="0.8"/>
-                    <polygon points="4,11 12,14 12,18 4,15" fill="#f59e0b" stroke="#b45309" stroke-width="0.8"/>
-                    <polygon points="20,11 12,14 12,18 20,15" fill="#d97706" stroke="#78350f" stroke-width="0.8"/>
+                    <!-- Back Log -->
+                    <g transform="rotate(-18 16 14)">
+                      <path d="M8 8 L24 8 L24 15 L8 15 Z" fill="url(#logBark)" stroke="#231308" stroke-width="0.8"/>
+                      <ellipse cx="8" cy="11.5" rx="3.5" ry="3.5" fill="url(#logRings)" stroke="#231308" stroke-width="0.8"/>
+                      <ellipse cx="8" cy="11.5" rx="2" ry="2" fill="none" stroke="#6f4222" stroke-width="0.6"/>
+                      <circle cx="8" cy="11.5" r="0.8" fill="#3a200e"/>
+                    </g>
+                    <!-- Bottom-Left Log -->
+                    <g transform="rotate(-12 12 21)">
+                      <path d="M5 16 L22 16 L22 23 L5 23 Z" fill="url(#logBark)" stroke="#231308" stroke-width="0.8"/>
+                      <ellipse cx="5" cy="19.5" rx="3.6" ry="3.6" fill="url(#logRings)" stroke="#231308" stroke-width="0.8"/>
+                      <ellipse cx="5" cy="19.5" rx="2" ry="2" fill="none" stroke="#6f4222" stroke-width="0.6"/>
+                      <circle cx="5" cy="19.5" r="0.8" fill="#3a200e"/>
+                    </g>
+                    <!-- Front-Right Log -->
+                    <g transform="rotate(-15 18 23)">
+                      <path d="M11 18 L27 18 L27 25 L11 25 Z" fill="url(#logBark)" stroke="#231308" stroke-width="0.8"/>
+                      <ellipse cx="11" cy="21.5" rx="3.6" ry="3.6" fill="url(#logRings)" stroke="#231308" stroke-width="0.8"/>
+                      <ellipse cx="11" cy="21.5" rx="2" ry="2" fill="none" stroke="#6f4222" stroke-width="0.6"/>
+                      <circle cx="11" cy="21.5" r="0.8" fill="#3a200e"/>
+                    </g>
                   </svg>
                 </div>
                 <div class="quest-item-info">
-                  <div class="quest-item-title">Собрать 100 ресурсов</div>
+                  <div class="quest-item-title">Собрать 2 ресурса</div>
                   <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill" id="quest-weekly-bar-2" style="width: 50%;"></div>
-                    <span class="quest-item-bar-val" id="quest-weekly-val-2">50 / 100</span>
+                    <div class="quest-item-bar-fill" id="quest-weekly-bar-2" style="width: 100%;"></div>
+                    <span class="quest-item-bar-val" id="quest-weekly-val-2">2/2</span>
                   </div>
                 </div>
                 <div class="quest-item-reward-box" title="Награда: 1 редкий сундук">
-                  <svg class="reward-svg-icon icon-chest" viewBox="0 0 24 24">
-                    <defs>
-                      <linearGradient id="chestWood1" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#b45309"/>
-                        <stop offset="100%" stop-color="#451a03"/>
-                      </linearGradient>
-                      <linearGradient id="chestGold1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fef08a"/>
-                        <stop offset="50%" stop-color="#f59e0b"/>
-                        <stop offset="100%" stop-color="#92400e"/>
-                      </linearGradient>
-                    </defs>
-                    <rect x="3" y="10" width="18" height="11" rx="1.5" fill="url(#chestWood1)" stroke="#271104" stroke-width="1"/>
-                    <path d="M3 10 C3 5 21 5 21 10 Z" fill="url(#chestWood1)" stroke="#271104" stroke-width="1"/>
-                    <rect x="6" y="6" width="2.5" height="15" fill="url(#chestGold1)"/>
-                    <rect x="15.5" y="6" width="2.5" height="15" fill="url(#chestGold1)"/>
-                    <line x1="3" y1="10" x2="21" y2="10" stroke="url(#chestGold1)" stroke-width="1.8"/>
-                    <rect x="10.5" y="9" width="3" height="4" rx="1" fill="#fef08a" stroke="#78350f" stroke-width="0.8"/>
-                    <circle cx="12" cy="10.5" r="0.8" fill="#451a03"/>
-                  </svg>
+                  <img src="/textures/reward_chest.png" class="reward-pixel-img" alt="Сундук" />
                   <span class="reward-amount">1</span>
                 </div>
               </div>
