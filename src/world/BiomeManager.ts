@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { TerrainMaterials } from './TerrainProps';
+import { getAssetUrl } from '../utils/assetPath';
 
 export interface BiomeLightingConfig {
   fogColor: number;
@@ -212,7 +213,7 @@ export class BiomeManager {
   public static getBiomeTexture(biomeId: string): THREE.Texture {
     let tex = this.biomeTextures.get(biomeId);
     if (!tex) {
-      tex = this.textureLoader.load(`/textures/biomes/biome_${biomeId}.jpg`);
+      tex = this.textureLoader.load(getAssetUrl(`/textures/biomes/biome_${biomeId}.jpg`));
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.RepeatWrapping;
       tex.colorSpace = THREE.SRGBColorSpace;
