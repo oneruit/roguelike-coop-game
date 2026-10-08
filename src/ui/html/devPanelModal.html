@@ -1,0 +1,214 @@
+      <div id="dev-panel-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop" id="dev-backdrop"></div>
+        <div class="modal-card dev-card modern-glass-modal">
+          <div class="dev-header">
+            <div class="dev-title-row">
+              <div class="terminal-badge menu-badge-blue">DEV CONSOLE</div>
+              <h2 class="dev-title wild-west-title modern-menu-title">РЕЖИМ РАЗРАБОТЧИКА</h2>
+            </div>
+            <button id="btn-dev-close" class="modern-back-btn">[X] [P]</button>
+          </div>
+
+          <!-- Co-op Host Control Banner -->
+          <div id="dev-coop-banner" class="dev-coop-banner hidden">
+            <span class="coop-banner-icon">[!]</span>
+            <div class="coop-banner-text">
+              <strong>Внимание:</strong> В кооперативном режиме читы и управление миром доступны только <strong>ХОСТУ комнаты</strong>. Все применённые им читы действуют на весь отряд!
+            </div>
+          </div>
+
+          <!-- Live Debug Telemetry -->
+          <div class="dev-telemetry-bar">
+            <div class="telemetry-item">FPS: <strong id="dev-fps">60</strong></div>
+            <div class="telemetry-item">Коорд: <strong id="dev-coords">0, 0</strong></div>
+            <div class="telemetry-item">Чанк: <strong id="dev-chunk">[0, 0]</strong></div>
+            <div class="telemetry-item">Враги: <strong id="dev-enemies-count">0</strong></div>
+            <div class="telemetry-item">Снаряды: <strong id="dev-projectiles-count">0</strong></div>
+            <div class="telemetry-item">Кристаллы: <strong id="dev-gems-count">0</strong></div>
+            <div class="telemetry-item">Время: <strong id="dev-time-str">00:00</strong></div>
+          </div>
+
+          <!-- Dev Control Sections -->
+          <div class="dev-sections-container">
+            <!-- Section 0: Seed & World Generation -->
+            <div class="dev-section dev-full-section">
+              <div class="section-title">СИД КАРТЫ (SEED)</div>
+              <div class="dev-seed-controls">
+                <input id="dev-seed-input" type="text" class="dev-seed-input" placeholder="Введите сид карты..." maxlength="24" autocomplete="off" />
+                <div class="dev-seed-btn-row">
+                  <button id="dev-btn-apply-seed" class="dev-btn dev-seed-apply-btn" title="Применить сид и перезапустить генерацию">
+                    <span class="btn-icon">⚡</span>
+                    <span>Применить сид</span>
+                  </button>
+                  <button id="dev-btn-random-seed" class="dev-btn" title="Сгенерировать случайный сид">
+                    <span class="btn-icon">🎲</span>
+                    <span>Случайный</span>
+                  </button>
+                  <button id="dev-btn-copy-seed" class="dev-btn" title="Скопировать сид в буфер обмена">
+                    <span class="btn-icon">📋</span>
+                    <span>Копировать</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 1: Hero & Cheats -->
+            <div class="dev-section">
+              <div class="section-title">ПЕРСОНАЖ & ЧИТЫ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-btn-god" class="dev-btn toggle-btn">
+                  <span class="btn-icon">[DEF]</span>
+                  <span>Режим Бога:</span>
+                  <strong id="dev-god-status" class="status-off">ВЫКЛ</strong>
+                </button>
+                <button id="dev-btn-heal" class="dev-btn">
+                  <span class="btn-icon">[HP]</span>
+                  <span>Полное HP</span>
+                </button>
+                <button id="dev-btn-speed" class="dev-btn toggle-btn">
+                  <span class="btn-icon">[SPD]</span>
+                  <span>Супер-бег (2.2x):</span>
+                  <strong id="dev-speed-status" class="status-off">ВЫКЛ</strong>
+                </button>
+                <button id="dev-btn-onehit" class="dev-btn toggle-btn">
+                  <span class="btn-icon">[HIT]</span>
+                  <span>1-Hit Kill (50x):</span>
+                  <strong id="dev-onehit-status" class="status-off">ВЫКЛ</strong>
+                </button>
+                <button id="dev-btn-vacuum" class="dev-btn">
+                  <span class="btn-icon">[VAC]</span>
+                  <span>Вакуум (Собрать всё)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 2: Altars & Buffs -->
+            <div class="dev-section">
+              <div class="section-title">СВЯТИЛИЩА & БАФФЫ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-buff-damage" class="dev-btn">
+                  <span class="btn-icon">[ATK]</span>
+                  <span>Бафф: Ярость (+80%)</span>
+                </button>
+                <button id="dev-buff-speed" class="dev-btn">
+                  <span class="btn-icon">[SPD]</span>
+                  <span>Бафф: Ветер (+60%)</span>
+                </button>
+                <button id="dev-buff-regen" class="dev-btn">
+                  <span class="btn-icon">[REG]</span>
+                  <span>Бафф: Реген (+12 HP/с)</span>
+                </button>
+                <button id="dev-buff-invuln" class="dev-btn">
+                  <span class="btn-icon">[INV]</span>
+                  <span>Бафф: Бессмертие (12с)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 3: Time & Speed -->
+            <div class="dev-section">
+              <div class="section-title">ВРЕМЯ И СКОРОСТЬ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-btn-boss-30" class="dev-btn alert-dev-btn" style="background: rgba(168, 85, 247, 0.25) !important; border-color: #a855f7 !important; color: #f3e8ff !important;">
+                  <span class="btn-icon">[!]</span>
+                  <strong>Прыжок на 29:55 (30м Финал)</strong>
+                </button>
+                <div style="display: flex; gap: 6px;">
+                  <button id="dev-btn-boss-time" class="dev-btn alert-dev-btn" style="flex: 1; padding: 6px 8px; font-size: 11px;">
+                    <span>[>>] 04:55</span>
+                  </button>
+                  <button id="dev-btn-boss-10" class="dev-btn alert-dev-btn" style="flex: 1; padding: 6px 8px; font-size: 11px;">
+                    <span>[>>] 09:55</span>
+                  </button>
+                  <button id="dev-btn-boss-15" class="dev-btn alert-dev-btn" style="flex: 1; padding: 6px 8px; font-size: 11px;">
+                    <span>[>>] 14:55</span>
+                  </button>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button id="dev-btn-time-plus" class="dev-btn" style="flex: 1;">
+                    <span class="btn-icon">[+]</span>
+                    <span>+60с</span>
+                  </button>
+                  <button id="dev-btn-time-minus" class="dev-btn" style="flex: 1;">
+                    <span class="btn-icon">[-]</span>
+                    <span>-60с</span>
+                  </button>
+                </div>
+                <div class="speed-toggle-row">
+                  <button id="dev-speed-1x" class="dev-speed-btn active">1x Скорость</button>
+                  <button id="dev-speed-2x" class="dev-speed-btn">2x Скорость</button>
+                  <button id="dev-speed-5x" class="dev-speed-btn">5x Скорость</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Level & Weapons -->
+            <div class="dev-section">
+              <div class="section-title">ПРОКАЧКА И ОРУЖИЕ</div>
+              <div class="dev-btn-grid">
+                <button id="dev-btn-lvl1" class="dev-btn">
+                  <span class="btn-icon">[LVL]</span>
+                  <span>+1 Уровень (Level Up)</span>
+                </button>
+                <button id="dev-btn-lvl10" class="dev-btn">
+                  <span class="btn-icon">[+10]</span>
+                  <span>+10 Уровней</span>
+                </button>
+                <button id="dev-btn-xp1000" class="dev-btn">
+                  <span class="btn-icon">[XP]</span>
+                  <span>+1000 Опыта</span>
+                </button>
+                <button id="dev-btn-all-weapons" class="dev-btn">
+                  <span class="btn-icon">[WEP]</span>
+                  <span>Выдать 5 оружий</span>
+                </button>
+                <button id="dev-btn-max-weapons" class="dev-btn">
+                  <span class="btn-icon">[MAX]</span>
+                  <span>Максимум уровней (MAX)</span>
+                </button>
+                <button id="dev-btn-test-update" class="dev-btn" style="background: rgba(56, 189, 248, 0.22) !important; border-color: #38bdf8 !important; color: #e0f2fe !important;">
+                  <span class="btn-icon">[UPD]</span>
+                  <span>Тест: Патч игры</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 4: Monster Spawning & Boss -->
+            <div class="dev-section dev-full-section">
+              <div class="section-title">СПАВН МОНСТРОВ & БОССА</div>
+              <div class="dev-btn-row">
+                <button id="dev-btn-spawn-boss" class="dev-btn boss-spawn-btn">
+                  <span class="btn-icon">[B1]</span>
+                  <strong>ДЕМОН (5М)</strong>
+                </button>
+                <button id="dev-btn-spawn-hydra" class="dev-btn boss-spawn-btn" style="background: linear-gradient(135deg, rgba(234, 88, 12, 0.4), rgba(154, 52, 18, 0.6)) !important; border-color: #fb923c !important; color: #ffedd5 !important;">
+                  <span class="btn-icon">[B2]</span>
+                  <strong>ГИДРА (10М)</strong>
+                </button>
+                <button id="dev-btn-spawn-reaper" class="dev-btn boss-spawn-btn" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.4), rgba(88, 28, 135, 0.6)) !important; border-color: #c084fc !important; color: #f5d0fe !important;">
+                  <span class="btn-icon">[B3]</span>
+                  <strong>ЖНЕЦ (30М)</strong>
+                </button>
+                <button id="dev-btn-nuke" class="dev-btn nuke-btn">
+                  <span class="btn-icon">[X]</span>
+                  <span>УНИЧТОЖИТЬ ВРАГОВ</span>
+                </button>
+              </div>
+              <div class="spawn-monsters-grid">
+                <button class="dev-spawn-btn" data-type="coyote">Койот</button>
+                <button class="dev-spawn-btn" data-type="crawler">Тварь</button>
+                <button class="dev-spawn-btn" data-type="cactus">Кактус</button>
+                <button class="dev-spawn-btn" data-type="skeleton">Скелет</button>
+                <button class="dev-spawn-btn" data-type="ghost">Призрак</button>
+                <button class="dev-spawn-btn" data-type="scorpion">Скорпион</button>
+                <button class="dev-spawn-btn" data-type="brute">Громила</button>
+                <button class="dev-spawn-btn" data-type="bison">Бизон</button>
+                <button class="dev-spawn-btn" data-type="hydra" style="background: rgba(234, 88, 12, 0.35); border-color: #fb923c; color: #ffedd5;">Гидра</button>
+                <button class="dev-spawn-btn" data-type="reaper" style="background: rgba(147, 51, 234, 0.35); border-color: #c084fc; color: #f5d0fe;">Жнец</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bottom Asset Preloader Progress Bar -->

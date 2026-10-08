@@ -259,7 +259,8 @@ body {
 }
 
 /* NovaSite Topbar */
-.topbar {
+.topbar,
+.dashboard-topbar {
   position: sticky;
   top: 0;
   z-index: 40;
@@ -278,29 +279,37 @@ body {
   max-width: 460px;
 }
 
-.search-box {
+.search-box,
+.topbar-search-wrap {
   display: flex;
   align-items: center;
   background: #f1f5f9;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 8px 14px;
   gap: 10px;
+  flex: 1;
+  max-width: 480px;
   transition: all 0.2s ease;
 }
 
-.search-box:focus-within {
+.search-box:focus-within,
+.topbar-search-wrap:focus-within {
   background: #ffffff;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.search-box-icon {
+.search-box-icon,
+.search-icon {
+  display: flex;
+  align-items: center;
   font-size: 14px;
   opacity: 0.5;
 }
 
-.search-input-field {
+.search-input-field,
+.topbar-search-input {
   background: transparent;
   border: none;
   outline: none;
@@ -309,7 +318,58 @@ body {
   width: 100%;
 }
 
-.search-input-field::placeholder {
+.search-input-field::placeholder,
+.topbar-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-clear-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-clear-search:hover {
+  background: #e2e8f0;
+  color: var(--text-heading);
+}
+
+.empty-search-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  background: #ffffff;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  margin-top: 14px;
+  text-align: center;
+}
+
+.empty-search-state .empty-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+.empty-search-state .empty-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 4px;
+}
+
+.empty-search-state .empty-subtitle {
+  font-size: 13px;
   color: var(--text-muted);
 }
 
