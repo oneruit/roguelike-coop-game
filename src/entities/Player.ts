@@ -221,6 +221,7 @@ export class Player {
 
     this.applyCharacterPerks();
     this.redrawOverhead();
+    this.updateAnimatedCharacterAnimation(0);
 
     scene.add(this.mesh);
   }
@@ -327,6 +328,7 @@ export class Player {
     this.applyCharacterPerks();
     this.lastDrawnHp = -1;
     this.redrawOverhead();
+    this.updateAnimatedCharacterAnimation(0);
   }
 
   public setDirection(dir: SpriteDirection) {

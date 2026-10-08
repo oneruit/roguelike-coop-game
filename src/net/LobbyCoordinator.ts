@@ -27,6 +27,7 @@ export class LobbyCoordinator {
     this.hud.onSinglePlayerSelected = () => {
       this.net.reset();
       this.player.isCoop = false;
+      this.hud.showCharacterSelect();
       this.onSinglePlayerSelected?.();
     };
 

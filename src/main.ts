@@ -230,6 +230,7 @@ class Game {
 
     this.lobbyCoordinator.onSinglePlayerSelected = () => {
       this.sessionDirector.gameState = GameState.CHARACTER_SELECT;
+      this.hud.showCharacterSelect();
     };
     this.lobbyCoordinator.onHostLobbyOpened = () => {
       this.sessionDirector.gameState = GameState.HOST_LOBBY;

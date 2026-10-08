@@ -150,50 +150,54 @@ export class SessionDirector {
     isTrainingMode: boolean = false,
     timeOfDayOption: 'random' | 'day' | 'night' = 'random'
   ): void {
-    this.isTrainingMode = isTrainingMode;
-    ProgressionManager.getInstance().isTrainingMode = isTrainingMode;
-    this.hud.setTrainingModeActive(isTrainingMode);
+    try {
+      this.isTrainingMode = isTrainingMode;
+      ProgressionManager.getInstance().isTrainingMode = isTrainingMode;
+      this.hud.setTrainingModeActive(isTrainingMode);
 
-    // Resolve Day / Night lighting
-    const chosenTimeOfDay: 'day' | 'night' =
-      timeOfDayOption === 'random'
-        ? Math.random() < 0.5 ? 'day' : 'night'
-        : timeOfDayOption;
+      // Resolve Day / Night lighting
+      const chosenTimeOfDay: 'day' | 'night' =
+        timeOfDayOption === 'random'
+          ? Math.random() < 0.5 ? 'day' : 'night'
+          : timeOfDayOption;
 
-    this.engine.setTimeOfDay(chosenTimeOfDay);
-    this.biomeManager.applyBiomeToScene(this.engine.scene, chosenTimeOfDay);
+      this.engine.setTimeOfDay(chosenTimeOfDay);
+      this.biomeManager.applyBiomeToScene(this.engine.scene, chosenTimeOfDay);
 
-    this.net.reset();
-    for (const rp of this.remotePlayers.values()) {
-      rp.destroy(this.engine.scene);
+      this.net.reset();
+      for (const rp of this.remotePlayers.values()) {
+        rp.destroy(this.engine.scene);
+      }
+      this.remotePlayers.clear();
+      this.netCoordinator.syncMapManagerPartners();
+      this.enemyManager.activePlayerCount = 1;
+
+      this.player.isGodMode = false;
+      this.player.isSpeedCheat = false;
+      this.player.isOneHitKill = false;
+      this.player.recalculateStats();
+      this.devManager.reset();
+
+      this.player.isCoop = false;
+      this.player.displayName = 'Вы';
+      this.player.colorCss = '#f59e0b';
+      this.player.setCharacter(charType);
+      this.player.redrawOverhead();
+      this.hud.setCoopBadge(null);
+      this.hud.clearTeammates();
+      this.hud.hidePartnerHp();
+
+      if (seedInput && seedInput.trim().length > 0) {
+        this.currentSeed = seedInput.trim();
+      } else {
+        this.currentSeed = Math.floor(Math.random() * 1000000);
+      }
+      this.devManager.setCurrentSeed(this.currentSeed);
+
+      this.restartGame(undefined, true);
+    } catch (err) {
+      console.error('[SessionDirector] Failed to start single player game:', err);
     }
-    this.remotePlayers.clear();
-    this.netCoordinator.syncMapManagerPartners();
-    this.enemyManager.activePlayerCount = 1;
-
-    this.player.isGodMode = false;
-    this.player.isSpeedCheat = false;
-    this.player.isOneHitKill = false;
-    this.player.recalculateStats();
-    this.devManager.reset();
-
-    this.player.isCoop = false;
-    this.player.displayName = 'Вы';
-    this.player.colorCss = '#f59e0b';
-    this.player.setCharacter(charType);
-    this.player.redrawOverhead();
-    this.hud.setCoopBadge(null);
-    this.hud.clearTeammates();
-    this.hud.hidePartnerHp();
-
-    if (seedInput && seedInput.trim().length > 0) {
-      this.currentSeed = seedInput.trim();
-    } else {
-      this.currentSeed = Math.floor(Math.random() * 1000000);
-    }
-    this.devManager.setCurrentSeed(this.currentSeed);
-
-    this.restartGame(undefined, true);
   }
 
   public startCoopGameAsHost(seedInput?: string): void {
@@ -380,67 +384,71 @@ export class SessionDirector {
   }
 
   public restartGame(pos?: Vector3, keepSeed: boolean = false): void {
-    this.combatDirector.clear();
-    this.enemyManager.clear();
-    this.dropManager.clear();
-    this.engine.chunkManager.clear();
+    try {
+      this.combatDirector.clear();
+      this.enemyManager.clear();
+      this.dropManager.clear();
+      this.engine.chunkManager.clear();
 
-    if (!keepSeed && this.net.role !== 'client') {
-      this.currentSeed = Math.floor(Math.random() * 1000000);
+      if (!keepSeed && this.net.role !== 'client') {
+        this.currentSeed = Math.floor(Math.random() * 1000000);
+      }
+      this.devManager.setCurrentSeed(this.currentSeed);
+
+      const spawnOffsets: Record<string, [number, number]> = {
+        p1: [0, 0],
+        host: [0, 0],
+        p2: [2.5, 0.5],
+        p3: [-2.5, 0.5],
+        p4: [1.5, 2.0],
+        p5: [-1.5, 2.0]
+      };
+      const myOffset = spawnOffsets[this.net.mySlotId] || (this.net.role === 'client' ? [2.5, 0.5] : [0, 0]);
+
+      // Initialize The Rift Stage 1
+      this.biomeManager.reset();
+      this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
+
+      if (this.net.role !== 'client') {
+        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1);
+      } else {
+        this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1);
+      }
+
+      const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
+      const initialPos = pos || new Vector3(myOffset[0], spawnY, myOffset[1]);
+
+      this.player.reset(initialPos);
+      this.devManager.reset();
+      this.player.isGodMode = false;
+      this.player.isSpeedCheat = false;
+      this.player.isOneHitKill = false;
+      this.player.recalculateStats();
+
+      this.player.credits = 0;
+      this.player.riftItems.clear();
+      this.player.recalculateStats();
+      this.enemyManager.currentStage = 1;
+      this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
+      this.hud.updateTeleporterHUD(false, 0, false, false);
+
+      this.mapManager.setSeed(this.currentSeed);
+      this.mapManager.clear();
+      this.mapManager.close();
+      this.netCoordinator.allPlayerStats.clear();
+      this.netCoordinator.partnerReviveTimers.clear();
+      this.combatDirector.recentlyDeadEnemyIds.clear();
+      this.netCoordinator.pendingDamageToClients.clear();
+      this.pendingLevelUps = 0;
+      this.isLevelUpActive = false;
+      this.hud.resetBossUI();
+      this.gameTime = 0;
+      this.gameState = GameState.PLAYING;
+      this.updateUI.setCombatActive(true);
+      this.lastTime = performance.now();
+    } catch (err) {
+      console.error('[SessionDirector] Error restarting game:', err);
     }
-    this.devManager.setCurrentSeed(this.currentSeed);
-
-    const spawnOffsets: Record<string, [number, number]> = {
-      p1: [0, 0],
-      host: [0, 0],
-      p2: [2.5, 0.5],
-      p3: [-2.5, 0.5],
-      p4: [1.5, 2.0],
-      p5: [-1.5, 2.0]
-    };
-    const myOffset = spawnOffsets[this.net.mySlotId] || (this.net.role === 'client' ? [2.5, 0.5] : [0, 0]);
-
-    // Initialize The Rift Stage 1
-    this.biomeManager.reset();
-    this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
-
-    if (this.net.role !== 'client') {
-      this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1);
-    } else {
-      this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1);
-    }
-
-    const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
-    const initialPos = pos || new Vector3(myOffset[0], spawnY, myOffset[1]);
-
-    this.player.reset(initialPos);
-    this.devManager.reset();
-    this.player.isGodMode = false;
-    this.player.isSpeedCheat = false;
-    this.player.isOneHitKill = false;
-    this.player.recalculateStats();
-
-    this.player.credits = 0;
-    this.player.riftItems.clear();
-    this.player.recalculateStats();
-    this.enemyManager.currentStage = 1;
-    this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
-    this.hud.updateTeleporterHUD(false, 0, false, false);
-
-    this.mapManager.setSeed(this.currentSeed);
-    this.mapManager.clear();
-    this.mapManager.close();
-    this.netCoordinator.allPlayerStats.clear();
-    this.netCoordinator.partnerReviveTimers.clear();
-    this.combatDirector.recentlyDeadEnemyIds.clear();
-    this.netCoordinator.pendingDamageToClients.clear();
-    this.pendingLevelUps = 0;
-    this.isLevelUpActive = false;
-    this.hud.resetBossUI();
-    this.gameTime = 0;
-    this.gameState = GameState.PLAYING;
-    this.updateUI.setCombatActive(true);
-    this.lastTime = performance.now();
   }
 
   public handleInteract(): void {

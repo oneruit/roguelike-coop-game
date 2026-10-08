@@ -175,6 +175,7 @@ export class RemotePlayer {
     this.setupAuras();
 
     this.redrawOverhead();
+    this.updateAnimation(0);
     scene.add(this.mesh);
   }
 
@@ -272,6 +273,7 @@ export class RemotePlayer {
     }
     this.lastDrawnHp = -1;
     this.redrawOverhead();
+    this.updateAnimation(0);
   }
 
   public syncState(state: PlayerNetState) {

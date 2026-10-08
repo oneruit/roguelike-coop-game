@@ -86,9 +86,37 @@ export class AdminController {
     const searchInput = document.getElementById('global-search') as HTMLInputElement;
     const clearBtn = document.getElementById('btn-clear-search');
 
+    const sanitizeSearchAutofill = () => {
+      if (!searchInput) return;
+      const val = searchInput.value.trim();
+      if (
+        val.startsWith('http://') ||
+        val.startsWith('https://') ||
+        (this.supabase.config.url && val === this.supabase.config.url)
+      ) {
+        searchInput.value = '';
+        this.state.searchFilter = '';
+        clearBtn?.classList.add('hidden');
+        this.applyFilter();
+      }
+    };
+
     if (searchInput) {
+      sanitizeSearchAutofill();
+      setTimeout(sanitizeSearchAutofill, 100);
+      setTimeout(sanitizeSearchAutofill, 500);
+      setTimeout(sanitizeSearchAutofill, 1500);
+
       searchInput.addEventListener('input', (e) => {
-        this.state.searchFilter = (e.target as HTMLInputElement).value.toLowerCase().trim();
+        const raw = (e.target as HTMLInputElement).value;
+        if (raw.startsWith('http://') || raw.startsWith('https://')) {
+          searchInput.value = '';
+          this.state.searchFilter = '';
+          clearBtn?.classList.add('hidden');
+          this.applyFilter();
+          return;
+        }
+        this.state.searchFilter = raw.toLowerCase().trim();
         if (clearBtn) {
           clearBtn.classList.toggle('hidden', !this.state.searchFilter);
         }
@@ -194,6 +222,9 @@ export class AdminController {
     });
 
     // Connection Form & buttons
+    document.getElementById('btn-save-conn')?.addEventListener('click', () => {
+      this.supabase.saveConnectionSettings();
+    });
     const connForm = document.getElementById('connection-form');
     connForm?.addEventListener('submit', (e) => {
       e.preventDefault();
