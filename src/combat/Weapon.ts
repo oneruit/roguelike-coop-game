@@ -1,4 +1,13 @@
-import * as THREE from 'three';
+import {
+  AdditiveBlending,
+  DoubleSide,
+  Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  type Scene,
+  type Texture,
+  Vector3
+} from 'three';
 import { Projectile } from './Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { Enemy } from '../entities/Enemy';
@@ -22,7 +31,7 @@ export interface WeaponInfo {
  */
 export function findClosestEnemies(
   enemies: Enemy[],
-  pos: THREE.Vector3,
+  pos: Vector3,
   count: number,
   maxDistSq: number = Infinity
 ): Enemy[] {
@@ -147,10 +156,10 @@ export abstract class Weapon {
 
   public abstract update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ): void;
 
   public abstract upgrade(): void;
@@ -203,7 +212,7 @@ export class BowWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -223,15 +232,15 @@ export class BowWeapon extends Weapon {
         const target = candidates[index % candidates.length];
         setTimeout(() => {
           if (!target || !target.isAlive) return;
-          const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.7, 0));
-          const targetPos = target.position.clone().add(new THREE.Vector3(0, 0.4, 0));
-          const dir = new THREE.Vector3().subVectors(targetPos, spawnPos);
+          const spawnPos = playerPos.clone().add(new Vector3(0, 0.7, 0));
+          const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+          const dir = new Vector3().subVectors(targetPos, spawnPos);
           if (dir.lengthSq() > 0) dir.normalize();
 
           // slight spread if multiple arrows are fired at fewer targets (e.g. against a lone boss)
           if (this.projectileCount > 1 && candidates.length < this.projectileCount) {
             const spreadAngle = (index - (this.projectileCount - 1) / 2) * 0.08;
-            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), spreadAngle);
+            dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
           }
 
           const proj = new Projectile({
@@ -305,7 +314,7 @@ export class KukriWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -323,14 +332,14 @@ export class KukriWeapon extends Weapon {
           const target = sorted[i % sorted.length];
           if (!target || !target.isAlive) return;
 
-          const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.7, 0));
-          const targetPos = target.position.clone().add(new THREE.Vector3(0, 0.4, 0));
-          const dir = new THREE.Vector3().subVectors(targetPos, spawnPos);
+          const spawnPos = playerPos.clone().add(new Vector3(0, 0.7, 0));
+          const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+          const dir = new Vector3().subVectors(targetPos, spawnPos);
           if (dir.lengthSq() > 0) {
             dir.normalize();
             // slight spread angle for dual throwing
             const spreadAngle = (i % 2 === 0 ? 0.08 : -0.08);
-            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), spreadAngle);
+            dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
           }
 
           const proj = new Projectile({
@@ -412,7 +421,7 @@ export class OrbitingBarrierWeapon extends Weapon {
 
   public update(
     _dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     _enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -424,7 +433,7 @@ export class OrbitingBarrierWeapon extends Weapon {
         const angle = (this.orbs.length / this.orbCount) * Math.PI * 2;
         const orb = new Projectile({
           position: playerPos.clone(),
-          direction: new THREE.Vector3(1, 0, 0),
+          direction: new Vector3(1, 0, 0),
           speed: 0,
           damage: this.damage,
           bleedDps: this.bleedDps,
@@ -487,9 +496,9 @@ export class HolyAuraWeapon extends Weapon {
   }
 
   private radius: number = 3.5;
-  private auraMesh: THREE.Mesh | null = null;
-  private auraMat: THREE.MeshBasicMaterial | null = null;
-  private fireTex: THREE.Texture | null = null;
+  private auraMesh: Mesh | null = null;
+  private auraMat: MeshBasicMaterial | null = null;
+  private fireTex: Texture | null = null;
   private animFrameTimer: number = 0;
 
   constructor() {
@@ -505,16 +514,16 @@ export class HolyAuraWeapon extends Weapon {
     this.cooldown = Math.max(0.22, Number((this.baseCooldown * Math.pow(0.96, this.level - 1)).toFixed(3)));
     if (this.auraMesh) {
       this.auraMesh.geometry.dispose();
-      this.auraMesh.geometry = new THREE.PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
+      this.auraMesh.geometry = new PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
     }
   }
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ) {
     if (this.auraMesh && this.fireTex) {
       this.auraMesh.position.set(playerPos.x, 0.08, playerPos.z);
@@ -546,29 +555,29 @@ export class HolyAuraWeapon extends Weapon {
     }
   }
 
-  public initVisual(scene: THREE.Scene, playerPos: THREE.Vector3) {
+  public initVisual(scene: Scene, playerPos: Vector3) {
     this.fireTex = TextureManager.getFireRingTexture().clone();
     this.fireTex.needsUpdate = true;
     this.fireTex.repeat.set(0.25, 0.25);
 
-    const geom = new THREE.PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
-    this.auraMat = new THREE.MeshBasicMaterial({
+    const geom = new PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
+    this.auraMat = new MeshBasicMaterial({
       map: this.fireTex,
-      side: THREE.DoubleSide,
+      side: DoubleSide,
       transparent: true,
       opacity: 0.95 * HolyAuraWeapon.vfxOpacity,
-      blending: THREE.AdditiveBlending,
+      blending: AdditiveBlending,
       depthWrite: false,
       visible: HolyAuraWeapon.vfxOpacity > 0.005
     });
-    this.auraMesh = new THREE.Mesh(geom, this.auraMat);
+    this.auraMesh = new Mesh(geom, this.auraMat);
     this.auraMesh.rotation.x = -Math.PI / 2;
     this.auraMesh.position.set(playerPos.x, 0.08, playerPos.z);
     scene.add(this.auraMesh);
     HolyAuraWeapon.instances.add(this);
   }
 
-  public destroy(scene: THREE.Scene) {
+  public destroy(scene: Scene) {
     HolyAuraWeapon.instances.delete(this);
     if (this.auraMesh) {
       scene.remove(this.auraMesh);
@@ -628,10 +637,10 @@ export class KatanaSlashWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
@@ -709,10 +718,10 @@ export class WhirlwindSlashWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
@@ -789,10 +798,10 @@ export class GreatswordWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
@@ -872,10 +881,10 @@ export class FlailWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
@@ -964,7 +973,7 @@ export class AstralStaffWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -981,9 +990,9 @@ export class AstralStaffWeapon extends Weapon {
       }
 
       const baseTarget = targets[0];
-      const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.8, 0));
-      const targetPos = baseTarget.position.clone().add(new THREE.Vector3(0, 0.4, 0));
-      const baseDir = new THREE.Vector3().subVectors(targetPos, spawnPos);
+      const spawnPos = playerPos.clone().add(new Vector3(0, 0.8, 0));
+      const targetPos = baseTarget.position.clone().add(new Vector3(0, 0.4, 0));
+      const baseDir = new Vector3().subVectors(targetPos, spawnPos);
       if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
       baseDir.normalize();
 
@@ -992,7 +1001,7 @@ export class AstralStaffWeapon extends Weapon {
 
       for (let i = 0; i < this.projectileCount; i++) {
         const angle = startAngle + i * spreadStep;
-        const dir = baseDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+        const dir = baseDir.clone().applyAxisAngle(new Vector3(0, 1, 0), angle);
 
         const proj = new Projectile({
           position: spawnPos,
@@ -1068,7 +1077,7 @@ export class ChakramWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -1085,9 +1094,9 @@ export class ChakramWeapon extends Weapon {
       }
 
       const target = targets[0];
-      const spawnPos = playerPos.clone().add(new THREE.Vector3(0, 0.6, 0));
-      const targetPos = target.position.clone().add(new THREE.Vector3(0, 0.4, 0));
-      const baseDir = new THREE.Vector3().subVectors(targetPos, spawnPos);
+      const spawnPos = playerPos.clone().add(new Vector3(0, 0.6, 0));
+      const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+      const baseDir = new Vector3().subVectors(targetPos, spawnPos);
       if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
       baseDir.normalize();
 
@@ -1102,7 +1111,7 @@ export class ChakramWeapon extends Weapon {
 
         // Slight initial angular offset for multi-chakrams
         const angleOffset = (i - (this.chakramCount - 1) / 2) * 0.16;
-        const throwDir = baseDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angleOffset);
+        const throwDir = baseDir.clone().applyAxisAngle(new Vector3(0, 1, 0), angleOffset);
 
         const proj = new Projectile({
           position: spawnPos,
@@ -1180,7 +1189,7 @@ export class LightningStrikeWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -1210,8 +1219,8 @@ export class LightningStrikeWeapon extends Weapon {
       strikeTargets.forEach((pos, idx) => {
         setTimeout(() => {
           const proj = new Projectile({
-            position: new THREE.Vector3(pos.x, 0, pos.z),
-            direction: new THREE.Vector3(0, 0, 1),
+            position: new Vector3(pos.x, 0, pos.z),
+            direction: new Vector3(0, 0, 1),
             speed: 0,
             damage: this.damage,
             pierce: 999,
@@ -1284,7 +1293,7 @@ export class IceSpikeWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -1312,8 +1321,8 @@ export class IceSpikeWeapon extends Weapon {
       strikeTargets.forEach((pos, idx) => {
         setTimeout(() => {
           const proj = new Projectile({
-            position: new THREE.Vector3(pos.x, -2.9, pos.z),
-            direction: new THREE.Vector3(0, 1, 0),
+            position: new Vector3(pos.x, -2.9, pos.z),
+            direction: new Vector3(0, 1, 0),
             speed: 0,
             damage: this.damage,
             pierce: 999,
@@ -1388,7 +1397,7 @@ export class FireballWeapon extends Weapon {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
@@ -1417,9 +1426,9 @@ export class FireballWeapon extends Weapon {
         setTimeout(() => {
           const startHeight = 15.0;
           const offsetDist = 2.8;
-          const startPos = new THREE.Vector3(pos.x - offsetDist, startHeight, pos.z - offsetDist);
-          const targetPos = new THREE.Vector3(pos.x, 0, pos.z);
-          const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
+          const startPos = new Vector3(pos.x - offsetDist, startHeight, pos.z - offsetDist);
+          const targetPos = new Vector3(pos.x, 0, pos.z);
+          const dir = new Vector3().subVectors(targetPos, startPos).normalize();
           const dist = startPos.distanceTo(targetPos);
           const flightTime = dist / this.fallSpeed;
 

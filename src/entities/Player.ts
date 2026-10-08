@@ -1,4 +1,24 @@
-import * as THREE from 'three';
+import {
+  CanvasTexture,
+  DoubleSide,
+  Group,
+  IcosahedronGeometry,
+  LinearFilter,
+  type Material,
+  Mesh,
+  MeshBasicMaterial,
+  MeshDepthMaterial,
+  MeshStandardMaterial,
+  PlaneGeometry,
+  PointLight,
+  RGBADepthPacking,
+  type Scene,
+  Sprite,
+  SpriteMaterial,
+  type Texture,
+  TorusGeometry,
+  Vector3
+} from 'three';
 import {
   Weapon,
   WhirlwindSlashWeapon,
@@ -21,34 +41,24 @@ import { PassiveBuffId } from '../drops/PassiveBuffs';
 import { RiftItemId, RiftItemDef } from '../items/RiftItemSystem';
 import { BalanceManager } from '../balance/BalanceManager';
 
-export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer';
-export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
-export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable';
+import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
+export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
 
-export interface ActiveBuff {
-  type: BuffType;
-  name: string;
-  icon: string;
-  color: string;
-  duration: number;
-  maxDuration: number;
-  value: number; // e.g. 0.8 for +80% damage, 0.6 for +60% speed, 12 for 12 hp/s regen
-}
 
 export class Player {
-  public mesh: THREE.Group;
-  public position: THREE.Vector3;
-  private spriteMesh: THREE.Mesh;
-  private spriteMaterial: THREE.MeshBasicMaterial;
-  private customDepthMaterial!: THREE.MeshDepthMaterial;
-  private shadowMesh: THREE.Mesh;
+  public mesh: Group;
+  public position: Vector3;
+  private spriteMesh: Mesh;
+  private spriteMaterial: MeshBasicMaterial;
+  private customDepthMaterial!: MeshDepthMaterial;
+  private shadowMesh: Mesh;
 
   // Directional Textures & Animated State Machine
   private animatedTextures!: AnimatedCharacterTextures;
   public animState: HeroAnimState = 'IDLE';
   public attackAnimTimer: number = 0;
   private animFrameTimer: number = 0;
-  private roninGeom!: THREE.PlaneGeometry;
+  private roninGeom!: PlaneGeometry;
 
   public currentDir: SpriteDirection = 'front';
   public getElevation?: (x: number, z: number) => number;
@@ -97,16 +107,16 @@ export class Player {
   public dashDuration: number = 0.22;
   public dashCooldown: number = 0;
   public maxDashCooldown: number = 2.8;
-  public dashDirection: THREE.Vector3 = new THREE.Vector3();
+  public dashDirection: Vector3 = new Vector3();
 
   // Active Shrine Buffs
   public activeBuffs: Map<BuffType, ActiveBuff> = new Map();
 
   // Visual Buff Auras
-  private invulnShieldMesh!: THREE.Mesh;
-  private damageAuraMesh!: THREE.Mesh;
-  private speedAuraMesh!: THREE.Mesh;
-  private regenAuraMesh!: THREE.Mesh;
+  private invulnShieldMesh!: Mesh;
+  private damageAuraMesh!: Mesh;
+  private speedAuraMesh!: Mesh;
+  private regenAuraMesh!: Mesh;
 
   // Developer Cheats
   public isGodMode: boolean = false;
@@ -136,41 +146,41 @@ export class Player {
   public colorCss: string = '#f59e0b';
   private overheadCanvas: HTMLCanvasElement;
   private overheadCtx: CanvasRenderingContext2D;
-  private overheadTexture: THREE.CanvasTexture;
-  private overheadSprite: THREE.Sprite;
+  private overheadTexture: CanvasTexture;
+  private overheadSprite: Sprite;
   private lastDrawnHp: number = -1;
   private lastDrawnMaxHp: number = -1;
   private lastDrawnLevel: number = -1;
   private lastDrawnDowned: boolean = false;
   private lastDrawnRevive: number = -1;
 
-  constructor(scene: THREE.Scene, charType: CharacterType = 'ronin') {
+  constructor(scene: Scene, charType: CharacterType = 'ronin') {
     this.charType = charType;
-    this.position = new THREE.Vector3(0, 0, 0);
-    this.mesh = new THREE.Group();
+    this.position = new Vector3(0, 0, 0);
+    this.mesh = new Group();
 
     // Ren (Ronin) animated 96x96 cell geometry (anchored at feet y=74, cell 96x96)
     // Offset from center is (74/96 - 0.5) * 3.6 = 0.27083 * 3.6 = 0.975
-    this.roninGeom = new THREE.PlaneGeometry(3.6, 3.6);
+    this.roninGeom = new PlaneGeometry(3.6, 3.6);
     this.roninGeom.translate(0, 0.975, 0);
 
     this.loadCharacterTextures(this.charType);
 
-    this.spriteMaterial = new THREE.MeshBasicMaterial({
+    this.spriteMaterial = new MeshBasicMaterial({
       map: this.animatedTextures.idle,
       transparent: true,
       alphaTest: 0.25,
-      side: THREE.DoubleSide,
+      side: DoubleSide,
       depthWrite: true,
       depthTest: true
     });
 
-    this.spriteMesh = new THREE.Mesh(this.roninGeom, this.spriteMaterial);
+    this.spriteMesh = new Mesh(this.roninGeom, this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
     this.spriteMesh.position.y = 0.05;
     this.spriteMesh.renderOrder = 0;
-    this.customDepthMaterial = new THREE.MeshDepthMaterial({
-      depthPacking: THREE.RGBADepthPacking,
+    this.customDepthMaterial = new MeshDepthMaterial({
+      depthPacking: RGBADepthPacking,
       map: this.spriteMaterial.map,
       alphaTest: 0.25
     });
@@ -183,7 +193,7 @@ export class Player {
     this.mesh.add(this.shadowMesh);
 
     // Hero Light Glow
-    const light = new THREE.PointLight(0xf59e0b, 1.4, 9);
+    const light = new PointLight(0xf59e0b, 1.4, 9);
     light.position.set(0, 1.2, 0.4);
     this.mesh.add(light);
 
@@ -193,14 +203,14 @@ export class Player {
     this.overheadCanvas.height = 96;
     this.overheadCtx = this.overheadCanvas.getContext('2d')!;
 
-    this.overheadTexture = new THREE.CanvasTexture(this.overheadCanvas);
-    this.overheadTexture.minFilter = THREE.LinearFilter;
-    const spriteMat = new THREE.SpriteMaterial({
+    this.overheadTexture = new CanvasTexture(this.overheadCanvas);
+    this.overheadTexture.minFilter = LinearFilter;
+    const spriteMat = new SpriteMaterial({
       map: this.overheadTexture,
       transparent: true,
       depthTest: false
     });
-    this.overheadSprite = new THREE.Sprite(spriteMat);
+    this.overheadSprite = new Sprite(spriteMat);
     this.overheadSprite.position.set(0, 3.0, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
@@ -217,8 +227,8 @@ export class Player {
 
   private setupAuras() {
     // 1. Invulnerability Golden Shield Bubble
-    const shieldGeom = new THREE.IcosahedronGeometry(1.4, 1);
-    const shieldMat = new THREE.MeshStandardMaterial({
+    const shieldGeom = new IcosahedronGeometry(1.4, 1);
+    const shieldMat = new MeshStandardMaterial({
       color: 0xf59e0b,
       emissive: 0xf59e0b,
       emissiveIntensity: 0.6,
@@ -226,46 +236,46 @@ export class Player {
       opacity: 0.4,
       wireframe: true
     });
-    this.invulnShieldMesh = new THREE.Mesh(shieldGeom, shieldMat);
+    this.invulnShieldMesh = new Mesh(shieldGeom, shieldMat);
     this.invulnShieldMesh.position.y = 1.2;
     this.invulnShieldMesh.visible = false;
     this.mesh.add(this.invulnShieldMesh);
 
     // 2. Crimson Wrath Ring (Damage Buff)
-    const dmgGeom = new THREE.TorusGeometry(1.15, 0.08, 6, 24);
+    const dmgGeom = new TorusGeometry(1.15, 0.08, 6, 24);
     dmgGeom.rotateX(Math.PI / 2);
-    const dmgMat = new THREE.MeshBasicMaterial({
+    const dmgMat = new MeshBasicMaterial({
       color: 0xef4444,
       transparent: true,
       opacity: 0.85
     });
-    this.damageAuraMesh = new THREE.Mesh(dmgGeom, dmgMat);
+    this.damageAuraMesh = new Mesh(dmgGeom, dmgMat);
     this.damageAuraMesh.position.y = 1.0;
     this.damageAuraMesh.visible = false;
     this.mesh.add(this.damageAuraMesh);
 
     // 3. Cyan Swift Wind Ring (Speed Buff)
-    const speedGeom = new THREE.TorusGeometry(1.1, 0.06, 6, 24);
+    const speedGeom = new TorusGeometry(1.1, 0.06, 6, 24);
     speedGeom.rotateX(Math.PI / 2.2);
-    const speedMat = new THREE.MeshBasicMaterial({
+    const speedMat = new MeshBasicMaterial({
       color: 0x06b6d4,
       transparent: true,
       opacity: 0.8
     });
-    this.speedAuraMesh = new THREE.Mesh(speedGeom, speedMat);
+    this.speedAuraMesh = new Mesh(speedGeom, speedMat);
     this.speedAuraMesh.position.y = 0.5;
     this.speedAuraMesh.visible = false;
     this.mesh.add(this.speedAuraMesh);
 
     // 4. Emerald Vitality Ring (Regen Buff)
-    const regenGeom = new THREE.TorusGeometry(0.95, 0.07, 6, 24);
+    const regenGeom = new TorusGeometry(0.95, 0.07, 6, 24);
     regenGeom.rotateX(Math.PI / 2);
-    const regenMat = new THREE.MeshBasicMaterial({
+    const regenMat = new MeshBasicMaterial({
       color: 0x10b981,
       transparent: true,
       opacity: 0.85
     });
-    this.regenAuraMesh = new THREE.Mesh(regenGeom, regenMat);
+    this.regenAuraMesh = new Mesh(regenGeom, regenMat);
     this.regenAuraMesh.position.y = 0.8;
     this.regenAuraMesh.visible = false;
     this.mesh.add(this.regenAuraMesh);
@@ -399,7 +409,7 @@ export class Player {
     this.recalculateStats();
   }
 
-  public triggerDash(moveDir: THREE.Vector3): boolean {
+  public triggerDash(moveDir: Vector3): boolean {
     if (this.dashCooldown > 0 || this.isDashing || this.isDowned || !this.isAlive) {
       return false;
     }
@@ -411,11 +421,11 @@ export class Player {
     if (moveDir.lengthSq() > 0.01) {
       this.dashDirection.copy(moveDir).normalize();
     } else {
-      const DIR_VEC_MAP: Record<SpriteDirection, THREE.Vector3> = {
-        front: new THREE.Vector3(0, 0, 1),
-        back: new THREE.Vector3(0, 0, -1),
-        left: new THREE.Vector3(-1, 0, 0),
-        right: new THREE.Vector3(1, 0, 0)
+      const DIR_VEC_MAP: Record<SpriteDirection, Vector3> = {
+        front: new Vector3(0, 0, 1),
+        back: new Vector3(0, 0, -1),
+        left: new Vector3(-1, 0, 0),
+        right: new Vector3(1, 0, 0)
       };
       this.dashDirection.copy(DIR_VEC_MAP[this.currentDir]);
     }
@@ -547,11 +557,11 @@ export class Player {
 
   public update(
     dt: number,
-    moveDir: THREE.Vector3,
+    moveDir: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
     obstacleManager?: ObstacleManager,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void,
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
     getElevation?: (x: number, z: number) => number
   ) {
     if (getElevation) {
@@ -719,7 +729,7 @@ export class Player {
 
     // Update weapons
     const damageEnemyWithMultiplier = damageEnemy
-      ? (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => {
+      ? (enemy: Enemy, amount: number, sourcePos?: Vector3) => {
           damageEnemy(enemy, amount * this.damageMultiplier, sourcePos);
         }
       : undefined;
@@ -743,7 +753,7 @@ export class Player {
     if (!this.animatedTextures) return;
 
     // Config for each of the 4 states: texture, column frame count, and playback FPS
-    const STATE_CONFIG: Record<HeroAnimState, { texture: THREE.Texture; cols: number; fps: number }> = {
+    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
       IDLE: {
         texture: this.animatedTextures.idle,
         cols: 10,
@@ -899,7 +909,7 @@ export class Player {
     return this.isOneHitKill;
   }
 
-  public giveAllWeapons(scene: THREE.Scene) {
+  public giveAllWeapons(scene: Scene) {
     const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
     if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
 
@@ -954,7 +964,7 @@ export class Player {
     return levelsGained;
   }
 
-  public reset(pos: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
+  public reset(pos: Vector3 = new Vector3(0, 0, 0)) {
     this.position.copy(pos);
     if (this.getElevation) {
       this.position.y = this.getElevation(this.position.x, this.position.z);
@@ -1091,7 +1101,7 @@ export class Player {
     this.overheadTexture.needsUpdate = true;
   }
 
-  public destroy(scene?: THREE.Scene) {
+  public destroy(scene?: Scene) {
     if (scene) scene.remove(this.mesh);
     this.spriteMaterial.dispose();
     this.overheadTexture.dispose();
@@ -1099,19 +1109,19 @@ export class Player {
     this.roninGeom.dispose();
     if (this.invulnShieldMesh) {
       this.invulnShieldMesh.geometry.dispose();
-      (this.invulnShieldMesh.material as THREE.Material).dispose();
+      (this.invulnShieldMesh.material as Material).dispose();
     }
     if (this.damageAuraMesh) {
       this.damageAuraMesh.geometry.dispose();
-      (this.damageAuraMesh.material as THREE.Material).dispose();
+      (this.damageAuraMesh.material as Material).dispose();
     }
     if (this.speedAuraMesh) {
       this.speedAuraMesh.geometry.dispose();
-      (this.speedAuraMesh.material as THREE.Material).dispose();
+      (this.speedAuraMesh.material as Material).dispose();
     }
     if (this.regenAuraMesh) {
       this.regenAuraMesh.geometry.dispose();
-      (this.regenAuraMesh.material as THREE.Material).dispose();
+      (this.regenAuraMesh.material as Material).dispose();
     }
   }
 

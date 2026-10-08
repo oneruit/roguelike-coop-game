@@ -1,32 +1,44 @@
-import * as THREE from 'three';
+import {
+  Texture,
+  TextureLoader,
+  CanvasTexture,
+  PlaneGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  SRGBColorSpace,
+  LinearFilter,
+  NearestFilter,
+  LinearMipmapLinearFilter,
+  type WebGLRenderer
+} from 'three';
 import { getAssetUrl } from '../utils/assetPath';
 
-export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
+export type { SpriteDirection } from '../shared/types';
 
 export interface DirectionalTextures {
-  front: THREE.Texture;
-  back: THREE.Texture;
-  left: THREE.Texture;
-  right: THREE.Texture;
+  front: Texture;
+  back: Texture;
+  left: Texture;
+  right: Texture;
 }
 
 export interface AnimatedCharacterTextures {
-  idle: THREE.Texture;
-  walk: THREE.Texture;
-  attack: THREE.Texture;
-  walk_attack: THREE.Texture;
+  idle: Texture;
+  walk: Texture;
+  attack: Texture;
+  walk_attack: Texture;
 }
 
 export interface BossTextures {
-  walk: THREE.Texture;
-  attack: THREE.Texture;
+  walk: Texture;
+  attack: Texture;
 }
 
 export type SwordsmanTextures = AnimatedCharacterTextures;
 
 export class TextureManager {
-  private static loader = new THREE.TextureLoader();
-  private static cache: Map<string, THREE.Texture> = new Map();
+  private static loader = new TextureLoader();
+  private static cache: Map<string, Texture> = new Map();
   private static weaponBlobUrls: Map<string, string> = new Map();
 
   public static getAssetUrl(path: string): string {
@@ -86,11 +98,11 @@ export class TextureManager {
   }
 
   // Shared shadow resources (created once, shared across thousands of entities)
-  private static sharedShadowTexture: THREE.CanvasTexture | null = null;
-  private static sharedShadowGeometry = new THREE.PlaneGeometry(1, 1);
-  private static sharedShadowMaterial: THREE.MeshBasicMaterial | null = null;
+  private static sharedShadowTexture: CanvasTexture | null = null;
+  private static sharedShadowGeometry = new PlaneGeometry(1, 1);
+  private static sharedShadowMaterial: MeshBasicMaterial | null = null;
 
-  public static load(url: string, renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static load(url: string, renderer?: WebGLRenderer): Texture {
     const resolvedUrl = getAssetUrl(url);
     if (this.cache.has(url)) {
       return this.cache.get(url)!;
@@ -104,15 +116,15 @@ export class TextureManager {
         renderer.initTexture(loadedTex);
       }
     });
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.colorSpace = SRGBColorSpace;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     this.cache.set(url, tex);
     this.cache.set(resolvedUrl, tex);
     return tex;
   }
 
-  public static loadDirectional(basePathWithoutExt: string, renderer?: THREE.WebGLRenderer): DirectionalTextures {
+  public static loadDirectional(basePathWithoutExt: string, renderer?: WebGLRenderer): DirectionalTextures {
     return {
       front: this.load(`${basePathWithoutExt}_front.png`, renderer),
       back: this.load(`${basePathWithoutExt}_back.png`, renderer),
@@ -262,7 +274,7 @@ export class TextureManager {
    * and compiles/uploads textures to the WebGL GPU memory upfront.
    */
   public static async preloadAllWithProgress(
-    renderer?: THREE.WebGLRenderer,
+    renderer?: WebGLRenderer,
     onProgress?: (loaded: number, total: number, item: string) => void
   ): Promise<void> {
     const urls = this.ALL_ASSET_URLS;
@@ -322,18 +334,18 @@ export class TextureManager {
               this.loader.load(
                 resolvedUrl,
                 (tex) => {
-                  tex.colorSpace = THREE.SRGBColorSpace;
+                  tex.colorSpace = SRGBColorSpace;
                   if (
                     url.includes('_walk.png') ||
                     url.includes('_attack.png') ||
                     url.includes('_idle.png') ||
                     url.includes('bullet_')
                   ) {
-                    tex.magFilter = THREE.NearestFilter;
+                    tex.magFilter = NearestFilter;
                   } else {
-                    tex.magFilter = THREE.LinearFilter;
+                    tex.magFilter = LinearFilter;
                   }
-                  tex.minFilter = THREE.LinearMipmapLinearFilter;
+                  tex.minFilter = LinearMipmapLinearFilter;
                   this.cache.set(url, tex);
                   this.cache.set(resolvedUrl, tex);
                   if (renderer) {
@@ -363,15 +375,15 @@ export class TextureManager {
   /**
    * Preloads all entity sprite sheets upfront to eliminate mid-game texture loading hitch.
    */
-  public static preloadAll(renderer?: THREE.WebGLRenderer) {
+  public static preloadAll(renderer?: WebGLRenderer) {
     this.preloadAllWithProgress(renderer).catch(() => {});
   }
 
-  public static loadBossTextures(baseName: string, renderer?: THREE.WebGLRenderer): BossTextures {
+  public static loadBossTextures(baseName: string, renderer?: WebGLRenderer): BossTextures {
     const loadPixel = (url: string) => {
       const tex = this.load(url, renderer);
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = NearestFilter;
+      tex.minFilter = LinearMipmapLinearFilter;
       return tex;
     };
 
@@ -381,11 +393,11 @@ export class TextureManager {
     };
   }
 
-  public static loadAnimatedTextures(baseName: string, renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadAnimatedTextures(baseName: string, renderer?: WebGLRenderer): AnimatedCharacterTextures {
     const loadPixel = (url: string) => {
       const tex = this.load(url, renderer);
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = NearestFilter;
+      tex.minFilter = LinearMipmapLinearFilter;
       return tex;
     };
 
@@ -397,44 +409,44 @@ export class TextureManager {
     };
   }
 
-  public static loadSwordsmanTextures(renderer?: THREE.WebGLRenderer): SwordsmanTextures {
+  public static loadSwordsmanTextures(renderer?: WebGLRenderer): SwordsmanTextures {
     return this.loadAnimatedTextures('hero_swordsman', renderer);
   }
 
-  public static loadRoninTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadRoninTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_ronin', renderer);
   }
 
-  public static loadValkyrieTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadValkyrieTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_valkyrie', renderer);
   }
 
-  public static loadFlailTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadFlailTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_flail', renderer);
   }
 
-  public static loadSorceressTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadSorceressTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_sorceress', renderer);
   }
 
-  public static loadChakramTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadChakramTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_chakram', renderer);
   }
 
-  public static loadArcherTextures(renderer?: THREE.WebGLRenderer): AnimatedCharacterTextures {
+  public static loadArcherTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_archer', renderer);
   }
 
-  public static getBulletTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getBulletTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/bullet_revolver.png', renderer);
-    tex.magFilter = THREE.NearestFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = NearestFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  private static sharedArrowTexture: THREE.CanvasTexture | null = null;
+  private static sharedArrowTexture: CanvasTexture | null = null;
 
-  public static getArrowTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getArrowTexture(renderer?: WebGLRenderer): Texture {
     if (!this.sharedArrowTexture) {
       const canvas = document.createElement('canvas');
       canvas.width = 128;
@@ -502,10 +514,10 @@ export class TextureManager {
       ctx.lineWidth = 1.2;
       ctx.stroke();
 
-      this.sharedArrowTexture = new THREE.CanvasTexture(canvas);
-      this.sharedArrowTexture.colorSpace = THREE.SRGBColorSpace;
-      this.sharedArrowTexture.magFilter = THREE.LinearFilter;
-      this.sharedArrowTexture.minFilter = THREE.LinearMipmapLinearFilter;
+      this.sharedArrowTexture = new CanvasTexture(canvas);
+      this.sharedArrowTexture.colorSpace = SRGBColorSpace;
+      this.sharedArrowTexture.magFilter = LinearFilter;
+      this.sharedArrowTexture.minFilter = LinearMipmapLinearFilter;
       if (renderer) {
         renderer.initTexture(this.sharedArrowTexture);
       }
@@ -513,59 +525,59 @@ export class TextureManager {
     return this.sharedArrowTexture;
   }
 
-  public static getKukriTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getKukriTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/weapon_kukri.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  public static getChakramTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getChakramTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/weapon_chakram.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  public static getLightningTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getLightningTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx_lightning.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  public static getIceSpikeTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getIceSpikeTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx_ice_spike.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  public static getFireballTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getFireballTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx_fireball.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  public static getScytheTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getScytheTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx_scythe.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
-  public static getFireRingTexture(renderer?: THREE.WebGLRenderer): THREE.Texture {
+  public static getFireRingTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx_fire_ring.png', renderer);
-    tex.magFilter = THREE.LinearFilter;
-    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   /**
    * High-performance contact shadow mesh sharing a single texture and material.
    */
-  public static createShadowMesh(radius: number): THREE.Mesh {
+  public static createShadowMesh(radius: number): Mesh {
     if (!this.sharedShadowTexture) {
       const canvas = document.createElement('canvas');
       canvas.width = 128;
@@ -588,9 +600,9 @@ export class TextureManager {
       ctx.fill();
       ctx.restore();
 
-      this.sharedShadowTexture = new THREE.CanvasTexture(canvas);
-      this.sharedShadowTexture.minFilter = THREE.LinearFilter;
-      this.sharedShadowMaterial = new THREE.MeshBasicMaterial({
+      this.sharedShadowTexture = new CanvasTexture(canvas);
+      this.sharedShadowTexture.minFilter = LinearFilter;
+      this.sharedShadowMaterial = new MeshBasicMaterial({
         map: this.sharedShadowTexture,
         transparent: true,
         depthWrite: false,
@@ -600,7 +612,7 @@ export class TextureManager {
       });
     }
 
-    const shadow = new THREE.Mesh(this.sharedShadowGeometry, this.sharedShadowMaterial!);
+    const shadow = new Mesh(this.sharedShadowGeometry, this.sharedShadowMaterial!);
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = 0.03;
     const diameter = radius * 2;

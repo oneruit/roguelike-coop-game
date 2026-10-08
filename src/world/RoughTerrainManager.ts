@@ -1,4 +1,15 @@
-import * as THREE from 'three';
+import {
+  Mesh,
+  type Scene,
+  TextureLoader,
+  Texture,
+  SRGBColorSpace,
+  NearestFilter,
+  LinearMipmapLinearFilter,
+  type Object3D,
+  MeshStandardMaterial,
+  PlaneGeometry
+} from 'three';
 import { SeededRNG } from '../core/SeededRNG';
 import { OccupiedArea } from './ChunkManager';
 import { getAssetUrl } from '../utils/assetPath';
@@ -7,33 +18,33 @@ export interface RoughZone {
   x: number;
   z: number;
   radius: number;
-  mesh: THREE.Mesh;
+  mesh: Mesh;
 }
 
 export class RoughTerrainManager {
-  private scene: THREE.Scene;
+  private scene: Scene;
   private zones: RoughZone[] = [];
   // Spatial hash: hash -> RoughZone[]
   private spatialHash = new Map<number, RoughZone[]>();
 
-  private static textureLoader = new THREE.TextureLoader();
-  private static cachedTextures = new Map<string, THREE.Texture>();
+  private static textureLoader = new TextureLoader();
+  private static cachedTextures = new Map<string, Texture>();
 
   // Slowdown multiplier when inside a rough terrain / sand dune zone (35% slowdown)
   public static readonly SLOW_FACTOR = 0.65;
   private static readonly CELL_SIZE = 50;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: Scene) {
     this.scene = scene;
   }
 
-  private static getTexture(filename: string): THREE.Texture {
+  private static getTexture(filename: string): Texture {
     let tex = this.cachedTextures.get(filename);
     if (!tex) {
       tex = this.textureLoader.load(getAssetUrl(`/textures/dunes/${filename}`));
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.colorSpace = SRGBColorSpace;
+      tex.magFilter = NearestFilter;
+      tex.minFilter = LinearMipmapLinearFilter;
       this.cachedTextures.set(filename, tex);
     }
     return tex;
@@ -50,7 +61,7 @@ export class RoughTerrainManager {
     stageNumber: number,
     rng: SeededRNG,
     occupied: OccupiedArea[],
-    addMeshToChunk?: (chunkKey: string, mesh: THREE.Object3D) => void
+    addMeshToChunk?: (chunkKey: string, mesh: Object3D) => void
   ) {
     this.clear();
 
@@ -102,7 +113,7 @@ export class RoughTerrainManager {
 
     // Plane geometry laying flat on the ground plane at y = 0.02
     // We create separate materials for primary and secondary sprites with smooth alpha blending and zero z-fighting
-    const primaryMat = new THREE.MeshStandardMaterial({
+    const primaryMat = new MeshStandardMaterial({
       map: primaryTex,
       transparent: true,
       depthWrite: false,
@@ -114,7 +125,7 @@ export class RoughTerrainManager {
     });
 
     const secondaryMat = secondaryTex
-      ? new THREE.MeshStandardMaterial({
+      ? new MeshStandardMaterial({
           map: secondaryTex,
           transparent: true,
           depthWrite: false,
@@ -166,10 +177,10 @@ export class RoughTerrainManager {
           const actualRadius = baseRadius * scaleMult;
           const diameter = actualRadius * 2.0;
 
-          const geom = new THREE.PlaneGeometry(diameter, diameter);
+          const geom = new PlaneGeometry(diameter, diameter);
           geom.rotateX(-Math.PI / 2);
 
-          const mesh = new THREE.Mesh(geom, mat);
+          const mesh = new Mesh(geom, mat);
           mesh.position.set(px, 0.02, pz);
 
           if (stageNumber === 1) {

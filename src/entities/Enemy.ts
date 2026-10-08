@@ -1,20 +1,21 @@
-import * as THREE from 'three';
+import {
+  Group,
+  Vector3,
+  Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  RingGeometry,
+  DoubleSide,
+  PointLight,
+  type Scene
+} from 'three';
 import { GemType } from '../drops/Gem';
 import { TextureManager, SpriteDirection, DirectionalTextures, BossTextures } from '../core/TextureManager';
 
 export type BossAnimState = 'WALK' | 'ATTACK';
 
-export type EnemyType =
-  | 'coyote'
-  | 'crawler'
-  | 'cactus'
-  | 'skeleton'
-  | 'ghost'
-  | 'scorpion'
-  | 'brute'
-  | 'bison'
-  | 'boss'
-  | 'hydra';
+import { EnemyType } from '../shared/types';
+export type { EnemyType };
 
 export interface EnemyConfig {
   type: EnemyType;
@@ -42,8 +43,8 @@ export class Enemy {
   public id: string;
   public type: EnemyType;
   public name: string;
-  public mesh: THREE.Group;
-  public position: THREE.Vector3;
+  public mesh: Group;
+  public position: Vector3;
   public hp: number;
   public maxHp: number;
   public speed: number;
@@ -67,9 +68,9 @@ export class Enemy {
   // 4-Directional Sprites
   private textures: DirectionalTextures;
   public currentDir: SpriteDirection = 'front';
-  private spriteMesh: THREE.Mesh;
-  private spriteMaterial: THREE.MeshBasicMaterial;
-  private shadowMesh: THREE.Mesh;
+  private spriteMesh: Mesh;
+  private spriteMaterial: MeshBasicMaterial;
+  private shadowMesh: Mesh;
 
   // Boss Animation States
   public animState: BossAnimState = 'WALK';
@@ -80,11 +81,11 @@ export class Enemy {
 
   private animTimer = Math.random() * Math.PI * 2;
   private flashTimer = 0;
-  public knockbackVelocity = new THREE.Vector3();
+  public knockbackVelocity = new Vector3();
 
-  private static geometryCache = new Map<EnemyType, THREE.PlaneGeometry>();
+  private static geometryCache = new Map<EnemyType, PlaneGeometry>();
 
-  constructor(config: EnemyConfig, spawnPos: THREE.Vector3) {
+  constructor(config: EnemyConfig, spawnPos: Vector3) {
     this.id = Math.random().toString(36).substring(2, 9);
     this.type = config.type;
     this.name = config.name;
@@ -114,7 +115,7 @@ export class Enemy {
 
     this.position = spawnPos.clone();
     this.boundingRadius = Math.max(this.width, this.height) * 0.75 + 0.5;
-    this.mesh = new THREE.Group();
+    this.mesh = new Group();
 
     if (this.eliteAffix) {
       const auraColors = {
@@ -122,15 +123,15 @@ export class Enemy {
         glacial: 0x38bdf8,
         overloading: 0x818cf8
       };
-      const ringGeom = new THREE.RingGeometry(this.width * 0.5, this.width * 0.75, 24);
+      const ringGeom = new RingGeometry(this.width * 0.5, this.width * 0.75, 24);
       ringGeom.rotateX(-Math.PI / 2);
-      const ringMat = new THREE.MeshBasicMaterial({
+      const ringMat = new MeshBasicMaterial({
         color: auraColors[this.eliteAffix],
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         transparent: true,
         opacity: 0.7
       });
-      const aura = new THREE.Mesh(ringGeom, ringMat);
+      const aura = new Mesh(ringGeom, ringMat);
       aura.position.y = 0.08;
       this.mesh.add(aura);
     }
@@ -142,9 +143,9 @@ export class Enemy {
     }
     this.textures = TextureManager.loadDirectional(config.texturePrefix);
 
-    let geom: THREE.PlaneGeometry;
+    let geom: PlaneGeometry;
     if (this.isBoss && !this.isImmortal) {
-      geom = new THREE.PlaneGeometry(this.width, this.height);
+      geom = new PlaneGeometry(this.width, this.height);
       // For demon: cell_size 160, feet_y 136 -> (136/160 - 0.5) = 0.35
       // For hydra: cell_size 224, feet_y 180 -> (180/224 - 0.5) = 0.30
       const anchorFactor = this.type === 'hydra' ? 0.30 : 0.35;
@@ -152,7 +153,7 @@ export class Enemy {
     } else {
       let cachedGeom = Enemy.geometryCache.get(this.type);
       if (!cachedGeom) {
-        cachedGeom = new THREE.PlaneGeometry(this.width, this.height);
+        cachedGeom = new PlaneGeometry(this.width, this.height);
         // Anchor at feet so sprite sits cleanly on the ground
         cachedGeom.translate(0, this.height / 2, 0);
         Enemy.geometryCache.set(this.type, cachedGeom);
@@ -160,11 +161,11 @@ export class Enemy {
       geom = cachedGeom;
     }
 
-    this.spriteMaterial = new THREE.MeshBasicMaterial({
+    this.spriteMaterial = new MeshBasicMaterial({
       map: this.bossTextures ? this.bossTextures.walk : this.textures.front,
       transparent: true,
       alphaTest: 0.08,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
 
     if (this.isImmortal) {
@@ -173,7 +174,7 @@ export class Enemy {
       this.spriteMaterial.opacity = 0.95;
     }
 
-    this.spriteMesh = new THREE.Mesh(geom, this.spriteMaterial);
+    this.spriteMesh = new Mesh(geom, this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
     this.mesh.add(this.spriteMesh);
 
@@ -184,12 +185,12 @@ export class Enemy {
 
     // Boss special key light
     if (this.isImmortal) {
-      const reaperLight = new THREE.PointLight(0xa855f7, 4.0, 22);
+      const reaperLight = new PointLight(0xa855f7, 4.0, 22);
       reaperLight.position.set(0, 3.0, 0.5);
       this.mesh.add(reaperLight);
     } else if (this.isBoss) {
       const lightColor = this.type === 'hydra' ? 0xf97316 : 0xdc2626;
-      const bossLight = new THREE.PointLight(lightColor, 3.2, 18);
+      const bossLight = new PointLight(lightColor, 3.2, 18);
       bossLight.position.set(0, 3.5, 0.8);
       this.mesh.add(bossLight);
     } else if (this.type === 'ghost') {
@@ -263,7 +264,7 @@ export class Enemy {
    * Authoritative simulation update: handles movement, knockback, and AI logic.
    * Completely decoupled from rendering and Three.js draw cycles.
    */
-  public updateSimulation(dt: number, playerPos: THREE.Vector3) {
+  public updateSimulation(dt: number, playerPos: Vector3) {
     if (!this.isAlive) return;
 
     if (this.bleedStacks.length > 0) {
@@ -345,7 +346,7 @@ export class Enemy {
     this.position.z = Math.max(-246, Math.min(246, this.position.z));
   }
 
-  public update(dt: number, playerPos: THREE.Vector3) {
+  public update(dt: number, playerPos: Vector3) {
     this.updateSimulation(dt, playerPos);
     this.updateVisuals(dt, true);
   }
@@ -391,7 +392,7 @@ export class Enemy {
 
   public takeDamage(
     amount: number,
-    sourcePos?: THREE.Vector3,
+    sourcePos?: Vector3,
     hitter: string = 'p1'
   ): boolean {
     if (this.isImmortal) {
@@ -466,7 +467,7 @@ export class Enemy {
     }
   }
 
-  public destroy(scene: THREE.Scene) {
+  public destroy(scene: Scene) {
     this.isAlive = false;
     this.bleedStacks = [];
     scene.remove(this.mesh);

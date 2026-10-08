@@ -1,11 +1,11 @@
-import * as THREE from 'three';
+import { Vector3, type Scene, Sphere, type Frustum } from 'three';
 import { Gem, GemType } from './Gem';
 import { SoundManager } from '../core/SoundManager';
 import { DropSnapshot } from '../net/NetworkManager';
 
 export interface GemCollector {
   id: string;
-  position: THREE.Vector3;
+  position: Vector3;
   pickupRadius: number;
   isAlive: boolean;
   isDowned: boolean;
@@ -13,16 +13,16 @@ export interface GemCollector {
 }
 
 export class DropManager {
-  private scene: THREE.Scene;
+  private scene: Scene;
   public gems: Gem[] = [];
   public getElevation?: (x: number, z: number) => number;
   private static readonly MAX_GEMS = 120;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: Scene) {
     this.scene = scene;
   }
 
-  public spawnGem(position: THREE.Vector3, type: GemType = 'blue', id?: string) {
+  public spawnGem(position: Vector3, type: GemType = 'blue', id?: string) {
     // If ground is cluttered, discard oldest common uncollected gem
     if (this.gems.length >= DropManager.MAX_GEMS) {
       const nonGoldIdx = this.gems.findIndex(g => g.type !== 'gold');
@@ -87,10 +87,10 @@ export class DropManager {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     pickupRadius: number,
     onCollectXp: (xp: number) => void,
-    partnerPos?: THREE.Vector3,
+    partnerPos?: Vector3,
     partnerPickupRadius: number = 4.2,
     onPartnerCollectXp?: (xp: number) => void
   ) {
@@ -136,7 +136,7 @@ export class DropManager {
       seenIds.add(s.id);
       let gem = this.gems.find((g) => g.id === s.id);
       if (!gem) {
-        gem = new Gem(s.type, new THREE.Vector3(s.x, 0, s.z), s.id);
+        gem = new Gem(s.type, new Vector3(s.x, 0, s.z), s.id);
         this.gems.push(gem);
         this.scene.add(gem.mesh);
       }
@@ -156,13 +156,13 @@ export class DropManager {
     }
   }
 
-  private tempSphere = new THREE.Sphere();
+  private tempSphere = new Sphere();
 
   /**
    * Rendering phase: Viewport/Frustum culling across all ground gems.
    * Culled gems have mesh.visible = false and skip all bobbing/rotation calculations.
    */
-  public updateVisuals(dt: number, frustum: THREE.Frustum) {
+  public updateVisuals(dt: number, frustum: Frustum) {
     for (let i = 0; i < this.gems.length; i++) {
       const gem = this.gems[i];
       if (gem.isCollected) {

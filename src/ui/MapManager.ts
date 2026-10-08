@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import type { Vector3 } from 'three';
 import { Player, BuffType } from '../entities/Player';
 import { EnemyManager } from '../entities/EnemyManager';
 import { DropManager } from '../drops/DropManager';
@@ -13,7 +13,7 @@ export interface DiscoveredAltar {
   name: string;
   icon: string;
   color: string;
-  pos: THREE.Vector3;
+  pos: Vector3;
   isCaptured: boolean;
 }
 
