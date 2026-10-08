@@ -9,6 +9,7 @@ import {
 } from '../../src/balance/BalanceTypes';
 import { DEFAULT_BALANCE } from '../../src/balance/defaultBalance';
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import { SvgChartRenderer, ChartSeries } from './chartUtils';
 
 const TEXTURE_MAP: Record<string, string> = {
   // Weapons
@@ -50,6 +51,35 @@ const TEXTURE_MAP: Record<string, string> = {
   'boss-sheriff': '/textures/boss_sheriff_front.png'
 };
 
+const WEAPON_COLORS: Record<string, string> = {
+  fireball: '#ef4444',
+  bow: '#10b981',
+  kukri: '#f59e0b',
+  orbiting_barrier: '#8b5cf6',
+  holy_aura: '#f97316',
+  katana_slash: '#ec4899',
+  whirlwind_slash: '#dc2626',
+  greatsword: '#6366f1',
+  flail: '#78716c',
+  astral_staff: '#a855f7',
+  chakram: '#06b6d4',
+  lightning_strike: '#eab308',
+  ice_spike: '#3b82f6'
+};
+
+const MONSTER_COLORS: Record<string, string> = {
+  coyote: '#94a3b8',
+  crawler: '#10b981',
+  cactus: '#84cc16',
+  skeleton: '#cbd5e1',
+  ghost: '#a78bfa',
+  scorpion: '#f97316',
+  brute: '#b45309',
+  bison: '#ef4444',
+  boss: '#dc2626',
+  hydra: '#7c3aed'
+};
+
 function getEntityTexture(category: string, id: string): string {
   const singular = category.replace(/s$/, '');
   const key = `${singular}-${id}`;
@@ -73,7 +103,46 @@ class AdminController {
   };
 
   private searchFilter: string = '';
-  private activeTab: string = 'weapons';
+  private activeTab: string = 'dashboard';
+
+  // Table sorting states
+  private tableSorts: Record<string, { col: string; dir: 'asc' | 'desc' }> = {
+    weapons: { col: 'name', dir: 'asc' },
+    heroes: { col: 'name', dir: 'asc' },
+    monsters: { col: 'name', dir: 'asc' },
+    bosses: { col: 'name', dir: 'asc' }
+  };
+
+  // Progression Charts State
+  private progView: 'weapons' | 'monsters' | 'heroes' = 'weapons';
+  private progWeaponMetric: 'damage' | 'dps' = 'damage';
+  private progSelectedWeapons: Set<string> = new Set([
+    'fireball',
+    'bow',
+    'greatsword',
+    'lightning_strike',
+    'katana_slash'
+  ]);
+  private progMonsterCategory: 'monsters' | 'bosses' = 'monsters';
+  private progMonsterMetric: 'hp' | 'damage' | 'speed' = 'hp';
+  private progSelectedMonsters: Set<string> = new Set(['coyote', 'crawler', 'scorpion', 'brute', 'bison']);
+  private progSelectedBosses: Set<string> = new Set(['boss', 'hydra']);
+
+  // Simulation State (DPS & Damage Modeler)
+  private simSlots: Array<{ enabled: boolean; weaponId: string; level: number }> = [
+    { enabled: true, weaponId: 'fireball', level: 10 },
+    { enabled: true, weaponId: 'bow', level: 8 },
+    { enabled: true, weaponId: 'lightning_strike', level: 6 },
+    { enabled: false, weaponId: 'whirlwind_slash', level: 5 },
+    { enabled: false, weaponId: 'holy_aura', level: 5 }
+  ];
+  private simHero: string = 'valkyrie';
+  private simSheriff: number = 0;
+  private simWatch: number = 0;
+  private simInjector: number = 0;
+  private simCritVisor: number = 0;
+  private simTargets: number = 3;
+  private simDamageRune: boolean = false;
 
   constructor() {
     this.bindDOM();
@@ -254,13 +323,44 @@ class AdminController {
       tab.addEventListener('click', (e) => {
         const target = (e.currentTarget as HTMLElement).dataset.tab;
         if (!target) return;
-        this.activeTab = target;
-        tabs.forEach((t) => t.classList.remove('active'));
-        (e.currentTarget as HTMLElement).classList.add('active');
-        document.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active'));
-        document.getElementById(`tab-${target}`)?.classList.add('active');
+        this.switchTab(target);
       });
     });
+
+    // Quick Jump cards and buttons on Dashboard
+    document.querySelectorAll('[data-jump-tab]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        const target = (e.currentTarget as HTMLElement).dataset.jumpTab;
+        if (!target) return;
+        this.switchTab(target);
+      });
+    });
+
+    // Table Sorting header clicks
+    document.querySelectorAll('.sortable-col').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        const header = e.currentTarget as HTMLElement;
+        const table = header.dataset.table;
+        const sortKey = header.dataset.sort;
+        if (!table || !sortKey) return;
+
+        const current = this.tableSorts[table] || { col: 'name', dir: 'asc' };
+        let newDir: 'asc' | 'desc' = 'asc';
+        if (current.col === sortKey) {
+          newDir = current.dir === 'asc' ? 'desc' : 'asc';
+        }
+        this.tableSorts[table] = { col: sortKey, dir: newDir };
+        this.updateSortHeaderUI(table);
+
+        if (table === 'weapons') this.renderWeapons();
+        else if (table === 'heroes') this.renderHeroes();
+        else if (table === 'monsters') this.renderMonsters();
+        else if (table === 'bosses') this.renderBosses();
+      });
+    });
+
+    this.bindProgressionEvents();
+    this.bindSimulationEvents();
 
     // Global Search Bar in Topbar
     const searchInput = document.getElementById('global-search') as HTMLInputElement;
@@ -438,6 +538,41 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     }
   }
 
+  public switchTab(target: string): void {
+    this.activeTab = target;
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach((t) => {
+      t.classList.toggle('active', (t as HTMLElement).dataset.tab === target);
+    });
+    document.querySelectorAll('.tab-pane').forEach((p) => {
+      p.classList.toggle('active', p.id === `tab-${target}`);
+    });
+
+    if (target === 'dashboard') this.renderDashboard();
+    else if (target === 'progression') this.renderProgression();
+    else if (target === 'simulation') this.renderSimulation();
+    else if (target === 'weapons') this.renderWeapons();
+    else if (target === 'heroes') this.renderHeroes();
+    else if (target === 'monsters') this.renderMonsters();
+    else if (target === 'bosses') this.renderBosses();
+    else if (target === 'global') this.renderGlobal();
+  }
+
+  private updateSortHeaderUI(table: string): void {
+    const sort = this.tableSorts[table];
+    if (!sort) return;
+    const headers = document.querySelectorAll(`.sortable-col[data-table="${table}"]`);
+    headers.forEach((h) => {
+      const colEl = h as HTMLElement;
+      const isCurrent = colEl.dataset.sort === sort.col;
+      colEl.classList.toggle('is-sorted', isCurrent);
+      const icon = colEl.querySelector('.sort-icon');
+      if (icon) {
+        icon.textContent = isCurrent ? (sort.dir === 'asc' ? '▲' : '▼') : '⇅';
+      }
+    });
+  }
+
   private toggleRow(rowId: string, itemElement: HTMLElement): void {
     if (this.expandedRows.has(rowId)) {
       this.expandedRows.delete(rowId);
@@ -484,11 +619,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   }
 
   private renderAll(): void {
+    this.renderDashboard();
     this.renderWeapons();
     this.renderHeroes();
     this.renderMonsters();
     this.renderBosses();
     this.renderGlobal();
+    this.renderProgression();
+    this.renderSimulation();
   }
 
   // =========================================================================
@@ -500,6 +638,52 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     container.innerHTML = '';
 
     const weapons = Object.values(this.draftBalance.weapons);
+    const sort = this.tableSorts.weapons || { col: 'name', dir: 'asc' };
+    weapons.sort((a, b) => {
+      let val = 0;
+      const baseDpsA = a.cooldown > 0 ? a.damage / a.cooldown : a.damage * 60;
+      const baseDpsB = b.cooldown > 0 ? b.damage / b.cooldown : b.damage * 60;
+      const l20DpsA =
+        a.cooldown > 0
+          ? (a.damage + 19 * a.damagePerLevel) / a.cooldown
+          : (a.damage + 19 * a.damagePerLevel) * 60;
+      const l20DpsB =
+        b.cooldown > 0
+          ? (b.damage + 19 * b.damagePerLevel) / b.cooldown
+          : (b.damage + 19 * b.damagePerLevel) * 60;
+      const isModA = Array.from(this.modifiedPaths).some((p) => p.startsWith(`weapons.${a.id}.`))
+        ? 1
+        : 0;
+      const isModB = Array.from(this.modifiedPaths).some((p) => p.startsWith(`weapons.${b.id}.`))
+        ? 1
+        : 0;
+
+      switch (sort.col) {
+        case 'name':
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+        case 'damage':
+          val = a.damage - b.damage;
+          break;
+        case 'cooldown':
+          val = a.cooldown - b.cooldown;
+          break;
+        case 'dps1':
+          val = baseDpsA - baseDpsB;
+          break;
+        case 'dps20':
+          val = l20DpsA - l20DpsB;
+          break;
+        case 'status':
+          val = isModA - isModB;
+          break;
+        default:
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+      }
+      return sort.dir === 'asc' ? val : -val;
+    });
+
     for (const w of weapons) {
       if (
         this.searchFilter &&
@@ -628,8 +812,43 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     const container = document.getElementById('heroes-list') || document.getElementById('heroes-grid');
     if (!container) return;
     container.innerHTML = '';
-
     const heroes = Object.values(this.draftBalance.heroes);
+    const sort = this.tableSorts.heroes || { col: 'name', dir: 'asc' };
+    heroes.sort((a, b) => {
+      let val = 0;
+      const isModA = Array.from(this.modifiedPaths).some((p) => p.startsWith(`heroes.${a.id}.`))
+        ? 1
+        : 0;
+      const isModB = Array.from(this.modifiedPaths).some((p) => p.startsWith(`heroes.${b.id}.`))
+        ? 1
+        : 0;
+
+      switch (sort.col) {
+        case 'name':
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+        case 'hp':
+          val = a.maxHp - b.maxHp;
+          break;
+        case 'speed':
+          val = a.baseSpeed - b.baseSpeed;
+          break;
+        case 'dmgmult':
+          val = a.damageMultiplier - b.damageMultiplier;
+          break;
+        case 'weapon':
+          val = (a.startingWeapon || '').localeCompare(b.startingWeapon || '', 'ru');
+          break;
+        case 'status':
+          val = isModA - isModB;
+          break;
+        default:
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+      }
+      return sort.dir === 'asc' ? val : -val;
+    });
+
     for (const h of heroes) {
       if (
         this.searchFilter &&
@@ -744,6 +963,42 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     container.innerHTML = '';
 
     const monsters = Object.values(this.draftBalance.monsters);
+    const sort = this.tableSorts.monsters || { col: 'name', dir: 'asc' };
+    monsters.sort((a, b) => {
+      let val = 0;
+      const isModA = Array.from(this.modifiedPaths).some((p) => p.startsWith(`monsters.${a.id}.`))
+        ? 1
+        : 0;
+      const isModB = Array.from(this.modifiedPaths).some((p) => p.startsWith(`monsters.${b.id}.`))
+        ? 1
+        : 0;
+
+      switch (sort.col) {
+        case 'name':
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+        case 'hp':
+          val = a.hp - b.hp;
+          break;
+        case 'speed':
+          val = a.speed - b.speed;
+          break;
+        case 'damage':
+          val = a.damage - b.damage;
+          break;
+        case 'gem':
+          val = (a.gemType || '').localeCompare(b.gemType || '', 'ru');
+          break;
+        case 'status':
+          val = isModA - isModB;
+          break;
+        default:
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+      }
+      return sort.dir === 'asc' ? val : -val;
+    });
+
     for (const m of monsters) {
       if (
         this.searchFilter &&
@@ -858,6 +1113,42 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     container.innerHTML = '';
 
     const bosses = Object.values(this.draftBalance.bosses);
+    const sort = this.tableSorts.bosses || { col: 'name', dir: 'asc' };
+    bosses.sort((a, b) => {
+      let val = 0;
+      const isModA = Array.from(this.modifiedPaths).some((p) => p.startsWith(`bosses.${a.id}.`))
+        ? 1
+        : 0;
+      const isModB = Array.from(this.modifiedPaths).some((p) => p.startsWith(`bosses.${b.id}.`))
+        ? 1
+        : 0;
+
+      switch (sort.col) {
+        case 'name':
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+        case 'hp':
+          val = a.hp - b.hp;
+          break;
+        case 'speed':
+          val = a.speed - b.speed;
+          break;
+        case 'damage':
+          val = a.damage - b.damage;
+          break;
+        case 'phases':
+          val = (a.id === 'hydra' ? 3 : 2) - (b.id === 'hydra' ? 3 : 2);
+          break;
+        case 'status':
+          val = isModA - isModB;
+          break;
+        default:
+          val = a.name.localeCompare(b.name, 'ru');
+          break;
+      }
+      return sort.dir === 'asc' ? val : -val;
+    });
+
     for (const b of bosses) {
       if (
         this.searchFilter &&
@@ -1132,6 +1423,9 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
 
     this.updateStagedUI();
     this.updateOverviewStats();
+    if (this.activeTab === 'progression') this.renderProgression();
+    if (this.activeTab === 'simulation') this.renderSimulation();
+    if (this.activeTab === 'dashboard') this.renderDashboard();
   }
 
   private updateStagedUI(): void {
@@ -1611,6 +1905,977 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       toast.style.transition = 'all 0.3s ease';
       setTimeout(() => toast.remove(), 300);
     }, 4000);
+  }
+
+  // =========================================================================
+  // DASHBOARD / HUB
+  // =========================================================================
+  private renderDashboard(): void {
+    // 1. Top 5 Weapons by L20 DPS
+    const topContainer = document.getElementById('dashboard-top-weapons-container');
+    if (topContainer) {
+      const weapons = Object.values(this.draftBalance.weapons);
+      weapons.sort((a, b) => {
+        const l20A =
+          a.cooldown > 0
+            ? (a.damage + 19 * a.damagePerLevel) / a.cooldown
+            : (a.damage + 19 * a.damagePerLevel) * 60;
+        const l20B =
+          b.cooldown > 0
+            ? (b.damage + 19 * b.damagePerLevel) / b.cooldown
+            : (b.damage + 19 * b.damagePerLevel) * 60;
+        return l20B - l20A;
+      });
+
+      const top5 = weapons.slice(0, 5);
+      let html = `
+        <table class="mini-ranking-table">
+          <thead>
+            <tr>
+              <th style="width:36px;">#</th>
+              <th>Оружие</th>
+              <th>Базовый урон</th>
+              <th>Кулдаун</th>
+              <th>DPS (L1)</th>
+              <th>DPS (L20)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      top5.forEach((w, idx) => {
+        const baseDps = w.cooldown > 0 ? (w.damage / w.cooldown).toFixed(1) : (w.damage * 60).toFixed(1);
+        const l20Dmg = w.damage + 19 * w.damagePerLevel;
+        const l20Dps = w.cooldown > 0 ? (l20Dmg / w.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+        const texture = getEntityTexture('weapons', w.id);
+        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
+
+        html += `
+          <tr>
+            <td><span class="rank-badge ${rankClass}">${idx + 1}</span></td>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <img src="${texture}" style="width:24px; height:24px; object-fit:contain; border-radius:4px;" alt="">
+                <strong>${w.name}</strong>
+              </div>
+            </td>
+            <td>${w.damage}</td>
+            <td>${w.cooldown}с</td>
+            <td><span class="stat-highlight">${baseDps}</span></td>
+            <td><span class="stat-highlight-gold" style="font-weight:700;">${l20Dps}</span></td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      topContainer.innerHTML = html;
+    }
+
+    // 2. System Status / Scaling Container
+    const sysContainer = document.getElementById('dashboard-system-status-container');
+    if (sysContainer) {
+      const calcHpMult = (m: number) =>
+        (1 + (m * 0.28 + Math.pow(m / 4.5, 1.7) * 0.4) * 1.5).toFixed(1);
+      const calcDmgMult = (m: number) =>
+        (1 + (m * 0.12 + Math.pow(m / 8, 1.4) * 0.25) * 1.5).toFixed(1);
+      const calcSpdMult = (m: number) => Math.min(1.45, 1 + m * 0.012 * 1.5).toFixed(2);
+
+      sysContainer.innerHTML = `
+        <table class="mini-ranking-table">
+          <thead>
+            <tr>
+              <th>Время волны</th>
+              <th>Событие</th>
+              <th>Множитель HP</th>
+              <th>Множитель урона</th>
+              <th>Множитель скорости</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>0 мин</strong></td>
+              <td><span style="color:var(--text-muted);">Старт выживания</span></td>
+              <td>1.0x</td>
+              <td>1.0x</td>
+              <td>1.00x</td>
+            </tr>
+            <tr>
+              <td><strong>5 мин</strong></td>
+              <td><span style="color:var(--accent-warning); font-weight:600;">👹 Босс 1 (Демон)</span></td>
+              <td><strong>${calcHpMult(5)}x</strong></td>
+              <td>${calcDmgMult(5)}x</td>
+              <td>${calcSpdMult(5)}x</td>
+            </tr>
+            <tr>
+              <td><strong>15 мин</strong></td>
+              <td><span style="color:var(--accent-primary); font-weight:600;">⚡ Середина боя</span></td>
+              <td><strong style="color:var(--accent-danger);">${calcHpMult(15)}x</strong></td>
+              <td>${calcDmgMult(15)}x</td>
+              <td>${calcSpdMult(15)}x</td>
+            </tr>
+            <tr>
+              <td><strong>25 мин</strong></td>
+              <td><span style="color:var(--accent-danger); font-weight:600;">🐉 Босс 2 (Гидра)</span></td>
+              <td><strong style="color:var(--accent-danger);">${calcHpMult(25)}x</strong></td>
+              <td>${calcDmgMult(25)}x</td>
+              <td>${calcSpdMult(25)}x</td>
+            </tr>
+            <tr>
+              <td><strong>30 мин</strong></td>
+              <td><span style="color:#7c3aed; font-weight:700;">🏆 Финал (Кап)</span></td>
+              <td><strong style="color:#7c3aed;">${calcHpMult(30)}x</strong></td>
+              <td>${calcDmgMult(30)}x</td>
+              <td>${calcSpdMult(30)}x</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+  }
+
+  // =========================================================================
+  // TAB: PROGRESSION (CHARTS)
+  // =========================================================================
+  private bindProgressionEvents(): void {
+    const viewButtons = document.querySelectorAll('#progression-view-switcher .segmented-btn');
+    viewButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const targetView = (e.currentTarget as HTMLElement).dataset.progView as
+          | 'weapons'
+          | 'monsters'
+          | 'heroes'
+          | undefined;
+        if (!targetView) return;
+        this.progView = targetView;
+        viewButtons.forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+
+        const elW = document.getElementById('prog-view-weapons');
+        const elM = document.getElementById('prog-view-monsters');
+        const elH = document.getElementById('prog-view-heroes');
+        if (elW) elW.style.display = targetView === 'weapons' ? 'block' : 'none';
+        if (elM) elM.style.display = targetView === 'monsters' ? 'block' : 'none';
+        if (elH) elH.style.display = targetView === 'heroes' ? 'block' : 'none';
+
+        this.renderProgression();
+      });
+    });
+
+    const metricButtons = document.querySelectorAll('#prog-weapon-metric-toggle .segmented-btn');
+    metricButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const metric = (e.currentTarget as HTMLElement).dataset.metric as 'damage' | 'dps' | undefined;
+        if (!metric) return;
+        this.progWeaponMetric = metric;
+        metricButtons.forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+
+        const title = document.getElementById('prog-weapons-chart-title');
+        if (title) {
+          title.textContent =
+            metric === 'damage'
+              ? 'Прогрессия урона оружия от Уровня 1 до Уровня 20'
+              : 'Прогрессия боевого DPS оружия от Уровня 1 до Уровня 20';
+        }
+
+        this.renderWeaponsProgression();
+      });
+    });
+
+    document.getElementById('btn-prog-weapons-select-all')?.addEventListener('click', () => {
+      Object.keys(this.draftBalance.weapons).forEach((id) => this.progSelectedWeapons.add(id));
+      this.renderWeaponsProgression();
+    });
+
+    document.getElementById('btn-prog-weapons-clear-all')?.addEventListener('click', () => {
+      this.progSelectedWeapons.clear();
+      const firstId = Object.keys(this.draftBalance.weapons)[0] || 'fireball';
+      this.progSelectedWeapons.add(firstId);
+      this.renderWeaponsProgression();
+    });
+
+    const monsterCatButtons = document.querySelectorAll('#prog-monster-category-toggle .segmented-btn');
+    monsterCatButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const cat = (e.currentTarget as HTMLElement).dataset.cat as 'monsters' | 'bosses' | undefined;
+        if (!cat) return;
+        this.progMonsterCategory = cat;
+        monsterCatButtons.forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+        this.renderMonstersProgression();
+      });
+    });
+
+    const monsterMetricButtons = document.querySelectorAll(
+      '#prog-monster-metric-toggle .segmented-btn'
+    );
+    monsterMetricButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const metric = (e.currentTarget as HTMLElement).dataset.metric as
+          | 'hp'
+          | 'damage'
+          | 'speed'
+          | undefined;
+        if (!metric) return;
+        this.progMonsterMetric = metric;
+        monsterMetricButtons.forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+        this.renderMonstersProgression();
+      });
+    });
+  }
+
+  private renderProgression(): void {
+    if (this.progView === 'weapons') {
+      this.renderWeaponsProgression();
+    } else if (this.progView === 'monsters') {
+      this.renderMonstersProgression();
+    } else if (this.progView === 'heroes') {
+      this.renderHeroesProgression();
+    }
+  }
+
+  private renderWeaponsProgression(): void {
+    this.renderWeaponsProgressionChips();
+
+    const chartContainer = document.getElementById('chart-weapons-progression');
+    if (!chartContainer) return;
+
+    const levels = Array.from({ length: 20 }, (_, i) => i + 1);
+    const xLabels = levels.map((lvl) => `L${lvl}`);
+    const isDps = this.progWeaponMetric === 'dps';
+
+    const seriesList: ChartSeries[] = [];
+    for (const wid of this.progSelectedWeapons) {
+      const w = this.draftBalance.weapons[wid];
+      if (!w) continue;
+
+      const values = levels.map((lvl) => {
+        const dmg = w.damage + (lvl - 1) * w.damagePerLevel;
+        if (isDps) {
+          const cd = w.cooldown > 0 ? w.cooldown : 1 / 60;
+          return Number((dmg / cd).toFixed(1));
+        }
+        return dmg;
+      });
+
+      seriesList.push({
+        id: wid,
+        name: w.name,
+        color: WEAPON_COLORS[wid] || '#2563eb',
+        values,
+        unit: isDps ? 'DPS' : 'урон'
+      });
+    }
+
+    SvgChartRenderer.renderLineChart(chartContainer, seriesList, {
+      xLabels,
+      fillArea: false
+    });
+  }
+
+  private renderWeaponsProgressionChips(): void {
+    const container = document.getElementById('prog-weapons-chips');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const weapons = Object.values(this.draftBalance.weapons);
+    for (const w of weapons) {
+      const isSelected = this.progSelectedWeapons.has(w.id);
+      const color = WEAPON_COLORS[w.id] || '#2563eb';
+
+      const chip = document.createElement('div');
+      chip.className = `filter-chip ${isSelected ? 'active' : ''}`;
+      chip.dataset.id = w.id;
+      chip.innerHTML = `
+        <span class="chip-dot" style="background:${color};"></span>
+        <span>${w.name}</span>
+      `;
+
+      chip.addEventListener('click', () => {
+        if (this.progSelectedWeapons.has(w.id)) {
+          if (this.progSelectedWeapons.size > 1) {
+            this.progSelectedWeapons.delete(w.id);
+          }
+        } else {
+          this.progSelectedWeapons.add(w.id);
+        }
+        this.renderWeaponsProgression();
+      });
+
+      container.appendChild(chip);
+    }
+  }
+
+  private renderMonstersProgression(): void {
+    this.renderMonstersProgressionChips();
+
+    const chartContainer = document.getElementById('chart-monsters-progression');
+    if (!chartContainer) return;
+
+    const minutes = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30];
+    const xLabels = minutes.map((m) => `${m} мин`);
+
+    const isBosses = this.progMonsterCategory === 'bosses';
+    const entities = isBosses
+      ? Object.values(this.draftBalance.bosses)
+      : Object.values(this.draftBalance.monsters);
+    const selectedSet = isBosses ? this.progSelectedBosses : this.progSelectedMonsters;
+    const metric = this.progMonsterMetric;
+
+    const seriesList: ChartSeries[] = [];
+    for (const ent of entities) {
+      if (!selectedSet.has(ent.id)) continue;
+
+      const values = minutes.map((m) => {
+        const hpMult = 1 + (m * 0.28 + Math.pow(m / 4.5, 1.7) * 0.4) * 1.5;
+        const dmgMult = 1 + (m * 0.12 + Math.pow(m / 8, 1.4) * 0.25) * 1.5;
+        const spdMult = Math.min(1.45, 1 + m * 0.012 * 1.5);
+
+        if (metric === 'hp') {
+          return Math.round(ent.hp * hpMult);
+        } else if (metric === 'damage') {
+          return Math.round(ent.damage * dmgMult);
+        } else {
+          return Number((ent.speed * spdMult).toFixed(2));
+        }
+      });
+
+      const unit = metric === 'hp' ? 'HP' : metric === 'damage' ? 'урон' : 'м/с';
+      seriesList.push({
+        id: ent.id,
+        name: ent.name,
+        color: MONSTER_COLORS[ent.id] || '#64748b',
+        values,
+        unit
+      });
+    }
+
+    SvgChartRenderer.renderLineChart(chartContainer, seriesList, {
+      xLabels,
+      fillArea: false
+    });
+  }
+
+  private renderMonstersProgressionChips(): void {
+    const container = document.getElementById('prog-monsters-chips');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const isBosses = this.progMonsterCategory === 'bosses';
+    const entities = isBosses
+      ? Object.values(this.draftBalance.bosses)
+      : Object.values(this.draftBalance.monsters);
+    const selectedSet = isBosses ? this.progSelectedBosses : this.progSelectedMonsters;
+
+    for (const ent of entities) {
+      const isSelected = selectedSet.has(ent.id);
+      const color = MONSTER_COLORS[ent.id] || '#64748b';
+
+      const chip = document.createElement('div');
+      chip.className = `filter-chip ${isSelected ? 'active' : ''}`;
+      chip.dataset.id = ent.id;
+      chip.innerHTML = `
+        <span class="chip-dot" style="background:${color};"></span>
+        <span>${ent.name}</span>
+      `;
+
+      chip.addEventListener('click', () => {
+        if (selectedSet.has(ent.id)) {
+          if (selectedSet.size > 1) {
+            selectedSet.delete(ent.id);
+          }
+        } else {
+          selectedSet.add(ent.id);
+        }
+        this.renderMonstersProgression();
+      });
+
+      container.appendChild(chip);
+    }
+  }
+
+  private renderHeroesProgression(): void {
+    const chartContainer = document.getElementById('chart-heroes-progression');
+    if (!chartContainer) return;
+
+    const heroes = Object.values(this.draftBalance.heroes);
+    const xLabels = heroes.map((h) => h.name);
+
+    const seriesList: ChartSeries[] = [
+      {
+        id: 'hero-hp',
+        name: 'Базовое здоровье (HP)',
+        color: '#ef4444',
+        values: heroes.map((h) => h.maxHp),
+        unit: 'HP'
+      },
+      {
+        id: 'hero-speed',
+        name: 'Скорость перемещения (×10)',
+        color: '#10b981',
+        values: heroes.map((h) => Number((h.baseSpeed * 10).toFixed(1))),
+        unit: 'x0.1 м/с'
+      },
+      {
+        id: 'hero-dmgmult',
+        name: 'Множитель урона (%)',
+        color: '#8b5cf6',
+        values: heroes.map((h) => Math.round(h.damageMultiplier * 100)),
+        unit: '%'
+      }
+    ];
+
+    SvgChartRenderer.renderLineChart(chartContainer, seriesList, {
+      xLabels,
+      fillArea: true
+    });
+  }
+
+  // =========================================================================
+  // TAB: SIMULATION (DPS & DAMAGE MODELER)
+  // =========================================================================
+  private bindSimulationEvents(): void {
+    document.querySelectorAll('.preset-chip-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const preset = (e.currentTarget as HTMLElement).dataset.preset;
+        if (preset) {
+          this.applyPreset(preset);
+        }
+      });
+    });
+
+    const heroSelect = document.getElementById('sim-hero-select') as HTMLSelectElement;
+    heroSelect?.addEventListener('change', (e) => {
+      this.simHero = (e.target as HTMLSelectElement).value;
+      this.renderSimulation();
+    });
+
+    const bindSyncInput = (
+      sliderId: string,
+      numId: string,
+      onChange: (val: number) => void
+    ) => {
+      const slider = document.getElementById(sliderId) as HTMLInputElement;
+      const num = document.getElementById(numId) as HTMLInputElement;
+      if (!slider || !num) return;
+
+      slider.addEventListener('input', (e) => {
+        const val = parseFloat((e.target as HTMLInputElement).value) || 0;
+        num.value = String(val);
+        onChange(val);
+        this.renderSimulation();
+      });
+
+      num.addEventListener('input', (e) => {
+        const val = parseFloat((e.target as HTMLInputElement).value) || 0;
+        slider.value = String(val);
+        onChange(val);
+        this.renderSimulation();
+      });
+    };
+
+    bindSyncInput('sim-slider-sheriff', 'sim-num-sheriff', (val) => {
+      this.simSheriff = val;
+      const badge = document.getElementById('sim-val-sheriff');
+      if (badge) badge.innerText = `${val} стаков (+${val * 2}%)`;
+    });
+
+    bindSyncInput('sim-slider-watch', 'sim-num-watch', (val) => {
+      this.simWatch = val;
+      const badge = document.getElementById('sim-val-watch');
+      if (badge) badge.innerText = `${val} стаков (-${Math.min(70, val * 8)}%)`;
+    });
+
+    bindSyncInput('sim-slider-injector', 'sim-num-injector', (val) => {
+      this.simInjector = val;
+      const badge = document.getElementById('sim-val-injector');
+      if (badge) badge.innerText = `${val} стаков`;
+    });
+
+    bindSyncInput('sim-slider-critvisor', 'sim-num-critvisor', (val) => {
+      this.simCritVisor = val;
+      const badge = document.getElementById('sim-val-critvisor');
+      const pct = Math.round((0.05 + val * 0.12) * 100);
+      if (badge) badge.innerText = `${val} стаков (${pct}%)`;
+    });
+
+    bindSyncInput('sim-slider-targets', 'sim-num-targets', (val) => {
+      this.simTargets = Math.max(1, Math.round(val));
+      const badge = document.getElementById('sim-val-targets');
+      if (badge) badge.innerText = `${this.simTargets} целей`;
+    });
+
+    const runeCheck = document.getElementById('sim-check-damagerune') as HTMLInputElement;
+    runeCheck?.addEventListener('change', (e) => {
+      this.simDamageRune = (e.target as HTMLInputElement).checked;
+      this.renderSimulation();
+    });
+
+    const slotsContainer = document.getElementById('sim-weapon-slots-container');
+    if (slotsContainer) {
+      slotsContainer.addEventListener('change', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('sim-slot-toggle')) {
+          const idx = parseInt(target.dataset.slot || '0');
+          if (this.simSlots[idx]) {
+            this.simSlots[idx].enabled = (target as HTMLInputElement).checked;
+            this.renderSimulation();
+          }
+        } else if (target.classList.contains('sim-slot-weapon')) {
+          const idx = parseInt(target.dataset.slot || '0');
+          if (this.simSlots[idx]) {
+            this.simSlots[idx].weaponId = (target as HTMLSelectElement).value;
+            this.renderSimulation();
+          }
+        }
+      });
+
+      slotsContainer.addEventListener('input', (e) => {
+        const target = e.target as HTMLElement;
+        if (
+          target.classList.contains('sim-slot-level-slider') ||
+          target.classList.contains('sim-slot-level-input')
+        ) {
+          const idx = parseInt(target.dataset.slot || '0');
+          if (this.simSlots[idx]) {
+            const val = Math.max(1, Math.min(20, parseInt((target as HTMLInputElement).value) || 1));
+            this.simSlots[idx].level = val;
+            const card = target.closest('.weapon-slot-card');
+            const slider = card?.querySelector('.sim-slot-level-slider') as HTMLInputElement;
+            const num = card?.querySelector('.sim-slot-level-input') as HTMLInputElement;
+            if (slider && slider !== target) slider.value = String(val);
+            if (num && num !== target) num.value = String(val);
+
+            this.renderSimulation();
+          }
+        }
+      });
+    }
+  }
+
+  private applyPreset(preset: string): void {
+    if (preset === 'sniper') {
+      this.simHero = 'archer';
+      this.simSlots = [
+        { enabled: true, weaponId: 'bow', level: 15 },
+        { enabled: true, weaponId: 'chakram', level: 12 },
+        { enabled: true, weaponId: 'ice_spike', level: 10 },
+        { enabled: false, weaponId: 'astral_staff', level: 8 },
+        { enabled: false, weaponId: 'fireball', level: 10 }
+      ];
+      this.simSheriff = 15;
+      this.simWatch = 5;
+      this.simInjector = 0;
+      this.simCritVisor = 4;
+      this.simTargets = 2;
+      this.simDamageRune = false;
+      this.showToast('Пресет «Снайпер дальнего боя» активирован.', 'info');
+    } else if (preset === 'melee') {
+      this.simHero = 'ronin';
+      this.simSlots = [
+        { enabled: true, weaponId: 'katana_slash', level: 18 },
+        { enabled: true, weaponId: 'whirlwind_slash', level: 15 },
+        { enabled: true, weaponId: 'greatsword', level: 12 },
+        { enabled: true, weaponId: 'orbiting_barrier', level: 10 },
+        { enabled: false, weaponId: 'flail', level: 8 }
+      ];
+      this.simSheriff = 20;
+      this.simWatch = 6;
+      this.simInjector = 1;
+      this.simCritVisor = 2;
+      this.simTargets = 6;
+      this.simDamageRune = true;
+      this.showToast('Пресет «Вихревой милишник» активирован.', 'info');
+    } else if (preset === 'elemental') {
+      this.simHero = 'sorceress';
+      this.simSlots = [
+        { enabled: true, weaponId: 'fireball', level: 20 },
+        { enabled: true, weaponId: 'lightning_strike', level: 16 },
+        { enabled: true, weaponId: 'holy_aura', level: 14 },
+        { enabled: true, weaponId: 'ice_spike', level: 12 },
+        { enabled: false, weaponId: 'astral_staff', level: 10 }
+      ];
+      this.simSheriff = 25;
+      this.simWatch = 8;
+      this.simInjector = 3;
+      this.simCritVisor = 1;
+      this.simTargets = 5;
+      this.simDamageRune = true;
+      this.showToast('Пресет «Стихийный маг» активирован.', 'info');
+    } else if (preset === 'crit') {
+      this.simHero = 'archer';
+      this.simSlots = [
+        { enabled: true, weaponId: 'bow', level: 18 },
+        { enabled: true, weaponId: 'chakram', level: 16 },
+        { enabled: true, weaponId: 'katana_slash', level: 14 },
+        { enabled: true, weaponId: 'kukri', level: 12 },
+        { enabled: false, weaponId: 'fireball', level: 10 }
+      ];
+      this.simSheriff = 15;
+      this.simWatch = 5;
+      this.simInjector = 0;
+      this.simCritVisor = 8;
+      this.simTargets = 3;
+      this.simDamageRune = false;
+      this.showToast('Пресет «Крит-мастер» активирован.', 'info');
+    } else if (preset === 'starter') {
+      this.simHero = 'valkyrie';
+      this.simSlots = [
+        { enabled: true, weaponId: 'bow', level: 1 },
+        { enabled: true, weaponId: 'fireball', level: 1 },
+        { enabled: false, weaponId: 'kukri', level: 1 },
+        { enabled: false, weaponId: 'flail', level: 1 },
+        { enabled: false, weaponId: 'holy_aura', level: 1 }
+      ];
+      this.simSheriff = 0;
+      this.simWatch = 0;
+      this.simInjector = 0;
+      this.simCritVisor = 0;
+      this.simTargets = 3;
+      this.simDamageRune = false;
+      this.showToast('Пресет «Стартовый набор» активирован.', 'info');
+    } else if (preset === 'reset') {
+      this.simHero = 'valkyrie';
+      this.simSlots = [
+        { enabled: true, weaponId: 'fireball', level: 1 },
+        { enabled: false, weaponId: 'bow', level: 1 },
+        { enabled: false, weaponId: 'kukri', level: 1 },
+        { enabled: false, weaponId: 'flail', level: 1 },
+        { enabled: false, weaponId: 'holy_aura', level: 1 }
+      ];
+      this.simSheriff = 0;
+      this.simWatch = 0;
+      this.simInjector = 0;
+      this.simCritVisor = 0;
+      this.simTargets = 3;
+      this.simDamageRune = false;
+      this.showToast('Параметры симулятора сброшены.', 'info');
+    }
+
+    this.updatePassiveUIValues();
+    this.renderSimulation();
+  }
+
+  private updatePassiveUIValues(): void {
+    const elHero = document.getElementById('sim-hero-select') as HTMLSelectElement;
+    if (elHero) elHero.value = this.simHero;
+
+    const setInputPair = (
+      sliderId: string,
+      numId: string,
+      badgeId: string,
+      val: number,
+      badgeText: string
+    ) => {
+      const sl = document.getElementById(sliderId) as HTMLInputElement;
+      const nm = document.getElementById(numId) as HTMLInputElement;
+      const bg = document.getElementById(badgeId);
+      if (sl) sl.value = String(val);
+      if (nm) nm.value = String(val);
+      if (bg) bg.innerText = badgeText;
+    };
+
+    setInputPair(
+      'sim-slider-sheriff',
+      'sim-num-sheriff',
+      'sim-val-sheriff',
+      this.simSheriff,
+      `${this.simSheriff} стаков (+${this.simSheriff * 2}%)`
+    );
+    setInputPair(
+      'sim-slider-watch',
+      'sim-num-watch',
+      'sim-val-watch',
+      this.simWatch,
+      `${this.simWatch} стаков (-${Math.min(70, this.simWatch * 8)}%)`
+    );
+    setInputPair(
+      'sim-slider-injector',
+      'sim-num-injector',
+      'sim-val-injector',
+      this.simInjector,
+      `${this.simInjector} стаков`
+    );
+    const critPct = Math.round((0.05 + this.simCritVisor * 0.12) * 100);
+    setInputPair(
+      'sim-slider-critvisor',
+      'sim-num-critvisor',
+      'sim-val-critvisor',
+      this.simCritVisor,
+      `${this.simCritVisor} стаков (${critPct}%)`
+    );
+    setInputPair(
+      'sim-slider-targets',
+      'sim-num-targets',
+      'sim-val-targets',
+      this.simTargets,
+      `${this.simTargets} целей`
+    );
+
+    const runeCheck = document.getElementById('sim-check-damagerune') as HTMLInputElement;
+    if (runeCheck) runeCheck.checked = this.simDamageRune;
+  }
+
+  private calculateSlotStats(slot: { weaponId: string; level: number }): {
+    singleTargetDps: number;
+    totalDps: number;
+    hitDamage: number;
+    effectiveCooldown: number;
+    weaponName: string;
+    weaponColor: string;
+  } {
+    const w =
+      this.draftBalance.weapons[slot.weaponId] ||
+      DEFAULT_BALANCE.weapons[slot.weaponId] ||
+      Object.values(this.draftBalance.weapons)[0];
+    const heroCfg =
+      this.draftBalance.heroes[this.simHero] ||
+      DEFAULT_BALANCE.heroes[this.simHero] || { damageMultiplier: 1.0 };
+    const heroMult = heroCfg.damageMultiplier || 1.0;
+    const sheriffMult = 1 + this.simSheriff * 0.02;
+    const runeMult = this.simDamageRune ? 1.3 : 1.0;
+
+    const baseCritChance = this.draftBalance.global.baseCritChance ?? 0.05;
+    const baseCritMult = this.draftBalance.global.baseCritDamageMult ?? 2.0;
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.simCritVisor * 0.12);
+    const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
+
+    const globalDmgMult = heroMult * sheriffMult * runeMult * expectedCritMult;
+    const baseLvlDmg = w.damage + (slot.level - 1) * w.damagePerLevel;
+    const hitDamage = baseLvlDmg * globalDmgMult;
+
+    const watchReduction = Math.max(0.3, 1 - this.simWatch * 0.08);
+    const injectorReduction = Math.pow(0.85, this.simInjector);
+    const cdMult = Math.max(0.2, watchReduction * injectorReduction);
+
+    const baseCd = w.cooldown > 0 ? w.cooldown : 1 / 60;
+    const effectiveCooldown = Math.max(0.04, baseCd * cdMult);
+
+    const singleTargetDps = hitDamage / effectiveCooldown;
+
+    let cleaveFactor = 1;
+    if (w.explosionRadius || w.splashRadius) {
+      const radius = w.explosionRadius || w.splashRadius || 2.5;
+      cleaveFactor = 1 + Math.min(this.simTargets - 1, Math.round(radius * 1.2));
+    } else if (w.pierce) {
+      cleaveFactor = Math.min(this.simTargets, w.pierce + 1);
+    } else if (
+      w.id === 'holy_aura' ||
+      w.id === 'orbiting_barrier' ||
+      w.id === 'whirlwind_slash' ||
+      w.id === 'greatsword' ||
+      w.id === 'flail'
+    ) {
+      cleaveFactor = Math.min(this.simTargets, 5);
+    }
+
+    const totalDps = singleTargetDps * cleaveFactor;
+
+    return {
+      singleTargetDps,
+      totalDps,
+      hitDamage,
+      effectiveCooldown,
+      weaponName: w.name,
+      weaponColor: WEAPON_COLORS[w.id] || '#3b82f6'
+    };
+  }
+
+  private renderSimulation(): void {
+    this.renderSimulationWeaponSlots();
+
+    const activeSlots = this.simSlots.filter((s) => s.enabled);
+    let totalDps = 0;
+    let singleTargetDps = 0;
+    const slotStatsList: Array<{ name: string; value: number; color: string; pct: number }> = [];
+
+    for (const slot of activeSlots) {
+      const stats = this.calculateSlotStats(slot);
+      totalDps += stats.totalDps;
+      singleTargetDps += stats.singleTargetDps;
+      slotStatsList.push({
+        name: stats.weaponName,
+        value: stats.totalDps,
+        color: stats.weaponColor,
+        pct: 0
+      });
+    }
+
+    slotStatsList.forEach((s) => {
+      s.pct = totalDps > 0 ? (s.value / totalDps) * 100 : 0;
+    });
+
+    const kpiTotal = document.getElementById('sim-kpi-total-dps');
+    if (kpiTotal) kpiTotal.innerText = Math.round(totalDps).toLocaleString();
+
+    const kpiSt = document.getElementById('sim-kpi-st-dps');
+    if (kpiSt) kpiSt.innerText = Math.round(singleTargetDps).toLocaleString();
+
+    const kpi60s = document.getElementById('sim-kpi-60s-dmg');
+    if (kpi60s) kpi60s.innerText = Math.round(totalDps * 60).toLocaleString();
+
+    const kpiCrit = document.getElementById('sim-kpi-crit');
+    const kpiCritSub = document.getElementById('sim-kpi-crit-sub');
+    const baseCritChance = this.draftBalance.global.baseCritChance ?? 0.05;
+    const baseCritMult = this.draftBalance.global.baseCritDamageMult ?? 2.0;
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.simCritVisor * 0.12);
+    const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
+
+    if (kpiCrit) {
+      kpiCrit.innerText = `${Math.round(effectiveCritChance * 100)}% / ${baseCritMult.toFixed(2)}x`;
+    }
+    if (kpiCritSub) {
+      kpiCritSub.innerText = `средний множитель: ${expectedCritMult.toFixed(2)}x`;
+    }
+
+    const shareContainer = document.getElementById('sim-damage-share-container');
+    if (shareContainer) {
+      SvgChartRenderer.renderShareBars(shareContainer, slotStatsList);
+    }
+
+    const curveContainer = document.getElementById('sim-damage-curve-container');
+    if (curveContainer) {
+      const seconds = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60];
+      const xLabels = seconds.map((s) => `${s}с`);
+
+      const seriesList: ChartSeries[] = [];
+      activeSlots.forEach((slot) => {
+        const stats = this.calculateSlotStats(slot);
+        seriesList.push({
+          id: slot.weaponId,
+          name: stats.weaponName,
+          color: stats.weaponColor,
+          values: seconds.map((s) => Math.round(stats.totalDps * s)),
+          unit: 'урон'
+        });
+      });
+
+      if (activeSlots.length > 1) {
+        seriesList.push({
+          id: 'total-build',
+          name: 'Суммарный урон всего билда',
+          color: '#2563eb',
+          dashed: true,
+          values: seconds.map((s) => Math.round(totalDps * s)),
+          unit: 'урон'
+        });
+      }
+
+      SvgChartRenderer.renderLineChart(curveContainer, seriesList, {
+        xLabels,
+        fillArea: true
+      });
+    }
+
+    const levelCurveContainer = document.getElementById('sim-level-curve-container');
+    if (levelCurveContainer) {
+      const levels = Array.from({ length: 20 }, (_, i) => i + 1);
+      const xLabels = levels.map((l) => `L${l}`);
+
+      const seriesList: ChartSeries[] = [];
+      activeSlots.forEach((slot) => {
+        const w = this.draftBalance.weapons[slot.weaponId];
+        const color = WEAPON_COLORS[slot.weaponId] || '#3b82f6';
+        const values = levels.map((lvl) => {
+          const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl });
+          return Math.round(stats.totalDps);
+        });
+        seriesList.push({
+          id: slot.weaponId,
+          name: w?.name || slot.weaponId,
+          color,
+          values,
+          unit: 'DPS'
+        });
+      });
+
+      if (activeSlots.length > 0) {
+        const totalBuildValues = levels.map((lvl) => {
+          let sum = 0;
+          activeSlots.forEach((slot) => {
+            const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl });
+            sum += stats.totalDps;
+          });
+          return Math.round(sum);
+        });
+
+        seriesList.push({
+          id: 'total-build-level',
+          name: 'Суммарный DPS билда (L1-L20)',
+          color: '#1e293b',
+          dashed: true,
+          values: totalBuildValues,
+          unit: 'DPS'
+        });
+      }
+
+      SvgChartRenderer.renderLineChart(levelCurveContainer, seriesList, {
+        xLabels,
+        fillArea: false
+      });
+    }
+  }
+
+  private renderSimulationWeaponSlots(): void {
+    const container = document.getElementById('sim-weapon-slots-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const weapons = Object.values(this.draftBalance.weapons);
+    const activeCount = this.simSlots.filter((s) => s.enabled).length;
+    const countBadge = document.getElementById('sim-active-slots-count');
+    if (countBadge) countBadge.innerText = `Активно: ${activeCount} из 5`;
+
+    this.simSlots.forEach((slot, idx) => {
+      const w = this.draftBalance.weapons[slot.weaponId] || weapons[0];
+      const stats = this.calculateSlotStats(slot);
+      const texture = getEntityTexture('weapons', w.id);
+
+      const card = document.createElement('div');
+      card.className = `weapon-slot-card ${slot.enabled ? '' : 'disabled'}`;
+      card.dataset.slotIndex = String(idx);
+
+      const weaponOptions = weapons
+        .map(
+          (item) =>
+            `<option value="${item.id}" ${item.id === slot.weaponId ? 'selected' : ''}>${item.icon || '⚔️'} ${item.name}</option>`
+        )
+        .join('');
+
+      card.innerHTML = `
+        <div class="slot-header">
+          <label class="slot-toggle-label">
+            <input type="checkbox" class="sim-slot-toggle" data-slot="${idx}" ${slot.enabled ? 'checked' : ''}>
+            <span>Слот ${idx + 1}</span>
+            <img src="${texture}" style="width:20px; height:20px; object-fit:contain; border-radius:4px; margin-left:4px;" alt="">
+          </label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:11px; color:var(--text-muted);">${slot.enabled ? 'В бою' : 'Выключен'}</span>
+            <span class="slot-stat-tag" style="font-weight:700; color:var(--accent-primary); font-size:13px;" id="sim-slot-dps-${idx}">
+              ${slot.enabled ? `${Math.round(stats.totalDps).toLocaleString()} DPS` : '0 DPS'}
+            </span>
+          </div>
+        </div>
+        <div class="slot-controls-row">
+          <select class="form-input sim-slot-weapon" data-slot="${idx}" ${slot.enabled ? '' : 'disabled'} style="font-weight:600;">
+            ${weaponOptions}
+          </select>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; font-weight:600; color:var(--text-muted); white-space:nowrap;">Ур.</span>
+            <input type="range" class="stat-slider sim-slot-level-slider" data-slot="${idx}" min="1" max="20" step="1" value="${slot.level}" ${slot.enabled ? '' : 'disabled'}>
+            <input type="number" class="stat-input sim-slot-level-input" data-slot="${idx}" min="1" max="20" step="1" value="${slot.level}" style="width:48px;" ${slot.enabled ? '' : 'disabled'}>
+          </div>
+        </div>
+        <div class="slot-stats-preview">
+          <span>Залп: <strong id="sim-slot-dmg-${idx}">${Math.round(stats.hitDamage)}</strong></span>
+          <span>Кулдаун: <strong id="sim-slot-cd-${idx}">${stats.effectiveCooldown.toFixed(2)}с</strong></span>
+          <span>Фокус DPS: <strong>${Math.round(stats.singleTargetDps)}</strong></span>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
   }
 }
 
