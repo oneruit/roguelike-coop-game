@@ -14,6 +14,7 @@ class AdminController {
   private originalBalance: GameBalanceState = JSON.parse(JSON.stringify(DEFAULT_BALANCE));
   private draftBalance: GameBalanceState = JSON.parse(JSON.stringify(DEFAULT_BALANCE));
   private modifiedPaths: Set<string> = new Set();
+  private expandedRows: Set<string> = new Set(['weapons-fireball']); // Default: fireball expanded for quick editing
 
   private supabase: SupabaseClient | null = null;
   private realtimeChannel: RealtimeChannel | null = null;
@@ -26,6 +27,7 @@ class AdminController {
   };
 
   private searchFilter: string = '';
+  private activeTab: string = 'weapons';
 
   constructor() {
     this.bindDOM();
@@ -35,6 +37,7 @@ class AdminController {
     await this.loadConfig();
     await this.connectSupabase();
     this.renderAll();
+    this.updateOverviewStats();
   }
 
   private async loadConfig(): Promise<void> {
@@ -64,11 +67,16 @@ class AdminController {
 
   private async connectSupabase(): Promise<void> {
     const statusEl = document.getElementById('status-connection');
+    const sidebarBadge = document.getElementById('sidebar-db-status-badge');
     if (!statusEl) return;
 
     if (!this.config.url || (!this.config.serviceRoleKey && !this.config.anonKey)) {
       statusEl.className = 'status-pill status-error';
       statusEl.innerHTML = '<span class="status-dot"></span><span>Supabase не настроен</span>';
+      if (sidebarBadge) {
+        sidebarBadge.className = 'tab-pill';
+        sidebarBadge.innerText = 'OFFLINE';
+      }
       this.showToast('Supabase не настроен. Перейдите во вкладку «Supabase & RLS».', 'info');
       return;
     }
@@ -87,13 +95,21 @@ class AdminController {
       if (error) {
         console.warn('[Admin] Supabase error:', error.message);
         statusEl.className = 'status-pill status-error';
-        statusEl.innerHTML = `<span class="status-dot"></span><span>Ошибка: ${error.message.substring(0, 24)}...</span>`;
+        statusEl.innerHTML = `<span class="status-dot"></span><span>Ошибка: ${error.message.substring(0, 20)}...</span>`;
+        if (sidebarBadge) {
+          sidebarBadge.className = 'tab-pill';
+          sidebarBadge.innerText = 'ERR';
+        }
         this.showToast(`Ошибка таблицы: ${error.message}. Возможно таблица еще не создана.`, 'error');
         return;
       }
 
       statusEl.className = 'status-pill status-connected';
       statusEl.innerHTML = '<span class="status-dot"></span><span>Supabase Online</span>';
+      if (sidebarBadge) {
+        sidebarBadge.className = 'tab-pill pill-subtle';
+        sidebarBadge.innerText = 'LIVE';
+      }
 
       if (data && data.length > 0) {
         for (const row of data as BalanceRow[]) {
@@ -102,6 +118,7 @@ class AdminController {
         this.draftBalance = JSON.parse(JSON.stringify(this.originalBalance));
         this.modifiedPaths.clear();
         this.updateStagedUI();
+        this.updateOverviewStats();
         this.showToast(`Загружено ${data.length} записей баланса из Supabase.`, 'success');
       } else {
         this.showToast('Таблица game_balance пуста. Нажмите «Инициализировать БД».', 'info');
@@ -136,6 +153,7 @@ class AdminController {
               this.draftBalance = JSON.parse(JSON.stringify(this.originalBalance));
             }
             this.renderAll();
+            this.updateOverviewStats();
           }
         }
       )
@@ -175,12 +193,13 @@ class AdminController {
   }
 
   private bindDOM(): void {
-    // Tabs
+    // Navigation Tabs in Sidebar
     const tabs = document.querySelectorAll('.nav-tab');
     tabs.forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const target = (e.currentTarget as HTMLElement).dataset.tab;
         if (!target) return;
+        this.activeTab = target;
         tabs.forEach((t) => t.classList.remove('active'));
         (e.currentTarget as HTMLElement).classList.add('active');
         document.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active'));
@@ -188,23 +207,36 @@ class AdminController {
       });
     });
 
-    // Weapon search
-    const searchInput = document.getElementById('weapon-search') as HTMLInputElement;
+    // Global Search Bar in Topbar
+    const searchInput = document.getElementById('global-search') as HTMLInputElement;
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.searchFilter = (e.target as HTMLInputElement).value.toLowerCase().trim();
-        this.renderWeapons();
+        this.applyFilter();
       });
     }
+
+    // Keyboard shortcut: Ctrl+K or / focuses search
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInput?.focus();
+        searchInput?.select();
+      }
+    });
+
+    // Expand All / Collapse All buttons
+    document.getElementById('btn-expand-all')?.addEventListener('click', () => {
+      this.expandAllCurrentTab();
+    });
+    document.getElementById('btn-collapse-all')?.addEventListener('click', () => {
+      this.collapseAllCurrentTab();
+    });
 
     // Top action buttons
     document.getElementById('btn-save')?.addEventListener('click', () => this.openReviewModal());
     document.getElementById('banner-review-btn')?.addEventListener('click', () => this.openReviewModal());
     document.getElementById('btn-discard')?.addEventListener('click', () => this.discardDraft());
-    document.getElementById('btn-settings')?.addEventListener('click', () => {
-      const tabBtn = document.querySelector('[data-tab="connection"]') as HTMLElement;
-      tabBtn?.click();
-    });
 
     // Reset buttons
     document.getElementById('btn-reset-weapons-all')?.addEventListener('click', () => {
@@ -222,6 +254,7 @@ class AdminController {
         }
         this.updateStagedUI();
         this.renderWeapons();
+        this.updateOverviewStats();
       }
     });
 
@@ -231,6 +264,7 @@ class AdminController {
         this.checkAllCategoryChanges('heroes');
         this.updateStagedUI();
         this.renderHeroes();
+        this.updateOverviewStats();
       }
     });
 
@@ -240,6 +274,7 @@ class AdminController {
         this.checkAllCategoryChanges('monsters');
         this.updateStagedUI();
         this.renderMonsters();
+        this.updateOverviewStats();
       }
     });
 
@@ -249,6 +284,7 @@ class AdminController {
         this.checkAllCategoryChanges('bosses');
         this.updateStagedUI();
         this.renderBosses();
+        this.updateOverviewStats();
       }
     });
 
@@ -258,6 +294,7 @@ class AdminController {
         this.checkAllCategoryChanges('global');
         this.updateStagedUI();
         this.renderGlobal();
+        this.updateOverviewStats();
       }
     });
 
@@ -299,6 +336,59 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     });
   }
 
+  private applyFilter(): void {
+    if (this.activeTab === 'weapons') this.renderWeapons();
+    else if (this.activeTab === 'heroes') this.renderHeroes();
+    else if (this.activeTab === 'monsters') this.renderMonsters();
+    else if (this.activeTab === 'bosses') this.renderBosses();
+  }
+
+  private expandAllCurrentTab(): void {
+    if (this.activeTab === 'weapons') {
+      Object.keys(this.draftBalance.weapons).forEach((k) => this.expandedRows.add(`weapons-${k}`));
+      this.renderWeapons();
+    } else if (this.activeTab === 'heroes') {
+      Object.keys(this.draftBalance.heroes).forEach((k) => this.expandedRows.add(`heroes-${k}`));
+      this.renderHeroes();
+    } else if (this.activeTab === 'monsters') {
+      Object.keys(this.draftBalance.monsters).forEach((k) => this.expandedRows.add(`monsters-${k}`));
+      this.renderMonsters();
+    } else if (this.activeTab === 'bosses') {
+      Object.keys(this.draftBalance.bosses).forEach((k) => this.expandedRows.add(`bosses-${k}`));
+      this.renderBosses();
+    }
+  }
+
+  private collapseAllCurrentTab(): void {
+    if (this.activeTab === 'weapons') {
+      Object.keys(this.draftBalance.weapons).forEach((k) => this.expandedRows.delete(`weapons-${k}`));
+      this.renderWeapons();
+    } else if (this.activeTab === 'heroes') {
+      Object.keys(this.draftBalance.heroes).forEach((k) => this.expandedRows.delete(`heroes-${k}`));
+      this.renderHeroes();
+    } else if (this.activeTab === 'monsters') {
+      Object.keys(this.draftBalance.monsters).forEach((k) => this.expandedRows.delete(`monsters-${k}`));
+      this.renderMonsters();
+    } else if (this.activeTab === 'bosses') {
+      Object.keys(this.draftBalance.bosses).forEach((k) => this.expandedRows.delete(`bosses-${k}`));
+      this.renderBosses();
+    }
+  }
+
+  private toggleRow(rowId: string, itemElement: HTMLElement): void {
+    if (this.expandedRows.has(rowId)) {
+      this.expandedRows.delete(rowId);
+      itemElement.classList.remove('is-expanded');
+      const toggleBtn = itemElement.querySelector('.btn-toggle-row');
+      if (toggleBtn) toggleBtn.textContent = 'Развернуть';
+    } else {
+      this.expandedRows.add(rowId);
+      itemElement.classList.add('is-expanded');
+      const toggleBtn = itemElement.querySelector('.btn-toggle-row');
+      if (toggleBtn) toggleBtn.textContent = 'Свернуть';
+    }
+  }
+
   private checkAllCategoryChanges(category: keyof GameBalanceState): void {
     if (category === 'global') {
       for (const prop of Object.keys(this.draftBalance.global)) {
@@ -335,8 +425,11 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.renderGlobal();
   }
 
+  // =========================================================================
+  // TAB 1: WEAPONS (Row Accordion View)
+  // =========================================================================
   private renderWeapons(): void {
-    const container = document.getElementById('weapons-grid');
+    const container = document.getElementById('weapons-list') || document.getElementById('weapons-grid');
     if (!container) return;
     container.innerHTML = '';
 
@@ -345,219 +438,446 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       if (
         this.searchFilter &&
         !w.name.toLowerCase().includes(this.searchFilter) &&
-        !w.id.toLowerCase().includes(this.searchFilter)
+        !w.id.toLowerCase().includes(this.searchFilter) &&
+        !(w.notes || '').toLowerCase().includes(this.searchFilter)
       ) {
         continue;
       }
 
-      const isFireball = w.id === 'fireball';
-      const isCardModified = Array.from(this.modifiedPaths).some((p) =>
-        p.startsWith(`weapons.${w.id}.`)
-      );
-
-      const card = document.createElement('div');
-      card.className = `card ${isFireball ? 'highlight-fireball' : ''} ${isCardModified ? 'is-modified' : ''}`;
+      const rowId = `weapons-${w.id}`;
+      const isExpanded = this.expandedRows.has(rowId);
+      const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`weapons.${w.id}.`));
 
       const baseDps = w.cooldown > 0 ? (w.damage / w.cooldown).toFixed(1) : (w.damage * 60).toFixed(1);
       const l20Dmg = w.damage + 19 * w.damagePerLevel;
       const l20Dps = w.cooldown > 0 ? (l20Dmg / w.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
 
-      card.innerHTML = `
-        <div class="card-header">
-          <div class="card-title-group">
-            <span class="card-icon">${w.icon}</span>
-            <div>
-              <div class="card-title">${w.name}</div>
-              <div class="card-tag">ID: ${w.id}</div>
+      const rowItem = document.createElement('div');
+      rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
+      rowItem.dataset.rowId = rowId;
+
+      rowItem.innerHTML = `
+        <div class="accordion-row-header weapons-table-cols">
+          <div class="accordion-col-expand">
+            <span class="chevron-arrow">›</span>
+          </div>
+          <div class="accordion-col-main">
+            <span class="item-icon">${w.icon}</span>
+            <div class="item-identity">
+              <span class="item-title">${w.name}</span>
+              <span class="item-id-badge">${w.id}</span>
             </div>
           </div>
-          ${isCardModified ? '<span class="card-badge badge-modified">Изменено</span>' : ''}
-        </div>
-        <div class="card-desc">${w.notes || 'Боевое оружие героя'}</div>
-
-        <div class="stat-fields-list">
-          ${this.renderStatControl('weapons', w.id, 'damage', 'Базовый урон (Damage)', w.damage, 1, 300, 1)}
-          ${this.renderStatControl('weapons', w.id, 'cooldown', 'Кулдаун (сек)', w.cooldown, 0.05, 5.0, 0.05)}
-          ${this.renderStatControl('weapons', w.id, 'damagePerLevel', 'Прирост за уровень', w.damagePerLevel, 1, 50, 1)}
-          ${w.range !== undefined ? this.renderStatControl('weapons', w.id, 'range', 'Дальность атаки (м)', w.range, 5, 50, 1) : ''}
-          ${w.explosionRadius !== undefined ? this.renderStatControl('weapons', w.id, 'explosionRadius', 'Радиус взрыва (м)', w.explosionRadius, 1, 10, 0.1) : ''}
-          ${w.fallSpeed !== undefined ? this.renderStatControl('weapons', w.id, 'fallSpeed', 'Скорость падения (м/с)', w.fallSpeed, 5, 60, 1) : ''}
-        </div>
-
-        <div class="dps-preview-box">
-          <div class="dps-metric">
-            <span class="dps-label">Base DPS (L1)</span>
-            <span class="dps-value" id="dps-${w.id}-base">${baseDps}</span>
+          <div class="accordion-col-stat" id="row-stat-damage-${w.id}">
+            <span>${w.damage}</span>
           </div>
-          <div class="dps-metric">
-            <span class="dps-label">Level 20 DPS</span>
-            <span class="dps-value" id="dps-${w.id}-l20">${l20Dps}</span>
+          <div class="accordion-col-stat" id="row-stat-cooldown-${w.id}">
+            <span>${w.cooldown}с</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span class="stat-highlight" id="row-stat-dps1-${w.id}">${baseDps}</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span class="stat-highlight-gold" id="row-stat-dps20-${w.id}">${l20Dps}</span>
+          </div>
+          <div class="accordion-col-status">
+            ${
+              isModified
+                ? '<span class="status-badge-chip badge-modified">Изменено</span>'
+                : '<span class="status-badge-chip badge-default">Дефолт</span>'
+            }
+          </div>
+          <div class="accordion-col-actions">
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}" title="Сбросить к BALANCE_REFERENCE.md">↩</button>
+            <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
           </div>
         </div>
 
-        <div class="card-footer">
-          <button class="btn btn-xs btn-secondary btn-reset-weapon" data-id="${w.id}" title="Сбросить к BALANCE_REFERENCE.md">
-            Сбросить оружие
-          </button>
+        <div class="accordion-row-body">
+          <div class="drawer-content">
+            <div class="drawer-header-info">
+              <div class="drawer-desc">${w.notes || 'Боевое оружие персонажа.'}</div>
+              <div class="drawer-scaling-badge">L20: ${w.damage} + 19×${w.damagePerLevel} = ${l20Dmg} dmg</div>
+            </div>
+
+            <div class="drawer-controls-grid">
+              ${this.renderStatControl('weapons', w.id, 'damage', 'Базовый урон (Damage)', w.damage, 1, 300, 1)}
+              ${this.renderStatControl('weapons', w.id, 'cooldown', 'Кулдаун атаки (сек)', w.cooldown, 0.05, 5.0, 0.05)}
+              ${this.renderStatControl('weapons', w.id, 'damagePerLevel', 'Прирост за уровень', w.damagePerLevel, 1, 50, 1)}
+              ${w.range !== undefined ? this.renderStatControl('weapons', w.id, 'range', 'Дальность атаки (м)', w.range, 5, 50, 1) : ''}
+              ${w.explosionRadius !== undefined ? this.renderStatControl('weapons', w.id, 'explosionRadius', 'Радиус взрыва (м)', w.explosionRadius, 1, 10, 0.1) : ''}
+              ${w.fallSpeed !== undefined ? this.renderStatControl('weapons', w.id, 'fallSpeed', 'Скорость падения (м/с)', w.fallSpeed, 5, 60, 1) : ''}
+            </div>
+
+            <div class="drawer-footer">
+              <div class="dps-preview-box">
+                <div class="dps-metric">
+                  <span class="dps-label">Base DPS (L1)</span>
+                  <span class="dps-value" id="dps-${w.id}-base">${baseDps}</span>
+                </div>
+                <div class="dps-metric">
+                  <span class="dps-label">Max DPS (L20)</span>
+                  <span class="dps-value" id="dps-${w.id}-l20">${l20Dps}</span>
+                </div>
+              </div>
+              <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}">
+                Сбросить к BALANCE_REFERENCE.md
+              </button>
+            </div>
+          </div>
         </div>
       `;
 
-      // Reset single weapon listener
-      card.querySelector('.btn-reset-weapon')?.addEventListener('click', (e) => {
-        const wid = (e.currentTarget as HTMLElement).dataset.id!;
-        this.resetSingleItem('weapons', wid);
+      // Accordion header click event
+      const headerEl = rowItem.querySelector('.accordion-row-header');
+      headerEl?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.btn-reset-item')) return;
+        this.toggleRow(rowId, rowItem);
       });
 
-      container.appendChild(card);
+      // Reset single weapon listener
+      rowItem.querySelectorAll('.btn-reset-item').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const wid = (e.currentTarget as HTMLElement).dataset.id!;
+          this.resetSingleItem('weapons', wid);
+        });
+      });
+
+      container.appendChild(rowItem);
     }
 
     this.attachInputListeners(container);
   }
 
+  // =========================================================================
+  // TAB 2: HEROES (Row Accordion View)
+  // =========================================================================
   private renderHeroes(): void {
-    const container = document.getElementById('heroes-grid');
+    const container = document.getElementById('heroes-list') || document.getElementById('heroes-grid');
     if (!container) return;
     container.innerHTML = '';
 
     const heroes = Object.values(this.draftBalance.heroes);
     for (const h of heroes) {
-      const isCardModified = Array.from(this.modifiedPaths).some((p) =>
-        p.startsWith(`heroes.${h.id}.`)
-      );
+      if (
+        this.searchFilter &&
+        !h.name.toLowerCase().includes(this.searchFilter) &&
+        !h.id.toLowerCase().includes(this.searchFilter) &&
+        !(h.role || '').toLowerCase().includes(this.searchFilter)
+      ) {
+        continue;
+      }
 
-      const card = document.createElement('div');
-      card.className = `card ${isCardModified ? 'is-modified' : ''}`;
-      card.innerHTML = `
-        <div class="card-header">
-          <div class="card-title-group">
-            <span class="card-icon">🤠</span>
-            <div>
-              <div class="card-title">${h.name}</div>
-              <div class="card-tag">ID: ${h.id} | Оружие: ${h.startingWeapon}</div>
+      const rowId = `heroes-${h.id}`;
+      const isExpanded = this.expandedRows.has(rowId);
+      const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`heroes.${h.id}.`));
+
+      const rowItem = document.createElement('div');
+      rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
+      rowItem.dataset.rowId = rowId;
+
+      rowItem.innerHTML = `
+        <div class="accordion-row-header heroes-table-cols">
+          <div class="accordion-col-expand">
+            <span class="chevron-arrow">›</span>
+          </div>
+          <div class="accordion-col-main">
+            <span class="item-icon">🤠</span>
+            <div class="item-identity">
+              <span class="item-title">${h.name}</span>
+              <span class="item-id-badge">${h.id}</span>
             </div>
           </div>
-          ${isCardModified ? '<span class="card-badge badge-modified">Изменено</span>' : ''}
+          <div class="accordion-col-stat" id="row-stat-hp-${h.id}">
+            <span>${h.maxHp} HP</span>
+          </div>
+          <div class="accordion-col-stat" id="row-stat-speed-${h.id}">
+            <span>${h.baseSpeed} м/с</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span class="stat-highlight" id="row-stat-dmgmult-${h.id}">${h.damageMultiplier}x</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span style="color:var(--text-muted); font-size:12px;">${h.startingWeapon}</span>
+          </div>
+          <div class="accordion-col-status">
+            ${
+              isModified
+                ? '<span class="status-badge-chip badge-modified">Изменено</span>'
+                : '<span class="status-badge-chip badge-default">Дефолт</span>'
+            }
+          </div>
+          <div class="accordion-col-actions">
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${h.id}" title="Сбросить к default">↩</button>
+            <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
+          </div>
         </div>
-        <div class="card-desc">${h.role || ''}</div>
 
-        <div class="stat-fields-list">
-          ${this.renderStatControl('heroes', h.id, 'maxHp', 'Базовое здоровье (HP)', h.maxHp, 50, 300, 5)}
-          ${this.renderStatControl('heroes', h.id, 'baseSpeed', 'Скорость бега (м/с)', h.baseSpeed, 4.0, 15.0, 0.1)}
-          ${this.renderStatControl('heroes', h.id, 'damageMultiplier', 'Множитель урона', h.damageMultiplier, 0.5, 3.0, 0.05)}
-        </div>
+        <div class="accordion-row-body">
+          <div class="drawer-content">
+            <div class="drawer-header-info">
+              <div class="drawer-desc">${h.role || 'Ковбой Дикого Запада.'}</div>
+              <div class="drawer-scaling-badge">Стартовое снаряжение: ${h.startingWeapon}</div>
+            </div>
 
-        <div class="card-footer">
-          <button class="btn btn-xs btn-secondary btn-reset-hero" data-id="${h.id}">Сбросить к default</button>
+            <div class="drawer-controls-grid">
+              ${this.renderStatControl('heroes', h.id, 'maxHp', 'Базовое здоровье (HP)', h.maxHp, 50, 300, 5)}
+              ${this.renderStatControl('heroes', h.id, 'baseSpeed', 'Скорость бега (м/с)', h.baseSpeed, 4.0, 15.0, 0.1)}
+              ${this.renderStatControl('heroes', h.id, 'damageMultiplier', 'Множитель урона', h.damageMultiplier, 0.5, 3.0, 0.05)}
+            </div>
+
+            <div class="drawer-footer">
+              <div></div>
+              <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${h.id}">
+                Сбросить к default
+              </button>
+            </div>
+          </div>
         </div>
       `;
 
-      card.querySelector('.btn-reset-hero')?.addEventListener('click', (e) => {
-        const hid = (e.currentTarget as HTMLElement).dataset.id!;
-        this.resetSingleItem('heroes', hid);
+      const headerEl = rowItem.querySelector('.accordion-row-header');
+      headerEl?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.btn-reset-item')) return;
+        this.toggleRow(rowId, rowItem);
       });
 
-      container.appendChild(card);
+      rowItem.querySelectorAll('.btn-reset-item').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const hid = (e.currentTarget as HTMLElement).dataset.id!;
+          this.resetSingleItem('heroes', hid);
+        });
+      });
+
+      container.appendChild(rowItem);
     }
 
     this.attachInputListeners(container);
   }
 
+  // =========================================================================
+  // TAB 3: MONSTERS (Row Accordion View)
+  // =========================================================================
   private renderMonsters(): void {
-    const container = document.getElementById('monsters-grid');
+    const container = document.getElementById('monsters-list') || document.getElementById('monsters-grid');
     if (!container) return;
     container.innerHTML = '';
 
     const monsters = Object.values(this.draftBalance.monsters);
     for (const m of monsters) {
-      const isCardModified = Array.from(this.modifiedPaths).some((p) =>
-        p.startsWith(`monsters.${m.id}.`)
-      );
+      if (
+        this.searchFilter &&
+        !m.name.toLowerCase().includes(this.searchFilter) &&
+        !m.id.toLowerCase().includes(this.searchFilter) &&
+        !(m.description || '').toLowerCase().includes(this.searchFilter)
+      ) {
+        continue;
+      }
 
-      const card = document.createElement('div');
-      card.className = `card ${isCardModified ? 'is-modified' : ''}`;
-      card.innerHTML = `
-        <div class="card-header">
-          <div class="card-title-group">
-            <span class="card-icon">👹</span>
-            <div>
-              <div class="card-title">${m.name}</div>
-              <div class="card-tag">ID: ${m.id} | Дроп: ${m.gemType || 'blue'} gem</div>
+      const rowId = `monsters-${m.id}`;
+      const isExpanded = this.expandedRows.has(rowId);
+      const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`monsters.${m.id}.`));
+
+      const rowItem = document.createElement('div');
+      rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
+      rowItem.dataset.rowId = rowId;
+
+      rowItem.innerHTML = `
+        <div class="accordion-row-header monsters-table-cols">
+          <div class="accordion-col-expand">
+            <span class="chevron-arrow">›</span>
+          </div>
+          <div class="accordion-col-main">
+            <span class="item-icon">👹</span>
+            <div class="item-identity">
+              <span class="item-title">${m.name}</span>
+              <span class="item-id-badge">${m.id}</span>
             </div>
           </div>
-          ${isCardModified ? '<span class="card-badge badge-modified">Изменено</span>' : ''}
+          <div class="accordion-col-stat" id="row-stat-hp-${m.id}">
+            <span>${m.hp} HP</span>
+          </div>
+          <div class="accordion-col-stat" id="row-stat-speed-${m.id}">
+            <span>${m.speed} м/с</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span class="stat-highlight" id="row-stat-damage-${m.id}">${m.damage}</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span style="color:var(--accent-cyan); font-size:12px;">${m.gemType || 'blue'} gem</span>
+          </div>
+          <div class="accordion-col-status">
+            ${
+              isModified
+                ? '<span class="status-badge-chip badge-modified">Изменено</span>'
+                : '<span class="status-badge-chip badge-default">Дефолт</span>'
+            }
+          </div>
+          <div class="accordion-col-actions">
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${m.id}" title="Сбросить к default">↩</button>
+            <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
+          </div>
         </div>
-        <div class="card-desc">${m.description || ''}</div>
 
-        <div class="stat-fields-list">
-          ${this.renderStatControl('monsters', m.id, 'hp', 'Здоровье (HP 0-мин)', m.hp, 10, 2000, 2)}
-          ${this.renderStatControl('monsters', m.id, 'speed', 'Скорость (м/с)', m.speed, 1.0, 10.0, 0.1)}
-          ${this.renderStatControl('monsters', m.id, 'damage', 'Урон за удар', m.damage, 1, 100, 1)}
-        </div>
+        <div class="accordion-row-body">
+          <div class="drawer-content">
+            <div class="drawer-header-info">
+              <div class="drawer-desc">${m.description || 'Рядовой противник волны.'}</div>
+              <div class="drawer-scaling-badge">Дроп: ${m.gemType || 'blue'} gem</div>
+            </div>
 
-        <div class="card-footer">
-          <button class="btn btn-xs btn-secondary btn-reset-monster" data-id="${m.id}">Сбросить к default</button>
+            <div class="drawer-controls-grid">
+              ${this.renderStatControl('monsters', m.id, 'hp', 'Здоровье (HP 0-мин)', m.hp, 10, 2000, 2)}
+              ${this.renderStatControl('monsters', m.id, 'speed', 'Скорость (м/с)', m.speed, 1.0, 10.0, 0.1)}
+              ${this.renderStatControl('monsters', m.id, 'damage', 'Урон за удар', m.damage, 1, 100, 1)}
+            </div>
+
+            <div class="drawer-footer">
+              <div></div>
+              <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${m.id}">
+                Сбросить к default
+              </button>
+            </div>
+          </div>
         </div>
       `;
 
-      card.querySelector('.btn-reset-monster')?.addEventListener('click', (e) => {
-        const mid = (e.currentTarget as HTMLElement).dataset.id!;
-        this.resetSingleItem('monsters', mid);
+      const headerEl = rowItem.querySelector('.accordion-row-header');
+      headerEl?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.btn-reset-item')) return;
+        this.toggleRow(rowId, rowItem);
       });
 
-      container.appendChild(card);
+      rowItem.querySelectorAll('.btn-reset-item').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const mid = (e.currentTarget as HTMLElement).dataset.id!;
+          this.resetSingleItem('monsters', mid);
+        });
+      });
+
+      container.appendChild(rowItem);
     }
 
     this.attachInputListeners(container);
   }
 
+  // =========================================================================
+  // TAB 4: BOSSES (Row Accordion View)
+  // =========================================================================
   private renderBosses(): void {
-    const container = document.getElementById('bosses-grid');
+    const container = document.getElementById('bosses-list') || document.getElementById('bosses-grid');
     if (!container) return;
     container.innerHTML = '';
 
     const bosses = Object.values(this.draftBalance.bosses);
     for (const b of bosses) {
-      const isCardModified = Array.from(this.modifiedPaths).some((p) =>
-        p.startsWith(`bosses.${b.id}.`)
-      );
+      if (
+        this.searchFilter &&
+        !b.name.toLowerCase().includes(this.searchFilter) &&
+        !b.id.toLowerCase().includes(this.searchFilter) &&
+        !(b.description || '').toLowerCase().includes(this.searchFilter)
+      ) {
+        continue;
+      }
 
-      const card = document.createElement('div');
-      card.className = `card ${isCardModified ? 'is-modified' : ''}`;
-      card.innerHTML = `
-        <div class="card-header">
-          <div class="card-title-group">
-            <span class="card-icon">👑</span>
-            <div>
-              <div class="card-title">${b.name}</div>
-              <div class="card-tag">ID: ${b.id}</div>
+      const rowId = `bosses-${b.id}`;
+      const isExpanded = this.expandedRows.has(rowId);
+      const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`bosses.${b.id}.`));
+
+      const rowItem = document.createElement('div');
+      rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
+      rowItem.dataset.rowId = rowId;
+
+      rowItem.innerHTML = `
+        <div class="accordion-row-header bosses-table-cols">
+          <div class="accordion-col-expand">
+            <span class="chevron-arrow">›</span>
+          </div>
+          <div class="accordion-col-main">
+            <span class="item-icon">👑</span>
+            <div class="item-identity">
+              <span class="item-title">${b.name}</span>
+              <span class="item-id-badge">${b.id}</span>
             </div>
           </div>
-          ${isCardModified ? '<span class="card-badge badge-modified">Изменено</span>' : ''}
+          <div class="accordion-col-stat" id="row-stat-hp-${b.id}">
+            <span>${b.hp.toLocaleString()} HP</span>
+          </div>
+          <div class="accordion-col-stat" id="row-stat-speed-${b.id}">
+            <span>${b.speed} м/с</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span class="stat-highlight" id="row-stat-damage-${b.id}">${b.damage}</span>
+          </div>
+          <div class="accordion-col-stat">
+            <span style="color:var(--accent-amber); font-size:12px;">Многофазный</span>
+          </div>
+          <div class="accordion-col-status">
+            ${
+              isModified
+                ? '<span class="status-badge-chip badge-modified">Изменено</span>'
+                : '<span class="status-badge-chip badge-default">Дефолт</span>'
+            }
+          </div>
+          <div class="accordion-col-actions">
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${b.id}" title="Сбросить к default">↩</button>
+            <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
+          </div>
         </div>
-        <div class="card-desc">${b.description || ''}</div>
 
-        <div class="stat-fields-list">
-          ${this.renderStatControl('bosses', b.id, 'hp', 'Базовое здоровье босса', b.hp, 1000, 100000, 200)}
-          ${this.renderStatControl('bosses', b.id, 'speed', 'Скорость (м/с)', b.speed, 1.0, 8.0, 0.1)}
-          ${this.renderStatControl('bosses', b.id, 'damage', 'Урон за удар', b.damage, 10, 300, 5)}
-        </div>
+        <div class="accordion-row-body">
+          <div class="drawer-content">
+            <div class="drawer-header-info">
+              <div class="drawer-desc">${b.description || 'Эпический босс арены.'}</div>
+              <div class="drawer-scaling-badge">Фазы боя: 2-3 фазы</div>
+            </div>
 
-        <div class="card-footer">
-          <button class="btn btn-xs btn-secondary btn-reset-boss" data-id="${b.id}">Сбросить к default</button>
+            <div class="drawer-controls-grid">
+              ${this.renderStatControl('bosses', b.id, 'hp', 'Базовое здоровье босса', b.hp, 1000, 100000, 200)}
+              ${this.renderStatControl('bosses', b.id, 'speed', 'Скорость (м/с)', b.speed, 1.0, 8.0, 0.1)}
+              ${this.renderStatControl('bosses', b.id, 'damage', 'Контактный урон', b.damage, 10, 300, 5)}
+            </div>
+
+            <div class="drawer-footer">
+              <div></div>
+              <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${b.id}">
+                Сбросить к default
+              </button>
+            </div>
+          </div>
         </div>
       `;
 
-      card.querySelector('.btn-reset-boss')?.addEventListener('click', (e) => {
-        const bid = (e.currentTarget as HTMLElement).dataset.id!;
-        this.resetSingleItem('bosses', bid);
+      const headerEl = rowItem.querySelector('.accordion-row-header');
+      headerEl?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.btn-reset-item')) return;
+        this.toggleRow(rowId, rowItem);
       });
 
-      container.appendChild(card);
+      rowItem.querySelectorAll('.btn-reset-item').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const bid = (e.currentTarget as HTMLElement).dataset.id!;
+          this.resetSingleItem('bosses', bid);
+        });
+      });
+
+      container.appendChild(rowItem);
     }
 
     this.attachInputListeners(container);
   }
 
+  // =========================================================================
+  // TAB 5: GLOBAL
+  // =========================================================================
   private renderGlobal(): void {
     const container = document.getElementById('global-form-container');
     if (!container) return;
@@ -565,23 +885,29 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     const g = this.draftBalance.global;
 
     container.innerHTML = `
-      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
         <div>
-          <h4 style="margin-bottom: 12px; color: var(--accent-gold);">Тактический рывок (Dash)</h4>
-          ${this.renderStatControl('global', '', 'dashCooldown', 'Кулдаун рывка (сек)', g.dashCooldown, 0.5, 6.0, 0.1)}
-          ${this.renderStatControl('global', '', 'dashDuration', 'Длительность рывка (сек)', g.dashDuration, 0.1, 1.0, 0.02)}
+          <h4 style="margin-bottom: 14px; color: var(--accent-cyan); font-size:14px; font-weight:700;">Тактический рывок (Dash)</h4>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            ${this.renderStatControl('global', '', 'dashCooldown', 'Кулдаун рывка (сек)', g.dashCooldown, 0.5, 6.0, 0.1)}
+            ${this.renderStatControl('global', '', 'dashDuration', 'Длительность рывка (сек)', g.dashDuration, 0.1, 1.0, 0.02)}
+          </div>
         </div>
 
         <div>
-          <h4 style="margin-bottom: 12px; color: var(--accent-gold);">Критический урон</h4>
-          ${this.renderStatControl('global', '', 'baseCritChance', 'Базовый шанс крита', g.baseCritChance, 0.0, 1.0, 0.01)}
-          ${this.renderStatControl('global', '', 'baseCritDamageMult', 'Множитель крит. урона', g.baseCritDamageMult, 1.2, 5.0, 0.1)}
+          <h4 style="margin-bottom: 14px; color: var(--accent-cyan); font-size:14px; font-weight:700;">Критический урон</h4>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            ${this.renderStatControl('global', '', 'baseCritChance', 'Базовый шанс крита', g.baseCritChance, 0.0, 1.0, 0.01)}
+            ${this.renderStatControl('global', '', 'baseCritDamageMult', 'Множитель крит. урона', g.baseCritDamageMult, 1.2, 5.0, 0.1)}
+          </div>
         </div>
 
         <div>
-          <h4 style="margin-bottom: 12px; color: var(--accent-gold);">Подбор и броня</h4>
-          ${this.renderStatControl('global', '', 'basePickupRadius', 'Радиус сбора (м)', g.basePickupRadius, 1.0, 25.0, 0.5)}
-          ${this.renderStatControl('global', '', 'maxArmorReduction', 'Макс. снижение урона (Cap)', g.maxArmorReduction, 0.3, 0.95, 0.05)}
+          <h4 style="margin-bottom: 14px; color: var(--accent-cyan); font-size:14px; font-weight:700;">Подбор и броня</h4>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            ${this.renderStatControl('global', '', 'basePickupRadius', 'Радиус магнита (м)', g.basePickupRadius, 1.0, 25.0, 0.5)}
+            ${this.renderStatControl('global', '', 'maxArmorReduction', 'Макс. снижение урона (Cap)', g.maxArmorReduction, 0.3, 0.95, 0.05)}
+          </div>
         </div>
       </div>
     `;
@@ -589,6 +915,9 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.attachInputListeners(container);
   }
 
+  // =========================================================================
+  // STAT CONTROLS & REACTIVITY
+  // =========================================================================
   private renderStatControl(
     category: string,
     id: string,
@@ -660,7 +989,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       this.modifiedPaths.delete(path);
     }
 
-    // Synchronize slider and input pairs
+    // Synchronize slider and input pairs on screen
     const allMatching = document.querySelectorAll<HTMLInputElement>(`[data-path="${path}"]`);
     allMatching.forEach((el) => {
       if (el.value !== String(value)) {
@@ -671,7 +1000,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       }
     });
 
-    // Update weapon DPS if weapon
+    // Update weapon metrics live in row header & drawer
     if (parts[0] === 'weapons') {
       const wid = parts[1];
       const weapon = this.draftBalance.weapons[wid];
@@ -682,12 +1011,39 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
 
         const elBase = document.getElementById(`dps-${wid}-base`);
         const elL20 = document.getElementById(`dps-${wid}-l20`);
+        const elRowDps1 = document.getElementById(`row-stat-dps1-${wid}`);
+        const elRowDps20 = document.getElementById(`row-stat-dps20-${wid}`);
+        const elRowDmg = document.getElementById(`row-stat-damage-${wid}`);
+        const elRowCd = document.getElementById(`row-stat-cooldown-${wid}`);
+
         if (elBase) elBase.innerText = baseDps;
         if (elL20) elL20.innerText = l20Dps;
+        if (elRowDps1) elRowDps1.innerText = baseDps;
+        if (elRowDps20) elRowDps20.innerText = l20Dps;
+        if (elRowDmg) elRowDmg.innerHTML = `<span>${weapon.damage}</span>`;
+        if (elRowCd) elRowCd.innerHTML = `<span>${weapon.cooldown}с</span>`;
+      }
+    }
+
+    // Update row item modified style
+    const category = parts[0];
+    const entityId = parts[1];
+    if (category && entityId) {
+      const rowItem = document.querySelector(`[data-row-id="${category}-${entityId}"]`);
+      if (rowItem) {
+        const hasItemMods = Array.from(this.modifiedPaths).some((p) => p.startsWith(`${category}.${entityId}.`));
+        rowItem.classList.toggle('is-modified', hasItemMods);
+        const statusBadge = rowItem.querySelector('.accordion-col-status');
+        if (statusBadge) {
+          statusBadge.innerHTML = hasItemMods
+            ? '<span class="status-badge-chip badge-modified">Изменено</span>'
+            : '<span class="status-badge-chip badge-default">Дефолт</span>';
+        }
       }
     }
 
     this.updateStagedUI();
+    this.updateOverviewStats();
   }
 
   private updateStagedUI(): void {
@@ -708,6 +1064,46 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     }
   }
 
+  private updateOverviewStats(): void {
+    // 1. Total weapons
+    const totalWeaponsEl = document.getElementById('kpi-weapons-count');
+    if (totalWeaponsEl) {
+      totalWeaponsEl.innerText = String(Object.keys(this.draftBalance.weapons).length);
+    }
+
+    // 2. Average DPS
+    const avgDpsEl = document.getElementById('kpi-avg-dps');
+    if (avgDpsEl) {
+      const weapons = Object.values(this.draftBalance.weapons);
+      let sum = 0;
+      for (const w of weapons) {
+        sum += w.cooldown > 0 ? w.damage / w.cooldown : w.damage * 60;
+      }
+      const avg = weapons.length > 0 ? (sum / weapons.length).toFixed(1) : '0';
+      avgDpsEl.innerText = avg;
+    }
+
+    // 3. Staged Draft Count & Delta
+    const draftCountEl = document.getElementById('kpi-draft-count');
+    const draftDeltaEl = document.getElementById('kpi-draft-delta');
+    const draftDescEl = document.getElementById('kpi-draft-desc');
+    const count = this.modifiedPaths.size;
+
+    if (draftCountEl) draftCountEl.innerText = String(count);
+    if (draftDeltaEl) {
+      if (count > 0) {
+        draftDeltaEl.className = 'metric-delta delta-down';
+        draftDeltaEl.innerText = `${count} в очереди ⚠️`;
+      } else {
+        draftDeltaEl.className = 'metric-delta delta-neutral';
+        draftDeltaEl.innerText = 'В синхроне';
+      }
+    }
+    if (draftDescEl) {
+      draftDescEl.innerText = count > 0 ? 'Требуется сохранение в Supabase' : 'Нет несохраненных правок';
+    }
+  }
+
   private resetSingleItem(category: keyof GameBalanceState, id: string): void {
     const defaultItem = (DEFAULT_BALANCE[category] as any)[id];
     if (!defaultItem) return;
@@ -724,6 +1120,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     }
 
     this.updateStagedUI();
+    this.updateOverviewStats();
     if (category === 'weapons') this.renderWeapons();
     else if (category === 'heroes') this.renderHeroes();
     else if (category === 'monsters') this.renderMonsters();
@@ -735,6 +1132,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       this.draftBalance = JSON.parse(JSON.stringify(this.originalBalance));
       this.modifiedPaths.clear();
       this.updateStagedUI();
+      this.updateOverviewStats();
       this.renderAll();
       this.showToast('Черновик успешно сброшен.', 'info');
     }
@@ -807,7 +1205,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       return;
     }
 
-    // Validate admin passcode challenge if required
+    // Validate admin passcode challenge if configured
     if (this.config.adminKey) {
       const inputPass = (document.getElementById('input-confirm-passcode') as HTMLInputElement)?.value;
       const errEl = document.getElementById('passcode-error');
@@ -825,7 +1223,6 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     }
 
     try {
-      // Collect rows to update
       const affectedCategories = new Set<string>();
       for (const p of this.modifiedPaths) {
         const parts = p.split('.');
@@ -878,6 +1275,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       this.originalBalance = JSON.parse(JSON.stringify(this.draftBalance));
       this.modifiedPaths.clear();
       this.updateStagedUI();
+      this.updateOverviewStats();
       this.closeReviewModal();
       this.renderAll();
 
@@ -911,7 +1309,6 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     localStorage.setItem('outlaw_supabase_service_role_key', this.config.serviceRoleKey);
     localStorage.setItem('outlaw_admin_passcode', this.config.adminKey);
 
-    // Save to local .env.local via Vite dev server middleware
     try {
       await fetch('/api/admin/save-env', {
         method: 'POST',
@@ -1049,6 +1446,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       this.draftBalance = JSON.parse(JSON.stringify(DEFAULT_BALANCE));
       this.modifiedPaths.clear();
       this.updateStagedUI();
+      this.updateOverviewStats();
       this.renderAll();
 
       this.showToast(
