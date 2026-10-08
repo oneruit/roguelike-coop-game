@@ -150,11 +150,20 @@ class AdminController {
         return;
       }
 
-      statusEl.className = 'status-pill status-connected';
-      statusEl.innerHTML = '<span class="status-dot"></span><span>Supabase Online</span>';
-      if (sidebarBadge) {
-        sidebarBadge.className = 'tab-pill pill-success';
-        sidebarBadge.innerText = 'LIVE';
+      if (this.config.serviceRoleKey) {
+        statusEl.className = 'status-pill status-connected';
+        statusEl.innerHTML = '<span class="status-dot"></span><span>Supabase (Запись активна)</span>';
+        if (sidebarBadge) {
+          sidebarBadge.className = 'tab-pill pill-success';
+          sidebarBadge.innerText = 'WRITE';
+        }
+      } else {
+        statusEl.className = 'status-pill status-connecting';
+        statusEl.innerHTML = '<span class="status-dot"></span><span title="Для записи укажите Service Role Key в настройках">Supabase (Только чтение)</span>';
+        if (sidebarBadge) {
+          sidebarBadge.className = 'tab-pill pill-danger';
+          sidebarBadge.innerText = 'READ ONLY';
+        }
       }
 
       if (data && data.length > 0) {
@@ -1294,6 +1303,19 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       return;
     }
 
+    if (!this.config.serviceRoleKey) {
+      this.closeReviewModal();
+      this.showToast(
+        '⚠️ Для записи в Supabase требуется Service Role Key! Публичный Anon-ключ имеет доступ только на чтение (защита RLS). Перейдите во вкладку «Настройки БД» и вставьте Service Role Key.',
+        'error'
+      );
+      const tabBtn = document.querySelector('[data-tab="connection"]') as HTMLElement;
+      tabBtn?.click();
+      const serviceInput = document.getElementById('cfg-supabase-service') as HTMLInputElement;
+      serviceInput?.focus();
+      return;
+    }
+
     if (this.config.adminKey) {
       const inputPass = (document.getElementById('input-confirm-passcode') as HTMLInputElement)?.value;
       const errEl = document.getElementById('passcode-error');
@@ -1373,7 +1395,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.showToast(`Ошибка отправки в Supabase: ${msg}`, 'error');
+      if (msg.includes('row-level security') || msg.includes('violates row-level security policy')) {
+        this.showToast(
+          '❌ Ошибка RLS: таблица game_balance защищена от неавторизованной записи. Для сохранения изменений требуется secret service_role ключ из Supabase (Settings -> API).',
+          'error'
+        );
+      } else {
+        this.showToast(`Ошибка отправки в Supabase: ${msg}`, 'error');
+      }
     } finally {
       if (deployBtn) {
         deployBtn.disabled = false;
@@ -1443,6 +1472,18 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   private async seedDatabase(): Promise<void> {
     if (!this.supabase) {
       this.showToast('Сначала подключитесь к Supabase!', 'error');
+      return;
+    }
+
+    if (!this.config.serviceRoleKey) {
+      this.showToast(
+        '⚠️ Для инициализации БД требуется Service Role Key! Публичный Anon-ключ защищён политикой RLS только для чтения. Вставьте Service Role Key в поле ниже и нажмите «Сохранить локально».',
+        'error'
+      );
+      const tabBtn = document.querySelector('[data-tab="connection"]') as HTMLElement;
+      tabBtn?.click();
+      const serviceInput = document.getElementById('cfg-supabase-service') as HTMLInputElement;
+      serviceInput?.focus();
       return;
     }
 
@@ -1543,7 +1584,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.showToast(`Ошибка инициализации БД: ${msg}`, 'error');
+      if (msg.includes('row-level security') || msg.includes('violates row-level security policy')) {
+        this.showToast(
+          '❌ Ошибка RLS: таблица защищена от неавторизованной записи. Проверьте, что в поле «Service Role Key» вставлен секретный service_role ключ (Supabase -> Settings -> API).',
+          'error'
+        );
+      } else {
+        this.showToast(`Ошибка инициализации БД: ${msg}`, 'error');
+      }
     }
   }
 

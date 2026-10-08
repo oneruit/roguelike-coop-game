@@ -436,10 +436,19 @@
                   <small>Публичный ключ (доступен клиенту игры только для чтения)</small>
                 </div>
 
-                <div class="form-group">
-                  <label for="cfg-supabase-service">Service Role Key (Секретный)</label>
-                  <input type="password" id="cfg-supabase-service" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
-                  <small>Ключ для авторизованных изменений в обход RLS из админки</small>
+                <div class="form-group" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px;">
+                  <label for="cfg-supabase-service" style="color: #92400e; font-weight: 700;">🔑 Service Role Key (Секретный ключ для записи)</label>
+                  <input type="password" id="cfg-supabase-service" placeholder="eyJh..." style="border-color: #f59e0b; background: #ffffff;">
+                  <div style="font-size: 12px; color: #78350f; line-height: 1.5; margin-top: 6px;">
+                    <strong>Где взять в Supabase:</strong>
+                    <ol style="margin: 4px 0 6px 18px;">
+                      <li>Откройте проект в <strong>Supabase Dashboard</strong>.</li>
+                      <li>В левом меню снизу нажмите <strong>Project Settings (⚙️) ➔ API</strong>.</li>
+                      <li>В блоке <strong>Project API keys</strong> найдите ключ с бейджем <code>service_role</code> (secret) и нажмите <strong>Reveal / Copy</strong>.</li>
+                      <li>Вставьте сюда и нажмите зелёную/синюю кнопку <strong>«Сохранить локально»</strong>.</li>
+                    </ol>
+                    <small>🛡️ <em>Этот ключ имеет права администратора для записи в БД в обход RLS. Он сохраняется исключительно локально в вашем <code>.env.local</code> и браузере.</em></small>
+                  </div>
                 </div>
 
                 <div class="form-group">
