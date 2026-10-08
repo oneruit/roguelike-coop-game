@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel // Outlaw Royale Game Balancer</title>
+  <link rel="stylesheet" href="./src/admin.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+  <div id="admin-app">
+    <!-- Top Header -->
+    <header class="admin-header">
+      <div class="header-brand">
+        <div class="brand-badge">⚡ LOCAL ADMIN</div>
+        <h1>OUTLAW ROYALE <span class="brand-sub">// GAME BALANCER</span></h1>
+      </div>
+
+      <div class="header-status">
+        <div id="status-connection" class="status-pill status-connecting" title="Статус подключения к Supabase">
+          <span class="status-dot"></span>
+          <span class="status-label">Проверка Supabase...</span>
+        </div>
+        <div id="status-security" class="status-pill status-secure" title="Управление защищено RLS и локальным окружением">
+          <span class="status-icon">🛡️</span>
+          <span class="status-label">RLS Protected</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-discard" class="btn btn-secondary" disabled title="Отменить все несохраненные локальные изменения">
+          ↩️ Сбросить черновик
+        </button>
+        <button id="btn-save" class="btn btn-primary" disabled title="Просмотреть изменения и отправить их в Supabase">
+          💾 Применить в Supabase <span id="staged-badge" class="badge">0</span>
+        </button>
+        <button id="btn-settings" class="btn btn-icon" title="Настройки подключения Supabase">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="admin-nav">
+      <button class="nav-tab active" data-tab="weapons">
+        <span class="tab-icon">☄️</span> Оружие (13)
+      </button>
+      <button class="nav-tab" data-tab="heroes">
+        <span class="tab-icon">🤠</span> Герои (6)
+      </button>
+      <button class="nav-tab" data-tab="monsters">
+        <span class="tab-icon">👹</span> Монстры (8)
+      </button>
+      <button class="nav-tab" data-tab="bosses">
+        <span class="tab-icon">👑</span> Боссы (2)
+      </button>
+      <button class="nav-tab" data-tab="global">
+        <span class="tab-icon">🌐</span> Глобальные параметры
+      </button>
+      <button class="nav-tab" data-tab="connection">
+        <span class="tab-icon">⚙️</span> Supabase & RLS
+      </button>
+    </nav>
+
+    <!-- Main Workspace -->
+    <main class="admin-content">
+      <!-- Unsaved Changes Notice Banner -->
+      <div id="staged-alert-banner" class="alert-banner hidden">
+        <div class="alert-content">
+          <span class="alert-icon">⚠️</span>
+          <span>У вас есть <strong><span id="staged-count-text">0</span></strong> несохраненных изменений баланса. Изменения применятся в игре только после подтверждения и сохранения в Supabase.</span>
+        </div>
+        <div class="alert-actions">
+          <button id="banner-review-btn" class="btn btn-sm btn-gold">Просмотреть и отправить</button>
+        </div>
+      </div>
+
+      <!-- Tab 1: Weapons -->
+      <section id="tab-weapons" class="tab-pane active">
+        <div class="pane-header">
+          <div>
+            <h2>Балансировка оружия</h2>
+            <p class="subtitle">Параметры урона, кулдаунов и прогрессии 13 видов оружия из BALANCE_REFERENCE.md</p>
+          </div>
+          <div class="pane-tools">
+            <input type="text" id="weapon-search" class="search-input" placeholder="🔍 Поиск оружия (напр. Огненный шар)...">
+            <button id="btn-reset-weapons-all" class="btn btn-sm btn-outline-danger">Сбросить все оружия к BALANCE_REFERENCE.md</button>
+          </div>
+        </div>
+        <div id="weapons-grid" class="cards-grid">
+          <!-- Dynamically injected weapon cards -->
+        </div>
+      </section>
+
+      <!-- Tab 2: Heroes -->
+      <section id="tab-heroes" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Характеристики героев</h2>
+            <p class="subtitle">Базовое здоровье, скорость и множители урона 6 персонажей</p>
+          </div>
+          <div class="pane-tools">
+            <button id="btn-reset-heroes-all" class="btn btn-sm btn-outline-danger">Сбросить героев к defaults</button>
+          </div>
+        </div>
+        <div id="heroes-grid" class="cards-grid">
+          <!-- Dynamically injected hero cards -->
+        </div>
+      </section>
+
+      <!-- Tab 3: Monsters -->
+      <section id="tab-monsters" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Характеристики монстров</h2>
+            <p class="subtitle">Базовые параметры HP, скорости и урона рядовых и средних противников</p>
+          </div>
+          <div class="pane-tools">
+            <button id="btn-reset-monsters-all" class="btn btn-sm btn-outline-danger">Сбросить монстров к defaults</button>
+          </div>
+        </div>
+        <div id="monsters-grid" class="cards-grid">
+          <!-- Dynamically injected monster cards -->
+        </div>
+      </section>
+
+      <!-- Tab 4: Bosses -->
+      <section id="tab-bosses" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Характеристики боссов</h2>
+            <p class="subtitle">Параметры ключевых боссов (Кровавый демон, Трехглавая гидра)</p>
+          </div>
+          <div class="pane-tools">
+            <button id="btn-reset-bosses-all" class="btn btn-sm btn-outline-danger">Сбросить боссов к defaults</button>
+          </div>
+        </div>
+        <div id="bosses-grid" class="cards-grid">
+          <!-- Dynamically injected boss cards -->
+        </div>
+      </section>
+
+      <!-- Tab 5: Global -->
+      <section id="tab-global" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Глобальные боевые параметры</h2>
+            <p class="subtitle">Кулдауны тактического рывка, параметры крита, радиус магнита и лимиты брони</p>
+          </div>
+          <div class="pane-tools">
+            <button id="btn-reset-global-all" class="btn btn-sm btn-outline-danger">Сбросить глобальные к defaults</button>
+          </div>
+        </div>
+        <div id="global-form-container" class="card-large">
+          <!-- Dynamically injected global settings form -->
+        </div>
+      </section>
+
+      <!-- Tab 6: Connection & SQL -->
+      <section id="tab-connection" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Настройки подключения Supabase и безопасность</h2>
+            <p class="subtitle">Управление доступом, защита от случайных вызовов (RLS) и скрипты миграции</p>
+          </div>
+        </div>
+
+        <div class="connection-layout">
+          <div class="card">
+            <h3>🔐 Ключи подключения (Хранятся локально)</h3>
+            <p class="card-desc">Эти данные используются исключительно локальной админ-панелью. Service Role Key никогда не попадает в клиентскую сборку игры.</p>
+
+            <form id="connection-form" class="form-grid">
+              <div class="form-group">
+                <label for="cfg-supabase-url">Supabase Project URL</label>
+                <input type="text" id="cfg-supabase-url" placeholder="https://your-project.supabase.co" required>
+                <small>URL вашего проекта из панели Supabase (Settings -> API)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="cfg-supabase-anon">Anon / Public Key</label>
+                <input type="password" id="cfg-supabase-anon" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
+                <small>Публичный ключ (доступен игре только для чтения)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="cfg-supabase-service">Service Role Key (Секретный, для записи в БД)</label>
+                <input type="password" id="cfg-supabase-service" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+                <small>Секретный ключ service_role для авторизованных изменений в обход RLS</small>
+              </div>
+
+              <div class="form-group">
+                <label for="cfg-admin-passcode">Admin Passcode / Защитный PIN (Опционально)</label>
+                <input type="password" id="cfg-admin-passcode" placeholder="Секретный пароль подтверждения изменений">
+                <small>Требуется вводить при каждом сохранении для защиты от случайных нажатий</small>
+              </div>
+
+              <div class="form-actions-inline">
+                <button type="button" id="btn-test-conn" class="btn btn-secondary">🔌 Проверить связь</button>
+                <button type="submit" class="btn btn-primary">💾 Сохранить настройки локально</button>
+                <button type="button" id="btn-seed-db" class="btn btn-gold">🌱 Инициализировать БД из BALANCE_REFERENCE.md</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3>🛡️ Защита данных: Как это работает</h3>
+            <ul class="security-features-list">
+              <li>
+                <strong>Row Level Security (RLS):</strong>
+                В Supabase для таблицы <code>game_balance</code> активирован RLS. Любой клиент с <code>anon</code> ключом может делать только <code>SELECT</code>. Любые <code>UPDATE/INSERT/DELETE</code> из игры или консоли блокируются базой данных.
+              </li>
+              <li>
+                <strong>Локальная изоляция:</strong>
+                Админ-панель слушает только локальный интерфейс <code>127.0.0.1:5174</code>.
+              </li>
+              <li>
+                <strong>Двухэтапное подтверждение (Staging):</strong>
+                Изменения параметров сначала сохраняются в локальный черновик с визуализацией изменений. Отправка в Supabase происходит только после нажатия «Применить в Supabase» и подтверждения в модальном окне.
+              </li>
+              <li>
+                <strong>Live Supabase Realtime:</strong>
+                Как только данные попадают в Supabase, запущенная игра мгновенно получает событие через WebSocket и обновляет баланс на лету.
+              </li>
+            </ul>
+
+            <div class="sql-box-header">
+              <h4>SQL Скрипт миграции (schema.sql)</h4>
+              <button id="btn-copy-sql" class="btn btn-xs btn-secondary">📋 Скопировать SQL</button>
+            </div>
+            <pre class="sql-code-snippet"><code>-- 1. Создание таблицы баланса с защитой RLS
+CREATE TABLE IF NOT EXISTS game_balance (
+  id TEXT PRIMARY KEY,
+  category TEXT NOT NULL,
+  key TEXT NOT NULL,
+  name TEXT NOT NULL,
+  data JSONB NOT NULL,
+  version INT DEFAULT 1,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE game_balance ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read" ON game_balance FOR SELECT USING (true);
+CREATE POLICY "Allow service_role write" ON game_balance FOR ALL TO service_role USING (true);
+ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Confirmation & Staging Review -->
+    <div id="modal-review" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Подтверждение отправки в Supabase</h3>
+          <button class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">
+            Проверьте список подготовленных правок. После нажатия <strong>«Подтвердить и отправить»</strong> изменения запишутся в Supabase, и все активные игровые клиенты немедленно получат новые числовые данные!
+          </p>
+
+          <div class="diff-table-container">
+            <table class="diff-table">
+              <thead>
+                <tr>
+                  <th>Объект</th>
+                  <th>Параметр</th>
+                  <th>Было</th>
+                  <th>Станет</th>
+                  <th>Разница</th>
+                </tr>
+              </thead>
+              <tbody id="diff-table-body">
+                <!-- Diff rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="admin-passcode-challenge" class="form-group hidden" style="margin-top: 15px;">
+            <label for="input-confirm-passcode">Введите Admin Passcode для подтверждения:</label>
+            <input type="password" id="input-confirm-passcode" class="form-input" placeholder="Введите ваш секретный PIN/Пароль">
+            <div id="passcode-error" class="text-danger hidden" style="font-size: 13px; margin-top: 4px;">Неверный пароль администратора</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-cancel-deploy" class="btn btn-secondary">Отмена</button>
+          <button id="btn-confirm-deploy" class="btn btn-primary">🚀 Подтвердить и отправить в Supabase</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script type="module" src="./src/admin.ts"></script>
+</body>
+</html>

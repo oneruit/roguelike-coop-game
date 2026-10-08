@@ -25,6 +25,7 @@ import { RIFT_ITEMS, RiftItemId } from './items/RiftItemSystem';
 import { ProgressionManager } from './core/ProgressionManager';
 import { TextureManager } from './core/TextureManager';
 import { SeededRNG } from './core/SeededRNG';
+import { BalanceManager } from './balance/BalanceManager';
 
 const SPAWN_OFFSETS: Record<string, [number, number]> = {
   p1: [0, 0],
@@ -111,6 +112,20 @@ class Game {
     this.biomeManager = new BiomeManager();
     this.chestManager = new ChestManager(this.engine.scene);
     this.riftTeleporter = new RiftTeleporter(this.engine.scene, new THREE.Vector3(75, 0, 75));
+
+    // Live Game Balance sync with Supabase
+    BalanceManager.init()
+      .then(() => {
+        this.player.syncBalance();
+        this.enemyManager.syncBalance();
+      })
+      .catch(console.warn);
+
+    BalanceManager.addListener((evt) => {
+      this.player.syncBalance();
+      this.enemyManager.syncBalance();
+      this.hud.showBalanceToast(evt.description);
+    });
 
     this.input.onInteract = () => {
       this.handleInteract();
