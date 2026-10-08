@@ -10,6 +10,52 @@ import {
 import { DEFAULT_BALANCE } from '../../src/balance/defaultBalance';
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 
+const TEXTURE_MAP: Record<string, string> = {
+  // Weapons
+  'weapon-fireball': '/textures/weapon_fireball.png',
+  'weapon-bow': '/textures/weapon_bow.png',
+  'weapon-kukri': '/textures/weapon_kukri.png',
+  'weapon-orbiting_barrier': '/textures/weapon_reaper_scythe.png',
+  'weapon-holy_aura': '/textures/weapon_holy_aura.png',
+  'weapon-katana_slash': '/textures/weapon_katana_slash.png',
+  'weapon-whirlwind_slash': '/textures/weapon_whirlwind_slash.png',
+  'weapon-greatsword': '/textures/weapon_greatsword.png',
+  'weapon-flail': '/textures/weapon_flail.png',
+  'weapon-astral_staff': '/textures/weapon_astral_staff.png',
+  'weapon-chakram': '/textures/weapon_chakram.png',
+  'weapon-lightning_strike': '/textures/weapon_lightning_strike.png',
+  'weapon-ice_spike': '/textures/weapon_ice_spike.png',
+
+  // Heroes
+  'hero-ronin': '/textures/hero_ronin_front.png',
+  'hero-valkyrie': '/textures/hero_valkyrie_front.png',
+  'hero-flail': '/textures/hero_flail_front.png',
+  'hero-sorceress': '/textures/hero_sorceress_front.png',
+  'hero-chakram': '/textures/hero_chakram_front.png',
+  'hero-archer': '/textures/hero_archer_front.png',
+
+  // Monsters
+  'monster-coyote': '/textures/monster_coyote_front.png',
+  'monster-crawler': '/textures/monster_crawler_front.png',
+  'monster-scorpion': '/textures/monster_scorpion_front.png',
+  'monster-skeleton': '/textures/monster_skeleton_front.png',
+  'monster-ghost': '/textures/monster_ghost_front.png',
+  'monster-cactus': '/textures/monster_cactus_front.png',
+  'monster-brute': '/textures/monster_brute_front.png',
+  'monster-bison': '/textures/monster_bison_front.png',
+
+  // Bosses
+  'boss-demon': '/textures/boss_demon_front.png',
+  'boss-hydra': '/textures/boss_hydra_front.png',
+  'boss-sheriff': '/textures/boss_sheriff_front.png'
+};
+
+function getEntityTexture(category: string, id: string): string {
+  const singular = category.replace(/s$/, '');
+  const key = `${singular}-${id}`;
+  return TEXTURE_MAP[key] || '/textures/bullet_revolver.png';
+}
+
 class AdminController {
   private originalBalance: GameBalanceState = JSON.parse(JSON.stringify(DEFAULT_BALANCE));
   private draftBalance: GameBalanceState = JSON.parse(JSON.stringify(DEFAULT_BALANCE));
@@ -77,7 +123,7 @@ class AdminController {
         sidebarBadge.className = 'tab-pill';
         sidebarBadge.innerText = 'OFFLINE';
       }
-      this.showToast('Supabase не настроен. Перейдите во вкладку «Supabase & RLS».', 'info');
+      this.showToast('Supabase не настроен. Перейдите во вкладку «Настройки БД».', 'info');
       return;
     }
 
@@ -104,11 +150,20 @@ class AdminController {
         return;
       }
 
-      statusEl.className = 'status-pill status-connected';
-      statusEl.innerHTML = '<span class="status-dot"></span><span>Supabase Online</span>';
-      if (sidebarBadge) {
-        sidebarBadge.className = 'tab-pill pill-subtle';
-        sidebarBadge.innerText = 'LIVE';
+      if (this.config.serviceRoleKey) {
+        statusEl.className = 'status-pill status-connected';
+        statusEl.innerHTML = '<span class="status-dot"></span><span>Supabase (Запись активна)</span>';
+        if (sidebarBadge) {
+          sidebarBadge.className = 'tab-pill pill-success';
+          sidebarBadge.innerText = 'WRITE';
+        }
+      } else {
+        statusEl.className = 'status-pill status-connecting';
+        statusEl.innerHTML = '<span class="status-dot"></span><span title="Для записи укажите Service Role Key в настройках">Supabase (Только чтение)</span>';
+        if (sidebarBadge) {
+          sidebarBadge.className = 'tab-pill pill-danger';
+          sidebarBadge.innerText = 'READ ONLY';
+        }
       }
 
       if (data && data.length > 0) {
@@ -238,12 +293,20 @@ class AdminController {
     document.getElementById('banner-review-btn')?.addEventListener('click', () => this.openReviewModal());
     document.getElementById('btn-discard')?.addEventListener('click', () => this.discardDraft());
 
-    // Reset buttons
+    // Help link jumps to connection tab
+    document.getElementById('btn-help-link')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tabBtn = document.querySelector('[data-tab="connection"]') as HTMLElement;
+      tabBtn?.click();
+    });
+
+    // Reset All buttons
     document.getElementById('btn-reset-weapons-all')?.addEventListener('click', () => {
       if (confirm('Сбросить параметры всех 13 видов оружия к значениям из BALANCE_REFERENCE.md?')) {
         for (const key of Object.keys(DEFAULT_BALANCE.weapons)) {
           this.draftBalance.weapons[key] = JSON.parse(JSON.stringify(DEFAULT_BALANCE.weapons[key]));
           for (const prop of Object.keys(DEFAULT_BALANCE.weapons[key])) {
+            if (typeof (DEFAULT_BALANCE.weapons[key] as any)[prop] !== 'number') continue;
             const path = `weapons.${key}.${prop}`;
             const isOrigDiff =
               (this.draftBalance.weapons[key] as any)[prop] !==
@@ -392,6 +455,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   private checkAllCategoryChanges(category: keyof GameBalanceState): void {
     if (category === 'global') {
       for (const prop of Object.keys(this.draftBalance.global)) {
+        if (typeof (this.draftBalance.global as any)[prop] !== 'number') continue;
         const path = `global.${prop}`;
         if ((this.draftBalance.global as any)[prop] !== (this.originalBalance.global as any)[prop]) {
           this.modifiedPaths.add(path);
@@ -407,6 +471,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
 
     for (const key of Object.keys(dict)) {
       for (const prop of Object.keys(dict[key])) {
+        // Crucial fix: Only compare numeric balance parameters, never strings like 'id', 'name', 'icon'
+        if (typeof dict[key][prop] !== 'number') continue;
         const path = `${category}.${key}.${prop}`;
         if (dict[key][prop] !== origDict[key]?.[prop]) {
           this.modifiedPaths.add(path);
@@ -426,7 +492,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   }
 
   // =========================================================================
-  // TAB 1: WEAPONS (Row Accordion View)
+  // TAB 1: WEAPONS (Accordion with Real Textures)
   // =========================================================================
   private renderWeapons(): void {
     const container = document.getElementById('weapons-list') || document.getElementById('weapons-grid');
@@ -451,6 +517,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const baseDps = w.cooldown > 0 ? (w.damage / w.cooldown).toFixed(1) : (w.damage * 60).toFixed(1);
       const l20Dmg = w.damage + 19 * w.damagePerLevel;
       const l20Dps = w.cooldown > 0 ? (l20Dmg / w.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+      const textureUrl = getEntityTexture('weapons', w.id);
 
       const rowItem = document.createElement('div');
       rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
@@ -462,7 +529,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <span class="chevron-arrow">›</span>
           </div>
           <div class="accordion-col-main">
-            <span class="item-icon">${w.icon}</span>
+            <img src="${textureUrl}" class="item-texture" alt="${w.name}" onerror="this.src='/textures/bullet_revolver.png'">
             <div class="item-identity">
               <span class="item-title">${w.name}</span>
               <span class="item-id-badge">${w.id}</span>
@@ -488,7 +555,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             }
           </div>
           <div class="accordion-col-actions">
-            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}" title="Сбросить к BALANCE_REFERENCE.md">↩</button>
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}" title="Сбросить к исходным параметрам">↩</button>
             <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
           </div>
         </div>
@@ -521,22 +588,25 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
                 </div>
               </div>
               <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}">
-                Сбросить к BALANCE_REFERENCE.md
+                Сбросить оружие
               </button>
             </div>
           </div>
         </div>
       `;
 
-      // Accordion header click event
       const headerEl = rowItem.querySelector('.accordion-row-header');
       headerEl?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
-        if (target.closest('.btn-reset-item')) return;
+        if (target.closest('.btn-reset-item') || target.closest('.btn-toggle-row')) return;
         this.toggleRow(rowId, rowItem);
       });
 
-      // Reset single weapon listener
+      rowItem.querySelector('.btn-toggle-row')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleRow(rowId, rowItem);
+      });
+
       rowItem.querySelectorAll('.btn-reset-item').forEach((btn) => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -552,7 +622,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   }
 
   // =========================================================================
-  // TAB 2: HEROES (Row Accordion View)
+  // TAB 2: HEROES (Accordion with Real Hero Textures)
   // =========================================================================
   private renderHeroes(): void {
     const container = document.getElementById('heroes-list') || document.getElementById('heroes-grid');
@@ -573,6 +643,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const rowId = `heroes-${h.id}`;
       const isExpanded = this.expandedRows.has(rowId);
       const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`heroes.${h.id}.`));
+      const textureUrl = getEntityTexture('heroes', h.id);
 
       const rowItem = document.createElement('div');
       rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
@@ -584,7 +655,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <span class="chevron-arrow">›</span>
           </div>
           <div class="accordion-col-main">
-            <span class="item-icon">🤠</span>
+            <img src="${textureUrl}" class="item-texture" alt="${h.name}" onerror="this.src='/textures/bullet_revolver.png'">
             <div class="item-identity">
               <span class="item-title">${h.name}</span>
               <span class="item-id-badge">${h.id}</span>
@@ -610,7 +681,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             }
           </div>
           <div class="accordion-col-actions">
-            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${h.id}" title="Сбросить к default">↩</button>
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${h.id}" title="Сбросить к исходным параметрам">↩</button>
             <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
           </div>
         </div>
@@ -631,7 +702,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <div class="drawer-footer">
               <div></div>
               <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${h.id}">
-                Сбросить к default
+                Сбросить героя
               </button>
             </div>
           </div>
@@ -641,7 +712,12 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const headerEl = rowItem.querySelector('.accordion-row-header');
       headerEl?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
-        if (target.closest('.btn-reset-item')) return;
+        if (target.closest('.btn-reset-item') || target.closest('.btn-toggle-row')) return;
+        this.toggleRow(rowId, rowItem);
+      });
+
+      rowItem.querySelector('.btn-toggle-row')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.toggleRow(rowId, rowItem);
       });
 
@@ -660,7 +736,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   }
 
   // =========================================================================
-  // TAB 3: MONSTERS (Row Accordion View)
+  // TAB 3: MONSTERS (Accordion with Real Monster Textures)
   // =========================================================================
   private renderMonsters(): void {
     const container = document.getElementById('monsters-list') || document.getElementById('monsters-grid');
@@ -681,6 +757,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const rowId = `monsters-${m.id}`;
       const isExpanded = this.expandedRows.has(rowId);
       const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`monsters.${m.id}.`));
+      const textureUrl = getEntityTexture('monsters', m.id);
 
       const rowItem = document.createElement('div');
       rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
@@ -692,7 +769,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <span class="chevron-arrow">›</span>
           </div>
           <div class="accordion-col-main">
-            <span class="item-icon">👹</span>
+            <img src="${textureUrl}" class="item-texture" alt="${m.name}" onerror="this.src='/textures/bullet_revolver.png'">
             <div class="item-identity">
               <span class="item-title">${m.name}</span>
               <span class="item-id-badge">${m.id}</span>
@@ -708,7 +785,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <span class="stat-highlight" id="row-stat-damage-${m.id}">${m.damage}</span>
           </div>
           <div class="accordion-col-stat">
-            <span style="color:var(--accent-cyan); font-size:12px;">${m.gemType || 'blue'} gem</span>
+            <span style="color:var(--accent-primary); font-size:12px; font-weight:600;">${m.gemType || 'blue'} gem</span>
           </div>
           <div class="accordion-col-status">
             ${
@@ -718,7 +795,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             }
           </div>
           <div class="accordion-col-actions">
-            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${m.id}" title="Сбросить к default">↩</button>
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${m.id}" title="Сбросить к исходным параметрам">↩</button>
             <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
           </div>
         </div>
@@ -739,7 +816,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <div class="drawer-footer">
               <div></div>
               <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${m.id}">
-                Сбросить к default
+                Сбросить монстра
               </button>
             </div>
           </div>
@@ -749,7 +826,12 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const headerEl = rowItem.querySelector('.accordion-row-header');
       headerEl?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
-        if (target.closest('.btn-reset-item')) return;
+        if (target.closest('.btn-reset-item') || target.closest('.btn-toggle-row')) return;
+        this.toggleRow(rowId, rowItem);
+      });
+
+      rowItem.querySelector('.btn-toggle-row')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.toggleRow(rowId, rowItem);
       });
 
@@ -768,7 +850,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   }
 
   // =========================================================================
-  // TAB 4: BOSSES (Row Accordion View)
+  // TAB 4: BOSSES (Accordion with Real Boss Textures)
   // =========================================================================
   private renderBosses(): void {
     const container = document.getElementById('bosses-list') || document.getElementById('bosses-grid');
@@ -789,6 +871,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const rowId = `bosses-${b.id}`;
       const isExpanded = this.expandedRows.has(rowId);
       const isModified = Array.from(this.modifiedPaths).some((p) => p.startsWith(`bosses.${b.id}.`));
+      const textureUrl = getEntityTexture('bosses', b.id);
 
       const rowItem = document.createElement('div');
       rowItem.className = `accordion-item ${isExpanded ? 'is-expanded' : ''} ${isModified ? 'is-modified' : ''}`;
@@ -800,7 +883,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <span class="chevron-arrow">›</span>
           </div>
           <div class="accordion-col-main">
-            <span class="item-icon">👑</span>
+            <img src="${textureUrl}" class="item-texture" alt="${b.name}" onerror="this.src='/textures/bullet_revolver.png'">
             <div class="item-identity">
               <span class="item-title">${b.name}</span>
               <span class="item-id-badge">${b.id}</span>
@@ -816,7 +899,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <span class="stat-highlight" id="row-stat-damage-${b.id}">${b.damage}</span>
           </div>
           <div class="accordion-col-stat">
-            <span style="color:var(--accent-amber); font-size:12px;">Многофазный</span>
+            <span style="color:var(--accent-warning); font-size:12px; font-weight:600;">Многофазный</span>
           </div>
           <div class="accordion-col-status">
             ${
@@ -826,7 +909,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             }
           </div>
           <div class="accordion-col-actions">
-            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${b.id}" title="Сбросить к default">↩</button>
+            <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${b.id}" title="Сбросить к исходным параметрам">↩</button>
             <button class="btn btn-xs btn-ghost btn-toggle-row">${isExpanded ? 'Свернуть' : 'Развернуть'}</button>
           </div>
         </div>
@@ -847,7 +930,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
             <div class="drawer-footer">
               <div></div>
               <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${b.id}">
-                Сбросить к default
+                Сбросить босса
               </button>
             </div>
           </div>
@@ -857,7 +940,12 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const headerEl = rowItem.querySelector('.accordion-row-header');
       headerEl?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
-        if (target.closest('.btn-reset-item')) return;
+        if (target.closest('.btn-reset-item') || target.closest('.btn-toggle-row')) return;
+        this.toggleRow(rowId, rowItem);
+      });
+
+      rowItem.querySelector('.btn-toggle-row')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.toggleRow(rowId, rowItem);
       });
 
@@ -887,7 +975,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     container.innerHTML = `
       <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
         <div>
-          <h4 style="margin-bottom: 14px; color: var(--accent-cyan); font-size:14px; font-weight:700;">Тактический рывок (Dash)</h4>
+          <h4 style="margin-bottom: 14px; color: var(--accent-primary); font-size:14px; font-weight:700;">Тактический рывок (Dash)</h4>
           <div style="display:flex; flex-direction:column; gap:12px;">
             ${this.renderStatControl('global', '', 'dashCooldown', 'Кулдаун рывка (сек)', g.dashCooldown, 0.5, 6.0, 0.1)}
             ${this.renderStatControl('global', '', 'dashDuration', 'Длительность рывка (сек)', g.dashDuration, 0.1, 1.0, 0.02)}
@@ -895,7 +983,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         </div>
 
         <div>
-          <h4 style="margin-bottom: 14px; color: var(--accent-cyan); font-size:14px; font-weight:700;">Критический урон</h4>
+          <h4 style="margin-bottom: 14px; color: var(--accent-primary); font-size:14px; font-weight:700;">Критический урон</h4>
           <div style="display:flex; flex-direction:column; gap:12px;">
             ${this.renderStatControl('global', '', 'baseCritChance', 'Базовый шанс крита', g.baseCritChance, 0.0, 1.0, 0.01)}
             ${this.renderStatControl('global', '', 'baseCritDamageMult', 'Множитель крит. урона', g.baseCritDamageMult, 1.2, 5.0, 0.1)}
@@ -903,7 +991,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         </div>
 
         <div>
-          <h4 style="margin-bottom: 14px; color: var(--accent-cyan); font-size:14px; font-weight:700;">Подбор и броня</h4>
+          <h4 style="margin-bottom: 14px; color: var(--accent-primary); font-size:14px; font-weight:700;">Подбор и броня</h4>
           <div style="display:flex; flex-direction:column; gap:12px;">
             ${this.renderStatControl('global', '', 'basePickupRadius', 'Радиус магнита (м)', g.basePickupRadius, 1.0, 25.0, 0.5)}
             ${this.renderStatControl('global', '', 'maxArmorReduction', 'Макс. снижение урона (Cap)', g.maxArmorReduction, 0.3, 0.95, 0.05)}
@@ -1092,39 +1180,44 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     if (draftCountEl) draftCountEl.innerText = String(count);
     if (draftDeltaEl) {
       if (count > 0) {
-        draftDeltaEl.className = 'metric-delta delta-down';
+        draftDeltaEl.className = 'trend-down';
         draftDeltaEl.innerText = `${count} в очереди ⚠️`;
       } else {
-        draftDeltaEl.className = 'metric-delta delta-neutral';
+        draftDeltaEl.className = 'trend-neutral';
         draftDeltaEl.innerText = 'В синхроне';
       }
     }
     if (draftDescEl) {
-      draftDescEl.innerText = count > 0 ? 'Требуется сохранение в Supabase' : 'Нет несохраненных правок';
+      draftDescEl.innerText = count > 0 ? 'Требуется сохранение в Supabase' : 'готовность к деплою';
     }
   }
 
+  // =========================================================================
+  // RESET SINGLE ITEM (BUG FIX: Clear only modified paths for this entity)
+  // =========================================================================
   private resetSingleItem(category: keyof GameBalanceState, id: string): void {
-    const defaultItem = (DEFAULT_BALANCE[category] as any)[id];
-    if (!defaultItem) return;
+    const origItem = (this.originalBalance[category] as any)[id] || (DEFAULT_BALANCE[category] as any)[id];
+    if (!origItem) return;
 
-    (this.draftBalance[category] as any)[id] = JSON.parse(JSON.stringify(defaultItem));
-    for (const prop of Object.keys(defaultItem)) {
-      const path = `${category}.${id}.${prop}`;
-      const origVal = this.getOriginalValue(path);
-      if (defaultItem[prop] !== origVal) {
-        this.modifiedPaths.add(path);
-      } else {
-        this.modifiedPaths.delete(path);
+    // 1. Revert draft balance for this item back to original
+    (this.draftBalance[category] as any)[id] = JSON.parse(JSON.stringify(origItem));
+
+    // 2. Clear all modified paths for this item
+    for (const p of Array.from(this.modifiedPaths)) {
+      if (p.startsWith(`${category}.${id}.`)) {
+        this.modifiedPaths.delete(p);
       }
     }
 
+    // 3. Update UI
     this.updateStagedUI();
     this.updateOverviewStats();
     if (category === 'weapons') this.renderWeapons();
     else if (category === 'heroes') this.renderHeroes();
     else if (category === 'monsters') this.renderMonsters();
     else if (category === 'bosses') this.renderBosses();
+
+    this.showToast(`Параметры "${origItem.name || id}" сброшены.`, 'info');
   }
 
   private discardDraft(): void {
@@ -1160,10 +1253,15 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       else if (cat === 'bosses') name = this.draftBalance.bosses[key]?.name || key;
       else if (cat === 'global') name = 'Глобальные';
 
-      const oldVal = this.getOriginalValue(p) ?? 0;
-      let newVal = 0;
-      if (parts.length === 3) newVal = (this.draftBalance as any)[cat][key][field];
-      else newVal = (this.draftBalance as any)[cat][field];
+      const oldVal = this.getOriginalValue(p);
+      const newVal = parts.length === 3
+        ? (this.draftBalance as any)[cat]?.[key]?.[field]
+        : (this.draftBalance as any)[cat]?.[field];
+
+      // Crucial bugfix: Only show real numeric diffs, avoid string NaN / 0 diffs
+      if (typeof oldVal !== 'number' || typeof newVal !== 'number' || isNaN(oldVal) || isNaN(newVal)) {
+        continue;
+      }
 
       const diff = newVal - oldVal;
       const pct = oldVal !== 0 ? (((newVal - oldVal) / oldVal) * 100).toFixed(1) : '+100';
@@ -1205,7 +1303,19 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       return;
     }
 
-    // Validate admin passcode challenge if configured
+    if (!this.config.serviceRoleKey) {
+      this.closeReviewModal();
+      this.showToast(
+        '⚠️ Для записи в Supabase требуется Service Role Key! Публичный Anon-ключ имеет доступ только на чтение (защита RLS). Перейдите во вкладку «Настройки БД» и вставьте Service Role Key.',
+        'error'
+      );
+      const tabBtn = document.querySelector('[data-tab="connection"]') as HTMLElement;
+      tabBtn?.click();
+      const serviceInput = document.getElementById('cfg-supabase-service') as HTMLInputElement;
+      serviceInput?.focus();
+      return;
+    }
+
     if (this.config.adminKey) {
       const inputPass = (document.getElementById('input-confirm-passcode') as HTMLInputElement)?.value;
       const errEl = document.getElementById('passcode-error');
@@ -1285,7 +1395,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.showToast(`Ошибка отправки в Supabase: ${msg}`, 'error');
+      if (msg.includes('row-level security') || msg.includes('violates row-level security policy')) {
+        this.showToast(
+          '❌ Ошибка RLS: таблица game_balance защищена от неавторизованной записи. Для сохранения изменений требуется secret service_role ключ из Supabase (Settings -> API).',
+          'error'
+        );
+      } else {
+        this.showToast(`Ошибка отправки в Supabase: ${msg}`, 'error');
+      }
     } finally {
       if (deployBtn) {
         deployBtn.disabled = false;
@@ -1355,6 +1472,18 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
   private async seedDatabase(): Promise<void> {
     if (!this.supabase) {
       this.showToast('Сначала подключитесь к Supabase!', 'error');
+      return;
+    }
+
+    if (!this.config.serviceRoleKey) {
+      this.showToast(
+        '⚠️ Для инициализации БД требуется Service Role Key! Публичный Anon-ключ защищён политикой RLS только для чтения. Вставьте Service Role Key в поле ниже и нажмите «Сохранить локально».',
+        'error'
+      );
+      const tabBtn = document.querySelector('[data-tab="connection"]') as HTMLElement;
+      tabBtn?.click();
+      const serviceInput = document.getElementById('cfg-supabase-service') as HTMLInputElement;
+      serviceInput?.focus();
       return;
     }
 
@@ -1455,7 +1584,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      this.showToast(`Ошибка инициализации БД: ${msg}`, 'error');
+      if (msg.includes('row-level security') || msg.includes('violates row-level security policy')) {
+        this.showToast(
+          '❌ Ошибка RLS: таблица защищена от неавторизованной записи. Проверьте, что в поле «Service Role Key» вставлен секретный service_role ключ (Supabase -> Settings -> API).',
+          'error'
+        );
+      } else {
+        this.showToast(`Ошибка инициализации БД: ${msg}`, 'error');
+      }
     }
   }
 
