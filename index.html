@@ -262,239 +262,8 @@
         </div>
 
         <!-- Right Side: Daily & Weekly Quests Sidebar -->
-        <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий">
-          <!-- 1. ЕЖЕДНЕВНЫЕ ЗАДАНИЯ (2 задания) -->
-          <div class="main-menu-quest-card quest-panel-daily" id="main-menu-daily-card">
-            <!-- Corner Rivets -->
-            <div class="panel-rivet rivet-tl"></div>
-            <div class="panel-rivet rivet-tr"></div>
-            <div class="panel-rivet rivet-bl"></div>
-            <div class="panel-rivet rivet-br"></div>
-
-            <div class="quest-card-header header-daily" title="Ежедневные задания обновляются каждые 24 часа">
-              <span class="quest-card-title">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</span>
-            </div>
-
-            <div class="quest-card-body">
-              <!-- Задание 1: Уничтожить 100 монстров -->
-              <div class="menu-quest-item" id="menu-quest-daily-1" title="Уничтожайте монстров в экспедициях">
-                <div class="quest-item-icon-box">
-                  <svg class="quest-svg-icon icon-goblin" viewBox="0 0 32 32">
-                    <defs>
-                      <linearGradient id="goblinSkin1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#84cc16"/>
-                        <stop offset="50%" stop-color="#4d7c0f"/>
-                        <stop offset="100%" stop-color="#365314"/>
-                      </linearGradient>
-                      <linearGradient id="goblinCowl1" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#7c2d12"/>
-                        <stop offset="100%" stop-color="#451a03"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M5 25 C7 20 12 18 16 18 C20 18 25 20 27 25 C25 28 20 30 16 30 C12 30 7 28 5 25 Z" fill="url(#goblinCowl1)" stroke="#271104" stroke-width="1"/>
-                    <polygon points="12,12 2,7 8,17" fill="#65a30d" stroke="#365314" stroke-width="0.8"/>
-                    <polygon points="11,13 4,9 8,16" fill="#84cc16" opacity="0.6"/>
-                    <polygon points="20,12 30,7 24,17" fill="#65a30d" stroke="#365314" stroke-width="0.8"/>
-                    <polygon points="21,13 28,9 24,16" fill="#84cc16" opacity="0.6"/>
-                    <ellipse cx="16" cy="14" rx="7.5" ry="8" fill="url(#goblinSkin1)" stroke="#365314" stroke-width="1"/>
-                    <path d="M10 11 Q13 13 15 12" stroke="#23380b" stroke-width="1.2" fill="none"/>
-                    <path d="M22 11 Q19 13 17 12" stroke="#23380b" stroke-width="1.2" fill="none"/>
-                    <polygon points="11,13 14,14 12,16" fill="#facc15"/>
-                    <circle cx="12.5" cy="14.2" r="0.8" fill="#422006"/>
-                    <polygon points="21,13 18,14 20,16" fill="#facc15"/>
-                    <circle cx="19.5" cy="14.2" r="0.8" fill="#422006"/>
-                    <polygon points="16,13 15,16.5 17,16.5" fill="#4d7c0f"/>
-                    <path d="M12 19 Q16 21 20 19" stroke="#1c1917" stroke-width="1.2" fill="none"/>
-                    <polygon points="13,19 14,17.5 14.5,19" fill="#fef08a"/>
-                    <polygon points="19,19 18,17.5 17.5,19" fill="#fef08a"/>
-                  </svg>
-                </div>
-                <div class="quest-item-info">
-                  <div class="quest-item-title">Уничтожить 100 монстров</div>
-                  <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill" id="quest-daily-bar-1" style="width: 45%;"></div>
-                    <span class="quest-item-bar-val" id="quest-daily-val-1">45 / 100</span>
-                  </div>
-                </div>
-                <div class="quest-item-reward-box" title="Награда: 2 плазменных кристалла">
-                  <svg class="reward-svg-icon icon-gem" viewBox="0 0 24 24">
-                    <defs>
-                      <linearGradient id="emeraldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#34d399"/>
-                        <stop offset="45%" stop-color="#10b981"/>
-                        <stop offset="100%" stop-color="#047857"/>
-                      </linearGradient>
-                    </defs>
-                    <polygon points="12,2 20,8 18,19 12,22 6,19 4,8" fill="url(#emeraldGrad1)" stroke="#a7f3d0" stroke-width="1"/>
-                    <polygon points="12,2 20,8 15,11 12,5" fill="#6ee7b7" opacity="0.7"/>
-                    <polygon points="12,5 15,11 9,11 12,5" fill="#ecfdf5" opacity="0.9"/>
-                    <polygon points="4,8 12,2 9,11" fill="#34d399" opacity="0.6"/>
-                    <polygon points="12,22 18,19 15,11 12,18" fill="#065f46" opacity="0.9"/>
-                    <polygon points="12,22 6,19 9,11 12,18" fill="#047857" opacity="0.8"/>
-                  </svg>
-                  <span class="reward-amount">2</span>
-                </div>
-              </div>
-
-              <!-- Задание 2: Победить 1 босса -->
-              <div class="menu-quest-item" id="menu-quest-daily-2" title="Победите Кровавого Шерифа или Гидру">
-                <div class="quest-item-icon-box">
-                  <svg class="quest-svg-icon icon-boss" viewBox="0 0 32 32">
-                    <defs>
-                      <linearGradient id="helmBronze1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#f59e0b"/>
-                        <stop offset="50%" stop-color="#b45309"/>
-                        <stop offset="100%" stop-color="#78350f"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M10 14 C7 10 4 5 2 2 C3 7 5 13 8 18 Z" fill="#d97706" stroke="#92400e" stroke-width="0.8"/>
-                    <path d="M22 14 C25 10 28 5 30 2 C29 7 27 13 24 18 Z" fill="#d97706" stroke="#92400e" stroke-width="0.8"/>
-                    <path d="M8 17 C8 8 24 8 24 17 L22 24 C19 27 13 27 10 24 Z" fill="url(#helmBronze1)" stroke="#92400e" stroke-width="1"/>
-                    <polygon points="16,6 18,12 16,14 14,12" fill="#fde047" stroke="#b45309" stroke-width="0.8"/>
-                    <rect x="10" y="15" width="12" height="4.5" rx="1.5" fill="#1c1917"/>
-                    <ellipse cx="13" cy="17.2" rx="1.6" ry="1.2" fill="#ef4444"/>
-                    <ellipse cx="19" cy="17.2" rx="1.6" ry="1.2" fill="#ef4444"/>
-                    <line x1="16" y1="20" x2="16" y2="24" stroke="#78350f" stroke-width="1.2"/>
-                    <line x1="13" y1="21" x2="13" y2="23.5" stroke="#78350f" stroke-width="1"/>
-                    <line x1="19" y1="21" x2="19" y2="23.5" stroke="#78350f" stroke-width="1"/>
-                  </svg>
-                </div>
-                <div class="quest-item-info">
-                  <div class="quest-item-title">Победить 1 босса</div>
-                  <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill completed" id="quest-daily-bar-2" style="width: 100%;"></div>
-                    <span class="quest-item-bar-val" id="quest-daily-val-2">1 / 1</span>
-                  </div>
-                </div>
-                <div class="quest-item-reward-box" title="Награда: 1 золотой жетон">
-                  <svg class="reward-svg-icon icon-coin" viewBox="0 0 24 24">
-                    <defs>
-                      <linearGradient id="goldCoinGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fef08a"/>
-                        <stop offset="40%" stop-color="#f59e0b"/>
-                        <stop offset="100%" stop-color="#b45309"/>
-                      </linearGradient>
-                    </defs>
-                    <circle cx="12" cy="12" r="10" fill="url(#goldCoinGrad1)" stroke="#fef08a" stroke-width="1.2"/>
-                    <circle cx="12" cy="12" r="7.5" fill="none" stroke="#78350f" stroke-dasharray="1.5 1.5" stroke-width="0.8"/>
-                    <polygon points="12,6.5 13.5,10 17,10.5 14.5,13 15,16.5 12,15 9,16.5 9.5,13 7,10.5 10.5,10" fill="#fde047" stroke="#b45309" stroke-width="0.6"/>
-                  </svg>
-                  <span class="reward-amount">1</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ (2 задания) -->
-          <div class="main-menu-quest-card quest-panel-weekly" id="main-menu-weekly-card">
-            <!-- Corner Rivets -->
-            <div class="panel-rivet rivet-tl"></div>
-            <div class="panel-rivet rivet-tr"></div>
-            <div class="panel-rivet rivet-bl"></div>
-            <div class="panel-rivet rivet-br"></div>
-
-            <div class="quest-card-header header-weekly" title="Еженедельные задания обновляются каждый понедельник">
-              <span class="quest-card-title">ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ</span>
-            </div>
-
-            <div class="quest-card-body">
-              <!-- Задание 1: Уничтожить 500 монстров -->
-              <div class="menu-quest-item" id="menu-quest-weekly-1" title="Истребляйте орды монстров Разлома">
-                <div class="quest-item-icon-box">
-                  <svg class="quest-svg-icon icon-goblin" viewBox="0 0 32 32">
-                    <path d="M5 25 C7 20 12 18 16 18 C20 18 25 20 27 25 C25 28 20 30 16 30 C12 30 7 28 5 25 Z" fill="#7c2d12" stroke="#271104" stroke-width="1"/>
-                    <polygon points="12,12 2,7 8,17" fill="#65a30d" stroke="#365314" stroke-width="0.8"/>
-                    <polygon points="20,12 30,7 24,17" fill="#65a30d" stroke="#365314" stroke-width="0.8"/>
-                    <ellipse cx="16" cy="14" rx="7.5" ry="8" fill="#4d7c0f" stroke="#365314" stroke-width="1"/>
-                    <polygon points="11,13 14,14 12,16" fill="#facc15"/>
-                    <circle cx="12.5" cy="14.2" r="0.8" fill="#422006"/>
-                    <polygon points="21,13 18,14 20,16" fill="#facc15"/>
-                    <circle cx="19.5" cy="14.2" r="0.8" fill="#422006"/>
-                    <path d="M12 19 Q16 21 20 19" stroke="#1c1917" stroke-width="1.2" fill="none"/>
-                    <polygon points="13,19 14,17.5 14.5,19" fill="#fef08a"/>
-                    <polygon points="19,19 18,17.5 17.5,19" fill="#fef08a"/>
-                  </svg>
-                </div>
-                <div class="quest-item-info">
-                  <div class="quest-item-title">Уничтожить 500 монстров</div>
-                  <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill" id="quest-weekly-bar-1" style="width: 30%;"></div>
-                    <span class="quest-item-bar-val" id="quest-weekly-val-1">150 / 500</span>
-                  </div>
-                </div>
-                <div class="quest-item-reward-box" title="Награда: 5 плазменных кристаллов">
-                  <svg class="reward-svg-icon icon-gem" viewBox="0 0 24 24">
-                    <polygon points="12,2 20,8 18,19 12,22 6,19 4,8" fill="#10b981" stroke="#a7f3d0" stroke-width="1"/>
-                    <polygon points="12,2 20,8 15,11 12,5" fill="#6ee7b7" opacity="0.7"/>
-                    <polygon points="12,5 15,11 9,11 12,5" fill="#ecfdf5" opacity="0.9"/>
-                    <polygon points="4,8 12,2 9,11" fill="#34d399" opacity="0.6"/>
-                    <polygon points="12,22 18,19 15,11 12,18" fill="#065f46" opacity="0.9"/>
-                    <polygon points="12,22 6,19 9,11 12,18" fill="#047857" opacity="0.8"/>
-                  </svg>
-                  <span class="reward-amount">5</span>
-                </div>
-              </div>
-
-              <!-- Задание 2: Собрать 100 ресурсов -->
-              <div class="menu-quest-item" id="menu-quest-weekly-2" title="Собирайте плазму и трофеи в бою">
-                <div class="quest-item-icon-box">
-                  <svg class="quest-svg-icon icon-resource" viewBox="0 0 32 32">
-                    <defs>
-                      <linearGradient id="ingotGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#d97706"/>
-                        <stop offset="60%" stop-color="#92400e"/>
-                        <stop offset="100%" stop-color="#451a03"/>
-                      </linearGradient>
-                      <linearGradient id="woodGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#b45309"/>
-                        <stop offset="50%" stop-color="#78350f"/>
-                        <stop offset="100%" stop-color="#3e1a06"/>
-                      </linearGradient>
-                    </defs>
-                    <polygon points="6,20 16,16 26,20 16,24" fill="url(#ingotGrad1)" stroke="#451a03" stroke-width="0.8"/>
-                    <polygon points="6,20 16,24 16,28 6,24" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
-                    <polygon points="26,20 16,24 16,28 26,24" fill="#451a03" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="10,13 18,10 26,13 18,16" fill="url(#woodGrad1)" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="10,13 18,16 18,20 10,17" fill="#92400e" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="26,13 18,16 18,20 26,17" fill="#451a03" stroke="#291002" stroke-width="0.8"/>
-                    <polygon points="4,11 12,8 20,11 12,14" fill="#fbbf24" opacity="0.85" stroke="#b45309" stroke-width="0.8"/>
-                    <polygon points="4,11 12,14 12,18 4,15" fill="#f59e0b" stroke="#b45309" stroke-width="0.8"/>
-                    <polygon points="20,11 12,14 12,18 20,15" fill="#d97706" stroke="#78350f" stroke-width="0.8"/>
-                  </svg>
-                </div>
-                <div class="quest-item-info">
-                  <div class="quest-item-title">Собрать 100 ресурсов</div>
-                  <div class="quest-item-bar-wrap">
-                    <div class="quest-item-bar-fill" id="quest-weekly-bar-2" style="width: 50%;"></div>
-                    <span class="quest-item-bar-val" id="quest-weekly-val-2">50 / 100</span>
-                  </div>
-                </div>
-                <div class="quest-item-reward-box" title="Награда: 1 редкий сундук">
-                  <svg class="reward-svg-icon icon-chest" viewBox="0 0 24 24">
-                    <defs>
-                      <linearGradient id="chestWood1" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#b45309"/>
-                        <stop offset="100%" stop-color="#451a03"/>
-                      </linearGradient>
-                      <linearGradient id="chestGold1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fef08a"/>
-                        <stop offset="50%" stop-color="#f59e0b"/>
-                        <stop offset="100%" stop-color="#92400e"/>
-                      </linearGradient>
-                    </defs>
-                    <rect x="3" y="10" width="18" height="11" rx="1.5" fill="url(#chestWood1)" stroke="#271104" stroke-width="1"/>
-                    <path d="M3 10 C3 5 21 5 21 10 Z" fill="url(#chestWood1)" stroke="#271104" stroke-width="1"/>
-                    <rect x="6" y="6" width="2.5" height="15" fill="url(#chestGold1)"/>
-                    <rect x="15.5" y="6" width="2.5" height="15" fill="url(#chestGold1)"/>
-                    <line x1="3" y1="10" x2="21" y2="10" stroke="url(#chestGold1)" stroke-width="1.8"/>
-                    <rect x="10.5" y="9" width="3" height="4" rx="1" fill="#fef08a" stroke="#78350f" stroke-width="0.8"/>
-                    <circle cx="12" cy="10.5" r="0.8" fill="#451a03"/>
-                  </svg>
-                  <span class="reward-amount">1</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий" title="Нажмите, чтобы открыть задания">
+          <img src="/textures/ui_quests_sidebar.png" alt="Задания" class="main-menu-quests-img" draggable="false" />
         </aside>
       </div>
 
@@ -747,26 +516,43 @@
             <button id="quests-btn-close" class="quest-book-close-btn" type="button" title="Закрыть книгу (ESC)">✕</button>
           </div>
 
+          <!-- Floating Magic Sparkle Particles (matching concept screenshot) -->
+          <div class="quest-magic-particles" aria-hidden="true">
+            <span class="magic-sparkle sparkle-1">✦</span>
+            <span class="magic-sparkle sparkle-2">✦</span>
+            <span class="magic-sparkle sparkle-3">✦</span>
+            <span class="magic-sparkle sparkle-4">✦</span>
+            <span class="magic-sparkle sparkle-5">✦</span>
+            <span class="magic-sparkle sparkle-star-br">✦</span>
+          </div>
+
           <!-- Outer Book Frame with Left Sidebar Tabs -->
           <div class="quest-book-wrapper">
-            <!-- Left Tabs Sidebar (Scroll/Quill, Chest, Settings) -->
-            <aside class="quest-book-tabs-sidebar" aria-label="Вкладки книги">
-              <button id="quest-tab-scroll" class="quest-book-tab tab-purple active" type="button" title="Задания">
-                <svg viewBox="0 0 24 24" class="tab-svg-icon">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm4-4H7v-2h9v2zm0-4H7V7h9v2z" fill="#f5d0fe"/>
-                  <circle cx="17" cy="6" r="2.5" fill="#f0abfc"/>
-                </svg>
+            <!-- Left Tabs Sidebar (Chapters of the Book) -->
+            <aside class="quest-book-tabs-sidebar" id="quest-book-tabs-sidebar" aria-label="Главы книги">
+              <button id="quest-tab-ch1" class="quest-book-tab quest-chapter-tab active" data-chapter="1" type="button" title="Глава I: Пробуждение">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">I</span>
+                </div>
               </button>
-              <button id="quest-tab-chest" class="quest-book-tab tab-brown" type="button" title="Награды и достижения">
-                <svg viewBox="0 0 24 24" class="tab-svg-icon">
-                  <path d="M20 7H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 6H5v-2h6v2zm8 0h-6v-2h6v2z" fill="#fcd34d"/>
-                  <path d="M12 2C9.24 2 7 4.24 7 7h10c0-2.76-2.24-5-5-5z" fill="#d97706"/>
-                </svg>
+              <button id="quest-tab-ch2" class="quest-book-tab quest-chapter-tab" data-chapter="2" type="button" title="Глава II: Охота на Лешего">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">II</span>
+                </div>
               </button>
-              <button id="quest-tab-gear" class="quest-book-tab tab-brown" type="button" title="Настройки игры">
-                <svg viewBox="0 0 24 24" class="tab-svg-icon">
-                  <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="#f59e0b"/>
-                </svg>
+              <button id="quest-tab-ch3" class="quest-book-tab quest-chapter-tab" data-chapter="3" type="button" title="Глава III: Стражи Разлома">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">III</span>
+                </div>
+              </button>
+              <button id="quest-tab-ch4" class="quest-book-tab quest-chapter-tab" data-chapter="4" type="button" title="Глава IV: Контракты Охотников">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">IV</span>
+                </div>
               </button>
             </aside>
 
@@ -782,9 +568,9 @@
               <div class="quest-book-spread">
                 <!-- Left Page: Quest Items List -->
                 <div class="quest-book-page quest-page-left">
-                  <div class="quest-heroes-list">
+                  <div class="quest-heroes-list" id="quest-items-list">
                     <!-- 1. Chapter 1 (Valkyrie) -->
-                    <div class="quest-hero-item" data-quest-hero="valkyrie" id="quest-item-valkyrie">
+                    <div class="quest-hero-item" data-quest-hero="valkyrie" data-quest-id="valkyrie" id="quest-item-valkyrie">
                       <div class="quest-item-icon-box">
                         <img src="/textures/quest_icon_chapter1.png" class="quest-item-avatar" alt="Глава 1: Пробуждение" />
                       </div>
@@ -798,7 +584,7 @@
                     </div>
 
                     <!-- 2. Resource Gathering Trees (Flail) -->
-                    <div class="quest-hero-item" data-quest-hero="flail" id="quest-item-flail">
+                    <div class="quest-hero-item" data-quest-hero="flail" data-quest-id="flail" id="quest-item-flail">
                       <div class="quest-item-icon-box">
                         <img src="/textures/quest_icon_resources_wood.png" class="quest-item-avatar" alt="Сбор Ресурсов" />
                       </div>
@@ -812,7 +598,7 @@
                     </div>
 
                     <!-- 3. Chapter Leshen (Sorceress) -->
-                    <div class="quest-hero-item" data-quest-hero="sorceress" id="quest-item-sorceress">
+                    <div class="quest-hero-item" data-quest-hero="sorceress" data-quest-id="sorceress" id="quest-item-sorceress">
                       <div class="quest-item-icon-box">
                         <img src="/textures/quest_icon_chapter_leshen.png" class="quest-item-avatar" alt="Глава на Лешена" />
                       </div>
@@ -826,7 +612,7 @@
                     </div>
 
                     <!-- 4. Hunt for Leshy (Chakram) -->
-                    <div class="quest-hero-item active" data-quest-hero="chakram" id="quest-item-chakram">
+                    <div class="quest-hero-item active" data-quest-hero="chakram" data-quest-id="chakram" id="quest-item-chakram">
                       <div class="quest-item-icon-box icon-box-leshy">
                         <img src="/textures/quest_icon_leshy.png" class="quest-item-avatar" alt="Охота на Лешего" />
                       </div>
@@ -840,7 +626,7 @@
                     </div>
 
                     <!-- 5. Resource Gathering Ore (Archer) -->
-                    <div class="quest-hero-item" data-quest-hero="archer" id="quest-item-archer">
+                    <div class="quest-hero-item" data-quest-hero="archer" data-quest-id="archer" id="quest-item-archer">
                       <div class="quest-item-icon-box">
                         <img src="/textures/quest_icon_resources_ore.png" class="quest-item-avatar" alt="Сбор Ресурсов" />
                       </div>
