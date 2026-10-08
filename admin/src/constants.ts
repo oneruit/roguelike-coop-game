@@ -1,41 +1,44 @@
+import { GameBalanceState } from '../../game/src/balance/BalanceTypes';
+
 export const TEXTURE_MAP: Record<string, string> = {
   // Weapons
-  'weapon-fireball': '/textures/weapon_fireball.png',
-  'weapon-bow': '/textures/weapon_bow.png',
-  'weapon-kukri': '/textures/weapon_kukri.png',
-  'weapon-orbiting_barrier': '/textures/weapon_reaper_scythe.png',
-  'weapon-holy_aura': '/textures/weapon_holy_aura.png',
-  'weapon-katana_slash': '/textures/weapon_katana_slash.png',
-  'weapon-whirlwind_slash': '/textures/weapon_whirlwind_slash.png',
-  'weapon-greatsword': '/textures/weapon_greatsword.png',
-  'weapon-flail': '/textures/weapon_flail.png',
-  'weapon-astral_staff': '/textures/weapon_astral_staff.png',
-  'weapon-chakram': '/textures/weapon_chakram.png',
-  'weapon-lightning_strike': '/textures/weapon_lightning_strike.png',
-  'weapon-ice_spike': '/textures/weapon_ice_spike.png',
+  'weapon-fireball': '/textures/weapons/weapon_fireball.png',
+  'weapon-bow': '/textures/weapons/weapon_bow.png',
+  'weapon-kukri': '/textures/weapons/weapon_kukri.png',
+  'weapon-orbiting_barrier': '/textures/weapons/weapon_reaper_scythe.png',
+  'weapon-holy_aura': '/textures/weapons/weapon_holy_aura.png',
+  'weapon-katana_slash': '/textures/weapons/weapon_katana_slash.png',
+  'weapon-whirlwind_slash': '/textures/weapons/weapon_whirlwind_slash.png',
+  'weapon-greatsword': '/textures/weapons/weapon_greatsword.png',
+  'weapon-flail': '/textures/weapons/weapon_flail.png',
+  'weapon-astral_staff': '/textures/weapons/weapon_astral_staff.png',
+  'weapon-chakram': '/textures/weapons/weapon_chakram.png',
+  'weapon-lightning_strike': '/textures/weapons/weapon_lightning_strike.png',
+  'weapon-ice_spike': '/textures/weapons/weapon_ice_spike.png',
 
   // Heroes
-  'hero-ronin': '/textures/hero_ronin_front.png',
-  'hero-valkyrie': '/textures/hero_valkyrie_front.png',
-  'hero-flail': '/textures/hero_flail_front.png',
-  'hero-sorceress': '/textures/hero_sorceress_front.png',
-  'hero-chakram': '/textures/hero_chakram_front.png',
-  'hero-archer': '/textures/hero_archer_front.png',
+  'hero-ronin': '/textures/heroes/hero_ronin_front.png',
+  'hero-valkyrie': '/textures/heroes/hero_valkyrie_front.png',
+  'hero-flail': '/textures/heroes/hero_flail_front.png',
+  'hero-sorceress': '/textures/heroes/hero_sorceress_front.png',
+  'hero-chakram': '/textures/heroes/hero_chakram_front.png',
+  'hero-archer': '/textures/heroes/hero_archer_front.png',
 
   // Monsters
-  'monster-coyote': '/textures/monster_coyote_front.png',
-  'monster-crawler': '/textures/monster_crawler_front.png',
-  'monster-scorpion': '/textures/monster_scorpion_front.png',
-  'monster-skeleton': '/textures/monster_skeleton_front.png',
-  'monster-ghost': '/textures/monster_ghost_front.png',
-  'monster-cactus': '/textures/monster_cactus_front.png',
-  'monster-brute': '/textures/monster_brute_front.png',
-  'monster-bison': '/textures/monster_bison_front.png',
+  'monster-coyote': '/textures/monsters/monster_coyote_front.png',
+  'monster-crawler': '/textures/monsters/monster_crawler_front.png',
+  'monster-scorpion': '/textures/monsters/monster_scorpion_front.png',
+  'monster-skeleton': '/textures/monsters/monster_skeleton_front.png',
+  'monster-ghost': '/textures/monsters/monster_ghost_front.png',
+  'monster-cactus': '/textures/monsters/monster_cactus_front.png',
+  'monster-brute': '/textures/monsters/monster_brute_front.png',
+  'monster-bison': '/textures/monsters/monster_bison_front.png',
 
   // Bosses
-  'boss-demon': '/textures/boss_demon_front.png',
-  'boss-hydra': '/textures/boss_hydra_front.png',
-  'boss-sheriff': '/textures/boss_sheriff_front.png'
+  'boss-boss': '/textures/bosses/boss_demon_front.png',
+  'boss-demon': '/textures/bosses/boss_demon_front.png',
+  'boss-hydra': '/textures/bosses/boss_hydra_front.png',
+  'boss-sheriff': '/textures/bosses/boss_sheriff_front.png'
 };
 
 export const WEAPON_COLORS: Record<string, string> = {
@@ -67,8 +70,48 @@ export const MONSTER_COLORS: Record<string, string> = {
   hydra: '#7c3aed'
 };
 
+export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monster' | 'boss' | 'global' {
+  switch (category) {
+    case 'weapons':
+    case 'weapon':
+      return 'weapon';
+    case 'heroes':
+    case 'hero':
+      return 'hero';
+    case 'monsters':
+    case 'monster':
+      return 'monster';
+    case 'bosses':
+    case 'boss':
+      return 'boss';
+    case 'global':
+    default:
+      return 'global';
+  }
+}
+
+export function toPluralCategory(category: string): keyof GameBalanceState {
+  switch (category) {
+    case 'weapon':
+    case 'weapons':
+      return 'weapons';
+    case 'hero':
+    case 'heroes':
+      return 'heroes';
+    case 'monster':
+    case 'monsters':
+      return 'monsters';
+    case 'boss':
+    case 'bosses':
+      return 'bosses';
+    case 'global':
+    default:
+      return 'global';
+  }
+}
+
 export function getEntityTexture(category: string, id: string): string {
-  const singular = category.replace(/s$/, '');
+  const singular = toSingularCategory(category);
   const key = `${singular}-${id}`;
-  return TEXTURE_MAP[key] || '/textures/bullet_revolver.png';
+  return TEXTURE_MAP[key] || '/textures/weapons/bullet_revolver.png';
 }

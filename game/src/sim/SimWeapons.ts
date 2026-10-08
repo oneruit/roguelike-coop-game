@@ -135,7 +135,7 @@ export abstract class SimWeapon {
     this.id = id;
     this.name = name;
     this.icon = icon;
-    this.iconImage = iconImage || `/textures/weapon_${id}.png`;
+    this.iconImage = iconImage || `/textures/weapons/weapon_${id}.png`;
     this.cooldown = cooldown;
     this.damage = damage;
   }

@@ -138,7 +138,7 @@ export class Enemy {
 
     // 1. Load Textures
     if (this.isBoss && !this.isImmortal) {
-      const bossBase = config.texturePrefix ? config.texturePrefix.replace(/.*textures\//, '') : 'boss_demon';
+      const bossBase = config.texturePrefix ? config.texturePrefix.replace(/^.*[\\/]/, '') : 'boss_demon';
       this.bossTextures = TextureManager.loadBossTextures(bossBase);
     }
     this.textures = TextureManager.loadDirectional(config.texturePrefix);

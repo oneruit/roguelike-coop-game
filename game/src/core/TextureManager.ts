@@ -45,21 +45,38 @@ export class TextureManager {
     return getAssetUrl(path);
   }
 
+  public static normalizeTextureUrl(url: string): string {
+    if (!url || !url.startsWith('/textures/')) return url;
+    const rel = url.substring('/textures/'.length);
+    if (rel.includes('/')) return url;
+
+    if (rel.startsWith('hero_')) return `/textures/heroes/${rel}`;
+    if (rel.startsWith('monster_')) return `/textures/monsters/${rel}`;
+    if (rel.startsWith('boss_')) return `/textures/bosses/${rel}`;
+    if (rel.startsWith('weapon_') || rel === 'bullet_revolver.png') return `/textures/weapons/${rel}`;
+    if (rel.startsWith('vfx_')) return `/textures/vfx/${rel}`;
+    if (rel.startsWith('quest_') || rel.startsWith('reward_') || rel.startsWith('ui_quest')) return `/textures/quests/${rel}`;
+    if (rel === 'game_logo_rift.png' || rel === 'menu_background.jpg') return `/textures/ui/${rel}`;
+    if (rel.startsWith('test_')) return `/textures/test/${rel}`;
+
+    return url;
+  }
+
   public static readonly WEAPON_ICON_URLS: string[] = [
-    '/textures/weapon_astral_staff.png',
-    '/textures/weapon_bow.png',
-    '/textures/weapon_chakram.png',
-    '/textures/weapon_flail.png',
-    '/textures/weapon_greatsword.png',
-    '/textures/weapon_holy_aura.png',
-    '/textures/weapon_katana_slash.png',
-    '/textures/weapon_kukri.png',
-    '/textures/weapon_lightning_strike.png',
-    '/textures/weapon_ice_spike.png',
-    '/textures/weapon_fireball.png',
-    '/textures/weapon_orbiting_barrier.png',
-    '/textures/weapon_reaper_scythe.png',
-    '/textures/weapon_whirlwind_slash.png'
+    '/textures/weapons/weapon_astral_staff.png',
+    '/textures/weapons/weapon_bow.png',
+    '/textures/weapons/weapon_chakram.png',
+    '/textures/weapons/weapon_flail.png',
+    '/textures/weapons/weapon_greatsword.png',
+    '/textures/weapons/weapon_holy_aura.png',
+    '/textures/weapons/weapon_katana_slash.png',
+    '/textures/weapons/weapon_kukri.png',
+    '/textures/weapons/weapon_lightning_strike.png',
+    '/textures/weapons/weapon_ice_spike.png',
+    '/textures/weapons/weapon_fireball.png',
+    '/textures/weapons/weapon_orbiting_barrier.png',
+    '/textures/weapons/weapon_reaper_scythe.png',
+    '/textures/weapons/weapon_whirlwind_slash.png'
   ];
 
   public static getWeaponBlobUrl(pathOrId: string): string {
@@ -67,8 +84,8 @@ export class TextureManager {
     if (pathOrId.startsWith('blob:') || pathOrId.startsWith('data:')) {
       return pathOrId;
     }
-    const cleanId = pathOrId.replace(/.*\/textures\/weapon_/, '').replace('.png', '');
-    const standardPath = `/textures/weapon_${cleanId}.png`;
+    const cleanId = pathOrId.replace(/.*\/textures\/(?:weapons\/)?weapon_/, '').replace('.png', '');
+    const standardPath = `/textures/weapons/weapon_${cleanId}.png`;
     const resolvedPath = getAssetUrl(standardPath);
     return (
       this.weaponBlobUrls.get(standardPath) ||
@@ -90,7 +107,7 @@ export class TextureManager {
           const blobUrl = URL.createObjectURL(blob);
           this.weaponBlobUrls.set(url, blobUrl);
           this.weaponBlobUrls.set(resolvedUrl, blobUrl);
-          const id = url.replace('/textures/weapon_', '').replace('.png', '');
+          const id = url.replace(/.*\/textures\/weapons\/weapon_/, '').replace('.png', '');
           this.weaponBlobUrls.set(id, blobUrl);
         }
       } catch {}
@@ -103,9 +120,13 @@ export class TextureManager {
   private static sharedShadowMaterial: MeshBasicMaterial | null = null;
 
   public static load(url: string, renderer?: WebGLRenderer): Texture {
-    const resolvedUrl = getAssetUrl(url);
+    const normalizedUrl = TextureManager.normalizeTextureUrl(url);
+    const resolvedUrl = getAssetUrl(normalizedUrl);
     if (this.cache.has(url)) {
       return this.cache.get(url)!;
+    }
+    if (this.cache.has(normalizedUrl)) {
+      return this.cache.get(normalizedUrl)!;
     }
     if (this.cache.has(resolvedUrl)) {
       return this.cache.get(resolvedUrl)!;
@@ -120,6 +141,7 @@ export class TextureManager {
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     this.cache.set(url, tex);
+    this.cache.set(normalizedUrl, tex);
     this.cache.set(resolvedUrl, tex);
     return tex;
   }
@@ -135,137 +157,137 @@ export class TextureManager {
 
   public static readonly ALL_ASSET_URLS: string[] = [
     // Weapons & Combat
-    '/textures/weapon_astral_staff.png',
-    '/textures/weapon_bow.png',
-    '/textures/weapon_chakram.png',
-    '/textures/weapon_flail.png',
-    '/textures/weapon_greatsword.png',
-    '/textures/weapon_holy_aura.png',
-    '/textures/weapon_katana_slash.png',
-    '/textures/weapon_kukri.png',
-    '/textures/weapon_lightning_strike.png',
-    '/textures/weapon_ice_spike.png',
-    '/textures/weapon_fireball.png',
-    '/textures/weapon_orbiting_barrier.png',
-    '/textures/weapon_whirlwind_slash.png',
-    '/textures/weapon_reaper_scythe.png',
-    '/textures/bullet_revolver.png',
-    '/textures/vfx_lightning.png',
-    '/textures/vfx_fire_ring.png',
-    '/textures/vfx_ice_spike.png',
-    '/textures/vfx_fireball.png',
-    '/textures/vfx_scythe.png',
+    '/textures/weapons/weapon_astral_staff.png',
+    '/textures/weapons/weapon_bow.png',
+    '/textures/weapons/weapon_chakram.png',
+    '/textures/weapons/weapon_flail.png',
+    '/textures/weapons/weapon_greatsword.png',
+    '/textures/weapons/weapon_holy_aura.png',
+    '/textures/weapons/weapon_katana_slash.png',
+    '/textures/weapons/weapon_kukri.png',
+    '/textures/weapons/weapon_lightning_strike.png',
+    '/textures/weapons/weapon_ice_spike.png',
+    '/textures/weapons/weapon_fireball.png',
+    '/textures/weapons/weapon_orbiting_barrier.png',
+    '/textures/weapons/weapon_whirlwind_slash.png',
+    '/textures/weapons/weapon_reaper_scythe.png',
+    '/textures/weapons/bullet_revolver.png',
+    '/textures/vfx/vfx_lightning.png',
+    '/textures/vfx/vfx_fire_ring.png',
+    '/textures/vfx/vfx_ice_spike.png',
+    '/textures/vfx/vfx_fireball.png',
+    '/textures/vfx/vfx_scythe.png',
 
     // Heroes - 6 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
-    '/textures/hero_ronin_front.png',
-    '/textures/hero_ronin_idle.png',
-    '/textures/hero_ronin_walk.png',
-    '/textures/hero_ronin_attack.png',
-    '/textures/hero_ronin_walk_attack.png',
+    '/textures/heroes/hero_ronin_front.png',
+    '/textures/heroes/hero_ronin_idle.png',
+    '/textures/heroes/hero_ronin_walk.png',
+    '/textures/heroes/hero_ronin_attack.png',
+    '/textures/heroes/hero_ronin_walk_attack.png',
 
-    '/textures/hero_valkyrie_front.png',
-    '/textures/hero_valkyrie_idle.png',
-    '/textures/hero_valkyrie_walk.png',
-    '/textures/hero_valkyrie_attack.png',
-    '/textures/hero_valkyrie_walk_attack.png',
+    '/textures/heroes/hero_valkyrie_front.png',
+    '/textures/heroes/hero_valkyrie_idle.png',
+    '/textures/heroes/hero_valkyrie_walk.png',
+    '/textures/heroes/hero_valkyrie_attack.png',
+    '/textures/heroes/hero_valkyrie_walk_attack.png',
 
-    '/textures/hero_flail_front.png',
-    '/textures/hero_flail_idle.png',
-    '/textures/hero_flail_walk.png',
-    '/textures/hero_flail_attack.png',
-    '/textures/hero_flail_walk_attack.png',
+    '/textures/heroes/hero_flail_front.png',
+    '/textures/heroes/hero_flail_idle.png',
+    '/textures/heroes/hero_flail_walk.png',
+    '/textures/heroes/hero_flail_attack.png',
+    '/textures/heroes/hero_flail_walk_attack.png',
 
-    '/textures/hero_sorceress_front.png',
-    '/textures/hero_sorceress_idle.png',
-    '/textures/hero_sorceress_walk.png',
-    '/textures/hero_sorceress_attack.png',
-    '/textures/hero_sorceress_walk_attack.png',
+    '/textures/heroes/hero_sorceress_front.png',
+    '/textures/heroes/hero_sorceress_idle.png',
+    '/textures/heroes/hero_sorceress_walk.png',
+    '/textures/heroes/hero_sorceress_attack.png',
+    '/textures/heroes/hero_sorceress_walk_attack.png',
 
-    '/textures/hero_chakram_front.png',
-    '/textures/hero_chakram_idle.png',
-    '/textures/hero_chakram_walk.png',
-    '/textures/hero_chakram_attack.png',
-    '/textures/hero_chakram_walk_attack.png',
+    '/textures/heroes/hero_chakram_front.png',
+    '/textures/heroes/hero_chakram_idle.png',
+    '/textures/heroes/hero_chakram_walk.png',
+    '/textures/heroes/hero_chakram_attack.png',
+    '/textures/heroes/hero_chakram_walk_attack.png',
 
-    '/textures/hero_archer_front.png',
-    '/textures/hero_archer_idle.png',
-    '/textures/hero_archer_walk.png',
-    '/textures/hero_archer_attack.png',
-    '/textures/hero_archer_walk_attack.png',
+    '/textures/heroes/hero_archer_front.png',
+    '/textures/heroes/hero_archer_idle.png',
+    '/textures/heroes/hero_archer_walk.png',
+    '/textures/heroes/hero_archer_attack.png',
+    '/textures/heroes/hero_archer_walk_attack.png',
 
     // Legacy Hero Avatars
-    '/textures/hero_male_front.png',
-    '/textures/hero_male_back.png',
-    '/textures/hero_male_left.png',
-    '/textures/hero_male_right.png',
-    '/textures/hero_female_front.png',
-    '/textures/hero_female_back.png',
-    '/textures/hero_female_left.png',
-    '/textures/hero_female_right.png',
+    '/textures/heroes/hero_male_front.png',
+    '/textures/heroes/hero_male_back.png',
+    '/textures/heroes/hero_male_left.png',
+    '/textures/heroes/hero_male_right.png',
+    '/textures/heroes/hero_female_front.png',
+    '/textures/heroes/hero_female_back.png',
+    '/textures/heroes/hero_female_left.png',
+    '/textures/heroes/hero_female_right.png',
 
     // Bosses
-    '/textures/boss_demon_walk.png',
-    '/textures/boss_demon_attack.png',
-    '/textures/boss_demon_front.png',
-    '/textures/boss_demon_back.png',
-    '/textures/boss_demon_left.png',
-    '/textures/boss_demon_right.png',
+    '/textures/bosses/boss_demon_walk.png',
+    '/textures/bosses/boss_demon_attack.png',
+    '/textures/bosses/boss_demon_front.png',
+    '/textures/bosses/boss_demon_back.png',
+    '/textures/bosses/boss_demon_left.png',
+    '/textures/bosses/boss_demon_right.png',
 
-    '/textures/boss_hydra_walk.png',
-    '/textures/boss_hydra_attack.png',
-    '/textures/boss_hydra_front.png',
-    '/textures/boss_hydra_back.png',
-    '/textures/boss_hydra_left.png',
-    '/textures/boss_hydra_right.png',
+    '/textures/bosses/boss_hydra_walk.png',
+    '/textures/bosses/boss_hydra_attack.png',
+    '/textures/bosses/boss_hydra_front.png',
+    '/textures/bosses/boss_hydra_back.png',
+    '/textures/bosses/boss_hydra_left.png',
+    '/textures/bosses/boss_hydra_right.png',
 
-    '/textures/boss_sheriff_front.png',
-    '/textures/boss_sheriff_back.png',
-    '/textures/boss_sheriff_left.png',
-    '/textures/boss_sheriff_right.png',
+    '/textures/bosses/boss_sheriff_front.png',
+    '/textures/bosses/boss_sheriff_back.png',
+    '/textures/bosses/boss_sheriff_left.png',
+    '/textures/bosses/boss_sheriff_right.png',
 
     // Monsters (4 Directions)
-    '/textures/monster_coyote_front.png',
-    '/textures/monster_coyote_back.png',
-    '/textures/monster_coyote_left.png',
-    '/textures/monster_coyote_right.png',
+    '/textures/monsters/monster_coyote_front.png',
+    '/textures/monsters/monster_coyote_back.png',
+    '/textures/monsters/monster_coyote_left.png',
+    '/textures/monsters/monster_coyote_right.png',
 
-    '/textures/monster_crawler_front.png',
-    '/textures/monster_crawler_back.png',
-    '/textures/monster_crawler_left.png',
-    '/textures/monster_crawler_right.png',
+    '/textures/monsters/monster_crawler_front.png',
+    '/textures/monsters/monster_crawler_back.png',
+    '/textures/monsters/monster_crawler_left.png',
+    '/textures/monsters/monster_crawler_right.png',
 
-    '/textures/monster_cactus_front.png',
-    '/textures/monster_cactus_back.png',
-    '/textures/monster_cactus_left.png',
-    '/textures/monster_cactus_right.png',
+    '/textures/monsters/monster_cactus_front.png',
+    '/textures/monsters/monster_cactus_back.png',
+    '/textures/monsters/monster_cactus_left.png',
+    '/textures/monsters/monster_cactus_right.png',
 
-    '/textures/monster_skeleton_front.png',
-    '/textures/monster_skeleton_back.png',
-    '/textures/monster_skeleton_left.png',
-    '/textures/monster_skeleton_right.png',
+    '/textures/monsters/monster_skeleton_front.png',
+    '/textures/monsters/monster_skeleton_back.png',
+    '/textures/monsters/monster_skeleton_left.png',
+    '/textures/monsters/monster_skeleton_right.png',
 
-    '/textures/monster_ghost_front.png',
-    '/textures/monster_ghost_back.png',
-    '/textures/monster_ghost_left.png',
-    '/textures/monster_ghost_right.png',
+    '/textures/monsters/monster_ghost_front.png',
+    '/textures/monsters/monster_ghost_back.png',
+    '/textures/monsters/monster_ghost_left.png',
+    '/textures/monsters/monster_ghost_right.png',
 
-    '/textures/monster_scorpion_front.png',
-    '/textures/monster_scorpion_back.png',
-    '/textures/monster_scorpion_left.png',
-    '/textures/monster_scorpion_right.png',
+    '/textures/monsters/monster_scorpion_front.png',
+    '/textures/monsters/monster_scorpion_back.png',
+    '/textures/monsters/monster_scorpion_left.png',
+    '/textures/monsters/monster_scorpion_right.png',
 
-    '/textures/monster_brute_front.png',
-    '/textures/monster_brute_back.png',
-    '/textures/monster_brute_left.png',
-    '/textures/monster_brute_right.png',
+    '/textures/monsters/monster_brute_front.png',
+    '/textures/monsters/monster_brute_back.png',
+    '/textures/monsters/monster_brute_left.png',
+    '/textures/monsters/monster_brute_right.png',
 
-    '/textures/monster_bison_front.png',
-    '/textures/monster_bison_back.png',
-    '/textures/monster_bison_left.png',
-    '/textures/monster_bison_right.png',
+    '/textures/monsters/monster_bison_front.png',
+    '/textures/monsters/monster_bison_back.png',
+    '/textures/monsters/monster_bison_left.png',
+    '/textures/monsters/monster_bison_right.png',
 
     // UI & Environment
-    '/textures/menu_background.jpg'
+    '/textures/ui/menu_background.jpg'
   ];
 
   /**
@@ -305,7 +327,7 @@ export class TextureManager {
             const blobUrl = URL.createObjectURL(blob);
             this.weaponBlobUrls.set(url, blobUrl);
             this.weaponBlobUrls.set(resolvedUrl, blobUrl);
-            const id = url.replace('/textures/weapon_', '').replace('.png', '');
+            const id = url.replace(/^.*weapon_/, '').replace('.png', '');
             this.weaponBlobUrls.set(id, blobUrl);
           }
         } catch {
@@ -388,8 +410,8 @@ export class TextureManager {
     };
 
     return {
-      walk: loadPixel(`/textures/${baseName}_walk.png`),
-      attack: loadPixel(`/textures/${baseName}_attack.png`)
+      walk: loadPixel(`/textures/bosses/${baseName}_walk.png`),
+      attack: loadPixel(`/textures/bosses/${baseName}_attack.png`)
     };
   }
 
@@ -402,10 +424,10 @@ export class TextureManager {
     };
 
     return {
-      idle: loadPixel(`/textures/${baseName}_idle.png`),
-      walk: loadPixel(`/textures/${baseName}_walk.png`),
-      attack: loadPixel(`/textures/${baseName}_attack.png`),
-      walk_attack: loadPixel(`/textures/${baseName}_walk_attack.png`)
+      idle: loadPixel(`/textures/heroes/${baseName}_idle.png`),
+      walk: loadPixel(`/textures/heroes/${baseName}_walk.png`),
+      attack: loadPixel(`/textures/heroes/${baseName}_attack.png`),
+      walk_attack: loadPixel(`/textures/heroes/${baseName}_walk_attack.png`)
     };
   }
 
@@ -438,7 +460,7 @@ export class TextureManager {
   }
 
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/bullet_revolver.png', renderer);
+    const tex = this.load('/textures/weapons/bullet_revolver.png', renderer);
     tex.magFilter = NearestFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
@@ -526,49 +548,49 @@ export class TextureManager {
   }
 
   public static getKukriTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/weapon_kukri.png', renderer);
+    const tex = this.load('/textures/weapons/weapon_kukri.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   public static getChakramTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/weapon_chakram.png', renderer);
+    const tex = this.load('/textures/weapons/weapon_chakram.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   public static getLightningTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/vfx_lightning.png', renderer);
+    const tex = this.load('/textures/vfx/vfx_lightning.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   public static getIceSpikeTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/vfx_ice_spike.png', renderer);
+    const tex = this.load('/textures/vfx/vfx_ice_spike.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   public static getFireballTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/vfx_fireball.png', renderer);
+    const tex = this.load('/textures/vfx/vfx_fireball.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   public static getScytheTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/vfx_scythe.png', renderer);
+    const tex = this.load('/textures/vfx/vfx_scythe.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
   }
 
   public static getFireRingTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/vfx_fire_ring.png', renderer);
+    const tex = this.load('/textures/vfx/vfx_fire_ring.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;

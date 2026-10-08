@@ -117,9 +117,9 @@ export class NetworkManager {
   public packetLoss: number = 0;
   public uploadKbps: number = 0;
   public downloadKbps: number = 0;
-  public webRtcRoute: string = 'P2P';
+  public webRtcRoute: string = 'none';
   public isTurnRoute: boolean = false;
-  public webRtcConnectionState: string = 'connected';
+  public webRtcConnectionState: string = 'disconnected';
   private lastHostMessageTime: number = 0;
 
   private bytesSentWindow: number = 0;
@@ -1170,21 +1170,21 @@ export class NetworkManager {
         connection: this.webRtcConnectionState || 'connected',
         route: this.webRtcRoute || 'P2P',
         turn: this.isTurnRoute,
-        uploadKbps: this.uploadKbps > 0 ? this.uploadKbps : 42,
-        downloadKbps: this.downloadKbps > 0 ? this.downloadKbps : 31
+        uploadKbps: this.uploadKbps,
+        downloadKbps: this.downloadKbps
       };
     }
 
     // Default telemetry matching specification for Solo mode & offline testing
     return {
-      rtt: 31,
-      jitter: 1.8,
+      rtt: 0,
+      jitter: 0,
       packetLoss: 0.0,
-      connection: 'connected',
-      route: 'P2P',
+      connection: 'offline',
+      route: 'none',
       turn: false,
-      uploadKbps: 42,
-      downloadKbps: 31
+      uploadKbps: 0,
+      downloadKbps: 0
     };
   }
 
@@ -1270,9 +1270,9 @@ export class NetworkManager {
     this.packetLoss = 0;
     this.uploadKbps = 0;
     this.downloadKbps = 0;
-    this.webRtcRoute = 'P2P';
+    this.webRtcRoute = 'none';
     this.isTurnRoute = false;
-    this.webRtcConnectionState = 'connected';
+    this.webRtcConnectionState = 'disconnected';
     this.lastHostMessageTime = 0;
 
     this.role = 'solo';

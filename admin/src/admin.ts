@@ -10,7 +10,7 @@ import { renderHeroes } from './views/heroesView';
 import { renderMonsters } from './views/monstersView';
 import { renderBosses } from './views/bossesView';
 import { renderGlobal } from './views/globalView';
-import { DEFAULT_BALANCE } from '../../src/balance/defaultBalance';
+import { DEFAULT_BALANCE } from '../../game/src/balance/defaultBalance';
 
 export class AdminController {
   public state: BalanceState;

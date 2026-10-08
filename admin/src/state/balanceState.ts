@@ -1,6 +1,7 @@
-import { GameBalanceState, BalanceRow } from '../../../src/balance/BalanceTypes';
-import { DEFAULT_BALANCE } from '../../../src/balance/defaultBalance';
+import { GameBalanceState, BalanceRow } from '../../../game/src/balance/BalanceTypes';
+import { DEFAULT_BALANCE } from '../../../game/src/balance/defaultBalance';
 import { TableSort } from '../types';
+import { toPluralCategory } from '../constants';
 
 export class BalanceState {
   public originalBalance: GameBalanceState;
@@ -105,7 +106,7 @@ export class BalanceState {
 
   public mergeRemoteRow(row: BalanceRow): void {
     if (!row || !row.category || !row.data) return;
-    const cat = row.category as keyof GameBalanceState;
+    const cat = toPluralCategory(row.category);
 
     if (cat === 'global') {
       this.originalBalance.global = { ...this.originalBalance.global, ...row.data };

@@ -70,7 +70,7 @@ export function renderHeroes(
           <span class="chevron-arrow">›</span>
         </div>
         <div class="accordion-col-main">
-          <img src="${textureUrl}" class="item-texture" alt="${h.name}" onerror="this.src='/textures/bullet_revolver.png'">
+          <img src="${textureUrl}" class="item-texture" alt="${h.name}" onerror="this.src='/textures/weapons/bullet_revolver.png'">
           <div class="item-identity">
             <span class="item-title">${h.name}</span>
             <span class="item-id-badge">${h.id}</span>
