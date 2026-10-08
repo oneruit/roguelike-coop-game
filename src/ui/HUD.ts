@@ -403,10 +403,9 @@ export class HUD {
       SoundManager.playButtonClick();
       this.hideQuestsModal();
       this.hideMainMenu();
+      this.showCharacterSelect();
       if (this.onSinglePlayerSelected) {
         this.onSinglePlayerSelected();
-      } else {
-        this.showCharacterSelect();
       }
     });
 

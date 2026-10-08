@@ -155,7 +155,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </span>
-          <input type="text" id="global-search" class="topbar-search-input" placeholder="Поиск оружия, героя, параметров (Ctrl+K)...">
+          <input type="search" id="global-search" name="admin_search_query" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" class="topbar-search-input" placeholder="Поиск оружия, героя, параметров (Ctrl+K)...">
           <button id="btn-clear-search" class="btn-clear-search hidden" title="Очистить поиск">✕</button>
         </div>
 
@@ -923,22 +923,22 @@
               <h3 class="card-surface-title">🔐 Ключи подключения (Локальное хранилище)</h3>
               <p class="card-desc">Ключи хранятся исключительно в вашем локальном окружении и браузере. Service Role Key никогда не передается в публичную клиентскую сборку игры.</p>
 
-              <form id="connection-form" class="form-grid">
+              <div id="connection-form" class="form-grid">
                 <div class="form-group">
                   <label for="cfg-supabase-url">Supabase Project URL</label>
-                  <input type="text" id="cfg-supabase-url" placeholder="https://your-project.supabase.co" required>
+                  <input type="text" id="cfg-supabase-url" name="supabase_project_url" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" placeholder="https://your-project.supabase.co" required>
                   <small>Settings -&gt; API -&gt; Project URL</small>
                 </div>
 
                 <div class="form-group">
                   <label for="cfg-supabase-anon">Anon / Public Key</label>
-                  <input type="password" id="cfg-supabase-anon" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
+                  <input type="password" id="cfg-supabase-anon" name="supabase_anon_key" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
                   <small>Публичный ключ (доступен клиенту игры только для чтения)</small>
                 </div>
 
                 <div class="form-group" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px;">
                   <label for="cfg-supabase-service" style="color: #92400e; font-weight: 700;">🔑 Service Role Key (Секретный ключ для записи)</label>
-                  <input type="password" id="cfg-supabase-service" placeholder="eyJh..." style="border-color: #f59e0b; background: #ffffff;">
+                  <input type="password" id="cfg-supabase-service" name="supabase_service_role_key" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" spellcheck="false" placeholder="eyJh..." style="border-color: #f59e0b; background: #ffffff;">
                   <div style="font-size: 12px; color: #78350f; line-height: 1.5; margin-top: 6px;">
                     <strong>Где взять в Supabase:</strong>
                     <ol style="margin: 4px 0 6px 18px;">
@@ -953,16 +953,16 @@
 
                 <div class="form-group">
                   <label for="cfg-admin-passcode">Admin Passcode / Защитный PIN (Опционально)</label>
-                  <input type="password" id="cfg-admin-passcode" placeholder="PIN-код для подтверждения">
+                  <input type="password" id="cfg-admin-passcode" name="admin_security_pin" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" spellcheck="false" placeholder="PIN-код для подтверждения">
                   <small>Запрашивается при подтверждении изменений в модальном окне</small>
                 </div>
 
                 <div class="form-actions-row">
                   <button type="button" id="btn-test-conn" class="btn btn-secondary">🔌 Проверить связь</button>
-                  <button type="submit" class="btn btn-primary">💾 Сохранить локально</button>
+                  <button type="button" id="btn-save-conn" class="btn btn-primary">💾 Сохранить локально</button>
                   <button type="button" id="btn-seed-db" class="btn btn-gold">🌱 Инициализировать БД из BALANCE_REFERENCE.md</button>
                 </div>
-              </form>
+              </div>
             </div>
 
             <div class="card-surface">
