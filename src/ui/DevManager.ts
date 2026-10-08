@@ -3,6 +3,7 @@ import { Player } from '../entities/Player';
 import { EnemyManager } from '../entities/EnemyManager';
 import { DropManager } from '../drops/DropManager';
 import { EnemyType } from '../entities/Enemy';
+import { UpdateNotifier } from '../core/UpdateNotifier';
 
 export class DevManager {
   private modal: HTMLElement;
@@ -303,6 +304,11 @@ export class DevManager {
         this.onBroadcastDevAction?.('max_weapons');
       }
     });
+
+    document.getElementById('dev-btn-test-update')?.addEventListener('click', () => {
+      UpdateNotifier.getInstance().simulateUpdate('1.0.1');
+    });
+
 
     // 4. Monsters & Boss
     document.getElementById('dev-btn-spawn-boss')?.addEventListener('click', () => {

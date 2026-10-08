@@ -105,6 +105,43 @@
         <div id="altar-notification-text" class="altar-notif-text">АЛТАРЬ ЗАХВАЧЕН!</div>
       </div>
 
+      <!-- Game Update Notification Banner & Pill (Non-intrusive) -->
+      <div id="game-update-container" class="hidden">
+        <!-- Expanded Banner -->
+        <div id="game-update-banner" class="game-update-banner">
+          <div class="update-banner-icon-wrap">
+            <span class="update-pulse-ring"></span>
+            <span class="update-banner-icon">🚀</span>
+          </div>
+          <div class="update-banner-info">
+            <div class="update-banner-header">
+              <span class="update-badge-label">НОВЫЙ ПАТЧ</span>
+              <span class="update-version-label" id="update-new-version-text">v1.0.1</span>
+            </div>
+            <div class="update-banner-text" id="update-banner-message">
+              Вышло обновление игры! Рекомендуем перезагрузить страницу после боя.
+            </div>
+          </div>
+          <div class="update-banner-actions">
+            <button id="btn-update-reload" class="update-btn-reload" type="button" tabindex="-1">
+              <span class="update-btn-icon">🔄</span>
+              <span>Обновить</span>
+            </button>
+            <button id="btn-update-dismiss" class="update-btn-dismiss" type="button" tabindex="-1" title="Скрыть (после боя)">
+              <span>✕</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Minimized Pill -->
+        <button id="game-update-pill" class="game-update-pill hidden" type="button" tabindex="-1" title="Нажмите, чтобы открыть меню обновления">
+          <span class="pill-pulse-dot"></span>
+          <span class="pill-icon">🚀</span>
+          <span class="pill-text" id="update-pill-text">Патч готов</span>
+          <span class="pill-action">Обновить ↻</span>
+        </button>
+      </div>
+
       <!-- Interactive Object Tooltip Prompt (Chests, Teleporter) -->
       <div id="interaction-prompt" class="hidden">
         <span class="prompt-key">[E]</span>
@@ -259,7 +296,13 @@
               </div>
             </button>
           </div>
+
+          <!-- Client Version & Update Pill in Main Menu -->
+          <div id="main-menu-version-tag" class="main-menu-version-tag" title="Версия клиента">
+            <span id="main-menu-version-text">v1.0.0</span>
+          </div>
         </div>
+
 
         <!-- Right Side: Daily & Weekly Quests Sidebar -->
         <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий">
@@ -1868,6 +1911,10 @@
                 <button id="dev-btn-max-weapons" class="dev-btn">
                   <span class="btn-icon">[MAX]</span>
                   <span>Максимум уровней (MAX)</span>
+                </button>
+                <button id="dev-btn-test-update" class="dev-btn" style="background: rgba(56, 189, 248, 0.22) !important; border-color: #38bdf8 !important; color: #e0f2fe !important;">
+                  <span class="btn-icon">[UPD]</span>
+                  <span>Тест: Патч игры</span>
                 </button>
               </div>
             </div>
