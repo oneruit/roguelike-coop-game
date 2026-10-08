@@ -26,6 +26,8 @@ import { ProgressionManager } from './core/ProgressionManager';
 import { TextureManager } from './core/TextureManager';
 import { SeededRNG } from './core/SeededRNG';
 import { BalanceManager } from './balance/BalanceManager';
+import { UpdateNotifier } from './core/UpdateNotifier';
+import { UpdateNotificationUI } from './ui/UpdateNotificationUI';
 
 const SPAWN_OFFSETS: Record<string, [number, number]> = {
   p1: [0, 0],
@@ -58,7 +60,9 @@ class Game {
   private debugHud: DebugHUD;
   private mapManager: MapManager;
   private net: NetworkManager;
+  private updateUI: UpdateNotificationUI;
   private roomPollingTimer: number | null = null;
+
   public isTrainingMode: boolean = false;
 
   // Performance Telemetry EMA smoothers
@@ -108,6 +112,9 @@ class Game {
     this.enemyManager = new EnemyManager(this.engine.scene, this.dropManager, this.damageNumbers);
     this.player = new Player(this.engine.scene, 'ronin');
     this.net = new NetworkManager();
+    UpdateNotifier.getInstance().init();
+    this.updateUI = new UpdateNotificationUI();
+
 
     this.biomeManager = new BiomeManager();
     this.chestManager = new ChestManager(this.engine.scene);
@@ -1086,6 +1093,7 @@ class Game {
     this.isLevelUpActive = false;
     this.hud.resetBossUI();
     this.gameState = GameState.MAIN_MENU;
+    this.updateUI.onRunEnded();
     this.hud.showMainMenu();
   }
 
@@ -1271,6 +1279,7 @@ class Game {
     this.hud.resetBossUI();
     this.gameTime = 0;
     this.gameState = GameState.PLAYING;
+    this.updateUI.setCombatActive(true);
     this.lastTime = performance.now();
   }
 
@@ -2681,6 +2690,7 @@ class Game {
 
   private triggerGameOver(isVictory: boolean = false) {
     this.gameState = GameState.GAME_OVER;
+    this.updateUI.onRunEnded();
     const mins = Math.floor(this.gameTime / 60);
     const secs = Math.floor(this.gameTime % 60);
     const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
