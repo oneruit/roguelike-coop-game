@@ -1349,6 +1349,8 @@ export class HUD {
       ? 'Ария «Посох»'
       : charType === 'chakram'
       ? 'Кира «Чакрам»'
+      : charType === 'knight'
+      ? 'Артур «Рыцарь»'
       : 'Эльф-лучник «Лук»';
   }
 
@@ -1363,6 +1365,8 @@ export class HUD {
       ? '/textures/heroes/hero_sorceress_front.png'
       : charType === 'chakram'
       ? '/textures/heroes/hero_chakram_front.png'
+      : charType === 'knight'
+      ? '/textures/heroes/hero_knight_front.png'
       : '/textures/heroes/hero_archer_front.png';
     return TextureManager.getAssetUrl(avatar);
   }

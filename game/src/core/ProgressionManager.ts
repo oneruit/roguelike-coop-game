@@ -97,7 +97,8 @@ export class ProgressionManager {
         flail: true,     // Brigitta (unlocked)
         sorceress: true, // Aria (unlocked)
         chakram: true,   // Kira (unlocked)
-        archer: false    // Elf: Locked! (Buy / Achievement)
+        archer: false,   // Elf: Locked! (Buy / Achievement)
+        knight: true     // Knight (unlocked)
       },
       dailyQuestsProgress: {
         daily_goblins: { current: 2, isClaimed: false },
@@ -135,7 +136,8 @@ export class ProgressionManager {
             flail: parsed.unlockedHeroes?.flail ?? true,
             sorceress: parsed.unlockedHeroes?.sorceress ?? true,
             chakram: parsed.unlockedHeroes?.chakram ?? true,
-            archer: Boolean(parsed.unlockedHeroes?.archer)
+            archer: Boolean(parsed.unlockedHeroes?.archer),
+            knight: parsed.unlockedHeroes?.knight ?? true
           },
           dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
             ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
@@ -536,6 +538,28 @@ export class ProgressionManager {
             crystals: 26
           },
           unlockConditionHint: 'Открывается после выполнения задания'
+        };
+
+      case 'knight':
+        return {
+          hero: 'knight',
+          heroName: 'Артур',
+          heroSubtitle: '«Рыцарь»',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_katana_slash.png'),
+          weaponName: 'Рассекающий Клинок',
+          avatarIcon: getAssetUrl('/textures/heroes/hero_knight_front.png'),
+          questTitle: 'Кодекс Рыцаря',
+          questDesc: 'Благородный рыцарь готов встать на защиту отряда. Доступен сразу.',
+          steps: [
+            'Рыцарь готов к походу в Разлом.'
+          ],
+          rewards: {
+            potions: 2,
+            coins: 1000,
+            rings: 2,
+            crystals: 20
+          },
+          unlockConditionHint: 'Доступен по умолчанию'
         };
 
       case 'archer':

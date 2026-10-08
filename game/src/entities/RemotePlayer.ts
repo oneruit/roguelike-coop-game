@@ -247,6 +247,8 @@ export class RemotePlayer {
         ? TextureManager.loadChakramTextures()
         : charType === 'archer'
         ? TextureManager.loadArcherTextures()
+        : charType === 'knight'
+        ? TextureManager.loadKnightTextures()
         : TextureManager.loadRoninTextures();
 
     // Clone textures so UV repeat and offset mutations never collide with player 1
@@ -408,26 +410,27 @@ export class RemotePlayer {
   private updateAnimation(dt: number) {
     if (!this.animatedTextures) return;
 
-    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: { texture: this.animatedTextures.idle, cols: 10, fps: 8 },
-      WALK: { texture: this.animatedTextures.walk, cols: 6, fps: 12 },
-      ATTACK: { texture: this.animatedTextures.attack, cols: 8, fps: 16 },
-      WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 6, fps: 14 }
-    };
+    const is3Row = this.charType === 'knight';
+
+    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; rows: number; fps: number }> = is3Row
+      ? {
+          IDLE: { texture: this.animatedTextures.idle, cols: 4, rows: 3, fps: 8 },
+          WALK: { texture: this.animatedTextures.walk, cols: 4, rows: 3, fps: 10 },
+          ATTACK: { texture: this.animatedTextures.attack, cols: 5, rows: 3, fps: 14 },
+          WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 5, rows: 3, fps: 14 }
+        }
+      : {
+          IDLE: { texture: this.animatedTextures.idle, cols: 10, rows: 4, fps: 8 },
+          WALK: { texture: this.animatedTextures.walk, cols: 6, rows: 4, fps: 12 },
+          ATTACK: { texture: this.animatedTextures.attack, cols: 8, rows: 4, fps: 16 },
+          WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 6, rows: 4, fps: 14 }
+        };
 
     const cfg = STATE_CONFIG[this.animState] || STATE_CONFIG.IDLE;
     const tex = cfg.texture;
 
     this.animFrameTimer += dt * cfg.fps;
     const frameCol = Math.floor(this.animFrameTimer) % cfg.cols;
-
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = {
-      front: 0,
-      right: 2,
-      left: 1,
-      back: 3
-    };
-    const row = DIR_ROW_MAP[this.currentDir] ?? 0;
 
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
@@ -437,8 +440,28 @@ export class RemotePlayer {
       }
     }
 
-    tex.repeat.set(1 / cfg.cols, 1 / 4);
-    tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    if (is3Row) {
+      const row = this.currentDir === 'front' ? 0 : this.currentDir === 'back' ? 2 : 1;
+      const isMirror = this.currentDir === 'left';
+      if (isMirror) {
+        tex.repeat.set(-1 / cfg.cols, 1 / cfg.rows);
+        tex.offset.set((frameCol + 1) / cfg.cols, (cfg.rows - 1 - row) / cfg.rows);
+      } else {
+        tex.repeat.set(1 / cfg.cols, 1 / cfg.rows);
+        tex.offset.set(frameCol / cfg.cols, (cfg.rows - 1 - row) / cfg.rows);
+      }
+    } else {
+      const DIR_ROW_MAP: Record<SpriteDirection, number> = {
+        front: 0,
+        right: 2,
+        left: 1,
+        back: 3
+      };
+      const row = DIR_ROW_MAP[this.currentDir] ?? 0;
+
+      tex.repeat.set(1 / cfg.cols, 1 / 4);
+      tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    }
   }
 
   public redrawOverhead() {

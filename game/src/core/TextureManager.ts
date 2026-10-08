@@ -215,6 +215,12 @@ export class TextureManager {
     '/textures/heroes/hero_archer_attack.png',
     '/textures/heroes/hero_archer_walk_attack.png',
 
+    '/textures/heroes/hero_knight_front.png',
+    '/textures/heroes/hero_knight_idle.png',
+    '/textures/heroes/hero_knight_walk.png',
+    '/textures/heroes/hero_knight_attack.png',
+    '/textures/heroes/hero_knight_walk_attack.png',
+
     // Legacy Hero Avatars
     '/textures/heroes/hero_male_front.png',
     '/textures/heroes/hero_male_back.png',
@@ -457,6 +463,10 @@ export class TextureManager {
 
   public static loadArcherTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_archer', renderer);
+  }
+
+  public static loadKnightTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_knight', renderer);
   }
 
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {

@@ -298,6 +298,8 @@ export class Player {
         ? TextureManager.loadChakramTextures()
         : charType === 'archer'
         ? TextureManager.loadArcherTextures()
+        : charType === 'knight'
+        ? TextureManager.loadKnightTextures()
         : TextureManager.loadRoninTextures();
 
     this.animatedTextures = {
@@ -357,6 +359,8 @@ export class Player {
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
     } else if (this.charType === 'archer') {
       this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+    } else if (this.charType === 'knight') {
+      this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.42)));
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }
@@ -754,45 +758,68 @@ export class Player {
   private updateAnimatedCharacterAnimation(dt: number) {
     if (!this.animatedTextures) return;
 
-    // Config for each of the 4 states: texture, column frame count, and playback FPS
-    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: {
-        texture: this.animatedTextures.idle,
-        cols: 10,
-        fps: 8 // Smooth breathing/idle
-      },
-      WALK: {
-        texture: this.animatedTextures.walk,
-        cols: 6,
-        fps: 12 // Responsive run footsteps
-      },
-      ATTACK: {
-        texture: this.animatedTextures.attack,
-        cols: 8,
-        fps: 16 // Fast, punchy slash
-      },
-      WALK_ATTACK: {
-        texture: this.animatedTextures.walk_attack,
-        cols: 6,
-        fps: 14 // Dash cleave
-      }
-    };
+    const is3Row = this.charType === 'knight';
+
+    // Config for each of the 4 states: texture, column frame count, row count, and playback FPS
+    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; rows: number; fps: number }> = is3Row
+      ? {
+          IDLE: {
+            texture: this.animatedTextures.idle,
+            cols: 4,
+            rows: 3,
+            fps: 8 // Smooth breathing & blink cycle
+          },
+          WALK: {
+            texture: this.animatedTextures.walk,
+            cols: 4,
+            rows: 3,
+            fps: 10 // Crisp 4-frame stride
+          },
+          ATTACK: {
+            texture: this.animatedTextures.attack,
+            cols: 5,
+            rows: 3,
+            fps: 14 // 5-frame sword cleave
+          },
+          WALK_ATTACK: {
+            texture: this.animatedTextures.walk_attack,
+            cols: 5,
+            rows: 3,
+            fps: 14 // 5-frame dash cleave
+          }
+        }
+      : {
+          IDLE: {
+            texture: this.animatedTextures.idle,
+            cols: 10,
+            rows: 4,
+            fps: 8 // Smooth breathing/idle
+          },
+          WALK: {
+            texture: this.animatedTextures.walk,
+            cols: 6,
+            rows: 4,
+            fps: 12 // Responsive run footsteps
+          },
+          ATTACK: {
+            texture: this.animatedTextures.attack,
+            cols: 8,
+            rows: 4,
+            fps: 16 // Fast, punchy slash
+          },
+          WALK_ATTACK: {
+            texture: this.animatedTextures.walk_attack,
+            cols: 6,
+            rows: 4,
+            fps: 14 // Dash cleave
+          }
+        };
 
     const cfg = STATE_CONFIG[this.animState];
     const tex = cfg.texture;
 
     this.animFrameTimer += dt * cfg.fps;
     const frameCol = Math.floor(this.animFrameTimer) % cfg.cols;
-
-    // Direction to row mapping:
-    // Row 0: front, Row 1: left, Row 2: right, Row 3: back
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = {
-      front: 0,
-      right: 2,
-      left: 1,
-      back: 3
-    };
-    const row = DIR_ROW_MAP[this.currentDir];
 
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
@@ -802,9 +829,33 @@ export class Player {
       }
     }
 
-    // Three.js UV repeat and offset mapping
-    tex.repeat.set(1 / cfg.cols, 1 / 4);
-    tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    if (is3Row) {
+      // 3-row layout: Row 0 = front, Row 1 = side (right-facing), Row 2 = back
+      const row = this.currentDir === 'front' ? 0 : this.currentDir === 'back' ? 2 : 1;
+      const isMirror = this.currentDir === 'left';
+      if (isMirror) {
+        // Horizontally mirror side view for left direction
+        tex.repeat.set(-1 / cfg.cols, 1 / cfg.rows);
+        tex.offset.set((frameCol + 1) / cfg.cols, (cfg.rows - 1 - row) / cfg.rows);
+      } else {
+        tex.repeat.set(1 / cfg.cols, 1 / cfg.rows);
+        tex.offset.set(frameCol / cfg.cols, (cfg.rows - 1 - row) / cfg.rows);
+      }
+    } else {
+      // Legacy 4-row layout:
+      // Row 0: front, Row 1: left, Row 2: right, Row 3: back
+      const DIR_ROW_MAP: Record<SpriteDirection, number> = {
+        front: 0,
+        right: 2,
+        left: 1,
+        back: 3
+      };
+      const row = DIR_ROW_MAP[this.currentDir];
+
+      // Three.js UV repeat and offset mapping
+      tex.repeat.set(1 / cfg.cols, 1 / 4);
+      tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    }
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {

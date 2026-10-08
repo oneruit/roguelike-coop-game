@@ -1152,6 +1152,8 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
       return new SimChakramWeapon();
     case 'archer':
       return new SimBowWeapon();
+    case 'knight':
+      return new SimKatanaSlashWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();

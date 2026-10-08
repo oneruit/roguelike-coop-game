@@ -220,6 +220,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.35,
       startingWeapon: 'bow',
       role: 'Сверхбыстрый снайпер с дальнобойными стрелами'
+    },
+    knight: {
+      id: 'knight',
+      name: 'Рыцарь',
+      maxHp: 125,
+      baseSpeed: 8.5,
+      damageMultiplier: 1.40,
+      startingWeapon: 'katana_slash',
+      role: 'Благородный рыцарь с рассекающим клинком'
     }
   },
   monsters: {
