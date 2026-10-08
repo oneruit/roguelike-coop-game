@@ -1,0 +1,166 @@
+      <div id="settings-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card settings-card modern-glass-modal">
+          <div class="modal-header">
+            <div class="sub-title menu-badge-yellow">ПАРАМЕТРЫ ИГРЫ</div>
+            <h2 class="modern-menu-title">НАСТРОЙКИ</h2>
+          </div>
+
+          <!-- Settings Navigation Tabs -->
+          <div class="settings-nav-tabs">
+            <button id="settings-tab-btn-video" class="settings-tab-btn active" type="button" data-tab="video">
+              <span class="tab-icon">🖥️</span> Видео
+            </button>
+            <button id="settings-tab-btn-audio" class="settings-tab-btn" type="button" data-tab="audio">
+              <span class="tab-icon">🔊</span> Аудио
+            </button>
+            <button id="settings-tab-btn-ui" class="settings-tab-btn" type="button" data-tab="ui">
+              <span class="tab-icon">📊</span> Интерфейс
+            </button>
+            <button id="settings-tab-btn-controls" class="settings-tab-btn" type="button" data-tab="controls">
+              <span class="tab-icon">🎮</span> Управление
+            </button>
+            <button id="settings-tab-btn-data" class="settings-tab-btn" type="button" data-tab="data">
+              <span class="tab-icon">💾</span> Данные
+            </button>
+          </div>
+
+          <div class="settings-content">
+            <!-- 1. Вкладка: ВИДЕО -->
+            <div id="settings-tab-video" class="settings-tab-pane">
+              <div class="settings-section">
+                <div class="settings-section-title">Графика и Экран / Display & Graphics</div>
+                <div class="settings-row">
+                  <label class="settings-label">Полноэкранный режим:</label>
+                  <button id="settings-btn-fullscreen" class="settings-mini-btn">Полный экран</button>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-resolution" class="settings-label">Качество графики (Рендер):</label>
+                  <div class="settings-control-row">
+                    <select id="settings-resolution" class="settings-select">
+                      <option value="1" selected>Высокое (100%)</option>
+                      <option value="0.85">Среднее (85%)</option>
+                      <option value="0.7">Низкое (70%)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-shadow-quality" class="settings-label">Качество теней:</label>
+                  <div class="settings-control-row">
+                    <select id="settings-shadow-quality" class="settings-select">
+                      <option value="0">Отключено (0)</option>
+                      <option value="512">Низкое (512)</option>
+                      <option value="1024" selected>Среднее (1024)</option>
+                      <option value="2048">Высокое (2048)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-vfx-opacity" class="settings-label">Прозрачность эффектов оружия (VFX):</label>
+                  <div class="settings-control-row">
+                    <input type="range" id="settings-vfx-opacity" min="0" max="100" value="100" class="settings-slider" />
+                    <span id="settings-vfx-opacity-val" class="settings-val-badge">100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Вкладка: АУДИО -->
+            <div id="settings-tab-audio" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Звук и Аудио / Audio</div>
+                <div class="settings-row">
+                  <label for="settings-volume" class="settings-label">Громкость звуков:</label>
+                  <div class="settings-control-row">
+                    <input type="range" id="settings-volume" min="0" max="100" value="80" class="settings-slider" />
+                    <span id="settings-volume-val" class="settings-val-badge">80%</span>
+                    <button id="settings-btn-test-sound" class="settings-mini-btn" title="Проверить громкость">Тест</button>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-mute" class="settings-label">Отключить звук (Mute):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-mute" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Вкладка: ИНТЕРФЕЙС -->
+            <div id="settings-tab-ui" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Элементы интерфейса / Interface & HUD</div>
+                <div class="settings-row">
+                  <label for="settings-perf-overlay" class="settings-label">Счетчик FPS и Пинг (Latency):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-perf-overlay" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-damage-numbers" class="settings-label">Числа урона над врагами (Damage):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-damage-numbers" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-xp-numbers" class="settings-label">Числа получения опыта (XP):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-xp-numbers" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <label for="settings-auto-levelup" class="settings-label">Автовыбор оружия (автопрокачка):</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="settings-auto-levelup" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Вкладка: УПРАВЛЕНИЕ -->
+            <div id="settings-tab-controls" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Управление и Навигация / Controls</div>
+                <div class="settings-controls-summary">
+                  <div class="ctrl-item"><span class="key-tag">[W][A][S][D] / Стрелочки</span> <span>Перемещение</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[1] [2] [3]</span> <span>Выбор оружия при повышении уровня</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[ПРОБЕЛ] / [SHIFT]</span> <span>Рывок (Dash)</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[TAB]</span> <span>Интерактивная карта</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[ESC]</span> <span>Пауза / Назад</span></div>
+                  <div class="ctrl-item"><span class="key-tag dev-tag">[P]</span> <span>Консоль разработчика</span></div>
+                  <div class="ctrl-item"><span class="key-tag">[F3]</span> <span>Сетевая отладка</span></div>
+                </div>
+                <button id="settings-btn-open-guide" class="settings-guide-btn" style="margin-top: 14px; width: 100%;">
+                  📖 Открыть справочник
+                </button>
+              </div>
+            </div>
+
+            <!-- 5. Вкладка: ДАННЫЕ -->
+            <div id="settings-tab-data" class="settings-tab-pane hidden">
+              <div class="settings-section">
+                <div class="settings-section-title">Хранилище и Прогресс / Storage & Data</div>
+                <div class="settings-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                  <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.45; margin: 0;">
+                    Сброс данных удаляет весь локальный прогресс игры: уровни аккаунта, открытых героев, золото, выполненные квесты Лешего и пользовательские настройки.
+                  </p>
+                  <button id="settings-btn-clear-data" class="settings-danger-btn" style="margin-top: 8px; width: 100%;">
+                    🗑️ Очистить данные / Clear Data
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lobby-actions" style="margin-top: 24px;">
+            <button id="settings-btn-back" class="modern-back-btn">← Назад в главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exit Confirmation Modal -->

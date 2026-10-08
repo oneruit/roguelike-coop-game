@@ -53,6 +53,25 @@ function versionPlugin(isBuild: boolean, buildTime: number, buildId: string): Pl
   };
 }
 
+function htmlPartialsPlugin(): Plugin {
+  return {
+    name: 'html-partials-plugin',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        return html.replace(/<!--\s*#include\s+"([^"]+)"\s*-->/g, (_, file) => {
+          const filePath = path.resolve(process.cwd(), file);
+          if (fs.existsSync(filePath)) {
+            return fs.readFileSync(filePath, 'utf-8');
+          }
+          console.warn(`[htmlPartialsPlugin] Partial not found: ${filePath}`);
+          return '';
+        });
+      }
+    }
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   const isBuild = command === 'build';
@@ -71,7 +90,7 @@ export default defineConfig(({ command }) => {
       (process.env.GITHUB_ACTIONS && process.env.GITHUB_REPOSITORY
         ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/`
         : './'),
-    plugins: [versionPlugin(isBuild, currentBuildTime, currentBuildId)],
+    plugins: [versionPlugin(isBuild, currentBuildTime, currentBuildId), htmlPartialsPlugin()],
     define: {
       __APP_VERSION__: JSON.stringify(appVersion),
       __APP_BUILD_TIME__: JSON.stringify(currentBuildTime),

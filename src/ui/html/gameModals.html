@@ -1,0 +1,177 @@
+      <div id="pause-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card pause-card modern-glass-modal">
+          <div class="modal-header">
+            <div class="sub-title menu-badge-blue">ПАУЗА</div>
+            <h2 class="wild-west-title modern-menu-title">ИГРА ПРИОСТАНОВЛЕНА</h2>
+          </div>
+          <p class="pause-hint menu-tagline-modern">Нажмите [ESC] или кнопку ниже, чтобы продолжить битву</p>
+          <div class="pause-seed-row" id="pause-seed-container">
+            <span>SEED КАРТЫ: <strong id="pause-seed-text" style="color: #f59e0b;">#1337</strong></span>
+            <button id="btn-pause-copy-seed" class="copy-seed-small-btn" title="Скопировать seed" type="button">📋 Копировать</button>
+          </div>
+          <div class="pause-actions">
+            <button id="btn-resume" class="action-btn select-btn">Продолжить</button>
+            <button id="btn-pause-dev" class="action-btn modern-back-btn hidden" style="border-color: #38bdf8; color: #38bdf8;">Консоль разработчика [P]</button>
+            <button id="btn-pause-restart-same" class="action-btn select-btn" style="background: rgba(245, 158, 11, 0.25); border-color: #f59e0b;">Заново (тот же seed)</button>
+            <button id="btn-pause-settings" class="action-btn modern-back-btn">Настройки</button>
+            <button id="btn-pause-restart" class="action-btn modern-back-btn">Выбрать героя</button>
+            <button id="btn-pause-menu" class="action-btn modern-back-btn">В главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desert Map Modal (TAB) -->
+      <div id="map-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop" id="map-backdrop"></div>
+        <div class="modal-card fullmap-card modern-glass-modal">
+          <div class="map-modal-header">
+            <div>
+              <div class="sub-title menu-badge-blue">КАРТОГРАФИЯ ДИКОГО ЗАПАДА</div>
+              <h2 class="map-title wild-west-title modern-menu-title">КАРТА ПУСТЫНИ (ИССЛЕДОВАНО)</h2>
+            </div>
+            <button id="btn-close-map" class="modern-back-btn">[X] [TAB]</button>
+          </div>
+
+          <div id="fullmap-stats" class="fullmap-stats-bar">
+            <!-- Dynamically populated stats -->
+          </div>
+
+          <div class="fullmap-canvas-container">
+            <canvas id="fullmap-canvas" width="760" height="500"></canvas>
+          </div>
+
+          <!-- Map Controls Hint -->
+          <div class="map-controls-hint">
+            <span>[Колесо мыши] Масштаб</span>
+            <span>•</span>
+            <span>[Зажать ЛКМ] Сдвиг карты</span>
+            <span>•</span>
+            <span>[ПРОБЕЛ / 2x ЛКМ] Центрировать на игроке</span>
+            <span>•</span>
+            <span>[TAB / ESC] Закрыть</span>
+          </div>
+
+          <!-- Map Legend -->
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-icon">🤠</span><span>Вы (Позиция)</span></div>
+            <div class="legend-item"><span class="legend-icon">⛺</span><span>Лагерь (0, 0)</span></div>
+            <div class="legend-item"><span class="legend-icon">⚔️</span><span>Алтарь Ярости</span></div>
+            <div class="legend-item"><span class="legend-icon">⚡</span><span>Алтарь Ветра</span></div>
+            <div class="legend-item"><span class="legend-icon">💖</span><span>Алтарь Жизни</span></div>
+            <div class="legend-item"><span class="legend-icon">🛡️</span><span>Алтарь Щита</span></div>
+            <div class="legend-item"><span class="legend-icon">💎</span><span>Кристаллы / Предметы</span></div>
+            <div class="legend-item"><span class="legend-icon">🌵</span><span>Препятствия</span></div>
+            <div class="legend-item"><span class="legend-icon">💀</span><span>Шериф (Босс)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Up Modal -->
+      <div id="level-up-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card level-up-card select-character-card modern-glass-modal">
+          <div class="modal-header">
+            <div id="level-up-step-indicator" class="sub-title menu-badge-yellow">ПОВЫШЕНИЕ УРОВНЯ</div>
+            <h2 id="level-up-title" class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ОРУЖИЕ</h2>
+          </div>
+          <div id="upgrade-cards" class="upgrade-grid">
+            <!-- Dynamically populated cards -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over / Victory Modal -->
+      <div id="game-over-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card game-over-card modern-glass-modal" id="game-over-card">
+          <div id="victory-badge" class="victory-badge-pill menu-badge-yellow hidden">ЛЕГЕНДА ДИКОГО ЗАПАДА • 30 МИНУТ</div>
+          <h1 id="game-over-title" class="death-title modern-menu-title">ВЫ ПОГИБЛИ</h1>
+          <p id="game-over-subtitle" class="death-subtitle menu-tagline-modern">Пустыня не прощает ошибок...</p>
+
+          <!-- Victory Announcement & Stats Suggestion -->
+          <div id="victory-stats-prompt" class="victory-stats-prompt hidden">
+            <div class="victory-prompt-icon">[!]</div>
+            <div class="victory-prompt-text">
+              <strong class="victory-prompt-headline">ВЫ ВЫЖИЛИ ВСЕ 30 МИНУТ!</strong>
+              <span>Бессмертный Жнец явился за вашей душой, но вы покорили кровавую прерию! Предлагаем изучить итоговую статистику вашей легендарной экспедиции:</span>
+            </div>
+          </div>
+
+          <div id="solo-game-over-stats" class="game-over-stats">
+            <div class="stat-row">
+              <span>Время выживания:</span>
+              <strong id="final-time">00:00</strong>
+            </div>
+            <div class="stat-row">
+              <span>Уничтожено врагов:</span>
+              <strong id="final-kills">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Нанесённый урон:</span>
+              <strong id="final-damage">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Достигнутый уровень:</span>
+              <strong id="final-level">1</strong>
+            </div>
+          </div>
+
+          <!-- Co-op Comparative Statistics Table (Supports up to 5 players) -->
+          <div id="coop-game-over-stats" class="game-over-coop-container hidden">
+            <div class="coop-time-banner">
+              Время выживания: <strong id="coop-final-time">00:00</strong>
+            </div>
+            <div id="coop-stats-table-wrapper" class="coop-stats-table-wrapper">
+              <table id="coop-stats-table" class="coop-stats-table">
+                <thead id="coop-stats-thead">
+                  <tr>
+                    <th>Параметр</th>
+                    <th class="p1-col">Игрок 1</th>
+                    <th class="p2-col">Игрок 2</th>
+                  </tr>
+                </thead>
+                <tbody id="coop-stats-tbody">
+                  <tr>
+                    <td>Убийств</td>
+                    <td id="coop-p1-kills">0</td>
+                    <td id="coop-p2-kills">0</td>
+                  </tr>
+                  <tr>
+                    <td>Урон</td>
+                    <td id="coop-p1-damage">0</td>
+                    <td id="coop-p2-damage">0</td>
+                  </tr>
+                  <tr>
+                    <td>Уровень</td>
+                    <td id="coop-p1-level">1</td>
+                    <td id="coop-p2-level">1</td>
+                  </tr>
+                  <tr>
+                    <td>Спасений</td>
+                    <td id="coop-p1-revives">0</td>
+                    <td id="coop-p2-revives">0</td>
+                  </tr>
+                  <tr class="total-row">
+                    <td>Врагов команды</td>
+                    <td colspan="2" id="coop-total-kills">0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Arsenal & Weapons Acquired in Run -->
+          <div id="game-over-arsenal" class="game-over-arsenal-box">
+            <div class="arsenal-title">СНАРЯЖЕНИЕ ЭКСПЕДИЦИИ:</div>
+            <div id="arsenal-items-list" class="arsenal-items-list"></div>
+          </div>
+
+          <div class="pause-actions" style="margin-top: 20px;">
+            <button id="btn-restart" class="action-btn select-btn">Возродиться</button>
+            <button id="btn-gameover-menu" class="action-btn modern-back-btn">В главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer Mode Console / Panel (P key) -->

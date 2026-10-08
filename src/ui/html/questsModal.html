@@ -1,0 +1,223 @@
+      <div id="quests-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="quest-modal-container">
+          
+          <!-- Top Centered Faceted Purple Plaque Header -->
+          <div class="quest-book-top-plaque">
+            <span class="plaque-diamond-l">◆</span>
+            <span class="plaque-title-text">Задания</span>
+            <span class="plaque-diamond-r">◆</span>
+          </div>
+
+          <!-- Top-Right Close Button and Account Badge -->
+          <div class="quest-top-controls">
+            <div class="quest-account-badge">
+              <span class="quest-acc-lvl" id="quest-acc-lvl-text">УРОВЕНЬ АККАУНТА: 1</span>
+              <span class="quest-acc-xp" id="quest-acc-xp-text">(0 / 200 XP)</span>
+              <span class="quest-acc-coins" id="quest-acc-coins-text">🪙 0</span>
+            </div>
+            <button id="quests-btn-close" class="quest-book-close-btn" type="button" title="Закрыть книгу (ESC)">✕</button>
+          </div>
+
+          <!-- Floating Magic Sparkle Particles (matching concept screenshot) -->
+          <div class="quest-magic-particles" aria-hidden="true">
+            <span class="magic-sparkle sparkle-1">✦</span>
+            <span class="magic-sparkle sparkle-2">✦</span>
+            <span class="magic-sparkle sparkle-3">✦</span>
+            <span class="magic-sparkle sparkle-4">✦</span>
+            <span class="magic-sparkle sparkle-5">✦</span>
+            <span class="magic-sparkle sparkle-star-br">✦</span>
+          </div>
+
+          <!-- Outer Book Frame with Left Sidebar Tabs -->
+          <div class="quest-book-wrapper">
+            <!-- Left Tabs Sidebar (Chapters of the Book) -->
+            <aside class="quest-book-tabs-sidebar" id="quest-book-tabs-sidebar" aria-label="Главы книги">
+              <button id="quest-tab-ch1" class="quest-book-tab quest-chapter-tab active" data-chapter="1" type="button" title="Глава I: Пробуждение">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">I</span>
+                </div>
+              </button>
+              <button id="quest-tab-ch2" class="quest-book-tab quest-chapter-tab" data-chapter="2" type="button" title="Глава II: Охота на Лешего">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">II</span>
+                </div>
+              </button>
+              <button id="quest-tab-ch3" class="quest-book-tab quest-chapter-tab" data-chapter="3" type="button" title="Глава III: Стражи Разлома">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">III</span>
+                </div>
+              </button>
+              <button id="quest-tab-ch4" class="quest-book-tab quest-chapter-tab" data-chapter="4" type="button" title="Глава IV: Контракты Охотников">
+                <div class="chapter-tab-content">
+                  <span class="chapter-tab-prefix">ГЛ.</span>
+                  <span class="chapter-tab-roman">IV</span>
+                </div>
+              </button>
+            </aside>
+
+            <!-- Main Purple Pixel-Art Grimoire Frame -->
+            <div class="quest-book-card">
+              <!-- Pixel Art Stepped Corner Accents -->
+              <div class="pixel-book-corner corner-tl"></div>
+              <div class="pixel-book-corner corner-tr"></div>
+              <div class="pixel-book-corner corner-bl"></div>
+              <div class="pixel-book-corner corner-br"></div>
+
+              <!-- Two-Page Spread -->
+              <div class="quest-book-spread">
+                <!-- Left Page: Quest Items List -->
+                <div class="quest-book-page quest-page-left">
+                  <div class="quest-heroes-list" id="quest-items-list">
+                    <!-- 1. Chapter 1 (Valkyrie) -->
+                    <div class="quest-hero-item" data-quest-hero="valkyrie" data-quest-id="valkyrie" id="quest-item-valkyrie">
+                      <div class="quest-item-icon-box">
+                        <img src="/textures/quest_icon_chapter1.png" class="quest-item-avatar" alt="Глава 1: Пробуждение" />
+                      </div>
+                      <div class="quest-item-info">
+                        <div class="quest-item-title" id="quest-title-valkyrie">Глава 1: Пробуждение (0/1)</div>
+                        <div class="quest-item-bar-wrap">
+                          <div class="quest-item-bar-fill" id="quest-prog-bar-valkyrie" style="width: 0%;"></div>
+                          <span class="quest-item-bar-val" id="quest-prog-text-valkyrie">0/1</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 2. Resource Gathering Trees (Flail) -->
+                    <div class="quest-hero-item" data-quest-hero="flail" data-quest-id="flail" id="quest-item-flail">
+                      <div class="quest-item-icon-box">
+                        <img src="/textures/quest_icon_resources_wood.png" class="quest-item-avatar" alt="Сбор Ресурсов" />
+                      </div>
+                      <div class="quest-item-info">
+                        <div class="quest-item-title" id="quest-title-flail">Сбор Ресурсов (5/10)</div>
+                        <div class="quest-item-bar-wrap">
+                          <div class="quest-item-bar-fill bar-cyan" id="quest-prog-bar-flail" style="width: 50%;"></div>
+                          <span class="quest-item-bar-val" id="quest-prog-text-flail">5/10</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 3. Chapter Leshen (Sorceress) -->
+                    <div class="quest-hero-item" data-quest-hero="sorceress" data-quest-id="sorceress" id="quest-item-sorceress">
+                      <div class="quest-item-icon-box">
+                        <img src="/textures/quest_icon_chapter_leshen.png" class="quest-item-avatar" alt="Глава на Лешена" />
+                      </div>
+                      <div class="quest-item-info">
+                        <div class="quest-item-title" id="quest-title-sorceress">Глава на Лешена (0/1)</div>
+                        <div class="quest-item-bar-wrap">
+                          <div class="quest-item-bar-fill" id="quest-prog-bar-sorceress" style="width: 0%;"></div>
+                          <span class="quest-item-bar-val" id="quest-prog-text-sorceress">0/1</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 4. Hunt for Leshy (Chakram) -->
+                    <div class="quest-hero-item active" data-quest-hero="chakram" data-quest-id="chakram" id="quest-item-chakram">
+                      <div class="quest-item-icon-box icon-box-leshy">
+                        <img src="/textures/quest_icon_leshy.png" class="quest-item-avatar" alt="Охота на Лешего" />
+                      </div>
+                      <div class="quest-item-info">
+                        <div class="quest-item-title" id="quest-title-chakram">Охота на Лешего (0/1)</div>
+                        <div class="quest-item-bar-wrap">
+                          <div class="quest-item-bar-fill" id="quest-prog-bar-chakram" style="width: 0%;"></div>
+                          <span class="quest-item-bar-val" id="quest-prog-text-chakram">0/1</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 5. Resource Gathering Ore (Archer) -->
+                    <div class="quest-hero-item" data-quest-hero="archer" data-quest-id="archer" id="quest-item-archer">
+                      <div class="quest-item-icon-box">
+                        <img src="/textures/quest_icon_resources_ore.png" class="quest-item-avatar" alt="Сбор Ресурсов" />
+                      </div>
+                      <div class="quest-item-info">
+                        <div class="quest-item-title" id="quest-title-archer">Сбор Ресурсов (5/1)</div>
+                        <div class="quest-item-bar-wrap">
+                          <div class="quest-item-bar-fill bar-orange" id="quest-prog-bar-archer" style="width: 55%;"></div>
+                          <span class="quest-item-bar-val" id="quest-prog-text-archer">55/10</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Center Spine Crease -->
+                <div class="quest-book-spine"></div>
+
+                <!-- Right Page: Quest Details -->
+                <div class="quest-book-page quest-page-right">
+                  <h2 id="quest-right-title" class="quest-detail-title">Охота на Лешего</h2>
+
+                  <!-- Target Monster / Hero Row -->
+                  <div class="quest-detail-target-row">
+                    <div class="quest-target-avatar-frame">
+                      <img id="quest-target-avatar" src="/textures/quest_target_leshy.png" class="quest-target-avatar-img" alt="Цель задания" />
+                    </div>
+                    <div class="quest-target-desc-wrap">
+                      <p id="quest-right-desc" class="quest-detail-desc">
+                        Найти следы в чаще.<br>
+                        Собрать 3 корня аконита.<br>
+                        Победить Лешего.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Decorative Divider -->
+                  <div class="quest-detail-divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-gem">◆</span>
+                    <span class="divider-line"></span>
+                  </div>
+
+                  <!-- Step Checklist (1. 2. 3.) -->
+                  <div id="quest-right-steps" class="quest-steps-list">
+                    <!-- Populated dynamically -->
+                  </div>
+
+                  <!-- Rewards Block -->
+                  <div class="quest-rewards-block">
+                    <div class="quest-rewards-heading">
+                      <span class="rewards-wing-l">―o</span>
+                      <span class="rewards-heading-title">НАГРАДЫ</span>
+                      <span class="rewards-wing-r">o―</span>
+                    </div>
+                    <div class="quest-rewards-grid" id="quest-rewards-grid">
+                      <!-- 1. Chest -->
+                      <div class="reward-slot reward-slot-chest" title="Награда: Сундук">
+                        <img src="/textures/reward_chest.png" class="reward-pixel-icon" alt="Сундук" />
+                        <span class="reward-slot-badge" id="reward-val-chest">1</span>
+                      </div>
+                      <!-- 2. Pouch (Coins) -->
+                      <div class="reward-slot reward-slot-pouch" title="Награда: Мешок золота">
+                        <img src="/textures/reward_pouch.png" class="reward-pixel-icon" alt="Золото" />
+                        <span class="reward-slot-badge" id="reward-val-coins">2000</span>
+                      </div>
+                      <!-- 3. Potion -->
+                      <div class="reward-slot reward-slot-potion" title="Награда: Зелье">
+                        <img src="/textures/reward_potion.png" class="reward-pixel-icon" alt="Зелье" />
+                        <span class="reward-slot-badge" id="reward-val-potions">x2</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Footer Status & Action Buttons -->
+                  <div class="quest-action-footer">
+                    <div id="quest-action-status-text" class="quest-status-text"></div>
+                    <div id="quest-action-buttons" class="quest-buttons-row">
+                      <!-- Populated dynamically -->
+                    </div>
+                  </div>
+
+                  <!-- Folded Page Corner (dog-ear curl) -->
+                  <div class="book-corner-curl"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Host Lobby Modal (Up to 5 players) -->

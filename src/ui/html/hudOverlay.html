@@ -1,0 +1,166 @@
+      <div id="hud-top">
+        <div id="xp-bar-container">
+          <div id="xp-bar-fill"></div>
+          <div id="xp-text">LVL <span id="player-level">1</span></div>
+        </div>
+
+        <div id="stats-panel">
+          <div class="stat-badge stage-badge">
+            <span class="stat-label">STAGE</span>
+            <span id="stage-text">1: ПУСТЫНЯ</span>
+          </div>
+          <div class="stat-badge credits-badge">
+            <span class="stat-label">CREDITS</span>
+            <span id="plasma-credits">⬡ 0</span>
+          </div>
+          <div class="stat-badge timer-badge">
+            <span class="stat-label">TIME</span>
+            <span id="game-timer">00:00</span>
+          </div>
+          <div class="stat-badge difficulty-badge" id="difficulty-badge" title="Сложность мира растет с течением времени!">
+            <span class="stat-label" id="diff-tier-label">ЛЕГКО</span>
+            <div class="diff-bar-bg"><div id="diff-bar-fill"></div></div>
+          </div>
+          <div class="stat-badge kill-badge">
+            <span class="stat-label">KILLS</span>
+            <span id="kill-count">0</span>
+            <span id="coop-kills-detail" class="hidden coop-kills-detail">
+              (<span class="my-kills-tag">Вы: <strong id="my-kills-count">0</strong></span> | <span class="partner-kills-tag">П2: <strong id="partner-kills-count">0</strong></span>)
+            </span>
+          </div>
+          <div id="coop-badge" class="stat-badge coop-badge hidden">
+            <span class="stat-label">ONLINE</span>
+            <span id="coop-room-name">КООП</span>
+          </div>
+        </div>
+
+        <!-- Teleporter Charge Event Bar (shown when teleporter is charging) -->
+        <div id="teleporter-event-container" class="hidden">
+          <div class="teleporter-header">
+            <span class="teleporter-tag">РАЗЛОМ</span>
+            <span class="teleporter-status" id="teleporter-status-text">ЗАРЯДКА: 0%</span>
+            <span class="teleporter-zone-status" id="teleporter-zone-text">В ЗОНЕ</span>
+          </div>
+          <div class="teleporter-bar">
+            <div id="teleporter-bar-fill"></div>
+          </div>
+        </div>
+
+        <!-- Boss Health Bar Container (shown when boss spawns) -->
+        <div id="boss-hp-container" class="hidden">
+          <div class="boss-hp-header">
+            <span class="boss-tag">BOSS</span>
+            <span class="boss-name" id="boss-name-text">КРОВАВЫЙ ШЕРИФ</span>
+            <span class="boss-hp-val" id="boss-hp-text">3500 / 3500</span>
+          </div>
+          <div class="boss-hp-bar">
+            <div id="boss-hp-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top-Right Performance Overlay (FPS & Ping) -->
+      <div id="perf-overlay" class="perf-overlay">
+        <span id="perf-fps" class="perf-badge perf-fps">60 FPS</span>
+        <span id="perf-ping" class="perf-badge perf-ping hidden">0 ms</span>
+      </div>
+
+      <!-- Floating Mobile Dev Trigger Button (Training Mode Only) -->
+      <button id="btn-dev-mobile-trigger" class="btn-dev-mobile-trigger hidden" title="Панель разработчика">DEV</button>
+
+      <!-- Minimap Radar in top-right corner -->
+      <div id="minimap-container" title="Нажмите, чтобы открыть карту [TAB]">
+        <canvas id="minimap-canvas" width="170" height="170"></canvas>
+        <div class="minimap-footer">
+          <span id="minimap-coords" class="minimap-coords">0, 0</span>
+          <span class="minimap-hint">[TAB] Карта</span>
+        </div>
+      </div>
+
+      <!-- Boss Warning Banner -->
+      <div id="boss-warning-banner" class="hidden">
+        <div id="boss-warning-text" class="warning-text">ВНИМАНИЕ: ПОЯВИЛСЯ БОСС «КРОВАВЫЙ ШЕРИФ»!</div>
+      </div>
+
+      <!-- Altar Capture Notification Banner -->
+      <div id="altar-notification-banner" class="hidden">
+        <div id="altar-notification-text" class="altar-notif-text">АЛТАРЬ ЗАХВАЧЕН!</div>
+      </div>
+
+      <!-- Game Update Notification Banner & Pill (Non-intrusive) -->
+      <div id="game-update-container" class="hidden">
+        <!-- Expanded Banner -->
+        <div id="game-update-banner" class="game-update-banner">
+          <div class="update-banner-icon-wrap">
+            <span class="update-pulse-ring"></span>
+            <span class="update-banner-icon">🚀</span>
+          </div>
+          <div class="update-banner-info">
+            <div class="update-banner-header">
+              <span class="update-badge-label">НОВЫЙ ПАТЧ</span>
+              <span class="update-version-label" id="update-new-version-text">v1.0.1</span>
+            </div>
+            <div class="update-banner-text" id="update-banner-message">
+              Вышло обновление игры! Рекомендуем перезагрузить страницу после боя.
+            </div>
+          </div>
+          <div class="update-banner-actions">
+            <button id="btn-update-reload" class="update-btn-reload" type="button" tabindex="-1">
+              <span class="update-btn-icon">🔄</span>
+              <span>Обновить</span>
+            </button>
+            <button id="btn-update-dismiss" class="update-btn-dismiss" type="button" tabindex="-1" title="Скрыть (после боя)">
+              <span>✕</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Minimized Pill -->
+        <button id="game-update-pill" class="game-update-pill hidden" type="button" tabindex="-1" title="Нажмите, чтобы открыть меню обновления">
+          <span class="pill-pulse-dot"></span>
+          <span class="pill-icon">🚀</span>
+          <span class="pill-text" id="update-pill-text">Патч готов</span>
+          <span class="pill-action">Обновить ↻</span>
+        </button>
+      </div>
+
+      <!-- Interactive Object Tooltip Prompt (Chests, Teleporter) -->
+      <div id="interaction-prompt" class="hidden">
+        <span class="prompt-key">[E]</span>
+        <span id="interaction-prompt-text">Открыть контейнер (25 ⬡)</span>
+      </div>
+
+      <!-- Item Inventory Tray (Stacked passive items) -->
+      <div id="item-inventory-tray"></div>
+
+      <!-- Tactical Dash Cooldown Badge -->
+      <div id="dash-cooldown-badge" class="dash-cooldown-badge">
+        <span class="dash-key">ПРОБЕЛ</span>
+        <span id="dash-cooldown-text">РЫВОК</span>
+      </div>
+
+      <!-- Top-Left HUD: Acquired Abilities, Altar Buffs & PoE Party List -->
+      <div id="top-left-hud">
+        <div id="active-weapons-bar" class="weapons-bar"></div>
+        <div id="active-passives-bar" class="passives-bar"></div>
+        <div id="active-buffs-tray" class="buffs-tray"></div>
+        <!-- Path of Exile Style Party List -->
+        <div id="poe-party-list" class="poe-party-list"></div>
+      </div>
+
+      <!-- Controls Hint -->
+      <div id="controls-hint">
+        <span>[W][A][S][D] — Перемещение</span>
+        <span class="dot">•</span>
+        <span>[ПРОБЕЛ] — Рывок</span>
+        <span class="dot">•</span>
+        <span>[E] — Взаимодействие</span>
+        <span class="dot">•</span>
+        <span>Авто-атака включена</span>
+        <span class="dot">•</span>
+        <span class="key-tag">[TAB]</span> <span>Карта</span>
+        <span class="dot">•</span>
+        <span class="key-tag">[ESC]</span> <span>Пауза</span>
+      </div>
+
+      <!-- Main Menu Modal (Start screen) -->
