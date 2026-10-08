@@ -9,7 +9,7 @@ import { RemotePlayer } from '../entities/RemotePlayer';
 import { PublicRoomInfo } from '../net/RoomDirectory';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
-import { ProgressionManager } from '../core/ProgressionManager';
+import { ProgressionManager, SidebarQuestItem } from '../core/ProgressionManager';
 import { TextureManager } from '../core/TextureManager';
 import * as THREE from 'three';
 
@@ -422,8 +422,13 @@ export class HUD {
       this.toggleQuestsInMainMenu();
     });
 
-    // Right-side Daily & Weekly quest block in main menu
-    document.getElementById('main-menu-quests-sidebar')?.addEventListener('click', () => {
+    // Right-side Daily & Weekly quest headers in main menu
+    document.getElementById('daily-quests-header')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.showQuestsModal('chakram', 1);
+    });
+
+    document.getElementById('weekly-quests-header')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.showQuestsModal('archer', 4);
     });
@@ -993,7 +998,90 @@ export class HUD {
   }
 
   public updateMainMenuQuests() {
-    // Main menu quests sidebar is rendered directly via the raster asset ui_quests_sidebar.png
+    const prog = ProgressionManager.getInstance();
+    const dailyQuests = prog.getDailySidebarQuests();
+    const weeklyQuests = prog.getWeeklySidebarQuests();
+
+    const dailyContainer = document.getElementById('daily-quest-items-list');
+    const weeklyContainer = document.getElementById('weekly-quest-items-list');
+
+    const renderQuestRow = (q: SidebarQuestItem) => {
+      const row = document.createElement('div');
+      row.className = `quest-card-item-row ${q.isComplete ? 'completed' : ''} ${q.isComplete && !q.isClaimed ? 'claimable' : ''} ${q.isClaimed ? 'claimed' : ''}`;
+      row.setAttribute('data-quest-id', q.id);
+      row.setAttribute('role', 'button');
+      row.setAttribute('tabindex', '0');
+      row.setAttribute(
+        'title',
+        q.isClaimed
+          ? `${q.title} — Награда получена ✓`
+          : q.isComplete
+          ? `${q.title} — Задание выполнено! Нажмите, чтобы забрать: ${q.rewardLabel}`
+          : `${q.title} (${q.current}/${q.max}) — Награда: ${q.rewardLabel}`
+      );
+
+      const statusBadge = q.isClaimed
+        ? '<span class="quest-card-claimed-check" title="Награда получена">✓</span>'
+        : q.isComplete
+        ? '<span class="quest-card-claim-badge">ЗАБРАТЬ</span>'
+        : '';
+
+      row.innerHTML = `
+        <div class="quest-card-slot icon-slot">
+          <img src="${q.icon}" alt="${q.title}" draggable="false" />
+        </div>
+        <div class="quest-card-info">
+          <div class="quest-card-name">${q.title}</div>
+          <div class="quest-card-bar-wrap">
+            <div class="quest-card-bar-fill ${q.isComplete ? 'completed' : ''}" style="width: ${q.progressPercent}%;"></div>
+            <span class="quest-card-bar-val">${q.current}/${q.max}</span>
+          </div>
+        </div>
+        <div class="quest-card-reward ${q.isComplete && !q.isClaimed ? 'claimable-pulse' : ''}">
+          <img src="${q.rewardIcon}" alt="${q.rewardLabel}" draggable="false" />
+          <span class="quest-card-reward-val">${q.rewardAmount}</span>
+          ${statusBadge}
+        </div>
+      `;
+
+      row.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (q.isComplete && !q.isClaimed) {
+          const res = prog.claimSidebarQuest(q.id);
+          if (res) {
+            SoundManager.playButtonClick();
+            this.triggerAltarNotification('Награда получена!', `${q.title}: +${res.label}`, '🎁', '#f59e0b');
+            this.updateMainMenuQuests();
+          }
+        } else if (q.isClaimed) {
+          SoundManager.playButtonClick();
+          this.triggerAltarNotification('Задание завершено', `Награда за «${q.title}» уже получена!`, '✓', '#10b981');
+        } else {
+          SoundManager.playButtonClick();
+          if (q.category === 'daily') {
+            this.showQuestsModal('chakram', 1);
+          } else {
+            this.showQuestsModal('archer', 4);
+          }
+        }
+      });
+
+      return row;
+    };
+
+    if (dailyContainer) {
+      dailyContainer.innerHTML = '';
+      dailyQuests.forEach((q) => {
+        dailyContainer.appendChild(renderQuestRow(q));
+      });
+    }
+
+    if (weeklyContainer) {
+      weeklyContainer.innerHTML = '';
+      weeklyQuests.forEach((q) => {
+        weeklyContainer.appendChild(renderQuestRow(q));
+      });
+    }
   }
 
   public hideMainMenu() {

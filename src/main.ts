@@ -199,6 +199,7 @@ class Game {
 
     // Altar capture event listener
     this.engine.altarManager.onAltarCaptured = (altar) => {
+      ProgressionManager.getInstance().recordResourceGather(1);
       this.hud.triggerAltarNotification(
         altar.config.name,
         altar.config.subtitle,
@@ -1302,6 +1303,7 @@ class Game {
       if (this.player.credits >= chestData.cost) {
         this.player.credits -= chestData.cost;
         const item = this.chestManager.openChest(chestData.chest);
+        ProgressionManager.getInstance().recordResourceGather(1);
         this.player.addRiftItem(item);
         SoundManager.playChestOpen();
         this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);

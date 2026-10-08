@@ -1581,36 +1581,318 @@ body, html {
 /* Right Side: Quests Sidebar (Daily & Weekly) */
 .main-menu-quests-sidebar {
   position: absolute;
-  right: clamp(16px, 3.5vw, 48px);
-  top: clamp(20px, 4vh, 44px);
+  right: clamp(16px, 3.2vw, 44px);
+  top: clamp(16px, 3.2vh, 36px);
   z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.6vh, 18px);
+  pointer-events: auto;
+  user-select: none;
+}
+
+/* Individual Quest Card */
+.quest-sidebar-card {
+  position: relative;
+  width: clamp(270px, 22.5vw, 350px);
+  aspect-ratio: 624 / 468;
+  background-image: url('/textures/ui_quest_card_panel.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  display: flex;
+  flex-direction: column;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.75));
+  box-sizing: border-box;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.quest-sidebar-card:hover {
+  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.85)) brightness(1.03);
+}
+
+/* Hanging Wooden Plaque Header */
+.quest-card-header {
+  height: 22.5%;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: auto;
+  padding: 0 16px;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-  user-select: none;
 }
 
-.main-menu-quests-sidebar:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.05);
+.quest-card-header-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(11.5px, 0.98vw, 15px);
+  font-weight: 900;
+  color: #fff6e8;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.95),
+    1px 1px 0 #1c1108,
+    -1px -1px 0 #1c1108,
+    1px -1px 0 #1c1108,
+    -1px 1px 0 #1c1108;
+  transition: color 0.16s ease, text-shadow 0.16s ease;
 }
 
-.main-menu-quests-sidebar:active {
-  transform: translateY(0);
+.quest-card-header:hover .quest-card-header-title {
+  color: #fde68a;
+  text-shadow: 
+    0 0 10px rgba(251, 191, 36, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.95),
+    1px 1px 0 #1c1108,
+    -1px -1px 0 #1c1108;
 }
 
-.main-menu-quests-img {
-  display: block;
-  width: clamp(280px, 24vw, 360px);
-  height: auto;
-  max-height: calc(100vh - 60px);
+/* Card Body & Subtitle */
+.quest-card-body {
+  flex: 1;
+  padding: 1.5% 6% 4.5% 6%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.quest-card-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(9.5px, 0.72vw, 11px);
+  font-weight: 500;
+  color: #8b9bb4;
+  text-align: center;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Items List */
+.quest-card-items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(6px, 0.9vh, 10px);
+}
+
+/* Quest Row */
+.quest-card-item-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.75vw, 12px);
+  background: rgba(18, 24, 29, 0.4);
+  border-radius: 6px;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  transition: background 0.16s ease, transform 0.16s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.quest-card-item-row:hover {
+  background: rgba(30, 42, 52, 0.75);
+  transform: translateX(2px);
+}
+
+/* Left Icon Slot */
+.quest-card-slot.icon-slot {
+  width: clamp(38px, 2.8vw, 45px);
+  height: clamp(38px, 2.8vw, 45px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.quest-card-slot img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
-  user-select: none;
-  -webkit-user-drag: none;
+  display: block;
+}
+
+/* Quest Info Center */
+.quest-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  justify-content: center;
+}
+
+.quest-card-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(11.5px, 0.88vw, 13px);
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.2px;
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    1px 1px 0 rgba(0, 0, 0, 0.85);
+}
+
+/* Progress Bar */
+.quest-card-bar-wrap {
+  position: relative;
+  width: 100%;
+  height: clamp(12px, 0.92vw, 15px);
+  background: #14191c;
+  border: 1.5px solid #3c4950;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.quest-card-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(180deg, #ff7a3d 0%, #e65100 50%, #b23b00 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 8px rgba(230, 81, 0, 0.4);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quest-card-bar-fill.completed {
+  background: linear-gradient(180deg, #ff8c42 0%, #eb5b14 50%, #ba3a00 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 10px rgba(255, 122, 61, 0.6);
+}
+
+.quest-card-bar-val {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(9.5px, 0.72vw, 11px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-shadow: 
+    0 1px 2px #000,
+    1px 0 0 #000,
+    -1px 0 0 #000,
+    0 -1px 0 #000;
+  pointer-events: none;
+}
+
+/* Right Reward Slot */
+.quest-card-reward {
+  position: relative;
+  width: clamp(38px, 2.8vw, 45px);
+  height: clamp(38px, 2.8vw, 45px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.quest-card-reward img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.quest-card-reward-val {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(10px, 0.76vw, 11.5px);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 
+    0 1px 2px #000,
+    1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000;
+  pointer-events: none;
+}
+
+/* Claimable & Claimed States */
+.quest-card-item-row.claimable {
+  background: rgba(60, 45, 15, 0.45);
+}
+
+.quest-card-item-row.claimable:hover {
+  background: rgba(85, 62, 20, 0.65);
+}
+
+.quest-card-item-row.claimable .quest-card-reward {
+  animation: rewardPulseGlow 1.8s infinite ease-in-out;
+}
+
+@keyframes rewardPulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px #f59e0b) brightness(1.05);
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 12px #fbbf24) brightness(1.25);
+  }
+}
+
+.quest-card-claim-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid #34d399;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.3px;
+  pointer-events: none;
+}
+
+.quest-card-item-row.claimed {
+  opacity: 0.75;
+}
+
+.quest-card-item-row.claimed .quest-card-reward {
+  filter: grayscale(0.2) brightness(0.85);
+}
+
+.quest-card-claimed-check {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #10b981;
+  color: #ffffff;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 900;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  border: 1px solid #34d399;
 }
 
 
@@ -1986,7 +2268,7 @@ body, html {
   }
 }
 
-@media (max-height: 560px) {
+@media (max-height: 620px) {
   .main-menu-game-title {
     top: 8px;
   }
@@ -1995,10 +2277,10 @@ body, html {
   }
   .main-menu-quests-sidebar {
     top: 8px;
+    gap: 8px;
   }
-  .main-menu-quests-img {
-    width: 220px;
-    max-height: calc(100vh - 16px);
+  .quest-sidebar-card {
+    width: clamp(210px, 18vw, 240px);
   }
 }
 
