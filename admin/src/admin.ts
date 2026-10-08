@@ -28,16 +28,40 @@ class AdminController {
 
   private searchFilter: string = '';
   private activeTab: string = 'weapons';
+  private currentTheme: 'dark' | 'light' = 'dark';
 
   constructor() {
     this.bindDOM();
   }
 
   public async init(): Promise<void> {
+    this.initTheme();
     await this.loadConfig();
     await this.connectSupabase();
     this.renderAll();
     this.updateOverviewStats();
+  }
+
+  private initTheme(): void {
+    const saved = localStorage.getItem('outlaw_theme') as 'dark' | 'light' | null;
+    this.currentTheme = saved === 'light' ? 'light' : 'dark';
+    this.applyTheme(this.currentTheme);
+  }
+
+  private applyTheme(theme: 'dark' | 'light'): void {
+    this.currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('outlaw_theme', theme);
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+      icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
+  }
+
+  private toggleTheme(): void {
+    const next = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.applyTheme(next);
+    this.showToast(next === 'dark' ? 'Активирована тёмная тема' : 'Активирована светлая тема', 'info');
   }
 
   private async loadConfig(): Promise<void> {
@@ -231,6 +255,11 @@ class AdminController {
     });
     document.getElementById('btn-collapse-all')?.addEventListener('click', () => {
       this.collapseAllCurrentTab();
+    });
+
+    // Theme Switcher Toggle
+    document.getElementById('btn-theme-toggle')?.addEventListener('click', () => {
+      this.toggleTheme();
     });
 
     // Top action buttons

@@ -1,75 +1,83 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard // Outlaw Royale Balancer</title>
+  <title>Outlaw Royale // Vuexy Admin Game Balancer</title>
   <link rel="stylesheet" href="./src/admin.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 </head>
 <body>
   <div id="admin-app" class="dashboard-shell">
-    <!-- Left Sidebar (Matching av.by / SaaS dashboard reference) -->
+    <!-- Left Sidebar (Vuexy Admin Style) -->
     <aside class="dashboard-sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
-          <span class="brand-badge-dot"></span>
-          <div class="brand-text">outlaw<span class="brand-accent">.admin</span></div>
+          <div class="brand-logo-icon">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+              <path d="M16 2L3 9L16 16L29 9L16 2Z" fill="#7367f0"/>
+              <path d="M3 23L16 30L29 23V15.5L16 22.5L3 15.5V23Z" fill="#7367f0" fill-opacity="0.8"/>
+            </svg>
+          </div>
+          <div class="brand-title-wrap">
+            <span class="brand-name">Vuexy<span class="brand-highlight">.Outlaw</span></span>
+            <span class="brand-version">GAME BALANCER</span>
+          </div>
         </div>
       </div>
 
       <div class="sidebar-content">
-        <!-- Group 1: Game Balance -->
-        <div class="sidebar-group">
-          <div class="sidebar-group-title">
-            <span>Баланс &amp; Сущности</span>
-            <span class="group-chevron">▾</span>
-          </div>
+        <!-- Section 1: Balance Management -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">БАЛАНС &amp; СУЩНОСТИ</div>
           <nav class="sidebar-nav">
             <button class="nav-tab active" data-tab="weapons">
+              <span class="tab-bullet"></span>
               <span class="tab-icon">☄️</span>
               <span class="tab-text">Оружие</span>
-              <span class="tab-pill">13</span>
+              <span class="tab-badge badge-primary">13</span>
             </button>
             <button class="nav-tab" data-tab="heroes">
+              <span class="tab-bullet"></span>
               <span class="tab-icon">🤠</span>
               <span class="tab-text">Герои</span>
-              <span class="tab-pill">6</span>
+              <span class="tab-badge badge-secondary">6</span>
             </button>
             <button class="nav-tab" data-tab="monsters">
+              <span class="tab-bullet"></span>
               <span class="tab-icon">👹</span>
               <span class="tab-text">Монстры</span>
-              <span class="tab-pill">8</span>
+              <span class="tab-badge badge-secondary">8</span>
             </button>
             <button class="nav-tab" data-tab="bosses">
+              <span class="tab-bullet"></span>
               <span class="tab-icon">👑</span>
               <span class="tab-text">Боссы</span>
-              <span class="tab-pill">2</span>
+              <span class="tab-badge badge-danger">2</span>
             </button>
             <button class="nav-tab" data-tab="global">
+              <span class="tab-bullet"></span>
               <span class="tab-icon">🌐</span>
               <span class="tab-text">Глобальные</span>
             </button>
           </nav>
         </div>
 
-        <!-- Group 2: System -->
-        <div class="sidebar-group">
-          <div class="sidebar-group-title">
-            <span>Система &amp; Данные</span>
-            <span class="group-chevron">▾</span>
-          </div>
+        <!-- Section 2: Infrastructure & Data -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">ИНФРАСТРУКТУРА</div>
           <nav class="sidebar-nav">
             <button class="nav-tab" data-tab="connection">
+              <span class="tab-bullet"></span>
               <span class="tab-icon">⚙️</span>
               <span class="tab-text">Supabase &amp; RLS</span>
-              <span class="tab-pill pill-subtle">LIVE</span>
+              <span id="sidebar-db-status-badge" class="tab-badge badge-success">LIVE</span>
             </button>
           </nav>
         </div>
       </div>
 
-      <!-- Sidebar Footer Status Widget -->
+      <!-- Sidebar Footer Widget -->
       <div class="sidebar-footer">
         <div class="sidebar-status-card">
           <div class="status-card-header">
@@ -84,21 +92,27 @@
 
     <!-- Main Workspace Column -->
     <div class="dashboard-main">
-      <!-- Top Bar (Search, Status Indicators, Profile, Primary Actions) -->
+      <!-- Vuexy Topbar / Floating Header -->
       <header class="topbar">
         <div class="topbar-left">
           <div class="search-box">
             <span class="search-box-icon">🔍</span>
-            <input type="text" id="global-search" class="search-input-field" placeholder="Поиск по оружию, героям, параметрам... (Ctrl+K)">
-            <kbd class="shortcut-tag">⌘ /</kbd>
+            <input type="text" id="global-search" class="search-input-field" placeholder="Search [CTRL + K] по оружию, героям, параметрам...">
+            <kbd class="shortcut-tag">CTRL + K</kbd>
           </div>
         </div>
 
         <div class="topbar-right">
+          <!-- Theme Switcher Toggle Button (Dark / Light) -->
+          <button id="btn-theme-toggle" class="btn-theme-toggle" title="Переключить тему (Светлая / Темная)">
+            <span id="theme-icon" class="theme-icon">🌙</span>
+          </button>
+
           <div id="status-connection" class="status-pill status-connecting" title="Статус подключения к Supabase">
             <span class="status-dot"></span>
-            <span class="status-label">Проверка Supabase...</span>
+            <span class="status-label">Supabase...</span>
           </div>
+
           <div id="status-security" class="status-pill status-secure" title="Управление защищено RLS">
             <span class="status-icon">🛡️</span>
             <span class="status-label">RLS Protected</span>
@@ -116,8 +130,8 @@
           <div class="user-profile-badge">
             <div class="profile-avatar">⚡</div>
             <div class="profile-meta">
-              <span class="profile-name">Admin Dev</span>
-              <span class="profile-role">Localhost</span>
+              <span class="profile-name">Game Master</span>
+              <span class="profile-role">Admin</span>
             </div>
           </div>
         </div>
@@ -125,10 +139,10 @@
 
       <!-- Scrollable Main Container -->
       <main class="dashboard-body">
-        <!-- Overview Section Header -->
+        <!-- Page Title & Header Actions -->
         <div class="page-header-row">
           <div>
-            <h1 class="page-title">Обзор баланса</h1>
+            <h1 class="page-title">Game Balance Dashboard</h1>
             <p class="page-subtitle">Централизованное управление боевыми характеристиками и синхронизация в реальном времени</p>
           </div>
           <div class="header-quick-tools">
@@ -137,39 +151,43 @@
           </div>
         </div>
 
-        <!-- 4 Top KPI Metric Cards (Matching Screenshot) -->
+        <!-- 4 Vuexy-styled Metric Overview Cards -->
         <div class="metrics-grid">
-          <div class="metric-card">
+          <!-- Card 1: Featured / Analytics Gradient Card -->
+          <div class="metric-card metric-card-featured">
             <div class="metric-head">
-              <span class="metric-label">Активное оружие</span>
-              <span class="metric-delta delta-up">+13 видов ↗</span>
+              <span class="metric-label">Арсенал вооружения</span>
+              <span class="metric-badge-tag badge-tag-light">+13 видов ↗</span>
             </div>
             <div class="metric-number" id="kpi-weapons-count">13</div>
-            <div class="metric-desc">Снаряды, ближний бой, зоны</div>
+            <div class="metric-desc">Снаряды, AoE зоны, ближний бой</div>
           </div>
 
+          <!-- Card 2: Average DPS -->
           <div class="metric-card">
             <div class="metric-head">
               <span class="metric-label">Средний DPS (L1)</span>
-              <span class="metric-delta delta-up" id="kpi-dps-trend">+240% на L20 ↗</span>
+              <span class="metric-badge-tag badge-tag-success" id="kpi-dps-trend">+240% на L20 ↗</span>
             </div>
             <div class="metric-number" id="kpi-avg-dps">41.8</div>
-            <div class="metric-desc">Базовый урон / КД</div>
+            <div class="metric-desc">Базовый урон / Кулдаун</div>
           </div>
 
+          <!-- Card 3: Enemies Pool -->
           <div class="metric-card">
             <div class="metric-head">
               <span class="metric-label">Пул противников</span>
-              <span class="metric-delta delta-neutral">8 крипов + 2 босса</span>
+              <span class="metric-badge-tag badge-tag-info">8 крипов + 2 босса</span>
             </div>
             <div class="metric-number">10 видов</div>
             <div class="metric-desc">Монстры и эпические боссы</div>
           </div>
 
+          <!-- Card 4: Draft Queue -->
           <div class="metric-card">
             <div class="metric-head">
               <span class="metric-label">Очередь правок (Draft)</span>
-              <span class="metric-delta delta-neutral" id="kpi-draft-delta">В синхроне</span>
+              <span class="metric-badge-tag badge-tag-secondary" id="kpi-draft-delta">В синхроне</span>
             </div>
             <div class="metric-number" id="kpi-draft-count">0</div>
             <div class="metric-desc" id="kpi-draft-desc">Нет несохраненных правок</div>
@@ -199,7 +217,7 @@
             </div>
           </div>
 
-          <!-- Table Header Labels -->
+          <!-- Accordion Header Columns -->
           <div class="accordion-table-header weapons-table-cols">
             <span class="col-exp"></span>
             <span class="col-name">Оружие / ID</span>
