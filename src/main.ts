@@ -1,4 +1,8 @@
-import * as THREE from 'three';
+import {
+  Frustum,
+  Matrix4,
+  Vector3
+} from 'three';
 import { Engine } from './core/Engine';
 import { InputManager } from './core/InputManager';
 import { Player, CharacterType } from './entities/Player';
@@ -72,8 +76,8 @@ class Game {
   private fpsEma: number = 0;
 
   // Frustum Culling
-  private cameraFrustum = new THREE.Frustum();
-  private projScreenMatrix = new THREE.Matrix4();
+  private cameraFrustum = new Frustum();
+  private projScreenMatrix = new Matrix4();
 
   // Remote Co-op Teammates (up to 4 teammates in 5-player mode)
   private remotePlayers: Map<string, RemotePlayer> = new Map();
@@ -118,7 +122,7 @@ class Game {
 
     this.biomeManager = new BiomeManager();
     this.chestManager = new ChestManager(this.engine.scene);
-    this.riftTeleporter = new RiftTeleporter(this.engine.scene, new THREE.Vector3(75, 0, 75));
+    this.riftTeleporter = new RiftTeleporter(this.engine.scene, new Vector3(75, 0, 75));
 
     // Live Game Balance sync with Supabase
     BalanceManager.init()
@@ -1001,7 +1005,7 @@ class Game {
       this.currentSeed = Math.floor(Math.random() * 1000000);
     }
 
-    this.restartGame(new THREE.Vector3(0, 0, 0), true);
+    this.restartGame(new Vector3(0, 0, 0), true);
 
     const numericSeed = typeof this.currentSeed === 'number'
       ? this.currentSeed
@@ -1054,7 +1058,7 @@ class Game {
     this.hud.setCoopBadge(this.net.roomCode);
 
     this.currentSeed = seed ?? 1337;
-    this.restartGame(new THREE.Vector3(myOffset[0], 0, myOffset[1]), true);
+    this.restartGame(new Vector3(myOffset[0], 0, myOffset[1]), true);
   }
 
   private returnToMainMenu() {
@@ -1146,8 +1150,8 @@ class Game {
 
   private spawnCosmeticShot(shot: NetShotInfo) {
     const proj = new Projectile({
-      position: new THREE.Vector3(shot.x, shot.y, shot.z),
-      direction: new THREE.Vector3(shot.dx, shot.dy ?? 0, shot.dz),
+      position: new Vector3(shot.x, shot.y, shot.z),
+      direction: new Vector3(shot.dx, shot.dy ?? 0, shot.dz),
       speed: shot.spd,
       damage: 0,
       pierce: 9999,
@@ -1215,7 +1219,7 @@ class Game {
     }
   };
 
-  private restartGame(pos?: THREE.Vector3, keepSeed: boolean = false) {
+  private restartGame(pos?: Vector3, keepSeed: boolean = false) {
     for (const p of this.projectiles) {
       p.destroy(this.engine.scene);
     }
@@ -1251,7 +1255,7 @@ class Game {
     }
 
     const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
-    const initialPos = pos || new THREE.Vector3(myOffset[0], spawnY, myOffset[1]);
+    const initialPos = pos || new Vector3(myOffset[0], spawnY, myOffset[1]);
 
     this.player.reset(initialPos);
     this.devManager.reset();
@@ -1433,7 +1437,7 @@ class Game {
   private applyCombatProcOnEnemyHit(
     enemy: Enemy,
     baseDamage: number,
-    _sourcePos?: THREE.Vector3
+    _sourcePos?: Vector3
   ): { finalDamage: number; isCrit: boolean } {
     let finalDamage = baseDamage;
     let isCrit = false;
@@ -1521,7 +1525,7 @@ class Game {
         SoundManager.playTeleporterActivate();
         for (const other of nearby) {
           if (other.isAlive) {
-            const pullDir = new THREE.Vector3().subVectors(centerPos, other.position);
+            const pullDir = new Vector3().subVectors(centerPos, other.position);
             const dist = pullDir.length();
             if (dist > 0.1) {
               other.position.addScaledVector(pullDir.normalize(), Math.min(dist, 3.2));
@@ -1840,7 +1844,7 @@ class Game {
       this.enemyManager.applyRemoteDamage(
         hit.enemyId,
         hit.damage,
-        new THREE.Vector3(hit.sourceX, 0, hit.sourceZ),
+        new Vector3(hit.sourceX, 0, hit.sourceZ),
         this.engine.camera,
         clientId
       );
@@ -1933,7 +1937,7 @@ class Game {
     return { total, visible, simulated };
   }
 
-  private updateProjectileVisuals(frustum: THREE.Frustum) {
+  private updateProjectileVisuals(frustum: Frustum) {
     for (let i = 0; i < this.projectiles.length; i++) {
       const p = this.projectiles[i];
       if (!p.isAlive) {
@@ -2030,8 +2034,8 @@ class Game {
           SoundManager.playLightning();
 
           const beamProj = new Projectile({
-            position: new THREE.Vector3(strikePos.x, 0, strikePos.z),
-            direction: new THREE.Vector3(0, 0, 1),
+            position: new Vector3(strikePos.x, 0, strikePos.z),
+            direction: new Vector3(0, 0, 1),
             speed: 0,
             damage: strikeDmg,
             pierce: 999,
@@ -2189,7 +2193,7 @@ class Game {
     this.engine.chunkManager.update(allPlayerPositions);
 
     // Update Ancient Altars simulation (supports up to 5 players in co-op)
-    const allAltarPlayers: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[] = [
+    const allAltarPlayers: { position: Vector3; isAlive: boolean; isDowned?: boolean }[] = [
       { position: this.player.position, isAlive: this.player.isAlive, isDowned: this.player.isDowned }
     ];
     for (const remote of this.remotePlayers.values()) {

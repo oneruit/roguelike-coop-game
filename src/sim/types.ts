@@ -1,30 +1,24 @@
-export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer';
-export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
-export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
-export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable';
-export type GemType = 'blue' | 'green' | 'red' | 'gold';
+import {
+  CharacterType,
+  HeroAnimState,
+  SpriteDirection,
+  BuffType,
+  GemType,
+  EnemyType,
+  ActiveBuff,
+  PlayerStats
+} from '../shared/types';
 
-export type EnemyType =
-  | 'coyote'
-  | 'crawler'
-  | 'cactus'
-  | 'skeleton'
-  | 'ghost'
-  | 'scorpion'
-  | 'brute'
-  | 'bison'
-  | 'boss'
-  | 'hydra';
-
-export interface ActiveBuff {
-  type: BuffType;
-  name: string;
-  icon: string;
-  color: string;
-  duration: number;
-  maxDuration: number;
-  value: number;
-}
+export type {
+  CharacterType,
+  HeroAnimState,
+  SpriteDirection,
+  BuffType,
+  GemType,
+  EnemyType,
+  ActiveBuff,
+  PlayerStats
+};
 
 export interface SimPlayerInput {
   moveX: number;

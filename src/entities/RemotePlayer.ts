@@ -1,15 +1,36 @@
-import * as THREE from 'three';
+import {
+  Group,
+  Vector3,
+  Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  Sprite,
+  CanvasTexture,
+  MeshDepthMaterial,
+  type Scene,
+  DoubleSide,
+  RGBADepthPacking,
+  PointLight,
+  RingGeometry,
+  LinearFilter,
+  SpriteMaterial,
+  IcosahedronGeometry,
+  MeshStandardMaterial,
+  TorusGeometry,
+  Texture,
+  type Material
+} from 'three';
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from './Player';
 import { SpriteDirection, TextureManager, AnimatedCharacterTextures } from '../core/TextureManager';
 import { PlayerNetState, NetWeaponInfo } from '../net/NetworkManager';
 
 export class RemotePlayer {
-  public mesh: THREE.Group;
-  public position: THREE.Vector3;
-  private targetPosition: THREE.Vector3;
-  private spriteMesh: THREE.Mesh;
-  private spriteMaterial: THREE.MeshBasicMaterial;
-  private shadowMesh: THREE.Mesh;
+  public mesh: Group;
+  public position: Vector3;
+  private targetPosition: Vector3;
+  private spriteMesh: Mesh;
+  private spriteMaterial: MeshBasicMaterial;
+  private shadowMesh: Mesh;
 
   public id: string = 'p2';
   public name: string = 'Игрок 2';
@@ -30,10 +51,10 @@ export class RemotePlayer {
 
   // Active Shrine Buffs & 3D Visual Auras
   public activeBuffs: Map<BuffType, ActiveBuff> = new Map();
-  private invulnShieldMesh!: THREE.Mesh;
-  private damageAuraMesh!: THREE.Mesh;
-  private speedAuraMesh!: THREE.Mesh;
-  private regenAuraMesh!: THREE.Mesh;
+  private invulnShieldMesh!: Mesh;
+  private damageAuraMesh!: Mesh;
+  private speedAuraMesh!: Mesh;
+  private regenAuraMesh!: Mesh;
 
   // Active Weapons / Abilities
   public weapons: NetWeaponInfo[] = [];
@@ -42,24 +63,24 @@ export class RemotePlayer {
 
   private animatedTextures!: AnimatedCharacterTextures;
   private animFrameTimer: number = 0;
-  private roninGeom: THREE.PlaneGeometry;
+  private roninGeom: PlaneGeometry;
 
   // Overhead 3D Canvas Billboard (Name, HP Bar, Revive Status)
-  private overheadSprite: THREE.Sprite;
+  private overheadSprite: Sprite;
   private overheadCanvas: HTMLCanvasElement;
   private overheadCtx: CanvasRenderingContext2D;
-  private overheadTexture: THREE.CanvasTexture;
+  private overheadTexture: CanvasTexture;
   private lastDrawnHp: number = -1;
   private lastDrawnDowned: boolean = false;
   private lastDrawnRevive: number = -1;
 
   // Downed red pulse light
   private pulseTimer: number = 0;
-  private downedAuraMesh: THREE.Mesh;
-  private customDepthMaterial!: THREE.MeshDepthMaterial;
+  private downedAuraMesh: Mesh;
+  private customDepthMaterial!: MeshDepthMaterial;
 
   constructor(
-    scene: THREE.Scene,
+    scene: Scene,
     id: string = 'p2',
     name: string = 'Игрок 2',
     charType: CharacterType = 'valkyrie',
@@ -75,32 +96,32 @@ export class RemotePlayer {
       this.colorHex = colorHex;
       this.colorCss = '#' + colorHex.toString(16).padStart(6, '0');
     }
-    this.position = new THREE.Vector3(0, 0, 0);
-    this.targetPosition = new THREE.Vector3(0, 0, 0);
-    this.mesh = new THREE.Group();
+    this.position = new Vector3(0, 0, 0);
+    this.targetPosition = new Vector3(0, 0, 0);
+    this.mesh = new Group();
 
     // 3.6 x 3.6 plane geometry anchored at feet
-    this.roninGeom = new THREE.PlaneGeometry(3.6, 3.6);
+    this.roninGeom = new PlaneGeometry(3.6, 3.6);
     this.roninGeom.translate(0, 0.975, 0);
 
     // Load and clone textures so UV repeat/offsets are independent from local player
     this.loadCharacterTextures(charType);
 
-    this.spriteMaterial = new THREE.MeshBasicMaterial({
+    this.spriteMaterial = new MeshBasicMaterial({
       map: this.animatedTextures.idle,
       transparent: true,
       alphaTest: 0.25,
-      side: THREE.DoubleSide,
+      side: DoubleSide,
       depthWrite: true,
       depthTest: true
     });
 
-    this.spriteMesh = new THREE.Mesh(this.roninGeom, this.spriteMaterial);
+    this.spriteMesh = new Mesh(this.roninGeom, this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
     this.spriteMesh.position.y = 0.05;
     this.spriteMesh.renderOrder = 0;
-    this.customDepthMaterial = new THREE.MeshDepthMaterial({
-      depthPacking: THREE.RGBADepthPacking,
+    this.customDepthMaterial = new MeshDepthMaterial({
+      depthPacking: RGBADepthPacking,
       map: this.spriteMaterial.map,
       alphaTest: 0.25
     });
@@ -113,20 +134,20 @@ export class RemotePlayer {
     this.mesh.add(this.shadowMesh);
 
     // Distinct Partner Halo Light (using player's assigned color)
-    const partnerLight = new THREE.PointLight(this.colorHex, 1.2, 8);
+    const partnerLight = new PointLight(this.colorHex, 1.2, 8);
     partnerLight.position.set(0, 1.2, 0.3);
     this.mesh.add(partnerLight);
 
     // Downed red warning beacon ring
-    const ringGeom = new THREE.RingGeometry(0.8, 1.2, 32);
+    const ringGeom = new RingGeometry(0.8, 1.2, 32);
     ringGeom.rotateX(-Math.PI / 2);
-    const ringMat = new THREE.MeshBasicMaterial({
+    const ringMat = new MeshBasicMaterial({
       color: 0xef4444,
       transparent: true,
       opacity: 0.85,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
-    this.downedAuraMesh = new THREE.Mesh(ringGeom, ringMat);
+    this.downedAuraMesh = new Mesh(ringGeom, ringMat);
     this.downedAuraMesh.position.y = 0.04;
     this.downedAuraMesh.visible = false;
     this.mesh.add(this.downedAuraMesh);
@@ -137,14 +158,14 @@ export class RemotePlayer {
     this.overheadCanvas.height = 96;
     this.overheadCtx = this.overheadCanvas.getContext('2d')!;
 
-    this.overheadTexture = new THREE.CanvasTexture(this.overheadCanvas);
-    this.overheadTexture.minFilter = THREE.LinearFilter;
-    const spriteMat = new THREE.SpriteMaterial({
+    this.overheadTexture = new CanvasTexture(this.overheadCanvas);
+    this.overheadTexture.minFilter = LinearFilter;
+    const spriteMat = new SpriteMaterial({
       map: this.overheadTexture,
       transparent: true,
       depthTest: false
     });
-    this.overheadSprite = new THREE.Sprite(spriteMat);
+    this.overheadSprite = new Sprite(spriteMat);
     this.overheadSprite.position.set(0, 3.0, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
@@ -159,8 +180,8 @@ export class RemotePlayer {
 
   private setupAuras() {
     // 1. Invulnerability Golden Shield Bubble
-    const shieldGeom = new THREE.IcosahedronGeometry(1.4, 1);
-    const shieldMat = new THREE.MeshStandardMaterial({
+    const shieldGeom = new IcosahedronGeometry(1.4, 1);
+    const shieldMat = new MeshStandardMaterial({
       color: 0xf59e0b,
       emissive: 0xf59e0b,
       emissiveIntensity: 0.6,
@@ -168,46 +189,46 @@ export class RemotePlayer {
       opacity: 0.4,
       wireframe: true
     });
-    this.invulnShieldMesh = new THREE.Mesh(shieldGeom, shieldMat);
+    this.invulnShieldMesh = new Mesh(shieldGeom, shieldMat);
     this.invulnShieldMesh.position.y = 1.2;
     this.invulnShieldMesh.visible = false;
     this.mesh.add(this.invulnShieldMesh);
 
     // 2. Crimson Wrath Ring (Damage Buff)
-    const dmgGeom = new THREE.TorusGeometry(1.15, 0.08, 6, 24);
+    const dmgGeom = new TorusGeometry(1.15, 0.08, 6, 24);
     dmgGeom.rotateX(Math.PI / 2);
-    const dmgMat = new THREE.MeshBasicMaterial({
+    const dmgMat = new MeshBasicMaterial({
       color: 0xef4444,
       transparent: true,
       opacity: 0.85
     });
-    this.damageAuraMesh = new THREE.Mesh(dmgGeom, dmgMat);
+    this.damageAuraMesh = new Mesh(dmgGeom, dmgMat);
     this.damageAuraMesh.position.y = 1.0;
     this.damageAuraMesh.visible = false;
     this.mesh.add(this.damageAuraMesh);
 
     // 3. Cyan Swift Wind Ring (Speed Buff)
-    const speedGeom = new THREE.TorusGeometry(1.1, 0.06, 6, 24);
+    const speedGeom = new TorusGeometry(1.1, 0.06, 6, 24);
     speedGeom.rotateX(Math.PI / 2.2);
-    const speedMat = new THREE.MeshBasicMaterial({
+    const speedMat = new MeshBasicMaterial({
       color: 0x06b6d4,
       transparent: true,
       opacity: 0.8
     });
-    this.speedAuraMesh = new THREE.Mesh(speedGeom, speedMat);
+    this.speedAuraMesh = new Mesh(speedGeom, speedMat);
     this.speedAuraMesh.position.y = 0.5;
     this.speedAuraMesh.visible = false;
     this.mesh.add(this.speedAuraMesh);
 
     // 4. Emerald Vitality Ring (Regen Buff)
-    const regenGeom = new THREE.TorusGeometry(0.95, 0.07, 6, 24);
+    const regenGeom = new TorusGeometry(0.95, 0.07, 6, 24);
     regenGeom.rotateX(Math.PI / 2);
-    const regenMat = new THREE.MeshBasicMaterial({
+    const regenMat = new MeshBasicMaterial({
       color: 0x10b981,
       transparent: true,
       opacity: 0.85
     });
-    this.regenAuraMesh = new THREE.Mesh(regenGeom, regenMat);
+    this.regenAuraMesh = new Mesh(regenGeom, regenMat);
     this.regenAuraMesh.position.y = 0.8;
     this.regenAuraMesh.visible = false;
     this.mesh.add(this.regenAuraMesh);
@@ -385,7 +406,7 @@ export class RemotePlayer {
   private updateAnimation(dt: number) {
     if (!this.animatedTextures) return;
 
-    const STATE_CONFIG: Record<HeroAnimState, { texture: THREE.Texture; cols: number; fps: number }> = {
+    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
       IDLE: { texture: this.animatedTextures.idle, cols: 10, fps: 8 },
       WALK: { texture: this.animatedTextures.walk, cols: 6, fps: 12 },
       ATTACK: { texture: this.animatedTextures.attack, cols: 8, fps: 16 },
@@ -515,7 +536,7 @@ export class RemotePlayer {
     this.overheadTexture.needsUpdate = true;
   }
 
-  public destroy(scene: THREE.Scene) {
+  public destroy(scene: Scene) {
     scene.remove(this.mesh);
     this.spriteMaterial.dispose();
     this.overheadTexture.dispose();
@@ -523,19 +544,19 @@ export class RemotePlayer {
     this.roninGeom.dispose();
     if (this.invulnShieldMesh) {
       this.invulnShieldMesh.geometry.dispose();
-      (this.invulnShieldMesh.material as THREE.Material).dispose();
+      (this.invulnShieldMesh.material as Material).dispose();
     }
     if (this.damageAuraMesh) {
       this.damageAuraMesh.geometry.dispose();
-      (this.damageAuraMesh.material as THREE.Material).dispose();
+      (this.damageAuraMesh.material as Material).dispose();
     }
     if (this.speedAuraMesh) {
       this.speedAuraMesh.geometry.dispose();
-      (this.speedAuraMesh.material as THREE.Material).dispose();
+      (this.speedAuraMesh.material as Material).dispose();
     }
     if (this.regenAuraMesh) {
       this.regenAuraMesh.geometry.dispose();
-      (this.regenAuraMesh.material as THREE.Material).dispose();
+      (this.regenAuraMesh.material as Material).dispose();
     }
   }
 }

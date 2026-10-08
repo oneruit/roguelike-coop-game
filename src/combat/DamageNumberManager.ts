@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Vector3, type Camera } from 'three';
 
 export class DamageNumberManager {
   public static damageEnabled = true;
@@ -18,7 +18,7 @@ export class DamageNumberManager {
     this.container = document.getElementById('damage-numbers-layer') || document.body;
   }
 
-  public spawnDamage(worldPos: THREE.Vector3, amount: number, isCrit = false, camera?: THREE.Camera, isBleed = false) {
+  public spawnDamage(worldPos: Vector3, amount: number, isCrit = false, camera?: Camera, isBleed = false) {
     if (!DamageNumberManager.damageEnabled) return;
     const el = document.createElement('div');
     el.className = `dmg-number ${isCrit ? 'dmg-crit' : ''} ${isBleed ? 'dmg-bleed' : ''}`;
@@ -30,7 +30,7 @@ export class DamageNumberManager {
     }
 
     if (camera) {
-      const v = worldPos.clone().add(new THREE.Vector3(
+      const v = worldPos.clone().add(new Vector3(
         (Math.random() - 0.5) * 0.6,
         1.2 + Math.random() * 0.4,
         (Math.random() - 0.5) * 0.6
@@ -61,14 +61,14 @@ export class DamageNumberManager {
     }, 750);
   }
 
-  public spawnXp(worldPos: THREE.Vector3, amount: number, camera?: THREE.Camera) {
+  public spawnXp(worldPos: Vector3, amount: number, camera?: Camera) {
     if (!DamageNumberManager.xpEnabled) return;
     const el = document.createElement('div');
     el.className = 'dmg-number dmg-xp';
     el.innerText = `+${amount} XP`;
 
     if (camera) {
-      const v = worldPos.clone().add(new THREE.Vector3(
+      const v = worldPos.clone().add(new Vector3(
         (Math.random() - 0.5) * 0.4,
         1.3 + Math.random() * 0.4,
         (Math.random() - 0.5) * 0.4
@@ -99,14 +99,14 @@ export class DamageNumberManager {
     }, 850);
   }
 
-  public spawnLevelUp(worldPos: THREE.Vector3, level: number, camera?: THREE.Camera) {
+  public spawnLevelUp(worldPos: Vector3, level: number, camera?: Camera) {
     if (!DamageNumberManager.enabled) return;
     const el = document.createElement('div');
     el.className = 'dmg-number dmg-levelup';
     el.innerText = `LEVEL UP! [${level}]`;
 
     if (camera) {
-      const v = worldPos.clone().add(new THREE.Vector3(0, 1.8, 0));
+      const v = worldPos.clone().add(new Vector3(0, 1.8, 0));
       v.project(camera);
       const x = (v.x * 0.5 + 0.5) * window.innerWidth;
       const y = (-(v.y * 0.5) + 0.5) * window.innerHeight;
@@ -125,14 +125,14 @@ export class DamageNumberManager {
     }, 1300);
   }
 
-  public spawnPassiveBuff(worldPos: THREE.Vector3, text: string, camera?: THREE.Camera) {
+  public spawnPassiveBuff(worldPos: Vector3, text: string, camera?: Camera) {
     if (!DamageNumberManager.enabled) return;
     const el = document.createElement('div');
     el.className = 'dmg-number dmg-passive-buff';
     el.innerText = text;
 
     if (camera) {
-      const v = worldPos.clone().add(new THREE.Vector3(0, 1.6, 0));
+      const v = worldPos.clone().add(new Vector3(0, 1.6, 0));
       v.project(camera);
       if (v.z < -1 || v.z > 1 || v.x < -1.1 || v.x > 1.1 || v.y < -1.1 || v.y > 1.1) {
         return;

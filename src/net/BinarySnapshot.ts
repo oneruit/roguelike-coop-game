@@ -6,30 +6,18 @@ import {
   PlayerStats,
   NetEvent,
   ChestSyncInfo,
-  TeleporterSyncInfo
-} from './NetworkManager';
-import { SpriteDirection, CharacterType, HeroAnimState, EnemyType, GemType } from '../sim/types';
+  TeleporterSyncInfo,
+  SLOTS,
+  DIRECTIONS as DIRS,
+  ANIM_STATES as ANIMS,
+  CHARACTERS as CHARS,
+  CHEST_TIERS,
+  ENEMIES,
+  GEMS
+} from '../shared/types';
 
 const MAGIC_HEADER = 0x48534e50; // "HSNP" (Host Snapshot Network Packet)
 const PROTOCOL_VERSION = 3;
-
-const SLOTS = ['p1', 'p2', 'p3', 'p4', 'p5'] as const;
-const DIRS: SpriteDirection[] = ['front', 'back', 'left', 'right'];
-const ANIMS: HeroAnimState[] = ['IDLE', 'WALK', 'ATTACK', 'WALK_ATTACK'];
-const CHARS: CharacterType[] = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer'];
-const CHEST_TIERS: ('small' | 'large' | 'legendary')[] = ['small', 'large', 'legendary'];
-const ENEMIES: EnemyType[] = [
-  'coyote',
-  'crawler',
-  'cactus',
-  'skeleton',
-  'ghost',
-  'scorpion',
-  'brute',
-  'bison',
-  'boss'
-];
-const GEMS: GemType[] = ['blue', 'green', 'red', 'gold'];
 
 // Fast text encoder/decoder
 const textEncoder = new TextEncoder();

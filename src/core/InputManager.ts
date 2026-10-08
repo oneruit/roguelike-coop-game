@@ -1,12 +1,12 @@
-import * as THREE from 'three';
+import { Vector3, Vector2, Raycaster, Plane, type Camera } from 'three';
 
 export class InputManager {
   private keys: { [key: string]: boolean } = {};
-  public moveDirection = new THREE.Vector3();
-  public mouseWorldPosition = new THREE.Vector3();
-  private raycaster = new THREE.Raycaster();
-  private mouse = new THREE.Vector2();
-  private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  public moveDirection = new Vector3();
+  public mouseWorldPosition = new Vector3();
+  private raycaster = new Raycaster();
+  private mouse = new Vector2();
+  private groundPlane = new Plane(new Vector3(0, 1, 0), 0);
 
   public onTogglePause?: () => void;
   public onToggleDevMode?: () => void;
@@ -74,7 +74,7 @@ export class InputManager {
     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   }
 
-  public update(camera: THREE.Camera) {
+  public update(camera: Camera) {
     let dx = 0;
     let dz = 0;
 

@@ -1,4 +1,15 @@
-import * as THREE from 'three';
+import {
+  Vector3,
+  Group,
+  Mesh,
+  type Scene,
+  BoxGeometry,
+  MeshStandardMaterial,
+  OctahedronGeometry,
+  MeshBasicMaterial,
+  RingGeometry,
+  DoubleSide
+} from 'three';
 import { rollRiftItem, RiftItemDef } from '../items/RiftItemSystem';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { SeededRNG } from '../core/SeededRNG';
@@ -9,40 +20,40 @@ export interface ChestInstance {
   id: string;
   tier: ChestTier;
   baseCost: number;
-  position: THREE.Vector3;
+  position: Vector3;
   isOpened: boolean;
-  mesh: THREE.Group;
-  lidMesh: THREE.Mesh;
-  hologramMesh: THREE.Mesh;
-  glowMesh: THREE.Mesh;
+  mesh: Group;
+  lidMesh: Mesh;
+  hologramMesh: Mesh;
+  glowMesh: Mesh;
 }
 
 export class ChestManager {
-  private scene: THREE.Scene;
+  private scene: Scene;
   public chests: ChestInstance[] = [];
   private static nextId = 1;
 
   // Shared Geometries & Materials for high performance
-  private smallBaseGeom = new THREE.BoxGeometry(1.6, 0.9, 1.2);
-  private smallLidGeom = new THREE.BoxGeometry(1.65, 0.35, 1.25);
-  private largeBaseGeom = new THREE.BoxGeometry(2.2, 1.2, 1.6);
-  private largeLidGeom = new THREE.BoxGeometry(2.25, 0.45, 1.65);
+  private smallBaseGeom = new BoxGeometry(1.6, 0.9, 1.2);
+  private smallLidGeom = new BoxGeometry(1.65, 0.35, 1.25);
+  private largeBaseGeom = new BoxGeometry(2.2, 1.2, 1.6);
+  private largeLidGeom = new BoxGeometry(2.25, 0.45, 1.65);
 
-  private smallMat = new THREE.MeshStandardMaterial({
+  private smallMat = new MeshStandardMaterial({
     color: 0x334155,
     metalness: 0.8,
     roughness: 0.3,
     emissive: 0x0284c7,
     emissiveIntensity: 0.3
   });
-  private largeMat = new THREE.MeshStandardMaterial({
+  private largeMat = new MeshStandardMaterial({
     color: 0x1e293b,
     metalness: 0.85,
     roughness: 0.25,
     emissive: 0x16a34a,
     emissiveIntensity: 0.35
   });
-  private legendaryMat = new THREE.MeshStandardMaterial({
+  private legendaryMat = new MeshStandardMaterial({
     color: 0x450a0a,
     metalness: 0.9,
     roughness: 0.2,
@@ -50,7 +61,7 @@ export class ChestManager {
     emissiveIntensity: 0.5
   });
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: Scene) {
     this.scene = scene;
   }
 
@@ -66,7 +77,7 @@ export class ChestManager {
     y: number = 0
   ): ChestInstance {
     const id = customId || `chest_${ChestManager.nextId++}`;
-    const group = new THREE.Group();
+    const group = new Group();
     group.position.set(x, y, z);
 
     let baseCost = customBaseCost ?? 25;
@@ -90,38 +101,38 @@ export class ChestManager {
     }
 
     // Base body
-    const baseMesh = new THREE.Mesh(baseGeom, mat);
+    const baseMesh = new Mesh(baseGeom, mat);
     baseMesh.position.y = baseGeom.parameters.height / 2;
     baseMesh.castShadow = true;
     baseMesh.receiveShadow = true;
     group.add(baseMesh);
 
     // Opening Lid (hinged at back)
-    const lidMesh = new THREE.Mesh(lidGeom, mat);
+    const lidMesh = new Mesh(lidGeom, mat);
     lidMesh.position.set(0, baseGeom.parameters.height + lidGeom.parameters.height / 2, 0);
     lidMesh.castShadow = true;
     group.add(lidMesh);
 
     // Glowing Hologram Beacon above chest
-    const holoGeom = new THREE.OctahedronGeometry(0.35);
-    const holoMat = new THREE.MeshBasicMaterial({
+    const holoGeom = new OctahedronGeometry(0.35);
+    const holoMat = new MeshBasicMaterial({
       color: glowColor,
       wireframe: true
     });
-    const hologramMesh = new THREE.Mesh(holoGeom, holoMat);
+    const hologramMesh = new Mesh(holoGeom, holoMat);
     hologramMesh.position.y = baseGeom.parameters.height + 1.2;
     group.add(hologramMesh);
 
     // Ground energy aura
-    const auraGeom = new THREE.RingGeometry(1.2, 1.5, 24);
+    const auraGeom = new RingGeometry(1.2, 1.5, 24);
     auraGeom.rotateX(-Math.PI / 2);
-    const auraMat = new THREE.MeshBasicMaterial({
+    const auraMat = new MeshBasicMaterial({
       color: glowColor,
       transparent: true,
       opacity: 0.45,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
-    const glowMesh = new THREE.Mesh(auraGeom, auraMat);
+    const glowMesh = new Mesh(auraGeom, auraMat);
     glowMesh.position.y = 0.05;
     group.add(glowMesh);
 
@@ -129,7 +140,7 @@ export class ChestManager {
       id,
       tier,
       baseCost,
-      position: new THREE.Vector3(x, y, z),
+      position: new Vector3(x, y, z),
       isOpened: false,
       mesh: group,
       lidMesh,
@@ -248,7 +259,7 @@ export class ChestManager {
    * Finds the closest unopened chest within interaction distance (~3.6m).
    */
   public getClosestInteractableChest(
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     gameTime: number,
     stage: number
   ): { chest: ChestInstance; cost: number; canAfford: boolean } | null {

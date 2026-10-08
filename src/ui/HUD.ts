@@ -11,7 +11,7 @@ import { DifficultyDirector } from '../director/DifficultyDirector';
 import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
 import { ProgressionManager, SidebarQuestItem } from '../core/ProgressionManager';
 import { TextureManager } from '../core/TextureManager';
-import * as THREE from 'three';
+import type { Scene } from 'three';
 
 export interface UpgradeOption {
   id: string;
@@ -220,7 +220,7 @@ export class HUD {
   private coopStatsThead: HTMLElement;
   private coopStatsTbody: HTMLElement;
 
-  private scene: THREE.Scene;
+  private scene: Scene;
   public isPaused = false;
   private bossWarningTimeout: number | null = null;
 
@@ -249,7 +249,7 @@ export class HUD {
   public onReturnToMenu?: () => void;
 
   constructor(
-    scene: THREE.Scene,
+    scene: Scene,
     onSelectHero: (charType: CharacterType, seedInput?: string, isTrainingMode?: boolean, timeOfDay?: 'random' | 'day' | 'night') => void,
     onResume: () => void,
     onRestart: () => void

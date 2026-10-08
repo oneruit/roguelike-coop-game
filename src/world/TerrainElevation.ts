@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 
 /**
  * Procedural Terrain Elevation Generator.
@@ -25,7 +25,7 @@ export class TerrainElevation {
   /**
    * Returns flat ground normal (0, 1, 0).
    */
-  public getNormal(_x: number, _z: number, target: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+  public getNormal(_x: number, _z: number, target: Vector3 = new Vector3()): Vector3 {
     return target.set(0, 1, 0);
   }
 }
