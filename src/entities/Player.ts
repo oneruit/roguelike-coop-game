@@ -354,6 +354,13 @@ export class Player {
     this.passiveHpRegen = 0;
     this.passiveDamageReduction = 0;
     this.sheriffStarCount = 0;
+    this.spursCount = 0;
+    this.flaskCount = 0;
+    this.lassoCount = 0;
+    this.amuletCount = 0;
+    this.vestCount = 0;
+    this.watchCount = 0;
+    this.pickupRadius = 4.2;
     this.recalculateStats();
   }
 
@@ -361,8 +368,10 @@ export class Player {
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.baseSpeed = heroCfg.baseSpeed;
+    const bonusHp = this.flaskCount * 30;
+    const newMaxHp = heroCfg.maxHp + bonusHp;
     const hpRatio = this.maxHp > 0 ? this.hp / this.maxHp : 1.0;
-    this.maxHp = heroCfg.maxHp;
+    this.maxHp = newMaxHp;
     this.hp = Math.min(this.maxHp, Math.max(1, Math.round(this.maxHp * hpRatio)));
 
     for (const weapon of this.weapons) {
@@ -431,29 +440,36 @@ export class Player {
     const vialStacks = this.getItemStacks('health_vial');
     const aegisStacks = this.getItemStacks('aegis_battery');
     const critStacks = this.getItemStacks('crit_visor');
-    const naniteStacks = this.getItemStacks('nanite_plating');
 
     // Speed: +12% per Adrenaline Dart stack
     speedBonus += adrenalineStacks * 0.12;
 
-    // HP Regen: +2.5 HP/s per Health Vial stack
-    this.passiveHpRegen = (this.amuletCount * 1.5) + (vialStacks * 2.5);
+    // HP Regen: +2.5 HP/s per Health Vial stack, +1.5 HP/s per Amulet stack, max 30
+    this.passiveHpRegen = Math.min(30, (this.amuletCount * 1.5) + (vialStacks * 2.5));
 
     // Max Shield: +35 shield per Aegis Battery stack
     this.maxShield = aegisStacks * 35;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
 
-    // Crit Chance: 5% base + 12% per Crit Visor stack
-    this.critChance = 0.05 + critStacks * 0.12;
+    // Crit Chance: 5% base + 12% per Crit Visor stack, cap at 1.0 (100%)
+    this.critChance = Math.min(1.0, 0.05 + critStacks * 0.12);
 
-    // Flat armor reduction: Nanite Plating
-    this.passiveDamageReduction = Math.min(0.75, (this.vestCount * 0.1) + (naniteStacks * 0.08));
+    // Leather Vest % damage reduction: 10% per stack, cap at 70%
+    this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.10);
 
-    // Attack Cooldown Multiplier: -15% cooldown per Kinetic Injector stack
-    this.passiveCooldownMultiplier = Math.max(0.2, (1 - this.watchCount * 0.08) * Math.pow(0.85, injectorStacks));
+    // Attack Cooldown Multiplier:
+    // Pocket watch: -8% cooldown per stack, up to 70% reduction (floor 0.30)
+    // Kinetic Injector: -15% cooldown per stack (0.85^stacks)
+    // Combined floor 0.20
+    const watchMult = Math.max(0.30, 1 - this.watchCount * 0.08);
+    const injectorMult = Math.pow(0.85, injectorStacks);
+    this.passiveCooldownMultiplier = Math.max(0.20, watchMult * injectorMult);
     for (const weapon of this.weapons) {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier;
     }
+
+    // Magnet Lasso pickup radius
+    this.pickupRadius = Math.min(25, 4.2 * Math.pow(1.35, this.lassoCount));
 
     // Apply speed cheat or base speed * passive multiplier + speed buff
     const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
@@ -476,34 +492,31 @@ export class Player {
     this.recalculateStats();
   }
 
-  public addHpRegen(amount: number = 1.5) {
-    this.passiveHpRegen = Math.min(30, this.passiveHpRegen + amount);
+  public addHpRegen(_amount: number = 1.5) {
     this.amuletCount++;
+    this.recalculateStats();
   }
 
-  public addDamageReduction(pct: number = 0.10) {
-    this.passiveDamageReduction = Math.min(0.70, this.passiveDamageReduction + pct);
+  public addDamageReduction(_pct: number = 0.10) {
     this.vestCount++;
+    this.recalculateStats();
   }
 
-  public addCooldownReduction(pct: number = 0.08) {
-    this.passiveCooldownMultiplier = Math.max(0.30, this.passiveCooldownMultiplier * (1 - pct));
+  public addCooldownReduction(_pct: number = 0.08) {
     this.watchCount++;
-    for (const w of this.weapons) {
-      (w as any).cooldown = Math.max(0.12, (w as any).cooldown * (1 - pct));
-    }
+    this.recalculateStats();
   }
 
   public addFlaskBonus(hpIncrease: number = 30) {
+    this.flaskCount++;
     this.maxHp += hpIncrease;
     this.heal(this.maxHp);
-    this.flaskCount++;
     this.redrawOverhead();
   }
 
-  public addLassoBonus(multiplier: number = 1.35) {
-    this.pickupRadius = Math.min(25, this.pickupRadius * multiplier);
+  public addLassoBonus(_multiplier: number = 1.35) {
     this.lassoCount++;
+    this.recalculateStats();
   }
 
   public applyPassiveBuff(id: PassiveBuffId): string {
@@ -812,9 +825,11 @@ export class Player {
     }
 
     // Check Chronos Phylactery (Legendary Item) lethal protection
-    if (this.hp <= 0 && this.hasChronosReady && this.getItemStacks('chronos_phylactery') > 0) {
+    const chronosStacks = this.getItemStacks('chronos_phylactery');
+    if (this.hp <= 0 && this.hasChronosReady && chronosStacks > 0) {
       this.hasChronosReady = false;
-      this.hp = Math.round(this.maxHp * 0.5);
+      const healPercent = Math.min(1.0, 0.50 + (chronosStacks - 1) * 0.25);
+      this.hp = Math.round(this.maxHp * healPercent);
       this.addBuff({
         type: 'invulnerable',
         name: 'Кристалл Времени',
@@ -886,7 +901,7 @@ export class Player {
 
   public giveAllWeapons(scene: THREE.Scene) {
     const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
-    if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon());
+    if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
 
     const hasKukri = this.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
     if (!hasKukri && this.weapons.length < 5) this.weapons.push(new KukriWeapon());
@@ -903,6 +918,7 @@ export class Player {
 
     const hasKatana = this.weapons.some(w => w.id === 'katana_slash');
     if (!hasKatana && this.weapons.length < 5) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
+    this.recalculateStats();
   }
 
   public maxAllWeapons() {

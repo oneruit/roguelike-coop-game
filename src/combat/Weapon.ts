@@ -104,6 +104,10 @@ export abstract class Weapon {
   public baseDamage: number;
   public damagePerLevel: number = 5;
 
+  public get effectiveCooldown(): number {
+    return Math.max(0.08, this.cooldown * this.cooldownMultiplier);
+  }
+
   constructor(
     id: string,
     name: string,
@@ -178,6 +182,19 @@ export class BowWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('bow', 'Охотничий Лук', '🏹', 0.85, 26, 6);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('bow');
+    const baseCount = cfg?.count ?? 1;
+    const basePierce = cfg?.pierce ?? 2;
+    this.projectileSpeed = cfg?.speed ?? 24;
+    this.projectileCount = baseCount + [4, 8, 12, 16, 20].filter(lvl => this.level >= lvl).length;
+    this.pierce = basePierce + [3, 6, 9, 13, 17].filter(lvl => this.level >= lvl).length;
+    const cdSteps = [2, 5, 7, 10, 14, 18].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.40, Number((this.baseCooldown * Math.pow(0.93, cdSteps)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -191,7 +208,7 @@ export class BowWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
       this.timer = 0;
 
@@ -240,24 +257,18 @@ export class BowWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
-      this.projectileCount++;
-    }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
-      this.pierce++;
-    }
-    if ([2, 5, 7, 10, 14, 18].includes(this.level)) {
-      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.93).toFixed(3)));
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+6 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) {
+      const nextCd = Math.max(0.40, Number((this.cooldown * 0.93).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-7% перезарядки');
+    }
     return perks.join(', ');
   }
 }
@@ -277,6 +288,19 @@ export class KukriWeapon extends Weapon {
 
   constructor() {
     super('kukri', 'Нож Кукри', '🔪', 0.65, 12, 3);
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('kukri');
+    const baseCount = cfg?.count ?? 2;
+    const basePierce = cfg?.pierce ?? 1;
+    this.projectileSpeed = cfg?.speed ?? 24;
+    this.burstCount = baseCount + [2, 4, 6, 8, 10, 12, 14, 16, 18, 20].filter(lvl => this.level >= lvl).length;
+    this.pierce = basePierce + [10, 20].filter(lvl => this.level >= lvl).length;
+    const cdSteps = [3, 5, 7, 9, 11, 13, 15, 17, 19].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.25, Number((this.baseCooldown * Math.pow(0.94, cdSteps)).toFixed(3)));
   }
 
   public update(
@@ -286,7 +310,7 @@ export class KukriWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
       this.timer = 0;
 
@@ -332,24 +356,18 @@ export class KukriWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(this.level)) {
-      this.burstCount++;
-    }
-    if ([10, 20].includes(this.level)) {
-      this.pierce++;
-    }
-    if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(this.level)) {
-      this.cooldown = Math.max(0.25, Number((this.cooldown * 0.94).toFixed(3)));
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+3 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
     if ([10, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) perks.push('-6% перезарядки');
+    if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) {
+      const nextCd = Math.max(0.25, Number((this.cooldown * 0.94).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-6% перезарядки');
+    }
     return perks.join(', ');
   }
 }
@@ -371,28 +389,21 @@ export class OrbitingBarrierWeapon extends Weapon {
 
   constructor() {
     super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4, 1);
-    const cfg = BalanceManager.getWeaponConfig('orbiting_barrier');
-    if (cfg.bleedDps !== undefined) this.bleedDps = cfg.bleedDps;
-    if (cfg.orbitRadius !== undefined) this.orbitRadius = cfg.orbitRadius;
-    if (cfg.orbitSpeed !== undefined) this.orbitSpeed = cfg.orbitSpeed;
-    if (cfg.count !== undefined) this.orbCount = cfg.count;
+    this.recalculateStats();
   }
 
-  public override applyBalance(cfg: WeaponBalanceConfig): void {
-    super.applyBalance(cfg);
-    if (cfg.bleedDps !== undefined) {
-      this.bleedDps = cfg.bleedDps + (this.level - 1) * 2;
-    }
-    if (cfg.orbitRadius !== undefined) {
-      this.orbitRadius = Number((cfg.orbitRadius + (this.level - 1) * 0.20).toFixed(2));
-    }
-    if (cfg.orbitSpeed !== undefined) {
-      this.orbitSpeed = Number((cfg.orbitSpeed + (this.level - 1) * 0.08).toFixed(2));
-    }
-    if (cfg.count !== undefined) {
-      const extra = [3, 6, 9, 12, 15, 18, 20].filter(lvl => this.level >= lvl).length;
-      this.orbCount = cfg.count + extra;
-    }
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('orbiting_barrier');
+    const baseBleed = cfg?.bleedDps ?? 8;
+    const baseRadius = cfg?.orbitRadius ?? 2.5;
+    const baseSpeed = cfg?.orbitSpeed ?? 3.8;
+    const baseCount = cfg?.count ?? 2;
+    this.bleedDps = baseBleed + (this.level - 1) * 2;
+    this.orbitRadius = Number((baseRadius + (this.level - 1) * 0.20).toFixed(2));
+    this.orbitSpeed = Number((baseSpeed + (this.level - 1) * 0.08).toFixed(2));
+    const extra = [3, 6, 9, 12, 15, 18, 20].filter(lvl => this.level >= lvl).length;
+    this.orbCount = baseCount + extra;
   }
 
   public getBleedDps(): number {
@@ -445,18 +456,12 @@ export class OrbitingBarrierWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    this.bleedDps = Number((this.bleedDps + 2).toFixed(2));
-    this.orbitRadius = Number((this.orbitRadius + 0.20).toFixed(2));
-    this.orbitSpeed = Number((this.orbitSpeed + 0.08).toFixed(2));
-    if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) {
-      this.orbCount++;
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+1 к прямому урону', '+2 к урону кровотечения/сек', '+0.20м радиус орбиты'];
+    const perks: string[] = [`+${this.damagePerLevel} к прямому урону`, '+2 к урону кровотечения/сек', '+0.20м радиус орбиты'];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
@@ -489,8 +494,19 @@ export class HolyAuraWeapon extends Weapon {
 
   constructor() {
     super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16, 4);
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
     const cfg = BalanceManager.getWeaponConfig('holy_aura');
-    if (cfg.explosionRadius !== undefined) this.radius = cfg.explosionRadius;
+    const baseRad = cfg?.explosionRadius ?? 3.5;
+    this.radius = Number((baseRad + (this.level - 1) * 0.20).toFixed(2));
+    this.cooldown = Math.max(0.22, Number((this.baseCooldown * Math.pow(0.96, this.level - 1)).toFixed(3)));
+    if (this.auraMesh) {
+      this.auraMesh.geometry.dispose();
+      this.auraMesh.geometry = new THREE.PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
+    }
   }
 
   public update(
@@ -511,7 +527,7 @@ export class HolyAuraWeapon extends Weapon {
     }
 
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       this.timer = 0;
 
       const radSq = this.radius * this.radius;
@@ -572,18 +588,15 @@ export class HolyAuraWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.radius = Number((this.radius + 0.20).toFixed(2));
     this.recalculateStats();
-    this.cooldown = Math.max(0.22, Number((this.cooldown * 0.96).toFixed(3)));
-    if (this.auraMesh) {
-      this.auraMesh.geometry.dispose();
-      this.auraMesh.geometry = new THREE.PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.20м радиус кольца, +4 урона, -4% перезарядки`;
+    const perks: string[] = ['+0.20м радиус кольца', `+${this.damagePerLevel} урона`];
+    const nextCd = Math.max(0.22, Number((this.cooldown * 0.96).toFixed(3)));
+    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
+    return perks.join(', ');
   }
 }
 
@@ -598,6 +611,15 @@ export class KatanaSlashWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('katana_slash', 'Рассекающий Клинок', '🗡️', 0.60, 25, 6);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('katana_slash');
+    const baseRad = cfg?.explosionRadius ?? 3.8;
+    this.slashRadius = Number((baseRad + (this.level - 1) * 0.14).toFixed(2));
+    this.cooldown = Math.max(0.30, Number((this.baseCooldown * Math.pow(0.96, this.level - 1)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -612,7 +634,7 @@ export class KatanaSlashWeapon extends Weapon {
     damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.slashRadius * this.slashRadius;
@@ -647,14 +669,15 @@ export class KatanaSlashWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.slashRadius = Number((this.slashRadius + 0.14).toFixed(2));
     this.recalculateStats();
-    this.cooldown = Math.max(0.30, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.14м радиус взмаха, +6 урона, -4% перезарядки`;
+    const perks: string[] = ['+0.14м радиус взмаха', `+${this.damagePerLevel} урона`];
+    const nextCd = Math.max(0.30, Number((this.cooldown * 0.96).toFixed(3)));
+    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
+    return perks.join(', ');
   }
 }
 
@@ -669,6 +692,15 @@ export class WhirlwindSlashWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('whirlwind_slash', 'Багровый Вихрь', '🌪️', 0.42, 16, 4);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('whirlwind_slash');
+    const baseRad = cfg?.explosionRadius ?? 3.6;
+    this.slashRadius = Number((baseRad + (this.level - 1) * 0.12).toFixed(2));
+    this.cooldown = Math.max(0.20, Number((this.baseCooldown * Math.pow(0.96, this.level - 1)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -683,7 +715,7 @@ export class WhirlwindSlashWeapon extends Weapon {
     damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.slashRadius * this.slashRadius;
@@ -717,14 +749,15 @@ export class WhirlwindSlashWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.slashRadius = Number((this.slashRadius + 0.12).toFixed(2));
     this.recalculateStats();
-    this.cooldown = Math.max(0.20, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.12м радиус вихря, +4 урона, -4% перезарядки`;
+    const perks: string[] = ['+0.12м радиус вихря', `+${this.damagePerLevel} урона`];
+    const nextCd = Math.max(0.20, Number((this.cooldown * 0.96).toFixed(3)));
+    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
+    return perks.join(', ');
   }
 }
 
@@ -739,6 +772,15 @@ export class GreatswordWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('greatsword', 'Двуручный Меч', '⚔️', 0.70, 32, 7);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('greatsword');
+    const baseRad = cfg?.explosionRadius ?? 4.2;
+    this.slashRadius = Number((baseRad + (this.level - 1) * 0.15).toFixed(2));
+    this.cooldown = Math.max(0.35, Number((this.baseCooldown * Math.pow(0.96, this.level - 1)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -753,7 +795,7 @@ export class GreatswordWeapon extends Weapon {
     damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.slashRadius * this.slashRadius;
@@ -787,14 +829,15 @@ export class GreatswordWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.slashRadius = Number((this.slashRadius + 0.15).toFixed(2));
     this.recalculateStats();
-    this.cooldown = Math.max(0.35, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.15м радиус взмаха, +7 урона, -4% перезарядки`;
+    const perks: string[] = ['+0.15м радиус взмаха', `+${this.damagePerLevel} урона`];
+    const nextCd = Math.max(0.35, Number((this.cooldown * 0.96).toFixed(3)));
+    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
+    return perks.join(', ');
   }
 }
 
@@ -810,6 +853,17 @@ export class FlailWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('flail', 'Боевой Цеп', '⛓️', 0.52, 20, 5);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('flail');
+    const baseRad = cfg?.explosionRadius ?? 3.9;
+    const baseKb = cfg?.knockback ?? 0.35;
+    this.flailRadius = Number((baseRad + (this.level - 1) * 0.14).toFixed(2));
+    this.knockback = Number((baseKb + (this.level - 1) * 0.02).toFixed(2));
+    this.cooldown = Math.max(0.25, Number((this.baseCooldown * Math.pow(0.96, this.level - 1)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -824,7 +878,7 @@ export class FlailWeapon extends Weapon {
     damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: THREE.Vector3) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.flailRadius * this.flailRadius;
@@ -864,15 +918,15 @@ export class FlailWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.flailRadius = Number((this.flailRadius + 0.14).toFixed(2));
     this.recalculateStats();
-    this.knockback = Number((this.knockback + 0.02).toFixed(2));
-    this.cooldown = Math.max(0.25, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    return `+0.14м радиус цепа, +5 урона, сильнее отброс, -4% перезарядки`;
+    const perks: string[] = ['+0.14м радиус цепа', `+${this.damagePerLevel} урона`, 'сильнее отброс'];
+    const nextCd = Math.max(0.25, Number((this.cooldown * 0.96).toFixed(3)));
+    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
+    return perks.join(', ');
   }
 }
 
@@ -889,6 +943,19 @@ export class AstralStaffWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('astral_staff', 'Звёздный Посох', '🔮', 0.65, 22, 5);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('astral_staff');
+    this.projectileSpeed = cfg?.speed ?? 16.0;
+    const baseCount = cfg?.count ?? 1;
+    const basePierce = cfg?.pierce ?? 2;
+    this.projectileCount = baseCount + [3, 6, 9, 12, 15, 18, 20].filter(lvl => this.level >= lvl).length;
+    this.pierceCount = basePierce + [4, 8, 12, 16, 20].filter(lvl => this.level >= lvl).length;
+    const cdSteps = [2, 5, 7, 10, 14, 17].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.30, Number((this.baseCooldown * Math.pow(0.94, cdSteps)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -902,7 +969,7 @@ export class AstralStaffWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const targets = findClosestEnemies(enemies, playerPos, 1, 22 * 22);
@@ -950,24 +1017,18 @@ export class AstralStaffWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) {
-      this.projectileCount++;
-    }
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
-      this.pierceCount++;
-    }
-    if ([2, 5, 7, 10, 14, 17].includes(this.level)) {
-      this.cooldown = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+5 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 снаряд веером (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierceCount + 1})`);
-    if ([2, 5, 7, 10, 14, 17].includes(nextLvl)) perks.push('-6% перезарядки');
+    if ([2, 5, 7, 10, 14, 17].includes(nextLvl)) {
+      const nextCd = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-6% перезарядки');
+    }
     return perks.join(', ');
   }
 }
@@ -986,6 +1047,19 @@ export class ChakramWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('chakram', 'Танцующий Чакрам', '🪃', 0.70, 20, 4);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('chakram');
+    const baseCount = cfg?.count ?? 1;
+    const baseSpd = cfg?.speed ?? 14.5;
+    this.chakramCount = baseCount + [4, 8, 12, 16, 20].filter(lvl => this.level >= lvl).length;
+    const spdSteps = [2, 5, 10, 15].filter(lvl => this.level >= lvl).length;
+    this.flightSpeed = Number((baseSpd + spdSteps * 1.2).toFixed(2));
+    const cdSteps = [3, 6, 9, 13, 17].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.30, Number((this.baseCooldown * Math.pow(0.94, cdSteps)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -999,7 +1073,7 @@ export class ChakramWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const targets = findClosestEnemies(enemies, playerPos, 1, 20 * 20);
@@ -1054,23 +1128,17 @@ export class ChakramWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
-      this.chakramCount++;
-    }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
-      this.cooldown = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
-    }
-    if ([2, 5, 10, 15].includes(this.level)) {
-      this.flightSpeed += 1.2;
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+4 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 возвращающийся чакрам (всего ${this.chakramCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-6% перезарядки');
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) {
+      const nextCd = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-6% перезарядки');
+    }
     if ([2, 5, 10, 15].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
     return perks.join(', ');
   }
@@ -1089,6 +1157,21 @@ export class LightningStrikeWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('lightning_strike', 'Удар Молнии', '⚡', 1.20, 45, 8);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('lightning_strike');
+    const baseCount = cfg?.count ?? 1;
+    const baseRadius = cfg?.splashRadius ?? 2.4;
+    this.range = cfg?.range ?? 22;
+    const countSteps = [4, 8, 12, 16, 20].filter(lvl => this.level >= lvl).length;
+    this.strikeCount = baseCount + countSteps;
+    const cdSteps = [3, 6, 9, 13, 17].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.40, Number((this.baseCooldown * Math.pow(0.92, cdSteps)).toFixed(3)));
+    const radSteps = [5, 10, 15].filter(lvl => this.level >= lvl).length;
+    this.strikeRadius = Number((baseRadius + radSteps * 0.30).toFixed(2));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -1102,8 +1185,7 @@ export class LightningStrikeWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    const effectiveCd = this.cooldown * this.cooldownMultiplier;
-    if (this.timer >= effectiveCd) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.strikeCount, this.range * this.range);
@@ -1150,23 +1232,17 @@ export class LightningStrikeWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
-      this.strikeCount++;
-    }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
-      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
-    }
-    if ([5, 10, 15].includes(this.level)) {
-      this.strikeRadius = Number((this.strikeRadius + 0.30).toFixed(2));
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+8 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 разряд молнии (всего ${this.strikeCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) {
+      const nextCd = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-8% перезарядки');
+    }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.30м радиус взрыва (всего ${(this.strikeRadius + 0.30).toFixed(2)}м)`);
     return perks.join(', ');
   }
@@ -1185,6 +1261,21 @@ export class IceSpikeWeapon extends Weapon {
   constructor(onTriggerAttack?: () => void) {
     super('ice_spike', 'Ледяной Шип', '🧊', 1.10, 38, 7);
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('ice_spike');
+    const baseCount = cfg?.count ?? 1;
+    const baseRadius = cfg?.splashRadius ?? 2.0;
+    this.range = cfg?.range ?? 18;
+    const countSteps = [4, 8, 12, 16, 20].filter(lvl => this.level >= lvl).length;
+    this.spikeCount = baseCount + countSteps;
+    const cdSteps = [3, 6, 9, 13, 17].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.35, Number((this.baseCooldown * Math.pow(0.93, cdSteps)).toFixed(3)));
+    const radSteps = [5, 10, 15].filter(lvl => this.level >= lvl).length;
+    this.spikeRadius = Number((baseRadius + radSteps * 0.25).toFixed(2));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -1198,8 +1289,7 @@ export class IceSpikeWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    const effectiveCd = this.cooldown * this.cooldownMultiplier;
-    if (this.timer >= effectiveCd) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.spikeCount, this.range * this.range);
@@ -1244,23 +1334,17 @@ export class IceSpikeWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
-      this.spikeCount++;
-    }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
-      this.cooldown = Math.max(0.35, Number((this.cooldown * 0.93).toFixed(3)));
-    }
-    if ([5, 10, 15].includes(this.level)) {
-      this.spikeRadius = Number((this.spikeRadius + 0.25).toFixed(2));
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+7 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 ледяной шип (всего ${this.spikeCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) {
+      const nextCd = Math.max(0.35, Number((this.cooldown * 0.93).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-7% перезарядки');
+    }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
     return perks.join(', ');
   }
@@ -1279,26 +1363,23 @@ export class FireballWeapon extends Weapon {
 
   constructor(onTriggerAttack?: () => void) {
     super('fireball', 'Огненный Шар', '☄️', 1.35, 55, 10);
-    const cfg = BalanceManager.getWeaponConfig('fireball');
-    this.fireballCount = cfg.count ?? 1;
-    this.explosionRadius = cfg.explosionRadius ?? 2.5;
-    this.range = cfg.range ?? 22;
-    this.fallSpeed = cfg.fallSpeed ?? 28;
     this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
   }
 
-  public override applyBalance(cfg: WeaponBalanceConfig): void {
-    super.applyBalance(cfg);
-    if (cfg.range !== undefined) this.range = cfg.range;
-    if (cfg.fallSpeed !== undefined) this.fallSpeed = cfg.fallSpeed;
-    if (cfg.explosionRadius !== undefined) {
-      const extraRadius = [5, 10, 15].filter((lvl) => this.level >= lvl).length * 0.35;
-      this.explosionRadius = Number((cfg.explosionRadius + extraRadius).toFixed(2));
-    }
-    if (cfg.count !== undefined) {
-      const extraCount = [4, 8, 12, 16, 20].filter((lvl) => this.level >= lvl).length;
-      this.fireballCount = cfg.count + extraCount;
-    }
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('fireball');
+    const baseCount = cfg?.count ?? 1;
+    const baseRadius = cfg?.explosionRadius ?? 2.5;
+    this.range = cfg?.range ?? 22;
+    this.fallSpeed = cfg?.fallSpeed ?? 28;
+    const countSteps = [4, 8, 12, 16, 20].filter(lvl => this.level >= lvl).length;
+    this.fireballCount = baseCount + countSteps;
+    const cdSteps = [3, 6, 9, 13, 17].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.40, Number((this.baseCooldown * Math.pow(0.92, cdSteps)).toFixed(3)));
+    const radSteps = [5, 10, 15].filter(lvl => this.level >= lvl).length;
+    this.explosionRadius = Number((baseRadius + radSteps * 0.35).toFixed(2));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -1312,8 +1393,7 @@ export class FireballWeapon extends Weapon {
     spawnProjectile: (p: Projectile) => void
   ) {
     this.timer += dt;
-    const effectiveCd = this.cooldown * this.cooldownMultiplier;
-    if (this.timer >= effectiveCd) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.fireballCount, this.range * this.range);
@@ -1366,23 +1446,17 @@ export class FireballWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.recalculateStats();
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
-      this.fireballCount++;
-    }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
-      this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
-    }
-    if ([5, 10, 15].includes(this.level)) {
-      this.explosionRadius = Number((this.explosionRadius + 0.35).toFixed(2));
-    }
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+10 к урону'];
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 огненный шар (всего ${this.fireballCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([3, 6, 9, 13, 17].includes(nextLvl)) {
+      const nextCd = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-8% перезарядки');
+    }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
     return perks.join(', ');
   }

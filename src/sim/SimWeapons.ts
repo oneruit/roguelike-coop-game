@@ -125,6 +125,11 @@ export abstract class SimWeapon {
   public cooldown: number;
   public timer: number = 0;
   public damage: number;
+  public cooldownMultiplier: number = 1.0;
+
+  public get effectiveCooldown(): number {
+    return Math.max(0.1, this.cooldown * this.cooldownMultiplier);
+  }
 
   constructor(id: string, name: string, icon: string, cooldown: number, damage: number, iconImage?: string) {
     this.id = id;
@@ -183,7 +188,7 @@ export class SimBowWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
       this.timer = 0;
 
@@ -277,7 +282,7 @@ export class SimKukriWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
       this.timer = 0;
 
@@ -365,7 +370,7 @@ export class SimWhirlwindSlashWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.slashRadius * this.slashRadius;
@@ -424,7 +429,7 @@ export class SimGreatswordWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.slashRadius * this.slashRadius;
@@ -483,7 +488,7 @@ export class SimFlailWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.flailRadius * this.flailRadius;
@@ -544,7 +549,7 @@ export class SimAstralStaffWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
       this.timer = 0;
 
@@ -698,7 +703,7 @@ export class SimHolyAuraWeapon extends SimWeapon {
     onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       this.timer = 0;
       const radSq = this.radius * this.radius;
       for (const enemy of enemies) {
@@ -746,7 +751,7 @@ export class SimKatanaSlashWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const radSq = this.slashRadius * this.slashRadius;
@@ -808,7 +813,7 @@ export class SimChakramWeapon extends SimWeapon {
     _emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const targets = findClosestSimEnemies(enemies, player.position, 1, 20 * 20);
@@ -911,7 +916,7 @@ export class SimLightningStrikeWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const targets = findClosestSimEnemies(enemies, player.position, this.strikeCount, this.range * this.range);
@@ -989,7 +994,7 @@ export class SimIceSpikeWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const targets = findClosestSimEnemies(enemies, player.position, this.spikeCount, this.range * this.range);
@@ -1068,7 +1073,7 @@ export class SimFireballWeapon extends SimWeapon {
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
-    if (this.timer >= this.cooldown) {
+    if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
       const targets = findClosestSimEnemies(enemies, player.position, this.fireballCount, this.range * this.range);
