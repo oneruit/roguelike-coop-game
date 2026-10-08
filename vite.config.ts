@@ -14,6 +14,13 @@ function versionPlugin(isBuild: boolean, buildTime: number, buildId: string): Pl
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = req.url || '';
+        // Redirect root / to /game/index.html in dev server
+        if (url === '/' || url === '') {
+          res.writeHead(302, { Location: '/game/index.html' });
+          res.end();
+          return;
+        }
+
         if (url.includes('/version.json')) {
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -60,7 +67,13 @@ function htmlPartialsPlugin(): Plugin {
       order: 'pre',
       handler(html) {
         return html.replace(/<!--\s*#include\s+"([^"]+)"\s*-->/g, (_, file) => {
-          const filePath = path.resolve(process.cwd(), file);
+          let filePath = path.resolve(process.cwd(), file);
+          if (!fs.existsSync(filePath)) {
+            const gameFilePath = path.resolve(process.cwd(), 'game', file);
+            if (fs.existsSync(gameFilePath)) {
+              filePath = gameFilePath;
+            }
+          }
           if (fs.existsSync(filePath)) {
             return fs.readFileSync(filePath, 'utf-8');
           }
@@ -100,11 +113,17 @@ export default defineConfig(({ command }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: true,
+      rollupOptions: {
+        input: {
+          main: path.resolve(process.cwd(), 'index.html'),
+          game: path.resolve(process.cwd(), 'game/index.html')
+        }
+      }
     },
     server: {
       port: 5173,
       host: true,
+      open: '/game/index.html'
     },
   };
 });
-

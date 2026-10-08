@@ -34,21 +34,21 @@ export interface DetailedPlayerResult {
 
 export function getWeaponIconUrl(weaponId: string): string {
   const map: Record<string, string> = {
-    chakram: '/textures/weapon_chakram.png',
-    bow: '/textures/weapon_bow.png',
-    kukri: '/textures/weapon_kukri.png',
-    katana_slash: '/textures/weapon_katana_slash.png',
-    greatsword: '/textures/weapon_greatsword.png',
-    flail: '/textures/weapon_flail.png',
-    astral_staff: '/textures/weapon_astral_staff.png',
-    orbiting_barrier: '/textures/weapon_orbiting_barrier.png',
-    holy_aura: '/textures/weapon_holy_aura.png',
-    whirlwind_slash: '/textures/weapon_whirlwind_slash.png',
-    lightning_strike: '/textures/weapon_lightning_strike.png',
-    ice_spike: '/textures/weapon_ice_spike.png',
-    fireball: '/textures/weapon_fireball.png'
+    chakram: '/textures/weapons/weapon_chakram.png',
+    bow: '/textures/weapons/weapon_bow.png',
+    kukri: '/textures/weapons/weapon_kukri.png',
+    katana_slash: '/textures/weapons/weapon_katana_slash.png',
+    greatsword: '/textures/weapons/weapon_greatsword.png',
+    flail: '/textures/weapons/weapon_flail.png',
+    astral_staff: '/textures/weapons/weapon_astral_staff.png',
+    orbiting_barrier: '/textures/weapons/weapon_orbiting_barrier.png',
+    holy_aura: '/textures/weapons/weapon_holy_aura.png',
+    whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
+    lightning_strike: '/textures/weapons/weapon_lightning_strike.png',
+    ice_spike: '/textures/weapons/weapon_ice_spike.png',
+    fireball: '/textures/weapons/weapon_fireball.png'
   };
-  const path = map[weaponId] || `/textures/weapon_${weaponId}.png`;
+  const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
   return TextureManager.getWeaponBlobUrl(path);
 }
 
@@ -1354,16 +1354,16 @@ export class HUD {
 
   public getHeroAvatar(charType: CharacterType): string {
     const avatar = charType === 'ronin'
-      ? '/textures/hero_ronin_front.png'
+      ? '/textures/heroes/hero_ronin_front.png'
       : charType === 'valkyrie'
-      ? '/textures/hero_valkyrie_front.png'
+      ? '/textures/heroes/hero_valkyrie_front.png'
       : charType === 'flail'
-      ? '/textures/hero_flail_front.png'
+      ? '/textures/heroes/hero_flail_front.png'
       : charType === 'sorceress'
-      ? '/textures/hero_sorceress_front.png'
+      ? '/textures/heroes/hero_sorceress_front.png'
       : charType === 'chakram'
-      ? '/textures/hero_chakram_front.png'
-      : '/textures/hero_archer_front.png';
+      ? '/textures/heroes/hero_chakram_front.png'
+      : '/textures/heroes/hero_archer_front.png';
     return TextureManager.getAssetUrl(avatar);
   }
 
@@ -2074,10 +2074,10 @@ export class HUD {
           chapter: 1,
           heroType: 'valkyrie',
           title: `Глава 1: Пробуждение (${pVal.label})`,
-          icon: '/textures/quest_icon_chapter1.png',
+          icon: '/textures/quests/quest_icon_chapter1.png',
           barColor: 'purple',
           progressVal: pVal,
-          targetAvatar: '/textures/hero_valkyrie_front.png',
+          targetAvatar: '/textures/heroes/hero_valkyrie_front.png',
           desc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
           steps: [
             'Сражайтесь в экспедициях и накапливайте боевой опыт.',
@@ -2090,10 +2090,10 @@ export class HUD {
           chapter: 1,
           heroType: 'flail',
           title: 'Сбор Ресурсов (5/10)',
-          icon: '/textures/quest_icon_resources_wood.png',
+          icon: '/textures/quests/quest_icon_resources_wood.png',
           barColor: 'cyan',
           progressVal: { current: 5, max: 10, label: '5/10', isComplete: false },
-          targetAvatar: '/textures/hero_flail_front.png',
+          targetAvatar: '/textures/heroes/hero_flail_front.png',
           desc: 'Бригитта собирает редкую древесину и ветви в чаще для укрепления лагеря и ковки цепей своего оружия.',
           steps: [
             'Исследуйте лесные чащи и рощи Разлома.',
@@ -2106,10 +2106,10 @@ export class HUD {
           chapter: 1,
           heroType: 'sorceress',
           title: `Глава на Лешена (${pSorc.label})`,
-          icon: '/textures/quest_icon_chapter_leshen.png',
+          icon: '/textures/quests/quest_icon_chapter_leshen.png',
           barColor: 'purple',
           progressVal: pSorc,
-          targetAvatar: '/textures/hero_sorceress_front.png',
+          targetAvatar: '/textures/heroes/hero_sorceress_front.png',
           desc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
           steps: [
             'Активируйте телепорт или дождитесь 5-й минуты экспедиции.',
@@ -2122,11 +2122,11 @@ export class HUD {
           chapter: 1,
           heroType: 'chakram',
           title: `Охота на Лешего (${pChak.label})`,
-          icon: '/textures/quest_icon_leshy.png',
+          icon: '/textures/quests/quest_icon_leshy.png',
           iconBoxClass: 'icon-box-leshy',
           barColor: 'purple',
           progressVal: pChak,
-          targetAvatar: '/textures/quest_target_leshy.png',
+          targetAvatar: '/textures/quests/quest_target_leshy.png',
           desc: 'Найти следы в чаще.\nСобрать 3 корня аконита.\nПобедить Лешего.',
           steps: [
             'Найти следы в чаще.',
@@ -2140,10 +2140,10 @@ export class HUD {
           chapter: 1,
           heroType: 'archer',
           title: 'Сбор Ресурсов (5/1)',
-          icon: '/textures/quest_icon_resources_ore.png',
+          icon: '/textures/quests/quest_icon_resources_ore.png',
           barColor: 'orange',
           progressVal: { current: 55, max: 100, label: '55/10', isComplete: false },
-          targetAvatar: '/textures/hero_archer_front.png',
+          targetAvatar: '/textures/heroes/hero_archer_front.png',
           desc: 'Добыть кристаллическую руду и редкие минералы в шахтах Разлома для наконечников эльфийских стрел.',
           steps: [
             'Разбивайте рудные залежи и собирайте самоцветы.',
@@ -2161,11 +2161,11 @@ export class HUD {
           chapter: 2,
           heroType: 'chakram',
           title: `Охота на Лешего (${pChak.label})`,
-          icon: '/textures/quest_icon_leshy.png',
+          icon: '/textures/quests/quest_icon_leshy.png',
           iconBoxClass: 'icon-box-leshy',
           barColor: 'purple',
           progressVal: pChak,
-          targetAvatar: '/textures/quest_target_leshy.png',
+          targetAvatar: '/textures/quests/quest_target_leshy.png',
           desc: 'Найти следы в чаще.\nСобрать 3 корня аконита.\nПобедить Лешего.',
           steps: [
             'Найти следы в чаще.',
@@ -2178,7 +2178,7 @@ export class HUD {
           id: 'leshen_tracks',
           chapter: 2,
           title: 'Следы в темной чаще (1/3)',
-          icon: '/textures/quest_icon_chapter_leshen.png',
+          icon: '/textures/quests/quest_icon_chapter_leshen.png',
           barColor: 'purple',
           progressVal: {
             current: prog.data.questLeshySteps[0] ? 3 : 1,
@@ -2186,7 +2186,7 @@ export class HUD {
             label: prog.data.questLeshySteps[0] ? '3/3' : '1/3',
             isComplete: prog.data.questLeshySteps[0]
           },
-          targetAvatar: '/textures/quest_target_leshy.png',
+          targetAvatar: '/textures/quests/quest_target_leshy.png',
           desc: 'Пройти по заросшим звериным тропам леса и обнаружить древние капища духов природы.',
           steps: [
             'Обнаружить отпечатки лап у лесного ручья.',
@@ -2199,7 +2199,7 @@ export class HUD {
           id: 'aconite_herbs',
           chapter: 2,
           title: 'Сбор корня аконита (3/3)',
-          icon: '/textures/quest_icon_resources_wood.png',
+          icon: '/textures/quests/quest_icon_resources_wood.png',
           barColor: 'cyan',
           progressVal: {
             current: prog.data.questLeshySteps[1] ? 3 : 2,
@@ -2207,7 +2207,7 @@ export class HUD {
             label: prog.data.questLeshySteps[1] ? '3/3' : '2/3',
             isComplete: prog.data.questLeshySteps[1]
           },
-          targetAvatar: '/textures/quest_target_leshy.png',
+          targetAvatar: '/textures/quests/quest_target_leshy.png',
           desc: 'Собрать три редких корня аконита для приготовления оберега от древесного проклятия.',
           steps: [
             'Найти корень у мшистого валуна.',
@@ -2220,7 +2220,7 @@ export class HUD {
           id: 'purge_woods',
           chapter: 2,
           title: 'Очищение рощи (0/1)',
-          icon: '/textures/quest_icon_chapter1.png',
+          icon: '/textures/quests/quest_icon_chapter1.png',
           barColor: 'purple',
           progressVal: {
             current: prog.data.questLeshySteps[2] ? 1 : 0,
@@ -2228,7 +2228,7 @@ export class HUD {
             label: prog.data.questLeshySteps[2] ? '1/1' : '0/1',
             isComplete: prog.data.questLeshySteps[2]
           },
-          targetAvatar: '/textures/quest_target_leshy.png',
+          targetAvatar: '/textures/quests/quest_target_leshy.png',
           desc: 'Очистить священную рощу от проклятия и изгнать порождения тьмы из древнего леса.',
           steps: [
             'Зажечь очистительный алтарь в чаще.',
@@ -2250,10 +2250,10 @@ export class HUD {
           chapter: 3,
           heroType: 'sorceress',
           title: `Охота на Стража (${pSorc.label})`,
-          icon: '/textures/quest_icon_chapter_leshen.png',
+          icon: '/textures/quests/quest_icon_chapter_leshen.png',
           barColor: 'purple',
           progressVal: pSorc,
-          targetAvatar: '/textures/hero_sorceress_front.png',
+          targetAvatar: '/textures/heroes/hero_sorceress_front.png',
           desc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
           steps: [
             'Активируйте телепорт или дождитесь 5-й минуты экспедиции.',
@@ -2266,10 +2266,10 @@ export class HUD {
           chapter: 3,
           heroType: 'flail',
           title: `Золотая лихорадка (${pFlail.label})`,
-          icon: '/textures/quest_icon_resources_ore.png',
+          icon: '/textures/quests/quest_icon_resources_ore.png',
           barColor: 'orange',
           progressVal: pFlail,
-          targetAvatar: '/textures/hero_flail_front.png',
+          targetAvatar: '/textures/heroes/hero_flail_front.png',
           desc: 'Бригитта собирает редкие металлы и монеты для закалки цепей своего оружия. Соберите 100 монет в битвах.',
           steps: [
             'Уничтожайте монстров и собирайте кредиты Разлома.',
@@ -2282,10 +2282,10 @@ export class HUD {
           chapter: 3,
           heroType: 'valkyrie',
           title: `Испытание ветерана (${pVal.label})`,
-          icon: '/textures/quest_icon_chapter1.png',
+          icon: '/textures/quests/quest_icon_chapter1.png',
           barColor: 'purple',
           progressVal: pVal,
-          targetAvatar: '/textures/hero_valkyrie_front.png',
+          targetAvatar: '/textures/heroes/hero_valkyrie_front.png',
           desc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
           steps: [
             'Сражайтесь в экспедициях и накапливайте боевой опыт.',
@@ -2306,10 +2306,10 @@ export class HUD {
           chapter: 4,
           heroType: 'archer',
           title: `Контракт Следопыта (${pArch.label})`,
-          icon: '/textures/quest_icon_resources_ore.png',
+          icon: '/textures/quests/quest_icon_resources_ore.png',
           barColor: 'orange',
           progressVal: pArch,
-          targetAvatar: '/textures/hero_archer_front.png',
+          targetAvatar: '/textures/heroes/hero_archer_front.png',
           desc: 'Эльфийский мастер стрельбы готов присоединиться к отряду по контракту за 100 монет либо за охотничье достижение.',
           steps: [
             `Накопите 100 монет в кошельке ИЛИ уничтожьте 100 чудовищ (убито: ${kills}/100).`,
@@ -2321,10 +2321,10 @@ export class HUD {
           id: 'monster_slayer',
           chapter: 4,
           title: `Истребитель чудовищ (${kills}/100)`,
-          icon: '/textures/quest_icon_leshy.png',
+          icon: '/textures/quests/quest_icon_leshy.png',
           barColor: 'purple',
           progressVal: { current: kills, max: 100, label: `${kills}/100`, isComplete: kills >= 100 },
-          targetAvatar: '/textures/quest_target_leshy.png',
+          targetAvatar: '/textures/quests/quest_target_leshy.png',
           desc: 'Защитите рубежи лагеря и уничтожьте 100 опасных чудовищ в экспедициях Разлома.',
           steps: [
             `Уничтожить 50 порождений тьмы (убито: ${Math.min(50, kills)}/50).`,
@@ -2336,10 +2336,10 @@ export class HUD {
           id: 'treasury',
           chapter: 4,
           title: `Казна следопытов (${coins}/500)`,
-          icon: '/textures/quest_icon_resources_wood.png',
+          icon: '/textures/quests/quest_icon_resources_wood.png',
           barColor: 'cyan',
           progressVal: { current: coins, max: 500, label: `${coins}/500`, isComplete: coins >= 500 },
-          targetAvatar: '/textures/hero_flail_front.png',
+          targetAvatar: '/textures/heroes/hero_flail_front.png',
           desc: 'Накопить состояние в 500 золотых монет в общем кошельке аккаунта.',
           steps: [
             'Побеждать элитных врагов и собирать золотые мешки.',

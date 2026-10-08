@@ -12,8 +12,8 @@
  */
 
 import { WebSocketServer, WebSocket } from 'ws';
-import { GameCore } from '../src/sim/GameCore';
-import { SimPlayerInput, CharacterType } from '../src/sim/types';
+import { GameCore } from '../game/src/sim/GameCore';
+import { SimPlayerInput, CharacterType } from '../game/src/sim/types';
 
 export interface DedicatedServerOptions {
   port?: number;

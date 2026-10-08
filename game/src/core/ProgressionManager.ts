@@ -291,7 +291,7 @@ export class ProgressionManager {
         id: 'daily_goblins',
         category: 'daily',
         title: 'Убить 2 гоблинов',
-        icon: getAssetUrl('/textures/ui_quest_slot_goblin.png'),
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_goblin.png'),
         current: gobCurrent,
         max: 2,
         progressPercent: Math.min(100, Math.round((gobCurrent / 2) * 100)),
@@ -299,14 +299,14 @@ export class ProgressionManager {
         isClaimed: Boolean(gobProg.isClaimed),
         rewardType: 'gem',
         rewardAmount: 4,
-        rewardIcon: getAssetUrl('/textures/ui_quest_slot_gem.png'),
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_gem.png'),
         rewardLabel: '4 изумруда'
       },
       {
         id: 'daily_bosses',
         category: 'daily',
         title: 'Победить 2 боссов',
-        icon: getAssetUrl('/textures/ui_quest_slot_boss.png'),
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_boss.png'),
         current: bossCurrent,
         max: 2,
         progressPercent: Math.min(100, Math.round((bossCurrent / 2) * 100)),
@@ -314,7 +314,7 @@ export class ProgressionManager {
         isClaimed: Boolean(bossProg.isClaimed),
         rewardType: 'coin',
         rewardAmount: 2,
-        rewardIcon: getAssetUrl('/textures/ui_quest_slot_coin.png'),
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_coin.png'),
         rewardLabel: '2 монеты'
       }
     ];
@@ -332,7 +332,7 @@ export class ProgressionManager {
         id: 'weekly_goblins',
         category: 'weekly',
         title: 'Убить 2 гоблинов',
-        icon: getAssetUrl('/textures/ui_quest_slot_goblin.png'),
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_goblin.png'),
         current: gobCurrent,
         max: 2,
         progressPercent: Math.min(100, Math.round((gobCurrent / 2) * 100)),
@@ -340,14 +340,14 @@ export class ProgressionManager {
         isClaimed: Boolean(gobProg.isClaimed),
         rewardType: 'gem',
         rewardAmount: 10,
-        rewardIcon: getAssetUrl('/textures/ui_quest_slot_gem.png'),
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_gem.png'),
         rewardLabel: '10 изумрудов'
       },
       {
         id: 'weekly_resources',
         category: 'weekly',
         title: 'Собрать 2 ресурса',
-        icon: getAssetUrl('/textures/ui_quest_slot_wood.png'),
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_wood.png'),
         current: resCurrent,
         max: 2,
         progressPercent: Math.min(100, Math.round((resCurrent / 2) * 100)),
@@ -355,7 +355,7 @@ export class ProgressionManager {
         isClaimed: Boolean(resProg.isClaimed),
         rewardType: 'chest',
         rewardAmount: 1,
-        rewardIcon: getAssetUrl('/textures/ui_quest_slot_chest.png'),
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_chest.png'),
         rewardLabel: '1 сундук'
       }
     ];
@@ -450,9 +450,9 @@ export class ProgressionManager {
           hero: 'valkyrie',
           heroName: 'Каэла',
           heroSubtitle: '«Стальной вихрь»',
-          weaponIcon: getAssetUrl('/textures/weapon_greatsword.png'),
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_greatsword.png'),
           weaponName: 'Двуручный меч',
-          avatarIcon: getAssetUrl('/textures/hero_valkyrie_front.png'),
+          avatarIcon: getAssetUrl('/textures/heroes/hero_valkyrie_front.png'),
           questTitle: 'Испытание ветерана',
           questDesc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
           steps: [
@@ -473,9 +473,9 @@ export class ProgressionManager {
           hero: 'flail',
           heroName: 'Бригитта',
           heroSubtitle: '«Громовой Цеп»',
-          weaponIcon: getAssetUrl('/textures/weapon_flail.png'),
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_flail.png'),
           weaponName: 'Громовой цеп',
-          avatarIcon: getAssetUrl('/textures/hero_flail_front.png'),
+          avatarIcon: getAssetUrl('/textures/heroes/hero_flail_front.png'),
           questTitle: 'Золотая лихорадка',
           questDesc: 'Бригитта собирает редкие металлы и монеты для закалки цепей своего сокрушительного оружия. Соберите 100 монет в битвах.',
           steps: [
@@ -496,9 +496,9 @@ export class ProgressionManager {
           hero: 'sorceress',
           heroName: 'Ария',
           heroSubtitle: '«Звёздный Посох»',
-          weaponIcon: getAssetUrl('/textures/weapon_astral_staff.png'),
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_astral_staff.png'),
           weaponName: 'Звёздный посох',
-          avatarIcon: getAssetUrl('/textures/hero_sorceress_front.png'),
+          avatarIcon: getAssetUrl('/textures/heroes/hero_sorceress_front.png'),
           questTitle: 'Охота на Стража Разлома',
           questDesc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
           steps: [
@@ -519,9 +519,9 @@ export class ProgressionManager {
           hero: 'chakram',
           heroName: 'Кира',
           heroSubtitle: '«Танцующий Чакрам»',
-          weaponIcon: getAssetUrl('/textures/weapon_chakram.png'),
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_chakram.png'),
           weaponName: 'Танцующий чакрам',
-          avatarIcon: getAssetUrl('/textures/hero_chakram_front.png'),
+          avatarIcon: getAssetUrl('/textures/heroes/hero_chakram_front.png'),
           questTitle: 'Охота на Лешего',
           questDesc: 'Найти следы в чаще. Собрать 3 корня аконита. Победить Лешего.',
           steps: [
@@ -544,9 +544,9 @@ export class ProgressionManager {
           hero: 'archer',
           heroName: 'Эльф',
           heroSubtitle: '«Охотничий Лук»',
-          weaponIcon: getAssetUrl('/textures/weapon_bow.png'),
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_bow.png'),
           weaponName: 'Охотничий лук',
-          avatarIcon: getAssetUrl('/textures/hero_archer_front.png'),
+          avatarIcon: getAssetUrl('/textures/heroes/hero_archer_front.png'),
           questTitle: 'Контракт Следопыта',
           questDesc: 'Эльфийский мастер стрельбы готов присоединиться к отряду по контракту за 100 монет либо за выдающееся достижение охотника.',
           steps: [

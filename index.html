@@ -3,54 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="0; url=./game/" />
     <title>The Rift - Sci-Fi Roguelike Co-op</title>
-    <link rel="stylesheet" href="/src/style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@600;700;800;900&family=Outfit:wght@400;600;700;800&family=Rye&display=swap" rel="stylesheet">
+    <script>
+      window.location.replace('./game/');
+    </script>
   </head>
-  <body>
-    <!-- Three.js Canvas Container -->
-    <div id="game-container"></div>
-
-    <!-- UI Overlay Layer -->
-    <div id="ui-overlay">
-      <!-- #include "src/ui/html/hudOverlay.html" -->
-      <!-- #include "src/ui/html/mainMenuModal.html" -->
-      <!-- #include "src/ui/html/coopModal.html" -->
-      <!-- #include "src/ui/html/settingsModal.html" -->
-      <!-- #include "src/ui/html/exitModal.html" -->
-      <!-- #include "src/ui/html/questsModal.html" -->
-      <!-- #include "src/ui/html/lobbyModals.html" -->
-      <!-- #include "src/ui/html/guideModal.html" -->
-      <!-- #include "src/ui/html/characterSelectModal.html" -->
-      <!-- #include "src/ui/html/gameModals.html" -->
-      <!-- #include "src/ui/html/devPanelModal.html" -->
-    </div>
-
-    <!-- Bottom Asset Preloader Progress Bar -->
-    <div id="game-loader-container" class="game-loader-container">
-      <div class="game-loader-content">
-        <div class="game-loader-header">
-          <div class="game-loader-title-wrap">
-            <span class="game-loader-badge">PRELOAD</span>
-            <span id="game-loader-title" class="game-loader-title">ЗАГРУЗКА РЕСУРСОВ ИГРЫ</span>
-          </div>
-          <span id="game-loader-percentage" class="game-loader-percentage">0%</span>
-        </div>
-        <div class="game-loader-track">
-          <div id="game-loader-fill" class="game-loader-fill" style="width: 0%;"></div>
-        </div>
-        <div class="game-loader-footer">
-          <span id="game-loader-details" class="game-loader-details">Подготовка текстур и иконок...</span>
-          <span id="game-loader-counter" class="game-loader-counter">0 / 0</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Floating Damage Numbers Container -->
-    <div id="damage-numbers-layer"></div>
-
-    <script type="module" src="/src/main.ts"></script>
+  <body style="background:#0b0e14;color:#94a3b8;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
+    <p>Запуск игры... Если переход не произошел автоматически, <a href="./game/" style="color:#38bdf8;">нажмите здесь</a>.</p>
   </body>
 </html>

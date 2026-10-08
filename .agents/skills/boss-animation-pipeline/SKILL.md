@@ -89,8 +89,8 @@ public static loadBossTextures(baseName: string, renderer?: THREE.WebGLRenderer)
     return tex;
   };
   return {
-    walk: loadPixel(`/textures/${baseName}_walk.png`),
-    attack: loadPixel(`/textures/${baseName}_attack.png`)
+    walk: loadPixel(`/textures/bosses/${baseName}_walk.png`),
+    attack: loadPixel(`/textures/bosses/${baseName}_attack.png`)
   };
 }
 ```
@@ -135,7 +135,7 @@ public static loadBossTextures(baseName: string, renderer?: THREE.WebGLRenderer)
 ## 4. Verification Checklist
 
 1. `python .agents/skills/boss-animation-pipeline/scripts/extract_boss.py ...` -> Return code 0.
-2. Verify output textures exist in `public/textures/` and `dist/textures/`.
+2. Verify output textures exist in `public/textures/bosses/` and `dist/textures/bosses/`.
 3. `npx tsc --noEmit` -> Zero TypeScript errors.
 4. `npm run build` -> Clean build without warnings.
 5. In-game Dev Panel -> Click "Призвать босса" / "Spawn Boss" and verify walking, attacking in all 4 directions, and smooth sprite playback.

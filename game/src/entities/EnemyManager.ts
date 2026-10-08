@@ -37,7 +37,7 @@ export class EnemyManager {
     coyote: {
       type: 'coyote',
       name: 'Кровожадный койот',
-      texturePrefix: '/textures/monster_coyote',
+      texturePrefix: '/textures/monsters/monster_coyote',
       hp: 48,
       speed: 5.4,
       damage: 8,
@@ -48,7 +48,7 @@ export class EnemyManager {
     crawler: {
       type: 'crawler',
       name: 'Ползучая тварь',
-      texturePrefix: '/textures/monster_crawler',
+      texturePrefix: '/textures/monsters/monster_crawler',
       hp: 40,
       speed: 6.0,
       damage: 10,
@@ -59,7 +59,7 @@ export class EnemyManager {
     cactus: {
       type: 'cactus',
       name: 'Кактусовый зомби',
-      texturePrefix: '/textures/monster_cactus',
+      texturePrefix: '/textures/monsters/monster_cactus',
       hp: 88,
       speed: 3.5,
       damage: 14,
@@ -70,7 +70,7 @@ export class EnemyManager {
     skeleton: {
       type: 'skeleton',
       name: 'Бандит-скелет',
-      texturePrefix: '/textures/monster_skeleton',
+      texturePrefix: '/textures/monsters/monster_skeleton',
       hp: 110,
       speed: 3.8,
       damage: 16,
@@ -81,7 +81,7 @@ export class EnemyManager {
     ghost: {
       type: 'ghost',
       name: 'Призрак ковбоя',
-      texturePrefix: '/textures/monster_ghost',
+      texturePrefix: '/textures/monsters/monster_ghost',
       hp: 140,
       speed: 4.0,
       damage: 18,
@@ -92,7 +92,7 @@ export class EnemyManager {
     scorpion: {
       type: 'scorpion',
       name: 'Скорпион-ползун',
-      texturePrefix: '/textures/monster_scorpion',
+      texturePrefix: '/textures/monsters/monster_scorpion',
       hp: 190,
       speed: 3.2,
       damage: 22,
@@ -103,7 +103,7 @@ export class EnemyManager {
     brute: {
       type: 'brute',
       name: 'Пустынный громила',
-      texturePrefix: '/textures/monster_brute',
+      texturePrefix: '/textures/monsters/monster_brute',
       hp: 350,
       speed: 2.6,
       damage: 28,
@@ -114,7 +114,7 @@ export class EnemyManager {
     bison: {
       type: 'bison',
       name: 'Белый бизон-убийца',
-      texturePrefix: '/textures/monster_bison',
+      texturePrefix: '/textures/monsters/monster_bison',
       hp: 720,
       speed: 4.8,
       damage: 35,
@@ -125,7 +125,7 @@ export class EnemyManager {
     boss: {
       type: 'boss',
       name: 'Кровавый демон',
-      texturePrefix: '/textures/boss_demon',
+      texturePrefix: '/textures/bosses/boss_demon',
       hp: 7600,
       speed: 2.4,
       damage: 45,
@@ -137,7 +137,7 @@ export class EnemyManager {
     hydra: {
       type: 'hydra',
       name: 'Древняя трехглавая гидра',
-      texturePrefix: '/textures/boss_hydra',
+      texturePrefix: '/textures/bosses/boss_hydra',
       hp: 28000,
       speed: 2.3,
       damage: 65,
@@ -540,7 +540,7 @@ export class EnemyManager {
     const reaperConfig: EnemyConfig = {
       type: 'boss',
       name: 'Бессмертный Жнец Прерии',
-      texturePrefix: '/textures/boss_sheriff',
+      texturePrefix: '/textures/bosses/boss_sheriff',
       hp: 99999999,
       speed: 7.6,
       damage: 99999,

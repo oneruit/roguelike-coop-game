@@ -70,7 +70,7 @@ export function renderBosses(
           <span class="chevron-arrow">›</span>
         </div>
         <div class="accordion-col-main">
-          <img src="${textureUrl}" class="item-texture" alt="${b.name}" onerror="this.src='/textures/bullet_revolver.png'">
+          <img src="${textureUrl}" class="item-texture" alt="${b.name}" onerror="this.src='/textures/weapons/bullet_revolver.png'">
           <div class="item-identity">
             <span class="item-title">${b.name}</span>
             <span class="item-id-badge">${b.id}</span>
