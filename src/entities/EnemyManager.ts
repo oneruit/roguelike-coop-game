@@ -7,6 +7,7 @@ import { DamageNumberManager } from '../combat/DamageNumberManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 import { EnemySnapshot } from '../net/NetworkManager';
 import { DifficultyDirector } from '../director/DifficultyDirector';
+import { BalanceManager } from '../balance/BalanceManager';
 
 export interface PlayerTargetInfo {
   id: string; // 'p1', 'p2', 'p3', 'p4', 'p5'
@@ -163,6 +164,31 @@ export class EnemyManager {
     this.scene = scene;
     this.dropManager = dropManager;
     this.damageNumbers = damageNumbers;
+    this.syncBalance();
+  }
+
+  public syncBalance(): void {
+    const types: EnemyType[] = ['coyote', 'crawler', 'cactus', 'skeleton', 'ghost', 'scorpion', 'brute', 'bison'];
+    for (const t of types) {
+      const cfg = BalanceManager.getEnemyConfig(t);
+      if (this.configs[t]) {
+        this.configs[t].hp = cfg.hp;
+        this.configs[t].speed = cfg.speed;
+        this.configs[t].damage = cfg.damage;
+      }
+    }
+    const demonCfg = BalanceManager.getBossConfig('boss');
+    if (this.configs.boss) {
+      this.configs.boss.hp = demonCfg.hp;
+      this.configs.boss.speed = demonCfg.speed;
+      this.configs.boss.damage = demonCfg.damage;
+    }
+    const hydraCfg = BalanceManager.getBossConfig('hydra');
+    if (this.configs.hydra) {
+      this.configs.hydra.hp = hydraCfg.hp;
+      this.configs.hydra.speed = hydraCfg.speed;
+      this.configs.hydra.damage = hydraCfg.damage;
+    }
   }
 
   private registerEnemy(enemy: Enemy): Enemy {

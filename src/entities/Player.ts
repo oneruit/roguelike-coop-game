@@ -19,6 +19,7 @@ import { SoundManager } from '../core/SoundManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 import { PassiveBuffId } from '../drops/PassiveBuffs';
 import { RiftItemId, RiftItemDef } from '../items/RiftItemSystem';
+import { BalanceManager } from '../balance/BalanceManager';
 
 export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer';
 export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
@@ -328,52 +329,23 @@ export class Player {
 
   private applyCharacterPerks() {
     this.weapons = [];
+    const heroCfg = BalanceManager.getHeroConfig(this.charType);
+    this.baseDamageMultiplier = heroCfg.damageMultiplier;
+    this.maxHp = heroCfg.maxHp;
+    this.hp = heroCfg.maxHp;
+    this.baseSpeed = heroCfg.baseSpeed;
+
     if (this.charType === 'valkyrie') {
-      // Hero 2: Valkyrie (Каэла «Двуручный Меч»)
-      // Heavy greatsword: wide sweeping cleave, heavy impact, high HP & fortitude
-      this.baseDamageMultiplier = 1.45;
-      this.maxHp = 135;
-      this.hp = 135;
-      this.baseSpeed = 8.2;
       this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5)));
     } else if (this.charType === 'flail') {
-      // Hero 3: Brigitta (Бригитта «Стальной Цеп»)
-      // Heavy spiked flail: crushing sweeps, staggered enemy knockback, balanced swift combat
-      this.baseDamageMultiplier = 1.40;
-      this.maxHp = 125;
-      this.hp = 125;
-      this.baseSpeed = 8.5;
       this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45)));
     } else if (this.charType === 'sorceress') {
-      // Hero 4: Aria (Ария «Звёздный Посох»)
-      // Astral starlight bolts, long-range magic pierce, high swiftness
-      this.baseDamageMultiplier = 1.30;
-      this.maxHp = 105;
-      this.hp = 105;
-      this.baseSpeed = 8.8;
       this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48)));
     } else if (this.charType === 'chakram') {
-      // Hero 5: Kira (Кира «Танцующий Чакрам»)
-      // Returning curved boomerang chakram, medium-range agile skirmisher
-      this.baseDamageMultiplier = 1.35;
-      this.maxHp = 115;
-      this.hp = 115;
-      this.baseSpeed = 8.7;
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
     } else if (this.charType === 'archer') {
-      // Hero 6: Elf Archer (Эльф лучник «Охотничий Лук»)
-      // High swiftness, precise long-range piercing arrows, agile ranger stats
-      this.baseDamageMultiplier = 1.35;
-      this.maxHp = 110;
-      this.hp = 110;
-      this.baseSpeed = 8.9;
       this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
     } else {
-      // Hero 1: Ren Ronin (Рен «Багровый вихрь»)
-      this.baseDamageMultiplier = 1.35;
-      this.maxHp = 115;
-      this.hp = 115;
-      this.baseSpeed = 8.6;
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }
     this.passiveDamageMultiplier = 1.0;
@@ -383,6 +355,21 @@ export class Player {
     this.passiveDamageReduction = 0;
     this.sheriffStarCount = 0;
     this.recalculateStats();
+  }
+
+  public syncBalance(): void {
+    const heroCfg = BalanceManager.getHeroConfig(this.charType);
+    this.baseDamageMultiplier = heroCfg.damageMultiplier;
+    this.baseSpeed = heroCfg.baseSpeed;
+    const hpRatio = this.maxHp > 0 ? this.hp / this.maxHp : 1.0;
+    this.maxHp = heroCfg.maxHp;
+    this.hp = Math.min(this.maxHp, Math.max(1, Math.round(this.maxHp * hpRatio)));
+
+    for (const weapon of this.weapons) {
+      weapon.applyBalance(BalanceManager.getWeaponConfig(weapon.id));
+    }
+    this.recalculateStats();
+    this.redrawOverhead();
   }
 
   public addBuff(buff: ActiveBuff) {

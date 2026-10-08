@@ -3041,6 +3041,53 @@ export class HUD {
     }, 3800);
   }
 
+  public showBalanceToast(message: string) {
+    let container = document.getElementById('balance-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'balance-toast-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+      `;
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid #f59e0b;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    `;
+    toast.innerHTML = `<span style="color:#f59e0b; font-size:18px;">⚡</span> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    window.setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      toast.style.transition = 'all 0.3s ease';
+      window.setTimeout(() => toast.remove(), 300);
+    }, 4500);
+  }
+
   public updateBuffsTray(activeBuffs: Map<BuffType, ActiveBuff>) {
     if (activeBuffs.size === 0) {
       if (this.buffsTray.children.length > 0) {
