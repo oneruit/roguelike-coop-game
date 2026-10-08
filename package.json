@@ -5,13 +5,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -n \"GAME,ADMIN\" -c \"cyan,yellow\" \"npm run dev:game\" \"npm run dev:admin\"",
+    "dev:game": "vite --port 5173",
+    "dev:admin": "vite --config vite.config.admin.ts",
     "build": "tsc && vite build",
+    "build:admin": "vite build --config vite.config.admin.ts",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "server": "tsx server/dedicatedServer.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
     "peerjs": "^1.5.5",
     "three": "^0.186.1",
     "ws": "^8.22.0"
@@ -19,6 +23,7 @@
   "devDependencies": {
     "@types/three": "^0.186.0",
     "@types/ws": "^8.18.2",
+    "concurrently": "^10.0.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.1"

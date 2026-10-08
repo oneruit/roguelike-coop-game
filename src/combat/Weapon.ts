@@ -3,6 +3,8 @@ import { Projectile } from './Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { Enemy } from '../entities/Enemy';
 import { TextureManager } from '../core/TextureManager';
+import { BalanceManager } from '../balance/BalanceManager';
+import { WeaponBalanceConfig } from '../balance/BalanceTypes';
 
 export interface WeaponInfo {
   id: string;
@@ -95,17 +97,48 @@ export abstract class Weapon {
   public level: number = 1;
   public maxLevel: number = 20;
   public cooldownMultiplier: number = 1.0;
-  protected cooldown: number;
+  public cooldown: number;
+  public baseCooldown: number;
   protected timer: number = 0;
-  protected damage: number;
+  public damage: number;
+  public baseDamage: number;
+  public damagePerLevel: number = 5;
 
-  constructor(id: string, name: string, icon: string, cooldown: number, damage: number, iconImage?: string) {
+  constructor(
+    id: string,
+    name: string,
+    icon: string,
+    cooldown: number,
+    damage: number,
+    damagePerLevel: number = 5,
+    iconImage?: string
+  ) {
     this.id = id;
-    this.name = name;
-    this.icon = icon;
+    const cfg = BalanceManager.getWeaponConfig(id);
+    this.name = cfg.name || name;
+    this.icon = cfg.icon || icon;
     this._iconImage = iconImage || `/textures/weapon_${id}.png`;
-    this.cooldown = cooldown;
-    this.damage = damage;
+    this.baseCooldown = cfg.cooldown !== undefined ? cfg.cooldown : cooldown;
+    this.cooldown = this.baseCooldown;
+    this.baseDamage = cfg.damage !== undefined ? cfg.damage : damage;
+    this.damagePerLevel = cfg.damagePerLevel !== undefined ? cfg.damagePerLevel : damagePerLevel;
+    this.damage = this.baseDamage;
+    this.maxLevel = cfg.maxLevel || 20;
+  }
+
+  public applyBalance(cfg: WeaponBalanceConfig): void {
+    if (!cfg) return;
+    this.baseDamage = cfg.damage;
+    this.baseCooldown = cfg.cooldown;
+    if (cfg.damagePerLevel !== undefined) this.damagePerLevel = cfg.damagePerLevel;
+    if (cfg.maxLevel !== undefined) this.maxLevel = cfg.maxLevel;
+    if (cfg.name) this.name = cfg.name;
+    if (cfg.icon) this.icon = cfg.icon;
+    this.recalculateStats();
+  }
+
+  public recalculateStats(): void {
+    this.damage = this.baseDamage + (this.level - 1) * this.damagePerLevel;
   }
 
   public abstract update(
@@ -143,7 +176,7 @@ export class BowWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('bow', 'Охотничий Лук', '🏹', 0.85, 26);
+    super('bow', 'Охотничий Лук', '🏹', 0.85, 26, 6);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -206,7 +239,7 @@ export class BowWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 6;
+    this.recalculateStats();
     if ([4, 8, 12, 16, 20].includes(this.level)) {
       this.projectileCount++;
     }
@@ -243,7 +276,7 @@ export class KukriWeapon extends Weapon {
   private pierce: number = 1;
 
   constructor() {
-    super('kukri', 'Нож Кукри', '🔪', 0.65, 12);
+    super('kukri', 'Нож Кукри', '🔪', 0.65, 12, 3);
   }
 
   public update(
@@ -298,7 +331,7 @@ export class KukriWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 3;
+    this.recalculateStats();
     if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(this.level)) {
       this.burstCount++;
     }
@@ -337,7 +370,29 @@ export class OrbitingBarrierWeapon extends Weapon {
   private bleedDps: number = 8;
 
   constructor() {
-    super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4);
+    super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4, 1);
+    const cfg = BalanceManager.getWeaponConfig('orbiting_barrier');
+    if (cfg.bleedDps !== undefined) this.bleedDps = cfg.bleedDps;
+    if (cfg.orbitRadius !== undefined) this.orbitRadius = cfg.orbitRadius;
+    if (cfg.orbitSpeed !== undefined) this.orbitSpeed = cfg.orbitSpeed;
+    if (cfg.count !== undefined) this.orbCount = cfg.count;
+  }
+
+  public override applyBalance(cfg: WeaponBalanceConfig): void {
+    super.applyBalance(cfg);
+    if (cfg.bleedDps !== undefined) {
+      this.bleedDps = cfg.bleedDps + (this.level - 1) * 2;
+    }
+    if (cfg.orbitRadius !== undefined) {
+      this.orbitRadius = Number((cfg.orbitRadius + (this.level - 1) * 0.20).toFixed(2));
+    }
+    if (cfg.orbitSpeed !== undefined) {
+      this.orbitSpeed = Number((cfg.orbitSpeed + (this.level - 1) * 0.08).toFixed(2));
+    }
+    if (cfg.count !== undefined) {
+      const extra = [3, 6, 9, 12, 15, 18, 20].filter(lvl => this.level >= lvl).length;
+      this.orbCount = cfg.count + extra;
+    }
   }
 
   public getBleedDps(): number {
@@ -389,7 +444,7 @@ export class OrbitingBarrierWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage = Number((this.damage + 1).toFixed(2));
+    this.recalculateStats();
     this.bleedDps = Number((this.bleedDps + 2).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.20).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.08).toFixed(2));
@@ -433,7 +488,9 @@ export class HolyAuraWeapon extends Weapon {
   private animFrameTimer: number = 0;
 
   constructor() {
-    super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16);
+    super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16, 4);
+    const cfg = BalanceManager.getWeaponConfig('holy_aura');
+    if (cfg.explosionRadius !== undefined) this.radius = cfg.explosionRadius;
   }
 
   public update(
@@ -516,7 +573,7 @@ export class HolyAuraWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.radius = Number((this.radius + 0.20).toFixed(2));
-    this.damage += 4;
+    this.recalculateStats();
     this.cooldown = Math.max(0.22, Number((this.cooldown * 0.96).toFixed(3)));
     if (this.auraMesh) {
       this.auraMesh.geometry.dispose();
@@ -539,7 +596,7 @@ export class KatanaSlashWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('katana_slash', 'Рассекающий Клинок', '🗡️', 0.60, 25);
+    super('katana_slash', 'Рассекающий Клинок', '🗡️', 0.60, 25, 6);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -591,7 +648,7 @@ export class KatanaSlashWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.slashRadius = Number((this.slashRadius + 0.14).toFixed(2));
-    this.damage += 6;
+    this.recalculateStats();
     this.cooldown = Math.max(0.30, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
@@ -610,7 +667,7 @@ export class WhirlwindSlashWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('whirlwind_slash', 'Багровый Вихрь', '🌪️', 0.42, 16);
+    super('whirlwind_slash', 'Багровый Вихрь', '🌪️', 0.42, 16, 4);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -661,7 +718,7 @@ export class WhirlwindSlashWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.slashRadius = Number((this.slashRadius + 0.12).toFixed(2));
-    this.damage += 4;
+    this.recalculateStats();
     this.cooldown = Math.max(0.20, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
@@ -680,7 +737,7 @@ export class GreatswordWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('greatsword', 'Двуручный Меч', '⚔️', 0.70, 32);
+    super('greatsword', 'Двуручный Меч', '⚔️', 0.70, 32, 7);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -731,7 +788,7 @@ export class GreatswordWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.slashRadius = Number((this.slashRadius + 0.15).toFixed(2));
-    this.damage += 7;
+    this.recalculateStats();
     this.cooldown = Math.max(0.35, Number((this.cooldown * 0.96).toFixed(3)));
   }
 
@@ -751,7 +808,7 @@ export class FlailWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('flail', 'Боевой Цеп', '⛓️', 0.52, 20);
+    super('flail', 'Боевой Цеп', '⛓️', 0.52, 20, 5);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -808,7 +865,7 @@ export class FlailWeapon extends Weapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.flailRadius = Number((this.flailRadius + 0.14).toFixed(2));
-    this.damage += 5;
+    this.recalculateStats();
     this.knockback = Number((this.knockback + 0.02).toFixed(2));
     this.cooldown = Math.max(0.25, Number((this.cooldown * 0.96).toFixed(3)));
   }
@@ -830,7 +887,7 @@ export class AstralStaffWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('astral_staff', 'Звёздный Посох', '🔮', 0.65, 22);
+    super('astral_staff', 'Звёздный Посох', '🔮', 0.65, 22, 5);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -892,7 +949,7 @@ export class AstralStaffWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage = Number((this.damage + 5).toFixed(2));
+    this.recalculateStats();
     if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) {
       this.projectileCount++;
     }
@@ -927,7 +984,7 @@ export class ChakramWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('chakram', 'Танцующий Чакрам', '🪃', 0.70, 20);
+    super('chakram', 'Танцующий Чакрам', '🪃', 0.70, 20, 4);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -996,7 +1053,7 @@ export class ChakramWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 4;
+    this.recalculateStats();
     if ([4, 8, 12, 16, 20].includes(this.level)) {
       this.chakramCount++;
     }
@@ -1030,7 +1087,7 @@ export class LightningStrikeWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('lightning_strike', 'Удар Молнии', '⚡', 1.20, 45);
+    super('lightning_strike', 'Удар Молнии', '⚡', 1.20, 45, 8);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -1092,7 +1149,7 @@ export class LightningStrikeWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 8;
+    this.recalculateStats();
     if ([4, 8, 12, 16, 20].includes(this.level)) {
       this.strikeCount++;
     }
@@ -1126,7 +1183,7 @@ export class IceSpikeWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('ice_spike', 'Ледяной Шип', '🧊', 1.10, 38);
+    super('ice_spike', 'Ледяной Шип', '🧊', 1.10, 38, 7);
     this.onTriggerAttack = onTriggerAttack;
   }
 
@@ -1186,7 +1243,7 @@ export class IceSpikeWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 7;
+    this.recalculateStats();
     if ([4, 8, 12, 16, 20].includes(this.level)) {
       this.spikeCount++;
     }
@@ -1221,8 +1278,27 @@ export class FireballWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('fireball', 'Огненный Шар', '☄️', 1.35, 55);
+    super('fireball', 'Огненный Шар', '☄️', 1.35, 55, 10);
+    const cfg = BalanceManager.getWeaponConfig('fireball');
+    this.fireballCount = cfg.count ?? 1;
+    this.explosionRadius = cfg.explosionRadius ?? 2.5;
+    this.range = cfg.range ?? 22;
+    this.fallSpeed = cfg.fallSpeed ?? 28;
     this.onTriggerAttack = onTriggerAttack;
+  }
+
+  public override applyBalance(cfg: WeaponBalanceConfig): void {
+    super.applyBalance(cfg);
+    if (cfg.range !== undefined) this.range = cfg.range;
+    if (cfg.fallSpeed !== undefined) this.fallSpeed = cfg.fallSpeed;
+    if (cfg.explosionRadius !== undefined) {
+      const extraRadius = [5, 10, 15].filter((lvl) => this.level >= lvl).length * 0.35;
+      this.explosionRadius = Number((cfg.explosionRadius + extraRadius).toFixed(2));
+    }
+    if (cfg.count !== undefined) {
+      const extraCount = [4, 8, 12, 16, 20].filter((lvl) => this.level >= lvl).length;
+      this.fireballCount = cfg.count + extraCount;
+    }
   }
 
   public setAttackCallback(cb: () => void) {
@@ -1289,7 +1365,7 @@ export class FireballWeapon extends Weapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 10;
+    this.recalculateStats();
     if ([4, 8, 12, 16, 20].includes(this.level)) {
       this.fireballCount++;
     }
