@@ -262,8 +262,32 @@
         </div>
 
         <!-- Right Side: Daily & Weekly Quests Sidebar -->
-        <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий" title="Нажмите, чтобы открыть задания">
-          <img src="/textures/ui_quests_sidebar.png" alt="Задания" class="main-menu-quests-img" draggable="false" />
+        <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий">
+          <!-- 1. Daily Quests Card -->
+          <section class="quest-sidebar-card daily-quests-card" id="daily-quests-card" aria-label="Ежедневные задания">
+            <header class="quest-card-header" id="daily-quests-header" title="Нажмите, чтобы открыть журнал заданий">
+              <span class="quest-card-header-title">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</span>
+            </header>
+            <div class="quest-card-body">
+              <div class="quest-card-subtitle">Бессменные ежедневные задания.</div>
+              <div class="quest-card-items" id="daily-quest-items-list">
+                <!-- Populated dynamically via HUD.ts -->
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Weekly Quests Card -->
+          <section class="quest-sidebar-card weekly-quests-card" id="weekly-quests-card" aria-label="Еженедельные задания">
+            <header class="quest-card-header" id="weekly-quests-header" title="Нажмите, чтобы открыть журнал заданий">
+              <span class="quest-card-header-title">ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ</span>
+            </header>
+            <div class="quest-card-body">
+              <div class="quest-card-subtitle">Контракты и еженедельные испытания.</div>
+              <div class="quest-card-items" id="weekly-quest-items-list">
+                <!-- Populated dynamically via HUD.ts -->
+              </div>
+            </div>
+          </section>
         </aside>
       </div>
 

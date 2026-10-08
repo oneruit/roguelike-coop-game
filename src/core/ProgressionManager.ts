@@ -1,6 +1,22 @@
 import { CharacterType } from '../sim/types';
 import { getAssetUrl } from '../utils/assetPath';
 
+export interface SidebarQuestItem {
+  id: string;
+  category: 'daily' | 'weekly';
+  title: string;
+  icon: string;
+  current: number;
+  max: number;
+  progressPercent: number;
+  isComplete: boolean;
+  isClaimed: boolean;
+  rewardType: 'gem' | 'coin' | 'chest';
+  rewardAmount: number;
+  rewardIcon: string;
+  rewardLabel: string;
+}
+
 export interface ProgressionData {
   accountLevel: number;
   accountXp: number;
@@ -9,9 +25,12 @@ export interface ProgressionData {
   walletCoins: number;
   bossesKilled: number;
   enemiesKilled: number;
+  resourcesGathered: number;
   questLeshySteps: [boolean, boolean, boolean];
   questLeshyCompleted: boolean;
   unlockedHeroes: Record<CharacterType, boolean>;
+  dailyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
+  weeklyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
 }
 
 export interface QuestStepItem {
@@ -69,6 +88,7 @@ export class ProgressionManager {
       walletCoins: 0,
       bossesKilled: 0,
       enemiesKilled: 0,
+      resourcesGathered: 2,
       questLeshySteps: [true, true, true],
       questLeshyCompleted: true,
       unlockedHeroes: {
@@ -78,6 +98,14 @@ export class ProgressionManager {
         sorceress: true, // Aria (unlocked)
         chakram: true,   // Kira (unlocked)
         archer: false    // Elf: Locked! (Buy / Achievement)
+      },
+      dailyQuestsProgress: {
+        daily_goblins: { current: 2, isClaimed: false },
+        daily_bosses: { current: 2, isClaimed: false }
+      },
+      weeklyQuestsProgress: {
+        weekly_goblins: { current: 2, isClaimed: false },
+        weekly_resources: { current: 2, isClaimed: false }
       }
     };
   }
@@ -96,6 +124,7 @@ export class ProgressionManager {
           walletCoins: Math.max(0, parsed.walletCoins ?? defaults.walletCoins),
           bossesKilled: Math.max(0, parsed.bossesKilled ?? defaults.bossesKilled),
           enemiesKilled: Math.max(0, parsed.enemiesKilled ?? defaults.enemiesKilled),
+          resourcesGathered: Math.max(0, parsed.resourcesGathered ?? defaults.resourcesGathered),
           questLeshySteps: Array.isArray(parsed.questLeshySteps) && parsed.questLeshySteps.length === 3
             ? [Boolean(parsed.questLeshySteps[0]), Boolean(parsed.questLeshySteps[1]), Boolean(parsed.questLeshySteps[2])]
             : defaults.questLeshySteps,
@@ -107,7 +136,13 @@ export class ProgressionManager {
             sorceress: parsed.unlockedHeroes?.sorceress ?? true,
             chakram: parsed.unlockedHeroes?.chakram ?? true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
-          }
+          },
+          dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
+            ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
+            : defaults.dailyQuestsProgress,
+          weeklyQuestsProgress: parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
+            ? { ...defaults.weeklyQuestsProgress, ...parsed.weeklyQuestsProgress }
+            : defaults.weeklyQuestsProgress
         };
       }
     } catch (e) {
@@ -201,6 +236,9 @@ export class ProgressionManager {
   public recordBossKilled() {
     if (this.isTrainingMode) return;
     this.data.bossesKilled += 1;
+    if (this.data.dailyQuestsProgress?.daily_bosses && !this.data.dailyQuestsProgress.daily_bosses.isClaimed) {
+      this.data.dailyQuestsProgress.daily_bosses.current = Math.min(2, this.data.dailyQuestsProgress.daily_bosses.current + 1);
+    }
     // Step 3 of Leshy quest can also progress when a boss is defeated
     if (this.data.questLeshySteps[0] && this.data.questLeshySteps[1] && !this.data.questLeshySteps[2]) {
       this.data.questLeshySteps[2] = true;
@@ -214,6 +252,12 @@ export class ProgressionManager {
   public recordEnemyKilled() {
     if (this.isTrainingMode) return;
     this.data.enemiesKilled += 1;
+    if (this.data.dailyQuestsProgress?.daily_goblins && !this.data.dailyQuestsProgress.daily_goblins.isClaimed) {
+      this.data.dailyQuestsProgress.daily_goblins.current = Math.min(2, this.data.dailyQuestsProgress.daily_goblins.current + 1);
+    }
+    if (this.data.weeklyQuestsProgress?.weekly_goblins && !this.data.weeklyQuestsProgress.weekly_goblins.isClaimed) {
+      this.data.weeklyQuestsProgress.weekly_goblins.current = Math.min(2, this.data.weeklyQuestsProgress.weekly_goblins.current + 1);
+    }
     // Step 1 of Leshy quest auto triggers after 10 kills if not done
     if (!this.data.questLeshySteps[0] && this.data.enemiesKilled >= 10) {
       this.data.questLeshySteps[0] = true;
@@ -224,6 +268,129 @@ export class ProgressionManager {
     }
     this.checkAutoUnlocks();
     this.save();
+  }
+
+  public recordResourceGather(amount: number = 1) {
+    if (this.isTrainingMode) return;
+    this.data.resourcesGathered = (this.data.resourcesGathered ?? 0) + amount;
+    if (this.data.weeklyQuestsProgress?.weekly_resources && !this.data.weeklyQuestsProgress.weekly_resources.isClaimed) {
+      this.data.weeklyQuestsProgress.weekly_resources.current = Math.min(2, this.data.weeklyQuestsProgress.weekly_resources.current + amount);
+    }
+    this.save();
+  }
+
+  public getDailySidebarQuests(): SidebarQuestItem[] {
+    const gobProg = this.data.dailyQuestsProgress?.daily_goblins ?? { current: 2, isClaimed: false };
+    const bossProg = this.data.dailyQuestsProgress?.daily_bosses ?? { current: 2, isClaimed: false };
+
+    const gobCurrent = Math.min(2, Math.max(0, gobProg.current));
+    const bossCurrent = Math.min(2, Math.max(0, bossProg.current));
+
+    return [
+      {
+        id: 'daily_goblins',
+        category: 'daily',
+        title: 'Убить 2 гоблинов',
+        icon: getAssetUrl('/textures/ui_quest_slot_goblin.png'),
+        current: gobCurrent,
+        max: 2,
+        progressPercent: Math.min(100, Math.round((gobCurrent / 2) * 100)),
+        isComplete: gobCurrent >= 2,
+        isClaimed: Boolean(gobProg.isClaimed),
+        rewardType: 'gem',
+        rewardAmount: 4,
+        rewardIcon: getAssetUrl('/textures/ui_quest_slot_gem.png'),
+        rewardLabel: '4 изумруда'
+      },
+      {
+        id: 'daily_bosses',
+        category: 'daily',
+        title: 'Победить 2 боссов',
+        icon: getAssetUrl('/textures/ui_quest_slot_boss.png'),
+        current: bossCurrent,
+        max: 2,
+        progressPercent: Math.min(100, Math.round((bossCurrent / 2) * 100)),
+        isComplete: bossCurrent >= 2,
+        isClaimed: Boolean(bossProg.isClaimed),
+        rewardType: 'coin',
+        rewardAmount: 2,
+        rewardIcon: getAssetUrl('/textures/ui_quest_slot_coin.png'),
+        rewardLabel: '2 монеты'
+      }
+    ];
+  }
+
+  public getWeeklySidebarQuests(): SidebarQuestItem[] {
+    const gobProg = this.data.weeklyQuestsProgress?.weekly_goblins ?? { current: 2, isClaimed: false };
+    const resProg = this.data.weeklyQuestsProgress?.weekly_resources ?? { current: 2, isClaimed: false };
+
+    const gobCurrent = Math.min(2, Math.max(0, gobProg.current));
+    const resCurrent = Math.min(2, Math.max(0, resProg.current));
+
+    return [
+      {
+        id: 'weekly_goblins',
+        category: 'weekly',
+        title: 'Убить 2 гоблинов',
+        icon: getAssetUrl('/textures/ui_quest_slot_goblin.png'),
+        current: gobCurrent,
+        max: 2,
+        progressPercent: Math.min(100, Math.round((gobCurrent / 2) * 100)),
+        isComplete: gobCurrent >= 2,
+        isClaimed: Boolean(gobProg.isClaimed),
+        rewardType: 'gem',
+        rewardAmount: 10,
+        rewardIcon: getAssetUrl('/textures/ui_quest_slot_gem.png'),
+        rewardLabel: '10 изумрудов'
+      },
+      {
+        id: 'weekly_resources',
+        category: 'weekly',
+        title: 'Собрать 2 ресурса',
+        icon: getAssetUrl('/textures/ui_quest_slot_wood.png'),
+        current: resCurrent,
+        max: 2,
+        progressPercent: Math.min(100, Math.round((resCurrent / 2) * 100)),
+        isComplete: resCurrent >= 2,
+        isClaimed: Boolean(resProg.isClaimed),
+        rewardType: 'chest',
+        rewardAmount: 1,
+        rewardIcon: getAssetUrl('/textures/ui_quest_slot_chest.png'),
+        rewardLabel: '1 сундук'
+      }
+    ];
+  }
+
+  public claimSidebarQuest(questId: string): { success: boolean; rewardType: string; amount: number; label: string } | null {
+    const all = [...this.getDailySidebarQuests(), ...this.getWeeklySidebarQuests()];
+    const target = all.find((q) => q.id === questId);
+    if (!target || !target.isComplete || target.isClaimed) return null;
+
+    if (target.category === 'daily') {
+      if (!this.data.dailyQuestsProgress[questId]) {
+        this.data.dailyQuestsProgress[questId] = { current: target.max, isClaimed: true };
+      } else {
+        this.data.dailyQuestsProgress[questId].isClaimed = true;
+      }
+    } else {
+      if (!this.data.weeklyQuestsProgress[questId]) {
+        this.data.weeklyQuestsProgress[questId] = { current: target.max, isClaimed: true };
+      } else {
+        this.data.weeklyQuestsProgress[questId].isClaimed = true;
+      }
+    }
+
+    if (target.rewardType === 'gem') {
+      this.addAccountXp(target.rewardAmount * 25);
+    } else if (target.rewardType === 'coin') {
+      this.addCoins(target.rewardAmount);
+    } else if (target.rewardType === 'chest') {
+      this.addCoins(100);
+      this.addAccountXp(150);
+    }
+
+    this.save();
+    return { success: true, rewardType: target.rewardType, amount: target.rewardAmount, label: target.rewardLabel };
   }
 
   public progressLeshyStep(stepIndex: 0 | 1 | 2): boolean {
