@@ -1,10 +1,23 @@
-import * as THREE from 'three';
+import {
+  AdditiveBlending,
+  CircleGeometry,
+  DoubleSide,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  PlaneGeometry,
+  RingGeometry,
+  type Scene,
+  SphereGeometry,
+  Vector3
+} from 'three';
 import { TextureManager } from '../core/TextureManager';
 import { SoundManager } from '../core/SoundManager';
 
 export interface ProjectileOptions {
-  position: THREE.Vector3;
-  direction: THREE.Vector3;
+  position: Vector3;
+  direction: Vector3;
   speed: number;
   damage: number;
   pierce: number;
@@ -28,9 +41,9 @@ export interface ProjectileOptions {
 }
 
 export class Projectile {
-  public mesh: THREE.Group;
-  public position: THREE.Vector3;
-  public direction: THREE.Vector3;
+  public mesh: Group;
+  public position: Vector3;
+  public direction: Vector3;
   public speed: number;
   public damage: number;
   public pierce: number;
@@ -65,24 +78,24 @@ export class Projectile {
   public hasTurnedBack = false;
 
   // Lightning specific visuals
-  private lightningMaterial?: THREE.MeshBasicMaterial;
-  private groundRingMesh?: THREE.Mesh;
-  private groundRingMat?: THREE.MeshBasicMaterial;
-  private groundDiscMat?: THREE.MeshBasicMaterial;
+  private lightningMaterial?: MeshBasicMaterial;
+  private groundRingMesh?: Mesh;
+  private groundRingMat?: MeshBasicMaterial;
+  private groundDiscMat?: MeshBasicMaterial;
 
   // Ice Spike specific visuals
-  private iceSpikeGroup?: THREE.Group;
-  private iceSpikeMaterial?: THREE.MeshBasicMaterial;
-  private iceGroundRingMesh?: THREE.Mesh;
-  private iceGroundRingMat?: THREE.MeshBasicMaterial;
+  private iceSpikeGroup?: Group;
+  private iceSpikeMaterial?: MeshBasicMaterial;
+  private iceGroundRingMesh?: Mesh;
+  private iceGroundRingMat?: MeshBasicMaterial;
 
   // Fireball specific visuals
-  private fireballFlightGroup?: THREE.Group;
-  private fireballImpactRing?: THREE.Mesh;
-  private fireballImpactDisc?: THREE.Mesh;
-  private fireballMaterial?: THREE.MeshBasicMaterial;
-  private fireballRingMat?: THREE.MeshBasicMaterial;
-  private fireballDiscMat?: THREE.MeshBasicMaterial;
+  private fireballFlightGroup?: Group;
+  private fireballImpactRing?: Mesh;
+  private fireballImpactDisc?: Mesh;
+  private fireballMaterial?: MeshBasicMaterial;
+  private fireballRingMat?: MeshBasicMaterial;
+  private fireballDiscMat?: MeshBasicMaterial;
   private impactLifetime = 0.24;
 
   // Weapon VFX Opacity control
@@ -161,54 +174,54 @@ export class Projectile {
   }
 
   // Shared assets for Orbiting Barrier (Reaper's Scythe / Magic Orbs)
-  private static orbGeom = new THREE.SphereGeometry(1, 10, 10);
-  private static orbCoreGeom = new THREE.SphereGeometry(0.5, 8, 8);
-  private static orbCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0 });
-  private static orbMatCache = new Map<number, THREE.MeshStandardMaterial>();
+  private static orbGeom = new SphereGeometry(1, 10, 10);
+  private static orbCoreGeom = new SphereGeometry(0.5, 8, 8);
+  private static orbCoreMat = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0 });
+  private static orbMatCache = new Map<number, MeshStandardMaterial>();
 
   // Shared assets for Reaper's Scythe
-  private static scytheGeom: THREE.PlaneGeometry | null = null;
-  private static scytheMaterial: THREE.MeshBasicMaterial | null = null;
+  private static scytheGeom: PlaneGeometry | null = null;
+  private static scytheMaterial: MeshBasicMaterial | null = null;
 
   // Shared assets for Lightning Strike
-  private static lightningGeomA: THREE.PlaneGeometry | null = null;
-  private static lightningGeomB: THREE.PlaneGeometry | null = null;
-  private static lightningRingGeom: THREE.RingGeometry | null = null;
-  private static lightningDiscGeom: THREE.CircleGeometry | null = null;
+  private static lightningGeomA: PlaneGeometry | null = null;
+  private static lightningGeomB: PlaneGeometry | null = null;
+  private static lightningRingGeom: RingGeometry | null = null;
+  private static lightningDiscGeom: CircleGeometry | null = null;
 
   // Shared assets for Ice Spike (Crossed Planes analogous to Lightning)
-  private static iceSpikeGeomA: THREE.PlaneGeometry | null = null;
-  private static iceSpikeGeomB: THREE.PlaneGeometry | null = null;
-  private static iceGroundRingGeom: THREE.RingGeometry | null = null;
+  private static iceSpikeGeomA: PlaneGeometry | null = null;
+  private static iceSpikeGeomB: PlaneGeometry | null = null;
+  private static iceGroundRingGeom: RingGeometry | null = null;
 
   // Shared assets for Fireball (Crossed Planes analogous to Lightning)
-  private static fireballGeomA: THREE.PlaneGeometry | null = null;
-  private static fireballGeomB: THREE.PlaneGeometry | null = null;
-  private static fireballRingGeom: THREE.RingGeometry | null = null;
-  private static fireballDiscGeom: THREE.CircleGeometry | null = null;
+  private static fireballGeomA: PlaneGeometry | null = null;
+  private static fireballGeomB: PlaneGeometry | null = null;
+  private static fireballRingGeom: RingGeometry | null = null;
+  private static fireballDiscGeom: CircleGeometry | null = null;
 
   // Shared assets for Chakram (Spinning Blade Plane)
-  private static chakramGeom: THREE.PlaneGeometry | null = null;
-  private static chakramMaterial: THREE.MeshBasicMaterial | null = null;
+  private static chakramGeom: PlaneGeometry | null = null;
+  private static chakramMaterial: MeshBasicMaterial | null = null;
 
   // Shared assets for Kukri Knife (Curved Spinning Blade)
-  private static kukriGeom: THREE.PlaneGeometry | null = null;
-  private static kukriMaterial: THREE.MeshBasicMaterial | null = null;
+  private static kukriGeom: PlaneGeometry | null = null;
+  private static kukriMaterial: MeshBasicMaterial | null = null;
 
   // Shared assets for Arrow Sprites
-  private static arrowGeomA: THREE.PlaneGeometry | null = null;
-  private static arrowGeomB: THREE.PlaneGeometry | null = null;
-  private static arrowMaterial: THREE.MeshBasicMaterial | null = null;
+  private static arrowGeomA: PlaneGeometry | null = null;
+  private static arrowGeomB: PlaneGeometry | null = null;
+  private static arrowMaterial: MeshBasicMaterial | null = null;
 
   // Shared assets for Gun Bullet Sprites
-  private static bulletGeomA: THREE.PlaneGeometry | null = null;
-  private static bulletGeomB: THREE.PlaneGeometry | null = null;
-  private static bulletMaterial: THREE.MeshBasicMaterial | null = null;
+  private static bulletGeomA: PlaneGeometry | null = null;
+  private static bulletGeomB: PlaneGeometry | null = null;
+  private static bulletMaterial: MeshBasicMaterial | null = null;
 
-  private static getOrbMaterial(color: number): THREE.MeshStandardMaterial {
+  private static getOrbMaterial(color: number): MeshStandardMaterial {
     let mat = Projectile.orbMatCache.get(color);
     if (!mat) {
-      mat = new THREE.MeshStandardMaterial({
+      mat = new MeshStandardMaterial({
         color,
         emissive: color,
         emissiveIntensity: 1.2 * Projectile.vfxOpacity,
@@ -248,54 +261,54 @@ export class Projectile {
     this.bleedDps = options.bleedDps ?? 0;
     this.maxLifetime = options.lifetime;
 
-    this.mesh = new THREE.Group();
+    this.mesh = new Group();
 
     if (this.isIceSpike) {
       if (!Projectile.iceSpikeGeomA || !Projectile.iceSpikeGeomB || !Projectile.iceGroundRingGeom) {
         const w = 2.4;
         const h = 5.2;
-        const ga = new THREE.PlaneGeometry(w, h);
+        const ga = new PlaneGeometry(w, h);
         ga.translate(0, h / 2, 0);
         Projectile.iceSpikeGeomA = ga;
 
-        const gb = new THREE.PlaneGeometry(w, h);
+        const gb = new PlaneGeometry(w, h);
         gb.translate(0, h / 2, 0);
         gb.rotateY(Math.PI / 2);
         Projectile.iceSpikeGeomB = gb;
 
-        const ring = new THREE.RingGeometry(0.15, 1.0, 20);
+        const ring = new RingGeometry(0.15, 1.0, 20);
         ring.rotateX(-Math.PI / 2);
         Projectile.iceGroundRingGeom = ring;
       }
 
-      this.iceSpikeMaterial = new THREE.MeshBasicMaterial({
+      this.iceSpikeMaterial = new MeshBasicMaterial({
         map: TextureManager.getIceSpikeTexture(),
         transparent: true,
         opacity: 0.95 * Projectile.vfxOpacity,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
 
-      this.iceSpikeGroup = new THREE.Group();
-      const spikeA = new THREE.Mesh(Projectile.iceSpikeGeomA, this.iceSpikeMaterial);
-      const spikeB = new THREE.Mesh(Projectile.iceSpikeGeomB, this.iceSpikeMaterial);
+      this.iceSpikeGroup = new Group();
+      const spikeA = new Mesh(Projectile.iceSpikeGeomA, this.iceSpikeMaterial);
+      const spikeB = new Mesh(Projectile.iceSpikeGeomB, this.iceSpikeMaterial);
       this.iceSpikeGroup.add(spikeA, spikeB);
       // Start submerged below ground
       this.iceSpikeGroup.position.y = -5.2;
       this.mesh.add(this.iceSpikeGroup);
 
-      this.iceGroundRingMat = new THREE.MeshBasicMaterial({
+      this.iceGroundRingMat = new MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
         opacity: 0.9 * Projectile.vfxOpacity,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
-      this.iceGroundRingMesh = new THREE.Mesh(Projectile.iceGroundRingGeom!, this.iceGroundRingMat);
+      this.iceGroundRingMesh = new Mesh(Projectile.iceGroundRingGeom!, this.iceGroundRingMat);
       this.iceGroundRingMesh.position.y = 0.04;
       this.iceGroundRingMesh.scale.set(this.radius, this.radius, this.radius);
       this.mesh.add(this.iceGroundRingMesh);
@@ -303,40 +316,40 @@ export class Projectile {
       if (!Projectile.fireballGeomA || !Projectile.fireballGeomB || !Projectile.fireballRingGeom || !Projectile.fireballDiscGeom) {
         const w = 2.4;
         const h = 5.6;
-        const ga = new THREE.PlaneGeometry(w, h);
+        const ga = new PlaneGeometry(w, h);
         ga.translate(0, h / 2, 0);
         Projectile.fireballGeomA = ga;
 
-        const gb = new THREE.PlaneGeometry(w, h);
+        const gb = new PlaneGeometry(w, h);
         gb.translate(0, h / 2, 0);
         gb.rotateY(Math.PI / 2);
         Projectile.fireballGeomB = gb;
 
-        const r = new THREE.RingGeometry(0.2, 1.0, 24);
+        const r = new RingGeometry(0.2, 1.0, 24);
         r.rotateX(-Math.PI / 2);
         Projectile.fireballRingGeom = r;
-        const d = new THREE.CircleGeometry(0.5, 16);
+        const d = new CircleGeometry(0.5, 16);
         d.rotateX(-Math.PI / 2);
         Projectile.fireballDiscGeom = d;
       }
 
-      this.fireballMaterial = new THREE.MeshBasicMaterial({
+      this.fireballMaterial = new MeshBasicMaterial({
         map: TextureManager.getFireballTexture(),
         transparent: true,
         opacity: Projectile.vfxOpacity,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
 
-      this.fireballFlightGroup = new THREE.Group();
-      const fbA = new THREE.Mesh(Projectile.fireballGeomA, this.fireballMaterial);
-      const fbB = new THREE.Mesh(Projectile.fireballGeomB, this.fireballMaterial);
+      this.fireballFlightGroup = new Group();
+      const fbA = new Mesh(Projectile.fireballGeomA, this.fireballMaterial);
+      const fbB = new Mesh(Projectile.fireballGeomB, this.fireballMaterial);
       this.fireballFlightGroup.add(fbA, fbB);
 
       // Orient flight group so the bottom head points along motion direction
-      const up = new THREE.Vector3(0, 1, 0);
+      const up = new Vector3(0, 1, 0);
       const backDir = this.direction.clone().negate().normalize();
       this.fireballFlightGroup.quaternion.setFromUnitVectors(up, backDir);
       this.mesh.add(this.fireballFlightGroup);
@@ -344,108 +357,108 @@ export class Projectile {
       if (!Projectile.lightningGeomA || !Projectile.lightningGeomB || !Projectile.lightningRingGeom || !Projectile.lightningDiscGeom) {
         const w = 2.6;
         const h = 18.0;
-        const ga = new THREE.PlaneGeometry(w, h);
+        const ga = new PlaneGeometry(w, h);
         ga.translate(0, h / 2, 0);
         Projectile.lightningGeomA = ga;
 
-        const gb = new THREE.PlaneGeometry(w, h);
+        const gb = new PlaneGeometry(w, h);
         gb.translate(0, h / 2, 0);
         gb.rotateY(Math.PI / 2);
         Projectile.lightningGeomB = gb;
 
-        const rg = new THREE.RingGeometry(0.15, 1.0, 24);
+        const rg = new RingGeometry(0.15, 1.0, 24);
         rg.rotateX(-Math.PI / 2);
         Projectile.lightningRingGeom = rg;
 
-        const dg = new THREE.CircleGeometry(0.5, 16);
+        const dg = new CircleGeometry(0.5, 16);
         dg.rotateX(-Math.PI / 2);
         Projectile.lightningDiscGeom = dg;
       }
 
-      this.lightningMaterial = new THREE.MeshBasicMaterial({
+      this.lightningMaterial = new MeshBasicMaterial({
         map: TextureManager.getLightningTexture(),
         transparent: true,
         opacity: Projectile.vfxOpacity,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
 
-      const boltA = new THREE.Mesh(Projectile.lightningGeomA, this.lightningMaterial);
-      const boltB = new THREE.Mesh(Projectile.lightningGeomB, this.lightningMaterial);
+      const boltA = new Mesh(Projectile.lightningGeomA, this.lightningMaterial);
+      const boltB = new Mesh(Projectile.lightningGeomB, this.lightningMaterial);
       this.mesh.add(boltA);
       this.mesh.add(boltB);
 
       // Expanding ground impact shockwave ring
-      this.groundRingMat = new THREE.MeshBasicMaterial({
+      this.groundRingMat = new MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
         opacity: 0.9 * Projectile.vfxOpacity,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
-      this.groundRingMesh = new THREE.Mesh(Projectile.lightningRingGeom, this.groundRingMat);
+      this.groundRingMesh = new Mesh(Projectile.lightningRingGeom, this.groundRingMat);
       this.groundRingMesh.position.y = 0.05;
       this.groundRingMesh.scale.set(this.radius, this.radius, this.radius);
       this.mesh.add(this.groundRingMesh);
 
       // Bright ground impact spark disc
-      this.groundDiscMat = new THREE.MeshBasicMaterial({
+      this.groundDiscMat = new MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
         opacity: 0.95 * Projectile.vfxOpacity,
-        blending: THREE.AdditiveBlending,
+        blending: AdditiveBlending,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
-      const discMesh = new THREE.Mesh(Projectile.lightningDiscGeom, this.groundDiscMat);
+      const discMesh = new Mesh(Projectile.lightningDiscGeom, this.groundDiscMat);
       discMesh.position.y = 0.06;
       discMesh.scale.set(this.radius, this.radius, this.radius);
       this.mesh.add(discMesh);
     } else if (this.isChakram) {
       if (!Projectile.chakramGeom || !Projectile.chakramMaterial) {
-        const geom = new THREE.PlaneGeometry(1.0, 1.0);
+        const geom = new PlaneGeometry(1.0, 1.0);
         geom.rotateX(-Math.PI / 2);
         Projectile.chakramGeom = geom;
 
-        Projectile.chakramMaterial = new THREE.MeshBasicMaterial({
+        Projectile.chakramMaterial = new MeshBasicMaterial({
           map: TextureManager.getChakramTexture(),
           transparent: true,
           opacity: Projectile.vfxOpacity,
           alphaTest: 0.02,
-          side: THREE.DoubleSide,
+          side: DoubleSide,
           depthWrite: false,
           visible: Projectile.vfxOpacity > 0.005
         });
       }
 
-      const bladeMesh = new THREE.Mesh(Projectile.chakramGeom, Projectile.chakramMaterial);
+      const bladeMesh = new Mesh(Projectile.chakramGeom, Projectile.chakramMaterial);
       this.mesh.add(bladeMesh);
 
       const scale = this.radius * 2.8;
       this.mesh.scale.set(scale, scale, scale);
     } else if (this.isKukri) {
       if (!Projectile.kukriGeom || !Projectile.kukriMaterial) {
-        const geom = new THREE.PlaneGeometry(1.4, 1.4);
+        const geom = new PlaneGeometry(1.4, 1.4);
         geom.rotateX(-Math.PI / 2);
         Projectile.kukriGeom = geom;
 
-        Projectile.kukriMaterial = new THREE.MeshBasicMaterial({
+        Projectile.kukriMaterial = new MeshBasicMaterial({
           map: TextureManager.getKukriTexture(),
           transparent: true,
           opacity: Projectile.vfxOpacity,
           alphaTest: 0.03,
-          side: THREE.DoubleSide,
+          side: DoubleSide,
           depthWrite: false,
           visible: Projectile.vfxOpacity > 0.005
         });
       }
 
-      const bladeMesh = new THREE.Mesh(Projectile.kukriGeom, Projectile.kukriMaterial);
+      const bladeMesh = new Mesh(Projectile.kukriGeom, Projectile.kukriMaterial);
       this.mesh.add(bladeMesh);
 
       const scale = this.radius * 3.5;
@@ -453,27 +466,27 @@ export class Projectile {
     } else if (this.isArrow) {
       if (!Projectile.arrowGeomA || !Projectile.arrowGeomB || !Projectile.arrowMaterial) {
         const aspect = 32 / 128; // 0.25
-        const geomA = new THREE.PlaneGeometry(1.5, 1.5 * aspect);
+        const geomA = new PlaneGeometry(1.5, 1.5 * aspect);
         geomA.rotateX(Math.PI / 4);
         Projectile.arrowGeomA = geomA;
 
-        const geomB = new THREE.PlaneGeometry(1.5, 1.5 * aspect);
+        const geomB = new PlaneGeometry(1.5, 1.5 * aspect);
         geomB.rotateX(-Math.PI / 4);
         Projectile.arrowGeomB = geomB;
 
-        Projectile.arrowMaterial = new THREE.MeshBasicMaterial({
+        Projectile.arrowMaterial = new MeshBasicMaterial({
           map: TextureManager.getArrowTexture(),
           transparent: true,
           opacity: Projectile.vfxOpacity,
           alphaTest: 0.03,
-          side: THREE.DoubleSide,
+          side: DoubleSide,
           depthWrite: false,
           visible: Projectile.vfxOpacity > 0.005
         });
       }
 
-      const meshA = new THREE.Mesh(Projectile.arrowGeomA, Projectile.arrowMaterial);
-      const meshB = new THREE.Mesh(Projectile.arrowGeomB, Projectile.arrowMaterial);
+      const meshA = new Mesh(Projectile.arrowGeomA, Projectile.arrowMaterial);
+      const meshB = new Mesh(Projectile.arrowGeomB, Projectile.arrowMaterial);
       this.mesh.add(meshA);
       this.mesh.add(meshB);
 
@@ -484,29 +497,29 @@ export class Projectile {
       this.mesh.rotation.y = -angle;
     } else if (this.isOrbiting) {
       if (!Projectile.scytheGeom || !Projectile.scytheMaterial) {
-        const geom = new THREE.PlaneGeometry(1.5, 1.5);
+        const geom = new PlaneGeometry(1.5, 1.5);
         geom.rotateX(-Math.PI / 2);
         Projectile.scytheGeom = geom;
 
-        Projectile.scytheMaterial = new THREE.MeshBasicMaterial({
+        Projectile.scytheMaterial = new MeshBasicMaterial({
           map: TextureManager.getScytheTexture(),
           transparent: true,
           opacity: Projectile.vfxOpacity,
-          side: THREE.DoubleSide,
+          side: DoubleSide,
           depthWrite: false,
           visible: Projectile.vfxOpacity > 0.005
         });
       }
 
-      const scytheMesh = new THREE.Mesh(Projectile.scytheGeom, Projectile.scytheMaterial);
+      const scytheMesh = new Mesh(Projectile.scytheGeom, Projectile.scytheMaterial);
       this.mesh.add(scytheMesh);
       const scale = this.radius * 3.4;
       this.mesh.scale.set(scale, scale, scale);
     } else if (options.isMagic) {
-      const sphere = new THREE.Mesh(Projectile.orbGeom, Projectile.getOrbMaterial(options.color));
+      const sphere = new Mesh(Projectile.orbGeom, Projectile.getOrbMaterial(options.color));
       this.mesh.add(sphere);
 
-      const core = new THREE.Mesh(Projectile.orbCoreGeom, Projectile.orbCoreMat);
+      const core = new Mesh(Projectile.orbCoreGeom, Projectile.orbCoreMat);
       this.mesh.add(core);
 
       this.mesh.scale.setScalar(this.radius);
@@ -514,27 +527,27 @@ export class Projectile {
       // Authentic Revolver Bullet Sprite from FX sheet #6
       if (!Projectile.bulletGeomA || !Projectile.bulletGeomB || !Projectile.bulletMaterial) {
         const aspect = 8 / 52;
-        const geomA = new THREE.PlaneGeometry(1.0, aspect);
+        const geomA = new PlaneGeometry(1.0, aspect);
         geomA.rotateX(Math.PI / 4);
         Projectile.bulletGeomA = geomA;
 
-        const geomB = new THREE.PlaneGeometry(1.0, aspect);
+        const geomB = new PlaneGeometry(1.0, aspect);
         geomB.rotateX(-Math.PI / 4);
         Projectile.bulletGeomB = geomB;
 
-        Projectile.bulletMaterial = new THREE.MeshBasicMaterial({
+        Projectile.bulletMaterial = new MeshBasicMaterial({
           map: TextureManager.getBulletTexture(),
           transparent: true,
           opacity: Projectile.vfxOpacity,
           alphaTest: 0.04,
-          side: THREE.DoubleSide,
+          side: DoubleSide,
           depthWrite: false,
           visible: Projectile.vfxOpacity > 0.005
         });
       }
 
-      const meshA = new THREE.Mesh(Projectile.bulletGeomA, Projectile.bulletMaterial);
-      const meshB = new THREE.Mesh(Projectile.bulletGeomB, Projectile.bulletMaterial);
+      const meshA = new Mesh(Projectile.bulletGeomA, Projectile.bulletMaterial);
+      const meshB = new Mesh(Projectile.bulletGeomB, Projectile.bulletMaterial);
       this.mesh.add(meshA);
       this.mesh.add(meshB);
 
@@ -550,7 +563,7 @@ export class Projectile {
     this.mesh.position.copy(this.position);
   }
 
-  public update(dt: number, centerPos?: THREE.Vector3) {
+  public update(dt: number, centerPos?: Vector3) {
     if (!this.isAlive) return;
 
     this.lifetime -= dt;
@@ -603,29 +616,29 @@ export class Projectile {
 
           if (this.fireballFlightGroup) this.fireballFlightGroup.visible = false;
 
-          this.fireballRingMat = new THREE.MeshBasicMaterial({
+          this.fireballRingMat = new MeshBasicMaterial({
             color: 0xf97316,
             transparent: true,
             opacity: 0.95 * Projectile.vfxOpacity,
-            blending: THREE.AdditiveBlending,
+            blending: AdditiveBlending,
             depthWrite: false,
-            side: THREE.DoubleSide,
+            side: DoubleSide,
             visible: Projectile.vfxOpacity > 0.005
           });
-          this.fireballImpactRing = new THREE.Mesh(Projectile.fireballRingGeom!, this.fireballRingMat);
+          this.fireballImpactRing = new Mesh(Projectile.fireballRingGeom!, this.fireballRingMat);
           this.fireballImpactRing.position.y = 0.04;
           this.mesh.add(this.fireballImpactRing);
 
-          this.fireballDiscMat = new THREE.MeshBasicMaterial({
+          this.fireballDiscMat = new MeshBasicMaterial({
             color: 0xfef08a,
             transparent: true,
             opacity: 0.9 * Projectile.vfxOpacity,
-            blending: THREE.AdditiveBlending,
+            blending: AdditiveBlending,
             depthWrite: false,
-            side: THREE.DoubleSide,
+            side: DoubleSide,
             visible: Projectile.vfxOpacity > 0.005
           });
-          this.fireballImpactDisc = new THREE.Mesh(Projectile.fireballDiscGeom!, this.fireballDiscMat);
+          this.fireballImpactDisc = new Mesh(Projectile.fireballDiscGeom!, this.fireballDiscMat);
           this.fireballImpactDisc.position.y = 0.05;
           this.mesh.add(this.fireballImpactDisc);
 
@@ -686,7 +699,7 @@ export class Projectile {
         // Outward sweeping curved arc phase
         const progress = this.elapsedTime / turnTime;
         const curveAngle = (this.curveSign || 1) * dt * 3.4 * (1 - progress * 0.4);
-        this.direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), curveAngle);
+        this.direction.applyAxisAngle(new Vector3(0, 1, 0), curveAngle);
         const curSpeed = this.speed * Math.max(0.25, 1 - progress * 0.65);
         this.position.addScaledVector(this.direction, curSpeed * dt);
       } else {
@@ -697,7 +710,7 @@ export class Projectile {
         }
 
         if (centerPos) {
-          const toOwner = new THREE.Vector3().subVectors(centerPos, this.position);
+          const toOwner = new Vector3().subVectors(centerPos, this.position);
           toOwner.y = 0;
           const dist = toOwner.length();
           if (dist < 1.0) {
@@ -741,7 +754,7 @@ export class Projectile {
     this.mesh.visible = true;
   }
 
-  public destroy(scene: THREE.Scene) {
+  public destroy(scene: Scene) {
     Projectile.activeProjectiles.delete(this);
     scene.remove(this.mesh);
     if (this.lightningMaterial) {

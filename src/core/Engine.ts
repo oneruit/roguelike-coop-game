@@ -1,12 +1,26 @@
-import * as THREE from 'three';
+import {
+  Scene,
+  PerspectiveCamera,
+  WebGLRenderer,
+  AmbientLight,
+  DirectionalLight,
+  HemisphereLight,
+  Vector3,
+  Color,
+  FogExp2,
+  PCFShadowMap,
+  ACESFilmicToneMapping,
+  Mesh,
+  MathUtils
+} from 'three';
 import { ChunkManager } from '../world/ChunkManager';
 import { AltarManager } from '../world/AltarManager';
 import { ObstacleManager } from '../world/ObstacleManager';
 
 export class Engine {
-  public scene: THREE.Scene;
-  public camera: THREE.PerspectiveCamera;
-  public renderer: THREE.WebGLRenderer;
+  public scene: Scene;
+  public camera: PerspectiveCamera;
+  public renderer: WebGLRenderer;
   public altarManager: AltarManager;
   public obstacleManager: ObstacleManager;
   public chunkManager: ChunkManager;
@@ -14,39 +28,39 @@ export class Engine {
 
   public timeOfDay: 'day' | 'night' = 'day';
 
-  private ambientLight!: THREE.AmbientLight;
-  private dirLight!: THREE.DirectionalLight;
-  private hemiLight!: THREE.HemisphereLight;
+  private ambientLight!: AmbientLight;
+  private dirLight!: DirectionalLight;
+  private hemiLight!: HemisphereLight;
 
-  private sunOffset = new THREE.Vector3(18, 28, 14);
-  private moonOffset = new THREE.Vector3(-14, 26, -14);
-  private currentLightOffset = new THREE.Vector3(18, 28, 14);
+  private sunOffset = new Vector3(18, 28, 14);
+  private moonOffset = new Vector3(-14, 26, -14);
+  private currentLightOffset = new Vector3(18, 28, 14);
 
   // Camera settings for 2.5D
-  private cameraOffset = new THREE.Vector3(0, 16, 12);
-  private cameraTarget = new THREE.Vector3();
+  private cameraOffset = new Vector3(0, 16, 12);
+  private cameraTarget = new Vector3();
 
   constructor(containerId: string) {
     this.container = document.getElementById(containerId) || document.body;
 
     // 1. Scene with warm dusty sunset desert fog
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x23140e);
-    this.scene.fog = new THREE.FogExp2(0x23140e, 0.016);
+    this.scene = new Scene();
+    this.scene.background = new Color(0x23140e);
+    this.scene.fog = new FogExp2(0x23140e, 0.016);
 
     // 2. Camera (2.5D tilted perspective)
     const aspect = window.innerWidth / window.innerHeight;
-    this.camera = new THREE.PerspectiveCamera(48, aspect, 0.1, 120);
+    this.camera = new PerspectiveCamera(48, aspect, 0.1, 120);
     this.camera.position.copy(this.cameraOffset);
     this.camera.lookAt(0, 0, 0);
 
     // 3. Renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    this.renderer = new WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.shadowMap.type = PCFShadowMap;
+    this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
     this.container.appendChild(this.renderer.domElement);
 
@@ -58,18 +72,18 @@ export class Engine {
     this.obstacleManager = new ObstacleManager();
     this.altarManager = new AltarManager(this.scene);
     this.chunkManager = new ChunkManager(this.scene, this.altarManager, this.obstacleManager);
-    this.chunkManager.update(new THREE.Vector3(0, 0, 0));
+    this.chunkManager.update(new Vector3(0, 0, 0));
 
     window.addEventListener('resize', () => this.onWindowResize());
   }
 
   private setupLighting() {
     // Ambient Light
-    this.ambientLight = new THREE.AmbientLight(0x8a5530, 0.95);
+    this.ambientLight = new AmbientLight(0x8a5530, 0.95);
     this.scene.add(this.ambientLight);
 
     // Directional Sun / Moon Key Light with Shadows (1024x1024 default resolution)
-    this.dirLight = new THREE.DirectionalLight(0xffedd5, 1.45);
+    this.dirLight = new DirectionalLight(0xffedd5, 1.45);
     this.dirLight.position.set(18, 28, 14);
     this.dirLight.castShadow = true;
     this.dirLight.shadow.mapSize.width = 1024;
@@ -86,7 +100,7 @@ export class Engine {
     this.scene.add(this.dirLight.target);
 
     // Hemisphere light
-    this.hemiLight = new THREE.HemisphereLight(0xfb923c, 0x241209, 0.70);
+    this.hemiLight = new HemisphereLight(0xfb923c, 0x241209, 0.70);
     this.scene.add(this.hemiLight);
   }
 
@@ -108,8 +122,8 @@ export class Engine {
       this.hemiLight.color.setHex(0xfb923c);
       this.hemiLight.groundColor.setHex(0x241209);
       this.hemiLight.intensity = 0.70;
-      this.scene.background = new THREE.Color(0x23140e);
-      if (this.scene.fog instanceof THREE.FogExp2) {
+      this.scene.background = new Color(0x23140e);
+      if (this.scene.fog instanceof FogExp2) {
         this.scene.fog.color.setHex(0x23140e);
         this.scene.fog.density = 0.016;
       }
@@ -125,8 +139,8 @@ export class Engine {
       this.hemiLight.groundColor.setHex(0x111827);
       this.hemiLight.intensity = 0.65;
       // Deep midnight indigo sky
-      this.scene.background = new THREE.Color(0x0c1322);
-      if (this.scene.fog instanceof THREE.FogExp2) {
+      this.scene.background = new Color(0x0c1322);
+      if (this.scene.fog instanceof FogExp2) {
         this.scene.fog.color.setHex(0x0c1322);
         this.scene.fog.density = 0.015;
       }
@@ -152,7 +166,7 @@ export class Engine {
     }
     this.renderer.shadowMap.needsUpdate = true;
     this.scene.traverse((obj) => {
-      if (obj instanceof THREE.Mesh && obj.material) {
+      if (obj instanceof Mesh && obj.material) {
         if (Array.isArray(obj.material)) {
           obj.material.forEach((m) => (m.needsUpdate = true));
         } else {
@@ -162,16 +176,16 @@ export class Engine {
     });
   }
 
-  public updateCamera(playerPos: THREE.Vector3, dt: number) {
+  public updateCamera(playerPos: Vector3, dt: number) {
     const targetX = playerPos.x + this.cameraOffset.x;
     const targetY = playerPos.y + this.cameraOffset.y;
     const targetZ = playerPos.z + this.cameraOffset.z;
 
     const factor = 1 - Math.exp(-12 * Math.min(dt, 0.1));
 
-    this.camera.position.x = THREE.MathUtils.lerp(this.camera.position.x, targetX, factor);
-    this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, targetY, factor);
-    this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, targetZ, factor);
+    this.camera.position.x = MathUtils.lerp(this.camera.position.x, targetX, factor);
+    this.camera.position.y = MathUtils.lerp(this.camera.position.y, targetY, factor);
+    this.camera.position.z = MathUtils.lerp(this.camera.position.z, targetZ, factor);
 
     this.cameraTarget.lerp(playerPos, factor);
     this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y + 0.6, this.cameraTarget.z);

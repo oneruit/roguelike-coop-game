@@ -1,23 +1,40 @@
-import * as THREE from 'three';
+import {
+  MeshStandardMaterial,
+  MeshBasicMaterial,
+  CanvasTexture,
+  RepeatWrapping,
+  DoubleSide,
+  Group,
+  CylinderGeometry,
+  SphereGeometry,
+  ConeGeometry,
+  DodecahedronGeometry,
+  PlaneGeometry,
+  BoxGeometry,
+  TorusGeometry,
+  CircleGeometry,
+  RingGeometry,
+  Mesh
+} from 'three';
 
 // Reusable shared materials for high performance and low draw overhead
 export class TerrainMaterials {
-  public static sandMaterial: THREE.MeshStandardMaterial;
-  public static cactusMaterial: THREE.MeshStandardMaterial;
-  public static cactusRibMaterial: THREE.MeshStandardMaterial;
-  public static cactusFlowerMaterial: THREE.MeshBasicMaterial;
-  public static barkMaterial: THREE.MeshStandardMaterial;
-  public static foliageMaterial: THREE.MeshStandardMaterial;
-  public static rockMaterial: THREE.MeshStandardMaterial;
-  public static scrubMaterial: THREE.MeshStandardMaterial;
-  public static boneMaterial: THREE.MeshStandardMaterial;
-  public static woodMaterial: THREE.MeshStandardMaterial;
-  public static ironMaterial: THREE.MeshStandardMaterial;
-  public static waterMaterial: THREE.MeshStandardMaterial;
-  public static wetSandMaterial: THREE.MeshStandardMaterial;
-  public static palmBarkMaterial: THREE.MeshStandardMaterial;
-  public static palmLeafMaterial: THREE.MeshStandardMaterial;
-  public static coconutMaterial: THREE.MeshStandardMaterial;
+  public static sandMaterial: MeshStandardMaterial;
+  public static cactusMaterial: MeshStandardMaterial;
+  public static cactusRibMaterial: MeshStandardMaterial;
+  public static cactusFlowerMaterial: MeshBasicMaterial;
+  public static barkMaterial: MeshStandardMaterial;
+  public static foliageMaterial: MeshStandardMaterial;
+  public static rockMaterial: MeshStandardMaterial;
+  public static scrubMaterial: MeshStandardMaterial;
+  public static boneMaterial: MeshStandardMaterial;
+  public static woodMaterial: MeshStandardMaterial;
+  public static ironMaterial: MeshStandardMaterial;
+  public static waterMaterial: MeshStandardMaterial;
+  public static wetSandMaterial: MeshStandardMaterial;
+  public static palmBarkMaterial: MeshStandardMaterial;
+  public static palmLeafMaterial: MeshStandardMaterial;
+  public static coconutMaterial: MeshStandardMaterial;
 
   private static initialized = false;
 
@@ -84,83 +101,83 @@ export class TerrainMaterials {
       ctx.fillRect(px, py, size, size);
     }
 
-    const sandTexture = new THREE.CanvasTexture(sandCanvas);
-    sandTexture.wrapS = THREE.RepeatWrapping;
-    sandTexture.wrapT = THREE.RepeatWrapping;
+    const sandTexture = new CanvasTexture(sandCanvas);
+    sandTexture.wrapS = RepeatWrapping;
+    sandTexture.wrapT = RepeatWrapping;
     sandTexture.repeat.set(6, 6);
 
-    this.sandMaterial = new THREE.MeshStandardMaterial({
+    this.sandMaterial = new MeshStandardMaterial({
       map: sandTexture,
       roughness: 0.92,
       metalness: 0.04
     });
 
     // 2. Cactus Material (Saguaro Green)
-    this.cactusMaterial = new THREE.MeshStandardMaterial({
+    this.cactusMaterial = new MeshStandardMaterial({
       color: 0x2d5e37,
       roughness: 0.75,
       metalness: 0.05
     });
 
-    this.cactusRibMaterial = new THREE.MeshStandardMaterial({
+    this.cactusRibMaterial = new MeshStandardMaterial({
       color: 0x22492a,
       roughness: 0.8
     });
 
-    this.cactusFlowerMaterial = new THREE.MeshBasicMaterial({
+    this.cactusFlowerMaterial = new MeshBasicMaterial({
       color: 0xf43f5e // Crimson desert bloom
     });
 
     // 3. Tree Bark Material (Weathered Desert Mesquite / Deadwood)
-    this.barkMaterial = new THREE.MeshStandardMaterial({
+    this.barkMaterial = new MeshStandardMaterial({
       color: 0x3d2719,
       roughness: 0.9,
       metalness: 0.02
     });
 
     // 4. Dry Olive Foliage for Desert Acacia
-    this.foliageMaterial = new THREE.MeshStandardMaterial({
+    this.foliageMaterial = new MeshStandardMaterial({
       color: 0x5a6336,
       roughness: 0.85,
       metalness: 0.0
     });
 
     // 5. Sandstone Boulder Material
-    this.rockMaterial = new THREE.MeshStandardMaterial({
+    this.rockMaterial = new MeshStandardMaterial({
       color: 0x8a5433,
       roughness: 0.88,
       metalness: 0.08
     });
 
     // 6. Desert Scrub / Dried Sagebrush
-    this.scrubMaterial = new THREE.MeshStandardMaterial({
+    this.scrubMaterial = new MeshStandardMaterial({
       color: 0x937848,
       roughness: 0.95,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
 
     // 7. Animal Bone / Skull Material
-    this.boneMaterial = new THREE.MeshStandardMaterial({
+    this.boneMaterial = new MeshStandardMaterial({
       color: 0xd8d2c4,
       roughness: 0.65,
       metalness: 0.05
     });
 
     // 8. Weathered Wood Material (Wagon Wheel, Posts)
-    this.woodMaterial = new THREE.MeshStandardMaterial({
+    this.woodMaterial = new MeshStandardMaterial({
       color: 0x543926,
       roughness: 0.85
     });
 
     // 9. Rusted Iron Material (Wheel Band)
-    this.ironMaterial = new THREE.MeshStandardMaterial({
+    this.ironMaterial = new MeshStandardMaterial({
       color: 0x3a251e,
       roughness: 0.7,
       metalness: 0.35
     });
 
     // 10. Oasis Shimmering Water Material
-    this.waterMaterial = new THREE.MeshStandardMaterial({
+    this.waterMaterial = new MeshStandardMaterial({
       color: 0x0ea5e9,
       roughness: 0.12,
       metalness: 0.1,
@@ -169,27 +186,27 @@ export class TerrainMaterials {
     });
 
     // 11. Wet Dark Sand (Oasis Shoreline)
-    this.wetSandMaterial = new THREE.MeshStandardMaterial({
+    this.wetSandMaterial = new MeshStandardMaterial({
       color: 0x854d0e,
       roughness: 0.85,
       metalness: 0.04
     });
 
     // 12. Palm Tree Materials
-    this.palmBarkMaterial = new THREE.MeshStandardMaterial({
+    this.palmBarkMaterial = new MeshStandardMaterial({
       color: 0x78350f,
       roughness: 0.82,
       metalness: 0.05
     });
 
-    this.palmLeafMaterial = new THREE.MeshStandardMaterial({
+    this.palmLeafMaterial = new MeshStandardMaterial({
       color: 0x16a34a,
       roughness: 0.6,
       metalness: 0.05,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
 
-    this.coconutMaterial = new THREE.MeshStandardMaterial({
+    this.coconutMaterial = new MeshStandardMaterial({
       color: 0x451a03,
       roughness: 0.7,
       metalness: 0.05
@@ -201,33 +218,33 @@ export class TerrainProps {
   /**
    * Builds an authentic 3D Saguaro Cactus with fluting and 0-2 curved arms.
    */
-  public static createCactus(rng: () => number): THREE.Group {
+  public static createCactus(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     const height = 3.6 + rng() * 2.2;
     const radius = 0.36 + rng() * 0.1;
 
     // Main Trunk (ribbed cylinder)
-    const trunkGeom = new THREE.CylinderGeometry(radius * 0.92, radius, height, 8);
-    const trunk = new THREE.Mesh(trunkGeom, TerrainMaterials.cactusMaterial);
+    const trunkGeom = new CylinderGeometry(radius * 0.92, radius, height, 8);
+    const trunk = new Mesh(trunkGeom, TerrainMaterials.cactusMaterial);
     trunk.position.y = height / 2;
     trunk.castShadow = true;
     trunk.receiveShadow = true;
     group.add(trunk);
 
     // Domed Cap
-    const capGeom = new THREE.SphereGeometry(radius * 0.92, 8, 6);
+    const capGeom = new SphereGeometry(radius * 0.92, 8, 6);
     capGeom.scale(1, 0.7, 1);
-    const cap = new THREE.Mesh(capGeom, TerrainMaterials.cactusMaterial);
+    const cap = new Mesh(capGeom, TerrainMaterials.cactusMaterial);
     cap.position.y = height;
     cap.castShadow = true;
     group.add(cap);
 
     // Occasional desert flower bud on top
     if (rng() < 0.45) {
-      const flowerGeom = new THREE.ConeGeometry(0.14, 0.25, 5);
-      const flower = new THREE.Mesh(flowerGeom, TerrainMaterials.cactusFlowerMaterial);
+      const flowerGeom = new ConeGeometry(0.14, 0.25, 5);
+      const flower = new Mesh(flowerGeom, TerrainMaterials.cactusFlowerMaterial);
       flower.position.y = height + 0.3;
       group.add(flower);
     }
@@ -241,27 +258,27 @@ export class TerrainProps {
       const armUp = 1.0 + rng() * 0.8;
       const armRad = radius * 0.78;
 
-      const armGroup = new THREE.Group();
+      const armGroup = new Group();
       armGroup.position.set(-radius * 0.7, armHeight, 0);
 
       // Horizontal branch
-      const horizGeom = new THREE.CylinderGeometry(armRad, armRad, armLength, 6);
+      const horizGeom = new CylinderGeometry(armRad, armRad, armLength, 6);
       horizGeom.rotateZ(Math.PI / 2);
-      const horiz = new THREE.Mesh(horizGeom, TerrainMaterials.cactusMaterial);
+      const horiz = new Mesh(horizGeom, TerrainMaterials.cactusMaterial);
       horiz.position.x = -armLength / 2;
       horiz.castShadow = true;
       armGroup.add(horiz);
 
       // Vertical branch pointing up
-      const vertGeom = new THREE.CylinderGeometry(armRad * 0.9, armRad, armUp, 6);
-      const vert = new THREE.Mesh(vertGeom, TerrainMaterials.cactusMaterial);
+      const vertGeom = new CylinderGeometry(armRad * 0.9, armRad, armUp, 6);
+      const vert = new Mesh(vertGeom, TerrainMaterials.cactusMaterial);
       vert.position.set(-armLength, armUp / 2, 0);
       vert.castShadow = true;
       armGroup.add(vert);
 
       // Arm cap
-      const armCapGeom = new THREE.SphereGeometry(armRad * 0.9, 6, 5);
-      const armCap = new THREE.Mesh(armCapGeom, TerrainMaterials.cactusMaterial);
+      const armCapGeom = new SphereGeometry(armRad * 0.9, 6, 5);
+      const armCap = new Mesh(armCapGeom, TerrainMaterials.cactusMaterial);
       armCap.position.set(-armLength, armUp, 0);
       armCap.castShadow = true;
       armGroup.add(armCap);
@@ -277,24 +294,24 @@ export class TerrainProps {
       const armUp = 0.9 + rng() * 0.7;
       const armRad = radius * 0.75;
 
-      const armGroup2 = new THREE.Group();
+      const armGroup2 = new Group();
       armGroup2.position.set(radius * 0.7, armHeight, 0);
 
-      const horizGeom2 = new THREE.CylinderGeometry(armRad, armRad, armLength, 6);
+      const horizGeom2 = new CylinderGeometry(armRad, armRad, armLength, 6);
       horizGeom2.rotateZ(-Math.PI / 2);
-      const horiz2 = new THREE.Mesh(horizGeom2, TerrainMaterials.cactusMaterial);
+      const horiz2 = new Mesh(horizGeom2, TerrainMaterials.cactusMaterial);
       horiz2.position.x = armLength / 2;
       horiz2.castShadow = true;
       armGroup2.add(horiz2);
 
-      const vertGeom2 = new THREE.CylinderGeometry(armRad * 0.9, armRad, armUp, 6);
-      const vert2 = new THREE.Mesh(vertGeom2, TerrainMaterials.cactusMaterial);
+      const vertGeom2 = new CylinderGeometry(armRad * 0.9, armRad, armUp, 6);
+      const vert2 = new Mesh(vertGeom2, TerrainMaterials.cactusMaterial);
       vert2.position.set(armLength, armUp / 2, 0);
       vert2.castShadow = true;
       armGroup2.add(vert2);
 
-      const armCapGeom2 = new THREE.SphereGeometry(armRad * 0.9, 6, 5);
-      const armCap2 = new THREE.Mesh(armCapGeom2, TerrainMaterials.cactusMaterial);
+      const armCapGeom2 = new SphereGeometry(armRad * 0.9, 6, 5);
+      const armCap2 = new Mesh(armCapGeom2, TerrainMaterials.cactusMaterial);
       armCap2.position.set(armLength, armUp, 0);
       armCap2.castShadow = true;
       armGroup2.add(armCap2);
@@ -311,9 +328,9 @@ export class TerrainProps {
   /**
    * Builds a twisted desert deadwood tree or dry desert acacia.
    */
-  public static createTree(rng: () => number): THREE.Group {
+  public static createTree(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     const isAcacia = rng() < 0.45;
     const trunkHeight1 = 2.0 + rng() * 0.8;
@@ -321,13 +338,13 @@ export class TerrainProps {
     const trunkRad = 0.38 + rng() * 0.12;
 
     // Segment 1 (Leaning base trunk)
-    const seg1Geom = new THREE.CylinderGeometry(trunkRad * 0.8, trunkRad, trunkHeight1, 6);
+    const seg1Geom = new CylinderGeometry(trunkRad * 0.8, trunkRad, trunkHeight1, 6);
     const leanAngle = 0.12 + rng() * 0.18;
     const leanDir = rng() * Math.PI * 2;
     seg1Geom.rotateZ(leanAngle);
     seg1Geom.rotateY(leanDir);
 
-    const seg1 = new THREE.Mesh(seg1Geom, TerrainMaterials.barkMaterial);
+    const seg1 = new Mesh(seg1Geom, TerrainMaterials.barkMaterial);
     seg1.position.y = trunkHeight1 / 2;
     seg1.castShadow = true;
     seg1.receiveShadow = true;
@@ -339,13 +356,13 @@ export class TerrainProps {
     const midY = trunkHeight1 * Math.cos(leanAngle);
 
     // Segment 2 (Crooked upper trunk)
-    const seg2Geom = new THREE.CylinderGeometry(trunkRad * 0.55, trunkRad * 0.8, trunkHeight2, 6);
+    const seg2Geom = new CylinderGeometry(trunkRad * 0.55, trunkRad * 0.8, trunkHeight2, 6);
     const leanAngle2 = 0.2 + rng() * 0.25;
     const leanDir2 = leanDir + Math.PI * 0.6 + (rng() - 0.5) * 0.5;
     seg2Geom.rotateZ(leanAngle2);
     seg2Geom.rotateY(leanDir2);
 
-    const seg2 = new THREE.Mesh(seg2Geom, TerrainMaterials.barkMaterial);
+    const seg2 = new Mesh(seg2Geom, TerrainMaterials.barkMaterial);
     seg2.position.set(midX, midY + trunkHeight2 * 0.4, midZ);
     seg2.castShadow = true;
     group.add(seg2);
@@ -355,7 +372,7 @@ export class TerrainProps {
     for (let b = 0; b < branchCount; b++) {
       const bLen = 1.8 + rng() * 1.4;
       const bRad = trunkRad * 0.38;
-      const bGeom = new THREE.CylinderGeometry(bRad * 0.5, bRad, bLen, 5);
+      const bGeom = new CylinderGeometry(bRad * 0.5, bRad, bLen, 5);
 
       const bAngle = (b / branchCount) * Math.PI * 2 + (rng() - 0.5) * 0.5;
       const bElevation = 0.45 + rng() * 0.4; // Tilted upward
@@ -363,7 +380,7 @@ export class TerrainProps {
       bGeom.rotateX(Math.PI / 2 - bElevation);
       bGeom.rotateY(bAngle);
 
-      const branch = new THREE.Mesh(bGeom, TerrainMaterials.barkMaterial);
+      const branch = new Mesh(bGeom, TerrainMaterials.barkMaterial);
       const attachY = midY + (rng() * 0.6 + 0.3) * trunkHeight2;
       branch.position.set(midX, attachY, midZ);
       branch.castShadow = true;
@@ -371,9 +388,9 @@ export class TerrainProps {
 
       // Tip foliage clumps if Acacia variant
       if (isAcacia) {
-        const foliageGeom = new THREE.DodecahedronGeometry(0.75 + rng() * 0.45, 0);
+        const foliageGeom = new DodecahedronGeometry(0.75 + rng() * 0.45, 0);
         foliageGeom.scale(1.4, 0.45, 1.2);
-        const foliage = new THREE.Mesh(foliageGeom, TerrainMaterials.foliageMaterial);
+        const foliage = new Mesh(foliageGeom, TerrainMaterials.foliageMaterial);
 
         const tipDist = bLen * 0.9;
         const tipX = midX + Math.sin(bAngle) * Math.cos(bElevation) * tipDist;
@@ -394,12 +411,12 @@ export class TerrainProps {
   /**
    * Builds an earthy sandstone boulder formation.
    */
-  public static createBoulder(rng: () => number): THREE.Group {
+  public static createBoulder(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     const baseRadius = 0.7 + rng() * 0.8;
-    const geom = new THREE.DodecahedronGeometry(baseRadius, 0);
+    const geom = new DodecahedronGeometry(baseRadius, 0);
 
     // Irregular non-uniform scale for natural flat rock look
     const sx = 1.0 + rng() * 0.7;
@@ -407,7 +424,7 @@ export class TerrainProps {
     const sz = 1.0 + rng() * 0.6;
     geom.scale(sx, sy, sz);
 
-    const boulder = new THREE.Mesh(geom, TerrainMaterials.rockMaterial);
+    const boulder = new Mesh(geom, TerrainMaterials.rockMaterial);
     boulder.position.y = (baseRadius * sy) * 0.65; // Partially sunken into sand
     boulder.rotation.set(rng() * 0.3, rng() * Math.PI * 2, rng() * 0.3);
     boulder.castShadow = true;
@@ -417,9 +434,9 @@ export class TerrainProps {
     // 40% chance of a smaller accent rock nearby
     if (rng() < 0.4) {
       const smallRad = baseRadius * (0.35 + rng() * 0.25);
-      const smallGeom = new THREE.DodecahedronGeometry(smallRad, 0);
+      const smallGeom = new DodecahedronGeometry(smallRad, 0);
       smallGeom.scale(1.2, 0.7, 1.1);
-      const smallRock = new THREE.Mesh(smallGeom, TerrainMaterials.rockMaterial);
+      const smallRock = new Mesh(smallGeom, TerrainMaterials.rockMaterial);
       const ang = rng() * Math.PI * 2;
       const dist = (baseRadius * sx * 0.7) + smallRad;
       smallRock.position.set(Math.cos(ang) * dist, smallRad * 0.4, Math.sin(ang) * dist);
@@ -434,18 +451,18 @@ export class TerrainProps {
   /**
    * Builds dry desert grass / sagebrush tuft.
    */
-  public static createScrub(rng: () => number): THREE.Group {
+  public static createScrub(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     const bladeCount = 4 + Math.floor(rng() * 3);
     const height = 0.6 + rng() * 0.5;
     const width = 0.5 + rng() * 0.4;
 
     for (let i = 0; i < bladeCount; i++) {
-      const geom = new THREE.PlaneGeometry(width * 0.4, height);
+      const geom = new PlaneGeometry(width * 0.4, height);
       geom.translate(0, height / 2, 0);
-      const mesh = new THREE.Mesh(geom, TerrainMaterials.scrubMaterial);
+      const mesh = new Mesh(geom, TerrainMaterials.scrubMaterial);
       mesh.rotation.y = (i / bladeCount) * Math.PI + (rng() - 0.5) * 0.3;
       mesh.rotation.x = (rng() - 0.5) * 0.3;
       mesh.rotation.z = (rng() - 0.5) * 0.3;
@@ -459,45 +476,45 @@ export class TerrainProps {
   /**
    * Builds a steer skull landmark (western desert cow skull with horns).
    */
-  public static createSteerSkull(rng: () => number): THREE.Group {
+  public static createSteerSkull(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     // Cranium
-    const craniumGeom = new THREE.ConeGeometry(0.24, 0.6, 5);
+    const craniumGeom = new ConeGeometry(0.24, 0.6, 5);
     craniumGeom.scale(1.1, 1.0, 0.65);
     craniumGeom.rotateX(-Math.PI / 2.2);
-    const cranium = new THREE.Mesh(craniumGeom, TerrainMaterials.boneMaterial);
+    const cranium = new Mesh(craniumGeom, TerrainMaterials.boneMaterial);
     cranium.position.y = 0.16;
     cranium.castShadow = true;
     group.add(cranium);
 
     // Eye Sockets (dark recesses)
-    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a120c });
-    const eyeGeom = new THREE.BoxGeometry(0.06, 0.06, 0.04);
+    const eyeMat = new MeshBasicMaterial({ color: 0x1a120c });
+    const eyeGeom = new BoxGeometry(0.06, 0.06, 0.04);
 
-    const eyeL = new THREE.Mesh(eyeGeom, eyeMat);
+    const eyeL = new Mesh(eyeGeom, eyeMat);
     eyeL.position.set(-0.1, 0.22, 0.08);
     group.add(eyeL);
 
-    const eyeR = new THREE.Mesh(eyeGeom, eyeMat);
+    const eyeR = new Mesh(eyeGeom, eyeMat);
     eyeR.position.set(0.1, 0.22, 0.08);
     group.add(eyeR);
 
     // Left Horn (curving outward and up)
-    const hornLGeom = new THREE.CylinderGeometry(0.02, 0.07, 0.55, 5);
+    const hornLGeom = new CylinderGeometry(0.02, 0.07, 0.55, 5);
     hornLGeom.rotateZ(Math.PI / 3);
     hornLGeom.rotateY(-0.3);
-    const hornL = new THREE.Mesh(hornLGeom, TerrainMaterials.boneMaterial);
+    const hornL = new Mesh(hornLGeom, TerrainMaterials.boneMaterial);
     hornL.position.set(-0.32, 0.3, 0.18);
     hornL.castShadow = true;
     group.add(hornL);
 
     // Right Horn
-    const hornRGeom = new THREE.CylinderGeometry(0.02, 0.07, 0.55, 5);
+    const hornRGeom = new CylinderGeometry(0.02, 0.07, 0.55, 5);
     hornRGeom.rotateZ(-Math.PI / 3);
     hornRGeom.rotateY(0.3);
-    const hornR = new THREE.Mesh(hornRGeom, TerrainMaterials.boneMaterial);
+    const hornR = new Mesh(hornRGeom, TerrainMaterials.boneMaterial);
     hornR.position.set(0.32, 0.3, 0.18);
     hornR.castShadow = true;
     group.add(hornR);
@@ -509,28 +526,28 @@ export class TerrainProps {
   /**
    * Builds an abandoned wooden wagon wheel half-buried in the sand.
    */
-  public static createWagonWheel(rng: () => number): THREE.Group {
+  public static createWagonWheel(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     const radius = 1.0;
     const tube = 0.08;
 
     // Rim
-    const rimGeom = new THREE.TorusGeometry(radius, tube, 6, 16);
-    const rim = new THREE.Mesh(rimGeom, TerrainMaterials.woodMaterial);
+    const rimGeom = new TorusGeometry(radius, tube, 6, 16);
+    const rim = new Mesh(rimGeom, TerrainMaterials.woodMaterial);
     rim.castShadow = true;
     group.add(rim);
 
     // Outer iron band
-    const ironGeom = new THREE.TorusGeometry(radius + 0.015, tube * 0.35, 4, 16);
-    const iron = new THREE.Mesh(ironGeom, TerrainMaterials.ironMaterial);
+    const ironGeom = new TorusGeometry(radius + 0.015, tube * 0.35, 4, 16);
+    const iron = new Mesh(ironGeom, TerrainMaterials.ironMaterial);
     group.add(iron);
 
     // Center Hub
-    const hubGeom = new THREE.CylinderGeometry(0.2, 0.2, 0.25, 8);
+    const hubGeom = new CylinderGeometry(0.2, 0.2, 0.25, 8);
     hubGeom.rotateX(Math.PI / 2);
-    const hub = new THREE.Mesh(hubGeom, TerrainMaterials.woodMaterial);
+    const hub = new Mesh(hubGeom, TerrainMaterials.woodMaterial);
     hub.castShadow = true;
     group.add(hub);
 
@@ -538,9 +555,9 @@ export class TerrainProps {
     const spokeCount = 6;
     for (let s = 0; s < spokeCount; s++) {
       const angle = (s / spokeCount) * Math.PI;
-      const spokeGeom = new THREE.CylinderGeometry(0.04, 0.04, radius * 2 - 0.1, 5);
+      const spokeGeom = new CylinderGeometry(0.04, 0.04, radius * 2 - 0.1, 5);
       spokeGeom.rotateZ(angle);
-      const spoke = new THREE.Mesh(spokeGeom, TerrainMaterials.woodMaterial);
+      const spoke = new Mesh(spokeGeom, TerrainMaterials.woodMaterial);
       spoke.castShadow = true;
       group.add(spoke);
     }
@@ -556,20 +573,20 @@ export class TerrainProps {
   /**
    * Builds a weathered wooden trail marker post.
    */
-  public static createTrailPost(rng: () => number): THREE.Group {
+  public static createTrailPost(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     // Vertical post
-    const postGeom = new THREE.CylinderGeometry(0.14, 0.16, 2.5, 5);
-    const post = new THREE.Mesh(postGeom, TerrainMaterials.woodMaterial);
+    const postGeom = new CylinderGeometry(0.14, 0.16, 2.5, 5);
+    const post = new Mesh(postGeom, TerrainMaterials.woodMaterial);
     post.position.y = 1.25;
     post.castShadow = true;
     group.add(post);
 
     // Cross directional board
-    const boardGeom = new THREE.BoxGeometry(1.2, 0.25, 0.08);
-    const board = new THREE.Mesh(boardGeom, TerrainMaterials.woodMaterial);
+    const boardGeom = new BoxGeometry(1.2, 0.25, 0.08);
+    const board = new Mesh(boardGeom, TerrainMaterials.woodMaterial);
     board.position.set(0.15, 2.0, 0);
     board.rotation.z = (rng() - 0.5) * 0.2;
     board.castShadow = true;
@@ -582,9 +599,9 @@ export class TerrainProps {
   /**
    * Builds an authentic desert palm tree with curved segmented trunk, radiating fronds and coconuts.
    */
-  public static createPalmTree(rng: () => number): THREE.Group {
+  public static createPalmTree(rng: () => number): Group {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
 
     // Curved trunk consisting of 4 slightly leaning segments
     const segHeight = 1.1;
@@ -599,8 +616,8 @@ export class TerrainProps {
     for (let s = 0; s < 4; s++) {
       const bottomR = 0.22 - s * 0.025;
       const topR = 0.20 - s * 0.025;
-      const geom = new THREE.CylinderGeometry(topR, bottomR, segHeight, 6);
-      const mesh = new THREE.Mesh(geom, TerrainMaterials.palmBarkMaterial);
+      const geom = new CylinderGeometry(topR, bottomR, segHeight, 6);
+      const mesh = new Mesh(geom, TerrainMaterials.palmBarkMaterial);
       mesh.position.set(currX + dx * 0.5, currY + segHeight * 0.5, currZ + dz * 0.5);
       mesh.rotation.x = dz;
       mesh.rotation.z = -dx;
@@ -616,7 +633,7 @@ export class TerrainProps {
     const frondCount = 8;
     for (let f = 0; f < frondCount; f++) {
       const angle = (f / frondCount) * Math.PI * 2 + (rng() - 0.5) * 0.2;
-      const frondGeom = new THREE.PlaneGeometry(0.7, 2.4, 2, 4);
+      const frondGeom = new PlaneGeometry(0.7, 2.4, 2, 4);
       frondGeom.translate(0, 1.2, 0);
 
       // Droop the tip downwards
@@ -629,7 +646,7 @@ export class TerrainProps {
       }
       frondGeom.computeVertexNormals();
 
-      const frondMesh = new THREE.Mesh(frondGeom, TerrainMaterials.palmLeafMaterial);
+      const frondMesh = new Mesh(frondGeom, TerrainMaterials.palmLeafMaterial);
       frondMesh.position.set(currX, currY, currZ);
       frondMesh.rotation.y = angle;
       frondMesh.rotation.x = Math.PI / 3.2; // drooping tilt
@@ -641,8 +658,8 @@ export class TerrainProps {
     const coconutCount = 3 + Math.floor(rng() * 2);
     for (let c = 0; c < coconutCount; c++) {
       const cAngle = (c / coconutCount) * Math.PI * 2;
-      const coconutGeom = new THREE.SphereGeometry(0.14, 5, 5);
-      const coconutMesh = new THREE.Mesh(coconutGeom, TerrainMaterials.coconutMaterial);
+      const coconutGeom = new SphereGeometry(0.14, 5, 5);
+      const coconutMesh = new Mesh(coconutGeom, TerrainMaterials.coconutMaterial);
       coconutMesh.position.set(
         currX + Math.cos(cAngle) * 0.22,
         currY - 0.15,
@@ -660,23 +677,23 @@ export class TerrainProps {
    * perimeter palm trees, smooth river stones and reeds.
    * Player and enemies cannot enter the water (solid collision registered via ObstacleManager).
    */
-  public static createOasis(rng: () => number): { group: THREE.Group; radius: number } {
+  public static createOasis(rng: () => number): { group: Group; radius: number } {
     TerrainMaterials.init();
-    const group = new THREE.Group();
+    const group = new Group();
     const radius = 5.0; // 5 meter radius water pool
 
     // 1. Shimmering turquoise water disc
-    const waterGeom = new THREE.CircleGeometry(radius, 32);
+    const waterGeom = new CircleGeometry(radius, 32);
     waterGeom.rotateX(-Math.PI / 2);
-    const waterMesh = new THREE.Mesh(waterGeom, TerrainMaterials.waterMaterial);
+    const waterMesh = new Mesh(waterGeom, TerrainMaterials.waterMaterial);
     waterMesh.position.y = 0.03;
     waterMesh.receiveShadow = true;
     group.add(waterMesh);
 
     // 2. Wet damp dark sand shoreline ring
-    const shoreGeom = new THREE.RingGeometry(radius - 0.2, radius + 1.2, 32);
+    const shoreGeom = new RingGeometry(radius - 0.2, radius + 1.2, 32);
     shoreGeom.rotateX(-Math.PI / 2);
-    const shoreMesh = new THREE.Mesh(shoreGeom, TerrainMaterials.wetSandMaterial);
+    const shoreMesh = new Mesh(shoreGeom, TerrainMaterials.wetSandMaterial);
     shoreMesh.position.y = 0.02;
     shoreMesh.receiveShadow = true;
     group.add(shoreMesh);
@@ -703,8 +720,8 @@ export class TerrainProps {
       const sx = Math.cos(stoneAngle) * dist;
       const sz = Math.sin(stoneAngle) * dist;
 
-      const stoneGeom = new THREE.DodecahedronGeometry(0.35 + rng() * 0.3, 0);
-      const stoneMesh = new THREE.Mesh(stoneGeom, TerrainMaterials.rockMaterial);
+      const stoneGeom = new DodecahedronGeometry(0.35 + rng() * 0.3, 0);
+      const stoneMesh = new Mesh(stoneGeom, TerrainMaterials.rockMaterial);
       stoneMesh.position.set(sx, 0.15, sz);
       stoneMesh.scale.set(1.4, 0.7, 1.1);
       stoneMesh.rotation.set(rng() * Math.PI, rng() * Math.PI, rng() * Math.PI);

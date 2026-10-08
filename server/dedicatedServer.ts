@@ -242,7 +242,7 @@ export class DedicatedGameServer {
   /**
    * Handles player connection (programmatic)
    */
-  public onPlayerJoin(id: string, name: string, charType: CharacterType = 'ronin') {
+  public onPlayerJoin(id: string, _name: string, charType: CharacterType = 'ronin') {
     this.core.addPlayer(id, charType);
   }
 

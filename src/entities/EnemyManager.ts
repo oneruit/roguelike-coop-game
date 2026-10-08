@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Vector3, type Scene, type Camera, Sphere, type Frustum } from 'three';
 import { Enemy, EnemyConfig, EnemyType } from './Enemy';
 import { SpatialGrid } from './SpatialGrid';
 import { DropManager } from '../drops/DropManager';
@@ -11,13 +11,13 @@ import { BalanceManager } from '../balance/BalanceManager';
 
 export interface PlayerTargetInfo {
   id: string; // 'p1', 'p2', 'p3', 'p4', 'p5'
-  position: THREE.Vector3;
+  position: Vector3;
   isAlive: boolean;
   isDowned: boolean;
 }
 
 export class EnemyManager {
-  private scene: THREE.Scene;
+  private scene: Scene;
   private dropManager: DropManager;
   private damageNumbers: DamageNumberManager;
   private spatialGrid = new SpatialGrid(4.0);
@@ -154,13 +154,13 @@ export class EnemyManager {
   public onBossDefeat?: () => void;
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string) => void;
-  public camera?: THREE.Camera;
+  public camera?: Camera;
 
   public activePlayerCount: number = 1;
   public getElevation?: (x: number, z: number) => number;
   private lastTargetHitTimes: Map<string, number> = new Map();
 
-  constructor(scene: THREE.Scene, dropManager: DropManager, damageNumbers: DamageNumberManager) {
+  constructor(scene: Scene, dropManager: DropManager, damageNumbers: DamageNumberManager) {
     this.scene = scene;
     this.dropManager = dropManager;
     this.damageNumbers = damageNumbers;
@@ -225,12 +225,12 @@ export class EnemyManager {
 
   public update(
     dt: number,
-    playerPos: THREE.Vector3,
+    playerPos: Vector3,
     onPlayerDamage: (damage: number, isImmortalHit?: boolean) => void,
     obstacleManager?: ObstacleManager,
     allTargets?: PlayerTargetInfo[],
     onRemoteDamage?: (targetId: string, damage: number, isImmortalHit?: boolean) => void,
-    partnerPos?: THREE.Vector3,
+    partnerPos?: Vector3,
     onPartnerDamage?: (damage: number, isImmortalHit?: boolean) => void,
     isPartnerAlive: boolean = true
   ) {
@@ -369,7 +369,7 @@ export class EnemyManager {
             const tier = Math.max(1, Math.floor(this.gameTime / 300));
             const gemCount = 5 + tier * 2;
             for (let g = 0; g < gemCount; g++) {
-              const offset = new THREE.Vector3(
+              const offset = new Vector3(
                 (Math.random() - 0.5) * 3.5,
                 0,
                 (Math.random() - 0.5) * 3.5
@@ -378,7 +378,7 @@ export class EnemyManager {
             }
             // Boss drops gold passive crystal (40% chance, reduced 5x from 2 guaranteed)
             if (Math.random() < 0.40) {
-              const pOffset = new THREE.Vector3(
+              const pOffset = new Vector3(
                 (Math.random() - 0.5) * 2.0,
                 0,
                 (Math.random() - 0.5) * 2.0
@@ -398,7 +398,7 @@ export class EnemyManager {
           const isTough = enemy.type === 'bison' || enemy.type === 'brute' || enemy.type === 'scorpion';
           const passiveChance = isTough ? 0.03 : 0.01;
           if (Math.random() < passiveChance) {
-            const pOffset = new THREE.Vector3(
+            const pOffset = new Vector3(
               (Math.random() - 0.5),
               0,
               (Math.random() - 0.5)
@@ -417,10 +417,10 @@ export class EnemyManager {
   /**
    * Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)
    */
-  public spawnTieredBoss(playerPos: THREE.Vector3, tier: number = 1) {
+  public spawnTieredBoss(playerPos: Vector3, tier: number = 1) {
     const angle = Math.random() * Math.PI * 2;
     const distance = 16;
-    const spawnPos = new THREE.Vector3(
+    const spawnPos = new Vector3(
       playerPos.x + Math.cos(angle) * distance,
       0,
       playerPos.z + Math.sin(angle) * distance
@@ -472,10 +472,10 @@ export class EnemyManager {
   /**
    * Spawns a stage boss explicitly when the Teleporter event is activated.
    */
-  public spawnTeleporterBoss(playerPos: THREE.Vector3, stage: number = 1): Enemy {
+  public spawnTeleporterBoss(playerPos: Vector3, stage: number = 1): Enemy {
     const angle = Math.random() * Math.PI * 2;
     const distance = 16;
-    const spawnPos = new THREE.Vector3(
+    const spawnPos = new Vector3(
       playerPos.x + Math.cos(angle) * distance,
       0,
       playerPos.z + Math.sin(angle) * distance
@@ -528,10 +528,10 @@ export class EnemyManager {
   /**
    * Spawns the inevitable 30-minute Immortal Boss (Death / Grim Reaper)
    */
-  public spawnImmortalBoss(playerPos: THREE.Vector3) {
+  public spawnImmortalBoss(playerPos: Vector3) {
     const angle = Math.random() * Math.PI * 2;
     const distance = 18;
-    const spawnPos = new THREE.Vector3(
+    const spawnPos = new Vector3(
       playerPos.x + Math.cos(angle) * distance,
       0,
       playerPos.z + Math.sin(angle) * distance
@@ -562,7 +562,7 @@ export class EnemyManager {
     }
   }
 
-  private spawnWave(playerPos: THREE.Vector3) {
+  private spawnWave(playerPos: Vector3) {
     // 30-Minute comprehensive wave progression:
     let types: EnemyType[] = ['coyote'];
     const time = this.gameTime;
@@ -649,10 +649,10 @@ export class EnemyManager {
     }
   }
 
-  private spawnSingleEnemy(type: EnemyType, playerPos: THREE.Vector3) {
+  private spawnSingleEnemy(type: EnemyType, playerPos: Vector3) {
     const angle = Math.random() * Math.PI * 2;
     const distance = 18 + Math.random() * 5;
-    const spawnPos = new THREE.Vector3(
+    const spawnPos = new Vector3(
       Math.max(-244, Math.min(244, playerPos.x + Math.cos(angle) * distance)),
       0,
       Math.max(-244, Math.min(244, playerPos.z + Math.sin(angle) * distance))
@@ -695,8 +695,8 @@ export class EnemyManager {
   public damageEnemy(
     enemy: Enemy,
     amount: number,
-    sourcePos?: THREE.Vector3,
-    camera?: THREE.Camera,
+    sourcePos?: Vector3,
+    camera?: Camera,
     hitter: string = 'p1',
     showDamageNumber: boolean = true
   ) {
@@ -708,7 +708,7 @@ export class EnemyManager {
     return isDead;
   }
 
-  public killAll(camera?: THREE.Camera) {
+  public killAll(camera?: Camera) {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
       if (enemy.isImmortal) continue; // Immortal Reaper cannot be wiped
@@ -716,7 +716,7 @@ export class EnemyManager {
     }
   }
 
-  public spawnSpecificEnemy(type: EnemyType | 'reaper', playerPos: THREE.Vector3) {
+  public spawnSpecificEnemy(type: EnemyType | 'reaper', playerPos: Vector3) {
     if (type === 'reaper') {
       this.spawnImmortalBossNow(playerPos);
       return;
@@ -732,16 +732,16 @@ export class EnemyManager {
     this.spawnSingleEnemy(type, playerPos);
   }
 
-  public spawnBossNow(playerPos: THREE.Vector3) {
+  public spawnBossNow(playerPos: Vector3) {
     const currentTier = Math.max(1, Math.floor(this.gameTime / 300) || 1);
     this.spawnTieredBoss(playerPos, currentTier);
   }
 
-  public spawnHydraNow(playerPos: THREE.Vector3) {
+  public spawnHydraNow(playerPos: Vector3) {
     this.spawnTieredBoss(playerPos, 2);
   }
 
-  public spawnImmortalBossNow(playerPos: THREE.Vector3) {
+  public spawnImmortalBossNow(playerPos: Vector3) {
     this.spawnImmortalBoss(playerPos);
   }
 
@@ -791,7 +791,7 @@ export class EnemyManager {
           config.speed = 7.6;
         }
         const initY = this.getElevation ? this.getElevation(s.x, s.z) : 0;
-        enemy = this.registerEnemy(new Enemy(config, new THREE.Vector3(s.x, initY, s.z)));
+        enemy = this.registerEnemy(new Enemy(config, new Vector3(s.x, initY, s.z)));
         enemy.id = s.id;
         this.enemies.push(enemy);
         this.scene.add(enemy.mesh);
@@ -832,8 +832,8 @@ export class EnemyManager {
   public applyRemoteDamage(
     enemyId: string,
     amount: number,
-    sourcePos?: THREE.Vector3,
-    camera?: THREE.Camera,
+    sourcePos?: Vector3,
+    camera?: Camera,
     hitter: string = 'client',
     showDamageNumber: boolean = false
   ) {
@@ -844,13 +844,13 @@ export class EnemyManager {
     return false;
   }
 
-  private tempSphere = new THREE.Sphere();
+  private tempSphere = new Sphere();
 
   /**
    * Rendering phase: Viewport/Frustum culling across all active enemies.
    * Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls).
    */
-  public updateVisuals(dt: number, frustum: THREE.Frustum, cameraPos?: THREE.Vector3) {
+  public updateVisuals(dt: number, frustum: Frustum, cameraPos?: Vector3) {
     const maxDistSq = 52 * 52;
     const cx = cameraPos ? cameraPos.x : 0;
     const cz = cameraPos ? cameraPos.z : 0;

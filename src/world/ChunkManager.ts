@@ -1,4 +1,12 @@
-import * as THREE from 'three';
+import {
+  type Scene,
+  Group,
+  Vector3,
+  Box3,
+  PlaneGeometry,
+  Mesh,
+  type Frustum
+} from 'three';
 import { TerrainProps, TerrainMaterials } from './TerrainProps';
 import { Altar } from './Altar';
 import { AltarManager } from './AltarManager';
@@ -17,7 +25,7 @@ export interface OccupiedArea {
 }
 
 export class ChunkManager {
-  private scene: THREE.Scene;
+  private scene: Scene;
   private altarManager: AltarManager;
   private obstacleManager: ObstacleManager;
 
@@ -34,10 +42,10 @@ export class ChunkManager {
 
   public elevation: TerrainElevation = new TerrainElevation(1337);
   public roughTerrainManager: RoughTerrainManager;
-  private oasisGroups: THREE.Group[] = [];
-  private activeChunks = new Map<string, THREE.Group>();
+  private oasisGroups: Group[] = [];
+  private activeChunks = new Map<string, Group>();
 
-  constructor(scene: THREE.Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
+  constructor(scene: Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
     this.scene = scene;
     this.altarManager = altarManager;
     this.obstacleManager = obstacleManager;
@@ -62,7 +70,7 @@ export class ChunkManager {
   /**
    * Returns surface normal vector at world coordinate (x, z).
    */
-  public getNormal(x: number, z: number, target?: THREE.Vector3): THREE.Vector3 {
+  public getNormal(x: number, z: number, target?: Vector3): Vector3 {
     return this.elevation.getNormal(x, z, target);
   }
 
@@ -112,7 +120,7 @@ export class ChunkManager {
       const teleDist = rng.range(110, 165);
       teleX = Math.cos(teleAngle) * teleDist;
       teleZ = Math.sin(teleAngle) * teleDist;
-      riftTeleporter.resetForStage(new THREE.Vector3(teleX, 0, teleZ));
+      riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
       occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
     }
 
@@ -128,7 +136,7 @@ export class ChunkManager {
       const ax = Math.cos(sectorAngle) * dist;
       const az = Math.sin(sectorAngle) * dist;
 
-      const altar = new Altar(chosenBuffs[i], new THREE.Vector3(ax, 0, az));
+      const altar = new Altar(chosenBuffs[i], new Vector3(ax, 0, az));
       this.altarManager.registerAltar(altar);
 
       const altarChunkKey = `${Math.floor(ax / ChunkManager.CHUNK_SIZE)},${Math.floor(az / ChunkManager.CHUNK_SIZE)}`;
@@ -193,7 +201,7 @@ export class ChunkManager {
     for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
       for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
         const key = `${cx},${cz}`;
-        const chunkGroup = new THREE.Group();
+        const chunkGroup = new Group();
 
         const worldCenterX = cx * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
         const worldCenterZ = cz * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
@@ -203,13 +211,13 @@ export class ChunkManager {
         const maxX = (cx + 1) * ChunkManager.CHUNK_SIZE + 1;
         const maxZ = (cz + 1) * ChunkManager.CHUNK_SIZE + 1;
 
-        (chunkGroup as any).boundingBox = new THREE.Box3(
-          new THREE.Vector3(minX, -6, minZ),
-          new THREE.Vector3(maxX, 22, maxZ)
+        (chunkGroup as any).boundingBox = new Box3(
+          new Vector3(minX, -6, minZ),
+          new Vector3(maxX, 22, maxZ)
         );
 
         // Flat 2D/2.5D Floor Geometry with continuous world UVs
-        const floorGeom = new THREE.PlaneGeometry(
+        const floorGeom = new PlaneGeometry(
           ChunkManager.CHUNK_SIZE,
           ChunkManager.CHUNK_SIZE,
           1,
@@ -238,7 +246,7 @@ export class ChunkManager {
         normAttr.needsUpdate = true;
         uvAttr.needsUpdate = true;
 
-        const floorMesh = new THREE.Mesh(floorGeom, TerrainMaterials.sandMaterial);
+        const floorMesh = new Mesh(floorGeom, TerrainMaterials.sandMaterial);
         floorMesh.position.set(worldCenterX, 0, worldCenterZ);
         floorMesh.receiveShadow = true;
         chunkGroup.add(floorMesh);
@@ -276,7 +284,7 @@ export class ChunkManager {
 
           // Valid placement! Choose prop type
           const propRoll = rng.next();
-          let prop: THREE.Group;
+          let prop: Group;
           let obsRadius = 0.55;
           let obsType: 'cactus' | 'tree' | 'boulder' | 'landmark' = 'cactus';
 
@@ -393,7 +401,7 @@ export class ChunkManager {
    * With the fixed preloaded map, update does not need to stream or unload chunks.
    * Runs in 0ms without runtime memory allocation.
    */
-  public update(_playerPos: THREE.Vector3 | THREE.Vector3[]) {
+  public update(_playerPos: Vector3 | Vector3[]) {
     // Fixed preloaded map: zero runtime streaming overhead!
   }
 
@@ -401,9 +409,9 @@ export class ChunkManager {
    * Frustum Culling: Hides chunks that are completely outside the camera view.
    * Keeps active rendering to only the 6-9 chunks in front of the camera.
    */
-  public cull(frustum: THREE.Frustum) {
+  public cull(frustum: Frustum) {
     for (const group of this.activeChunks.values()) {
-      const box = (group as any).boundingBox as THREE.Box3 | undefined;
+      const box = (group as any).boundingBox as Box3 | undefined;
       if (box) {
         group.visible = frustum.intersectsBox(box);
       }
@@ -417,7 +425,7 @@ export class ChunkManager {
     for (const group of this.activeChunks.values()) {
       this.scene.remove(group);
       group.traverse((obj) => {
-        if (obj instanceof THREE.Mesh) {
+        if (obj instanceof Mesh) {
           obj.geometry.dispose();
         }
       });
@@ -427,7 +435,7 @@ export class ChunkManager {
     for (const oasis of this.oasisGroups) {
       this.scene.remove(oasis);
       oasis.traverse((obj) => {
-        if (obj instanceof THREE.Mesh) {
+        if (obj instanceof Mesh) {
           obj.geometry.dispose();
         }
       });

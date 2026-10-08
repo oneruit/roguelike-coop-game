@@ -1,4 +1,17 @@
-import * as THREE from 'three';
+import {
+  Texture,
+  TextureLoader,
+  RepeatWrapping,
+  SRGBColorSpace,
+  NearestFilter,
+  LinearMipmapLinearFilter,
+  type Scene,
+  Color,
+  FogExp2,
+  AmbientLight,
+  DirectionalLight,
+  HemisphereLight
+} from 'three';
 import { TerrainMaterials } from './TerrainProps';
 import { getAssetUrl } from '../utils/assetPath';
 
@@ -207,19 +220,19 @@ export const BIOMES: BiomeConfig[] = [
 export class BiomeManager {
   public currentStageIndex: number = 0;
   public currentTimeOfDay: 'day' | 'night' = 'day';
-  private static biomeTextures = new Map<string, THREE.Texture>();
-  private static textureLoader = new THREE.TextureLoader();
+  private static biomeTextures = new Map<string, Texture>();
+  private static textureLoader = new TextureLoader();
 
-  public static getBiomeTexture(biomeId: string): THREE.Texture {
+  public static getBiomeTexture(biomeId: string): Texture {
     let tex = this.biomeTextures.get(biomeId);
     if (!tex) {
       tex = this.textureLoader.load(getAssetUrl(`/textures/biomes/biome_${biomeId}.jpg`));
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
-      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+      tex.colorSpace = SRGBColorSpace;
       // Preserve slightly pixelated stylized look requested by the user
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = NearestFilter;
+      tex.minFilter = LinearMipmapLinearFilter;
       this.biomeTextures.set(biomeId, tex);
     }
     return tex;
@@ -236,7 +249,7 @@ export class BiomeManager {
   /**
    * Applies the current biome's atmosphere, lighting, fog, textures and materials to the Three.js scene.
    */
-  public applyBiomeToScene(scene: THREE.Scene, timeOfDay: 'day' | 'night' = this.currentTimeOfDay) {
+  public applyBiomeToScene(scene: Scene, timeOfDay: 'day' | 'night' = this.currentTimeOfDay) {
     this.currentTimeOfDay = timeOfDay;
     const biome = this.currentBiome;
     const isNight = timeOfDay === 'night';
@@ -250,21 +263,21 @@ export class BiomeManager {
     const hemiGnd = isNight && biome.night?.hemiGroundColor !== undefined ? biome.night.hemiGroundColor : biome.hemiGroundColor;
 
     // 1. Fog & Background
-    scene.background = new THREE.Color(bgColor);
-    if (scene.fog instanceof THREE.FogExp2) {
+    scene.background = new Color(bgColor);
+    if (scene.fog instanceof FogExp2) {
       scene.fog.color.setHex(fogColor);
       scene.fog.density = fogDensity;
     } else {
-      scene.fog = new THREE.FogExp2(fogColor, fogDensity);
+      scene.fog = new FogExp2(fogColor, fogDensity);
     }
 
     // 2. Lights in the scene
     scene.traverse((obj) => {
-      if (obj instanceof THREE.AmbientLight) {
+      if (obj instanceof AmbientLight) {
         obj.color.setHex(ambColor);
-      } else if (obj instanceof THREE.DirectionalLight) {
+      } else if (obj instanceof DirectionalLight) {
         obj.color.setHex(dirColor);
-      } else if (obj instanceof THREE.HemisphereLight) {
+      } else if (obj instanceof HemisphereLight) {
         obj.color.setHex(hemiSky);
         obj.groundColor.setHex(hemiGnd);
       }

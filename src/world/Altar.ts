@@ -1,4 +1,26 @@
-import * as THREE from 'three';
+import {
+  Group,
+  Vector3,
+  Mesh,
+  PointLight,
+  MeshBasicMaterial,
+  CanvasTexture,
+  MeshStandardMaterial,
+  CylinderGeometry,
+  TorusGeometry,
+  OctahedronGeometry,
+  ConeGeometry,
+  IcosahedronGeometry,
+  DodecahedronGeometry,
+  type BufferGeometry,
+  RingGeometry,
+  DoubleSide,
+  CircleGeometry,
+  LinearFilter,
+  PlaneGeometry,
+  type Camera,
+  type Scene
+} from 'three';
 import { Player, ActiveBuff, BuffType } from '../entities/Player';
 import { SoundManager } from '../core/SoundManager';
 
@@ -84,8 +106,8 @@ export const ALTAR_CONFIGS: Record<BuffType, AltarConfig> = {
 };
 
 export class Altar {
-  public mesh: THREE.Group;
-  public position: THREE.Vector3;
+  public mesh: Group;
+  public position: Vector3;
   public config: AltarConfig;
   public captureRadius = 4.2;
   public captureTime = 3.2; // seconds to capture
@@ -94,159 +116,159 @@ export class Altar {
   public rechargeTimer = 0;
   public rechargeDuration = 75; // seconds until reactivation
 
-  private relicMesh: THREE.Mesh;
-  private light: THREE.PointLight;
-  private outerRingMesh: THREE.Mesh;
-  private innerZoneMesh: THREE.Mesh;
-  private innerZoneMat: THREE.MeshBasicMaterial;
-  private shockwaveMesh: THREE.Mesh;
-  private shockwaveMat: THREE.MeshBasicMaterial;
+  private relicMesh: Mesh;
+  private light: PointLight;
+  private outerRingMesh: Mesh;
+  private innerZoneMesh: Mesh;
+  private innerZoneMat: MeshBasicMaterial;
+  private shockwaveMesh: Mesh;
+  private shockwaveMat: MeshBasicMaterial;
   private isShockwaving = false;
   private shockwaveTimer = 0;
 
   // 3D Billboard HUD
   private billboardCanvas: HTMLCanvasElement;
   private billboardCtx: CanvasRenderingContext2D;
-  private billboardTexture: THREE.CanvasTexture;
-  private billboardMesh: THREE.Mesh;
+  private billboardTexture: CanvasTexture;
+  private billboardMesh: Mesh;
 
   private animTimer = 0;
   public onCaptured?: (altar: Altar, buff: ActiveBuff) => void;
 
-  constructor(type: BuffType, position: THREE.Vector3) {
+  constructor(type: BuffType, position: Vector3) {
     this.config = ALTAR_CONFIGS[type];
     this.position = position.clone();
-    this.mesh = new THREE.Group();
+    this.mesh = new Group();
     this.mesh.position.copy(this.position);
 
     // 1. Stepped Stone Dais
-    const stoneMat = new THREE.MeshStandardMaterial({
+    const stoneMat = new MeshStandardMaterial({
       color: 0x3d2b20,
       roughness: 0.88,
       metalness: 0.05
     });
 
-    const step1Geom = new THREE.CylinderGeometry(2.5, 2.7, 0.35, 8);
-    const step1 = new THREE.Mesh(step1Geom, stoneMat);
+    const step1Geom = new CylinderGeometry(2.5, 2.7, 0.35, 8);
+    const step1 = new Mesh(step1Geom, stoneMat);
     step1.position.y = 0.17;
     step1.receiveShadow = true;
     step1.castShadow = true;
     this.mesh.add(step1);
 
-    const step2Geom = new THREE.CylinderGeometry(1.8, 2.0, 0.3, 8);
-    const step2 = new THREE.Mesh(step2Geom, stoneMat);
+    const step2Geom = new CylinderGeometry(1.8, 2.0, 0.3, 8);
+    const step2 = new Mesh(step2Geom, stoneMat);
     step2.position.y = 0.45;
     step2.receiveShadow = true;
     step2.castShadow = true;
     this.mesh.add(step2);
 
     // 2. Central Altar Pillar
-    const pillarGeom = new THREE.CylinderGeometry(0.55, 0.72, 1.1, 8);
-    const pillar = new THREE.Mesh(pillarGeom, stoneMat);
+    const pillarGeom = new CylinderGeometry(0.55, 0.72, 1.1, 8);
+    const pillar = new Mesh(pillarGeom, stoneMat);
     pillar.position.y = 1.05;
     pillar.castShadow = true;
     this.mesh.add(pillar);
 
     // Glowing Rune Band on Pillar
-    const runeRingGeom = new THREE.TorusGeometry(0.62, 0.05, 6, 16);
+    const runeRingGeom = new TorusGeometry(0.62, 0.05, 6, 16);
     runeRingGeom.rotateX(Math.PI / 2);
-    const runeMat = new THREE.MeshStandardMaterial({
+    const runeMat = new MeshStandardMaterial({
       color: this.config.colorHex,
       emissive: this.config.colorHex,
       emissiveIntensity: 0.85
     });
-    const runeRing = new THREE.Mesh(runeRingGeom, runeMat);
+    const runeRing = new Mesh(runeRingGeom, runeMat);
     runeRing.position.y = 1.15;
     this.mesh.add(runeRing);
 
     // 3. Four Corner Obelisks with glowing crystal caps
     const obeliskPositions = [
-      new THREE.Vector3(-1.45, 0, -1.45),
-      new THREE.Vector3(1.45, 0, -1.45),
-      new THREE.Vector3(-1.45, 0, 1.45),
-      new THREE.Vector3(1.45, 0, 1.45)
+      new Vector3(-1.45, 0, -1.45),
+      new Vector3(1.45, 0, -1.45),
+      new Vector3(-1.45, 0, 1.45),
+      new Vector3(1.45, 0, 1.45)
     ];
 
-    const obeliskGeom = new THREE.CylinderGeometry(0.16, 0.24, 1.5, 6);
-    const capCrystalGeom = new THREE.OctahedronGeometry(0.14, 0);
+    const obeliskGeom = new CylinderGeometry(0.16, 0.24, 1.5, 6);
+    const capCrystalGeom = new OctahedronGeometry(0.14, 0);
 
     for (const obPos of obeliskPositions) {
-      const obelisk = new THREE.Mesh(obeliskGeom, stoneMat);
+      const obelisk = new Mesh(obeliskGeom, stoneMat);
       obelisk.position.set(obPos.x, 0.85, obPos.z);
       obelisk.castShadow = true;
       this.mesh.add(obelisk);
 
-      const capCrystal = new THREE.Mesh(capCrystalGeom, runeMat);
+      const capCrystal = new Mesh(capCrystalGeom, runeMat);
       capCrystal.position.set(obPos.x, 1.68, obPos.z);
       this.mesh.add(capCrystal);
     }
 
     // 4. Floating Mystic Relic (Distinct geometry per type)
-    let relicGeom: THREE.BufferGeometry;
+    let relicGeom: BufferGeometry;
     if (type === 'damage') {
-      relicGeom = new THREE.OctahedronGeometry(0.48, 0);
+      relicGeom = new OctahedronGeometry(0.48, 0);
     } else if (type === 'speed') {
-      relicGeom = new THREE.ConeGeometry(0.38, 0.85, 4);
+      relicGeom = new ConeGeometry(0.38, 0.85, 4);
       relicGeom.rotateX(Math.PI);
     } else if (type === 'regen') {
-      relicGeom = new THREE.IcosahedronGeometry(0.44, 0);
+      relicGeom = new IcosahedronGeometry(0.44, 0);
     } else {
-      relicGeom = new THREE.DodecahedronGeometry(0.46, 0);
+      relicGeom = new DodecahedronGeometry(0.46, 0);
     }
 
-    const relicMat = new THREE.MeshStandardMaterial({
+    const relicMat = new MeshStandardMaterial({
       color: this.config.colorHex,
       emissive: this.config.colorHex,
       emissiveIntensity: 1.2,
       roughness: 0.2,
       metalness: 0.4
     });
-    this.relicMesh = new THREE.Mesh(relicGeom, relicMat);
+    this.relicMesh = new Mesh(relicGeom, relicMat);
     this.relicMesh.position.y = 1.95;
     this.relicMesh.castShadow = true;
     this.mesh.add(this.relicMesh);
 
     // 5. Point Light
-    this.light = new THREE.PointLight(this.config.colorHex, 2.2, 9);
+    this.light = new PointLight(this.config.colorHex, 2.2, 9);
     this.light.position.set(0, 2.1, 0);
     this.mesh.add(this.light);
 
     // 6. Ground Capture Rings
-    const ringGeom = new THREE.RingGeometry(this.captureRadius - 0.15, this.captureRadius, 36);
+    const ringGeom = new RingGeometry(this.captureRadius - 0.15, this.captureRadius, 36);
     ringGeom.rotateX(-Math.PI / 2);
-    const ringMat = new THREE.MeshBasicMaterial({
+    const ringMat = new MeshBasicMaterial({
       color: this.config.colorHex,
       transparent: true,
       opacity: 0.75,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
-    this.outerRingMesh = new THREE.Mesh(ringGeom, ringMat);
+    this.outerRingMesh = new Mesh(ringGeom, ringMat);
     this.outerRingMesh.position.y = 0.05;
     this.mesh.add(this.outerRingMesh);
 
     // Inner capture fill disc
-    const innerGeom = new THREE.CircleGeometry(this.captureRadius - 0.16, 36);
+    const innerGeom = new CircleGeometry(this.captureRadius - 0.16, 36);
     innerGeom.rotateX(-Math.PI / 2);
-    this.innerZoneMat = new THREE.MeshBasicMaterial({
+    this.innerZoneMat = new MeshBasicMaterial({
       color: this.config.colorHex,
       transparent: true,
       opacity: 0.1,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
-    this.innerZoneMesh = new THREE.Mesh(innerGeom, this.innerZoneMat);
+    this.innerZoneMesh = new Mesh(innerGeom, this.innerZoneMat);
     this.innerZoneMesh.position.y = 0.04;
     this.mesh.add(this.innerZoneMesh);
 
     // Shockwave Ring (triggers on completion)
-    const shockGeom = new THREE.RingGeometry(0.2, 0.7, 36);
+    const shockGeom = new RingGeometry(0.2, 0.7, 36);
     shockGeom.rotateX(-Math.PI / 2);
-    this.shockwaveMat = new THREE.MeshBasicMaterial({
+    this.shockwaveMat = new MeshBasicMaterial({
       color: this.config.colorHex,
       transparent: true,
       opacity: 0,
-      side: THREE.DoubleSide
+      side: DoubleSide
     });
-    this.shockwaveMesh = new THREE.Mesh(shockGeom, this.shockwaveMat);
+    this.shockwaveMesh = new Mesh(shockGeom, this.shockwaveMat);
     this.shockwaveMesh.position.y = 0.08;
     this.mesh.add(this.shockwaveMesh);
 
@@ -255,16 +277,16 @@ export class Altar {
     this.billboardCanvas.width = 384;
     this.billboardCanvas.height = 144;
     this.billboardCtx = this.billboardCanvas.getContext('2d')!;
-    this.billboardTexture = new THREE.CanvasTexture(this.billboardCanvas);
-    this.billboardTexture.minFilter = THREE.LinearFilter;
+    this.billboardTexture = new CanvasTexture(this.billboardCanvas);
+    this.billboardTexture.minFilter = LinearFilter;
 
-    const billboardMat = new THREE.MeshBasicMaterial({
+    const billboardMat = new MeshBasicMaterial({
       map: this.billboardTexture,
       transparent: true,
       depthWrite: false
     });
-    const billboardGeom = new THREE.PlaneGeometry(3.6, 1.35);
-    this.billboardMesh = new THREE.Mesh(billboardGeom, billboardMat);
+    const billboardGeom = new PlaneGeometry(3.6, 1.35);
+    this.billboardMesh = new Mesh(billboardGeom, billboardMat);
     this.billboardMesh.position.set(0, 3.2, 0);
     this.mesh.add(this.billboardMesh);
 
@@ -347,10 +369,10 @@ export class Altar {
   public updateSimulation(
     dt: number,
     player: Player,
-    partnerPos?: THREE.Vector3,
+    partnerPos?: Vector3,
     isPartnerAlive: boolean = true,
     allowCapture: boolean = true,
-    allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
+    allPlayers?: { position: Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
     if (this.isCaptured) {
       this.rechargeTimer -= dt;
@@ -415,7 +437,7 @@ export class Altar {
    * Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh animations.
    * If inFrustum is false, sets mesh.visible = false and skips all canvas redraws.
    */
-  public updateVisuals(dt: number, camera: THREE.Camera, inFrustum: boolean) {
+  public updateVisuals(dt: number, camera: Camera, inFrustum: boolean) {
     if (!inFrustum) {
       this.mesh.visible = false;
       return;
@@ -458,11 +480,11 @@ export class Altar {
   public update(
     dt: number,
     player: Player,
-    camera: THREE.Camera,
-    partnerPos?: THREE.Vector3,
+    camera: Camera,
+    partnerPos?: Vector3,
     isPartnerAlive: boolean = true,
     allowCapture: boolean = true,
-    allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
+    allPlayers?: { position: Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
     this.updateSimulation(dt, player, partnerPos, isPartnerAlive, allowCapture, allPlayers);
     this.updateVisuals(dt, camera, true);
@@ -480,10 +502,10 @@ export class Altar {
     SoundManager.playAltarCaptured();
   }
 
-  public destroy(scene: THREE.Scene) {
+  public destroy(scene: Scene) {
     scene.remove(this.mesh);
     this.mesh.traverse((obj) => {
-      if (obj instanceof THREE.Mesh) {
+      if (obj instanceof Mesh) {
         obj.geometry.dispose();
       }
     });

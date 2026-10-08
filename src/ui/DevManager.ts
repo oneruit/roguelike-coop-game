@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import type { Scene, Camera } from 'three';
 import { Player } from '../entities/Player';
 import { EnemyManager } from '../entities/EnemyManager';
 import { DropManager } from '../drops/DropManager';
@@ -28,8 +28,8 @@ export class DevManager {
   private player: Player;
   private enemyManager: EnemyManager;
   private dropManager: DropManager;
-  private scene: THREE.Scene;
-  private camera: THREE.Camera;
+  private scene: Scene;
+  private camera: Camera;
   private onTriggerLevelUp: (count?: number) => void;
   public timeScale: number = 1.0;
 
@@ -46,8 +46,8 @@ export class DevManager {
     player: Player,
     enemyManager: EnemyManager,
     dropManager: DropManager,
-    scene: THREE.Scene,
-    camera: THREE.Camera,
+    scene: Scene,
+    camera: Camera,
     onTriggerLevelUp: (count?: number) => void
   ) {
     this.player = player;

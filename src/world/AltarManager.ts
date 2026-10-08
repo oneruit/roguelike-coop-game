@@ -1,13 +1,13 @@
-import * as THREE from 'three';
+import { type Scene, Sphere, Vector3, type Camera, type Frustum } from 'three';
 import { Altar } from './Altar';
 import { Player, ActiveBuff } from '../entities/Player';
 
 export class AltarManager {
-  private scene: THREE.Scene;
+  private scene: Scene;
   public altars: Altar[] = [];
   public onAltarCaptured?: (altar: Altar, buff: ActiveBuff) => void;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: Scene) {
     this.scene = scene;
   }
 
@@ -29,22 +29,22 @@ export class AltarManager {
     }
   }
 
-  private tempSphere = new THREE.Sphere();
+  private tempSphere = new Sphere();
 
   public updateSimulation(
     dt: number,
     player: Player,
-    partnerPos?: THREE.Vector3,
+    partnerPos?: Vector3,
     isPartnerAlive: boolean = true,
     allowCapture: boolean = true,
-    allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
+    allPlayers?: { position: Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
     for (const altar of this.altars) {
       altar.updateSimulation(dt, player, partnerPos, isPartnerAlive, allowCapture, allPlayers);
     }
   }
 
-  public updateVisuals(dt: number, camera: THREE.Camera, frustum: THREE.Frustum) {
+  public updateVisuals(dt: number, camera: Camera, frustum: Frustum) {
     for (const altar of this.altars) {
       this.tempSphere.center.set(altar.position.x, 2.0, altar.position.z);
       this.tempSphere.radius = 8.0;
@@ -56,11 +56,11 @@ export class AltarManager {
   public update(
     dt: number,
     player: Player,
-    camera: THREE.Camera,
-    partnerPos?: THREE.Vector3,
+    camera: Camera,
+    partnerPos?: Vector3,
     isPartnerAlive: boolean = true,
     allowCapture: boolean = true,
-    allPlayers?: { position: THREE.Vector3; isAlive: boolean; isDowned?: boolean }[]
+    allPlayers?: { position: Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
     this.updateSimulation(dt, player, partnerPos, isPartnerAlive, allowCapture, allPlayers);
     for (const altar of this.altars) {
