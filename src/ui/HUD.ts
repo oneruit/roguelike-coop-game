@@ -3548,7 +3548,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('bow'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов',
-          apply: () => player.weapons.push(new BowWeapon())
+          apply: () => {
+            player.weapons.push(new BowWeapon(() => player.triggerAttackAnim(0.40)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3561,7 +3564,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('kukri'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Стремительные броски изогнутых клинков кукри в ближайших врагов',
-          apply: () => player.weapons.push(new KukriWeapon())
+          apply: () => {
+            player.weapons.push(new KukriWeapon());
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3574,7 +3580,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('orbiting_barrier'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение',
-          apply: () => player.weapons.push(new OrbitingBarrierWeapon())
+          apply: () => {
+            player.weapons.push(new OrbitingBarrierWeapon());
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3591,6 +3600,7 @@ export class HUD {
             const aura = new HolyAuraWeapon();
             aura.initVisual(this.scene, player.position);
             player.weapons.push(aura);
+            player.recalculateStats();
           }
         });
       }
@@ -3604,7 +3614,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('katana_slash'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Рассекает окружающих врагов смертоносным круговым ударом',
-          apply: () => player.weapons.push(new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)))
+          apply: () => {
+            player.weapons.push(new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3617,7 +3630,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('whirlwind_slash'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью',
-          apply: () => player.weapons.push(new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)))
+          apply: () => {
+            player.weapons.push(new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3630,7 +3646,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('greatsword'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом',
-          apply: () => player.weapons.push(new GreatswordWeapon(() => player.triggerAttackAnim(0.5)))
+          apply: () => {
+            player.weapons.push(new GreatswordWeapon(() => player.triggerAttackAnim(0.5)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3643,7 +3662,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('flail'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров',
-          apply: () => player.weapons.push(new FlailWeapon(() => player.triggerAttackAnim(0.45)))
+          apply: () => {
+            player.weapons.push(new FlailWeapon(() => player.triggerAttackAnim(0.45)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3656,7 +3678,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('astral_staff'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Магический посох, запускающий скоростные пробивающие звёздные снаряды',
-          apply: () => player.weapons.push(new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)))
+          apply: () => {
+            player.weapons.push(new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3669,7 +3694,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('chakram'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением',
-          apply: () => player.weapons.push(new ChakramWeapon(() => player.triggerAttackAnim(0.42)))
+          apply: () => {
+            player.weapons.push(new ChakramWeapon(() => player.triggerAttackAnim(0.42)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3682,7 +3710,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('lightning_strike'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху',
-          apply: () => player.weapons.push(new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)))
+          apply: () => {
+            player.weapons.push(new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3695,7 +3726,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('ice_spike'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском',
-          apply: () => player.weapons.push(new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)))
+          apply: () => {
+            player.weapons.push(new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)));
+            player.recalculateStats();
+          }
         });
       }
 
@@ -3708,7 +3742,10 @@ export class HUD {
           iconImage: getWeaponIconUrl('fireball'),
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области',
-          apply: () => player.weapons.push(new FireballWeapon(() => player.triggerAttackAnim(0.42)))
+          apply: () => {
+            player.weapons.push(new FireballWeapon(() => player.triggerAttackAnim(0.42)));
+            player.recalculateStats();
+          }
         });
       }
     }
@@ -3754,7 +3791,7 @@ export class HUD {
         icon: '🧿',
         count: player.amuletCount,
         title: 'Охотничий Амулет',
-        desc: `+${player.passiveHpRegen.toFixed(1)} HP/с регенерации`
+        desc: `+${(player.amuletCount * 1.5).toFixed(1)} HP/с (всего +${player.passiveHpRegen.toFixed(1)} HP/с)`
       },
       {
         id: 'stat_vest',
@@ -3768,7 +3805,7 @@ export class HUD {
         icon: '⏱️',
         count: player.watchCount,
         title: 'Карманные Часы',
-        desc: `-${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к перезарядке`
+        desc: `-${Math.min(70, player.watchCount * 8)}% к перезарядке (всего -${Math.round((1 - player.passiveCooldownMultiplier) * 100)}%)`
       }
     ];
 
