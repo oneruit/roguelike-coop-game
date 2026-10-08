@@ -143,7 +143,7 @@ Add the character card to `#character-select-modal .character-grid`:
 ```html
 <div class="character-card" data-hero="<char_type>">
   <div class="char-portrait-wrapper">
-    <img src="/textures/hero_<char_name>_front.png" alt="<Name>" class="char-portrait" />
+    <img src="/textures/heroes/hero_<char_name>_front.png" alt="<Name>" class="char-portrait" />
   </div>
   <div class="char-name"><Character Name></div>
   <div class="char-type"><Class / Title></div>

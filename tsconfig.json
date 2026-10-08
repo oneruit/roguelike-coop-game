@@ -15,5 +15,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "admin", "server"]
+  "include": ["game/src", "admin", "server"]
 }

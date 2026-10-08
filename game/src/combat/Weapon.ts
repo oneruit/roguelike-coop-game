@@ -130,7 +130,7 @@ export abstract class Weapon {
     const cfg = BalanceManager.getWeaponConfig(id);
     this.name = cfg.name || name;
     this.icon = cfg.icon || icon;
-    this._iconImage = iconImage || `/textures/weapon_${id}.png`;
+    this._iconImage = iconImage || `/textures/weapons/weapon_${id}.png`;
     this.baseCooldown = cfg.cooldown !== undefined ? cfg.cooldown : cooldown;
     this.cooldown = this.baseCooldown;
     this.baseDamage = cfg.damage !== undefined ? cfg.damage : damage;

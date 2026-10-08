@@ -493,8 +493,8 @@ def draw_bow(cell, row_idx, phase):
         draw_bow_back(cell, phase)
 
 def build_all_sheets():
-    idle_raw = np.array(Image.open('public/textures/hero_chakram_idle.png'))
-    walk_raw = np.array(Image.open('public/textures/hero_chakram_walk.png'))
+    idle_raw = np.array(Image.open('public/textures/heroes/hero_chakram_idle.png'))
+    walk_raw = np.array(Image.open('public/textures/heroes/hero_chakram_walk.png'))
 
     # 1. IDLE (960x384, 10 cols x 4 rows)
     idle_sheet = np.zeros((384, 960, 4), dtype=np.uint8)
@@ -505,8 +505,8 @@ def build_all_sheets():
             colored = recolor_elf(clean, r)
             draw_bow(colored, r, 'ready')
             idle_sheet[r*96:(r+1)*96, c*96:(c+1)*96] = colored
-    Image.fromarray(idle_sheet).save('public/textures/hero_archer_idle.png')
-    print('[OK] Generated public/textures/hero_archer_idle.png')
+    Image.fromarray(idle_sheet).save('public/textures/heroes/hero_archer_idle.png')
+    print('[OK] Generated public/textures/heroes/hero_archer_idle.png')
 
     # 2. WALK (576x384, 6 cols x 4 rows)
     walk_sheet = np.zeros((384, 576, 4), dtype=np.uint8)
@@ -517,8 +517,8 @@ def build_all_sheets():
             colored = recolor_elf(clean, r)
             draw_bow(colored, r, 'ready')
             walk_sheet[r*96:(r+1)*96, c*96:(c+1)*96] = colored
-    Image.fromarray(walk_sheet).save('public/textures/hero_archer_walk.png')
-    print('[OK] Generated public/textures/hero_archer_walk.png')
+    Image.fromarray(walk_sheet).save('public/textures/heroes/hero_archer_walk.png')
+    print('[OK] Generated public/textures/heroes/hero_archer_walk.png')
 
     # 3. ATTACK (768x384, 8 cols x 4 rows)
     # Using clean standing base frames with archery progression
@@ -532,8 +532,8 @@ def build_all_sheets():
             colored = recolor_elf(clean, r)
             draw_bow(colored, r, atk_phases[c])
             atk_sheet[r*96:(r+1)*96, c*96:(c+1)*96] = colored
-    Image.fromarray(atk_sheet).save('public/textures/hero_archer_attack.png')
-    print('[OK] Generated public/textures/hero_archer_attack.png')
+    Image.fromarray(atk_sheet).save('public/textures/heroes/hero_archer_attack.png')
+    print('[OK] Generated public/textures/heroes/hero_archer_attack.png')
 
     # 4. WALK ATTACK (576x384, 6 cols x 4 rows)
     # Using running base frames with archery progression on the run
@@ -546,14 +546,14 @@ def build_all_sheets():
             colored = recolor_elf(clean, r)
             draw_bow(colored, r, watk_phases[c])
             watk_sheet[r*96:(r+1)*96, c*96:(c+1)*96] = colored
-    Image.fromarray(watk_sheet).save('public/textures/hero_archer_walk_attack.png')
-    print('[OK] Generated public/textures/hero_archer_walk_attack.png')
+    Image.fromarray(watk_sheet).save('public/textures/heroes/hero_archer_walk_attack.png')
+    print('[OK] Generated public/textures/heroes/hero_archer_walk_attack.png')
 
     # 5. PORTRAIT (64x64, downscale of Idle row 0 col 0)
     portrait_raw = idle_sheet[0:96, 0:96]
     portrait_img = Image.fromarray(portrait_raw).resize((64, 64), Image.Resampling.LANCZOS)
-    portrait_img.save('public/textures/hero_archer_front.png')
-    print('[OK] Generated public/textures/hero_archer_front.png')
+    portrait_img.save('public/textures/heroes/hero_archer_front.png')
+    print('[OK] Generated public/textures/heroes/hero_archer_front.png')
 
 if __name__ == '__main__':
     build_all_sheets()

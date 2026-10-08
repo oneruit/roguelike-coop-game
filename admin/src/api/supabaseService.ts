@@ -1,9 +1,10 @@
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import { BalanceRow } from '../../../src/balance/BalanceTypes';
-import { DEFAULT_BALANCE } from '../../../src/balance/defaultBalance';
+import { BalanceRow } from '../../../game/src/balance/BalanceTypes';
+import { DEFAULT_BALANCE } from '../../../game/src/balance/defaultBalance';
 import { AdminConfig } from '../types';
 import { BalanceState } from '../state/balanceState';
 import { showToast } from '../ui/toast';
+import { toSingularCategory } from '../constants';
 
 export class SupabaseService {
   private client: SupabaseClient | null = null;
@@ -417,9 +418,11 @@ export class SupabaseService {
           name = 'Глобальные боевые параметры';
         }
 
+        const singularCat = toSingularCategory(cat);
+
         rowsToUpsert.push({
-          id: `${cat.slice(0, -1)}:${key}`,
-          category: cat.slice(0, -1) as any,
+          id: `${singularCat}:${key}`,
+          category: singularCat as any,
           key,
           name,
           data: dataPayload,
@@ -438,6 +441,9 @@ export class SupabaseService {
       this.state.originalBalance = JSON.parse(JSON.stringify(this.state.draftBalance));
       this.state.modifiedPaths.clear();
       this.onDataChanged();
+
+      const modalReview = document.getElementById('modal-review');
+      if (modalReview) modalReview.classList.add('hidden');
 
       showToast(
         `✅ Успешно обновлено ${rowsToUpsert.length} записей в Supabase! Игра синхронизирована.`,

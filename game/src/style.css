@@ -1523,7 +1523,7 @@ body, html {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/textures/menu_background.jpg') center center / cover no-repeat;
+  background: url('/textures/ui/menu_background.jpg') center center / cover no-repeat;
   background-color: #060e1a;
   z-index: 1;
 }
@@ -1596,7 +1596,7 @@ body, html {
   position: relative;
   width: clamp(270px, 22.5vw, 350px);
   aspect-ratio: 624 / 468;
-  background-image: url('/textures/ui_quest_card_panel.png');
+  background-image: url('/textures/quests/ui_quest_card_panel.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
@@ -2512,7 +2512,7 @@ body, html {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/textures/menu_background.jpg') center center / cover no-repeat;
+  background: url('/textures/ui/menu_background.jpg') center center / cover no-repeat;
   background-color: #060e1a;
   z-index: 1;
 }

@@ -1,6 +1,6 @@
 import { BalanceState } from '../state/balanceState';
 import { SimulationState } from '../types';
-import { DEFAULT_BALANCE } from '../../../src/balance/defaultBalance';
+import { DEFAULT_BALANCE } from '../../../game/src/balance/defaultBalance';
 import { SvgChartRenderer, ChartSeries } from '../chartUtils';
 import { WEAPON_COLORS, getEntityTexture } from '../constants';
 import { showToast } from '../ui/toast';
