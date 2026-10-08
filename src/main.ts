@@ -170,6 +170,7 @@ class Game {
       }
 
       if (hitterId === myId) {
+        this.player.kills++;
         this.onLocalPlayerEnemyKill(enemy);
       }
       const st = this.allPlayerStats.get(hitterId) || { kills: 0, damageDealt: 0, level: 1, revives: 0 };
@@ -1365,7 +1366,8 @@ class Game {
     this.player.position.set(0, spawnY, 0);
     this.player.mesh.position.set(0, spawnY, 0);
 
-    // Revive all downed squad members
+    // Revive all downed squad members & reset Chronos Phylactery once-per-stage lethal protection
+    this.player.hasChronosReady = true;
     if (this.player.isDowned) {
       this.player.revive(0.5);
     }
@@ -1410,6 +1412,7 @@ class Game {
     this.player.position.set(myOffset[0], spawnY, myOffset[1]);
     this.player.mesh.position.set(myOffset[0], spawnY, myOffset[1]);
 
+    this.player.hasChronosReady = true;
     if (this.player.isDowned) {
       this.player.revive(0.5);
     }
@@ -1433,10 +1436,12 @@ class Game {
       SoundManager.playCrit();
     }
 
-    // Item Proc: Pulse Rounds (Common) - chance to inflict extra bleed/burst damage
+    // Item Proc: Pulse Rounds (Common) - chance to inflict extra bleed over 3 sec (180% damage)
     const pulseStacks = this.player.getItemStacks('pulse_rounds');
     if (pulseStacks > 0 && Math.random() < Math.min(0.8, pulseStacks * 0.15)) {
-      finalDamage = Math.round(finalDamage * 1.8);
+      const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      const bleedDps = (finalDamage * 1.8) / 3.0;
+      enemy.addBleed(bleedDps, 3.0, myId);
       isCrit = true;
     }
 
@@ -1488,6 +1493,52 @@ class Game {
     const leechStacks = this.player.getItemStacks('bio_leech');
     if (leechStacks > 0) {
       this.player.heal(leechStacks * 5);
+    }
+
+    // Item Proc: Singularity Core (Legendary: every 10 kills [-2/stack, min 3] creates black hole pull & 600% [+200%/stack] explosion)
+    const singularityStacks = this.player.getItemStacks('singularity_core');
+    if (singularityStacks > 0 && enemy && enemy.position) {
+      this.player.singularityKillCounter++;
+      const reqKills = Math.max(3, 10 - (singularityStacks - 1) * 2);
+      if (this.player.singularityKillCounter >= reqKills) {
+        this.player.singularityKillCounter = 0;
+        const centerPos = enemy.position.clone();
+        const pullRadius = 7.5;
+        const baseDmg = 25 * this.player.damageMultiplier;
+        const singularityDmg = Math.round(baseDmg * (6.0 + (singularityStacks - 1) * 2.0));
+        const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+        const nearby = this.enemyManager.getNearbyEnemies(centerPos.x, centerPos.z, pullRadius, this.scratchNearbyEnemies);
+
+        SoundManager.playTeleporterActivate();
+        for (const other of nearby) {
+          if (other.isAlive) {
+            const pullDir = new THREE.Vector3().subVectors(centerPos, other.position);
+            const dist = pullDir.length();
+            if (dist > 0.1) {
+              other.position.addScaledVector(pullDir.normalize(), Math.min(dist, 3.2));
+            }
+            if (this.net.role === 'client') {
+              const isDead = other.takeDamage(singularityDmg, centerPos, myId);
+              this.damageNumbers.spawnDamage(other.position, singularityDmg, true, this.engine.camera);
+              if (isDead) {
+                this.recentlyDeadEnemyIds.add(other.id);
+                other.destroy(this.engine.scene);
+                const idx = this.enemyManager.enemies.indexOf(other);
+                if (idx !== -1) this.enemyManager.enemies.splice(idx, 1);
+              }
+              this.pendingClientHits.push({
+                enemyId: other.id,
+                damage: singularityDmg,
+                sourceX: centerPos.x,
+                sourceZ: centerPos.z,
+                isFatal: isDead
+              });
+            } else {
+              this.enemyManager.damageEnemy(other, singularityDmg, centerPos, this.engine.camera, myId);
+            }
+          }
+        }
+      }
     }
 
     // Item Proc: Plasma Detonator (AOE explosion on kill)
@@ -1940,6 +1991,80 @@ class Game {
         }
       }
     );
+
+    // Item Proc: Orbital Strike (Legendary: every 12s [-2s/stack, min 4s], satellite beam fires at highest HP enemy for 800% base damage)
+    const orbitalStacks = this.player.getItemStacks('orbital_strike');
+    if (orbitalStacks > 0 && this.player.isAlive && !this.player.isDowned) {
+      this.player.orbitalStrikeTimer -= dt;
+      const orbitalCooldown = Math.max(4.0, 12.0 - (orbitalStacks - 1) * 2.0);
+      if (this.player.orbitalStrikeTimer <= 0) {
+        this.player.orbitalStrikeTimer = orbitalCooldown;
+
+        let highestHpEnemy: Enemy | null = null;
+        let maxHpVal = -1;
+        const playerPos = this.player.position;
+        for (const enemy of this.enemyManager.enemies) {
+          if (enemy.isAlive && enemy.position.distanceTo(playerPos) <= 30) {
+            if (enemy.hp > maxHpVal) {
+              maxHpVal = enemy.hp;
+              highestHpEnemy = enemy;
+            }
+          }
+        }
+
+        if (highestHpEnemy) {
+          const baseDmg = 25 * this.player.damageMultiplier;
+          const strikeDmg = Math.round(baseDmg * 8.0);
+          const strikePos = highestHpEnemy.position.clone();
+          const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+
+          SoundManager.playLightning();
+
+          const beamProj = new Projectile({
+            position: new THREE.Vector3(strikePos.x, 0, strikePos.z),
+            direction: new THREE.Vector3(0, 0, 1),
+            speed: 0,
+            damage: strikeDmg,
+            pierce: 999,
+            lifetime: 0.35,
+            radius: 3.0,
+            color: 0xef4444,
+            isLightning: true
+          });
+          this.spawnProjectile(beamProj);
+
+          const blastRadius = 3.0;
+          const blastEnemies = this.enemyManager.getNearbyEnemies(strikePos.x, strikePos.z, blastRadius, this.scratchNearbyEnemies);
+          for (const target of blastEnemies) {
+            if (target.isAlive) {
+              if (this.net.role === 'client') {
+                const isDead = target.takeDamage(strikeDmg, strikePos, myId);
+                this.damageNumbers.spawnDamage(target.position, strikeDmg, true, this.engine.camera);
+                this.player.totalDamageDealt += strikeDmg;
+                if (isDead) {
+                  this.player.kills++;
+                  this.recentlyDeadEnemyIds.add(target.id);
+                  this.onLocalPlayerEnemyKill(target);
+                  target.destroy(this.engine.scene);
+                  const idx = this.enemyManager.enemies.indexOf(target);
+                  if (idx !== -1) this.enemyManager.enemies.splice(idx, 1);
+                }
+                this.pendingClientHits.push({
+                  enemyId: target.id,
+                  damage: strikeDmg,
+                  sourceX: strikePos.x,
+                  sourceZ: strikePos.z,
+                  isFatal: isDead
+                });
+              } else {
+                this.player.totalDamageDealt += strikeDmg;
+                this.enemyManager.damageEnemy(target, strikeDmg, strikePos, this.engine.camera, myId);
+              }
+            }
+          }
+        }
+      }
+    }
 
     // 3. Update Remote Teammates & Revive Logic
     for (const remote of this.remotePlayers.values()) {
