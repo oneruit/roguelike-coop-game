@@ -11,7 +11,7 @@ import {
   type Scene
 } from 'three';
 import { GemType } from '../drops/Gem';
-import { TextureManager, SpriteDirection, DirectionalTextures, BossTextures } from '../core/TextureManager';
+import { TextureManager, SpriteDirection, DirectionalTextures, BossTextures, MonsterTextures } from '../core/TextureManager';
 
 export type BossAnimState = 'WALK' | 'ATTACK';
 
@@ -30,6 +30,7 @@ export interface EnemyConfig {
   gemType: GemType;
   isBoss?: boolean;
   isImmortal?: boolean;
+  animated?: boolean;
   eliteAffix?: 'blazing' | 'glacial' | 'overloading';
   creditsValue?: number;
 }
@@ -81,6 +82,7 @@ export class Enemy {
   public attackCooldownTimer = 0;
   private bossAnimFrameTimer = 0;
   private bossTextures?: BossTextures;
+  private monsterTextures?: MonsterTextures;
 
   private animTimer = Math.random() * Math.PI * 2;
   private flashTimer = 0;
@@ -143,6 +145,11 @@ export class Enemy {
     if (this.isBoss && !this.isImmortal) {
       const bossBase = config.texturePrefix ? config.texturePrefix.replace(/^.*[\\/]/, '') : 'boss_demon';
       this.bossTextures = TextureManager.loadBossTextures(bossBase);
+    } else if (config.animated && !this.isImmortal) {
+      const monsterBase = config.texturePrefix ? config.texturePrefix.replace(/^.*[\\/]/, '') : '';
+      if (monsterBase) {
+        this.monsterTextures = TextureManager.loadMonsterTextures(monsterBase);
+      }
     }
     this.textures = TextureManager.loadDirectional(config.texturePrefix);
 
@@ -164,8 +171,12 @@ export class Enemy {
       geom = cachedGeom;
     }
 
+    const initialMap = this.bossTextures
+      ? this.bossTextures.walk
+      : (this.monsterTextures ? this.monsterTextures.walk : this.textures.front);
+
     this.spriteMaterial = new MeshBasicMaterial({
-      map: this.bossTextures ? this.bossTextures.walk : this.textures.front,
+      map: initialMap,
       transparent: true,
       alphaTest: 0.08,
       side: DoubleSide
@@ -231,12 +242,17 @@ export class Enemy {
   private updateBossAnimation(dt: number) {
     if (!this.bossTextures) return;
 
-    const cols = 6;
+    const tex = this.animState === 'ATTACK' ? this.bossTextures.attack : this.bossTextures.walk;
+    const img = (tex as any).image as { width?: number; height?: number } | undefined;
+    const cols = (img && img.width && img.height && img.height > 0)
+      ? Math.round((img.width / img.height) * 4)
+      : 4;
+
     let frameCol = 0;
 
     if (this.animState === 'ATTACK') {
       this.attackAnimTimer -= dt;
-      // 6 frames over 0.5s duration
+      // Attack frames over 0.5s duration
       const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / 0.5)));
       frameCol = Math.floor(progress * cols);
 
@@ -245,12 +261,43 @@ export class Enemy {
         this.bossAnimFrameTimer = 0;
       }
     } else {
-      // 10 FPS walk cycle
-      this.bossAnimFrameTimer += dt * 10;
+      // 8-10 FPS walk cycle adapted to frame count
+      this.bossAnimFrameTimer += dt * (cols === 4 ? 8 : 10);
       frameCol = Math.floor(this.bossAnimFrameTimer) % cols;
     }
 
-    const tex = this.animState === 'ATTACK' ? this.bossTextures.attack : this.bossTextures.walk;
+    if (this.spriteMaterial.map !== tex) {
+      this.spriteMaterial.map = tex;
+      this.spriteMaterial.needsUpdate = true;
+    }
+
+    const DIR_ROW_MAP: Record<SpriteDirection, number> = {
+      front: 0,
+      left: 1,
+      right: 2,
+      back: 3
+    };
+    const row = DIR_ROW_MAP[this.currentDir];
+
+    tex.repeat.set(1 / cols, 1 / 4);
+    tex.offset.set(frameCol / cols, (3 - row) / 4);
+
+    this.spriteMesh.position.y = 0;
+    this.spriteMesh.rotation.z = 0;
+  }
+
+  private updateMonsterAnimation(dt: number) {
+    if (!this.monsterTextures) return;
+
+    const tex = this.monsterTextures.walk;
+    const img = (tex as any).image as { width?: number; height?: number } | undefined;
+    const cols = (img && img.width && img.height && img.height > 0)
+      ? Math.round((img.width / img.height) * 4)
+      : 4;
+
+    this.animTimer += dt * 8;
+    const frameCol = Math.floor(this.animTimer) % cols;
+
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
       this.spriteMaterial.needsUpdate = true;
@@ -380,6 +427,8 @@ export class Enemy {
 
     if (this.isBoss && this.bossTextures) {
       this.updateBossAnimation(dt);
+    } else if (this.monsterTextures) {
+      this.updateMonsterAnimation(dt);
     } else {
       // Walking / Bobbing animation
       if (this.isImmortal) {
