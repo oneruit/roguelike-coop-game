@@ -89,12 +89,16 @@ def align_and_pack_sheet(
     rows=4,
     target_feet_y=118,
     target_char_h=92.0,
-    max_char_h=96.0
+    max_char_h=96.0,
+    mirror_left=False,
+    mirror_right=False
 ):
     """
     Standardizes a 6x4 animation image into cell_size x cell_size frames (768x512).
     Leaves a 10px margin at the bottom (target_feet_y = 118 in 128px cell).
     Caps character height to <= 96px.
+    Supports mirror_left (mirrors Row 2 Right into Row 1 Left) and mirror_right (mirrors Row 1 into Row 2)
+    to eliminate AI direction drift and turning artifacts in lateral rows.
     """
     h, w = rgba_arr.shape[:2]
     row_h = h / float(rows)
@@ -126,9 +130,19 @@ def align_and_pack_sheet(
     out_sheet = np.zeros((rows * cell_size, cols * cell_size, 4), dtype=np.uint8)
 
     for r in range(rows):
-        y0 = int(round(r * row_h))
-        y1 = int(round((r + 1) * row_h))
-        ground_y = row_baselines[r]
+        # Determine source row if horizontal mirroring is requested
+        src_r = r
+        flip_horizontal = False
+        if r == 1 and mirror_left:
+            src_r = 2
+            flip_horizontal = True
+        elif r == 2 and mirror_right:
+            src_r = 1
+            flip_horizontal = True
+
+        y0 = int(round(src_r * row_h))
+        y1 = int(round((src_r + 1) * row_h))
+        ground_y = row_baselines[src_r]
 
         for c in range(cols):
             x0 = int(round(c * col_w))
@@ -150,6 +164,11 @@ def align_and_pack_sheet(
 
             sp_img = Image.fromarray(sprite)
             sp_scaled = np.array(sp_img.resize((new_w, new_h), Image.Resampling.LANCZOS))
+
+            if flip_horizontal:
+                # Mirror sprite horizontally to guarantee 100% directional accuracy
+                sp_scaled = np.fliplr(sp_scaled)
+
             bh, bw = sp_scaled.shape[:2]
 
             # Placement with 10px margin at bottom
@@ -239,7 +258,9 @@ def process_character(
     rows=4,
     target_feet_y=118,
     target_char_h=92.0,
-    max_char_h=96.0
+    max_char_h=96.0,
+    mirror_left=False,
+    mirror_right=False
 ):
     out_dir = os.path.normpath(os.path.abspath(out_dir))
     os.makedirs(out_dir, exist_ok=True)
@@ -269,7 +290,9 @@ def process_character(
             rows=rows,
             target_feet_y=target_feet_y,
             target_char_h=target_char_h,
-            max_char_h=max_char_h
+            max_char_h=max_char_h,
+            mirror_left=mirror_left,
+            mirror_right=mirror_right
         )
 
         out_file = os.path.normpath(os.path.abspath(os.path.join(out_dir, f'{clean_name}_{state}.png')))
@@ -298,7 +321,7 @@ def process_character(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process 4 separate 6x4 animation sheets into 128x128 standard.')
-    parser.add_argument('--name', '-n', required=True, help='Character name (e.g. valkyria or hero_valkyria)')
+    parser.add_argument('--name', '-n', required=True, help='Character name (e.g. valkyrie or hero_valkyrie)')
     parser.add_argument('--idle', required=True, help='Path to 6x4 IDLE image')
     parser.add_argument('--walk', required=True, help='Path to 6x4 WALK image')
     parser.add_argument('--attack', required=True, help='Path to 6x4 ATTACK image')
@@ -311,6 +334,8 @@ if __name__ == '__main__':
     parser.add_argument('--feet-y', type=int, default=118, help='Feet anchor Y coordinate (default: 118, 10px margin from bottom)')
     parser.add_argument('--char-h', type=float, default=92.0, help='Target character height (default: 92.0, max 96.0)')
     parser.add_argument('--max-h', type=float, default=96.0, help='Max allowed character height (default: 96.0)')
+    parser.add_argument('--mirror-left', action='store_true', help='Mirror Row 2 (Right) into Row 1 (Left) to eliminate orientation drift')
+    parser.add_argument('--mirror-right', action='store_true', help='Mirror Row 1 (Left) into Row 2 (Right)')
 
     args = parser.parse_args()
     process_character(
@@ -326,5 +351,8 @@ if __name__ == '__main__':
         rows=args.rows,
         target_feet_y=args.feet_y,
         target_char_h=args.char_h,
-        max_char_h=args.max_h
+        max_char_h=args.max_h,
+        mirror_left=args.mirror_left,
+        mirror_right=args.mirror_right
     )
+
