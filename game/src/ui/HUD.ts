@@ -1,5 +1,5 @@
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../combat/InvokerWeapons';
-import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../shared/InvokerSpells';
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId, canAcquireInvokerWeapon } from '../shared/InvokerSpells';
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
 import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
@@ -3530,7 +3530,7 @@ export class HUD {
 
     // 1. Existing weapon upgrades (up to maxLevel 20)
     for (const weapon of player.weapons) {
-      if (weapon.level < weapon.maxLevel) {
+      if (weapon.level < weapon.maxLevel && canAcquireInvokerWeapon(weapon.id, player.weapons)) {
         pool.push({
           id: `upgrade_${weapon.id}`,
           title: `Улучшение: ${weapon.name}`,
@@ -3548,6 +3548,7 @@ export class HUD {
       const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
       for (const spell of invokerWeapons) {
         const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
+        if (!canAcquireInvokerWeapon(id, player.weapons)) continue;
         if (player.weapons.some(weapon => weapon.id === id)) continue;
         const def = spell ? INVOKER_SPELLS[spell] : null;
         pool.push({
@@ -3558,6 +3559,7 @@ export class HUD {
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
           apply: () => {
+            if (!canAcquireInvokerWeapon(id, player.weapons)) return;
             const triggerAttack = () => player.triggerAttackAnim(0.5);
             player.weapons.push(spell
               ? new InvokerSpellWeapon(spell, triggerAttack)

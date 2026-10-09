@@ -1,5 +1,7 @@
 import {
   INVOKER_SPELLS,
+  getInvokerScaling,
+  getInvokerSpellDuration,
   type InvokerSpellCast,
   type InvokerSpellId,
   type SpellControl,
@@ -60,8 +62,8 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
       targetId: target.id,
       dx: dx / length,
       dz: dz / length,
-      radius: baseRadius + Math.min(2, (level - 1) * 0.06),
-      duration: def.duration,
+      radius: baseRadius * getInvokerScaling(level).radius,
+      duration: getInvokerSpellDuration(spellId, level),
       delay: def.delay,
     };
     if (spellId === "ghost_walk" || spellId === "alacrity")
@@ -84,6 +86,9 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
       spell.age += Math.max(0, dt);
       const c = spell.cast;
       const endAge = Math.min(spell.age, c.duration);
+      const scaling = getInvokerScaling(c.level);
+      const slow = (factor: number) =>
+        Math.max(0.2, factor - scaling.slowBonus);
       const source: SpellPosition = { x: c.x, y: c.y, z: c.z };
       if (c.spellId === "tornado" || c.spellId === "deafening_blast") {
         const speed = c.spellId === "tornado" ? 8 : 16;
@@ -104,8 +109,12 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
             context.control(
               enemy,
               c.spellId === "tornado"
-                ? { stunDuration: 1.2 }
-                : { disarmDuration: 1.8, pushX: c.dx * 12, pushZ: c.dz * 12 },
+                ? { stunDuration: 1.2 * scaling.control }
+                : {
+                    disarmDuration: 1.8 * scaling.control,
+                    pushX: c.dx * 12,
+                    pushZ: c.dz * 12,
+                  },
             );
             context.damage(enemy, spell.damage, source);
           }
@@ -121,9 +130,9 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
             );
             if (target) {
               context.control(target, {
-                stunDuration: 0.16,
-                slowFactor: 0.7,
-                slowDuration: 0.6,
+                stunDuration: 0.16 * scaling.control,
+                slowFactor: slow(0.7),
+                slowDuration: 0.6 * scaling.control,
               });
               context.damage(target, spell.damage / 4, source);
             }
@@ -134,7 +143,10 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
               context.position.z,
               c.radius,
               (enemy) =>
-                context.control(enemy, { slowFactor: 0.55, slowDuration: 0.5 }),
+                context.control(enemy, {
+                  slowFactor: slow(0.55),
+                  slowDuration: 0.5 * scaling.control,
+                }),
             );
           } else if (c.spellId === "alacrity") {
             interval = c.duration;
@@ -163,7 +175,10 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
                 Math.abs(ex * c.dx + ez * c.dz) <= 0.9 &&
                 Math.abs(ex * c.dz - ez * c.dx) <= c.radius
               ) {
-                context.control(enemy, { slowFactor: 0.3, slowDuration: 0.55 });
+                context.control(enemy, {
+                  slowFactor: slow(0.3),
+                  slowDuration: 0.55 * scaling.control,
+                });
                 context.damage(enemy, spell.damage / 10, source);
               }
             }
@@ -180,7 +195,10 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
             interval = c.duration;
             this.area(context, c.targetX, c.targetZ, c.radius, (enemy) => {
               if (c.spellId === "emp")
-                context.control(enemy, { slowFactor: 0.55, slowDuration: 1.5 });
+                context.control(enemy, {
+                  slowFactor: slow(0.55),
+                  slowDuration: 1.5 * scaling.control,
+                });
               context.damage(enemy, spell.damage, source);
             });
           }
