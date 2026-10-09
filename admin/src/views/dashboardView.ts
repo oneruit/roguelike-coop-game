@@ -125,8 +125,49 @@ export function renderDashboard(state: BalanceState): void {
 }
 
 export function updateOverviewStats(state: BalanceState): void {
+  const weaponCount = Object.keys(state.draftBalance.weapons).length;
+  const heroCount = Object.keys(state.draftBalance.heroes).length;
+  const monsterCount = Object.keys(state.draftBalance.monsters).length;
+  const bossCount = Object.keys(state.draftBalance.bosses).length;
+  const opponentsCount = monsterCount + bossCount;
+
   const kpiCount = document.getElementById('kpi-weapons-count');
-  if (kpiCount) kpiCount.innerText = `${Object.keys(state.draftBalance.weapons).length}`;
+  if (kpiCount) kpiCount.innerText = `${weaponCount}`;
+
+  const kpiHeroes = document.getElementById('kpi-heroes-count');
+  if (kpiHeroes) kpiHeroes.innerText = `${heroCount}`;
+
+  const kpiOpponents = document.getElementById('kpi-opponents-count');
+  if (kpiOpponents) kpiOpponents.innerText = `${opponentsCount} видов`;
+
+  const kpiOpponentsDesc = document.getElementById('kpi-opponents-desc');
+  if (kpiOpponentsDesc) kpiOpponentsDesc.innerText = `${monsterCount} крипов + ${bossCount} босса`;
+
+  // Sidebar pills
+  const sideW = document.getElementById('sidebar-weapons-count');
+  if (sideW) sideW.innerText = `${weaponCount}`;
+  const sideH = document.getElementById('sidebar-heroes-count');
+  if (sideH) sideH.innerText = `${heroCount}`;
+  const sideM = document.getElementById('sidebar-monsters-count');
+  if (sideM) sideM.innerText = `${monsterCount}`;
+  const sideB = document.getElementById('sidebar-bosses-count');
+  if (sideB) sideB.innerText = `${bossCount}`;
+
+  // Quick navigation count badges
+  const qnavW = document.getElementById('qnav-weapons-count');
+  if (qnavW) qnavW.innerText = `${weaponCount} видов`;
+  const qnavH = document.getElementById('qnav-heroes-count');
+  if (qnavH) qnavH.innerText = `${heroCount} героев`;
+  const qnavM = document.getElementById('qnav-monsters-count');
+  if (qnavM) qnavM.innerText = `${monsterCount} видов`;
+  const qnavB = document.getElementById('qnav-bosses-count');
+  if (qnavB) qnavB.innerText = `${bossCount} босса`;
+
+  // Hero banner description
+  const heroDesc = document.getElementById('dashboard-hero-desc');
+  if (heroDesc) {
+    heroDesc.innerText = `Централизованный пульт мониторинга и точечной настройки ${weaponCount} видов оружия, ${heroCount} ковбоев/героев, ${monsterCount} рядовых монстров и ${bossCount} эпических боссов арены. Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.`;
+  }
 
   const kpiAvgDps = document.getElementById('kpi-avg-dps');
   if (kpiAvgDps) {

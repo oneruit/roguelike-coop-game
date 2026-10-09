@@ -49,7 +49,7 @@
                 </svg>
               </span>
               <span class="tab-text">Оружие</span>
-              <span class="tab-pill">13</span>
+              <span id="sidebar-weapons-count" class="tab-pill">25</span>
             </button>
 
             <button class="nav-tab" data-tab="heroes">
@@ -62,7 +62,7 @@
                 </svg>
               </span>
               <span class="tab-text">Герои</span>
-              <span class="tab-pill">6</span>
+              <span id="sidebar-heroes-count" class="tab-pill">8</span>
             </button>
 
             <button class="nav-tab" data-tab="monsters">
@@ -74,7 +74,7 @@
                 </svg>
               </span>
               <span class="tab-text">Монстры</span>
-              <span class="tab-pill">8</span>
+              <span id="sidebar-monsters-count" class="tab-pill">8</span>
             </button>
 
             <button class="nav-tab" data-tab="bosses">
@@ -84,7 +84,7 @@
                 </svg>
               </span>
               <span class="tab-text">Боссы</span>
-              <span class="tab-pill pill-danger">2</span>
+              <span id="sidebar-bosses-count" class="tab-pill pill-danger">2</span>
             </button>
 
             <button class="nav-tab" data-tab="progression">
@@ -210,8 +210,8 @@
           <div class="dashboard-hero-banner">
             <div>
               <h2 class="hero-banner-title">Wild West Roguelike — Панель управления балансом</h2>
-              <p class="hero-banner-desc">
-                Централизованный пульт мониторинга и точечной настройки 13 видов оружия, 6 ковбоев, 8 рядовых монстров и 2 эпических боссов арены.
+              <p id="dashboard-hero-desc" class="hero-banner-desc">
+                Централизованный пульт мониторинга и точечной настройки 25 видов оружия, 8 ковбоев/героев, 8 рядовых монстров и 2 эпических боссов арены.
                 Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.
               </p>
               <div class="hero-banner-badges">
@@ -223,7 +223,7 @@
             </div>
           </div>
 
-          <!-- Top 4 Metric KPI Cards -->
+          <!-- Top Metric KPI Cards -->
           <div class="metrics-grid">
             <div class="metric-card">
               <div class="metric-card-inner">
@@ -234,10 +234,31 @@
                 </div>
                 <div class="metric-data-wrap">
                   <span class="metric-label">Всего оружия</span>
-                  <div class="metric-number" id="kpi-weapons-count">13</div>
+                  <div class="metric-number" id="kpi-weapons-count">25</div>
                   <div class="metric-trend-row">
                     <span class="trend-neutral">100% охват</span>
                     <span class="trend-period">от L1 до L20</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-card-inner">
+                <div class="metric-icon-circle circle-amber">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <div class="metric-data-wrap">
+                  <span class="metric-label">Всего героев</span>
+                  <div class="metric-number" id="kpi-heroes-count">8</div>
+                  <div class="metric-trend-row">
+                    <span class="trend-neutral">Все классы</span>
+                    <span class="trend-period">уникальные билды</span>
                   </div>
                 </div>
               </div>
@@ -274,10 +295,10 @@
                 </div>
                 <div class="metric-data-wrap">
                   <span class="metric-label">Пул противников</span>
-                  <div class="metric-number">10 видов</div>
+                  <div class="metric-number" id="kpi-opponents-count">10 видов</div>
                   <div class="metric-trend-row">
-                    <span class="trend-up">↑ +5%</span>
-                    <span class="trend-period">8 крипов + 2 босса</span>
+                    <span class="trend-neutral">Волны 0-30м</span>
+                    <span class="trend-period" id="kpi-opponents-desc">8 крипов + 2 босса</span>
                   </div>
                 </div>
               </div>
@@ -309,7 +330,7 @@
             <div class="quick-nav-card" data-jump-tab="weapons">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">🏹</div>
-                <span class="quick-nav-count-badge">13 видов</span>
+                <span id="qnav-weapons-count" class="quick-nav-count-badge">25 видов</span>
               </div>
               <div class="quick-nav-title">Арсенал оружия</div>
               <div class="quick-nav-desc">Урон за удар, кулдауны, скейлинг L1-L20 и сортировка характеристик</div>
@@ -319,7 +340,7 @@
             <div class="quick-nav-card" data-jump-tab="heroes">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">🤠</div>
-                <span class="quick-nav-count-badge">6 героев</span>
+                <span id="qnav-heroes-count" class="quick-nav-count-badge">8 героев</span>
               </div>
               <div class="quick-nav-title">Характеристики героев</div>
               <div class="quick-nav-desc">Базовое здоровье, скорость перемещения и множители урона ковбоев</div>
@@ -329,7 +350,7 @@
             <div class="quick-nav-card" data-jump-tab="monsters">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">🐺</div>
-                <span class="quick-nav-count-badge">8 видов</span>
+                <span id="qnav-monsters-count" class="quick-nav-count-badge">8 видов</span>
               </div>
               <div class="quick-nav-title">Рядовые монстры</div>
               <div class="quick-nav-desc">Базовые параметры койотов, скорпионов, скелетов и кривые роста во времени</div>
@@ -339,7 +360,7 @@
             <div class="quick-nav-card" data-jump-tab="bosses">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">👹</div>
-                <span class="quick-nav-count-badge">2 босса</span>
+                <span id="qnav-bosses-count" class="quick-nav-count-badge">2 босса</span>
               </div>
               <div class="quick-nav-title">Эпические боссы</div>
               <div class="quick-nav-desc">Демон, Гидра, параметры здоровья, скорости и фазовые модификаторы</div>
@@ -698,7 +719,7 @@
             <div class="chart-card">
               <div class="chart-card-header">
                 <div>
-                  <h3 class="chart-card-title">Сравнительный профиль 6 героев</h3>
+                  <h3 class="chart-card-title" id="prog-heroes-chart-title">Сравнительный профиль героев</h3>
                   <span class="chart-card-subtitle">Соотношение базового HP, скорости перемещения и множителя урона</span>
                 </div>
               </div>
@@ -719,6 +740,8 @@
             <button class="preset-chip-btn" data-preset="sniper">🏹 Снайпер дальнего боя</button>
             <button class="preset-chip-btn" data-preset="melee">⚔️ Вихревой милишник</button>
             <button class="preset-chip-btn" data-preset="elemental">⚡ Стихийный маг</button>
+            <button class="preset-chip-btn" data-preset="rocket">🔫 Коммандос (Ракета)</button>
+            <button class="preset-chip-btn" data-preset="invoker">🔮 Архимаг (Инвокер)</button>
             <button class="preset-chip-btn" data-preset="crit">🎯 Крит-мастер</button>
             <button class="preset-chip-btn" data-preset="starter">🌱 Стартовый набор (L1)</button>
             <button class="preset-chip-btn" data-preset="reset" style="color:var(--accent-danger);">🔄 Сброс</button>
@@ -764,12 +787,14 @@
                     <span style="font-size:11px; color:var(--text-secondary);">Влияет на весь наносимый урон арсенала</span>
                   </div>
                   <select id="sim-hero-select" class="form-input" style="max-width:200px; font-weight:600;">
-                    <option value="ronin">Ронин (+35% урона)</option>
-                    <option value="sorceress">Чародейка (+25% урона)</option>
-                    <option value="archer">Следопыт (+20% урона)</option>
-                    <option value="chakram">Меткий стрелок (+15% урона)</option>
-                    <option value="flail">Цепной рыцарь (+10% урона)</option>
-                    <option value="valkyrie" selected>Валькирия (1.00x урона)</option>
+                    <option value="invoker">Инвокер (1.20x урона)</option>
+                    <option value="ronin">Рен (Ронин) (1.35x урона)</option>
+                    <option value="valkyrie" selected>Каэла (Валькирия) (1.45x урона)</option>
+                    <option value="flail">Бригитта (1.40x урона)</option>
+                    <option value="sorceress">Ария (Чародейка) (1.30x урона)</option>
+                    <option value="chakram">Кира (1.35x урона)</option>
+                    <option value="archer">Эльф лучник (1.35x урона)</option>
+                    <option value="rocket">Ракета (Енот) (1.35x урона)</option>
                   </select>
                 </div>
               </div>

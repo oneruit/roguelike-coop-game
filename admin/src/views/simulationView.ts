@@ -2,7 +2,7 @@ import { BalanceState } from '../state/balanceState';
 import { SimulationState } from '../types';
 import { DEFAULT_BALANCE } from '../../../game/src/balance/defaultBalance';
 import { SvgChartRenderer, ChartSeries } from '../chartUtils';
-import { WEAPON_COLORS, getEntityTexture } from '../constants';
+import { getEntityTexture, getWeaponColor } from '../constants';
 import { showToast } from '../ui/toast';
 
 export class SimulationView {
@@ -213,6 +213,38 @@ export class SimulationView {
       this.sim.cleaveTargets = 3;
       this.sim.damageRuneActive = false;
       showToast('Пресет «Крит-мастер» активирован.', 'info');
+    } else if (preset === 'rocket') {
+      this.sim.hero = 'rocket';
+      this.sim.slots = [
+        { enabled: true, weaponId: 'assault_rifle', level: 18 },
+        { enabled: true, weaponId: 'bow', level: 14 },
+        { enabled: true, weaponId: 'kukri', level: 12 },
+        { enabled: true, weaponId: 'lightning_strike', level: 10 },
+        { enabled: true, weaponId: 'fireball', level: 8 }
+      ];
+      this.sim.sheriffStacks = 20;
+      this.sim.watchStacks = 6;
+      this.sim.injectorStacks = 2;
+      this.sim.critVisorStacks = 4;
+      this.sim.cleaveTargets = 4;
+      this.sim.damageRuneActive = true;
+      showToast('Пресет «Штурмовик (Ракета)» активирован.', 'info');
+    } else if (preset === 'invoker') {
+      this.sim.hero = 'invoker';
+      this.sim.slots = [
+        { enabled: true, weaponId: 'invoker_invoke', level: 18 },
+        { enabled: true, weaponId: 'invoker_chaos_meteor', level: 16 },
+        { enabled: true, weaponId: 'invoker_sun_strike', level: 14 },
+        { enabled: true, weaponId: 'invoker_emp', level: 12 },
+        { enabled: true, weaponId: 'invoker_ice_wall', level: 10 }
+      ];
+      this.sim.sheriffStacks = 25;
+      this.sim.watchStacks = 8;
+      this.sim.injectorStacks = 2;
+      this.sim.critVisorStacks = 3;
+      this.sim.cleaveTargets = 5;
+      this.sim.damageRuneActive = true;
+      showToast('Пресет «Архимаг (Инвокер)» активирован.', 'info');
     } else if (preset === 'starter') {
       this.sim.hero = 'valkyrie';
       this.sim.slots = [
@@ -251,7 +283,24 @@ export class SimulationView {
     this.render();
   }
 
+  public renderHeroDropdown(): void {
+    const heroSelect = document.getElementById('sim-hero-select') as HTMLSelectElement;
+    if (!heroSelect) return;
+    const heroes = Object.values(this.state.draftBalance.heroes);
+    if (heroes.length > 0 && !heroes.some((h) => h.id === this.sim.hero)) {
+      this.sim.hero = heroes[0].id;
+    }
+    const currentVal = this.sim.hero;
+    heroSelect.innerHTML = heroes
+      .map(
+        (h) =>
+          `<option value="${h.id}" ${h.id === currentVal ? 'selected' : ''}>${h.name} (${h.damageMultiplier.toFixed(2)}x урона)</option>`
+      )
+      .join('');
+  }
+
   public updatePassiveUIValues(): void {
+    this.renderHeroDropdown();
     const elHero = document.getElementById('sim-hero-select') as HTMLSelectElement;
     if (elHero) elHero.value = this.sim.hero;
 
@@ -359,7 +408,9 @@ export class SimulationView {
       w.id === 'orbiting_barrier' ||
       w.id === 'whirlwind_slash' ||
       w.id === 'greatsword' ||
-      w.id === 'flail'
+      w.id === 'flail' ||
+      w.id === 'katana_slash' ||
+      w.id.startsWith('invoker_')
     ) {
       cleaveFactor = Math.min(this.sim.cleaveTargets, 5);
     }
@@ -372,11 +423,12 @@ export class SimulationView {
       hitDamage,
       effectiveCooldown,
       weaponName: w.name,
-      weaponColor: WEAPON_COLORS[w.id] || '#3b82f6'
+      weaponColor: getWeaponColor(w.id)
     };
   }
 
   public render(): void {
+    this.renderHeroDropdown();
     this.renderSimulationWeaponSlots();
 
     const activeSlots = this.sim.slots.filter((s) => s.enabled);
@@ -470,7 +522,7 @@ export class SimulationView {
       const seriesList: ChartSeries[] = [];
       activeSlots.forEach((slot) => {
         const w = this.state.draftBalance.weapons[slot.weaponId];
-        const color = WEAPON_COLORS[slot.weaponId] || '#3b82f6';
+        const color = getWeaponColor(slot.weaponId);
         const values = levels.map((lvl) => {
           const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl });
           return Math.round(stats.totalDps);

@@ -76,8 +76,29 @@ export const MONSTER_COLORS: Record<string, string> = {
   brute: '#b45309',
   bison: '#ef4444',
   boss: '#dc2626',
-  hydra: '#7c3aed'
+  hydra: '#7c3aed',
+  sheriff: '#eab308'
 };
+
+export function getWeaponColor(id: string): string {
+  if (WEAPON_COLORS[id]) return WEAPON_COLORS[id];
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash % 360);
+  return `hsl(${hue}, 70%, 50%)`;
+}
+
+export function getMonsterColor(id: string): string {
+  if (MONSTER_COLORS[id]) return MONSTER_COLORS[id];
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash % 360);
+  return `hsl(${hue}, 65%, 45%)`;
+}
 
 export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monster' | 'boss' | 'global' {
   switch (category) {
@@ -122,5 +143,19 @@ export function toPluralCategory(category: string): keyof GameBalanceState {
 export function getEntityTexture(category: string, id: string): string {
   const singular = toSingularCategory(category);
   const key = `${singular}-${id}`;
-  return TEXTURE_MAP[key] || '/textures/weapons/bullet_revolver.png';
+  if (TEXTURE_MAP[key]) {
+    return TEXTURE_MAP[key];
+  }
+  switch (singular) {
+    case 'hero':
+      return `/textures/heroes/hero_${id}_front.png`;
+    case 'weapon':
+      return `/textures/weapons/weapon_${id}.png`;
+    case 'monster':
+      return `/textures/monsters/monster_${id}_front.png`;
+    case 'boss':
+      return `/textures/bosses/boss_${id}_front.png`;
+    default:
+      return '/textures/weapons/bullet_revolver.png';
+  }
 }
