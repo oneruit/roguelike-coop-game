@@ -97,6 +97,7 @@ export class ProgressionManager {
         flail: true,     // Brigitta (unlocked)
         sorceress: true, // Aria (unlocked)
         chakram: true,   // Kira (unlocked)
+        torbjorn: true,  // Torbjörn (unlocked)
         archer: false    // Elf: Locked! (Buy / Achievement)
       },
       dailyQuestsProgress: {
@@ -135,6 +136,7 @@ export class ProgressionManager {
             flail: parsed.unlockedHeroes?.flail ?? true,
             sorceress: parsed.unlockedHeroes?.sorceress ?? true,
             chakram: parsed.unlockedHeroes?.chakram ?? true,
+            torbjorn: parsed.unlockedHeroes?.torbjorn ?? true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
           },
           dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
@@ -169,7 +171,7 @@ export class ProgressionManager {
       return Boolean(this.data.unlockedHeroes.archer);
     }
     // Existing base heroes are unlocked by default
-    if (hero === 'valkyrie' || hero === 'flail' || hero === 'sorceress' || hero === 'chakram') {
+    if (hero === 'valkyrie' || hero === 'flail' || hero === 'sorceress' || hero === 'chakram' || hero === 'torbjorn') {
       return this.data.unlockedHeroes[hero] ?? true;
     }
     // For future heroes added to the game, read their unlocked status
@@ -203,6 +205,10 @@ export class ProgressionManager {
     }
     if (!this.data.unlockedHeroes.chakram) {
       this.data.unlockedHeroes.chakram = true;
+      changed = true;
+    }
+    if (!this.data.unlockedHeroes.torbjorn) {
+      this.data.unlockedHeroes.torbjorn = true;
       changed = true;
     }
 
@@ -536,6 +542,29 @@ export class ProgressionManager {
             crystals: 26
           },
           unlockConditionHint: 'Открывается после выполнения задания'
+        };
+
+      case 'torbjorn':
+        return {
+          hero: 'torbjorn',
+          heroName: 'Торбьорн',
+          heroSubtitle: '«Мастер-Инженер»',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_turret.png'),
+          weaponName: 'Авто-Турель',
+          avatarIcon: getAssetUrl('/textures/heroes/hero_torbjorn_front.png'),
+          questTitle: 'Чертежи Кузницы',
+          questDesc: 'Легендарный шведский инженер размещает смертоносные сторожевые турели и кует победу в бою.',
+          steps: [
+            'Развернуть сторожевую турель.',
+            'Уничтожить монстров шквальным огнем заклепок.'
+          ],
+          rewards: {
+            potions: 2,
+            coins: 2500,
+            rings: 3,
+            crystals: 30
+          },
+          unlockConditionHint: 'Доступен сразу'
         };
 
       case 'archer':

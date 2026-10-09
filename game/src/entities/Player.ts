@@ -30,7 +30,8 @@ import {
   KukriWeapon,
   OrbitingBarrierWeapon,
   HolyAuraWeapon,
-  KatanaSlashWeapon
+  KatanaSlashWeapon,
+  TurretWeapon
 } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { Enemy } from './Enemy';
@@ -154,8 +155,10 @@ export class Player {
   private lastDrawnLevel: number = -1;
   private lastDrawnDowned: boolean = false;
   private lastDrawnRevive: number = -1;
+  public scene: Scene;
 
   constructor(scene: Scene, charType: CharacterType = 'ronin') {
+    this.scene = scene;
     this.charType = charType;
     this.position = new Vector3(0, 0, 0);
     this.mesh = new Group();
@@ -299,6 +302,8 @@ export class Player {
         ? TextureManager.loadChakramTextures()
         : charType === 'archer'
         ? TextureManager.loadArcherTextures()
+        : charType === 'torbjorn'
+        ? TextureManager.loadTorbjornTextures()
         : TextureManager.loadRoninTextures();
 
     this.animatedTextures = {
@@ -360,6 +365,11 @@ export class Player {
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
     } else if (this.charType === 'archer') {
       this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+    } else if (this.charType === 'torbjorn') {
+      const turretWp = new TurretWeapon(() => this.triggerAttackAnim(0.44));
+      turretWp.setScene(this.scene);
+      this.weapons.push(turretWp);
+      this.passiveDamageReduction = 0.10;
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }

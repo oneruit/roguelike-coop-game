@@ -1,10 +1,15 @@
 import {
   AdditiveBlending,
+  BoxGeometry,
+  CylinderGeometry,
   DoubleSide,
+  Group,
   Mesh,
   MeshBasicMaterial,
+  MeshStandardMaterial,
   PlaneGeometry,
   type Scene,
+  SphereGeometry,
   type Texture,
   Vector3
 } from 'three';
@@ -1497,6 +1502,315 @@ export class FireballWeapon extends Weapon {
       if (nextCd < this.cooldown) perks.push('-8% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}
+
+/**
+ * Torbjorn's Automated Sentry Turret
+ * A stationary deployable mechanical turret that detects nearby monsters,
+ * aims its twin-barrel swivel head at them, and fires high-velocity rivet rounds.
+ */
+export class SentryTurret {
+  public id: string;
+  public position: Vector3;
+  public mesh: Group;
+  public headMesh: Group;
+  public range: number;
+  public damage: number;
+  public fireInterval: number;
+  public fireTimer: number = 0;
+  public lifetime: number;
+  public age: number = 0;
+  public isAlive: boolean = true;
+  private currentYaw: number = 0;
+
+  constructor(position: Vector3, damage: number, range: number, fireInterval: number, lifetime: number = 30.0) {
+    this.id = 'turret_' + Math.random().toString(36).substring(2, 10);
+    this.position = position.clone();
+    this.damage = damage;
+    this.range = range;
+    this.fireInterval = fireInterval;
+    this.lifetime = lifetime;
+
+    this.mesh = new Group();
+    this.mesh.position.copy(this.position);
+
+    const baseMat = new MeshStandardMaterial({
+      color: 0x374151,
+      roughness: 0.5,
+      metalness: 0.8
+    });
+    const redArmorMat = new MeshStandardMaterial({
+      color: 0xb91c1c, // Torbjorn red armor
+      roughness: 0.35,
+      metalness: 0.6
+    });
+    const barrelMat = new MeshStandardMaterial({
+      color: 0x1f2937,
+      roughness: 0.3,
+      metalness: 0.9
+    });
+    const eyeMat = new MeshBasicMaterial({
+      color: 0xff6600 // Glowing orange targeting sensor
+    });
+
+    // Base pedestal
+    const pedestalGeom = new CylinderGeometry(0.35, 0.45, 0.22, 10);
+    const pedestal = new Mesh(pedestalGeom, baseMat);
+    pedestal.position.y = 0.11;
+    this.mesh.add(pedestal);
+
+    // 3 Tripod legs
+    for (let i = 0; i < 3; i++) {
+      const angle = (i * Math.PI * 2) / 3;
+      const legGeom = new BoxGeometry(0.12, 0.15, 0.45);
+      const leg = new Mesh(legGeom, baseMat);
+      leg.position.set(Math.cos(angle) * 0.32, 0.08, Math.sin(angle) * 0.32);
+      leg.rotation.y = -angle;
+      leg.rotation.x = 0.35;
+      this.mesh.add(leg);
+    }
+
+    // Swivel Head (rotates to face target)
+    this.headMesh = new Group();
+    this.headMesh.position.y = 0.35;
+    this.mesh.add(this.headMesh);
+
+    // Red turret body
+    const bodyGeom = new BoxGeometry(0.48, 0.34, 0.52);
+    const body = new Mesh(bodyGeom, redArmorMat);
+    this.headMesh.add(body);
+
+    // Sensor Eye (on top)
+    const eyeHousingGeom = new CylinderGeometry(0.12, 0.14, 0.18, 8);
+    const eyeHousing = new Mesh(eyeHousingGeom, baseMat);
+    eyeHousing.position.set(0, 0.22, -0.06);
+    this.headMesh.add(eyeHousing);
+
+    const sensorGeom = new SphereGeometry(0.09, 8, 8);
+    const sensor = new Mesh(sensorGeom, eyeMat);
+    sensor.position.set(0, 0.22, 0.05);
+    this.headMesh.add(sensor);
+
+    // Twin Gun Barrels
+    const barrelGeom = new CylinderGeometry(0.045, 0.045, 0.48, 8);
+    barrelGeom.rotateX(Math.PI / 2);
+
+    const barrelL = new Mesh(barrelGeom, barrelMat);
+    barrelL.position.set(-0.14, 0.02, 0.38);
+    this.headMesh.add(barrelL);
+
+    const barrelR = new Mesh(barrelGeom, barrelMat);
+    barrelR.position.set(0.14, 0.02, 0.38);
+    this.headMesh.add(barrelR);
+
+    // Ammo drum on side
+    const drumGeom = new CylinderGeometry(0.12, 0.12, 0.22, 8);
+    const drum = new Mesh(drumGeom, baseMat);
+    drum.position.set(-0.28, 0.0, -0.05);
+    drum.rotation.z = Math.PI / 2;
+    this.headMesh.add(drum);
+
+    this.mesh.scale.set(0.1, 0.1, 0.1);
+  }
+
+  public update(
+    dt: number,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+  ) {
+    this.age += dt;
+    if (this.age >= this.lifetime) {
+      this.isAlive = false;
+      return;
+    }
+
+    if (this.age < 0.25) {
+      const s = Math.min(1.0, this.age / 0.25);
+      this.mesh.scale.set(s, s, s);
+    }
+
+    const maxDistSq = this.range * this.range;
+    const targetEnemies = findClosestEnemies(enemies, this.position, 1, maxDistSq);
+    const target = targetEnemies[0];
+
+    if (target && target.isAlive) {
+      const dx = target.position.x - this.position.x;
+      const dz = target.position.z - this.position.z;
+      const targetYaw = Math.atan2(dx, dz);
+
+      let diff = targetYaw - this.currentYaw;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      this.currentYaw += diff * Math.min(1.0, dt * 14);
+      this.headMesh.rotation.y = this.currentYaw;
+
+      this.fireTimer += dt;
+      if (this.fireTimer >= this.fireInterval) {
+        this.fireTimer = 0;
+        this.shootAt(target, spawnProjectile);
+      }
+    } else {
+      this.currentYaw += dt * 0.8;
+      this.headMesh.rotation.y = this.currentYaw;
+    }
+  }
+
+  private shootAt(target: Enemy, spawnProjectile: (p: Projectile) => void) {
+    const muzzleOffset = new Vector3(
+      Math.sin(this.currentYaw) * 0.65,
+      0.35,
+      Math.cos(this.currentYaw) * 0.65
+    );
+    const spawnPos = this.position.clone().add(muzzleOffset);
+
+    const dir = new Vector3(
+      target.position.x - spawnPos.x,
+      0,
+      target.position.z - spawnPos.z
+    ).normalize();
+
+    const proj = new Projectile({
+      position: spawnPos,
+      direction: dir,
+      speed: 25.0,
+      damage: this.damage,
+      pierce: 1,
+      lifetime: 0.75,
+      radius: 0.16,
+      color: 0xff6600,
+      isCosmetic: false
+    });
+
+    spawnProjectile(proj);
+    SoundManager.playTurretShoot();
+  }
+
+  public destroy(scene?: Scene) {
+    if (scene && this.mesh.parent === scene) {
+      scene.remove(this.mesh);
+    }
+  }
+}
+
+/**
+ * Auto-Turret (Авто-Турель) - Hero 7 Torbjorn starting weapon
+ * Periodically deploys automated sentry turrets that track and shoot nearby enemies.
+ */
+export class TurretWeapon extends Weapon {
+  public activeTurrets: SentryTurret[] = [];
+  public maxTurrets: number = 1;
+  public turretRange: number = 14.0;
+  public turretFireInterval: number = 0.32;
+  public turretLifetime: number = 30.0;
+  private onTriggerAttack?: () => void;
+  public scene?: Scene;
+
+  constructor(onTriggerAttack?: () => void) {
+    super('turret', 'Авто-Турель', '🏗️', 4.0, 16, 4, '/textures/weapons/weapon_turret.png');
+    this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('turret');
+    const baseCd = cfg?.cooldown ?? 4.0;
+    const baseRad = cfg?.range ?? 14.0;
+
+    this.cooldown = Math.max(1.8, Number((baseCd * Math.pow(0.96, this.level - 1)).toFixed(3)));
+    this.turretRange = Number((baseRad + (this.level - 1) * 0.25).toFixed(2));
+    this.turretFireInterval = Math.max(0.16, Number((0.34 - (this.level - 1) * 0.009).toFixed(3)));
+
+    const extra = [5, 10, 15].filter(lvl => this.level >= lvl).length;
+    this.maxTurrets = 1 + extra;
+  }
+
+  public setScene(scene: Scene) {
+    this.scene = scene;
+  }
+
+  public update(
+    dt: number,
+    playerPos: Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void,
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+  ) {
+    for (const turret of this.activeTurrets) {
+      turret.update(dt, enemies, spawnProjectile, damageEnemy);
+    }
+
+    const deadTurrets = this.activeTurrets.filter(t => !t.isAlive);
+    for (const dead of deadTurrets) {
+      dead.destroy(this.scene);
+    }
+    this.activeTurrets = this.activeTurrets.filter(t => t.isAlive);
+
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      this.timer = 0;
+      this.deployTurret(playerPos);
+    }
+  }
+
+  private deployTurret(playerPos: Vector3) {
+    this.onTriggerAttack?.();
+    SoundManager.playTurretDeploy();
+
+    if (this.activeTurrets.length >= this.maxTurrets) {
+      const oldest = this.activeTurrets.shift();
+      if (oldest) {
+        oldest.destroy(this.scene);
+      }
+    }
+
+    const offset = new Vector3(
+      (Math.random() - 0.5) * 0.8,
+      0,
+      (Math.random() - 0.5) * 0.8
+    );
+    const deployPos = playerPos.clone().add(offset);
+
+    const turret = new SentryTurret(
+      deployPos,
+      this.damage,
+      this.turretRange,
+      this.turretFireInterval,
+      this.turretLifetime
+    );
+
+    this.activeTurrets.push(turret);
+
+    if (this.scene) {
+      this.scene.add(turret.mesh);
+    }
+  }
+
+  public destroy() {
+    for (const t of this.activeTurrets) {
+      t.destroy(this.scene);
+    }
+    this.activeTurrets = [];
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.recalculateStats();
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const perks: string[] = [
+      `+${this.damagePerLevel} урона турели`,
+      `-4% интервал стрельбы`
+    ];
+    if (this.level === 4 || this.level === 9 || this.level === 14) {
+      perks.push('+1 дополнительная активная турель');
+    }
     return perks.join(', ');
   }
 }

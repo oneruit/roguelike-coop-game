@@ -1,5 +1,5 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon, TurretWeapon } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
@@ -46,7 +46,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
     lightning_strike: '/textures/weapons/weapon_lightning_strike.png',
     ice_spike: '/textures/weapons/weapon_ice_spike.png',
-    fireball: '/textures/weapons/weapon_fireball.png'
+    fireball: '/textures/weapons/weapon_fireball.png',
+    turret: '/textures/weapons/weapon_turret.png'
   };
   const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
   return TextureManager.getWeaponBlobUrl(path);
@@ -1197,6 +1198,10 @@ export class HUD {
           ? 'Ария (Волшебница)'
           : hero === 'chakram'
           ? 'Кира (Чакрам)'
+          : hero === 'archer'
+          ? 'Лира (Лук)'
+          : hero === 'torbjorn'
+          ? 'Торбьорн (Инженер)'
           : 'Рен (Ронин)';
       this.hostPartnerTitle.innerText = `Игрок подключился! (${heroName})`;
       this.hostPartnerDesc.innerText = 'Игрок готов к экспедиции! Вы можете начать поход или дождаться остальных.';
@@ -1349,7 +1354,11 @@ export class HUD {
       ? 'Ария «Посох»'
       : charType === 'chakram'
       ? 'Кира «Чакрам»'
-      : 'Эльф-лучник «Лук»';
+      : charType === 'archer'
+      ? 'Лира «Лук»'
+      : charType === 'torbjorn'
+      ? 'Торбьорн «Инженер»'
+      : 'Герой';
   }
 
   public getHeroAvatar(charType: CharacterType): string {
@@ -1363,6 +1372,8 @@ export class HUD {
       ? '/textures/heroes/hero_sorceress_front.png'
       : charType === 'chakram'
       ? '/textures/heroes/hero_chakram_front.png'
+      : charType === 'torbjorn'
+      ? '/textures/heroes/hero_torbjorn_front.png'
       : '/textures/heroes/hero_archer_front.png';
     return TextureManager.getAssetUrl(avatar);
   }
@@ -1525,7 +1536,9 @@ export class HUD {
       valkyrie: 'Каэла (Меч)',
       flail: 'Бригитта (Цеп)',
       sorceress: 'Ария (Магия)',
-      chakram: 'Кира (Чакрам)'
+      chakram: 'Кира (Чакрам)',
+      archer: 'Лира (Лук)',
+      torbjorn: 'Торбьорн (Турель)'
     };
 
     for (const r of rooms) {
@@ -3743,6 +3756,24 @@ export class HUD {
           description: 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области',
           apply: () => {
             player.weapons.push(new FireballWeapon(() => player.triggerAttackAnim(0.42)));
+            player.recalculateStats();
+          }
+        });
+      }
+
+      const hasTurret = player.weapons.some(w => w.id === 'turret');
+      if (!hasTurret) {
+        pool.push({
+          id: 'new_turret',
+          title: 'Новое: Авто-Турель',
+          icon: '🏗️',
+          iconImage: getWeaponIconUrl('turret'),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: 'Размещает автоматические сторожевые турели, непрерывно расстреливающие врагов раскалёнными заклепками',
+          apply: () => {
+            const turretWep = new TurretWeapon(() => player.triggerAttackAnim(0.35));
+            turretWep.setScene(player.scene);
+            player.weapons.push(turretWep);
             player.recalculateStats();
           }
         });

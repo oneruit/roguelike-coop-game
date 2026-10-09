@@ -18,8 +18,24 @@ from PIL import Image
 import numpy as np
 
 
-def detect_background(img_arr):
+def detect_background(img_arr, override_type=None):
     """Checks if image already has transparency, is a checkerboard JPEG, or needs chromakeying."""
+    if override_type and override_type != 'auto':
+        if override_type == 'transparent':
+            return 'transparent', None
+        elif override_type == 'checkerboard':
+            return 'checkerboard', None
+        elif override_type == 'solid':
+            # Sample corner perimeter to avoid text labels
+            h, w = img_arr.shape[:2]
+            perim = np.concatenate([
+                img_arr[0:5, :, :3].reshape(-1, 3),
+                img_arr[-5:, :, :3].reshape(-1, 3),
+                img_arr[:, 0:5, :3].reshape(-1, 3),
+                img_arr[:, -5:, :3].reshape(-1, 3),
+            ], axis=0)
+            return 'solid', np.median(perim, axis=0)
+
     if img_arr.shape[2] == 4:
         alpha = img_arr[:, :, 3]
         if (alpha == 0).mean() > 0.15:
@@ -36,7 +52,8 @@ def detect_background(img_arr):
     sat = np.max(np.abs(corners - np.mean(corners, axis=1, keepdims=True)), axis=1)
     if (sat < 5).mean() > 0.8:
         lum = np.mean(corners, axis=1)
-        if lum.max() - lum.min() > 25:
+        # Checkerboards have distinct alternating squares, both with high luminance
+        if lum.min() > 100 and lum.max() - lum.min() > 25:
             return 'checkerboard', None
 
     bg_color = np.median(corners, axis=0)
@@ -176,12 +193,26 @@ def build_sheet(arr, row_configs, x0, x1, expected_cols, target_feet_y, cell_siz
     return Image.fromarray(sheet)
 
 
-def process_character_sheet(input_path, char_name, out_dir='public/textures', cell_size=96, target_feet_y=74):
+def process_character_sheet(input_path, char_name, out_dir='public/textures', cell_size=96, target_feet_y=74, bg_type_override=None):
     os.makedirs(out_dir, exist_ok=True)
     raw_img = Image.open(input_path)
     raw_arr = np.array(raw_img)
+    # Erase dividing grid lines and quadrant header titles if present
+    h, w = raw_arr.shape[:2]
+    mid_y = h // 2
+    mid_x = w // 2
+    # Grid lines
+    for dy in range(-4, 5):
+        if 0 <= mid_y + dy < h:
+            raw_arr[mid_y + dy, :] = [255, 255, 255] if raw_arr.shape[2] == 3 else [255, 255, 255, 0]
+    for dx in range(-4, 5):
+        if 0 <= mid_x + dx < w:
+            raw_arr[:, mid_x + dx] = [255, 255, 255] if raw_arr.shape[2] == 3 else [255, 255, 255, 0]
+    # Header areas (top 38 px and 38 px below mid_y)
+    raw_arr[:38, :] = [255, 255, 255] if raw_arr.shape[2] == 3 else [255, 255, 255, 0]
+    raw_arr[mid_y:mid_y + 38, :] = [255, 255, 255] if raw_arr.shape[2] == 3 else [255, 255, 255, 0]
 
-    bg_type, bg_color = detect_background(raw_arr)
+    bg_type, bg_color = detect_background(raw_arr, bg_type_override)
     print(f'Processing {input_path} (Format: {raw_img.format}, Size: {raw_img.size}, BG: {bg_type})')
 
     arr = clean_or_extract_alpha(raw_arr, bg_type, bg_color)
@@ -210,9 +241,9 @@ def process_character_sheet(input_path, char_name, out_dir='public/textures', ce
     top_bands = find_row_bands(top_y_proj, min_count=30)
     bot_bands = find_row_bands(bot_y_proj, min_count=30)
 
-    # Filter out text headers (headers appear at the very top of each half, b[0] < 50)
-    top_char_bands = [b for b in top_bands if b[0] >= 50 and (b[1] - b[0] >= 35)]
-    bot_char_bands = [b for b in bot_bands if b[0] >= 45 and (b[1] - b[0] >= 35)]
+    # Filter out text headers (headers appear at the very top of each half, b[1] <= 40 or height < 35)
+    top_char_bands = [b for b in top_bands if b[1] > 40 and (b[1] - b[0] >= 35)]
+    bot_char_bands = [b for b in bot_bands if b[1] > 40 and (b[1] - b[0] >= 35)]
 
     if len(top_char_bands) < 4:
         print('Using standard top row coordinates fallback...')
@@ -302,6 +333,7 @@ if __name__ == '__main__':
     parser.add_argument('--out-dir', '-o', default='public/textures', help='Output directory (default: public/textures)')
     parser.add_argument('--cell-size', type=int, default=96, help='Standard cell size in pixels (default: 96)')
     parser.add_argument('--feet-y', type=int, default=74, help='Feet anchor Y coordinate inside cell (default: 74)')
+    parser.add_argument('--bg-type', choices=['auto', 'solid', 'transparent', 'checkerboard'], default='auto', help='Force background type')
     args = parser.parse_args()
 
     process_character_sheet(
@@ -309,5 +341,6 @@ if __name__ == '__main__':
         char_name=args.name,
         out_dir=args.out_dir,
         cell_size=args.cell_size,
-        target_feet_y=args.feet_y
+        target_feet_y=args.feet_y,
+        bg_type_override=args.bg_type
     )

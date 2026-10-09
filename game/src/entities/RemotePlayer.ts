@@ -247,6 +247,8 @@ export class RemotePlayer {
         ? TextureManager.loadChakramTextures()
         : charType === 'archer'
         ? TextureManager.loadArcherTextures()
+        : charType === 'torbjorn'
+        ? TextureManager.loadTorbjornTextures()
         : TextureManager.loadRoninTextures();
 
     // Clone textures so UV repeat and offset mutations never collide with player 1
@@ -500,6 +502,10 @@ export class RemotePlayer {
           ? 'Ария'
           : this.charType === 'chakram'
           ? 'Кира'
+          : this.charType === 'archer'
+          ? 'Лира'
+          : this.charType === 'torbjorn'
+          ? 'Торбьорн'
           : 'Рен';
       ctx.fillText(`${this.name} (${heroName}) [L${this.level}]`, w / 2, 24);
 

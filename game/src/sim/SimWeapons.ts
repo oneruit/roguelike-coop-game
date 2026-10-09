@@ -1138,6 +1138,141 @@ export class SimFireballWeapon extends SimWeapon {
 }
 
 /**
+ * SimTurretWeapon (Авто-Турель)
+ * Periodically deploys automated sentry turrets in simulation that fire rivets at nearby enemies.
+ */
+export interface SimTurretState {
+  id: string;
+  position: SimVec3;
+  age: number;
+  fireTimer: number;
+  isAlive: boolean;
+}
+
+export class SimTurretWeapon extends SimWeapon {
+  public activeTurrets: SimTurretState[] = [];
+  public maxTurrets: number = 1;
+  public turretRange: number = 14.0;
+  public turretFireInterval: number = 0.32;
+  public turretLifetime: number = 30.0;
+
+  constructor() {
+    super('turret', 'Авто-Турель', '🏗️', 4.0, 16, '/textures/weapons/weapon_turret.png');
+    this.recalculateStats();
+  }
+
+  public recalculateStats(): void {
+    const baseCd = 4.0;
+    const baseRad = 14.0;
+
+    this.cooldown = Math.max(1.8, Number((baseCd * Math.pow(0.96, this.level - 1)).toFixed(3)));
+    this.turretRange = Number((baseRad + (this.level - 1) * 0.25).toFixed(2));
+    this.turretFireInterval = Math.max(0.16, Number((0.34 - (this.level - 1) * 0.009).toFixed(3)));
+
+    const extra = [5, 10, 15].filter(lvl => this.level >= lvl).length;
+    this.maxTurrets = 1 + extra;
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    spawnProjectile: (p: SimProjectileData) => void,
+    _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    const maxDistSq = this.turretRange * this.turretRange;
+
+    // Update existing turrets
+    for (const turret of this.activeTurrets) {
+      if (!turret.isAlive) continue;
+      turret.age += dt;
+      if (turret.age >= this.turretLifetime) {
+        turret.isAlive = false;
+        continue;
+      }
+
+      const targetList = findClosestSimEnemies(enemies, turret.position, 1, maxDistSq);
+      const target = targetList[0];
+      if (target && target.isAlive) {
+        turret.fireTimer += dt;
+        if (turret.fireTimer >= this.turretFireInterval) {
+          turret.fireTimer = 0;
+
+          const dir = new SimVec3().subVectors(target.position, turret.position);
+          dir.y = 0;
+          dir.normalize();
+
+          const proj: SimProjectileData = {
+            id: `sim_rivet_${Math.random().toString(36).substring(2, 9)}`,
+            ownerId: player.id,
+            position: turret.position.clone().add({ x: 0, y: 0.35, z: 0 }),
+            direction: dir,
+            speed: 25.0,
+            damage: this.damage * player.damageMultiplier,
+            pierce: 1,
+            lifetime: 0.75,
+            radius: 0.16,
+            color: 0xff6600
+          };
+
+          spawnProjectile(proj);
+          if (emitSound) emitSound('shoot');
+        }
+      }
+    }
+
+    this.activeTurrets = this.activeTurrets.filter(t => t.isAlive);
+
+    // Deploy new turrets periodically
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      this.timer = 0;
+      if (triggerAnim) triggerAnim(0.35);
+
+      if (this.activeTurrets.length >= this.maxTurrets) {
+        this.activeTurrets.shift();
+      }
+
+      const offset = new SimVec3(
+        (Math.random() - 0.5) * 0.8,
+        0,
+        (Math.random() - 0.5) * 0.8
+      );
+      const deployPos = player.position.clone().add(offset);
+
+      this.activeTurrets.push({
+        id: `sim_turret_${Math.random().toString(36).substring(2, 9)}`,
+        position: deployPos,
+        age: 0,
+        fireTimer: 0,
+        isAlive: true
+      });
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 4;
+    this.recalculateStats();
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const perks: string[] = [
+      `+4 урона турели`,
+      `-4% интервал стрельбы`
+    ];
+    if (this.level === 4 || this.level === 9 || this.level === 14) {
+      perks.push('+1 дополнительная активная турель');
+    }
+    return perks.join(', ');
+  }
+}
+
+/**
  * Creates weapon for character selection
  */
 export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon {
@@ -1152,6 +1287,8 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
       return new SimChakramWeapon();
     case 'archer':
       return new SimBowWeapon();
+    case 'torbjorn':
+      return new SimTurretWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();
@@ -1179,6 +1316,8 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimAstralStaffWeapon();
     case 'chakram':
       return new SimChakramWeapon();
+    case 'turret':
+      return new SimTurretWeapon();
     case 'lightning_strike':
       return new SimLightningStrikeWeapon();
     case 'ice_spike':

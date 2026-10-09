@@ -164,6 +164,18 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       splashRadius: 2.0,
       count: 1,
       notes: 'Пронзающие ледяные пики из-под земли'
+    },
+    turret: {
+      id: 'turret',
+      name: 'Авто-Турель',
+      icon: '🏗️',
+      damage: 16,
+      cooldown: 4.0,
+      damagePerLevel: 4,
+      maxLevel: 20,
+      range: 14,
+      count: 1,
+      notes: 'Стационарная автоматическая турель, ведущая скорострельный огонь'
     }
   },
   heroes: {
@@ -220,6 +232,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.35,
       startingWeapon: 'bow',
       role: 'Сверхбыстрый снайпер с дальнобойными стрелами'
+    },
+    torbjorn: {
+      id: 'torbjorn',
+      name: 'Торбьорн (Инженер)',
+      maxHp: 130,
+      baseSpeed: 8.3,
+      damageMultiplier: 1.35,
+      startingWeapon: 'turret',
+      role: 'Мастер-оружейник, строит автоматические турели'
     }
   },
   monsters: {

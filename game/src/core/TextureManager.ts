@@ -76,7 +76,8 @@ export class TextureManager {
     '/textures/weapons/weapon_fireball.png',
     '/textures/weapons/weapon_orbiting_barrier.png',
     '/textures/weapons/weapon_reaper_scythe.png',
-    '/textures/weapons/weapon_whirlwind_slash.png'
+    '/textures/weapons/weapon_whirlwind_slash.png',
+    '/textures/weapons/weapon_turret.png'
   ];
 
   public static getWeaponBlobUrl(pathOrId: string): string {
@@ -214,6 +215,13 @@ export class TextureManager {
     '/textures/heroes/hero_archer_walk.png',
     '/textures/heroes/hero_archer_attack.png',
     '/textures/heroes/hero_archer_walk_attack.png',
+
+    '/textures/heroes/hero_torbjorn_front.png',
+    '/textures/heroes/hero_torbjorn_idle.png',
+    '/textures/heroes/hero_torbjorn_walk.png',
+    '/textures/heroes/hero_torbjorn_attack.png',
+    '/textures/heroes/hero_torbjorn_walk_attack.png',
+    '/textures/weapons/weapon_turret.png',
 
     // Legacy Hero Avatars
     '/textures/heroes/hero_male_front.png',
@@ -457,6 +465,10 @@ export class TextureManager {
 
   public static loadArcherTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_archer', renderer);
+  }
+
+  public static loadTorbjornTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_torbjorn', renderer);
   }
 
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {

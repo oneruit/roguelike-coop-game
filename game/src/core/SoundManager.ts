@@ -785,9 +785,68 @@ export class SoundManager {
     osc.frequency.setValueAtTime(520, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.06);
     gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
     osc.connect(gain);
     gain.connect(this.getMasterGain());
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.08);
+  }
+
+  /**
+   * Sound when Torbjorn deploys a mechanical sentry turret
+   */
+  public static playTurretDeploy() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // Metallic ratchet clank
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(320, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.20, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+
+    // Steam hiss / pneumatic lock
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(640, ctx.currentTime + 0.06);
+    osc2.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.20);
+    gain2.gain.setValueAtTime(0.14, ctx.currentTime + 0.06);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    osc2.connect(gain2);
+    gain2.connect(this.getMasterGain());
+    osc2.start(ctx.currentTime + 0.06);
+    osc2.stop(ctx.currentTime + 0.23);
+  }
+
+  /**
+   * Sound when sentry turret fires rapid rivet bullets
+   */
+  public static playTurretShoot() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(740, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.07);
+
+    gain.gain.setValueAtTime(0.14, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+
     osc.start();
     osc.stop(ctx.currentTime + 0.08);
   }

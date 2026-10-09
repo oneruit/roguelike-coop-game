@@ -120,6 +120,12 @@ export class SimPlayerInternal {
       this.hp = 110;
       this.baseSpeed = 8.9;
       this.baseDamageMultiplier = 1.35;
+    } else if (charType === 'torbjorn') {
+      this.maxHp = 130;
+      this.hp = 130;
+      this.baseSpeed = 8.3;
+      this.baseDamageMultiplier = 1.35;
+      this.passiveDamageReduction = 0.10;
     } else {
       this.maxHp = 115;
       this.hp = 115;
