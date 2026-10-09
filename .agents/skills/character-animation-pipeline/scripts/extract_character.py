@@ -295,13 +295,12 @@ def process_character_sheet(input_path, char_name, out_dir='public/textures', ce
     walk_atk_sheet.save(walk_atk_path)
     print(f'[OK] Generated WALK ATTACK: {walk_atk_path} ({walk_atk_sheet.size})')
 
-    # 5. PORTRAIT (Front IDLE frame 0, 64x64)
+    # 5. PORTRAIT (Front IDLE frame 0, standardized to cell_size)
     portrait = idle_sheet.crop((0, 0, cell_size, cell_size))
-    # Resize portrait cleanly to 64x64 for UI avatar
-    portrait_64 = portrait.resize((64, 64), Image.Resampling.LANCZOS)
+    portrait_std = portrait.resize((cell_size, cell_size), Image.Resampling.LANCZOS)
     portrait_path = os.path.join(out_dir, f'{char_name}_front.png')
-    portrait_64.save(portrait_path)
-    print(f'[OK] Generated PORTRAIT: {portrait_path} ({portrait_64.size})')
+    portrait_std.save(portrait_path)
+    print(f'[OK] Generated PORTRAIT: {portrait_path} ({portrait_std.size})')
 
     print(f'\nSuccess! All 5 expanded sprite textures generated for character "{char_name}".')
 
@@ -311,8 +310,8 @@ if __name__ == '__main__':
     parser.add_argument('--input', '-i', required=True, help='Path to composite sprite sheet image')
     parser.add_argument('--name', '-n', required=True, help='Character name prefix (e.g. hero_ronin)')
     parser.add_argument('--out-dir', '-o', default='public/textures', help='Output directory (default: public/textures)')
-    parser.add_argument('--cell-size', type=int, default=96, help='Standard cell size in pixels (default: 96)')
-    parser.add_argument('--feet-y', type=int, default=74, help='Feet anchor Y coordinate inside cell (default: 74)')
+    parser.add_argument('--cell-size', type=int, default=128, help='Standard cell size in pixels (default: 128)')
+    parser.add_argument('--feet-y', type=int, default=100, help='Feet anchor Y coordinate inside cell (default: 100)')
     parser.add_argument('--segmentation-alpha', type=int, default=1, help='Minimum alpha for frame detection (1..255); higher values separate faint glows')
     args = parser.parse_args()
     if not 1 <= args.segmentation_alpha <= 255:

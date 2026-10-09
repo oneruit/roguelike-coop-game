@@ -20,7 +20,7 @@ import {
   Texture,
   type Material
 } from 'three';
-import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from './Player';
+import { Player, CharacterType, HeroAnimState, BuffType, ActiveBuff } from './Player';
 import { SpriteDirection, TextureManager, AnimatedCharacterTextures } from '../core/TextureManager';
 import { PlayerNetState, NetWeaponInfo } from '../net/NetworkManager';
 
@@ -100,9 +100,8 @@ export class RemotePlayer {
     this.targetPosition = new Vector3(0, 0, 0);
     this.mesh = new Group();
 
-    // 3.6 x 3.6 plane geometry anchored at feet
-    this.roninGeom = new PlaneGeometry(3.6, 3.6);
-    this.roninGeom.translate(0, 0.975, 0);
+    // 3.6 x 3.6 plane geometry anchored at feet based on character standard
+    this.roninGeom = Player.getCharacterGeometry(charType).clone();
 
     // Load and clone textures so UV repeat/offsets are independent from local player
     this.loadCharacterTextures(charType);
@@ -415,17 +414,22 @@ export class RemotePlayer {
     if (!this.animatedTextures) return;
 
     const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: { texture: this.animatedTextures.idle, cols: 10, fps: 8 },
+      IDLE: { texture: this.animatedTextures.idle, cols: 6, fps: 8 },
       WALK: { texture: this.animatedTextures.walk, cols: 6, fps: 12 },
-      ATTACK: { texture: this.animatedTextures.attack, cols: 8, fps: 16 },
+      ATTACK: { texture: this.animatedTextures.attack, cols: 6, fps: 16 },
       WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 6, fps: 14 }
     };
 
     const cfg = STATE_CONFIG[this.animState] || STATE_CONFIG.IDLE;
     const tex = cfg.texture;
 
+    const img = (tex as any).image as { width?: number; height?: number } | undefined;
+    const dynamicCols = (img && img.width && img.height && img.height > 0)
+      ? Math.round((img.width / img.height) * 4)
+      : cfg.cols;
+
     this.animFrameTimer += dt * cfg.fps;
-    const frameCol = Math.floor(this.animFrameTimer) % cfg.cols;
+    const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
 
     const DIR_ROW_MAP: Record<SpriteDirection, number> = {
       front: 0,
@@ -443,8 +447,8 @@ export class RemotePlayer {
       }
     }
 
-    tex.repeat.set(1 / cfg.cols, 1 / 4);
-    tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    tex.repeat.set(1 / dynamicCols, 1 / 4);
+    tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
   }
 
   public redrawOverhead() {
