@@ -14,6 +14,7 @@ import { Enemy } from '../entities/Enemy';
 import { TextureManager } from '../core/TextureManager';
 import { BalanceManager } from '../balance/BalanceManager';
 import { WeaponBalanceConfig } from '../balance/BalanceTypes';
+import type { MeleeAttackInfo, MeleeWeaponId } from '../shared/types';
 
 export interface WeaponInfo {
   id: string;
@@ -112,6 +113,7 @@ export abstract class Weapon {
   public damage: number;
   public baseDamage: number;
   public damagePerLevel: number = 5;
+  public onMeleeAttack?: (attack: MeleeAttackInfo) => void;
 
   public get effectiveCooldown(): number {
     return Math.max(0.08, this.cooldown * this.cooldownMultiplier);
@@ -161,6 +163,26 @@ export abstract class Weapon {
     spawnProjectile: (p: Projectile) => void,
     damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
   ): void;
+
+  protected getMeleeAttackAngle(playerPos: Vector3, enemies: Enemy[]): number {
+    let closestDistance = Infinity;
+    let angle = 0;
+    for (const enemy of enemies) {
+      if (!enemy.isAlive) continue;
+      const dx = enemy.position.x - playerPos.x;
+      const dz = enemy.position.z - playerPos.z;
+      const distance = dx * dx + dz * dz;
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        angle = Math.atan2(-dz, dx);
+      }
+    }
+    return angle;
+  }
+
+  protected emitMeleeAttack(weaponId: MeleeWeaponId, position: Vector3, radius: number, angle: number): void {
+    this.onMeleeAttack?.({ weaponId, x: position.x, y: position.y, z: position.z, radius, angle });
+  }
 
   public abstract upgrade(): void;
   public abstract getNextUpgradeDescription(): string;
@@ -646,6 +668,7 @@ export class KatanaSlashWeapon extends Weapon {
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
       const radSq = this.slashRadius * this.slashRadius;
       let hitCount = 0;
 
@@ -667,6 +690,7 @@ export class KatanaSlashWeapon extends Weapon {
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 45);
       if (hitCount > 0 || nearby) {
         this.timer = 0;
+        this.emitMeleeAttack('katana_slash', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
         }
@@ -727,6 +751,7 @@ export class WhirlwindSlashWeapon extends Weapon {
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
       const radSq = this.slashRadius * this.slashRadius;
       let hitCount = 0;
 
@@ -747,6 +772,7 @@ export class WhirlwindSlashWeapon extends Weapon {
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 40);
       if (hitCount > 0 || nearby) {
         this.timer = 0;
+        this.emitMeleeAttack('whirlwind_slash', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
         }
@@ -807,6 +833,7 @@ export class GreatswordWeapon extends Weapon {
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
       const radSq = this.slashRadius * this.slashRadius;
       let hitCount = 0;
 
@@ -827,6 +854,7 @@ export class GreatswordWeapon extends Weapon {
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 48);
       if (hitCount > 0 || nearby) {
         this.timer = 0;
+        this.emitMeleeAttack('greatsword', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
         }
@@ -890,6 +918,7 @@ export class FlailWeapon extends Weapon {
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
 
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
       const radSq = this.flailRadius * this.flailRadius;
       let hitCount = 0;
 
@@ -916,6 +945,7 @@ export class FlailWeapon extends Weapon {
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 42);
       if (hitCount > 0 || nearby) {
         this.timer = 0;
+        this.emitMeleeAttack('flail', playerPos, this.flailRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
         }
