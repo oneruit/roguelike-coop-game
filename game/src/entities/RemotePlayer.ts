@@ -415,17 +415,22 @@ export class RemotePlayer {
     if (!this.animatedTextures) return;
 
     const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: { texture: this.animatedTextures.idle, cols: 10, fps: 8 },
+      IDLE: { texture: this.animatedTextures.idle, cols: 6, fps: 8 },
       WALK: { texture: this.animatedTextures.walk, cols: 6, fps: 12 },
-      ATTACK: { texture: this.animatedTextures.attack, cols: 8, fps: 16 },
+      ATTACK: { texture: this.animatedTextures.attack, cols: 6, fps: 16 },
       WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 6, fps: 14 }
     };
 
     const cfg = STATE_CONFIG[this.animState] || STATE_CONFIG.IDLE;
     const tex = cfg.texture;
 
+    const img = (tex as any).image as { width?: number; height?: number } | undefined;
+    const dynamicCols = (img && img.width && img.height && img.height > 0)
+      ? Math.round((img.width / img.height) * 4)
+      : cfg.cols;
+
     this.animFrameTimer += dt * cfg.fps;
-    const frameCol = Math.floor(this.animFrameTimer) % cfg.cols;
+    const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
 
     const DIR_ROW_MAP: Record<SpriteDirection, number> = {
       front: 0,
@@ -443,8 +448,8 @@ export class RemotePlayer {
       }
     }
 
-    tex.repeat.set(1 / cfg.cols, 1 / 4);
-    tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    tex.repeat.set(1 / dynamicCols, 1 / 4);
+    tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
   }
 
   public redrawOverhead() {
