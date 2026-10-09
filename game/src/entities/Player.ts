@@ -1,3 +1,5 @@
+import { InvokerWeapon, InvokerInvokeWeapon } from '../combat/InvokerWeapons';
+import { createInvokerBuff, type InvokerSpellCast, type SpellControl } from '../shared/InvokerSpells';
 import {
   CanvasTexture,
   DoubleSide,
@@ -289,7 +291,9 @@ export class Player {
 
   private loadCharacterTextures(charType: CharacterType) {
     const raw =
-      charType === 'valkyrie'
+      charType === 'invoker'
+        ? TextureManager.loadInvokerTextures()
+        : charType === 'valkyrie'
         ? TextureManager.loadValkyrieTextures()
         : charType === 'flail'
         ? TextureManager.loadFlailTextures()
@@ -336,6 +340,8 @@ export class Player {
     this.currentDir = dir;
   }
 
+  public onSpellCast?: (cast: InvokerSpellCast) => void;
+  public onSpellControl?: (enemy: Enemy, control: SpellControl) => void;
   public onMeleeAttack?: (attack: MeleeAttackInfo) => void;
 
   public triggerAttackAnim(duration: number = 0.5) {
@@ -350,7 +356,9 @@ export class Player {
     this.hp = heroCfg.maxHp;
     this.baseSpeed = heroCfg.baseSpeed;
 
-    if (this.charType === 'valkyrie') {
+    if (this.charType === 'invoker') {
+      this.weapons.push(new InvokerInvokeWeapon(() => this.triggerAttackAnim(.5)));
+    } else if (this.charType === 'valkyrie') {
       this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5)));
     } else if (this.charType === 'flail') {
       this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45)));
@@ -443,6 +451,10 @@ export class Player {
     let speedBonus = 0;
     let dmgBonus = 0;
 
+    const ghostBuff = this.activeBuffs.get('ghost');
+    if (ghostBuff) speedBonus += ghostBuff.value;
+    const alacrityBuff = this.activeBuffs.get('alacrity');
+    if (alacrityBuff) dmgBonus += alacrityBuff.value;
     const speedBuff = this.activeBuffs.get('speed');
     if (speedBuff) speedBonus += speedBuff.value;
 
@@ -480,7 +492,7 @@ export class Player {
     const injectorMult = Math.pow(0.85, injectorStacks);
     this.passiveCooldownMultiplier = Math.max(0.20, watchMult * injectorMult);
     for (const weapon of this.weapons) {
-      weapon.cooldownMultiplier = this.passiveCooldownMultiplier;
+      weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
 
     // Magnet Lasso pickup radius
@@ -684,7 +696,7 @@ export class Player {
         newDir = moveDir.z < 0 ? 'back' : 'front';
       }
 
-      if (newDir !== this.currentDir) {
+      if (newDir !== this.currentDir && !(isAttacking && this.charType === 'invoker')) {
         this.setDirection(newDir);
       }
     } else {
@@ -732,6 +744,8 @@ export class Player {
       }
     }
 
+    this.spriteMaterial.opacity = this.activeBuffs.has('ghost') ? .4 : 1;
+
     // Update weapons
     const damageEnemyWithMultiplier = damageEnemy
       ? (enemy: Enemy, amount: number, sourcePos?: Vector3) => {
@@ -739,6 +753,18 @@ export class Player {
         }
       : undefined;
     for (const weapon of this.weapons) {
+      if (weapon instanceof InvokerWeapon) {
+        weapon.onSpellCast = cast => {
+          if (Math.hypot(cast.dx, cast.dz) > .01) {
+            this.setDirection(Math.abs(cast.dx) >= Math.abs(cast.dz) ?
+              (cast.dx < 0 ? 'left' : 'right') : (cast.dz < 0 ? 'back' : 'front'));
+          }
+          this.triggerAttackAnim(.5);
+          this.onSpellCast?.(cast);
+        };
+        weapon.onSpellControl = this.onSpellControl;
+        weapon.onSpellBuff = (spell, level) => this.addBuff(createInvokerBuff(spell, level));
+      }
       weapon.onMeleeAttack = this.onMeleeAttack;
       weapon.update(dt, this.position, enemies, spawnProjectile, damageEnemyWithMultiplier);
     }
@@ -812,7 +838,7 @@ export class Player {
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {
-    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable'))) || this.isDowned) {
+    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost'))) || this.isDowned) {
       return false;
     }
 
@@ -1061,7 +1087,9 @@ export class Player {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const heroName =
-        this.charType === 'valkyrie'
+        this.charType === 'invoker'
+          ? 'Инвокер'
+          : this.charType === 'valkyrie'
           ? 'Каэла'
           : this.charType === 'flail'
           ? 'Бригитта'

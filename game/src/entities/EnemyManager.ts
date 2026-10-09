@@ -337,7 +337,7 @@ export class EnemyManager {
 
       // Check collision with targeted player
       const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
-      if (closestDistSq < collisionRadius * collisionRadius) {
+      if (enemy.canAttack && closestDistSq < collisionRadius * collisionRadius) {
         const now = performance.now();
         const lastHit = this.lastTargetHitTimes.get(closestTargetId) || 0;
         if (now - lastHit > 380) {

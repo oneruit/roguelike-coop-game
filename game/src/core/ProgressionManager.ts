@@ -97,6 +97,7 @@ export class ProgressionManager {
         flail: true,     // Brigitta (unlocked)
         sorceress: true, // Aria (unlocked)
         chakram: true,   // Kira (unlocked)
+        invoker: true,
         archer: false    // Elf: Locked! (Buy / Achievement)
       },
       dailyQuestsProgress: {
@@ -135,6 +136,7 @@ export class ProgressionManager {
             flail: parsed.unlockedHeroes?.flail ?? true,
             sorceress: parsed.unlockedHeroes?.sorceress ?? true,
             chakram: parsed.unlockedHeroes?.chakram ?? true,
+            invoker: true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
           },
           dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
@@ -164,7 +166,7 @@ export class ProgressionManager {
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
-    if (hero === 'ronin') return true;
+    if (hero === 'ronin' || hero === 'invoker') return true;
     if (hero === 'archer') {
       return Boolean(this.data.unlockedHeroes.archer);
     }
@@ -444,6 +446,11 @@ export class ProgressionManager {
   }
 
   public getHeroQuestDefinition(hero: CharacterType): HeroQuestDefinition {
+    if (hero === 'invoker') return { hero, heroName:'Инвокер', heroSubtitle:'«Маг стихий»',
+      weaponIcon:getAssetUrl('/textures/weapons/weapon_invoker_invoke.png'), weaponName:'Invoke',
+      avatarIcon:getAssetUrl('/textures/heroes/hero_invoker_front.png'), questTitle:'Маг стихий',
+      questDesc:'Инвокер доступен сразу и использует десять случайных заклинаний.', steps:[],
+      rewards:{potions:0,coins:0,rings:0,crystals:0}, unlockConditionHint:'Доступен сразу' };
     switch (hero) {
       case 'valkyrie':
         return {

@@ -1,6 +1,10 @@
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../game/src/shared/InvokerSpells';
 import { GameBalanceState } from '../../game/src/balance/BalanceTypes';
 
 export const TEXTURE_MAP: Record<string, string> = {
+  'hero-invoker':'/textures/heroes/hero_invoker_front.png',
+  'weapon-invoker_invoke':'/textures/weapons/weapon_invoker_invoke.png',
+  ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => ['weapon-'+invokerWeaponId(spell),'/textures/weapons/weapon_'+invokerWeaponId(spell)+'.png'])),
   // Weapons
   'weapon-fireball': '/textures/weapons/weapon_fireball.png',
   'weapon-bow': '/textures/weapons/weapon_bow.png',
@@ -42,6 +46,8 @@ export const TEXTURE_MAP: Record<string, string> = {
 };
 
 export const WEAPON_COLORS: Record<string, string> = {
+  invoker_invoke:'#a78bfa',
+  ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => [invokerWeaponId(spell),'#'+INVOKER_SPELLS[spell].color.toString(16).padStart(6,'0')])),
   fireball: '#ef4444',
   bow: '#10b981',
   kukri: '#f59e0b',

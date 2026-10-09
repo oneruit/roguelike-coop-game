@@ -1,3 +1,5 @@
+import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../combat/InvokerWeapons';
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../shared/InvokerSpells';
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
 import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
@@ -1189,7 +1191,9 @@ export class HUD {
     if (connected) {
       this.hostPartnerBox.className = 'partner-status-box connected';
       const heroName =
-        hero === 'valkyrie'
+        hero === 'invoker'
+          ? 'Инвокер (Маг стихий)'
+          : hero === 'valkyrie'
           ? 'Каэла (Мечница)'
           : hero === 'flail'
           ? 'Бригитта (Цеп)'
@@ -1339,6 +1343,7 @@ export class HUD {
   }
 
   public getHeroName(charType: CharacterType): string {
+    if (charType === 'invoker') return 'Инвокер «Маг стихий»';
     return charType === 'ronin'
       ? 'Рен «Ронин»'
       : charType === 'valkyrie'
@@ -1353,6 +1358,7 @@ export class HUD {
   }
 
   public getHeroAvatar(charType: CharacterType): string {
+    if (charType === 'invoker') return TextureManager.getAssetUrl('/textures/heroes/hero_invoker_front.png');
     const avatar = charType === 'ronin'
       ? '/textures/heroes/hero_ronin_front.png'
       : charType === 'valkyrie'
@@ -1521,6 +1527,7 @@ export class HUD {
     }
 
     const heroNames: Record<string, string> = {
+      invoker: 'Инвокер (Стихии)',
       ronin: 'Рен (Вихрь)',
       valkyrie: 'Каэла (Меч)',
       flail: 'Бригитта (Цеп)',
@@ -3538,6 +3545,27 @@ export class HUD {
 
     // 2. New western weapons if player has less than 5 weapons
     if (player.weapons.length < 5) {
+      const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
+      for (const spell of invokerWeapons) {
+        const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
+        if (player.weapons.some(weapon => weapon.id === id)) continue;
+        const def = spell ? INVOKER_SPELLS[spell] : null;
+        pool.push({
+          id: 'new_' + id,
+          title: 'Новое: ' + (def?.name ?? 'Invoke'),
+          icon: def?.icon ?? '🔮',
+          iconImage: getWeaponIconUrl(id),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
+          apply: () => {
+            const triggerAttack = () => player.triggerAttackAnim(0.5);
+            player.weapons.push(spell
+              ? new InvokerSpellWeapon(spell, triggerAttack)
+              : new InvokerInvokeWeapon(triggerAttack));
+            player.recalculateStats();
+          }
+        });
+      }
       const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
       if (!hasBow) {
         pool.push({

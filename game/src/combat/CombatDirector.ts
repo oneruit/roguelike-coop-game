@@ -1,3 +1,6 @@
+import { InvokerSpellEffects } from './InvokerSpellEffects';
+import type { NetEvent } from '../shared/types';
+import type { InvokerSpellCast, SpellControl } from '../shared/InvokerSpells';
 import { Vector3, Frustum } from 'three';
 import { Projectile } from './Projectile';
 import { Enemy } from '../entities/Enemy';
@@ -22,9 +25,11 @@ export class CombatDirector {
   public projectiles: Projectile[] = [];
   public pendingClientHits: DamageDealtEvent[] = [];
   public pendingLocalShots: NetShotInfo[] = [];
+  public pendingSpellControls: NetEvent[] = [];
   public recentlyDeadEnemyIds: Set<string> = new Set();
   private scratchNearbyEnemies: Enemy[] = [];
   private meleeEffects: MeleeAttackEffects;
+  private spellEffects: InvokerSpellEffects;
 
   constructor(
     engine: Engine,
@@ -42,7 +47,64 @@ export class CombatDirector {
     this.remotePlayers = remotePlayers;
     this.meleeEffects = new MeleeAttackEffects(engine.scene);
     this.player.onMeleeAttack = this.spawnMeleeAttack;
+    this.spellEffects = new InvokerSpellEffects(
+      engine.scene,
+      id => {
+        const localId = this.net.mySlotId || (this.net.role === 'client' ? 'p2' : 'p1');
+        return id === localId
+          ? this.player.position
+          : this.remotePlayers.get(id)?.position ??
+            this.enemyManager.enemies.find(enemy => enemy.id === id && enemy.isAlive)?.position;
+      },
+      (position, range) => {
+        let closest: Enemy | undefined;
+        let distance = range * range;
+        for (const enemy of this.enemyManager.enemies) {
+          if (!enemy.isAlive) continue;
+          const dist = (enemy.position.x - position.x) ** 2 + (enemy.position.z - position.z) ** 2;
+          if (dist < distance) {
+            closest = enemy;
+            distance = dist;
+          }
+        }
+        return closest?.position;
+      }
+    );
+    this.player.onSpellCast = this.spawnSpellCast;
+    this.player.onSpellControl = this.applySpellControl;
   }
+
+  public spawnSpellCast = (cast: InvokerSpellCast): void => {
+    const effect = {
+      ...cast,
+      y: this.engine.chunkManager.getElevation(cast.x, cast.z),
+      targetY: this.engine.chunkManager.getElevation(cast.targetX, cast.targetZ)
+    };
+    const ownerId = this.net.mySlotId || (this.net.role === 'client' ? 'p2' : 'p1');
+    this.spellEffects.play(effect, ownerId);
+    if (this.player.isCoop) {
+      this.pendingLocalShots.push({
+        x: effect.x, y: effect.y, z: effect.z,
+        dx: effect.dx, dz: effect.dz, spd: 0, lt: effect.duration,
+        rad: effect.radius, col: 0xffffff, ownerId, spell: effect
+      });
+    }
+  };
+
+  public applySpellControl = (enemy: Enemy, control: SpellControl): void => {
+    enemy.applySpellControl(control);
+    if (this.net.role === 'host' && this.player.isCoop) {
+      this.pendingSpellControls.push({
+        type: 'spell_control', enemyId: enemy.id, control, killer: this.net.mySlotId || 'p1'
+      });
+    }
+    if (this.net.role === 'client') {
+      this.pendingClientHits.push({
+        enemyId: enemy.id, damage: 0,
+        sourceX: this.player.position.x, sourceZ: this.player.position.z, control
+      });
+    }
+  };
 
   public spawnMeleeAttack = (attack: MeleeAttackInfo): void => {
     const effect = { ...attack, y: this.engine.chunkManager.getElevation(attack.x, attack.z) };
@@ -59,6 +121,11 @@ export class CombatDirector {
   };
 
   public spawnCosmeticShot(shot: NetShotInfo): void {
+    if (shot.spell) {
+      this.spellEffects.play(shot.spell,shot.ownerId);
+      SoundManager.playMagic();
+      return;
+    }
     if (shot.melee) {
       this.meleeEffects.play({
         weaponId: shot.melee, x: shot.x, y: shot.y, z: shot.z,
@@ -295,6 +362,7 @@ export class CombatDirector {
 
   public updateProjectiles(dt: number): void {
     this.meleeEffects.update(dt);
+    this.spellEffects.update(dt);
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const proj = this.projectiles[i];
       let centerPos = this.player.position;
@@ -474,11 +542,13 @@ export class CombatDirector {
 
   public clear(): void {
     this.meleeEffects.clear();
+    this.spellEffects.clear();
     for (const p of this.projectiles) {
       p.destroy(this.engine.scene);
     }
     this.projectiles = [];
     this.pendingClientHits = [];
+    this.pendingSpellControls = [];
     this.pendingLocalShots = [];
     this.recentlyDeadEnemyIds.clear();
   }

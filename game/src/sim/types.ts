@@ -1,3 +1,4 @@
+import type { InvokerSpellCast } from '../shared/InvokerSpells';
 import {
   CharacterType,
   HeroAnimState,
@@ -103,6 +104,7 @@ export interface SimAltarState {
 }
 
 export type SimEvent =
+  | { type: 'spell_cast'; ownerId:string; cast:InvokerSpellCast }
   | {
       type: 'damage_num';
       x: number;

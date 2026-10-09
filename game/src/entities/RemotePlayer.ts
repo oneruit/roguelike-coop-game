@@ -237,7 +237,9 @@ export class RemotePlayer {
 
   private loadCharacterTextures(charType: CharacterType) {
     const raw =
-      charType === 'valkyrie'
+      charType === 'invoker'
+        ? TextureManager.loadInvokerTextures()
+        : charType === 'valkyrie'
         ? TextureManager.loadValkyrieTextures()
         : charType === 'flail'
         ? TextureManager.loadFlailTextures()
@@ -343,6 +345,8 @@ export class RemotePlayer {
         this.activeBuffs.delete(type);
       }
     }
+
+    this.spriteMaterial.opacity = this.activeBuffs.has('ghost') ? .4 : 1;
 
     // 3D Altar Buff Auras Animation on Character Model
     const hasInvuln = this.activeBuffs.has('invulnerable');
@@ -492,7 +496,9 @@ export class RemotePlayer {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const heroName =
-        this.charType === 'valkyrie'
+        this.charType === 'invoker'
+          ? 'Инвокер'
+          : this.charType === 'valkyrie'
           ? 'Каэла'
           : this.charType === 'flail'
           ? 'Бригитта'

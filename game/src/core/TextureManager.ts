@@ -63,6 +63,17 @@ export class TextureManager {
   }
 
   public static readonly WEAPON_ICON_URLS: string[] = [
+    '/textures/weapons/weapon_invoker_invoke.png',
+    '/textures/weapons/weapon_invoker_cold_snap.png',
+    '/textures/weapons/weapon_invoker_ghost_walk.png',
+    '/textures/weapons/weapon_invoker_ice_wall.png',
+    '/textures/weapons/weapon_invoker_emp.png',
+    '/textures/weapons/weapon_invoker_tornado.png',
+    '/textures/weapons/weapon_invoker_alacrity.png',
+    '/textures/weapons/weapon_invoker_sun_strike.png',
+    '/textures/weapons/weapon_invoker_forge_spirit.png',
+    '/textures/weapons/weapon_invoker_chaos_meteor.png',
+    '/textures/weapons/weapon_invoker_deafening_blast.png',
     '/textures/weapons/weapon_astral_staff.png',
     '/textures/weapons/weapon_bow.png',
     '/textures/weapons/weapon_chakram.png',
@@ -157,6 +168,17 @@ export class TextureManager {
 
   public static readonly ALL_ASSET_URLS: string[] = [
     // Weapons & Combat
+    '/textures/weapons/weapon_invoker_invoke.png',
+    '/textures/weapons/weapon_invoker_cold_snap.png',
+    '/textures/weapons/weapon_invoker_ghost_walk.png',
+    '/textures/weapons/weapon_invoker_ice_wall.png',
+    '/textures/weapons/weapon_invoker_emp.png',
+    '/textures/weapons/weapon_invoker_tornado.png',
+    '/textures/weapons/weapon_invoker_alacrity.png',
+    '/textures/weapons/weapon_invoker_sun_strike.png',
+    '/textures/weapons/weapon_invoker_forge_spirit.png',
+    '/textures/weapons/weapon_invoker_chaos_meteor.png',
+    '/textures/weapons/weapon_invoker_deafening_blast.png',
     '/textures/weapons/weapon_astral_staff.png',
     '/textures/weapons/weapon_bow.png',
     '/textures/weapons/weapon_chakram.png',
@@ -208,6 +230,12 @@ export class TextureManager {
     '/textures/heroes/hero_chakram_walk.png',
     '/textures/heroes/hero_chakram_attack.png',
     '/textures/heroes/hero_chakram_walk_attack.png',
+
+    '/textures/heroes/hero_invoker_front.png',
+    '/textures/heroes/hero_invoker_idle.png',
+    '/textures/heroes/hero_invoker_walk.png',
+    '/textures/heroes/hero_invoker_attack.png',
+    '/textures/heroes/hero_invoker_walk_attack.png',
 
     '/textures/heroes/hero_archer_front.png',
     '/textures/heroes/hero_archer_idle.png',
@@ -453,6 +481,10 @@ export class TextureManager {
 
   public static loadChakramTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_chakram', renderer);
+  }
+
+  public static loadInvokerTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_invoker', renderer);
   }
 
   public static loadArcherTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {

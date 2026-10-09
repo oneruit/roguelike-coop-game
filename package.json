@@ -12,7 +12,8 @@
     "build:admin": "vite build --config vite.config.admin.ts",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "server": "tsx server/dedicatedServer.ts"
+    "server": "tsx server/dedicatedServer.ts",
+    "test:invoker": "tsx --test tests/invoker.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
