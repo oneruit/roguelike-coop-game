@@ -1,3 +1,4 @@
+import { selectWeaponUpgradeOptions } from './selectWeaponUpgradeOptions';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../combat/InvokerWeapons';
 import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId, canAcquireInvokerWeapon } from '../shared/InvokerSpells';
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
@@ -3801,7 +3802,7 @@ export class HUD {
     }
 
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
+    return selectWeaponUpgradeOptions(shuffled, player.charType);
   }
 
   public updatePassivesBar(player: Player) {

@@ -1,3 +1,4 @@
+import { selectWeaponUpgradeOptions } from "../game/src/ui/selectWeaponUpgradeOptions";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { Scene, Vector3 } from "three";
@@ -237,7 +238,7 @@ test("Spell visuals are bounded, expire and dispose their resources", () => {
   assert.equal(scene.children.length, 0);
 });
 test("Invoker hero and spell/control events survive binary co-op snapshots", () => {
-  assert.equal(CHARACTERS[6], "invoker");
+  assert.ok(CHARACTERS.includes("invoker"));
   assert.equal(CHARACTERS[0], "ronin");
   const f = fixture();
   const cast = f.runtime.cast("sun_strike", 1, 90, f.enemies[0], f.context);
@@ -502,4 +503,45 @@ test("Mastery preserves the global cooldown floor at maximum haste", () => {
     spell.cooldownMultiplier = 0.001;
     assert.equal(spell.effectiveCooldown, 0.08);
   }
+});
+
+test("Invoker gets new spells ahead of unrelated weapons while retaining a mastery upgrade", () => {
+  const pool = [
+    { id: "new_bow" }, { id: "new_fireball" }, { id: "upgrade_invoker_invoke" },
+    { id: "new_invoker_emp" }, { id: "new_invoker_tornado" }, { id: "new_invoker_sun_strike" }
+  ];
+  const copy = [...pool];
+  assert.deepEqual(selectWeaponUpgradeOptions(pool, "invoker").map(option => option.id),
+    ["new_invoker_emp", "new_invoker_tornado", "upgrade_invoker_invoke"]);
+  assert.deepEqual(pool, copy, "Selecting cards does not mutate the randomized pool");
+});
+
+test("Other heroes retain ordinary choices even after acquiring Invoke", () => {
+  const pool = [{ id: "new_bow" }, { id: "new_invoker_emp" }, { id: "upgrade_invoker_invoke" }, { id: "new_invoker_tornado" }];
+  assert.deepEqual(selectWeaponUpgradeOptions(pool, "ronin"), pool.slice(0, 3));
+});
+
+test("Invoker retains normal upgrades when no new spells can be acquired", () => {
+  const fullInventoryPool = [
+    { id: "upgrade_invoker_invoke" }, { id: "upgrade_invoker_emp" },
+    { id: "upgrade_invoker_tornado" }, { id: "upgrade_bow" }
+  ];
+  assert.deepEqual(selectWeaponUpgradeOptions(fullInventoryPool, "invoker"), fullInventoryPool.slice(0, 3));
+  assert.deepEqual(selectWeaponUpgradeOptions([], "invoker"), []);
+});
+
+test("Invoker fills missing spell choices without duplicates or inventing locked spells", () => {
+  const pool = [{ id: "new_bow" }, { id: "new_invoker_emp" }, { id: "upgrade_invoker_invoke" }];
+  const choices = selectWeaponUpgradeOptions(pool, "invoker");
+  assert.equal(choices[0].id, "new_invoker_emp");
+  assert.equal(new Set(choices.map(option => option.id)).size, 3);
+  assert.ok(choices.every(option => pool.includes(option)));
+  const withoutInvoke = [{ id: "new_invoker_invoke" }, { id: "new_bow" }];
+  assert.deepEqual(selectWeaponUpgradeOptions(withoutInvoke, "invoker"), withoutInvoke);
+});
+
+test("Invoker gets three randomized new spells when all existing weapons are maxed", () => {
+  const pool = [{ id: "new_bow" }, { id: "new_invoker_tornado" }, { id: "new_invoker_emp" }, { id: "new_invoker_alacrity" }];
+  assert.deepEqual(selectWeaponUpgradeOptions(pool, "invoker").map(option => option.id),
+    ["new_invoker_tornado", "new_invoker_emp", "new_invoker_alacrity"]);
 });
