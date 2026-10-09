@@ -100,6 +100,8 @@ export class LobbyCoordinator {
         ? 'chakram'
         : this.player.charType === 'chakram'
         ? 'archer'
+        : this.player.charType === 'archer'
+        ? 'rocket'
         : 'ronin';
     this.hud.showJoinLobby(nextHero);
     this.startRoomPolling();

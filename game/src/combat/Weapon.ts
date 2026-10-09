@@ -1501,3 +1501,111 @@ export class FireballWeapon extends Weapon {
   }
 }
 
+/**
+ * Assault Rifle (Штурмовая Винтовка)
+ * High-speed rapid-fire automatic rifle that shoots streams of bullets at enemies.
+ */
+export class AssaultRifleWeapon extends Weapon {
+  private projectileSpeed: number = 32;
+  private projectileCount: number = 1;
+  private pierce: number = 1;
+  private onTriggerAttack?: () => void;
+
+  constructor(onTriggerAttack?: () => void) {
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 18, 3);
+    this.iconImage = '/textures/weapons/weapon_assault_rifle.png';
+    this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('assault_rifle');
+    const baseCount = cfg?.count ?? 1;
+    const basePierce = cfg?.pierce ?? 1;
+    this.projectileSpeed = cfg?.speed ?? 32;
+    // Level scaling:
+    // Extra bullets: at levels 5, 10, 15, 20 (+1 projectile)
+    this.projectileCount = baseCount + [5, 10, 15, 20].filter(lvl => this.level >= lvl).length;
+    // Extra pierce: at levels 4, 8, 12, 16 (+1 pierce)
+    this.pierce = basePierce + [4, 8, 12, 16].filter(lvl => this.level >= lvl).length;
+    // Fire rate speedup: at levels 2, 6, 9, 13, 17 (-5% cooldown each)
+    const cdSteps = [2, 6, 9, 13, 17].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.09, Number((this.baseCooldown * Math.pow(0.95, cdSteps)).toFixed(3)));
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
+  }
+
+  public update(
+    dt: number,
+    playerPos: Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      if (enemies.length === 0) return;
+      this.timer = 0;
+
+      const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount, 26 * 26);
+      if (candidates.length === 0) return;
+
+      if (this.onTriggerAttack) {
+        this.onTriggerAttack();
+      }
+
+      for (let index = 0; index < this.projectileCount; index++) {
+        const target = candidates[index % candidates.length];
+        if (!target || !target.isAlive) continue;
+
+        const spawnPos = playerPos.clone().add(new Vector3(0, 0.65, 0));
+        const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+        const dir = new Vector3().subVectors(targetPos, spawnPos);
+        if (dir.lengthSq() > 0) dir.normalize();
+
+        // Slight spread if multiple bullets or recoil spray
+        if (this.projectileCount > 1) {
+          const spreadAngle = (index - (this.projectileCount - 1) / 2) * 0.10 + (Math.random() - 0.5) * 0.04;
+          dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
+        } else {
+          const spreadAngle = (Math.random() - 0.5) * 0.04;
+          dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
+        }
+
+        const proj = new Projectile({
+          position: spawnPos,
+          direction: dir,
+          speed: this.projectileSpeed,
+          damage: this.damage,
+          pierce: this.pierce,
+          lifetime: 1.6,
+          radius: 0.28,
+          color: 0xffaa22
+        });
+
+        spawnProjectile(proj);
+      }
+      SoundManager.playMachineGunShoot();
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.recalculateStats();
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    if ([5, 10, 15, 20].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12, 16].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    if ([2, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+5% скорострельности`);
+    return perks.join(', ');
+  }
+}
+
+

@@ -1,5 +1,5 @@
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
-import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon } from '../combat/Weapon';
+import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon, AssaultRifleWeapon } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { SoundManager } from '../core/SoundManager';
 import { DamageNumberManager } from '../combat/DamageNumberManager';
@@ -46,7 +46,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
     lightning_strike: '/textures/weapons/weapon_lightning_strike.png',
     ice_spike: '/textures/weapons/weapon_ice_spike.png',
-    fireball: '/textures/weapons/weapon_fireball.png'
+    fireball: '/textures/weapons/weapon_fireball.png',
+    assault_rifle: '/textures/weapons/weapon_assault_rifle.png'
   };
   const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
   return TextureManager.getWeaponBlobUrl(path);
@@ -1349,7 +1350,9 @@ export class HUD {
       ? 'Ария «Посох»'
       : charType === 'chakram'
       ? 'Кира «Чакрам»'
-      : 'Эльф-лучник «Лук»';
+      : charType === 'archer'
+      ? 'Эльф-лучник «Лук»'
+      : 'Ракета «Енот»';
   }
 
   public getHeroAvatar(charType: CharacterType): string {
@@ -1363,7 +1366,9 @@ export class HUD {
       ? '/textures/heroes/hero_sorceress_front.png'
       : charType === 'chakram'
       ? '/textures/heroes/hero_chakram_front.png'
-      : '/textures/heroes/hero_archer_front.png';
+      : charType === 'archer'
+      ? '/textures/heroes/hero_archer_front.png'
+      : '/textures/heroes/hero_rocket_front.png';
     return TextureManager.getAssetUrl(avatar);
   }
 
@@ -3743,6 +3748,22 @@ export class HUD {
           description: 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области',
           apply: () => {
             player.weapons.push(new FireballWeapon(() => player.triggerAttackAnim(0.42)));
+            player.recalculateStats();
+          }
+        });
+      }
+
+      const hasRifle = player.weapons.some(w => w.id === 'assault_rifle');
+      if (!hasRifle) {
+        pool.push({
+          id: 'new_assault_rifle',
+          title: 'Новое: Штурмовая Винтовка',
+          icon: '🔫',
+          iconImage: getWeaponIconUrl('assault_rifle'),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль',
+          apply: () => {
+            player.weapons.push(new AssaultRifleWeapon(() => player.triggerAttackAnim(0.20)));
             player.recalculateStats();
           }
         });

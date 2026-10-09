@@ -97,7 +97,8 @@ export class ProgressionManager {
         flail: true,     // Brigitta (unlocked)
         sorceress: true, // Aria (unlocked)
         chakram: true,   // Kira (unlocked)
-        archer: false    // Elf: Locked! (Buy / Achievement)
+        archer: false,   // Elf: Locked! (Buy / Achievement)
+        rocket: true     // Rocket Raccoon (unlocked)
       },
       dailyQuestsProgress: {
         daily_goblins: { current: 2, isClaimed: false },
@@ -135,7 +136,8 @@ export class ProgressionManager {
             flail: parsed.unlockedHeroes?.flail ?? true,
             sorceress: parsed.unlockedHeroes?.sorceress ?? true,
             chakram: parsed.unlockedHeroes?.chakram ?? true,
-            archer: Boolean(parsed.unlockedHeroes?.archer)
+            archer: Boolean(parsed.unlockedHeroes?.archer),
+            rocket: parsed.unlockedHeroes?.rocket ?? true
           },
           dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
             ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
@@ -164,7 +166,7 @@ export class ProgressionManager {
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
-    if (hero === 'ronin') return true;
+    if (hero === 'ronin' || hero === 'rocket') return true;
     if (hero === 'archer') {
       return Boolean(this.data.unlockedHeroes.archer);
     }
@@ -536,6 +538,28 @@ export class ProgressionManager {
             crystals: 26
           },
           unlockConditionHint: 'Открывается после выполнения задания'
+        };
+
+      case 'rocket':
+        return {
+          hero: 'rocket',
+          heroName: 'Ракета',
+          heroSubtitle: '«Страж Галактики»',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_assault_rifle.png'),
+          weaponName: 'Штурмовая винтовка',
+          avatarIcon: getAssetUrl('/textures/heroes/hero_rocket_front.png'),
+          questTitle: 'Арсенал Енота',
+          questDesc: 'Гениальный енот-коммандос из Стражей Галактики с тяжелой штурмовой винтовкой и бешеным темпом стрельбы.',
+          steps: [
+            'Доступен сразу всем защитникам Рифта.'
+          ],
+          rewards: {
+            potions: 3,
+            coins: 1500,
+            rings: 3,
+            crystals: 30
+          },
+          unlockConditionHint: 'Разблокирован по умолчанию'
         };
 
       case 'archer':

@@ -164,6 +164,19 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       splashRadius: 2.0,
       count: 1,
       notes: 'Пронзающие ледяные пики из-под земли'
+    },
+    assault_rifle: {
+      id: 'assault_rifle',
+      name: 'Штурмовая Винтовка',
+      icon: '🔫',
+      damage: 18,
+      cooldown: 0.18,
+      damagePerLevel: 3,
+      maxLevel: 20,
+      speed: 32,
+      pierce: 1,
+      count: 1,
+      notes: 'Скорострельная автоматическая винтовка с ураганным темпом стрельбы'
     }
   },
   heroes: {
@@ -220,6 +233,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.35,
       startingWeapon: 'bow',
       role: 'Сверхбыстрый снайпер с дальнобойными стрелами'
+    },
+    rocket: {
+      id: 'rocket',
+      name: 'Ракета (Енот)',
+      maxHp: 105,
+      baseSpeed: 9.1,
+      damageMultiplier: 1.35,
+      startingWeapon: 'assault_rifle',
+      role: 'Сверхбыстрый коммандос с автоматической винтовкой'
     }
   },
   monsters: {

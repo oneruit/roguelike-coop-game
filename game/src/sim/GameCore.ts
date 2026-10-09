@@ -120,6 +120,11 @@ export class SimPlayerInternal {
       this.hp = 110;
       this.baseSpeed = 8.9;
       this.baseDamageMultiplier = 1.35;
+    } else if (charType === 'rocket') {
+      this.maxHp = 105;
+      this.hp = 105;
+      this.baseSpeed = 9.1;
+      this.baseDamageMultiplier = 1.35;
     } else {
       this.maxHp = 115;
       this.hp = 115;
