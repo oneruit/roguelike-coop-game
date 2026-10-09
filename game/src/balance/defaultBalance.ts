@@ -1,7 +1,22 @@
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId, INVOKE_BASE_DAMAGE, INVOKE_DAMAGE_PER_LEVEL } from '../shared/InvokerSpells';
 import { GameBalanceState } from './BalanceTypes';
 
 export const DEFAULT_BALANCE: GameBalanceState = {
   weapons: {
+    invoker_invoke: {
+      id: 'invoker_invoke', name: 'Invoke — Случайное заклинание', icon: '🔮', damage: INVOKE_BASE_DAMAGE,
+      cooldown: 1.4, damagePerLevel: INVOKE_DAMAGE_PER_LEVEL, maxLevel: 20, range: 22,
+      notes: 'При каждом срабатывании равновероятно выбирает одно из десяти заклинаний Инвокера.'
+    },
+    ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => {
+      const def = INVOKER_SPELLS[spell];
+      const id = invokerWeaponId(spell);
+      return [id, {
+        id, name: def.name, icon: def.icon, damage: def.damage, cooldown: def.cooldown,
+        damagePerLevel: def.damage === 0 ? 0 : 6, maxLevel: 20, range: 22,
+        explosionRadius: def.radius, notes: def.description
+      }];
+    })),
     fireball: {
       id: 'fireball',
       name: 'Огненный Шар',
@@ -164,9 +179,24 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       splashRadius: 2.0,
       count: 1,
       notes: 'Пронзающие ледяные пики из-под земли'
+    },
+    assault_rifle: {
+      id: 'assault_rifle',
+      name: 'Штурмовая Винтовка',
+      icon: '🔫',
+      damage: 18,
+      cooldown: 0.18,
+      damagePerLevel: 3,
+      maxLevel: 20,
+      speed: 32,
+      pierce: 1,
+      count: 1,
+      notes: 'Скорострельная автоматическая винтовка с ураганным темпом стрельбы'
     }
   },
   heroes: {
+    invoker: { id:'invoker', name:'Инвокер', maxHp:100, baseSpeed:8.5, damageMultiplier:1.2,
+      startingWeapon:'invoker_invoke', role:'Маг десяти случайных заклинаний: урон, контроль и усиления' },
     ronin: {
       id: 'ronin',
       name: 'Рен (Ронин)',
@@ -220,6 +250,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.35,
       startingWeapon: 'bow',
       role: 'Сверхбыстрый снайпер с дальнобойными стрелами'
+    },
+    rocket: {
+      id: 'rocket',
+      name: 'Ракета (Енот)',
+      maxHp: 105,
+      baseSpeed: 9.1,
+      damageMultiplier: 1.35,
+      startingWeapon: 'assault_rifle',
+      role: 'Сверхбыстрый коммандос с автоматической винтовкой'
     }
   },
   monsters: {

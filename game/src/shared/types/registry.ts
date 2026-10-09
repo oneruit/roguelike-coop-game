@@ -18,7 +18,9 @@ export const CHARACTERS: readonly CharacterType[] = [
   'flail',
   'sorceress',
   'chakram',
-  'archer'
+  'archer',
+  'rocket',
+  'invoker'
 ] as const;
 
 export const CHEST_TIERS = ['small', 'large', 'legendary'] as const;
@@ -39,4 +41,4 @@ export const ENEMIES: readonly EnemyType[] = [
 
 export const GEMS: readonly GemType[] = ['blue', 'green', 'red', 'gold'] as const;
 
-export const BUFF_TYPES: readonly string[] = ['damage', 'speed', 'regen', 'invulnerable'] as const;
+export const BUFF_TYPES: readonly string[] = ['damage', 'speed', 'regen', 'invulnerable', 'ghost', 'alacrity'] as const;

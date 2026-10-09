@@ -1,3 +1,5 @@
+import { createInvokerBuff, SpellControlState, canAcquireInvokerWeapon } from '../shared/InvokerSpells';
+import { SimInvokerWeapon } from './SimWeapons';
 import { SimVec3 } from './math/SimVector';
 import { SimRNG } from './SimRNG';
 import {
@@ -95,7 +97,12 @@ export class SimPlayerInternal {
     this.charType = charType;
     this.position = spawnPos.clone();
 
-    if (charType === 'valkyrie') {
+    if (charType === 'invoker') {
+      this.maxHp = 100;
+      this.hp = 100;
+      this.baseSpeed = 8.5;
+      this.baseDamageMultiplier = 1.2;
+    } else if (charType === 'valkyrie') {
       this.maxHp = 135;
       this.hp = 135;
       this.baseSpeed = 8.2;
@@ -120,6 +127,11 @@ export class SimPlayerInternal {
       this.hp = 110;
       this.baseSpeed = 8.9;
       this.baseDamageMultiplier = 1.35;
+    } else if (charType === 'rocket') {
+      this.maxHp = 105;
+      this.hp = 105;
+      this.baseSpeed = 9.1;
+      this.baseDamageMultiplier = 1.35;
     } else {
       this.maxHp = 115;
       this.hp = 115;
@@ -134,11 +146,18 @@ export class SimPlayerInternal {
   public recalculateStats() {
     let speedBonus = 0;
     let dmgBonus = 0;
+    const ghostBuff = this.activeBuffs.get('ghost');
+    if (ghostBuff) speedBonus += ghostBuff.value;
+    const alacrityBuff = this.activeBuffs.get('alacrity');
+    if (alacrityBuff) dmgBonus += alacrityBuff.value;
     const speedBuff = this.activeBuffs.get('speed');
     if (speedBuff) speedBonus += speedBuff.value;
     const dmgBuff = this.activeBuffs.get('damage');
     if (dmgBuff) dmgBonus += dmgBuff.value;
 
+    for (const weapon of this.weapons) {
+      weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
+    }
     this.speed = this.baseSpeed * this.passiveSpeedMultiplier * (1 + speedBonus);
     this.damageMultiplier = this.baseDamageMultiplier * this.passiveDamageMultiplier * (1 + dmgBonus);
   }
@@ -163,6 +182,7 @@ export class SimEnemyInternal {
   public currentDir: SpriteDirection = 'front';
   public knockback: SimVec3 = new SimVec3();
   public lastHitBy: string = 'host';
+  public readonly spellControl = new SpellControlState();
   public bleedStacks: { dps: number; remainingTime: number; hitter: string }[] = [];
   public bleedTimer: number = 0;
 
@@ -372,7 +392,7 @@ export class GameCore {
 
   public upgradePlayerWeapon(playerId: string, weaponId: string) {
     const player = this.players.get(playerId);
-    if (!player) return;
+    if (!player || !canAcquireInvokerWeapon(weaponId, player.weapons)) return;
 
     let weapon = player.weapons.find(w => w.id === weaponId);
     if (weapon) {
@@ -472,7 +492,9 @@ export class GameCore {
         this.obstacleManager.resolveEntityCollision(player.position, 0.45);
 
         // Facing direction
-        if (Math.abs(mx) > Math.abs(mz)) {
+        if (player.charType === 'invoker' && player.attackAnimTimer > 0) {
+          // Keep facing the spell target while moving through the cast animation.
+        } else if (Math.abs(mx) > Math.abs(mz)) {
           player.dir = mx > 0 ? 'right' : 'left';
         } else {
           player.dir = mz > 0 ? 'front' : 'back';
@@ -484,7 +506,39 @@ export class GameCore {
       }
 
       // Update Weapons
+      const invokeSource = player.weapons.find(weapon => weapon.id === 'invoker_invoke');
       for (const weapon of player.weapons) {
+        if (weapon instanceof SimInvokerWeapon) {
+          weapon.setInvokeSource(invokeSource instanceof SimInvokerWeapon ? invokeSource : undefined);
+          weapon.random = () => this.rng.nextFloat();
+          weapon.onSpellBuff = (spell, level) => {
+            const buff = createInvokerBuff(spell, level);
+            player.activeBuffs.set(buff.type, buff);
+            player.recalculateStats();
+          };
+          weapon.onSpellControl = (target, control) => {
+            const enemy = this.enemies.find(candidate => candidate.id === target.id);
+            if (!enemy) return;
+            enemy.spellControl.apply(control, enemy.isBoss, enemy.isImmortal);
+            if (!enemy.isImmortal) {
+              const resistance = enemy.isBoss ? 0.15 : 1;
+              if (Number.isFinite(control.pushX)) {
+                enemy.knockback.x += Math.max(-12, Math.min(12, control.pushX!)) * 0.2 * resistance;
+              }
+              if (Number.isFinite(control.pushZ)) {
+                enemy.knockback.z += Math.max(-12, Math.min(12, control.pushZ!)) * 0.2 * resistance;
+              }
+            }
+          };
+          weapon.onSpellCast = cast => {
+            if (Math.hypot(cast.dx, cast.dz) > 0.01) {
+              player.dir = Math.abs(cast.dx) >= Math.abs(cast.dz)
+                ? (cast.dx < 0 ? 'left' : 'right')
+                : (cast.dz < 0 ? 'back' : 'front');
+            }
+            this.events.push({ type: 'spell_cast', ownerId: player.id, cast });
+          };
+        }
         weapon.update(
           dt,
           {
@@ -632,6 +686,7 @@ export class GameCore {
     for (const enemy of this.enemies) {
       if (!enemy.isAlive) continue;
 
+      enemy.spellControl.update(dt);
       // Process bleed ticks
       if (enemy.bleedStacks.length > 0) {
         enemy.bleedTimer += dt;
@@ -684,8 +739,8 @@ export class GameCore {
       const dist = Math.sqrt(dx * dx + dz * dz);
 
       if (dist > 0.05) {
-        const vx = (dx / dist) * enemy.speed * dt;
-        const vz = (dz / dist) * enemy.speed * dt;
+        const vx = (dx / dist) * enemy.speed * enemy.spellControl.movementFactor * dt;
+        const vz = (dz / dist) * enemy.speed * enemy.spellControl.movementFactor * dt;
         enemy.position.x += vx;
         enemy.position.z += vz;
         this.obstacleManager.resolveEntityCollision(enemy.position, (enemy.width + enemy.height) * 0.15);
@@ -700,7 +755,7 @@ export class GameCore {
 
       // Contact collision damage with player
       const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
-      if (dist <= collisionRadius) {
+      if (enemy.spellControl.canAttack && dist <= collisionRadius) {
         const now = this.gameTime;
         if (now - target.lastHitTimeByEnemy >= 0.38) {
           target.lastHitTimeByEnemy = now;
@@ -712,7 +767,7 @@ export class GameCore {
 
   private damagePlayer(player: SimPlayerInternal, enemy: SimEnemyInternal) {
     const isInvulnerable = player.activeBuffs.has('invulnerable');
-    if (isInvulnerable) return;
+    if (isInvulnerable || (player.activeBuffs.has('ghost') && !enemy.isImmortal && this.gameTime < 1800)) return;
 
     let dmg = enemy.damage * (1 - player.passiveDamageReduction);
     if (enemy.isImmortal || this.gameTime >= 1800) {

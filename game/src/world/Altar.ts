@@ -34,7 +34,7 @@ export interface AltarConfig {
   buff: ActiveBuff;
 }
 
-export const ALTAR_CONFIGS: Record<BuffType, AltarConfig> = {
+export const ALTAR_CONFIGS: Partial<Record<BuffType, AltarConfig>> = {
   damage: {
     type: 'damage',
     name: 'Алтарь Ярости',
@@ -136,7 +136,9 @@ export class Altar {
   public onCaptured?: (altar: Altar, buff: ActiveBuff) => void;
 
   constructor(type: BuffType, position: Vector3) {
-    this.config = ALTAR_CONFIGS[type];
+    const config = ALTAR_CONFIGS[type];
+    if (!config) throw new Error('No altar for buff: ' + type);
+    this.config = config;
     this.position = position.clone();
     this.mesh = new Group();
     this.mesh.position.copy(this.position);
