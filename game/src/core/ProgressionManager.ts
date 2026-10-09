@@ -168,8 +168,7 @@ export class ProgressionManager {
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
-    if (hero === 'ronin' || hero === 'rocket') return true; // TODO
-    if (hero === 'ronin' || hero === 'invoker') return true;
+    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker') return true; // TODO
     if (hero === 'archer') {
       return Boolean(this.data.unlockedHeroes.archer);
     }
