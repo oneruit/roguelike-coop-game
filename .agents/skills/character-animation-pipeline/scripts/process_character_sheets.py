@@ -5,6 +5,9 @@ Processes 4 separate animation state images (IDLE, WALK, ATTACK, WALK_ATTACK) an
 into production-ready, standardized sprite sheets for the game engine.
 
 Standard Specifications:
+- Character Style: "Chibi" proportions (2.0 to 2.5 heads tall, expressive head, compact body)
+- Character Max Height: <= 96 pixels inside 128px cell
+- Clean Natural Outlines: No artificial 1px black borders
 - 4 separate images (one per action state)
 - Exactly 24 frames per image arranged in 6 columns x 4 rows
 - Frame cell size: 128 x 128 pixels
@@ -15,7 +18,8 @@ Standard Specifications:
   * Row 1: Left-facing view
   * Row 2: Right-facing view
   * Row 3 (Bottom): Back / Upward-facing view
-- Foot anchor baseline: feet_y = 100 in 128px cell
+- Bottom margin: 10px offset from bottom (target_feet_y = 118 in 128px cell)
+  Prevents combat slash arcs and ground effects from clipping while keeping characters grounded
 - Horizontal center: x = 64 in 128px cell
 """
 
@@ -34,7 +38,7 @@ from PIL import Image
 def detect_and_clean_background(img_arr, bg_mode='auto'):
     """
     Cleans background to transparent RGBA.
-    Supports transparent PNGs, pure/near black background, solid colors, and white backgrounds.
+    Supports transparent PNGs, pure/near black background, solid colors, and pure white backgrounds.
     """
     h, w = img_arr.shape[:2]
     c = img_arr.shape[2] if len(img_arr.shape) > 2 else 1
@@ -61,11 +65,10 @@ def detect_and_clean_background(img_arr, bg_mode='auto'):
         # Dark / pitch-black background
         max_val = np.max(rgb, axis=2)
         alpha = np.clip((max_val - 12.0) / 18.0, 0.0, 1.0)
-    elif bg_brightness > 235:
+    elif bg_brightness > 230:
         # Pure white / near-white background
-        min_val = np.min(rgb, axis=2)
-        diff = 255.0 - min_val
-        alpha = np.clip((diff - 12.0) / 20.0, 0.0, 1.0)
+        dist = np.sqrt(np.sum((255.0 - rgb) ** 2, axis=-1))
+        alpha = np.clip((dist - 16.0) / 20.0, 0.0, 1.0)
     else:
         # Chroma keying with Euclidean color distance
         d = np.sqrt(np.sum((rgb - bg_color) ** 2, axis=-1))
@@ -75,20 +78,28 @@ def detect_and_clean_background(img_arr, bg_mode='auto'):
     for ch in range(3):
         out[:, :, ch] = np.clip(np.round(rgb[:, :, ch]), 0, 255).astype(np.uint8)
     out[:, :, 3] = np.clip(np.round(alpha * 255), 0, 255).astype(np.uint8)
-    out[out[:, :, 3] < 16, 3] = 0
+    out[out[:, :, 3] < 18, 3] = 0
     return out
 
 
-def align_and_pack_sheet(rgba_arr, cell_size=128, cols=6, rows=4, target_feet_y=100, target_char_h=96.0):
+def align_and_pack_sheet(
+    rgba_arr,
+    cell_size=128,
+    cols=6,
+    rows=4,
+    target_feet_y=118,
+    target_char_h=92.0,
+    max_char_h=96.0
+):
     """
     Standardizes a 6x4 animation image into cell_size x cell_size frames (768x512).
-    Aligns character baselines and centers horizontally.
+    Leaves a 10px margin at the bottom (target_feet_y = 118 in 128px cell).
+    Caps character height to <= 96px.
     """
     h, w = rgba_arr.shape[:2]
     row_h = h / float(rows)
     col_w = w / float(cols)
 
-    # 1. First pass: find global character reference height and row ground lines
     row_baselines = []
     char_heights = []
 
@@ -109,12 +120,8 @@ def align_and_pack_sheet(rgba_arr, cell_size=128, cols=6, rows=4, target_feet_y=
         row_baselines.append(np.median(feet_in_row) if len(feet_in_row) > 0 else (y1 - 3))
 
     ref_h = np.median(char_heights) if len(char_heights) > 0 else (row_h * 0.8)
-    scale = target_char_h / float(ref_h) if ref_h > 0 else 1.0
-
-    # Ensure character fits comfortably in cell
-    max_allowed_h = cell_size - 14
-    if target_char_h > max_allowed_h:
-        scale = max_allowed_h / float(ref_h)
+    # Scale to target height and strictly cap at max_char_h (96px)
+    scale = min(target_char_h / float(ref_h), max_char_h / float(ref_h)) if ref_h > 0 else 1.0
 
     out_sheet = np.zeros((rows * cell_size, cols * cell_size, 4), dtype=np.uint8)
 
@@ -143,24 +150,25 @@ def align_and_pack_sheet(rgba_arr, cell_size=128, cols=6, rows=4, target_feet_y=
 
             sp_img = Image.fromarray(sprite)
             sp_scaled = np.array(sp_img.resize((new_w, new_h), Image.Resampling.LANCZOS))
+            bh, bw = sp_scaled.shape[:2]
 
-            # Vertical placement relative to row baseline
+            # Placement with 10px margin at bottom
             global_feet = y0 + max_y
             feet_offset = global_feet - ground_y
 
             dst_feet_y = target_feet_y + int(round(feet_offset * scale))
-            dst_y = dst_feet_y - new_h
-            dst_x = (cell_size - new_w) // 2
+            dst_y = dst_feet_y - bh
+            dst_x = (cell_size - bw) // 2
 
-            # Keep inside cell bounds
-            dst_y = max(0, min(cell_size - new_h, dst_y))
-            dst_x = max(0, min(cell_size - new_w, dst_x))
+            # Clamp inside frame boundaries
+            dst_y = max(0, min(cell_size - bh, dst_y))
+            dst_x = max(0, min(cell_size - bw, dst_x))
 
             out_y0 = r * cell_size + dst_y
             out_x0 = c * cell_size + dst_x
 
             mask = sp_scaled[:, :, 3] > 0
-            target_slice = out_sheet[out_y0:out_y0 + new_h, out_x0:out_x0 + new_w]
+            target_slice = out_sheet[out_y0:out_y0 + bh, out_x0:out_x0 + bw]
             target_slice[mask] = sp_scaled[mask]
 
     return Image.fromarray(out_sheet)
@@ -170,6 +178,7 @@ def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_shee
     """
     Standardizes portrait to 128x128 pixel transparent PNG.
     """
+    out_path = os.path.normpath(os.path.abspath(out_path))
     if portrait_input and os.path.isfile(portrait_input):
         raw = Image.open(portrait_input)
         arr = np.array(raw)
@@ -193,14 +202,27 @@ def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_shee
             cropped = rgba[y0:y1, x0:x1]
             crop_img = Image.fromarray(cropped)
             res = crop_img.resize((cell_size, cell_size), Image.Resampling.LANCZOS)
-            res.save(out_path)
+            tmp_path = out_path + '.tmp.png'
+            res.save(tmp_path)
+            if os.path.exists(out_path):
+                try:
+                    os.remove(out_path)
+                except Exception:
+                    pass
+            os.replace(tmp_path, out_path)
             print(f'[OK] Processed Portrait: {out_path} ({res.size})')
             return
 
     if fallback_idle_sheet is not None:
-        # Crop Row 0 Col 0 from aligned IDLE sheet
         crop_cell = fallback_idle_sheet.crop((0, 0, cell_size, cell_size))
-        crop_cell.save(out_path)
+        tmp_path = out_path + '.tmp.png'
+        crop_cell.save(tmp_path)
+        if os.path.exists(out_path):
+            try:
+                os.remove(out_path)
+            except Exception:
+                pass
+        os.replace(tmp_path, out_path)
         print(f'[OK] Created Portrait from IDLE Row 0 Col 0: {out_path} ({crop_cell.size})')
 
 
@@ -215,9 +237,11 @@ def process_character(
     cell_size=128,
     cols=6,
     rows=4,
-    target_feet_y=100,
-    target_char_h=96.0
+    target_feet_y=118,
+    target_char_h=92.0,
+    max_char_h=96.0
 ):
+    out_dir = os.path.normpath(os.path.abspath(out_dir))
     os.makedirs(out_dir, exist_ok=True)
     clean_name = name if name.startswith('hero_') else f'hero_{name}'
 
@@ -244,19 +268,32 @@ def process_character(
             cols=cols,
             rows=rows,
             target_feet_y=target_feet_y,
-            target_char_h=target_char_h
+            target_char_h=target_char_h,
+            max_char_h=max_char_h
         )
 
-        out_file = os.path.join(out_dir, f'{clean_name}_{state}.png')
-        sheet.save(out_file)
+        out_file = os.path.normpath(os.path.abspath(os.path.join(out_dir, f'{clean_name}_{state}.png')))
+        tmp_file = out_file + '.tmp.png'
+        sheet.save(tmp_file)
+        if os.path.exists(out_file):
+            try:
+                os.remove(out_file)
+            except Exception:
+                pass
+        os.replace(tmp_file, out_file)
         processed_sheets[state] = sheet
         print(f'[OK] Processed {state.upper()}: {out_file} ({sheet.size})')
 
     # Portrait processing
     portrait_out = os.path.join(out_dir, f'{clean_name}_front.png')
-    process_portrait(portrait_path, portrait_out, cell_size=cell_size, fallback_idle_sheet=processed_sheets.get('idle'))
+    process_portrait(
+        portrait_path,
+        portrait_out,
+        cell_size=cell_size,
+        fallback_idle_sheet=processed_sheets.get('idle')
+    )
 
-    print(f'\nSuccess! Standard 128x128 character package ready for "{clean_name}".')
+    print(f'\nSuccess! Standard 128x128 Chibi character package ready for "{clean_name}".')
 
 
 if __name__ == '__main__':
@@ -271,8 +308,9 @@ if __name__ == '__main__':
     parser.add_argument('--cell-size', type=int, default=128, help='Frame cell size (default: 128)')
     parser.add_argument('--cols', type=int, default=6, help='Columns per row (default: 6)')
     parser.add_argument('--rows', type=int, default=4, help='Rows (default: 4)')
-    parser.add_argument('--feet-y', type=int, default=100, help='Feet anchor Y coordinate (default: 100)')
-    parser.add_argument('--char-h', type=float, default=96.0, help='Target character height (default: 96.0)')
+    parser.add_argument('--feet-y', type=int, default=118, help='Feet anchor Y coordinate (default: 118, 10px margin from bottom)')
+    parser.add_argument('--char-h', type=float, default=92.0, help='Target character height (default: 92.0, max 96.0)')
+    parser.add_argument('--max-h', type=float, default=96.0, help='Max allowed character height (default: 96.0)')
 
     args = parser.parse_args()
     process_character(
@@ -287,5 +325,6 @@ if __name__ == '__main__':
         cols=args.cols,
         rows=args.rows,
         target_feet_y=args.feet_y,
-        target_char_h=args.char_h
+        target_char_h=args.char_h,
+        max_char_h=args.max_h
     )

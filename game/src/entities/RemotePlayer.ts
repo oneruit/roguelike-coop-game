@@ -20,7 +20,7 @@ import {
   Texture,
   type Material
 } from 'three';
-import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from './Player';
+import { Player, CharacterType, HeroAnimState, BuffType, ActiveBuff } from './Player';
 import { SpriteDirection, TextureManager, AnimatedCharacterTextures } from '../core/TextureManager';
 import { PlayerNetState, NetWeaponInfo } from '../net/NetworkManager';
 
@@ -100,9 +100,8 @@ export class RemotePlayer {
     this.targetPosition = new Vector3(0, 0, 0);
     this.mesh = new Group();
 
-    // 3.6 x 3.6 plane geometry anchored at feet
-    this.roninGeom = new PlaneGeometry(3.6, 3.6);
-    this.roninGeom.translate(0, 0.975, 0);
+    // 3.6 x 3.6 plane geometry anchored at feet based on character standard
+    this.roninGeom = Player.getCharacterGeometry(charType).clone();
 
     // Load and clone textures so UV repeat/offsets are independent from local player
     this.loadCharacterTextures(charType);

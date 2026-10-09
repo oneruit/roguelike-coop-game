@@ -252,6 +252,18 @@ export class HUD {
   public onRefreshRoomsClicked?: () => void;
   public onReturnToMenu?: () => void;
 
+  public static readonly MENU_BACKGROUNDS: readonly string[] = [
+    '/textures/ui/menu_background_1.jpg',
+    '/textures/ui/menu_background_2.png'
+  ];
+
+  public static applyRandomMenuBackground() {
+    const list = HUD.MENU_BACKGROUNDS;
+    if (list.length === 0) return;
+    const chosen = list[Math.floor(Math.random() * list.length)];
+    document.documentElement.style.setProperty('--menu-background-url', `url('${chosen}')`);
+  }
+
   constructor(
     scene: Scene,
     onSelectHero: (charType: CharacterType, seedInput?: string, isTrainingMode?: boolean, timeOfDay?: 'random' | 'day' | 'night') => void,
@@ -301,6 +313,7 @@ export class HUD {
 
     // Modals
     this.mainMenuModal = document.getElementById('main-menu-modal')!;
+    HUD.applyRandomMenuBackground();
     this.coopModal = document.getElementById('coop-modal')!;
     this.settingsModal = document.getElementById('settings-modal')!;
     this.exitModal = document.getElementById('exit-modal')!;
@@ -997,6 +1010,7 @@ export class HUD {
     this.hideCharacterSelect();
     this.hideQuestsModal();
     this.updateMainMenuQuests();
+    HUD.applyRandomMenuBackground();
     this.mainMenuModal.classList.remove('hidden');
   }
 
