@@ -13,6 +13,8 @@ import {
   PlayerStats
 } from './entities';
 
+import type { MeleeWeaponId } from './combat';
+
 export type NetRole = 'solo' | 'host' | 'client';
 
 export interface EnemySnapshot {
@@ -101,6 +103,7 @@ export interface NetShotInfo {
   ltg?: boolean;
   ice?: boolean;
   fb?: boolean;
+  melee?: MeleeWeaponId;
 }
 
 export interface NetEvent {
