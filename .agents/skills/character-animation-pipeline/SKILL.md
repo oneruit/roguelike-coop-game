@@ -1,13 +1,13 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, and integrating 4-state animated characters (IDLE, WALK, ATTACK, WALK_ATTACK across 4 directional rows, 6 cols x 4 rows @ 128x128px per cell) in chibi style with 10px bottom margin and ground anchoring into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, and integrating 4-state animated characters (IDLE, WALK, ATTACK, WALK_ATTACK across 4 directional rows, 6 cols x 4 rows @ 128x128px per cell) in chibi style with 10px bottom margin, weapon consistency rules, and ground anchoring into the game engine.
 ---
 
 # Character Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating 4-state animated characters into the game engine.
 
-Instead of generating a single massive composite sheet, this pipeline standardizes on **4 separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **6 columns $\times$ 4 rows (24 frames)** grid with **$128 \times 128$ pixel cells**, **chibi art proportions**, a **10px bottom margin** for combat effect clearance, and **ground anchoring** so characters walk firmly on the ground rather than floating.
+Instead of generating a single composite sheet, this pipeline standardizes on **4 separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **6 columns $\times$ 4 rows (24 frames)** grid with **$128 \times 128$ pixel cells**, **chibi art proportions**, a **10px bottom margin** for combat effect clearance, strict **weapon consistency rules**, and **ground anchoring** so characters walk firmly on the ground rather than floating.
 
 ---
 
@@ -26,7 +26,7 @@ Every character comprises 5 distinct texture assets in `public/textures/heroes/`
 
 ---
 
-### 1.2 Core Visual Standards: Chibi Proportions, Clean Alpha & 10px Bottom Margin
+### 1.2 Core Visual Standards
 
 1. **Chibi Style Proportions:**
    - Proportions: **2.0 to 2.5 heads tall** (large expressive head, cute compact torso and limbs).
@@ -35,7 +35,7 @@ Every character comprises 5 distinct texture assets in `public/textures/heroes/`
 
 2. **Character Height Limit:**
    - The character standing height **must not exceed 96 pixels** (`height <= 96px`) inside the $128 \times 128$ cell.
-   - This guarantees at least 22px headroom at the top for helmets, wings, hats, and floating effects.
+   - Guarantees at least 22px headroom at the top for helmets, wings, hats, and floating effects.
 
 3. **Natural Clean Outlines (No Artificial 1px Black Border):**
    - Sprites must maintain their **natural pixel art antialiasing and shading**.
@@ -82,96 +82,143 @@ With geometry translation $1.51875$:
 
 ---
 
-## 2. Cross-Sheet Consistency Protocol
+## 2. Generation Artifact Prevention & Enforcement Rules
+
+When generating sprite sheets with generative models, four major classes of artifacts frequently occur:
+
+### 2.1 Artifact A: Duplicate or Phantom Weapons
+* **Problem:** Diffusion models frequently draw extra swords or weapons on the character's hips, back, or belt, even when the character is holding a weapon in hand (e.g. holding spear AND having extra sword on hip, or dual spears).
+* **Prevention Rules:**
+  1. **Strict Single-Equipment Constraint in Prompts:**
+     `Equipment: Exactly ONE spear held in right hand, exactly ONE round shield held on left arm. Zero extra weapons. NO weapons on hip, NO sheathed swords, NO daggers on belt, NO weapons slung on back.`
+  2. **Negative Prompting Tokens:**
+     `no secondary weapon, no scabbard, no sheath, no extra weapons, no dual weapons, no hip sword.`
+
+### 2.2 Artifact B: Inconsistent Handedness (Weapon in Wrong Hand)
+* **Problem:** Models confuse character-relative hands and camera-relative sides, swapping the main weapon from the right hand to the left hand in some frames or directional views.
+* **Prevention Rules:**
+  Define the anatomical hand position strictly for each of the 4 rows:
+  - **Row 0 (Front):** Facing forward directly towards viewer. Right hand (viewer's left side) firmly holds spear; left arm (viewer's right side) holds shield.
+  - **Row 1 (Profile Left):** Facing strictly LEFT. Character's left arm with shield is in front facing camera; right hand with spear is in background thrusting left.
+  - **Row 2 (Profile Right):** Facing strictly RIGHT. Character's right hand with spear is in foreground facing camera; left arm with shield is behind body.
+  - **Row 3 (Back):** Facing strictly UP/away from viewer. Showing back of armor/wings; right hand (viewer's right side) holds spear, left arm (viewer's left side) holds shield.
+
+### 2.3 Artifact C: Missing or Disappearing Weapons
+* **Problem:** During animation sequences (especially walk or recovery frames), weapons may vanish or morph into empty hands.
+* **Prevention Rules:**
+  Include a mandatory persistence token:
+  `Mandatory equipment presence in EVERY frame: every single frame across all rows MUST clearly show the spear and round shield. Weapons never disappear, unequip, or morph.`
+
+### 2.4 Artifact D: Direction Drift & Chaotic Row Rotations
+* **Problem:** In side rows (Row 1 Left or Row 2 Right), some frames turn forward towards the camera or flip backward, creating chaotic flickering during movement.
+* **Prevention Strategy:**
+  1. **Prompt Level:**
+     `Row 1: STRICT 100% profile facing LEFT only for all 6 columns. Zero front-facing frames, zero camera turns.`
+     `Row 2: STRICT 100% profile facing RIGHT only for all 6 columns. Zero front-facing frames, zero camera turns.`
+  2. **Pipeline Symmetrical Mirroring (`--mirror-left`):**
+     Diffusion models consistently render right-facing profiles better than left-facing profiles. The Python processing script provides the `--mirror-left` flag:
+     - Automatically mirrors Row 2 (Right) horizontally into Row 1 (Left).
+     - Guarantees 100% flawless lateral consistency, zero direction drift, matched frame timing, and identical silhouette between left and right motion.
+
+---
+
+## 3. Cross-Sheet Consistency Protocol
 
 To prevent character drift (where face, armor, eye color, hair, or wings change between the 4 sheets), follow this 3-step consistency protocol:
 
 ### Step 1: Character Design Specification (Design Bible)
 Establish exact visual tokens before prompting:
-- **Archetype & Proportions:** e.g., Chibi Norse Valkyrie maiden, 2.5 heads tall.
-- **Head & Face:** Silver winged helmet/circlet, long golden blonde braids, glowing cyan eyes (`#00E5FF`).
+- **Archetype & Proportions:** Chibi Norse Valkyrie maiden, 2.5 heads tall.
+- **Head & Face:** Silver winged circlet/helmet, long golden blonde braids, cute glowing cyan eyes (`#00E5FF`).
 - **Outfit & Armor:** Polished silver plate cuirass with gold trims, royal blue battle tunic/skirt (`#1D4ED8`).
-- **Accessories:** Golden-feathered wings behind shoulders, silver two-handed greatsword with glowing azure blade.
+- **Wings:** White feathered angel wings behind shoulders with subtle golden tips.
+- **Equipment:** One golden-tipped spear in right hand, one round Norse shield (blue and silver with gold rim and center boss) on left arm. No other weapons.
 
 ### Step 2: Master Reference Generation
 Generate the **Master Portrait** (or Master IDLE sheet) first. Save it as the visual anchor.
 
 ### Step 3: Reference Image Conditioning (`ImagePaths`)
-When generating the remaining sheets (WALK, ATTACK, WALK_ATTACK), **always pass the master reference image** via `ImagePaths` in `generate_image` (e.g. `ImagePaths: [portrait_path, idle_sheet_path]`). This locks the model into drawing the exact same character with identical colors, hair, and clothing across all action states.
+When generating the remaining sheets (WALK, ATTACK, WALK_ATTACK), **always pass the master reference image** via `ImagePaths` in `generate_image` (e.g. `ImagePaths: [portrait_path, idle_sheet_path]`). This locks the model into drawing the exact same character with identical colors, hair, clothing, and weapons across all action states.
 
 ---
 
-## 3. Standard Generation Prompts
+## 4. Standard Generation Prompts (Valkyrie Example: Spear & Shield)
 
-### Master IDLE Prompt (`hero_<name>_idle.png`)
+### Master PORTRAIT Prompt (`hero_valkyrie_front.png`)
 ```text
-2D chibi pixel art character sprite sheet of <Hero Description>.
-Chibi proportions: 2.5 heads tall, max 96px height, large expressive head, cute glowing cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
+128x128 chibi pixel art portrait of cute Valkyrie (winged maiden warrior of Norse mythology).
+Chibi anime proportions, large expressive glowing cyan eyes, long golden blonde braided hair, silver winged helmet with golden trims, polished silver breastplate with royal blue tunic collar, white feathered wings with golden tips behind shoulders.
+Holding spear in right hand and round blue Norse shield on left arm.
+No other weapons.
+Pure solid white background rgb(255,255,255), clean 16-bit chibi pixel art icon.
+```
+
+### Master IDLE Prompt (`hero_valkyrie_idle.png`)
+```text
+2D chibi pixel art character sprite sheet of cute Norse Valkyrie maiden warrior.
+Chibi proportions: 2.5 heads tall, max 96px height, large expressive head, cute glowing cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, white feathered wings with golden tips.
+Equipment: STRICTLY ONE spear in right hand, STRICTLY ONE round blue Norse shield on left arm. ZERO extra weapons, NO weapons on hip, NO sheathed swords, NO daggers on belt, NO weapons on back.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
-Row 0: facing front / forward.
-Row 1: facing left.
-Row 2: facing right.
-Row 3: facing back.
+Row 0: facing front / forward towards viewer. Right hand holds spear, left arm holds shield.
+Row 1: STRICT 100% profile facing LEFT only for all 6 columns. Zero front-facing frames.
+Row 2: STRICT 100% profile facing RIGHT only for all 6 columns. Zero front-facing frames.
+Row 3: facing back / away from viewer. Right hand holds spear, left arm holds shield.
 Animation: IDLE subtle breathing and gentle wing flutter cycle across 6 columns per row.
 Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
-### Master WALK Prompt (`hero_<name>_walk.png`)
+### Master WALK Prompt (`hero_valkyrie_walk.png`)
 *(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
-2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
-Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
+2D chibi pixel art character sprite sheet of the same cute chibi Norse Valkyrie maiden from reference images.
+Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, white feathered wings.
+Equipment: STRICTLY ONE spear in right hand, STRICTLY ONE round blue Norse shield on left arm in every frame. NO extra weapons, NO swords on hips, NO weapons on back.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
-Row 0: facing front / forward.
-Row 1: facing left.
-Row 2: facing right.
-Row 3: facing back.
-Animation: WALK running cycle animation across 6 columns per row: alternating legs, cute run strides, animated wings.
+Row 0: facing front / forward towards viewer.
+Row 1: STRICT 100% profile facing LEFT only for all 6 columns. Left arm shield forward, right hand spear behind.
+Row 2: STRICT 100% profile facing RIGHT only for all 6 columns. Right hand spear forward, left arm shield behind.
+Row 3: facing back / away from viewer.
+Animation: WALK running cycle animation across 6 columns per row: alternating legs, cute run strides, animated wings, carrying spear and shield.
 Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
-### Master ATTACK Prompt (`hero_<name>_attack.png`)
+### Master ATTACK Prompt (`hero_valkyrie_attack.png`)
 *(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
-2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
-Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
+2D chibi pixel art character sprite sheet of the same cute chibi Norse Valkyrie maiden from reference images.
+Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, white feathered wings.
+Equipment: STRICTLY ONE spear in right hand, STRICTLY ONE round blue Norse shield on left arm in every frame. NO extra weapons, NO swords on hips, NO weapons on back.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
-Row 0: facing front / forward.
-Row 1: facing left.
-Row 2: facing right.
-Row 3: facing back.
-Animation: ATTACK strike animation across 6 columns per row: anticipation windup, raising greatsword, forward cleave slash with glowing cyan blade arc trail, follow-through swing, recovery.
+Row 0: facing front / forward towards viewer. Thrusting spear downward towards viewer.
+Row 1: STRICT 100% profile facing LEFT only for all 6 columns. Thrusting spear forward to the left.
+Row 2: STRICT 100% profile facing RIGHT only for all 6 columns. Thrusting spear forward to the right.
+Row 3: facing back / away from viewer. Thrusting spear upward away from viewer.
+Animation: ATTACK spear thrust animation across 6 columns per row: anticipation windup pull back, rapid forward spear lunge thrust with glowing cyan pierce arc trail, shield brace, recovery.
 Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
-### Master WALK_ATTACK Prompt (`hero_<name>_walk_attack.png`)
+### Master WALK_ATTACK Prompt (`hero_valkyrie_walk_attack.png`)
 *(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
-2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
-Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
+2D chibi pixel art character sprite sheet of the same cute chibi Norse Valkyrie maiden from reference images.
+Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, white feathered wings.
+Equipment: STRICTLY ONE spear in right hand, STRICTLY ONE round blue Norse shield on left arm in every frame. NO extra weapons, NO swords on hips, NO weapons on back.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
-Row 0: facing front / forward.
-Row 1: facing left.
-Row 2: facing right.
-Row 3: facing back.
-Animation: WALK ATTACK running dash slash animation across 6 columns per row: sprinting forward, leaping strike with glowing cyan greatsword slash arc, follow-through dash, recovery.
+Row 0: facing front / forward towards viewer.
+Row 1: STRICT 100% profile facing LEFT only for all 6 columns.
+Row 2: STRICT 100% profile facing RIGHT only for all 6 columns.
+Row 3: facing back / away from viewer.
+Animation: WALK ATTACK charging spear dash thrust animation across 6 columns per row: sprinting forward, leaping dive thrust with glowing cyan energy trail, follow-through dash, recovery.
 Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
-```
-
-### Master PORTRAIT Prompt (`hero_<name>_front.png`)
-```text
-128x128 chibi pixel art portrait of cute <Hero Description>.
-Chibi anime proportions, large expressive glowing cyan eyes, long golden blonde braided hair, silver winged helmet with golden trims, silver breastplate with royal blue tunic collar, small golden feathered wings.
-Pure solid white background rgb(255,255,255), clean 16-bit chibi pixel art icon.
 ```
 
 ---
 
-## 4. Automated Processing Script
+## 5. Automated Processing Script
 
 Use `.agents/skills/character-animation-pipeline/scripts/process_character_sheets.py`:
 
@@ -187,27 +234,29 @@ python .agents/skills/character-animation-pipeline/scripts/process_character_she
   --cell-size 128 \
   --feet-y 118 \
   --char-h 92.0 \
-  --max-h 96.0
+  --max-h 96.0 \
+  --mirror-left
 ```
 
-### Processing Operations:
+### Script Capabilities:
 1. **Background Clean:** Removes pure white (`#FFFFFF`) or pure black (`#000000`) backgrounds with soft anti-aliased alpha borders.
-2. **Bottom Offset:** Anchors feet at `target_feet_y = 118` (leaving a 10px margin at the bottom for slash arcs and ground contact).
-3. **Height Capping:** Ensures the character height never exceeds 96px (`max_h = 96.0`).
-4. **Resolution Packaging:** Packs each sheet into $768 \times 512$ px (6 cols $\times$ 4 rows @ 128x128) and portrait into $128 \times 128$ px.
+2. **Bottom Offset:** Anchors feet at `target_feet_y = 118` (leaving a 10px margin at the bottom for combat effects and grounding).
+3. **Height Capping:** Ensures character height never exceeds 96px (`max_h = 96.0`).
+4. **Mirroring (`--mirror-left`):** Mirrors Row 2 (Right) into Row 1 (Left), completely eliminating AI lateral drift and direction inconsistency.
+5. **Resolution Packaging:** Packs each sheet into $768 \times 512$ px (6 cols $\times$ 4 rows @ 128x128) and portrait into $128 \times 128$ px.
 
 ---
 
-## 5. Engine Integration Checklist
+## 6. Engine Integration Checklist
 
-### Step 5.1: Texture Preloading (`game/src/core/TextureManager.ts`)
+### Step 6.1: Texture Preloading (`game/src/core/TextureManager.ts`)
 ```typescript
 public static loadValkyrieTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
   return this.loadAnimatedTextures('hero_valkyrie', renderer);
 }
 ```
 
-### Step 5.2: Player Geometry Grounding (`game/src/entities/Player.ts` & `RemotePlayer.ts`)
+### Step 6.2: Player Geometry Grounding (`game/src/entities/Player.ts` & `RemotePlayer.ts`)
 ```typescript
 public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
   let geom = Player.geometryCache.get(charType);
@@ -215,7 +264,6 @@ public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
     geom = new PlaneGeometry(3.6, 3.6);
     // 128x128 chibi standard: feet anchored at y=118 in 128px cell (10px bottom margin)
     // translation = (118 / 128 - 0.5) * 3.6 = 0.421875 * 3.6 = 1.51875
-    // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
     const is128Standard = charType === 'valkyrie';
     const translateY = is128Standard ? 1.51875 : 0.975;
     geom.translate(0, translateY, 0);
@@ -225,7 +273,7 @@ public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
 }
 ```
 
-### Step 5.3: Dynamic UV Columns Support
+### Step 6.3: Dynamic UV Columns Support
 ```typescript
 const img = (tex as any).image as { width?: number; height?: number } | undefined;
 const dynamicCols = (img && img.width && img.height && img.height > 0)
@@ -238,7 +286,7 @@ tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
 
 ---
 
-## 6. Verification Checklist
+## 7. Verification Checklist
 
 Always run:
 1. `python .agents/skills/character-animation-pipeline/scripts/process_character_sheets.py ...` -> Exit code 0.
