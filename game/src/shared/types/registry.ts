@@ -19,6 +19,7 @@ export const CHARACTERS: readonly CharacterType[] = [
   'sorceress',
   'chakram',
   'archer',
+  'rocket',
   'invoker'
 ] as const;
 

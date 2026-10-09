@@ -78,6 +78,47 @@ export class SoundManager {
   }
 
   /**
+   * Sound when automatic rifle / machine gun fires a round
+   */
+  public static playMachineGunShoot() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // 1. Sharp transient click/pop
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(950, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.06);
+
+    gain.gain.setValueAtTime(0.14, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start(now);
+    osc.stop(now + 0.065);
+
+    // 2. Punchy muzzle blast
+    const punchOsc = ctx.createOscillator();
+    const punchGain = ctx.createGain();
+    punchOsc.type = 'triangle';
+    punchOsc.frequency.setValueAtTime(280, now);
+    punchOsc.frequency.exponentialRampToValueAtTime(60, now + 0.05);
+
+    punchGain.gain.setValueAtTime(0.16, now);
+    punchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+    punchOsc.connect(punchGain);
+    punchGain.connect(this.getMasterGain());
+    punchOsc.start(now);
+    punchOsc.stop(now + 0.055);
+  }
+
+  /**
    * Sound when bow releases an arrow (bowstring twang + swift aerodynamic whoosh)
    */
   public static playBowShoot() {

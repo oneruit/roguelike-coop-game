@@ -87,7 +87,8 @@ export class TextureManager {
     '/textures/weapons/weapon_fireball.png',
     '/textures/weapons/weapon_orbiting_barrier.png',
     '/textures/weapons/weapon_reaper_scythe.png',
-    '/textures/weapons/weapon_whirlwind_slash.png'
+    '/textures/weapons/weapon_whirlwind_slash.png',
+    '/textures/weapons/weapon_assault_rifle.png'
   ];
 
   public static getWeaponBlobUrl(pathOrId: string): string {
@@ -242,6 +243,12 @@ export class TextureManager {
     '/textures/heroes/hero_archer_walk.png',
     '/textures/heroes/hero_archer_attack.png',
     '/textures/heroes/hero_archer_walk_attack.png',
+
+    '/textures/heroes/hero_rocket_front.png',
+    '/textures/heroes/hero_rocket_idle.png',
+    '/textures/heroes/hero_rocket_walk.png',
+    '/textures/heroes/hero_rocket_attack.png',
+    '/textures/heroes/hero_rocket_walk_attack.png',
 
     // Legacy Hero Avatars
     '/textures/heroes/hero_male_front.png',
@@ -489,6 +496,10 @@ export class TextureManager {
 
   public static loadArcherTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_archer', renderer);
+  }
+
+  public static loadRocketTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_rocket', renderer);
   }
 
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {

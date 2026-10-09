@@ -32,7 +32,8 @@ import {
   KukriWeapon,
   OrbitingBarrierWeapon,
   HolyAuraWeapon,
-  KatanaSlashWeapon
+  KatanaSlashWeapon,
+  AssaultRifleWeapon
 } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { Enemy } from './Enemy';
@@ -303,6 +304,8 @@ export class Player {
         ? TextureManager.loadChakramTextures()
         : charType === 'archer'
         ? TextureManager.loadArcherTextures()
+        : charType === 'rocket'
+        ? TextureManager.loadRocketTextures()
         : TextureManager.loadRoninTextures();
 
     this.animatedTextures = {
@@ -368,6 +371,8 @@ export class Player {
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
     } else if (this.charType === 'archer') {
       this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+    } else if (this.charType === 'rocket') {
+      this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20)));
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }
@@ -1097,6 +1102,10 @@ export class Player {
           ? 'Ария'
           : this.charType === 'chakram'
           ? 'Кира'
+          : this.charType === 'archer'
+          ? 'Эльф'
+          : this.charType === 'rocket'
+          ? 'Ракета'
           : 'Рен';
       ctx.fillText(`${this.displayName} (${heroName}) [L${this.level}]`, w / 2, 24);
 

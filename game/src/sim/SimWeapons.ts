@@ -1140,6 +1140,96 @@ export class SimFireballWeapon extends SimWeapon {
   }
 }
 
+export class SimAssaultRifleWeapon extends SimWeapon {
+  private projectileCount: number = 1;
+  private projectileSpeed: number = 32;
+  private pierce: number = 1;
+
+  constructor() {
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 18);
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    spawnProjectile: (p: SimProjectileData) => void,
+    _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    _triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      if (enemies.length === 0) return;
+      this.timer = 0;
+
+      const targets = findClosestSimEnemies(enemies, player.position, this.projectileCount, 26 * 26);
+      if (targets.length === 0) return;
+
+      if (_triggerAnim) _triggerAnim(0.20);
+      if (emitSound) emitSound('shoot');
+
+      for (let i = 0; i < this.projectileCount; i++) {
+        const target = targets[i % targets.length];
+        if (!target || !target.isAlive) continue;
+
+        const dir = new SimVec3().subVectors(target.position, player.position);
+        dir.y = 0;
+        dir.normalize();
+
+        if (this.projectileCount > 1) {
+          const spreadAngle = (i - (this.projectileCount - 1) / 2) * 0.10 + (Math.random() - 0.5) * 0.04;
+          const cos = Math.cos(spreadAngle);
+          const sin = Math.sin(spreadAngle);
+          const rx = dir.x * cos - dir.z * sin;
+          const rz = dir.x * sin + dir.z * cos;
+          dir.x = rx;
+          dir.z = rz;
+        }
+
+        const proj: SimProjectileData = {
+          id: Math.random().toString(36).substring(2, 9),
+          ownerId: player.id,
+          position: player.position.clone().add({ x: 0, y: 0.65, z: 0 }),
+          direction: dir,
+          speed: this.projectileSpeed,
+          damage: this.damage * player.damageMultiplier,
+          pierce: this.pierce,
+          lifetime: 1.6,
+          radius: 0.28,
+          color: 0xffaa22
+        };
+
+        spawnProjectile(proj);
+      }
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 3;
+    if ([5, 10, 15, 20].includes(this.level)) this.projectileCount++;
+    if ([4, 8, 12, 16].includes(this.level)) this.pierce++;
+    if ([2, 6, 9, 13, 17].includes(this.level)) {
+      this.cooldown = Math.max(0.09, Number((this.cooldown * 0.95).toFixed(3)));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+3 к урону'];
+    if ([5, 10, 15, 20].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12, 16].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    if ([2, 6, 9, 13, 17].includes(nextLvl)) perks.push('+5% скорострельности');
+    return perks.join(', ');
+  }
+}
+
+/**
+ * Creates weapon for character selection
+ */
 /** Headless adapter uses the exact same ten spell rules as browser weapons. */
 export class SimInvokerWeapon extends SimWeapon {
   private runtime = new InvokerSpellRuntime<SimEnemyRef>();
@@ -1229,6 +1319,8 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
       return new SimChakramWeapon();
     case 'archer':
       return new SimBowWeapon();
+    case 'rocket':
+      return new SimAssaultRifleWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();
@@ -1246,6 +1338,8 @@ export function createSimWeaponById(id: string): SimWeapon | null {
     case 'bow':
     case 'heavy_colt':
       return new SimBowWeapon();
+    case 'assault_rifle':
+      return new SimAssaultRifleWeapon();
     case 'kukri':
     case 'dual_revolvers':
       return new SimKukriWeapon();
