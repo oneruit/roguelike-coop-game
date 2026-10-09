@@ -795,7 +795,7 @@ export class Player {
     const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
       IDLE: {
         texture: this.animatedTextures.idle,
-        cols: 10,
+        cols: 6,
         fps: 8 // Smooth breathing/idle
       },
       WALK: {
@@ -805,7 +805,7 @@ export class Player {
       },
       ATTACK: {
         texture: this.animatedTextures.attack,
-        cols: 8,
+        cols: 6,
         fps: 16 // Fast, punchy slash
       },
       WALK_ATTACK: {
@@ -818,8 +818,13 @@ export class Player {
     const cfg = STATE_CONFIG[this.animState];
     const tex = cfg.texture;
 
+    const img = (tex as any).image as { width?: number; height?: number } | undefined;
+    const dynamicCols = (img && img.width && img.height && img.height > 0)
+      ? Math.round((img.width / img.height) * 4)
+      : cfg.cols;
+
     this.animFrameTimer += dt * cfg.fps;
-    const frameCol = Math.floor(this.animFrameTimer) % cfg.cols;
+    const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
 
     // Direction to row mapping:
     // Row 0: front, Row 1: left, Row 2: right, Row 3: back
@@ -840,8 +845,8 @@ export class Player {
     }
 
     // Three.js UV repeat and offset mapping
-    tex.repeat.set(1 / cfg.cols, 1 / 4);
-    tex.offset.set(frameCol / cfg.cols, (3 - row) / 4);
+    tex.repeat.set(1 / dynamicCols, 1 / 4);
+    tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {

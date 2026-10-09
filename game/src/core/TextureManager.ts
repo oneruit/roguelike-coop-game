@@ -478,6 +478,10 @@ export class TextureManager {
     return this.loadAnimatedTextures('hero_valkyrie', renderer);
   }
 
+  public static loadValkyriaTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_valkyrie', renderer);
+  }
+
   public static loadFlailTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_flail', renderer);
   }
