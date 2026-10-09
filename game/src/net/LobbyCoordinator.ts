@@ -102,6 +102,9 @@ export class LobbyCoordinator {
         ? 'archer'
         : this.player.charType === 'archer'
         ? 'rocket'
+        : this.player.charType === 'rocket'
+        ? 'invoker'
+        : this.player.charType === 'invoker'
         : 'ronin';
     this.hud.showJoinLobby(nextHero);
     this.startRoomPolling();

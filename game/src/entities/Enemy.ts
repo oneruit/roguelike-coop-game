@@ -1,3 +1,4 @@
+import { SpellControlState, type SpellControl } from '../shared/InvokerSpells';
 import {
   Group,
   Vector3,
@@ -57,6 +58,8 @@ export class Enemy {
   public eliteAffix?: 'blazing' | 'glacial' | 'overloading';
   public creditsValue: number = 3;
   public isAlive = true;
+  public readonly spellControl = new SpellControlState();
+  public get canAttack(): boolean { return this.spellControl.canAttack; }
   public lastHitBy: string = 'p1';
   public boundingRadius: number;
 
@@ -201,6 +204,14 @@ export class Enemy {
     this.mesh.position.copy(this.position);
   }
 
+  public applySpellControl(control: SpellControl): void {
+    this.spellControl.apply(control, this.isBoss, this.isImmortal);
+    if (this.isImmortal) return;
+    const resistance = this.isBoss ? .15 : 1;
+    if (Number.isFinite(control.pushX)) this.knockbackVelocity.x += Math.max(-12,Math.min(12,control.pushX!))*resistance;
+    if (Number.isFinite(control.pushZ)) this.knockbackVelocity.z += Math.max(-12,Math.min(12,control.pushZ!))*resistance;
+  }
+
   public setDirection(dir: SpriteDirection) {
     this.currentDir = dir;
     if (!this.bossTextures) {
@@ -266,6 +277,7 @@ export class Enemy {
    */
   public updateSimulation(dt: number, playerPos: Vector3) {
     if (!this.isAlive) return;
+    this.spellControl.update(dt);
 
     if (this.bleedStacks.length > 0) {
       this.updateBleed(dt);
@@ -294,7 +306,7 @@ export class Enemy {
       }
 
       const attackDist = this.type === 'hydra' ? 5.2 : 4.8;
-      if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.animState !== 'ATTACK') {
+      if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.canAttack && this.animState !== 'ATTACK') {
         this.triggerAttack();
       }
 
@@ -303,7 +315,7 @@ export class Enemy {
         const invDist = 1 / dist;
         const normX = dx * invDist;
         const normZ = dz * invDist;
-        const moveSpeed = this.animState === 'ATTACK' ? this.speed * 0.35 : this.speed;
+        const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.35 : this.speed) * this.spellControl.movementFactor;
         this.position.x += normX * moveSpeed * dt;
         this.position.z += normZ * moveSpeed * dt;
 
@@ -324,8 +336,8 @@ export class Enemy {
         const invDist = 1 / dist;
         const normX = dx * invDist;
         const normZ = dz * invDist;
-        this.position.x += normX * this.speed * dt;
-        this.position.z += normZ * this.speed * dt;
+        this.position.x += normX * this.speed * this.spellControl.movementFactor * dt;
+        this.position.z += normZ * this.speed * this.spellControl.movementFactor * dt;
 
         // Determine 4-directional sprite based on movement towards player
         let newDir: SpriteDirection = this.currentDir;

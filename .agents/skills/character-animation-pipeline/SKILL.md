@@ -54,6 +54,12 @@ python .agents/skills/character-animation-pipeline/scripts/extract_character.py 
   --feet-y 74
 ```
 
+For characters with faint orb glows connecting adjacent sprites, add
+`--segmentation-alpha 64`. This segments opaque character cores while preserving
+the original RGBA pixels. Excess complete frames are truncated rather than merged;
+missing frames repeat the final recovery frame. Every copied frame is clipped to
+its own destination cell to prevent bleeding into adjacent rows or columns.
+
 ### Script Capabilities:
 1. **Background Auto-Detection:**
    - **Transparent PNG:** Automatically detects alpha channel and cleans faint noise (`alpha < 12`).
