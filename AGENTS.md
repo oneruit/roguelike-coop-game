@@ -51,14 +51,23 @@ Do not modify unrelated files or introduce unrelated changes.
 
 ### 4. Verify
 
-Before committing, both commands must succeed:
+Before committing, all verification commands must succeed:
 
 ```powershell
 npm run typecheck
 npm run build
+npm run build:admin
 ```
 
 Fix all errors before continuing.
+
+### Entity & Admin Panel Synchronization Rule
+
+When adding or modifying playable characters, weapons, enemies, or bosses:
+- **Default Balance**: Always register new entities in `game/src/balance/defaultBalance.ts` (`DEFAULT_BALANCE`).
+- **Admin Panel Assets**: Ensure textures and chart colors are registered or follow standard asset conventions in `admin/src/constants.ts`.
+- **Admin Build**: Verify that `npm run build:admin` succeeds and entities appear in the admin tables, charts, and simulator.
+- Full details and step-by-step checklist: see [`.agents/rules/entity-admin-sync.md`](.agents/rules/entity-admin-sync.md).
 
 ### 5. Commit
 

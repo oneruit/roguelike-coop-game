@@ -1,7 +1,7 @@
 import { BalanceState } from '../state/balanceState';
 import { ProgressionChartState } from '../types';
 import { SvgChartRenderer, ChartSeries } from '../chartUtils';
-import { WEAPON_COLORS, MONSTER_COLORS } from '../constants';
+import { getWeaponColor, getMonsterColor } from '../constants';
 
 export class ProgressionView {
   private state: BalanceState;
@@ -146,7 +146,7 @@ export class ProgressionView {
       seriesList.push({
         id: wid,
         name: w.name,
-        color: WEAPON_COLORS[wid] || '#2563eb',
+        color: getWeaponColor(wid),
         values,
         unit: isDps ? 'DPS' : 'урон'
       });
@@ -166,7 +166,7 @@ export class ProgressionView {
     const weapons = Object.values(this.state.draftBalance.weapons);
     for (const w of weapons) {
       const isSelected = this.chartState.selectedWeapons.has(w.id);
-      const color = WEAPON_COLORS[w.id] || '#2563eb';
+      const color = getWeaponColor(w.id);
 
       const chip = document.createElement('div');
       chip.className = `filter-chip ${isSelected ? 'active' : ''}`;
@@ -229,7 +229,7 @@ export class ProgressionView {
       seriesList.push({
         id: ent.id,
         name: ent.name,
-        color: MONSTER_COLORS[ent.id] || '#64748b',
+        color: getMonsterColor(ent.id),
         values,
         unit
       });
@@ -254,7 +254,7 @@ export class ProgressionView {
 
     for (const ent of entities) {
       const isSelected = selectedSet.has(ent.id);
-      const color = MONSTER_COLORS[ent.id] || '#64748b';
+      const color = getMonsterColor(ent.id);
 
       const chip = document.createElement('div');
       chip.className = `filter-chip ${isSelected ? 'active' : ''}`;
@@ -284,6 +284,10 @@ export class ProgressionView {
     if (!chartContainer) return;
 
     const heroes = Object.values(this.state.draftBalance.heroes);
+    const title = document.getElementById('prog-heroes-chart-title');
+    if (title) {
+      title.innerText = `Сравнительный профиль ${heroes.length} героев`;
+    }
     const xLabels = heroes.map((h) => h.name);
 
     const seriesList: ChartSeries[] = [

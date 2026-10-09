@@ -127,8 +127,17 @@ export function renderWeapons(
             ${renderStatControl(state, 'weapons', w.id, 'cooldown', 'Кулдаун атаки (сек)', w.cooldown, 0.05, 5.0, 0.05)}
             ${renderStatControl(state, 'weapons', w.id, 'damagePerLevel', 'Прирост за уровень', w.damagePerLevel, 1, 50, 1)}
             ${w.range !== undefined ? renderStatControl(state, 'weapons', w.id, 'range', 'Дальность атаки (м)', w.range, 5, 50, 1) : ''}
+            ${w.speed !== undefined ? renderStatControl(state, 'weapons', w.id, 'speed', 'Скорость снаряда (м/с)', w.speed, 5, 60, 1) : ''}
+            ${w.pierce !== undefined ? renderStatControl(state, 'weapons', w.id, 'pierce', 'Пробитие целей (Pierce)', w.pierce, 1, 10, 1) : ''}
+            ${w.count !== undefined ? renderStatControl(state, 'weapons', w.id, 'count', 'Количество снарядов', w.count, 1, 10, 1) : ''}
             ${w.explosionRadius !== undefined ? renderStatControl(state, 'weapons', w.id, 'explosionRadius', 'Радиус взрыва (м)', w.explosionRadius, 1, 10, 0.1) : ''}
+            ${w.splashRadius !== undefined ? renderStatControl(state, 'weapons', w.id, 'splashRadius', 'Радиус сплеша (м)', w.splashRadius, 0.5, 10, 0.1) : ''}
             ${w.fallSpeed !== undefined ? renderStatControl(state, 'weapons', w.id, 'fallSpeed', 'Скорость падения (м/с)', w.fallSpeed, 5, 60, 1) : ''}
+            ${w.knockback !== undefined ? renderStatControl(state, 'weapons', w.id, 'knockback', 'Сила отброса (Knockback)', w.knockback, 0.05, 2.0, 0.05) : ''}
+            ${w.bleedDps !== undefined ? renderStatControl(state, 'weapons', w.id, 'bleedDps', 'Кровотечение (ДПС)', w.bleedDps, 1, 100, 1) : ''}
+            ${w.bleedDuration !== undefined ? renderStatControl(state, 'weapons', w.id, 'bleedDuration', 'Длит. кровотечения (с)', w.bleedDuration, 0.5, 10, 0.5) : ''}
+            ${w.orbitRadius !== undefined ? renderStatControl(state, 'weapons', w.id, 'orbitRadius', 'Радиус орбиты (м)', w.orbitRadius, 1.0, 8.0, 0.1) : ''}
+            ${w.orbitSpeed !== undefined ? renderStatControl(state, 'weapons', w.id, 'orbitSpeed', 'Скорость орбиты (рад/с)', w.orbitSpeed, 0.5, 10.0, 0.1) : ''}
           </div>
 
           <div class="drawer-footer">
