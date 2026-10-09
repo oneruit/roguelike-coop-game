@@ -1,13 +1,13 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, and integrating 4-state animated characters (IDLE, WALK, ATTACK, WALK_ATTACK across 4 directional rows, 6 cols x 4 rows @ 128x128px per cell) and 128x128 portraits into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, and integrating 4-state animated characters (IDLE, WALK, ATTACK, WALK_ATTACK across 4 directional rows, 6 cols x 4 rows @ 128x128px per cell) in chibi style with mandatory 1px black border and bottom grounding into the game engine.
 ---
 
 # Character Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating 4-state animated characters into the game engine.
 
-Instead of generating a single massive composite sheet, this pipeline standardizes on **4 separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **6 columns $\times$ 4 rows (24 frames)** grid with **$128 \times 128$ pixel cells**.
+Instead of generating a single massive composite sheet, this pipeline standardizes on **4 separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **6 columns $\times$ 4 rows (24 frames)** grid with **$128 \times 128$ pixel cells**, **chibi art proportions**, a **mandatory 1px solid black border**, and **bottom grounding** so characters walk firmly on the ground rather than floating.
 
 ---
 
@@ -24,14 +24,28 @@ Every character comprises 5 distinct texture assets in `public/textures/heroes/`
 | `hero_<name>_walk_attack.png` | **WALK_ATTACK** (рывок с ударом) | 6 cols $\times$ 4 rows (24 frames) | $128 \times 128$ px | **$768 \times 512$ px** |
 | `hero_<name>_front.png` | **PORTRAIT** (аватар, карточка) | 1 frame icon | $128 \times 128$ px | **$128 \times 128$ px** |
 
-> **Why 4 separate images instead of a single composite sheet?**
-> 1. **Zero quadrant bleed:** No text headers, no dividing gutter lines, and no bleed between adjacent animations.
-> 2. **Maximized resolution:** AI generators produce far sharper details, weapon trails, wings, and cloth physics when generating one 6x4 state at a time.
-> 3. **Unified UV math:** Every animation state uses the identical `1 / 6` width and `1 / 4` height UV tile mapping.
+---
+
+### 1.2 Core Visual Standards: Chibi Proportions & 1px Black Border
+
+1. **Chibi Style Proportions:**
+   - Proportions: **2.0 to 2.5 heads tall** (large expressive head, cute compact torso and limbs).
+   - High readability in top-down / 2.5D isometric view.
+   - Distinctive stylized equipment, hairstyles, and glowing eyes.
+
+2. **Mandatory 1px Solid Black Outline (`border 1px black`):**
+   - Every frame **must have a crisp 1px solid black outline** (`#000000`) surrounding the character's outer silhouette.
+   - This ensures the sprite cleanly pops out against any background, sandy floor, altar tiles, or enemy crowds.
+   - The processing script automatically enforces this outline on all alpha boundaries.
+
+3. **Bottom Grounding (`Прижатие к низу`):**
+   - **Crucial Rule:** In each $128 \times 128$ frame, the character's feet **must be pressed to the bottom of the cell** (`target_feet_y = 122`), leaving only 6px margin at the bottom (for ground contact and the 1px black border).
+   - All extra empty space / headroom sits at the **top of the cell** ($y \in [0, 18]$), **never at the bottom**.
+   - If empty space were left below the feet, shorter/chibi characters would hover or float in the air above the terrain!
 
 ---
 
-### 1.2 Directional Row Mapping (Rows 0 to 3)
+### 1.3 Directional Row Mapping (Rows 0 to 3)
 In Three.js UV coordinates, $V = 0$ is at the bottom of the image and $V = 1$ is at the top.
 The rows from top to bottom map to:
 
@@ -54,190 +68,184 @@ The rows from top to bottom map to:
 
 ---
 
-### 1.3 Anatomical Baseline & Geometry Anchoring
-In a $128 \times 128$ pixel cell:
-- **Baseline Feet Anchor (`feet_y`)**: **$y = 100$** (leaving 28px margin at the bottom for ground contact shadows and downward weapon slash arcs).
-- **Torso/Hip Horizontal Center (`center_x`)**: **$x = 64$** (exact center of the 128px cell).
-- **Character Standing Height**: **$88 - 96$ px** (leaving 20-30px headroom for helmets, wings, hats, and floating effects).
-- **Three.js Mesh Translation Formula**:
-  For a plane geometry of size $3.6 \times 3.6$ units:
-  $$\text{translation}_y = \left(\frac{\text{feet\_y}}{\text{cell\_size}} - 0.5\right) \times \text{world\_size} = \left(\frac{100}{128} - 0.5\right) \times 3.6 = 0.28125 \times 3.6 \approx 1.0125$$
+### 1.4 Three.js Ground Anchoring Math
+For a $3.6 \times 3.6$ unit plane geometry in Three.js with feet anchored at `feet_y = 122` in a 128px cell:
+
+$$\text{translation}_y = \left(\frac{\text{feet\_y}}{\text{cell\_size}} - 0.5\right) \times \text{world\_size} = \left(\frac{122}{128} - 0.5\right) \times 3.6 = 0.453125 \times 3.6 = 1.63125$$
+
+With geometry translation $1.63125$, the character's feet touch down **exactly at ground level ($y = 0.000$)**, resting perfectly on top of the ground shadow mesh (`shadowMesh`).
 
 ---
 
-## 2. Standard Generation Plan & AI Prompts
+## 2. Cross-Sheet Consistency Protocol
 
-When generating character sheets using an image generation model or tool:
-- **Aspect Ratio**: `3:2` (e.g. 1264x848 or 1536x1024, scaled down cleanly to 768x512).
-- **Background**: Solid pitch-black background (`#000000`) without white borders, labels, or grid lines.
-- **Style**: Clean 16-bit / 32-bit pixel art, uniform scale, consistent lighting, centered full-body sprites.
+To prevent character drift (where face, armor, eye color, hair, or wings change between the 4 sheets), follow this 3-step consistency protocol:
 
-### Prompt Templates
+### Step 1: Character Design Specification (Design Bible)
+Establish exact visual tokens before prompting:
+- **Archetype & Proportions:** e.g., Chibi Norse Valkyrie maiden, 2.5 heads tall.
+- **Head & Face:** Silver winged helmet/circlet, long golden blonde braids, glowing cyan eyes (`#00E5FF`).
+- **Outfit & Armor:** Polished silver plate cuirass with gold trims, royal blue battle tunic/skirt (`#1D4ED8`).
+- **Accessories:** Golden-feathered wings behind shoulders, silver two-handed greatsword with glowing azure blade.
+- **Outline:** Mandatory 1px solid black border.
 
-#### 1. IDLE Sheet (`hero_<name>_idle.png`)
+### Step 2: Master Reference Generation
+Generate the **Master Portrait** (or Master IDLE sheet) first. Save it as the visual anchor.
+
+### Step 3: Reference Image Conditioning (`ImagePaths`)
+When generating the remaining sheets (WALK, ATTACK, WALK_ATTACK), **always pass the master reference image** via `ImagePaths` in `generate_image` (e.g. `ImagePaths: [portrait_path, idle_sheet_path]`). This locks the model into drawing the exact same character with identical colors, hair, and clothing across all action states.
+
+---
+
+## 3. Standard Generation Prompts
+
+### Master IDLE Prompt (`hero_<name>_idle.png`)
 ```text
-2D pixel art character sprite sheet for <Hero Description>.
-Grid layout with exactly 6 columns and 4 rows (24 frames total).
-Pure solid pitch-black background #000000 without grid lines, seamless black backdrop.
+2D chibi pixel art character sprite sheet of <Hero Description>.
+Chibi proportions: 2.5 heads tall, large expressive head, cute glowing cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
+Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Grid layout: exactly 6 columns and 4 rows (24 frames total).
+Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
 Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
-Animation state: IDLE breathing and subtle stance animation cycle across 6 columns per row.
-Centered characters, consistent height, full body visible in each frame, clean pixel art style, no text, no labels.
+Animation: IDLE subtle breathing and gentle wing flutter cycle across 6 columns per row.
+Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
 ```
 
-#### 2. WALK Sheet (`hero_<name>_walk.png`)
+### Master WALK Prompt (`hero_<name>_walk.png`)
+*(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
-2D pixel art character sprite sheet for <Hero Description>.
-Grid layout with exactly 6 columns and 4 rows (24 frames total).
-Pure solid pitch-black background #000000 without grid lines, seamless black backdrop.
+2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
+Identical character design: 2.5 heads tall chibi proportions, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
+Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Grid layout: exactly 6 columns and 4 rows (24 frames total).
+Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
 Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
-Animation state: WALK running cycle animation across 6 columns per row: alternating legs, natural stride, arm swing.
-Centered characters, consistent height, full body visible in each frame, clean pixel art style, no text, no labels.
+Animation: WALK running cycle animation across 6 columns per row: alternating legs, cute run strides, animated wings.
+Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
 ```
 
-#### 3. ATTACK Sheet (`hero_<name>_attack.png`)
+### Master ATTACK Prompt (`hero_<name>_attack.png`)
+*(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
-2D pixel art character sprite sheet for <Hero Description>.
-Grid layout with exactly 6 columns and 4 rows (24 frames total).
-Pure solid pitch-black background #000000 without grid lines, seamless black backdrop.
+2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
+Identical character design: 2.5 heads tall chibi proportions, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
+Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Grid layout: exactly 6 columns and 4 rows (24 frames total).
+Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
 Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
-Animation state: ATTACK strike animation across 6 columns per row: anticipation windup, weapon thrust and slash with glowing energy trail, follow-through, recovery.
-Centered characters, full body visible in each frame, clean pixel art style, no text, no labels.
+Animation: ATTACK strike animation across 6 columns per row: anticipation windup, raising greatsword, forward cleave slash with glowing cyan blade arc trail, follow-through swing, recovery.
+Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
 ```
 
-#### 4. WALK_ATTACK Sheet (`hero_<name>_walk_attack.png`)
+### Master WALK_ATTACK Prompt (`hero_<name>_walk_attack.png`)
+*(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
-2D pixel art character sprite sheet for <Hero Description>.
-Grid layout with exactly 6 columns and 4 rows (24 frames total).
-Pure solid pitch-black background #000000 without grid lines, seamless black backdrop.
+2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
+Identical character design: 2.5 heads tall chibi proportions, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
+Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Grid layout: exactly 6 columns and 4 rows (24 frames total).
+Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
 Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
-Animation state: WALK ATTACK running dash slash animation across 6 columns per row: sprinting forward, leaping strike with glowing sword slash arc, follow-through dash, recovery.
-Centered characters, full body visible in each frame, clean pixel art style, no text, no labels.
+Animation: WALK ATTACK running dash slash animation across 6 columns per row: sprinting forward, leaping strike with glowing cyan greatsword slash arc, follow-through dash, recovery.
+Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
 ```
 
-#### 5. PORTRAIT Icon (`hero_<name>_front.png`)
+### Master PORTRAIT Prompt (`hero_<name>_front.png`)
 ```text
-128x128 pixel art portrait of <Hero Description>.
-Epic RPG character portrait icon, close-up bust/head, detailed face, helmet/hair, shoulder armor.
-Isolated on pure solid pitch-black background #000000, crisp pixel art, clean outlines.
+128x128 chibi pixel art portrait of cute <Hero Description>.
+Chibi anime proportions, large expressive glowing cyan eyes, long golden blonde braided hair, silver winged helmet with golden trims, silver breastplate with royal blue tunic collar, small golden feathered wings.
+Mandatory crisp 1px solid black outline around the character border.
+Pure solid white background rgb(255,255,255), clean 16-bit chibi pixel art icon.
 ```
 
 ---
 
-## 3. Automated Processing Script
+## 4. Automated Processing Script
 
-A dedicated processing script is located at `.agents/skills/character-animation-pipeline/scripts/process_character_sheets.py`:
+Use `.agents/skills/character-animation-pipeline/scripts/process_character_sheets.py`:
 
 ```bash
 python .agents/skills/character-animation-pipeline/scripts/process_character_sheets.py \
-  --name "<char_name>" \
-  --idle "<path_to_idle_sheet>" \
-  --walk "<path_to_walk_sheet>" \
-  --attack "<path_to_attack_sheet>" \
-  --walk-attack "<path_to_walk_attack_sheet>" \
-  --portrait "<path_to_portrait_image>" \
+  --name "valkyrie" \
+  --idle "<path_to_idle>" \
+  --walk "<path_to_walk>" \
+  --attack "<path_to_attack>" \
+  --walk-attack "<path_to_walk_attack>" \
+  --portrait "<path_to_portrait>" \
   --out-dir "public/textures/heroes" \
   --cell-size 128 \
-  --feet-y 100
+  --feet-y 122 \
+  --char-h 104.0
 ```
 
-### Script Workflow:
-1. **Background Chromakeying:** Automatically removes solid black, solid white, or solid background colors, producing a clean anti-aliased RGBA alpha channel.
-2. **Row & Baseline Alignment:** Samples ground contact points across all 4 rows and aligns characters to `target_feet_y = 100`.
-3. **Horizontal Centering:** Centers character bodies at $x = 64$ inside the $128 \times 128$ cell.
-4. **Resolution Assembly:** Packs each state into exactly $768 \times 512$ px (6 cols $\times$ 4 rows).
-5. **Portrait Formatting:** Cleans background and centers portrait to $128 \times 128$ px. If no portrait image is supplied, crops Row 0 Col 0 from the aligned IDLE sheet.
+### Processing Operations:
+1. **Background Clean:** Removes pure white (`#FFFFFF`) or pure black (`#000000`) backgrounds, generating smooth anti-aliased alpha borders.
+2. **Bottom Anchoring:** Pushes all feet to `target_feet_y = 122` (in 128px cell). Shorter characters leave headroom at the top, firmly standing on the ground.
+3. **Mandatory 1px Black Border:** Applies morphological dilation to ensure every single frame has an outer 1px `#000000` boundary.
+4. **Resolution Packaging:** Packs each sheet into $768 \times 512$ px (6 cols $\times$ 4 rows @ 128x128) and portrait into $128 \times 128$ px.
 
 ---
 
-## 4. Engine Integration Checklist
+## 5. Engine Integration Checklist
 
-### Step 4.1: Texture Preloading (`game/src/core/TextureManager.ts`)
-Preload the 5 textures in `preloadAll()` and add a typed accessor:
-
+### Step 5.1: Texture Preloading (`game/src/core/TextureManager.ts`)
 ```typescript
-// In preloadAll:
-'/textures/heroes/hero_<name>_front.png',
-'/textures/heroes/hero_<name>_idle.png',
-'/textures/heroes/hero_<name>_walk.png',
-'/textures/heroes/hero_<name>_attack.png',
-'/textures/heroes/hero_<name>_walk_attack.png',
-
-// Accessor method:
-public static load<Name>Textures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
-  return this.loadAnimatedTextures('hero_<name>', renderer);
+public static loadValkyrieTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+  return this.loadAnimatedTextures('hero_valkyrie', renderer);
 }
 ```
 
-### Step 4.2: Player Geometry & UV State Machine (`game/src/entities/Player.ts` & `RemotePlayer.ts`)
-1. **Geometry Setup:**
-   ```typescript
-   // 128x128 cell, feet anchored at y=100 in 3.6x3.6 world plane:
-   // translation = (100 / 128 - 0.5) * 3.6 = 0.28125 * 3.6 = 1.0125
-   this.heroGeom = new PlaneGeometry(3.6, 3.6);
-   this.heroGeom.translate(0, 1.0125, 0);
-   ```
+### Step 5.2: Player Geometry Grounding (`game/src/entities/Player.ts` & `RemotePlayer.ts`)
+```typescript
+public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
+  let geom = Player.geometryCache.get(charType);
+  if (!geom) {
+    geom = new PlaneGeometry(3.6, 3.6);
+    // 128x128 chibi standard: feet anchored at y=122 in 128px cell (pressed to bottom)
+    // translation = (122 / 128 - 0.5) * 3.6 = 0.453125 * 3.6 = 1.63125
+    // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
+    const is128Standard = charType === 'valkyrie';
+    const translateY = is128Standard ? 1.63125 : 0.975;
+    geom.translate(0, translateY, 0);
+    Player.geometryCache.set(charType, geom);
+  }
+  return geom;
+}
+```
 
-2. **Animation UV State Machine:**
-   ```typescript
-   const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-     IDLE: { texture: this.animatedTextures.idle, cols: 6, fps: 8 },
-     WALK: { texture: this.animatedTextures.walk, cols: 6, fps: 12 },
-     ATTACK: { texture: this.animatedTextures.attack, cols: 6, fps: 16 },
-     WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 6, fps: 14 }
-   };
+### Step 5.3: Dynamic UV Columns Support
+```typescript
+const img = (tex as any).image as { width?: number; height?: number } | undefined;
+const dynamicCols = (img && img.width && img.height && img.height > 0)
+  ? Math.round((img.width / img.height) * 4)
+  : cfg.cols;
 
-   const cfg = STATE_CONFIG[this.animState];
-   const tex = cfg.texture;
-
-   // Support dynamic column detection from image aspect ratio:
-   const img = (tex as any).image as { width?: number; height?: number } | undefined;
-   const dynamicCols = (img && img.width && img.height && img.height > 0)
-     ? Math.round((img.width / img.height) * 4)
-     : cfg.cols;
-
-   this.animFrameTimer += dt * cfg.fps;
-   const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
-
-   const DIR_ROW_MAP: Record<SpriteDirection, number> = {
-     front: 0,
-     left: 1,
-     right: 2,
-     back: 3
-   };
-   const row = DIR_ROW_MAP[this.currentDir];
-
-   // UV repeat and offset:
-   tex.repeat.set(1 / dynamicCols, 1 / 4);
-   tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
-   ```
-
-### Step 4.3: Character Registration
-1. Add character type to `CharacterType` in `game/src/shared/types/entities.ts`.
-2. Register in `HERO_LIST` in `game/src/shared/types/registry.ts`.
-3. Add starting weapon and stats in `game/src/entities/Player.ts` (`applyCharacterPerks`).
-4. Add portrait card in `game/src/ui/html/characterSelectModal.html`.
+tex.repeat.set(1 / dynamicCols, 1 / 4);
+tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
+```
 
 ---
 
-## 5. Verification Checklist
+## 6. Verification Checklist
 
-Always verify after asset generation and integration:
+Always run:
 1. `python .agents/skills/character-animation-pipeline/scripts/process_character_sheets.py ...` -> Exit code 0.
 2. Dimensions check:
-   - All 4 sheets (`idle`, `walk`, `attack`, `walk_attack`): **$768 \times 512$** pixels RGBA.
-   - Portrait (`front`): **$128 \times 128$** pixels RGBA.
+   - 4 sheets: $768 \times 512$ pixels RGBA.
+   - Portrait: $128 \times 128$ pixels RGBA.
+   - Outline check: 1px black outline around all character frames.
 3. TypeScript check:
    ```powershell
    npm run typecheck
@@ -246,4 +254,4 @@ Always verify after asset generation and integration:
    ```powershell
    npm run build
    ```
-5. In-game verification: launch game, select the character, and test moving and attacking in all 4 directions (Front, Left, Right, Back).
+5. In-game verification: verify feet touch ground shadows without floating.

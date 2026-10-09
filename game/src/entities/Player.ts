@@ -158,15 +158,29 @@ export class Player {
   private lastDrawnDowned: boolean = false;
   private lastDrawnRevive: number = -1;
 
+  private static geometryCache = new Map<CharacterType, PlaneGeometry>();
+
+  public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
+    let geom = Player.geometryCache.get(charType);
+    if (!geom) {
+      geom = new PlaneGeometry(3.6, 3.6);
+      // 128x128 chibi standard: feet anchored at y=122 in 128px cell (pressed to bottom)
+      // translation = (122 / 128 - 0.5) * 3.6 = 0.453125 * 3.6 = 1.63125
+      // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
+      const is128Standard = charType === 'valkyrie';
+      const translateY = is128Standard ? 1.63125 : 0.975;
+      geom.translate(0, translateY, 0);
+      Player.geometryCache.set(charType, geom);
+    }
+    return geom;
+  }
+
   constructor(scene: Scene, charType: CharacterType = 'ronin') {
     this.charType = charType;
     this.position = new Vector3(0, 0, 0);
     this.mesh = new Group();
 
-    // Ren (Ronin) animated 96x96 cell geometry (anchored at feet y=74, cell 96x96)
-    // Offset from center is (74/96 - 0.5) * 3.6 = 0.27083 * 3.6 = 0.975
-    this.roninGeom = new PlaneGeometry(3.6, 3.6);
-    this.roninGeom.translate(0, 0.975, 0);
+    this.roninGeom = Player.getCharacterGeometry('ronin');
 
     this.loadCharacterTextures(this.charType);
 
@@ -179,7 +193,7 @@ export class Player {
       depthTest: true
     });
 
-    this.spriteMesh = new Mesh(this.roninGeom, this.spriteMaterial);
+    this.spriteMesh = new Mesh(Player.getCharacterGeometry(this.charType), this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
     this.spriteMesh.position.y = 0.05;
     this.spriteMesh.renderOrder = 0;
@@ -323,7 +337,7 @@ export class Player {
   public setCharacter(charType: CharacterType = 'ronin') {
     this.charType = charType;
     this.loadCharacterTextures(this.charType);
-    this.spriteMesh.geometry = this.roninGeom;
+    this.spriteMesh.geometry = Player.getCharacterGeometry(this.charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
     if (this.customDepthMaterial) {
       this.customDepthMaterial.map = this.animatedTextures.idle;
