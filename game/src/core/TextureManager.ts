@@ -32,6 +32,13 @@ export interface AnimatedCharacterTextures {
 export interface BossTextures {
   walk: Texture;
   attack: Texture;
+  idle?: Texture;
+}
+
+export interface MonsterTextures {
+  walk: Texture;
+  attack?: Texture;
+  idle?: Texture;
 }
 
 export type SwordsmanTextures = AnimatedCharacterTextures;
@@ -451,6 +458,21 @@ export class TextureManager {
     };
   }
 
+  public static loadMonsterTextures(baseName: string, renderer?: WebGLRenderer): MonsterTextures {
+    const loadPixel = (url: string) => {
+      const tex = this.load(url, renderer);
+      tex.magFilter = NearestFilter;
+      tex.minFilter = LinearMipmapLinearFilter;
+      return tex;
+    };
+
+    return {
+      walk: loadPixel(`/textures/monsters/${baseName}_walk.png`),
+      attack: loadPixel(`/textures/monsters/${baseName}_attack.png`),
+      idle: loadPixel(`/textures/monsters/${baseName}_idle.png`)
+    };
+  }
+
   public static loadAnimatedTextures(baseName: string, renderer?: WebGLRenderer): AnimatedCharacterTextures {
     const loadPixel = (url: string) => {
       const tex = this.load(url, renderer);
@@ -476,10 +498,6 @@ export class TextureManager {
   }
 
   public static loadValkyrieTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
-    return this.loadAnimatedTextures('hero_valkyrie', renderer);
-  }
-
-  public static loadValkyriaTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_valkyrie', renderer);
   }
 
