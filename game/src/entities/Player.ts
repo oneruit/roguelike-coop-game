@@ -164,11 +164,11 @@ export class Player {
     let geom = Player.geometryCache.get(charType);
     if (!geom) {
       geom = new PlaneGeometry(3.6, 3.6);
-      // 128x128 chibi standard: feet anchored at y=122 in 128px cell (pressed to bottom)
-      // translation = (122 / 128 - 0.5) * 3.6 = 0.453125 * 3.6 = 1.63125
+      // 128x128 chibi standard: feet anchored at y=118 in 128px cell (10px bottom margin)
+      // translation = (118 / 128 - 0.5) * 3.6 = 0.421875 * 3.6 = 1.51875
       // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
       const is128Standard = charType === 'valkyrie';
-      const translateY = is128Standard ? 1.63125 : 0.975;
+      const translateY = is128Standard ? 1.51875 : 0.975;
       geom.translate(0, translateY, 0);
       Player.geometryCache.set(charType, geom);
     }
