@@ -1,13 +1,13 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, and integrating 4-state animated characters (IDLE, WALK, ATTACK, WALK_ATTACK across 4 directional rows, 6 cols x 4 rows @ 128x128px per cell) in chibi style with mandatory 1px black border and bottom grounding into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, and integrating 4-state animated characters (IDLE, WALK, ATTACK, WALK_ATTACK across 4 directional rows, 6 cols x 4 rows @ 128x128px per cell) in chibi style with 10px bottom margin and ground anchoring into the game engine.
 ---
 
 # Character Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating 4-state animated characters into the game engine.
 
-Instead of generating a single massive composite sheet, this pipeline standardizes on **4 separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **6 columns $\times$ 4 rows (24 frames)** grid with **$128 \times 128$ pixel cells**, **chibi art proportions**, a **mandatory 1px solid black border**, and **bottom grounding** so characters walk firmly on the ground rather than floating.
+Instead of generating a single massive composite sheet, this pipeline standardizes on **4 separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **6 columns $\times$ 4 rows (24 frames)** grid with **$128 \times 128$ pixel cells**, **chibi art proportions**, a **10px bottom margin** for combat effect clearance, and **ground anchoring** so characters walk firmly on the ground rather than floating.
 
 ---
 
@@ -26,22 +26,25 @@ Every character comprises 5 distinct texture assets in `public/textures/heroes/`
 
 ---
 
-### 1.2 Core Visual Standards: Chibi Proportions & 1px Black Border
+### 1.2 Core Visual Standards: Chibi Proportions, Clean Alpha & 10px Bottom Margin
 
 1. **Chibi Style Proportions:**
    - Proportions: **2.0 to 2.5 heads tall** (large expressive head, cute compact torso and limbs).
    - High readability in top-down / 2.5D isometric view.
    - Distinctive stylized equipment, hairstyles, and glowing eyes.
 
-2. **Mandatory 1px Solid Black Outline (`border 1px black`):**
-   - Every frame **must have a crisp 1px solid black outline** (`#000000`) surrounding the character's outer silhouette.
-   - This ensures the sprite cleanly pops out against any background, sandy floor, altar tiles, or enemy crowds.
-   - The processing script automatically enforces this outline on all alpha boundaries.
+2. **Character Height Limit:**
+   - The character standing height **must not exceed 96 pixels** (`height <= 96px`) inside the $128 \times 128$ cell.
+   - This guarantees at least 22px headroom at the top for helmets, wings, hats, and floating effects.
 
-3. **Bottom Grounding (`Прижатие к низу`):**
-   - **Crucial Rule:** In each $128 \times 128$ frame, the character's feet **must be pressed to the bottom of the cell** (`target_feet_y = 122`), leaving only 6px margin at the bottom (for ground contact and the 1px black border).
-   - All extra empty space / headroom sits at the **top of the cell** ($y \in [0, 18]$), **never at the bottom**.
-   - If empty space were left below the feet, shorter/chibi characters would hover or float in the air above the terrain!
+3. **Natural Clean Outlines (No Artificial 1px Black Border):**
+   - Sprites must maintain their **natural pixel art antialiasing and shading**.
+   - Do **NOT** add artificial heavy 1px black borders around sprites, as they distort delicate pixel details and degrade visual appeal.
+
+4. **10px Bottom Margin & Grounding (`Отступ 10px снизу`):**
+   - **Crucial Rule:** In each $128 \times 128$ frame, the character's feet are anchored at **$y = 118$** (`target_feet_y = 118`), leaving a clean **10px margin at the bottom** ($128 - 118 = 10$ px).
+   - **Why 10px margin?** Downward weapon slashes, ground dust, shockwaves, and impact sparks often extend below the character's feet; the 10px buffer prevents these effects from clipping against the frame edge.
+   - Shorter/chibi characters are grounded by anchoring their feet to $y = 118$, with extra headroom staying at the top of the cell.
 
 ---
 
@@ -69,11 +72,13 @@ The rows from top to bottom map to:
 ---
 
 ### 1.4 Three.js Ground Anchoring Math
-For a $3.6 \times 3.6$ unit plane geometry in Three.js with feet anchored at `feet_y = 122` in a 128px cell:
+For a $3.6 \times 3.6$ unit plane geometry in Three.js with feet anchored at `feet_y = 118` in a 128px cell:
 
-$$\text{translation}_y = \left(\frac{\text{feet\_y}}{\text{cell\_size}} - 0.5\right) \times \text{world\_size} = \left(\frac{122}{128} - 0.5\right) \times 3.6 = 0.453125 \times 3.6 = 1.63125$$
+$$\text{translation}_y = \left(\frac{\text{feet\_y}}{\text{cell\_size}} - 0.5\right) \times \text{world\_size} = \left(\frac{118}{128} - 0.5\right) \times 3.6 = (0.921875 - 0.5) \times 3.6 = 0.421875 \times 3.6 = \mathbf{1.51875}$$
 
-With geometry translation $1.63125$, the character's feet touch down **exactly at ground level ($y = 0.000$)**, resting perfectly on top of the ground shadow mesh (`shadowMesh`).
+With geometry translation $1.51875$:
+- The character's feet touch down **exactly at ground level ($y = 0.000$)**, resting directly on top of the ground shadow mesh (`shadowMesh`).
+- The 10px buffer extends downward ($y \in [-0.281, 0.000]$), rendering ground slashes and dust effects without clipping.
 
 ---
 
@@ -87,7 +92,6 @@ Establish exact visual tokens before prompting:
 - **Head & Face:** Silver winged helmet/circlet, long golden blonde braids, glowing cyan eyes (`#00E5FF`).
 - **Outfit & Armor:** Polished silver plate cuirass with gold trims, royal blue battle tunic/skirt (`#1D4ED8`).
 - **Accessories:** Golden-feathered wings behind shoulders, silver two-handed greatsword with glowing azure blade.
-- **Outline:** Mandatory 1px solid black border.
 
 ### Step 2: Master Reference Generation
 Generate the **Master Portrait** (or Master IDLE sheet) first. Save it as the visual anchor.
@@ -102,8 +106,7 @@ When generating the remaining sheets (WALK, ATTACK, WALK_ATTACK), **always pass 
 ### Master IDLE Prompt (`hero_<name>_idle.png`)
 ```text
 2D chibi pixel art character sprite sheet of <Hero Description>.
-Chibi proportions: 2.5 heads tall, large expressive head, cute glowing cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
-Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Chibi proportions: 2.5 heads tall, max 96px height, large expressive head, cute glowing cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
@@ -111,15 +114,14 @@ Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
 Animation: IDLE subtle breathing and gentle wing flutter cycle across 6 columns per row.
-Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
 ### Master WALK Prompt (`hero_<name>_walk.png`)
 *(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
 2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
-Identical character design: 2.5 heads tall chibi proportions, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
-Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, holding silver greatsword.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
@@ -127,15 +129,14 @@ Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
 Animation: WALK running cycle animation across 6 columns per row: alternating legs, cute run strides, animated wings.
-Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
 ### Master ATTACK Prompt (`hero_<name>_attack.png`)
 *(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
 2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
-Identical character design: 2.5 heads tall chibi proportions, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
-Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
@@ -143,15 +144,14 @@ Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
 Animation: ATTACK strike animation across 6 columns per row: anticipation windup, raising greatsword, forward cleave slash with glowing cyan blade arc trail, follow-through swing, recovery.
-Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
 ### Master WALK_ATTACK Prompt (`hero_<name>_walk_attack.png`)
 *(Provide Master Portrait & IDLE in `ImagePaths`)*
 ```text
 2D chibi pixel art character sprite sheet of the same cute chibi <Hero Description> from reference images.
-Identical character design: 2.5 heads tall chibi proportions, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
-Mandatory crisp 1px solid black outline around every character sprite (border 1px black).
+Identical character design: 2.5 heads tall chibi proportions, max 96px height, cute large cyan eyes, golden blonde braids, silver winged helmet, silver plate armor with royal blue tunic, golden feathered wings, wielding two-handed silver greatsword.
 Grid layout: exactly 6 columns and 4 rows (24 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
 Row 0: facing front / forward.
@@ -159,14 +159,13 @@ Row 1: facing left.
 Row 2: facing right.
 Row 3: facing back.
 Animation: WALK ATTACK running dash slash animation across 6 columns per row: sprinting forward, leaping strike with glowing cyan greatsword slash arc, follow-through dash, recovery.
-Characters anchored to the bottom of their frame cell. Clean 16-bit chibi pixel art.
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit chibi pixel art.
 ```
 
 ### Master PORTRAIT Prompt (`hero_<name>_front.png`)
 ```text
 128x128 chibi pixel art portrait of cute <Hero Description>.
 Chibi anime proportions, large expressive glowing cyan eyes, long golden blonde braided hair, silver winged helmet with golden trims, silver breastplate with royal blue tunic collar, small golden feathered wings.
-Mandatory crisp 1px solid black outline around the character border.
 Pure solid white background rgb(255,255,255), clean 16-bit chibi pixel art icon.
 ```
 
@@ -186,14 +185,15 @@ python .agents/skills/character-animation-pipeline/scripts/process_character_she
   --portrait "<path_to_portrait>" \
   --out-dir "public/textures/heroes" \
   --cell-size 128 \
-  --feet-y 122 \
-  --char-h 104.0
+  --feet-y 118 \
+  --char-h 92.0 \
+  --max-h 96.0
 ```
 
 ### Processing Operations:
-1. **Background Clean:** Removes pure white (`#FFFFFF`) or pure black (`#000000`) backgrounds, generating smooth anti-aliased alpha borders.
-2. **Bottom Anchoring:** Pushes all feet to `target_feet_y = 122` (in 128px cell). Shorter characters leave headroom at the top, firmly standing on the ground.
-3. **Mandatory 1px Black Border:** Applies morphological dilation to ensure every single frame has an outer 1px `#000000` boundary.
+1. **Background Clean:** Removes pure white (`#FFFFFF`) or pure black (`#000000`) backgrounds with soft anti-aliased alpha borders.
+2. **Bottom Offset:** Anchors feet at `target_feet_y = 118` (leaving a 10px margin at the bottom for slash arcs and ground contact).
+3. **Height Capping:** Ensures the character height never exceeds 96px (`max_h = 96.0`).
 4. **Resolution Packaging:** Packs each sheet into $768 \times 512$ px (6 cols $\times$ 4 rows @ 128x128) and portrait into $128 \times 128$ px.
 
 ---
@@ -213,11 +213,11 @@ public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
   let geom = Player.geometryCache.get(charType);
   if (!geom) {
     geom = new PlaneGeometry(3.6, 3.6);
-    // 128x128 chibi standard: feet anchored at y=122 in 128px cell (pressed to bottom)
-    // translation = (122 / 128 - 0.5) * 3.6 = 0.453125 * 3.6 = 1.63125
+    // 128x128 chibi standard: feet anchored at y=118 in 128px cell (10px bottom margin)
+    // translation = (118 / 128 - 0.5) * 3.6 = 0.421875 * 3.6 = 1.51875
     // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
     const is128Standard = charType === 'valkyrie';
-    const translateY = is128Standard ? 1.63125 : 0.975;
+    const translateY = is128Standard ? 1.51875 : 0.975;
     geom.translate(0, translateY, 0);
     Player.geometryCache.set(charType, geom);
   }
@@ -245,7 +245,8 @@ Always run:
 2. Dimensions check:
    - 4 sheets: $768 \times 512$ pixels RGBA.
    - Portrait: $128 \times 128$ pixels RGBA.
-   - Outline check: 1px black outline around all character frames.
+   - Character height: $\le 96$ pixels.
+   - Bottom margin: exactly 10 pixels.
 3. TypeScript check:
    ```powershell
    npm run typecheck
@@ -254,4 +255,4 @@ Always run:
    ```powershell
    npm run build
    ```
-5. In-game verification: verify feet touch ground shadows without floating.
+5. In-game verification: verify feet touch ground shadows with 10px buffer below feet.

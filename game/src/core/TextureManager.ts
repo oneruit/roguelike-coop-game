@@ -56,7 +56,7 @@ export class TextureManager {
     if (rel.startsWith('weapon_') || rel === 'bullet_revolver.png') return `/textures/weapons/${rel}`;
     if (rel.startsWith('vfx_')) return `/textures/vfx/${rel}`;
     if (rel.startsWith('quest_') || rel.startsWith('reward_') || rel.startsWith('ui_quest')) return `/textures/quests/${rel}`;
-    if (rel === 'game_logo_rift.png' || rel === 'menu_background.jpg') return `/textures/ui/${rel}`;
+    if (rel === 'game_logo_rift.png' || rel.startsWith('menu_background')) return `/textures/ui/${rel}`;
     if (rel.startsWith('test_')) return `/textures/test/${rel}`;
 
     return url;
@@ -322,7 +322,8 @@ export class TextureManager {
     '/textures/monsters/monster_bison_right.png',
 
     // UI & Environment
-    '/textures/ui/menu_background.jpg'
+    '/textures/ui/menu_background_1.jpg',
+    '/textures/ui/menu_background_2.png'
   ];
 
   /**

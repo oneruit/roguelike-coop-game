@@ -5,8 +5,9 @@ Processes 4 separate animation state images (IDLE, WALK, ATTACK, WALK_ATTACK) an
 into production-ready, standardized sprite sheets for the game engine.
 
 Standard Specifications:
-- Character Style: "Chibi" proportions (2.5 heads tall, large expressive eyes, compact body)
-- Border: Mandatory 1px solid black border around entire character silhouette
+- Character Style: "Chibi" proportions (2.0 to 2.5 heads tall, expressive head, compact body)
+- Character Max Height: <= 96 pixels inside 128px cell
+- Clean Natural Outlines: No artificial 1px black borders
 - 4 separate images (one per action state)
 - Exactly 24 frames per image arranged in 6 columns x 4 rows
 - Frame cell size: 128 x 128 pixels
@@ -17,7 +18,8 @@ Standard Specifications:
   * Row 1: Left-facing view
   * Row 2: Right-facing view
   * Row 3 (Bottom): Back / Upward-facing view
-- Anchoring to bottom: target_feet_y = 122 in 128px cell (prevents hovering above ground)
+- Bottom margin: 10px offset from bottom (target_feet_y = 118 in 128px cell)
+  Prevents combat slash arcs and ground effects from clipping while keeping characters grounded
 - Horizontal center: x = 64 in 128px cell
 """
 
@@ -31,40 +33,6 @@ if hasattr(sys.stdout, 'reconfigure'):
 import argparse
 import numpy as np
 from PIL import Image
-
-
-def apply_1px_black_border(rgba_arr):
-    """
-    Enforces a mandatory 1px solid black border around the alpha silhouette of a sprite.
-    Any transparent pixel adjacent to a non-transparent foreground pixel is set to [0, 0, 0, 255].
-    """
-    alpha = rgba_arr[:, :, 3]
-    fg = alpha > 20
-    h, w = alpha.shape
-
-    dilated = np.zeros((h, w), dtype=bool)
-    for dy in [-1, 0, 1]:
-        for dx in [-1, 0, 1]:
-            if dy == 0 and dx == 0:
-                continue
-            shifted = np.zeros_like(fg)
-            sy_start = max(0, dy)
-            sy_end = h + min(0, dy)
-            ty_start = max(0, -dy)
-            ty_end = h + min(0, -dy)
-
-            sx_start = max(0, dx)
-            sx_end = w + min(0, dx)
-            tx_start = max(0, -dx)
-            tx_end = w + min(0, -dx)
-
-            shifted[sy_start:sy_end, sx_start:sx_end] = fg[ty_start:ty_end, tx_start:tx_end]
-            dilated |= shifted
-
-    border = dilated & (~fg)
-    out = rgba_arr.copy()
-    out[border] = [0, 0, 0, 255]
-    return out
 
 
 def detect_and_clean_background(img_arr, bg_mode='auto'):
@@ -119,14 +87,14 @@ def align_and_pack_sheet(
     cell_size=128,
     cols=6,
     rows=4,
-    target_feet_y=122,
-    target_char_h=104.0,
-    add_border=True
+    target_feet_y=118,
+    target_char_h=92.0,
+    max_char_h=96.0
 ):
     """
     Standardizes a 6x4 animation image into cell_size x cell_size frames (768x512).
-    Anchors character feet to the bottom (target_feet_y = 122 in 128px cell).
-    Ensures mandatory 1px black outline.
+    Leaves a 10px margin at the bottom (target_feet_y = 118 in 128px cell).
+    Caps character height to <= 96px.
     """
     h, w = rgba_arr.shape[:2]
     row_h = h / float(rows)
@@ -152,11 +120,8 @@ def align_and_pack_sheet(
         row_baselines.append(np.median(feet_in_row) if len(feet_in_row) > 0 else (y1 - 3))
 
     ref_h = np.median(char_heights) if len(char_heights) > 0 else (row_h * 0.8)
-    scale = target_char_h / float(ref_h) if ref_h > 0 else 1.0
-
-    max_allowed_h = cell_size - 8
-    if target_char_h > max_allowed_h:
-        scale = max_allowed_h / float(ref_h)
+    # Scale to target height and strictly cap at max_char_h (96px)
+    scale = min(target_char_h / float(ref_h), max_char_h / float(ref_h)) if ref_h > 0 else 1.0
 
     out_sheet = np.zeros((rows * cell_size, cols * cell_size, 4), dtype=np.uint8)
 
@@ -185,15 +150,9 @@ def align_and_pack_sheet(
 
             sp_img = Image.fromarray(sprite)
             sp_scaled = np.array(sp_img.resize((new_w, new_h), Image.Resampling.LANCZOS))
+            bh, bw = sp_scaled.shape[:2]
 
-            if add_border:
-                sp_bordered = apply_1px_black_border(sp_scaled)
-            else:
-                sp_bordered = sp_scaled
-
-            bh, bw = sp_bordered.shape[:2]
-
-            # Placement anchored firmly to bottom
+            # Placement with 10px margin at bottom
             global_feet = y0 + max_y
             feet_offset = global_feet - ground_y
 
@@ -208,16 +167,16 @@ def align_and_pack_sheet(
             out_y0 = r * cell_size + dst_y
             out_x0 = c * cell_size + dst_x
 
-            mask = sp_bordered[:, :, 3] > 0
+            mask = sp_scaled[:, :, 3] > 0
             target_slice = out_sheet[out_y0:out_y0 + bh, out_x0:out_x0 + bw]
-            target_slice[mask] = sp_bordered[mask]
+            target_slice[mask] = sp_scaled[mask]
 
     return Image.fromarray(out_sheet)
 
 
-def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_sheet=None, add_border=True):
+def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_sheet=None):
     """
-    Standardizes portrait to 128x128 pixel transparent PNG with 1px black outline.
+    Standardizes portrait to 128x128 pixel transparent PNG.
     """
     out_path = os.path.normpath(os.path.abspath(out_path))
     if portrait_input and os.path.isfile(portrait_input):
@@ -242,22 +201,29 @@ def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_shee
 
             cropped = rgba[y0:y1, x0:x1]
             crop_img = Image.fromarray(cropped)
-            res = np.array(crop_img.resize((cell_size, cell_size), Image.Resampling.LANCZOS))
-            if add_border:
-                res = apply_1px_black_border(res)
-            res_img = Image.fromarray(res)
-            res_img.save(out_path)
-            print(f'[OK] Processed Portrait: {out_path} ({res_img.size})')
+            res = crop_img.resize((cell_size, cell_size), Image.Resampling.LANCZOS)
+            tmp_path = out_path + '.tmp.png'
+            res.save(tmp_path)
+            if os.path.exists(out_path):
+                try:
+                    os.remove(out_path)
+                except Exception:
+                    pass
+            os.replace(tmp_path, out_path)
+            print(f'[OK] Processed Portrait: {out_path} ({res.size})')
             return
 
     if fallback_idle_sheet is not None:
         crop_cell = fallback_idle_sheet.crop((0, 0, cell_size, cell_size))
-        crop_arr = np.array(crop_cell)
-        if add_border:
-            crop_arr = apply_1px_black_border(crop_arr)
-        res_img = Image.fromarray(crop_arr)
-        res_img.save(out_path)
-        print(f'[OK] Created Portrait from IDLE Row 0 Col 0: {out_path} ({res_img.size})')
+        tmp_path = out_path + '.tmp.png'
+        crop_cell.save(tmp_path)
+        if os.path.exists(out_path):
+            try:
+                os.remove(out_path)
+            except Exception:
+                pass
+        os.replace(tmp_path, out_path)
+        print(f'[OK] Created Portrait from IDLE Row 0 Col 0: {out_path} ({crop_cell.size})')
 
 
 def process_character(
@@ -271,9 +237,9 @@ def process_character(
     cell_size=128,
     cols=6,
     rows=4,
-    target_feet_y=122,
-    target_char_h=104.0,
-    add_border=True
+    target_feet_y=118,
+    target_char_h=92.0,
+    max_char_h=96.0
 ):
     out_dir = os.path.normpath(os.path.abspath(out_dir))
     os.makedirs(out_dir, exist_ok=True)
@@ -303,11 +269,18 @@ def process_character(
             rows=rows,
             target_feet_y=target_feet_y,
             target_char_h=target_char_h,
-            add_border=add_border
+            max_char_h=max_char_h
         )
 
-        out_file = os.path.join(out_dir, f'{clean_name}_{state}.png')
-        sheet.save(out_file)
+        out_file = os.path.normpath(os.path.abspath(os.path.join(out_dir, f'{clean_name}_{state}.png')))
+        tmp_file = out_file + '.tmp.png'
+        sheet.save(tmp_file)
+        if os.path.exists(out_file):
+            try:
+                os.remove(out_file)
+            except Exception:
+                pass
+        os.replace(tmp_file, out_file)
         processed_sheets[state] = sheet
         print(f'[OK] Processed {state.upper()}: {out_file} ({sheet.size})')
 
@@ -317,8 +290,7 @@ def process_character(
         portrait_path,
         portrait_out,
         cell_size=cell_size,
-        fallback_idle_sheet=processed_sheets.get('idle'),
-        add_border=add_border
+        fallback_idle_sheet=processed_sheets.get('idle')
     )
 
     print(f'\nSuccess! Standard 128x128 Chibi character package ready for "{clean_name}".')
@@ -336,9 +308,9 @@ if __name__ == '__main__':
     parser.add_argument('--cell-size', type=int, default=128, help='Frame cell size (default: 128)')
     parser.add_argument('--cols', type=int, default=6, help='Columns per row (default: 6)')
     parser.add_argument('--rows', type=int, default=4, help='Rows (default: 4)')
-    parser.add_argument('--feet-y', type=int, default=122, help='Feet anchor Y coordinate (default: 122, anchored to bottom)')
-    parser.add_argument('--char-h', type=float, default=104.0, help='Target character height (default: 104.0)')
-    parser.add_argument('--no-border', action='store_true', help='Skip mandatory 1px black outline enforcement')
+    parser.add_argument('--feet-y', type=int, default=118, help='Feet anchor Y coordinate (default: 118, 10px margin from bottom)')
+    parser.add_argument('--char-h', type=float, default=92.0, help='Target character height (default: 92.0, max 96.0)')
+    parser.add_argument('--max-h', type=float, default=96.0, help='Max allowed character height (default: 96.0)')
 
     args = parser.parse_args()
     process_character(
@@ -354,5 +326,5 @@ if __name__ == '__main__':
         rows=args.rows,
         target_feet_y=args.feet_y,
         target_char_h=args.char_h,
-        add_border=not args.no_border
+        max_char_h=args.max_h
     )
