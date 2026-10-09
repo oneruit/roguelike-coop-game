@@ -1,4 +1,4 @@
-import { createInvokerBuff, SpellControlState } from '../shared/InvokerSpells';
+import { createInvokerBuff, SpellControlState, canAcquireInvokerWeapon } from '../shared/InvokerSpells';
 import { SimInvokerWeapon } from './SimWeapons';
 import { SimVec3 } from './math/SimVector';
 import { SimRNG } from './SimRNG';
@@ -387,7 +387,7 @@ export class GameCore {
 
   public upgradePlayerWeapon(playerId: string, weaponId: string) {
     const player = this.players.get(playerId);
-    if (!player) return;
+    if (!player || !canAcquireInvokerWeapon(weaponId, player.weapons)) return;
 
     let weapon = player.weapons.find(w => w.id === weaponId);
     if (weapon) {
@@ -501,8 +501,10 @@ export class GameCore {
       }
 
       // Update Weapons
+      const invokeSource = player.weapons.find(weapon => weapon.id === 'invoker_invoke');
       for (const weapon of player.weapons) {
         if (weapon instanceof SimInvokerWeapon) {
+          weapon.setInvokeSource(invokeSource instanceof SimInvokerWeapon ? invokeSource : undefined);
           weapon.random = () => this.rng.nextFloat();
           weapon.onSpellBuff = (spell, level) => {
             const buff = createInvokerBuff(spell, level);
