@@ -1,11 +1,11 @@
-import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../shared/InvokerSpells';
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId, INVOKE_BASE_DAMAGE, INVOKE_DAMAGE_PER_LEVEL } from '../shared/InvokerSpells';
 import { GameBalanceState } from './BalanceTypes';
 
 export const DEFAULT_BALANCE: GameBalanceState = {
   weapons: {
     invoker_invoke: {
-      id: 'invoker_invoke', name: 'Invoke — Случайное заклинание', icon: '🔮', damage: 36,
-      cooldown: 1.4, damagePerLevel: 6, maxLevel: 20, range: 22,
+      id: 'invoker_invoke', name: 'Invoke — Случайное заклинание', icon: '🔮', damage: INVOKE_BASE_DAMAGE,
+      cooldown: 1.4, damagePerLevel: INVOKE_DAMAGE_PER_LEVEL, maxLevel: 20, range: 22,
       notes: 'При каждом срабатывании равновероятно выбирает одно из десяти заклинаний Инвокера.'
     },
     ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => {

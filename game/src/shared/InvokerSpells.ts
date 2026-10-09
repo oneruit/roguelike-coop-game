@@ -154,6 +154,46 @@ export function invokerSpellFromWeaponId(id: string): InvokerSpellId | null {
   const spell = id.replace(/^invoker_/, "");
   return id.startsWith("invoker_") && isInvokerSpellId(spell) ? spell : null;
 }
+/** Separate spell weapons require Invoke in the same inventory. */
+export function canAcquireInvokerWeapon(
+  id: string,
+  weapons: readonly { id: string }[],
+): boolean {
+  return (
+    !invokerSpellFromWeaponId(id) ||
+    weapons.some((weapon) => weapon.id === "invoker_invoke")
+  );
+}
+export const INVOKE_BASE_DAMAGE = 36;
+export const INVOKE_DAMAGE_PER_LEVEL = 9;
+export const INVOKE_COOLDOWN_FACTOR = 0.96;
+
+/** Shared mastery curve for browser and deterministic simulation. Ghost duration stays fixed. */
+export function getInvokerScaling(level: number) {
+  const steps = Math.max(0, Math.min(19, Math.floor(level) - 1));
+  return {
+    radius: 1 + steps * 0.035,
+    duration: 1 + steps * 0.025,
+    control: 1 + steps * 0.025,
+    slowBonus: steps * 0.005,
+    buffValue: Math.min(0.75, 0.25 + steps * 0.025),
+  };
+}
+export function getInvokerSpellDuration(
+  spell: InvokerSpellId,
+  level: number,
+): number {
+  const persistent = [
+    "ice_wall",
+    "forge_spirit",
+    "chaos_meteor",
+    "alacrity",
+  ].includes(spell);
+  return (
+    INVOKER_SPELLS[spell].duration *
+    (persistent ? getInvokerScaling(level).duration : 1)
+  );
+}
 export interface InvokerSpellCast {
   spellId: InvokerSpellId;
   x: number;
@@ -231,8 +271,8 @@ export function createInvokerBuff(
     name: def.name,
     icon: def.icon,
     color: "#" + def.color.toString(16).padStart(6, "0"),
-    duration: def.duration,
-    maxDuration: def.duration,
-    value: Math.min(0.5, 0.25 + Math.max(0, level - 1) * 0.012),
+    duration: getInvokerSpellDuration(spell, level),
+    maxDuration: getInvokerSpellDuration(spell, level),
+    value: getInvokerScaling(level).buffValue,
   };
 }

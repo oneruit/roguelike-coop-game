@@ -757,8 +757,10 @@ export class Player {
           damageEnemy(enemy, amount * this.damageMultiplier, sourcePos);
         }
       : undefined;
+    const invokeSource = this.weapons.find(weapon => weapon.id === 'invoker_invoke');
     for (const weapon of this.weapons) {
       if (weapon instanceof InvokerWeapon) {
+        weapon.setInvokeSource(invokeSource instanceof InvokerWeapon ? invokeSource : undefined);
         weapon.onSpellCast = cast => {
           if (Math.hypot(cast.dx, cast.dz) > .01) {
             this.setDirection(Math.abs(cast.dx) >= Math.abs(cast.dz) ?

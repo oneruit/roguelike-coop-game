@@ -7,6 +7,8 @@ import {
   SpellControlState,
   invokerWeaponId,
   createInvokerBuff,
+  getInvokerScaling,
+  getInvokerSpellDuration,
   type InvokerSpellCast,
 } from "../game/src/shared/InvokerSpells";
 import {
@@ -333,4 +335,171 @@ test("Dedicated simulation creates Invoker and reproduces casts from the same se
     return spells;
   };
   assert.deepEqual(run(), run());
+});
+
+test("Dedicated upgrades reject spells without Invoke, then allow them after acquiring it", () => {
+  const core = new GameCore({ seed: 77 });
+  const player = core.addPlayer("p1", "ronin");
+  core.upgradePlayerWeapon("p1", "invoker_sun_strike");
+  assert.equal(
+    player.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
+    false,
+  );
+  core.upgradePlayerWeapon("p1", "invoker_invoke");
+  core.upgradePlayerWeapon("p1", "invoker_sun_strike");
+  assert.equal(
+    player.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
+    true,
+  );
+});
+
+function testEnemy(): Enemy {
+  return {
+    id: "e",
+    position: new Vector3(0, 0, 4),
+    isAlive: true,
+    applySpellControl() {},
+    takeDamage() {},
+  } as unknown as Enemy;
+}
+function resolveSunStrike(
+  weapon: InvokerInvokeWeapon | InvokerSpellWeapon,
+): number {
+  let damage = 0;
+  const enemies = [testEnemy()];
+  const hit = (_enemy: Enemy, amount: number) => {
+    damage += amount;
+  };
+  weapon.update(
+    weapon.effectiveCooldown,
+    new Vector3(),
+    enemies,
+    () => {},
+    hit,
+  );
+  weapon.update(0.91, new Vector3(), enemies, () => {}, hit);
+  return damage;
+}
+test("Invoke levels add 25% base spell damage and shorten its cooldown by 4%", () => {
+  const invoke = new InvokerInvokeWeapon(undefined, () => 0.65); // Sun Strike
+  assert.equal(resolveSunStrike(invoke), 90);
+  const upgraded = new InvokerInvokeWeapon(undefined, () => 0.65);
+  upgraded.upgrade();
+  assert.equal(resolveSunStrike(upgraded), 112.5);
+  assert.ok(Math.abs(upgraded.effectiveCooldown - 1.4 * 0.96) < 1e-8);
+});
+
+test("Separate spells cannot cast without Invoke and inherit its upgrades when owned", () => {
+  const spell = new InvokerSpellWeapon("sun_strike");
+  const casts: InvokerSpellCast[] = [];
+  spell.onSpellCast = (cast) => casts.push(cast);
+  assert.equal(resolveSunStrike(spell), 0);
+  assert.equal(casts.length, 0);
+  const invoke = new InvokerInvokeWeapon();
+  spell.setInvokeSource(invoke);
+  assert.equal(resolveSunStrike(spell), 90);
+  const stronger = new InvokerSpellWeapon("sun_strike");
+  invoke.upgrade();
+  stronger.setInvokeSource(invoke);
+  assert.equal(resolveSunStrike(stronger), 112.5);
+  assert.equal(stronger.spellLevel, 2);
+  assert.ok(stronger.effectiveCooldown < 4.8);
+  stronger.upgrade();
+  assert.equal(stronger.spellLevel, 3);
+  stronger.setInvokeSource(undefined);
+  assert.equal(resolveSunStrike(stronger), 0);
+});
+
+test("Invoke mastery strengthens radius, control, persistent spells and self buffs", () => {
+  const low = fixture(),
+    high = fixture();
+  const lowCast = low.runtime.cast("emp", 1, 65, low.enemies[0], low.context);
+  const highCast = high.runtime.cast(
+    "emp",
+    10,
+    65,
+    high.enemies[0],
+    high.context,
+  );
+  low.runtime.update(1.5, low.context);
+  high.runtime.update(1.5, high.context);
+  assert.ok(highCast.radius > lowCast.radius);
+  const lowControl = low.controls[0] as {
+    slowDuration: number;
+    slowFactor: number;
+  };
+  const highControl = high.controls[0] as {
+    slowDuration: number;
+    slowFactor: number;
+  };
+  assert.ok(highControl.slowDuration > lowControl.slowDuration);
+  assert.ok(highControl.slowFactor < lowControl.slowFactor);
+  assert.ok(
+    getInvokerSpellDuration("forge_spirit", 10) >
+      getInvokerSpellDuration("forge_spirit", 1),
+  );
+  const lowBuff = createInvokerBuff("alacrity", 1),
+    highBuff = createInvokerBuff("alacrity", 10);
+  assert.ok(highBuff.value > lowBuff.value);
+  assert.ok(highBuff.duration > lowBuff.duration);
+  assert.equal(createInvokerBuff("ghost_walk", 20).duration, 3);
+  assert.deepEqual(getInvokerScaling(999), getInvokerScaling(20));
+});
+
+test("Browser and headless adapters share upgraded Invoke and separate spell damage", () => {
+  const invoke = new SimInvokerWeapon();
+  invoke.upgrade();
+  invoke.random = () => 0.65;
+  const spell = new SimInvokerWeapon("sun_strike");
+  const target = {
+    id: "target",
+    position: new SimVec3(0, 0, 4),
+    isAlive: true,
+  };
+  const player = {
+    id: "p1",
+    position: new SimVec3(),
+    isAlive: true,
+    isDowned: false,
+    damageMultiplier: 1,
+  };
+  const run = (weapon: SimInvokerWeapon) => {
+    let total = 0;
+    weapon.update(
+      weapon.effectiveCooldown,
+      player,
+      [target],
+      () => {},
+      (_id, amount) => {
+        total += amount;
+      },
+    );
+    weapon.update(
+      0.91,
+      player,
+      [target],
+      () => {},
+      (_id, amount) => {
+        total += amount;
+      },
+    );
+    return total;
+  };
+  assert.equal(run(spell), 0);
+  spell.setInvokeSource(invoke);
+  assert.equal(run(spell), 112.5);
+  assert.equal(run(invoke), 112.5);
+});
+
+test("Mastery preserves the global cooldown floor at maximum haste", () => {
+  for (const [invoke, spell] of [
+    [new InvokerInvokeWeapon(), new InvokerSpellWeapon("sun_strike")],
+    [new SimInvokerWeapon(), new SimInvokerWeapon("sun_strike")]
+  ] as const) {
+    while (invoke.level < 20) invoke.upgrade();
+    while (spell.level < 20) spell.upgrade();
+    spell.setInvokeSource(invoke as never);
+    spell.cooldownMultiplier = 0.001;
+    assert.equal(spell.effectiveCooldown, 0.08);
+  }
 });
