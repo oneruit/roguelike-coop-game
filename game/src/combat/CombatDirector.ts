@@ -8,6 +8,8 @@ import { DamageNumberManager } from './DamageNumberManager';
 import { NetworkManager, NetShotInfo, DamageDealtEvent } from '../net/NetworkManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
 import { SoundManager } from '../core/SoundManager';
+import { MeleeAttackEffects } from './MeleeAttackEffects';
+import type { MeleeAttackInfo } from '../shared/types';
 
 export class CombatDirector {
   private engine: Engine;
@@ -22,6 +24,7 @@ export class CombatDirector {
   public pendingLocalShots: NetShotInfo[] = [];
   public recentlyDeadEnemyIds: Set<string> = new Set();
   private scratchNearbyEnemies: Enemy[] = [];
+  private meleeEffects: MeleeAttackEffects;
 
   constructor(
     engine: Engine,
@@ -37,9 +40,33 @@ export class CombatDirector {
     this.damageNumbers = damageNumbers;
     this.net = net;
     this.remotePlayers = remotePlayers;
+    this.meleeEffects = new MeleeAttackEffects(engine.scene);
+    this.player.onMeleeAttack = this.spawnMeleeAttack;
   }
 
+  public spawnMeleeAttack = (attack: MeleeAttackInfo): void => {
+    const effect = { ...attack, y: this.engine.chunkManager.getElevation(attack.x, attack.z) };
+    this.meleeEffects.play(effect);
+    if (this.player.isCoop) {
+      this.pendingLocalShots.push({
+        x: effect.x, y: effect.y, z: effect.z,
+        dx: Math.cos(effect.angle), dz: -Math.sin(effect.angle),
+        spd: 0, lt: 0.4, rad: effect.radius, col: 0xffffff,
+        melee: effect.weaponId,
+        ownerId: this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2')
+      });
+    }
+  };
+
   public spawnCosmeticShot(shot: NetShotInfo): void {
+    if (shot.melee) {
+      this.meleeEffects.play({
+        weaponId: shot.melee, x: shot.x, y: shot.y, z: shot.z,
+        radius: shot.rad, angle: Math.atan2(-shot.dz, shot.dx)
+      });
+      SoundManager.playSlash();
+      return;
+    }
     const proj = new Projectile({
       position: new Vector3(shot.x, shot.y, shot.z),
       direction: new Vector3(shot.dx, shot.dy ?? 0, shot.dz),
@@ -267,6 +294,7 @@ export class CombatDirector {
   }
 
   public updateProjectiles(dt: number): void {
+    this.meleeEffects.update(dt);
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const proj = this.projectiles[i];
       let centerPos = this.player.position;
@@ -445,6 +473,7 @@ export class CombatDirector {
   }
 
   public clear(): void {
+    this.meleeEffects.clear();
     for (const p of this.projectiles) {
       p.destroy(this.engine.scene);
     }

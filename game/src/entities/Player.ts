@@ -40,6 +40,7 @@ import { ObstacleManager } from '../world/ObstacleManager';
 import { PassiveBuffId } from '../drops/PassiveBuffs';
 import { RiftItemId, RiftItemDef } from '../items/RiftItemSystem';
 import { BalanceManager } from '../balance/BalanceManager';
+import type { MeleeAttackInfo } from '../shared/types';
 
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
@@ -334,6 +335,8 @@ export class Player {
   public setDirection(dir: SpriteDirection) {
     this.currentDir = dir;
   }
+
+  public onMeleeAttack?: (attack: MeleeAttackInfo) => void;
 
   public triggerAttackAnim(duration: number = 0.5) {
     this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
@@ -736,6 +739,7 @@ export class Player {
         }
       : undefined;
     for (const weapon of this.weapons) {
+      weapon.onMeleeAttack = this.onMeleeAttack;
       weapon.update(dt, this.position, enemies, spawnProjectile, damageEnemyWithMultiplier);
     }
 
