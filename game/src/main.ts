@@ -635,6 +635,7 @@ class Game {
           const remote = this.remotePlayers.get(targetId);
           if (remote) {
             const isVictoryDeath = isImmortalHit || this.sessionDirector.gameTime >= 1800;
+            if (!isVictoryDeath && remote.activeBuffs.has('ghost')) return;
             remote.hp = Math.max(0, remote.hp - damage);
             const cur = this.netCoordinator.pendingDamageToClients.get(targetId) || 0;
             this.netCoordinator.pendingDamageToClients.set(targetId, cur + damage);
@@ -645,6 +646,8 @@ class Game {
         }
       );
     } else {
+      // Client-side control prediction uses the same countdown as the host.
+      for (const enemy of this.enemyManager.enemies) enemy.spellControl.update(dt);
       // Client-side local collision check against enemies
       if (this.player.isAlive && !this.player.isDowned) {
         const now = performance.now();
@@ -656,7 +659,7 @@ class Game {
             this.scratchNearbyEnemies
           );
           for (const enemy of nearby) {
-            if (!enemy.isAlive) continue;
+            if (!enemy.isAlive || !enemy.canAttack) continue;
             const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
             const dx = enemy.position.x - this.player.position.x;
             const dz = enemy.position.z - this.player.position.z;

@@ -1,3 +1,6 @@
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId, invokerSpellFromWeaponId, type InvokerSpellId, type InvokerSpellCast, type SpellControl } from '../shared/InvokerSpells';
+import { InvokerSpellRuntime, type SpellContext } from '../shared/InvokerSpellRuntime';
+import { DEFAULT_BALANCE } from '../balance/defaultBalance';
 import { SimVec3 } from './math/SimVector';
 import { CharacterType } from './types';
 
@@ -1137,11 +1140,85 @@ export class SimFireballWeapon extends SimWeapon {
   }
 }
 
-/**
- * Creates weapon for character selection
- */
+/** Headless adapter uses the exact same ten spell rules as browser weapons. */
+export class SimInvokerWeapon extends SimWeapon {
+  private runtime = new InvokerSpellRuntime<SimEnemyRef>();
+  public onSpellControl?: (enemy: SimEnemyRef, control: SpellControl) => void;
+  public onSpellBuff?: (spell: 'ghost_walk' | 'alacrity', level: number) => void;
+  public onSpellCast?: (cast: InvokerSpellCast) => void;
+  public random: () => number = Math.random;
+  public lastSpell: InvokerSpellId | null = null;
+  private baseDamage: number;
+  private baseCooldown: number;
+  private damagePerLevel: number;
+
+  constructor(public readonly spell: InvokerSpellId | null = null) {
+    const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
+    const config = DEFAULT_BALANCE.weapons[id];
+    super(id, config.name, config.icon, config.cooldown, config.damage);
+    this.baseDamage = config.damage;
+    this.baseCooldown = config.cooldown;
+    this.damagePerLevel = config.damagePerLevel;
+  }
+
+  public override get effectiveCooldown(): number {
+    const cooldown = super.effectiveCooldown;
+    return this.spell === 'ghost_walk'
+      ? Math.max(INVOKER_SPELLS.ghost_walk.duration + 1.5, cooldown)
+      : cooldown;
+  }
+
+  public update(
+    dt: number, player: SimPlayerRef, enemies: SimEnemyRef[],
+    _spawn: (p: SimProjectileData) => void,
+    damage: (enemyId: string, damage: number, source: SimVec3, knockback?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ): void {
+    const context: SpellContext<SimEnemyRef> = {
+      position: player.position, enemies,
+      damage: (enemy, amount, source) => damage(
+        enemy.id, amount * player.damageMultiplier, new SimVec3(source.x, source.y, source.z), 0
+      ),
+      control: (enemy, control) => this.onSpellControl?.(enemy, control),
+      buff: (spell, level) => this.onSpellBuff?.(spell, level),
+      visual: cast => this.onSpellCast?.(cast)
+    };
+    this.runtime.update(dt, context);
+    this.timer += dt;
+    if (this.timer < this.effectiveCooldown) return;
+    const target = findClosestSimEnemies(enemies, player.position, 1, 22 * 22)[0];
+    if (!target) return;
+    const index = Math.max(0, Math.min(9, Math.floor(this.random() * INVOKER_SPELL_IDS.length)));
+    const spell = this.spell ?? INVOKER_SPELL_IDS[index];
+    this.timer = 0;
+    this.lastSpell = spell;
+    this.runtime.cast(
+      spell, this.level,
+      this.spell ? this.damage : INVOKER_SPELLS[spell].damage * (this.damage / 36),
+      target, context
+    );
+    triggerAnim?.(0.5);
+    emitSound?.('magic');
+  }
+
+  public upgrade(): void {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage = this.baseDamage + (this.level - 1) * this.damagePerLevel;
+    this.cooldown = Math.max(0.5, this.baseCooldown * Math.pow(0.975, this.level - 1));
+  }
+
+  public getNextUpgradeDescription(): string {
+    return 'Усиливает заклинание; −2.5% перезарядки';
+  }
+}
+
+/** Creates the starting weapon for character selection. */
 export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon {
   switch (charType) {
+    case 'invoker':
+      return new SimInvokerWeapon();
     case 'valkyrie':
       return new SimGreatswordWeapon();
     case 'flail':
@@ -1162,6 +1239,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
  * Creates weapon by ID
  */
 export function createSimWeaponById(id: string): SimWeapon | null {
+  if(id==='invoker_invoke')return new SimInvokerWeapon();
+  const spell=invokerSpellFromWeaponId(id);
+  if(spell)return new SimInvokerWeapon(spell);
   switch (id) {
     case 'bow':
     case 'heavy_colt':

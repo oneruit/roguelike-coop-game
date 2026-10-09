@@ -365,6 +365,10 @@ export class GameNetworkCoordinator {
             event.color || altar.config.colorCss
           );
         }
+      } else if (event.type === 'spell_control' && event.enemyId && event.control) {
+        if (event.killer !== this.net.mySlotId) {
+          this.enemyManager.enemies.find(enemy => enemy.id === event.enemyId)?.applySpellControl(event.control);
+        }
       } else if (event.type === 'shot' && event.shot) {
         if (event.shot.ownerId !== this.net.mySlotId) {
           this.combatDirector.spawnCosmeticShot(event.shot);
@@ -495,6 +499,11 @@ export class GameNetworkCoordinator {
     }
 
     for (const hit of msg.damageDealt) {
+      if (hit.control) {
+        this.enemyManager.enemies.find(enemy => enemy.id === hit.enemyId)?.applySpellControl(hit.control);
+        this.pendingNetworkEvents.push({type:'spell_control',enemyId:hit.enemyId,control:hit.control,killer:clientId});
+      }
+      if (!Number.isFinite(hit.damage) || hit.damage <= 0) continue;
       const st = this.allPlayerStats.get(clientId);
       if (st) st.damageDealt += hit.damage;
       this.enemyManager.applyRemoteDamage(
@@ -616,6 +625,7 @@ export class GameNetworkCoordinator {
       }
       this.pendingDamageToClients.clear();
 
+      this.pendingNetworkEvents.push(...this.combatDirector.pendingSpellControls.splice(0));
       if (this.combatDirector.pendingLocalShots.length > 0) {
         for (const shot of this.combatDirector.pendingLocalShots.splice(0)) {
           this.pendingNetworkEvents.push({

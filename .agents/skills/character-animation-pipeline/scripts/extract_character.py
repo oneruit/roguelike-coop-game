@@ -132,14 +132,18 @@ def get_frame_boxes(alpha, y0, y1, x0, x1, min_w=14, gap_thresh=2):
     return boxes
 
 
-def build_sheet(arr, row_configs, x0, x1, expected_cols, target_feet_y, cell_size, loop_row3=False):
+def build_sheet(arr, row_configs, x0, x1, expected_cols, target_feet_y, cell_size, loop_row3=False, segmentation_alpha=1):
     """Assembles a standard 4-row sprite sheet with aligned feet anchors."""
     sheet = np.zeros((4 * cell_size, expected_cols * cell_size, 4), dtype=np.uint8)
-    alpha = arr[:, :, 3]
+    # Segment opaque character cores; faint orb glows must not join neighboring frames.
+    # Keep the original RGBA pixels when copying the detected frames.
+    alpha = np.where(arr[:, :, 3] >= segmentation_alpha, arr[:, :, 3], 0)
 
     for r_idx, r in enumerate(row_configs):
         boxes = get_frame_boxes(alpha, r['y0'], r['y1'], x0, x1)
-        if len(boxes) != expected_cols and not (loop_row3 and len(boxes) == 4):
+        # With core-alpha segmentation, excess boxes are genuine extra frames.
+        # Never merge two complete characters just to match the requested count.
+        if len(boxes) != expected_cols and (segmentation_alpha == 1 or len(boxes) < expected_cols) and not (loop_row3 and len(boxes) == 4):
             for candidate_thresh in [4, 3, 2, 5, 6, 1]:
                 alt_boxes = get_frame_boxes(alpha, r['y0'], r['y1'], x0, x1, gap_thresh=candidate_thresh)
                 if len(alt_boxes) == expected_cols or (loop_row3 and len(alt_boxes) == 4):
@@ -158,6 +162,9 @@ def build_sheet(arr, row_configs, x0, x1, expected_cols, target_feet_y, cell_siz
 
         for c_idx, b in enumerate(frame_boxes):
             bx0, bx1 = b
+            if segmentation_alpha > 1:
+                bx0 = max(x0, bx0 - 2)
+                bx1 = min(x1, bx1 + 2)
             fw = bx1 - bx0
             target_col_x = c_idx * cell_size + (cell_size - fw) // 2
 
@@ -166,17 +173,17 @@ def build_sheet(arr, row_configs, x0, x1, expected_cols, target_feet_y, cell_siz
 
             for y_loc in range(sub_frame.shape[0]):
                 dst_y = row_offset_y + y_loc
-                if 0 <= dst_y < 4 * cell_size:
+                if r_idx * cell_size <= dst_y < (r_idx + 1) * cell_size:
                     for x_loc in range(sub_frame.shape[1]):
                         dst_x = target_col_x + x_loc
-                        if 0 <= dst_x < expected_cols * cell_size:
+                        if c_idx * cell_size <= dst_x < (c_idx + 1) * cell_size:
                             if sub_frame[y_loc, x_loc, 3] > 0:
                                 sheet[dst_y, dst_x] = sub_frame[y_loc, x_loc]
 
     return Image.fromarray(sheet)
 
 
-def process_character_sheet(input_path, char_name, out_dir='public/textures', cell_size=96, target_feet_y=74):
+def process_character_sheet(input_path, char_name, out_dir='public/textures', cell_size=96, target_feet_y=74, segmentation_alpha=1):
     os.makedirs(out_dir, exist_ok=True)
     raw_img = Image.open(input_path)
     raw_arr = np.array(raw_img)
@@ -185,7 +192,7 @@ def process_character_sheet(input_path, char_name, out_dir='public/textures', ce
     print(f'Processing {input_path} (Format: {raw_img.format}, Size: {raw_img.size}, BG: {bg_type})')
 
     arr = clean_or_extract_alpha(raw_arr, bg_type, bg_color)
-    alpha = arr[:, :, 3]
+    alpha = np.where(arr[:, :, 3] >= segmentation_alpha, arr[:, :, 3], 0)
 
     w = arr.shape[1]
     mid_x = w // 2
@@ -237,6 +244,10 @@ def process_character_sheet(input_path, char_name, out_dir='public/textures', ce
             else:
                 y1 = max_y - 1
 
+            if segmentation_alpha > 1:
+                # Do not include the faint top-edge glow of the next directional row.
+                y1 = min(y1, b1 + y_offset + 3)
+
             # Feet Y is the median bottom-most non-zero alpha in left quadrant (IDLE/WALK)
             boxes = get_frame_boxes(alpha, y0, b1 + y_offset, 0, split_x)
             feet_ys = []
@@ -261,25 +272,25 @@ def process_character_sheet(input_path, char_name, out_dir='public/textures', ce
         print(f"  {cfg['name']}: y0={cfg['y0']}, y1={cfg['y1']}, feet_y={cfg['feet_y']}")
 
     # 1. IDLE (top-left, 10 cols)
-    idle_sheet = build_sheet(arr, top_configs, 0, split_x, 10, target_feet_y, cell_size, loop_row3=True)
+    idle_sheet = build_sheet(arr, top_configs, 0, split_x, 10, target_feet_y, cell_size, loop_row3=True, segmentation_alpha=segmentation_alpha)
     idle_path = os.path.join(out_dir, f'{char_name}_idle.png')
     idle_sheet.save(idle_path)
     print(f'[OK] Generated IDLE: {idle_path} ({idle_sheet.size})')
 
     # 2. WALK (bottom-left, 6 cols)
-    walk_sheet = build_sheet(arr, bot_configs, 0, split_x, 6, target_feet_y, cell_size)
+    walk_sheet = build_sheet(arr, bot_configs, 0, split_x, 6, target_feet_y, cell_size, segmentation_alpha=segmentation_alpha)
     walk_path = os.path.join(out_dir, f'{char_name}_walk.png')
     walk_sheet.save(walk_path)
     print(f'[OK] Generated WALK: {walk_path} ({walk_sheet.size})')
 
     # 3. ATTACK (top-right, 8 cols)
-    attack_sheet = build_sheet(arr, top_configs, split_x, w, 8, target_feet_y, cell_size)
+    attack_sheet = build_sheet(arr, top_configs, split_x, w, 8, target_feet_y, cell_size, segmentation_alpha=segmentation_alpha)
     attack_path = os.path.join(out_dir, f'{char_name}_attack.png')
     attack_sheet.save(attack_path)
     print(f'[OK] Generated ATTACK: {attack_path} ({attack_sheet.size})')
 
     # 4. WALK ATTACK (bottom-right, 6 cols)
-    walk_atk_sheet = build_sheet(arr, bot_configs, split_x, w, 6, target_feet_y, cell_size)
+    walk_atk_sheet = build_sheet(arr, bot_configs, split_x, w, 6, target_feet_y, cell_size, segmentation_alpha=segmentation_alpha)
     walk_atk_path = os.path.join(out_dir, f'{char_name}_walk_attack.png')
     walk_atk_sheet.save(walk_atk_path)
     print(f'[OK] Generated WALK ATTACK: {walk_atk_path} ({walk_atk_sheet.size})')
@@ -302,12 +313,16 @@ if __name__ == '__main__':
     parser.add_argument('--out-dir', '-o', default='public/textures', help='Output directory (default: public/textures)')
     parser.add_argument('--cell-size', type=int, default=96, help='Standard cell size in pixels (default: 96)')
     parser.add_argument('--feet-y', type=int, default=74, help='Feet anchor Y coordinate inside cell (default: 74)')
+    parser.add_argument('--segmentation-alpha', type=int, default=1, help='Minimum alpha for frame detection (1..255); higher values separate faint glows')
     args = parser.parse_args()
+    if not 1 <= args.segmentation_alpha <= 255:
+        parser.error('--segmentation-alpha must be between 1 and 255')
 
     process_character_sheet(
         input_path=args.input,
         char_name=args.name,
         out_dir=args.out_dir,
         cell_size=args.cell_size,
-        target_feet_y=args.feet_y
+        target_feet_y=args.feet_y,
+        segmentation_alpha=args.segmentation_alpha
     )

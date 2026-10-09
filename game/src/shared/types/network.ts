@@ -1,3 +1,4 @@
+import type { InvokerSpellCast, SpellControl } from '../InvokerSpells';
 /**
  * Shared Network Protocol Contracts & Types
  * Defines the complete synchronization contract between Host, Clients, and Dedicated Server.
@@ -80,6 +81,7 @@ export interface DamageDealtEvent {
   sourceZ: number;
   isFatal?: boolean;
   attackerId?: string;
+  control?: SpellControl;
 }
 
 export interface NetShotInfo {
@@ -104,9 +106,12 @@ export interface NetShotInfo {
   ice?: boolean;
   fb?: boolean;
   melee?: MeleeWeaponId;
+  spell?: InvokerSpellCast;
 }
 
 export interface NetEvent {
+  enemyId?: string;
+  control?: SpellControl;
   type:
     | 'damage_num'
     | 'altar_captured'
@@ -116,6 +121,7 @@ export interface NetEvent {
     | 'sound'
     | 'level_up'
     | 'xp_gain'
+    | 'spell_control'
     | 'shot'
     | 'credit_gain'
     | 'chest_opened'

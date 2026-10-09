@@ -135,6 +135,80 @@
               </button>
             </div>
 
+            <!-- Invoker: ten elemental spells -->
+            <div class="character-card hero-select-card" data-hero="invoker">
+              <div class="char-portrait-frame">
+                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
+                  <rect width="240" height="180" fill="url(#cave-grad)"/>
+                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
+                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
+                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
+                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
+                  <!-- Torches -->
+                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
+                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
+                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
+                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
+                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
+                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
+                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
+                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
+                  <!-- Magic Circle at feet -->
+                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
+                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
+                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
+                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
+                </svg>
+                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
+                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
+                </svg>
+                <img src="/textures/heroes/hero_invoker_front.png" alt="Инвокер" class="char-portrait" />
+              </div>
+              <div class="char-card-name">Инвокер «Маг стихий»</div>
+              <div class="char-features-list">
+                <div class="char-feature-box">
+                  <div class="char-feature-icon">
+                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
+                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
+                    </svg>
+                  </div>
+                  <div class="char-feature-text">
+                    <span class="feature-label">Оружие:</span>
+                    <span class="feature-value">Invoke — 10 заклинаний</span>
+                  </div>
+                </div>
+                <div class="char-feature-box">
+                  <div class="char-feature-icon">
+                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
+                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
+                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
+                    </svg>
+                  </div>
+                  <div class="char-feature-text">
+                    <span class="feature-label">Случайный каст</span>
+                    <span class="feature-value">урон, контроль и усиления</span>
+                  </div>
+                </div>
+                <div class="char-feature-box">
+                  <div class="char-feature-icon">
+                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
+                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
+                    </svg>
+                  </div>
+                  <div class="char-feature-text">
+                    <span class="feature-label">100 HP • +20% урона</span>
+                    <span class="feature-value">скорость 8.5</span>
+                  </div>
+                </div>
+              </div>
+              <button class="char-select-btn" type="button">
+                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
+                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
+                </svg>
+                <span class="char-btn-label">ВЫБРАТЬ</span>
+              </button>
+            </div>
+
             <!-- Hero 2: Valkyrie (Каэла) -->
             <div class="character-card hero-select-card" data-hero="valkyrie">
               <div class="char-portrait-frame">
