@@ -1,13 +1,13 @@
 ---
 name: monster-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in chibi/pixel art style with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in menacing 16-bit pixel art style (strictly NO anime/chibi/cute) with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
 ---
 
 # Monster Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating **4-frame animated monsters and regular enemies** into the game engine.
 
-Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **chibi pixel art proportions**, a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
+Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **compact aggressive monster proportions** (menacing beasts, ferocious vermin, undead), a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
 
 ---
 
@@ -28,10 +28,11 @@ Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state
 
 ### 1.2 Core Visual Standards for Monsters
 
-1. **Chibi / Compact Pixel Art Proportions:**
+1. **Compact Aggressive Monster Proportions & Threat Demeanor:**
    - High readability in top-down / 2.5D isometric view.
-   - Expressive eyes/snout, compact torso, clearly silhouetted paws, pincers, or tails.
-   - Stylistically harmonious with heroes (16-bit chibi style).
+   - Expressive predatory eyes/snout, compact muscular torso, clearly silhouetted paws, pincers, spines, or tails.
+   - **Strict Exclusions:** Monsters are dangerous predators, beasts, and undead — **STRICTLY NO anime, NO chibi proportions, NO kawaii, NO cute/friendly expressions, NO cartoon pet look**.
+   - Clean 16-bit pixel art style with hard pixel edges, limited color palette, and high contrast.
 
 2. **Monster Height Limit:**
    - Monster height **must not exceed 96 pixels** (`height <= 96px`) inside the $128 \times 128$ cell.
@@ -113,45 +114,73 @@ With plane geometry translation $+0.928$ along the $Y$ axis:
 
 #### Master PORTRAIT Prompt (`monster_coyote_front.png`)
 ```text
-128x128 chibi pixel art monster portrait of Prairie Coyote.
-Fierce cute desert coyote beast, sandy brown fur, pointed alert ears, amber glowing eyes, sharp white fangs.
-Pure solid white background rgb(255,255,255), clean 16-bit RPG monster icon.
+128x128 menacing pixel art monster portrait of Prairie Coyote, a vicious and deadly desert predator.
+
+Compact aggressive beast proportions, muscular canine frame, sturdy paws, predatory stance, strong readable silhouette.
+
+Snarling aggressive expression, sharp glowing amber eyes, bared white fangs, alert pointed ears, no friendly or cute expression.
+
+Sandy brown fur with dusty grey undertones, coarse spiky coat texture, bushy tail.
+
+Pure solid white background rgb(255,255,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 #### Master WALK Prompt (`monster_coyote_walk.png`)
 ```text
-2D chibi pixel art monster sprite sheet of Prairie Coyote.
-Quadruped canine beast: sandy brown fur, bushy tail, alert pointed ears, amber eyes. Exactly 4 legs, 1 tail. No extra limbs.
+2D pixel art monster sprite sheet of Prairie Coyote, a vicious desert predator beast.
+
+Compact aggressive beast proportions, muscular canine frame, sturdy paws, bushy tail, alert pointed ears, amber predatory eyes, sharp fangs. Exactly 4 legs, 1 tail. No extra limbs.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: WALK rhythmic 4-frame running trot cycle across 4 columns:
 Column 0: front-left and rear-right paws reach forward;
 Column 1: paws meet ground in passing stance;
 Column 2: front-right and rear-left paws reach forward;
 Column 3: paws meet ground in passing stance.
-Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 #### Master ATTACK Prompt (`monster_coyote_attack.png`)
 ```text
-2D chibi pixel art monster sprite sheet of the same Prairie Coyote from reference images.
-Quadruped canine: sandy brown fur, amber eyes, sharp fangs.
+2D pixel art monster sprite sheet of the same vicious Prairie Coyote from reference images.
+
+Identical monster design: compact muscular canine frame, sandy brown fur, amber predatory eyes, sharp bared fangs. Exactly 4 legs, 1 tail.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: ATTACK 4-frame bite lunge across 4 columns:
 Column 0: crouching anticipation coil;
 Column 1: forward lunging bite snap with open jaws;
-Column 2: bite clamp impact;
+Column 2: bite clamp impact (damage hit frame);
 Column 3: landing back into trot stance.
-Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ---
@@ -160,16 +189,25 @@ Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit
 
 #### Master WALK Prompt (`monster_scorpion_walk.png`)
 ```text
-2D chibi pixel art monster sprite sheet of Desert Scorpion.
-Arachnid monster: chitinous red-brown carapace, 2 large front pincers, raised segmented tail with venomous glowing green stinger. Exactly 2 pincers and 1 tail.
+2D pixel art monster sprite sheet of Desert Scorpion, a deadly venomous arachnid creature.
+
+Compact aggressive creature proportions: chitinous red-brown carapace, 2 large front pincers, raised segmented tail with venomous glowing green stinger. Exactly 2 pincers, 8 legs, and 1 tail. No extra limbs.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
-Animation: WALK scuttling 4-frame cycle across 4 columns: alternating legs scuttle, pincers snapping gently, tail arching.
-Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Animation: WALK scuttling 4-frame cycle across 4 columns: alternating legs scuttle, pincers snapping aggressively, tail arched ready to strike.
+
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG monster design, vicious and dangerous arachnid beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon bug look, no childish appearance, no soft pastel colors, no friendly appearance, no photorealism, no smooth gradients.
 ```
 
 ---
