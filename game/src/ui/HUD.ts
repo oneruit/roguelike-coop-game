@@ -1212,12 +1212,10 @@ export class HUD {
     freeSlot.setAttribute('tabindex', '0');
     freeSlot.setAttribute('title', 'Бесплатный боевой пропуск 1-го сезона активен для всех игроков');
     freeSlot.innerHTML = `
-      <div class="bp-slot-box">
-        <svg class="bp-lock-icon" viewBox="0 0 24 24" width="16" height="16" fill="#94a3b8">
-          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-        </svg>
+      <div class="bp-slot-box bp-slot-free-box">
+        <img src="/textures/ui/bp_badge_free.png" class="bp-slot-img bp-badge-img" alt="Бесплатно" />
       </div>
-      <span class="bp-free-ribbon">БЕСПЛАТНЫЙ</span>
+      <span class="bp-free-ribbon">БЕСПЛАТНО</span>
     `;
     freeSlot.addEventListener('click', () => {
       SoundManager.playButtonClick();
@@ -1255,13 +1253,14 @@ export class HUD {
         ? '<span class="bp-slot-check-badge" title="Получено">✓</span>'
         : canClaim
         ? '<span class="bp-slot-claim-sparkle" title="Забрать">!</span>'
-        : '<span class="bp-slot-lock-badge" title="Заблокировано"><svg viewBox="0 0 24 24" width="9" height="9" fill="#94a3b8"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></span>';
+        : '<span class="bp-slot-lock-badge" title="Заблокировано"><svg viewBox="0 0 24 24" width="12" height="12" fill="#cbd5e1"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></span>';
 
       slot.innerHTML = `
         <div class="bp-slot-box">
           <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-slot-img" alt="${reward.name}" onerror="this.style.opacity='0.2'" />
           ${statusBadge}
         </div>
+        <span class="bp-slot-lvl">${reward.level}</span>
       `;
 
       slot.addEventListener('click', () => {

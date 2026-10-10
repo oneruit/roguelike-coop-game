@@ -1909,10 +1909,10 @@ body, html {
    ========================================================================== */
 .battle-pass-widget {
   position: absolute;
-  left: clamp(24px, 3.5vw, 48px);
-  top: clamp(14px, 2.5vh, 28px);
+  left: clamp(20px, 2.8vw, 40px);
+  top: clamp(14px, 2vh, 26px);
   z-index: 20;
-  width: clamp(330px, 26vw, 400px);
+  width: clamp(480px, 34vw, 560px);
   aspect-ratio: 558 / 218;
   pointer-events: auto;
   user-select: none;
@@ -2028,7 +2028,7 @@ body, html {
 
 .bp-m-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(7.5px, 0.6vw, 9.5px);
+  font-size: clamp(8px, 0.65vw, 10px);
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.3px;
@@ -2037,8 +2037,8 @@ body, html {
 }
 
 .bp-m-chest {
-  width: clamp(18px, 1.4vw, 22px);
-  height: clamp(14px, 1.1vw, 17px);
+  width: clamp(22px, 1.6vw, 28px);
+  height: clamp(17px, 1.25vw, 22px);
   object-fit: contain;
   image-rendering: pixelated;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
@@ -2121,14 +2121,41 @@ body, html {
   box-shadow: none;
 }
 
-.bp-slot-free .bp-lock-icon,
-.bp-slot-free .bp-free-ribbon {
+.bp-slot-free .bp-lock-icon {
   display: none;
 }
 
+.bp-free-ribbon {
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(7.5px, 0.62vw, 9.5px);
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  color: #f8fafc;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-top: 2px;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.bp-slot-card.bp-slot-free:hover .bp-free-ribbon {
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
 .bp-slot-box {
-  width: clamp(26px, 2.2vw, 35px);
-  height: clamp(26px, 2.2vw, 35px);
+  width: clamp(34px, 2.7vw, 44px);
+  height: clamp(34px, 2.7vw, 44px);
   background: #101722;
   border: 1.5px solid #283749;
   border-radius: 6px;
@@ -2148,11 +2175,17 @@ body, html {
 }
 
 .bp-slot-img {
-  width: 76%;
-  height: 76%;
+  width: 82%;
+  height: 82%;
   object-fit: contain;
   image-rendering: pixelated;
   transition: transform 0.16s ease;
+}
+
+.bp-slot-free-box .bp-badge-img {
+  width: 90%;
+  height: 90%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
 .bp-slot-card:hover .bp-slot-img {
@@ -2221,6 +2254,24 @@ body, html {
   align-items: center;
   justify-content: center;
   opacity: 0.65;
+}
+
+.bp-slot-lvl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(8px, 0.6vw, 9.5px);
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px #000;
+  line-height: 1;
+  margin-top: 2px;
+  pointer-events: none;
+}
+
+.bp-slot-card.unlocked .bp-slot-lvl,
+.bp-slot-card.claimed .bp-slot-lvl {
+  color: #38bdf8;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.6), 0 1px 2px #000;
 }
 
 /* ==========================================================================
@@ -2664,7 +2715,7 @@ body, html {
     left: auto;
     top: auto;
     width: 100%;
-    max-width: 380px;
+    max-width: 440px;
     margin-bottom: 12px;
   }
 }
