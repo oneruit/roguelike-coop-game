@@ -1,59 +1,62 @@
 ---
 name: monster-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (WALK, ATTACK, IDLE across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in chibi/pixel art style with 10px bottom margin and ground anchoring into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in chibi/pixel art style with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
 ---
 
 # Monster Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating **4-frame animated monsters and regular enemies** into the game engine.
 
-Standardizing on **separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **chibi pixel art proportions**, a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
+Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **chibi pixel art proportions**, a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
 
 ---
 
 ## 1. Standard Architecture & Specifications
 
-### 1.1 The 4 Standard Assets per Monster
-Every animated monster comprises 4 core texture assets in `public/textures/monsters/`:
+### 1.1 The 3 Standard Assets per Monster (2 States + Portrait)
+Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state is not needed. The **PORTRAIT** is automatically extracted from the 1st frame (Row 0, Col 0 - Front view) via the python script:
 
 | Texture File | Action State | Layout | Frame Cell Size | Total Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| `monster_<name>_walk.png` | **WALK** (бег, крадущийся шаг, бег стаи) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_attack.png` *(опц.)* | **ATTACK** (укус, выпад когтями, жало) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_idle.png` *(опц.)* | **IDLE** (рычание, дыхание, шевеление) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_front.png` | **PORTRAIT** (аватар, карточка бестиария) | 1 frame icon | $128 \times 128$ px | **$128 \times 128$ px** |
+| `monster_<name>_walk.png` | **WALK** (run, creeping stalk, pack sprint) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
+| `monster_<name>_attack.png` | **ATTACK** (bite, claw strike, sting) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
+| `monster_<name>_front.png` | **PORTRAIT** (avatar, bestiary icon from 1st frame) | 1 frame icon | $128 \times 128$ px | **$128 \times 128$ px** |
 
-*Примечание:* Скрипт также автоматически генерирует статические фолбэки для 4 направлений: `monster_<name>_{front,back,left,right}.png`.
+*Note:* `process_monster_sheets.py` also automatically extracts static directional fallbacks for all 4 directions: `monster_<name>_{front,back,left,right}.png`.
 
 ---
 
 ### 1.2 Core Visual Standards for Monsters
 
 1. **Chibi / Compact Pixel Art Proportions:**
-   - Высокая читаемость при виде сверху (top-down / 2.5D isometric view).
-   - Выразительные глаза/морда, плотное тело, ясные очертания лап, клешней или хвостов.
-   - Стилистика едина со стилем героев (16-bit чиби-стиль).
+   - High readability in top-down / 2.5D isometric view.
+   - Expressive eyes/snout, compact torso, clearly silhouetted paws, pincers, or tails.
+   - Stylistically harmonious with heroes (16-bit chibi style).
 
 2. **Monster Height Limit:**
-   - Высота монстра **не должна превышать 96 пикселей** (`height <= 96px`) внутри ячейки $128 \times 128$.
-   - Запас сверху не менее 22 пикселей для шипов, ушей, рогов и анимаций прыжка.
+   - Monster height **must not exceed 96 pixels** (`height <= 96px`) inside the $128 \times 128$ cell.
+   - Guarantees at least 22 pixels of overhead headroom for spines, ears, horns, and leaping animations.
 
-3. **10px Bottom Margin & Grounding (`Отступ 10px снизу`):**
-   - Лапы/брюшко монстра зафиксированы на **$y = 118$** (`target_feet_y = 118` в ячейке 128px).
-   - Оставляет чистый **буфер 10px снизу** ($128 - 118 = 10$ px), исключая обрезку когтей, жала и лап при движении.
+3. **10px Bottom Margin & Ground Anchoring (`target_feet_y = 118`):**
+   - The contact point where the monster's paws or belly meet the ground is anchored at **$y = 118$** (`target_feet_y = 118` in a 128px cell).
+   - Leaves a clean **10px margin at the bottom** ($128 - 118 = 10$ px), preventing claws, stingers, and paws from clipping against the frame edge.
 
-4. **Чистые альфа-края (No Artificial 1px Black Border):**
-   - Натуральный пиксель-арт без искусственных толстых 1px черных рамок.
+4. **Natural Clean Alpha Edges (No Artificial 1px Black Border):**
+   - Natural pixel art antialiasing without thick artificial 1px black borders.
+
+5. **Contact Ground Shadow:**
+   - Monsters cast a realistic contact ground shadow mesh (`shadowMesh = TextureManager.createShadowMesh(radius)`), placed at local $y = 0.03$, exactly matching the hero player pattern.
+   - The shadow texture is a centered radial gradient ellipse ($1.0 \times 0.65$ ratio) centered at local $(0,0)$.
 
 ---
 
 ### 1.3 Directional Row Mapping (Rows 0 to 3)
-В UV-координатах Three.js:
+In Three.js UV coordinates:
 
-- **Row 0 (Top, $y \in [0, 128)$)**: **Front** — вид спереди (морда смотрит на игрока).
-- **Row 1 ($y \in [128, 256)$)**: **Left** — вид слева (движение влево; отзеркаливается из Row 2).
-- **Row 2 ($y \in [256, 384)$)**: **Right** — вид справа (движение вправо).
-- **Row 3 (Bottom, $y \in [384, 512)$)**: **Back** — вид со спины (движение вверх от камеры).
+- **Row 0 (Top, $y \in [0, 128)$)**: **Front** — front-facing view (snout/face facing player).
+- **Row 1 ($y \in [128, 256)$)**: **Left** — left-facing view (moving left; mirrored from Row 2).
+- **Row 2 ($y \in [256, 384)$)**: **Right** — right-facing view (moving right).
+- **Row 3 (Bottom, $y \in [384, 512)$)**: **Back** — back-facing view (moving up away from camera).
 
 ```
 +---------------+---------------+---------------+---------------+
@@ -70,42 +73,42 @@ Every animated monster comprises 4 core texture assets in `public/textures/monst
 ---
 
 ### 1.4 Three.js Ground Anchoring Math for Monsters
-Для плоскости Three.js размером $2.2 \times 2.2$ метра и точкой опоры $y = 118$ в ячейке 128px:
+For a Three.js plane geometry of size $2.2 \times 2.2$ units with contact point $y = 118$ in a 128px cell:
 
 $$\text{translation}_y = \left(\frac{118}{128} - 0.5\right) \times \text{world\_size} = (0.921875 - 0.5) \times 2.2 = 0.421875 \times 2.2 = \mathbf{0.9281}$$
 
-При смещении плоскости на $+0.928$ по оси $Y$:
-- Лапы монстра стоят ровно на плоскости $y = 0.000$ на контактной тени `shadowMesh`.
-- Нижний буфер 10px предотвращает эффект «парения» или обрезания земли.
+With plane geometry translation $+0.928$ along the $Y$ axis:
+- The monster's paws rest directly on ground level $y = 0.000$ on top of `shadowMesh`.
+- The 10px buffer prevents any visual floating or ground clipping.
 
 ---
 
 ## 2. Monster Generation Artifact Prevention Rules
 
-1. **Анатомическая стабильность (Limb & Feature Count):**
-   - Четвероногие (койот, бизон): ровно 4 лапы, 1 хвост, 2 уха. Запрещены лишние ноги-фантомы или исчезающие хвосты.
-   - Членистоногие (скорпион, краулер): ровно 2 клешни, 1 сегментированный хвост с жалом.
-   - Гуманоиды/нежить (скелет, громила): ровно 2 руки, 2 ноги, 1 оружие/дубина.
-2. **Предотвращение дрейфа сторон (Direction Drift):**
-   - Диффузионные модели часто рисуют боковой профиль влево с поворотом морды к зрителю.
-   - **Решение:** Флаг `--mirror-left` в `process_monster_sheets.py` берет строку Row 2 (Right) и отзеркаливает по горизонтали в Row 1 (Left), обеспечивая 100% стабильный профиль без флипов.
-3. **4-кадровые ритмичные циклы:**
-   - **WALK (4 кадра):**
-     * Колонка 0: Шаг левой лапой/ногой вперед
-     * Колонка 1: Нейтральная фаза прохождения (все лапы касаются земли)
-     * Колонка 2: Шаг правой лапой/ногой вперед
-     * Колонка 3: Нейтральная фаза прохождения
-   - **ATTACK (4 кадра):**
-     * Колонка 0: Замах / сжатие для прыжка (anticipation)
-     * Колонка 1: Рывок вперед с укусом/ударом клешней (strike)
-     * Колонка 2: Завершение выпада / контакт (impact)
-     * Колонка 3: Возврат в исходную позицию (recovery)
+1. **Anatomical Stability (Limb & Feature Count):**
+   - Quadrupeds (coyote, bison): exactly 4 paws, 1 tail, 2 ears. No phantom limbs or disappearing tails.
+   - Arthropods (scorpion, crawler): exactly 2 pincers, 1 segmented tail with stinger.
+   - Humanoids / Undead (skeleton, brute): exactly 2 arms, 2 legs, 1 weapon/club.
+2. **Direction Drift Prevention:**
+   - Diffusion models often turn left profiles towards the viewer.
+   - **Solution:** The `--mirror-left` flag in `process_monster_sheets.py` takes Row 2 (Right) and mirrors it horizontally into Row 1 (Left), ensuring 100% stable profile symmetry without cadence flips.
+3. **4-Frame Rhythmic Cycles & 3rd Frame Hit Registration:**
+   - **WALK (4 frames):**
+     * Column 0: Front-left and back-right paws step forward
+     * Column 1: Neutral passing stance (paws grounded)
+     * Column 2: Front-right and back-left paws step forward
+     * Column 3: Neutral passing stance
+   - **ATTACK (4 frames over 0.5s duration):**
+     * Column 0 (Frame 1): Crouch / tension windup (anticipation)
+     * Column 1 (Frame 2): Forward lunge with bite/claw strike (strike launch)
+     * Column 2 (Frame 3): **STRIKE IMPACT! Hit damage against player is registered strictly on this 3rd frame** (`frameCol === 2`).
+     * Column 3 (Frame 4): Recovery back to trot stance (recovery)
 
 ---
 
-## 3. Master Generation Prompts (Примеры Монстров)
+## 3. Master Generation Prompts (Monster Examples)
 
-### Пример 1: Койот / Степной Волк (`monster_coyote`)
+### Example 1: Prairie Coyote (`monster_coyote`)
 
 #### Master PORTRAIT Prompt (`monster_coyote_front.png`)
 ```text
@@ -152,7 +155,7 @@ Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit
 
 ---
 
-### Пример 2: Пустынный Скорпион (`monster_scorpion`)
+### Example 2: Desert Scorpion (`monster_scorpion`)
 
 #### Master WALK Prompt (`monster_scorpion_walk.png`)
 ```text
@@ -172,7 +175,7 @@ Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit
 
 ## 4. Automated Processing Script
 
-Скрипт `.agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py`:
+Script `.agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py`:
 
 ```bash
 python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py \
@@ -192,18 +195,36 @@ python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.
 
 ## 5. Engine Integration Checklist
 
-### Step 5.1: Dynamic UV Columns Detection in `Enemy.ts`
-При рендеринге анимированного монстра движок определяет `cols` динамически:
+### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+When an animated monster attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
-const tex = this.monsterTextures.walk;
-const img = (tex as any).image as { width?: number; height?: number } | undefined;
-const cols = (img && img.width && img.height && img.height > 0)
-  ? Math.round((img.width / img.height) * 4)
-  : 4;
+// Authoritative simulation in Enemy.updateSimulation
+if (this.animState === 'ATTACK') {
+  this.attackAnimTimer -= dt;
+  const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
+  const frameCol = Math.floor(progress * 4);
 
-tex.repeat.set(1 / cols, 1 / 4);
-tex.offset.set(frameCol / cols, (3 - row) / 4);
+  // Damage is registered strictly on the 3rd frame (index 2)
+  if (frameCol === 2 && !this.hasDealtDamageThisAttack) {
+    this.hasDealtDamageThisAttack = true;
+    this.pendingAttackHit = true;
+  }
+
+  if (this.attackAnimTimer <= 0) {
+    this.animState = 'WALK';
+    this.attackAnimTimer = 0;
+  }
+}
+```
+
+### Step 5.2: Contact Ground Shadow Mesh
+Monsters receive a contact ground shadow identical to the hero player:
+
+```typescript
+const shadowRadius = Math.max(0.6, (this.width + this.height) * 0.22);
+this.shadowMesh = TextureManager.createShadowMesh(shadowRadius);
+this.mesh.add(this.shadowMesh);
 ```
 
 ---
@@ -211,7 +232,7 @@ tex.offset.set(frameCol / cols, (3 - row) / 4);
 ## 6. Verification Checklist
 
 1. `python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py ...` -> Exit code 0.
-2. Проверка разрешения:
-   - Спрайтшиты `monster_<name>_{walk,attack}.png`: $512 \times 512$ px (4 cols $\times$ 4 rows @ 128x128).
-   - Портрет `monster_<name>_front.png`: $128 \times 128$ px.
-3. `npm run typecheck` и `npm run build` — 0 ошибок.
+2. Resolution verification:
+   - Sprite sheets `monster_<name>_{walk,attack}.png`: $512 \times 512$ px (4 cols $\times$ 4 rows @ 128x128).
+   - Portrait `monster_<name>_front.png`: $128 \times 128$ px.
+3. `npm run typecheck` and `npm run build` — 0 errors.
