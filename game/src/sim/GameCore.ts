@@ -142,6 +142,21 @@ export class SimPlayerInternal {
     this.speed = this.baseSpeed;
     this.damageMultiplier = this.baseDamageMultiplier;
     this.weapons.push(createSimWeaponForCharacter(charType));
+    this.startingWeapon = this.weapons[0]?.id || '';
+  }
+
+  public critChance: number = 0.05;
+  public critDamage: number = 0.50;
+  public startingWeapon: string = '';
+
+  public getDamageMultiplier(weaponId?: string): number {
+    const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
+    const generalBonus = this.passiveDamageMultiplier * (1 + dmgBonus);
+    const isStarting = !weaponId ||
+      weaponId === this.startingWeapon ||
+      (this.charType === 'invoker' && (weaponId === 'invoker_invoke' || weaponId.startsWith('invoker_')));
+    const heroMultiplier = isStarting ? this.baseDamageMultiplier : 1.0;
+    return heroMultiplier * generalBonus;
   }
 
   public recalculateStats() {
@@ -547,7 +562,7 @@ export class GameCore {
             position: player.position,
             isAlive: player.isAlive,
             isDowned: player.isDowned,
-            damageMultiplier: player.damageMultiplier
+            damageMultiplier: player.getDamageMultiplier(weapon.id)
           },
           this.enemies,
           (projData) => {
@@ -954,12 +969,26 @@ export class GameCore {
       }
     }
 
-    const isCrit = damage >= 30;
+    let isCrit = false;
+    let finalDmg = damage;
+    if (attacker) {
+      const critChance = Math.min(10.0, attacker.critChance);
+      const critDamage = Math.min(1.0, attacker.critDamage);
+      if (critChance > 0) {
+        const guaranteed = Math.floor(critChance);
+        const rem = critChance - guaranteed;
+        const tier = guaranteed + (Math.random() < rem ? 1 : 0);
+        if (tier > 0) {
+          isCrit = true;
+          finalDmg = Math.round(damage * (1 + tier * critDamage));
+        }
+      }
+    }
     this.events.push({
       type: 'damage_num',
       enemyId: enemy.id,
       attackerId,
-      damage: Math.round(damage),
+      damage: Math.round(finalDmg),
       isCrit,
       x: enemy.position.x,
       y: enemy.height * 0.8,
