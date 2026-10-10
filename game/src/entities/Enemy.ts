@@ -4,6 +4,8 @@ import {
   Vector3,
   Mesh,
   MeshBasicMaterial,
+  MeshDepthMaterial,
+  RGBADepthPacking,
   PlaneGeometry,
   RingGeometry,
   DoubleSide,
@@ -75,7 +77,7 @@ export class Enemy {
   public currentDir: SpriteDirection = 'front';
   private spriteMesh: Mesh;
   private spriteMaterial: MeshBasicMaterial;
-  private shadowMesh: Mesh;
+  private customDepthMaterial!: MeshDepthMaterial;
 
   // Animation & Attack State (2 states: WALK and ATTACK)
   public animState: EnemyAnimState = 'WALK';
@@ -213,12 +215,15 @@ export class Enemy {
 
     this.spriteMesh = new Mesh(geom, this.spriteMaterial);
     this.spriteMesh.rotation.x = -Math.PI / 4.8;
+    this.spriteMesh.renderOrder = 0;
+    this.customDepthMaterial = new MeshDepthMaterial({
+      depthPacking: RGBADepthPacking,
+      map: this.spriteMaterial.map,
+      alphaTest: 0.25
+    });
+    this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
+    this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
-
-    // 2. Contact Shadow
-    const shadowRadius = Math.max(0.6, (this.width + this.height) * 0.22);
-    this.shadowMesh = TextureManager.createShadowMesh(shadowRadius);
-    this.mesh.add(this.shadowMesh);
 
     // Boss special key light
     if (this.isImmortal) {
@@ -250,6 +255,10 @@ export class Enemy {
     this.currentDir = dir;
     if (!this.bossTextures && !this.monsterTextures) {
       this.spriteMaterial.map = this.textures[dir];
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = this.textures[dir];
+        this.customDepthMaterial.needsUpdate = true;
+      }
     }
   }
 
@@ -289,6 +298,10 @@ export class Enemy {
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
       this.spriteMaterial.needsUpdate = true;
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = tex;
+        this.customDepthMaterial.needsUpdate = true;
+      }
     }
 
     const DIR_ROW_MAP: Record<SpriteDirection, number> = {
@@ -329,6 +342,10 @@ export class Enemy {
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
       this.spriteMaterial.needsUpdate = true;
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = tex;
+        this.customDepthMaterial.needsUpdate = true;
+      }
     }
 
     const DIR_ROW_MAP: Record<SpriteDirection, number> = {
@@ -579,6 +596,9 @@ export class Enemy {
     this.bleedStacks = [];
     scene.remove(this.mesh);
     this.spriteMaterial.dispose();
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.dispose();
+    }
     if (this.bossTextures) {
       this.bossTextures.walk.dispose();
       this.bossTextures.attack.dispose();
