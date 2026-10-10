@@ -106,7 +106,46 @@ With plane geometry translation $+1.82$ along the $Y$ axis:
 
 ---
 
-## 3. Master Generation Prompts (Example: Infernal Demon Boss)
+## 3. Boss Colossus Concept Sheet & Human Approval Protocol (Phase 0 Approval Gate)
+
+Bosses are high-impact centerpiece encounters with massive visual presence ($160 \times 160$ px frames, 2.5–4x scale). To eliminate wasted iterations and guarantee satisfaction with the boss's menacing dark fantasy aesthetic, all boss creation requires a mandatory **Phase 0 Concept Approval Gate**:
+
+### Step 3.1: Boss Concept Sheet Generation (`boss_<name>_concept.png`)
+Generate a single composite **Boss Concept Sheet** featuring 3 distinct sections on pure solid white background `rgb(255,255,255)`:
+1. **Left section (Boss HP Bar Portrait / Visage View):** Close-up 160x160 terrifying boss portrait (glowing volcanic/infernal eyes, obsidian horns, demonic maw, spiked crowns, aura of supreme threat).
+2. **Center section (Colossal Full-Body Sprite):** Full-body colossal boss sprite in front-facing combat stance (height up to 120–130 px, 24px bottom margin, massive shoulders, heavy hooves/claws, spikes, magma veins, monstrous silhouette).
+3. **Right section (Signature Slam Weapon / Cataclysm Feature):** Standalone close-up detail of the boss's cataclysmic weapon or signature attack organ (e.g. molten magma cleaver, colossal volcanic crushing claw, infernal chained flail).
+
+#### Master Concept Sheet Prompt (Example: Infernal Demon Overlord)
+```text
+Boss concept reference sheet of Infernal Demon Overlord, a terrifying colossal dark fantasy boss.
+
+Three clear distinct sections on pure solid white background rgb(255,255,255):
+1. Left section: close-up 160x160 menacing boss portrait icon, terrifying demonic maw, sharp curved obsidian horns, blazing red volcanic eyes, rising dark smoke, molten magma veins.
+2. Center section: colossal full-body demonic overlord sprite in front combat stance, imposing heavy proportions, massive shoulders with magma cracks, blackened spiked plate armor, heavy demon hooves, spiked tail, clawed hands.
+3. Right section: isolated detailed display of the colossal volcanic crushing claw with glowing molten magma cracks and fiery embers.
+
+Clean 16-bit pixel art game assets, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
+```
+
+### Step 3.2: Human Approval Gateway (`ask_question` Interactive Check)
+The agent MUST display `boss_<name>_concept.png` in chat and request developer approval via `ask_question`:
+- **Question:** *"Сгенерирован концепт-лист босса (портрет для полоски HP, колоссальный силуэт в полный рост, боевые детали). Подойдёт ли такой дизайн или нужны правки?"*
+- **Options:**
+  - `(Recommended) Утвердить концепт босса (перейти к генерации листов анимаций WALK и ATTACK)`
+  - `Внести правки в босса (указать, что изменить: рога, масштаб, лавовые эффекты, броню, оружие)`
+- **Iteration Loop:** If adjustments are requested, the agent updates prompt tokens, regenerates `boss_<name>_concept.png`, and asks again.
+- **NEVER generate animation sheets before the boss concept is approved by the human developer.**
+
+### Step 3.3: Reference Image Conditioning (`ImagePaths: [concept_path]`)
+When generating `boss_<name>_walk.png` and `boss_<name>_attack.png`, **always pass the approved concept image** via `ImagePaths` in `generate_image` to lock in identical horns, colors, magma veins, and equipment across all frames.
+
+---
+
+## 4. Master Generation Prompts (Example: Infernal Demon Boss)
 
 ### Master PORTRAIT Prompt (`boss_demon_front.png`)
 ```text
@@ -174,7 +213,7 @@ No anime style, no chibi proportions, no kawaii style, no cute expression, no ca
 
 ---
 
-## 4. Automated Processing Script
+## 5. Automated Processing Script
 
 Script `.agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py`:
 
@@ -194,9 +233,9 @@ python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py \
 
 ---
 
-## 5. Engine Integration Checklist
+## 6. Engine Integration Checklist
 
-### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+### Step 6.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
 When an animated boss attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
@@ -219,7 +258,7 @@ if (this.animState === 'ATTACK') {
 }
 ```
 
-### Step 5.2: Dynamic 2D Sprite Projected Shadow Integration
+### Step 6.2: Dynamic 2D Sprite Projected Shadow Integration
 Bosses cast a realistic directional silhouette shadow onto the terrain matching the player:
 
 ```typescript
@@ -234,7 +273,7 @@ this.spriteMesh.castShadow = true;
 
 ---
 
-## 6. Verification Checklist
+## 7. Verification Checklist
 
 1. `python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py ...` -> Exit code 0.
 2. Resolution verification:

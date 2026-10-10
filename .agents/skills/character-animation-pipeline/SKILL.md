@@ -131,9 +131,9 @@ When generating sprite sheets with generative models, four major classes of arti
 
 ---
 
-## 3. Cross-Sheet Consistency Protocol
+## 3. Cross-Sheet Consistency & Human Approval Protocol (Phase 0 Concept Gate)
 
-To prevent character drift (where face, armor, eye color, hair, or wings change between the 4 sheets), follow this 3-step consistency protocol:
+To prevent character drift and avoid wasting resources generating 24-frame animation sheets for an unverified design, all character creation follows a strict 4-step protocol with a **mandatory human approval gateway**:
 
 ### Step 1: Character Design Specification (Design Bible)
 Establish exact visual tokens before prompting:
@@ -143,15 +143,43 @@ Establish exact visual tokens before prompting:
 - **Wings:** White feathered angel wings behind shoulders with subtle golden tips.
 - **Equipment:** One spear in right hand, one round blue Norse shield on left arm. No other weapons.
 
-### Step 2: Master Reference Generation
-Generate the **Master Portrait** (or Master IDLE sheet) first. Save it as the visual anchor.
+### Step 2: Concept Sheet Generation (`hero_<name>_concept.png`)
+Before generating any animation sheets, generate a single composite **Character Concept Sheet** (`hero_<name>_concept.png`) featuring 3 distinct sections on pure white background `rgb(255,255,255)`:
+1. **Left section (Portrait / Avatar):** Close-up 128x128 pixel art face icon with distinct eyes, facial features, and headgear.
+2. **Center section (Full-Body Combat Sprite):** Full-body chibi sprite in front-facing combat stance (height $\le 96$ px, 10px bottom margin, armor, silhouette).
+3. **Right section (Isolated Weapons & Equipment):** Standalone detailed weapon and shield sprites with clear blade/head geometry.
 
-### Step 3: Reference Image Conditioning (`ImagePaths`)
-When generating the remaining sheets (WALK, ATTACK, WALK_ATTACK), **always pass the master reference image** via `ImagePaths` in `generate_image` (e.g. `ImagePaths: [portrait_path, idle_sheet_path]`). This locks the model into drawing the exact same character with identical colors, hair, clothing, and weapons across all action states.
+### Step 3: Human Approval Gateway (`ask_question` Interactive Check)
+The agent MUST display `hero_<name>_concept.png` in chat and request human verification using `ask_question`:
+- **Question:** *"Сгенерирован концепт-лист персонажа (портрет, спрайт в полный рост, экипировка). Подойдёт ли такой персонаж или переделать?"*
+- **Options:**
+  - `(Recommended) Утвердить концепт (перейти к генерации анимаций IDLE, WALK, ATTACK, WALK_ATTACK)`
+  - `Внести правки в дизайн (указать, что изменить: цвет глаз, волосы, броню, форму оружия и т.д.)`
+- **Iteration Loop:** If the developer requests changes (e.g. "make eyes amber, hair shorter, shield kite-shaped"), the agent adjusts the prompt tokens, regenerates `hero_<name>_concept.png`, and asks again until approved.
+- **NEVER generate animation sheets before the concept is approved by the human developer.**
+
+### Step 4: Reference Image Conditioning (`ImagePaths: [concept_path]`)
+When generating the 4 animation sheets (`hero_<name>_{idle,walk,attack,walk_attack}.png`), **always pass the approved concept sheet** via `ImagePaths` in `generate_image`.
+This locks the model into drawing the exact same character with identical colors, hair, clothing, and weapons across all action states.
 
 ---
 
 ## 4. Standard Generation Prompts (Valkyrie Example: Spear & Shield)
+
+### Master CONCEPT SHEET Prompt (`hero_valkyrie_concept.png`)
+```text
+Character design and concept reference sheet of a Valkyrie, a battle-ready winged maiden warrior of Norse mythology.
+
+Three clear distinct sections on pure solid white background rgb(255,255,255):
+1. Left section: close-up 128x128 pixel art portrait icon, sharp blue eyes, serious focused expression, silver winged circlet, golden blonde braids framing face, determined look, no smile, no cute or adorable expression.
+2. Center section: full-body battle-ready chibi combat sprite in front-facing stance, chibi proportions with intentionally oversized head and compact athletic body, sturdy limbs, silver breastplate with royal blue tunic collar, reinforced leather pieces, practical armored boots, white feathered wings with golden tips, holding a spear in right hand and round blue Norse shield on left arm.
+3. Right section: isolated standalone weapon sprite display, detailed golden-tipped spear and round blue Norse shield with silver rim.
+
+Clean 16-bit pixel art game assets, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
+Heroic fantasy RPG game character design, battle-ready and dangerous despite chibi proportions.
+
+No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no delicate feminine pose, no pretty boy face, no cropped weapon, no weapon cut off by frame, no realistic proportions, no photorealism, no smooth gradients.
+```
 
 ### Master PORTRAIT Prompt (`hero_valkyrie_front.png`)
 ```text

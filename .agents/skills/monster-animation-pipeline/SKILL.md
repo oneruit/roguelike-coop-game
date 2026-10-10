@@ -108,7 +108,46 @@ With plane geometry translation $+0.928$ along the $Y$ axis:
 
 ---
 
-## 3. Master Generation Prompts (Monster Examples)
+## 3. Monster Concept Sheet & Human Approval Protocol (Phase 0 Approval Gate)
+
+To prevent monster anatomical drift and ensure visual satisfaction before generating multi-frame animation sheets, all monster creation follows a mandatory human approval workflow:
+
+### Step 3.1: Monster Concept Sheet Generation (`monster_<name>_concept.png`)
+Generate a single composite **Monster Concept Sheet** featuring 3 distinct sections on pure solid white background `rgb(255,255,255)`:
+1. **Left section (Bestiary Portrait / Snout View):** Close-up 128x128 menacing monster icon (sharp predatory eyes, bared fangs, horns, antennae, threat snarl).
+2. **Center section (Full-Body Monster Sprite):** Full-body compact aggressive beast/vermin/undead sprite in front combat stance (height $\le 96$ px, 10px bottom margin, predatory posture, paws/claws/carapace).
+3. **Right section (Signature Attack Feature / Threat Detail):** Standalone close-up detail of the monster's primary weapon or natural attack feature (e.g. venomous stinger, crushing pincers, gnashing jaw, barbed spikes).
+
+#### Master Concept Sheet Prompt (Example: Prairie Coyote)
+```text
+Monster concept reference sheet of Prairie Coyote, a vicious and deadly desert predator beast.
+
+Three clear distinct sections on pure solid white background rgb(255,255,255):
+1. Left section: close-up 128x128 menacing monster portrait icon, snarling aggressive muzzle, sharp bared white fangs, glowing amber eyes, alert pointed ears, no cute or friendly expression.
+2. Center section: full-body compact aggressive beast sprite in front combat stance, muscular canine frame, sturdy paws, spiky sandy-brown fur, bushy tail, exactly 4 legs and 1 tail.
+3. Right section: isolated detailed display of open snapping predator jaws and sharp white canine teeth.
+
+Clean 16-bit pixel art game assets, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
+```
+
+### Step 3.2: Human Approval Gateway (`ask_question` Interactive Check)
+The agent MUST display `monster_<name>_concept.png` in chat and request developer approval via `ask_question`:
+- **Question:** *"Сгенерирован концепт-лист монстра (портрет, силуэт в полный рост, боевые детали). Подойдёт ли такой дизайн или нужны правки?"*
+- **Options:**
+  - `(Recommended) Утвердить концепт (перейти к генерации листов анимаций WALK и ATTACK)`
+  - `Внести правки в монстра (указать, что изменить: окрас, форму рогов/клешней, свирепость, детали)`
+- **Iteration Loop:** If the developer requests adjustments, the agent modifies the prompt tokens, regenerates `monster_<name>_concept.png`, and asks again.
+- **NEVER generate animation sheets before the monster concept is approved by the human developer.**
+
+### Step 3.3: Reference Image Conditioning (`ImagePaths: [concept_path]`)
+When generating `monster_<name>_walk.png` and `monster_<name>_attack.png`, **always pass the approved concept image** via `ImagePaths` in `generate_image`.
+
+---
+
+## 4. Master Generation Prompts (Monster Examples)
 
 ### Example 1: Prairie Coyote (`monster_coyote`)
 
@@ -212,7 +251,7 @@ No anime style, no chibi proportions, no kawaii style, no cute expression, no ca
 
 ---
 
-## 4. Automated Processing Script
+## 5. Automated Processing Script
 
 Script `.agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py`:
 
@@ -232,9 +271,9 @@ python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.
 
 ---
 
-## 5. Engine Integration Checklist
+## 6. Engine Integration Checklist
 
-### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+### Step 6.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
 When an animated monster attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
@@ -257,7 +296,7 @@ if (this.animState === 'ATTACK') {
 }
 ```
 
-### Step 5.2: Dynamic 2D Sprite Projected Shadow Integration
+### Step 6.2: Dynamic 2D Sprite Projected Shadow Integration
 Monsters cast a realistic directional silhouette shadow onto the terrain matching the player:
 
 ```typescript
@@ -272,7 +311,7 @@ this.spriteMesh.castShadow = true;
 
 ---
 
-## 6. Verification Checklist
+## 7. Verification Checklist
 
 1. `python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py ...` -> Exit code 0.
 2. Resolution verification:
