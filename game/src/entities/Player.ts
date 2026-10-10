@@ -1004,25 +1004,47 @@ export class Player {
     return this.isOneHitKill;
   }
 
+  public static readonly MAX_WEAPONS = 4;
+
+  public getAwakenedCap(): number {
+    const awakenedCount = this.weapons.filter(w => (w.awakenedGrade ?? 0) > 0).length;
+    switch (awakenedCount) {
+      case 1: return 6;
+      case 2: return 8;
+      case 3: return 10;
+      case 4: return 12;
+      default: return 12;
+    }
+  }
+
+  public areAllWeaponsMaxed(): boolean {
+    if (this.weapons.length < Player.MAX_WEAPONS) return false;
+    const awakenedCap = this.getAwakenedCap();
+    return this.weapons.every(w => {
+      const cap = (w.awakenedGrade ?? 0) > 0 ? awakenedCap : 12;
+      return w.level >= cap;
+    });
+  }
+
   public giveAllWeapons(scene: Scene) {
     const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
-    if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+    if (!hasBow && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
 
     const hasKukri = this.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
-    if (!hasKukri && this.weapons.length < 5) this.weapons.push(new KukriWeapon());
+    if (!hasKukri && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KukriWeapon());
 
     const hasOrbs = this.weapons.some(w => w.id === 'orbiting_barrier');
-    if (!hasOrbs && this.weapons.length < 5) this.weapons.push(new OrbitingBarrierWeapon());
+    if (!hasOrbs && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new OrbitingBarrierWeapon());
 
     const hasAura = this.weapons.some(w => w.id === 'holy_aura');
-    if (!hasAura && this.weapons.length < 5) {
+    if (!hasAura && this.weapons.length < Player.MAX_WEAPONS) {
       const aura = new HolyAuraWeapon();
       aura.initVisual(scene, this.position);
       this.weapons.push(aura);
     }
 
     const hasKatana = this.weapons.some(w => w.id === 'katana_slash');
-    if (!hasKatana && this.weapons.length < 5) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
+    if (!hasKatana && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
     this.recalculateStats();
   }
 

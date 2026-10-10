@@ -180,7 +180,39 @@ export class RiftTeleporter {
     this.zoneDomeMat.color.setHex(0x6366f1);
   }
 
+  /**
+   * Disables the teleporter for the final stage (Rift Core) where no transitions occur.
+   */
+  public disableForFinalStage() {
+    this.mesh.visible = false;
+    this.state = 'IDLE';
+    this.isDiscovered = false;
+    this.chargeProgress = 0;
+    this.position.set(99999, -999, 99999);
+    this.mesh.position.copy(this.position);
+  }
+
+  /**
+   * Automatically stabilizes the teleporter when 5 minutes on the biome have elapsed.
+   */
+  public stabilizeVoluntaryPortal(): boolean {
+    if (!this.mesh.visible) return false;
+    if (this.state === 'WARP_READY') return false;
+    this.state = 'WARP_READY';
+    this.isDiscovered = true;
+    this.isBossDefeated = true;
+    this.chargeProgress = 1.0;
+    this.zoneDome.visible = true;
+    this.zoneDomeMat.color.setHex(0x10b981);
+    this.zoneDomeMat.opacity = 0.6;
+    return true;
+  }
+
   public getInteraction(playerPos: Vector3): { canInteract: boolean; prompt: string; action: 'activate' | 'warp' | null } {
+    if (!this.mesh.visible) {
+      return { canInteract: false, prompt: '', action: null };
+    }
+
     const distSq = playerPos.distanceToSquared(this.position);
     if (distSq > 5.5 * 5.5) {
       return { canInteract: false, prompt: '', action: null };

@@ -408,13 +408,15 @@ export class SessionDirector {
       const myOffset = spawnOffsets[this.net.mySlotId] || (this.net.role === 'client' ? [2.5, 0.5] : [0, 0]);
 
       // Initialize The Rift Stage 1
-      this.biomeManager.reset();
+      const numericSeed = typeof this.currentSeed === 'number' ? this.currentSeed : SeededRNG.hashString(String(this.currentSeed));
+      this.biomeManager.reset(numericSeed);
+      this.enemyManager.resetStageTime();
       this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
 
       if (this.net.role !== 'client') {
-        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1);
+        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1, this.biomeManager.currentBiome.id);
       } else {
-        this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1);
+        this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1, this.biomeManager.currentBiome.id);
       }
 
       const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
@@ -501,6 +503,28 @@ export class SessionDirector {
         SoundManager.playChestOpen();
         this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);
 
+        // Global magnet pull for all XP gems & passive crystals on map
+        this.dropManager.attractAllGemsTo(this.player.position);
+
+        // Bonus XP cache from chest
+        const bonusXp = 20 + this.biomeManager.stageNumber * 10;
+        this.player.gainXp(bonusXp);
+
+        // Protective safety shockwave: knock back nearby monsters
+        for (const enemy of this.enemyManager.enemies) {
+          if (!enemy.isAlive) continue;
+          const dSq = enemy.position.distanceToSquared(this.player.position);
+          if (dSq < 144) {
+            const diff = enemy.position.clone().sub(this.player.position);
+            diff.y = 0;
+            const dist = diff.length();
+            if (dist > 0.1) {
+              diff.normalize().multiplyScalar(4.0);
+              enemy.position.add(diff);
+            }
+          }
+        }
+
         const onChosen = (chosenItem: RiftItemDef) => {
           ProgressionManager.getInstance().recordResourceGather(1);
           this.player.addRiftItem(chosenItem);
@@ -549,6 +573,7 @@ export class SessionDirector {
     const nextBiome = this.biomeManager.advanceStage();
     this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
     this.enemyManager.currentStage = this.biomeManager.stageNumber;
+    this.enemyManager.resetStageTime();
     this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
 
     // Derive deterministic stage seed
@@ -559,7 +584,7 @@ export class SessionDirector {
 
     // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
     AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${nextBiome.name.toUpperCase()}`);
-    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber);
+    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber, nextBiome.id);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
 
@@ -597,6 +622,7 @@ export class SessionDirector {
     const nextBiome = this.biomeManager.setStage(stageNumber);
     this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
     this.enemyManager.currentStage = stageNumber;
+    this.enemyManager.resetStageTime();
     this.hud.updateStageText(stageNumber, biomeName || nextBiome.name);
 
     const numBase = typeof this.currentSeed === 'number'
@@ -604,7 +630,7 @@ export class SessionDirector {
       : SeededRNG.hashString(this.currentSeed.toString());
     const stageSeed = numBase + stageNumber * 10007;
     AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${(biomeName || nextBiome.name).toUpperCase()}`);
-    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber);
+    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber, nextBiome.id);
     this.mapManager.setSeed(stageSeed);
     this.mapManager.clear();
 

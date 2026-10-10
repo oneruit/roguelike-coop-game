@@ -3687,7 +3687,7 @@ export class HUD {
       if (weaponOptions.length > 0) {
         weaponOptions[0].apply();
       } else {
-        // All 5 weapons are maxed at level 20: provide fallback reward
+        // All weapons maxed at level 12 / awakened cap: provide fallback reward
         player.maxHp += 50;
         player.heal(player.maxHp);
         player.redrawOverhead();
@@ -3711,13 +3711,13 @@ export class HUD {
         onSelect();
       });
     } else {
-      // All 5 weapons are maxed at level 20: provide fallback reward
+      // All weapons maxed fallback reward
       const fallbackOption: UpgradeOption = {
         id: 'max_arsenal_reward',
         title: 'Эликсир Героя',
         icon: '💖',
         levelTag: 'АРСЕНАЛ МАКСИМАЛЕН • ЛЕГЕНДАРНЫЙ',
-        description: 'Все 5 оружий прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
+        description: 'Все оружия прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
         grade: 'legendary',
         apply: () => {
           player.maxHp += 50;
@@ -4398,18 +4398,22 @@ export class HUD {
 
   private generateWeaponOptions(player: Player, excludeIds?: ReadonlySet<string>): UpgradeOption[] {
     const pool: UpgradeOption[] = [];
+    const allMaxed = player.areAllWeaponsMaxed();
+    const awakenedCap = player.getAwakenedCap();
 
-    // 1. Existing weapon upgrades (up to maxLevel 20)
+    // 1. Existing weapon upgrades
     for (const weapon of player.weapons) {
-      if (weapon.level < weapon.maxLevel && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
+      const effectiveCap = (weapon.awakenedGrade ?? 0) > 0 ? awakenedCap : weapon.maxLevel;
+      if (weapon.level < effectiveCap && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
         const grade = rollWeaponGrade(this.currentStageNumber);
         const gradeLabel = getGradeLabel(grade);
+        const prefix = (weapon.awakenedGrade ?? 0) > 0 ? '[ГРЕЙД II • x2] ' : '';
         pool.push({
           id: `upgrade_${weapon.id}`,
-          title: `Улучшение: ${weapon.name}`,
+          title: `${prefix}Улучшение: ${weapon.name}`,
           icon: weapon.icon,
           iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: `УРОВЕНЬ ${weapon.level + 1} • ${gradeLabel.toUpperCase()}`,
+          levelTag: `УРОВЕНЬ ${weapon.level + 1}/${effectiveCap} • ${gradeLabel.toUpperCase()}`,
           description: weapon.getNextUpgradeDescription(grade),
           grade,
           apply: () => weapon.upgrade(grade)
@@ -4417,8 +4421,66 @@ export class HUD {
       }
     }
 
-    // 2. New weapons if player has less than 5 weapons
-    if (player.weapons.length < 5) {
+    // 2. Post-max progression & Grade Awakening
+    if (allMaxed || pool.length === 0) {
+      // 2a. Health bonus
+      pool.push({
+        id: 'bonus_health_elixir',
+        title: 'Эликсир Жизни (+50 HP)',
+        icon: '❤️',
+        levelTag: 'БОНУС ЗДОРОВЬЯ',
+        description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
+        grade: 'rare',
+        apply: () => {
+          player.maxHp += 50;
+          player.hp = Math.min(player.maxHp, player.hp + 50);
+          player.recalculateStats();
+        }
+      });
+
+      // 2b. Grade Awakening for unawakened weapons
+      const unawakenedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 0);
+      const nextAwakenedCount = player.weapons.filter(w => (w.awakenedGrade ?? 0) > 0).length + 1;
+      let targetCapAfterAwaken = 6;
+      if (nextAwakenedCount === 2) targetCapAfterAwaken = 8;
+      else if (nextAwakenedCount === 3) targetCapAfterAwaken = 10;
+      else if (nextAwakenedCount >= 4) targetCapAfterAwaken = 12;
+
+      for (const weapon of unawakenedWeapons) {
+        pool.push({
+          id: `awaken_${weapon.id}`,
+          title: `Пробуждение Грейда: ${weapon.name}`,
+          icon: '🌟',
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+          levelTag: `ГРЕЙД II • СБРОС (МАКС. ${targetCapAfterAwaken})`,
+          description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до ${targetCapAfterAwaken} ур.`,
+          grade: 'legendary',
+          apply: () => {
+            weapon.awakenGrade();
+            player.recalculateStats();
+          }
+        });
+      }
+
+      // If all weapons are already awakened at max level 12, offer Damage Elixir
+      if (unawakenedWeapons.length === 0) {
+        pool.push({
+          id: 'bonus_damage_elixir',
+          title: 'Эликсир Могущества (+10% урона)',
+          icon: '⚡',
+          levelTag: 'БОНУС УРОНА',
+          description: 'Увеличивает весь наносимый урон героя на +10%.',
+          grade: 'legendary',
+          apply: () => {
+            player.damageMultiplier += 0.10;
+            player.recalculateStats();
+          }
+        });
+      }
+    }
+
+    // 3. New weapons if player has less than 4 weapons and not maxed
+    if (player.weapons.length < 4 && !allMaxed) {
       // 2a. Character-specific / Invoker spells
       const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
       for (const spell of invokerWeapons) {

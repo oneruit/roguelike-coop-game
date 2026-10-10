@@ -220,8 +220,39 @@ export const BIOMES: BiomeConfig[] = [
 export class BiomeManager {
   public currentStageIndex: number = 0;
   public currentTimeOfDay: 'day' | 'night' = 'day';
+  public activeRunBiomes: BiomeConfig[] = [];
   private static biomeTextures = new Map<string, Texture>();
   private static textureLoader = new TextureLoader();
+
+  constructor() {
+    this.initRunBiomes();
+  }
+
+  public initRunBiomes(seed?: number): BiomeConfig[] {
+    const regularBiomes = BIOMES.filter(b => b.id !== 'rift_core');
+    const riftCore = BIOMES.find(b => b.id === 'rift_core')!;
+
+    // Seeded or random shuffle of the 5 non-final biomes
+    const shuffled = [...regularBiomes];
+    let s = typeof seed === 'number' ? seed : Math.floor(Math.random() * 1000000);
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      s = (s * 9301 + 49297) % 233280;
+      const j = Math.floor((s / 233280) * (i + 1));
+      const tmp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = tmp;
+    }
+
+    // Pick 3 random biomes and append rift_core as the 4th (final) biome
+    this.activeRunBiomes = [
+      { ...shuffled[0], stageNumber: 1 },
+      { ...shuffled[1], stageNumber: 2 },
+      { ...shuffled[2], stageNumber: 3 },
+      { ...riftCore, stageNumber: 4 }
+    ];
+    this.currentStageIndex = 0;
+    return this.activeRunBiomes;
+  }
 
   public static getBiomeTexture(biomeId: string): Texture {
     let tex = this.biomeTextures.get(biomeId);
@@ -239,11 +270,18 @@ export class BiomeManager {
   }
 
   public get currentBiome(): BiomeConfig {
-    return BIOMES[Math.min(this.currentStageIndex, BIOMES.length - 1)];
+    if (this.activeRunBiomes.length === 0) {
+      this.initRunBiomes();
+    }
+    return this.activeRunBiomes[Math.min(this.currentStageIndex, this.activeRunBiomes.length - 1)];
   }
 
   public get stageNumber(): number {
     return this.currentStageIndex + 1;
+  }
+
+  public isFinalStage(): boolean {
+    return this.stageNumber >= 4;
   }
 
   /**
@@ -305,26 +343,31 @@ export class BiomeManager {
   }
 
   /**
-   * Sets the current stage explicitly (1-based index).
+   * Sets the current stage explicitly (1-based index, up to 4 stages).
    */
   public setStage(stageNumber: number): BiomeConfig {
-    this.currentStageIndex = Math.max(0, stageNumber - 1) % BIOMES.length;
+    if (this.activeRunBiomes.length === 0) {
+      this.initRunBiomes();
+    }
+    this.currentStageIndex = Math.max(0, Math.min(stageNumber - 1, this.activeRunBiomes.length - 1));
     return this.currentBiome;
   }
 
   /**
    * Advances to the next stage/biome.
+   * Caps at stage 4 (final stage).
    */
   public advanceStage(): BiomeConfig {
-    this.currentStageIndex++;
-    if (this.currentStageIndex >= BIOMES.length) {
-      // Loop over or stay at final
-      this.currentStageIndex = 0; // Looping like in RoR2!
+    if (this.activeRunBiomes.length === 0) {
+      this.initRunBiomes();
+    }
+    if (this.currentStageIndex < this.activeRunBiomes.length - 1) {
+      this.currentStageIndex++;
     }
     return this.currentBiome;
   }
 
-  public reset() {
-    this.currentStageIndex = 0;
+  public reset(seed?: number) {
+    this.initRunBiomes(seed);
   }
 }
