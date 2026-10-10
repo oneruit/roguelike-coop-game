@@ -154,15 +154,15 @@ export function invokerSpellFromWeaponId(id: string): InvokerSpellId | null {
   const spell = id.replace(/^invoker_/, "");
   return id.startsWith("invoker_") && isInvokerSpellId(spell) ? spell : null;
 }
-/** Separate spell weapons require Invoke in the same inventory. */
+import { canCharacterAcquireWeapon } from "./UniqueCharacters";
+
+/** Separate spell weapons require Invoke in the same inventory, and hero must be allowed to acquire. */
 export function canAcquireInvokerWeapon(
   id: string,
   weapons: readonly { id: string }[],
+  charType: import("./types/entities").CharacterType = "invoker"
 ): boolean {
-  return (
-    !invokerSpellFromWeaponId(id) ||
-    weapons.some((weapon) => weapon.id === "invoker_invoke")
-  );
+  return canCharacterAcquireWeapon(charType, id, weapons);
 }
 export const INVOKE_BASE_DAMAGE = 36;
 export const INVOKE_DAMAGE_PER_LEVEL = 9;

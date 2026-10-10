@@ -1,6 +1,7 @@
 import { selectWeaponUpgradeOptions } from './selectWeaponUpgradeOptions';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../combat/InvokerWeapons';
-import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId, canAcquireInvokerWeapon } from '../shared/InvokerSpells';
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../shared/InvokerSpells';
+import { canCharacterAcquireWeapon } from '../shared/UniqueCharacters';
 import { Player, CharacterType, ActiveBuff, BuffType } from '../entities/Player';
 import { Weapon, BowWeapon, KukriWeapon, OrbitingBarrierWeapon, HolyAuraWeapon, KatanaSlashWeapon, WhirlwindSlashWeapon, GreatswordWeapon, FlailWeapon, AstralStaffWeapon, ChakramWeapon, LightningStrikeWeapon, IceSpikeWeapon, FireballWeapon, AssaultRifleWeapon } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
@@ -97,6 +98,11 @@ export class HUD {
   private itemInventoryTray: HTMLElement | null;
   private dashCooldownBadge: HTMLElement | null;
   private dashCooldownText: HTMLElement | null;
+
+  // Screen Damage Flash & Low HP Vignette
+  private damageFlashLayer: HTMLElement | null;
+  private lowHpVignetteLayer: HTMLElement | null;
+  private damageFlashTimeout: number | null = null;
 
   // Altar & Buffs HUD
   private altarBanner: HTMLElement;
@@ -340,6 +346,10 @@ export class HUD {
     this.itemInventoryTray = document.getElementById('item-inventory-tray');
     this.dashCooldownBadge = document.getElementById('dash-cooldown-badge');
     this.dashCooldownText = document.getElementById('dash-cooldown-text');
+
+    // Screen Damage & Low HP Vignette
+    this.damageFlashLayer = document.getElementById('damage-flash-layer');
+    this.lowHpVignetteLayer = document.getElementById('low-hp-vignette-layer');
 
     // Modals
     this.mainMenuModal = document.getElementById('main-menu-modal')!;
@@ -3199,6 +3209,22 @@ export class HUD {
       this.hpText.innerText = `${Math.ceil(player.hp)} / ${player.maxHp}`;
     }
 
+    // Screen Low HP Vignette (< 30% of max HP)
+    if (this.lowHpVignetteLayer) {
+      const hpRatio = player.maxHp > 0 ? player.hp / player.maxHp : 1;
+      if (player.isAlive && !player.isDowned && hpRatio <= 0.30) {
+        this.lowHpVignetteLayer.classList.add('active');
+        if (hpRatio <= 0.15) {
+          this.lowHpVignetteLayer.classList.add('critical');
+        } else {
+          this.lowHpVignetteLayer.classList.remove('critical');
+        }
+      } else {
+        this.lowHpVignetteLayer.classList.remove('active');
+        this.lowHpVignetteLayer.classList.remove('critical');
+      }
+    }
+
     // In single player, keep PoE party list updated with local player
     if (!player.isCoop && this.poePartyList) {
       this.updatePoeParty(player, new Map(), 'p1', 'solo');
@@ -3487,6 +3513,21 @@ export class HUD {
         slot.remove();
       }
     }
+  }
+
+  public triggerDamageFlash(_damageAmount?: number) {
+    if (!this.damageFlashLayer) return;
+    this.damageFlashLayer.classList.remove('hit-flash');
+    void this.damageFlashLayer.offsetWidth; // Force CSS reflow to re-trigger transition
+    this.damageFlashLayer.classList.add('hit-flash');
+
+    if (this.damageFlashTimeout !== null) {
+      window.clearTimeout(this.damageFlashTimeout);
+    }
+    this.damageFlashTimeout = window.setTimeout(() => {
+      this.damageFlashLayer?.classList.remove('hit-flash');
+      this.damageFlashTimeout = null;
+    }, 45);
   }
 
   public triggerBossWarning(bossName?: string, tier?: number) {
@@ -3900,7 +3941,7 @@ export class HUD {
 
     // 1. Existing weapon upgrades (up to maxLevel 20)
     for (const weapon of player.weapons) {
-      if (weapon.level < weapon.maxLevel && canAcquireInvokerWeapon(weapon.id, player.weapons)) {
+      if (weapon.level < weapon.maxLevel && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
         pool.push({
           id: `upgrade_${weapon.id}`,
           title: `Улучшение: ${weapon.name}`,
@@ -3913,12 +3954,13 @@ export class HUD {
       }
     }
 
-    // 2. New western weapons if player has less than 5 weapons
+    // 2. New weapons if player has less than 5 weapons
     if (player.weapons.length < 5) {
+      // 2a. Character-specific / Invoker spells
       const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
       for (const spell of invokerWeapons) {
         const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
-        if (!canAcquireInvokerWeapon(id, player.weapons)) continue;
+        if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) continue;
         if (player.weapons.some(weapon => weapon.id === id)) continue;
         const def = spell ? INVOKER_SPELLS[spell] : null;
         pool.push({
@@ -3929,7 +3971,7 @@ export class HUD {
           levelTag: 'НОВОЕ ОРУЖИЕ',
           description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
           apply: () => {
-            if (!canAcquireInvokerWeapon(id, player.weapons)) return;
+            if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
             const triggerAttack = () => player.triggerAttackAnim(0.5);
             player.weapons.push(spell
               ? new InvokerSpellWeapon(spell, triggerAttack)
@@ -3938,7 +3980,11 @@ export class HUD {
           }
         });
       }
-      const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
+
+      // 2b. General arsenal (only for characters allowed to use generic weapons)
+      const canUseGenericWeapons = canCharacterAcquireWeapon(player.charType, 'bow', player.weapons);
+      if (canUseGenericWeapons) {
+        const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
       if (!hasBow) {
         pool.push({
           id: 'new_bow',
@@ -4162,6 +4208,7 @@ export class HUD {
             player.recalculateStats();
           }
         });
+      }
       }
     }
 

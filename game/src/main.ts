@@ -172,6 +172,7 @@ class Game {
       () => this.sessionDirector.resumeGame(),
       () => this.sessionDirector.restartGame(undefined, false)
     );
+    this.player.onDamageTaken = (amount) => this.hud.triggerDamageFlash(amount);
     this.hud.onRestartSameSeed = () => this.sessionDirector.restartGame(undefined, true);
     this.hud.onToggleDevMode = () => this.sessionDirector.toggleDevMode();
     this.hud.onResolutionScaleChanged = (scale: number) => {
