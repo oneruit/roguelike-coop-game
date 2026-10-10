@@ -18,11 +18,31 @@ export class DamageNumberManager {
     this.container = document.getElementById('damage-numbers-layer') || document.body;
   }
 
-  public spawnDamage(worldPos: Vector3, amount: number, isCrit = false, camera?: Camera, isBleed = false) {
+  public spawnDamage(
+    worldPos: Vector3,
+    amount: number,
+    isCrit = false,
+    camera?: Camera,
+    isBleed = false,
+    critTier = 1
+  ) {
     if (!DamageNumberManager.damageEnabled) return;
     const el = document.createElement('div');
-    el.className = `dmg-number ${isCrit ? 'dmg-crit' : ''} ${isBleed ? 'dmg-bleed' : ''}`;
-    el.innerText = `${Math.round(amount)}${isCrit ? '!' : (isBleed ? '🩸' : '')}`;
+    const tierClass = isCrit ? (critTier >= 3 ? 'dmg-crit-t3' : (critTier === 2 ? 'dmg-crit-t2' : 'dmg-crit-t1')) : '';
+    el.className = `dmg-number ${isCrit ? `dmg-crit ${tierClass}` : ''} ${isBleed ? 'dmg-bleed' : ''}`;
+    let suffix = '';
+    if (isCrit) {
+      if (critTier >= 3) {
+        suffix = `!x${critTier}`;
+      } else if (critTier === 2) {
+        suffix = '!!';
+      } else {
+        suffix = '!';
+      }
+    } else if (isBleed) {
+      suffix = '🩸';
+    }
+    el.innerText = `${Math.round(amount)}${suffix}`;
     if (isBleed) {
       el.style.color = '#f87171';
       el.style.textShadow = '0 0 6px #991b1b, 0 1px 2px #000';

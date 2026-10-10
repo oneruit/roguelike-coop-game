@@ -207,16 +207,30 @@ export class CombatDirector {
   public applyCombatProcOnEnemyHit(
     enemy: Enemy,
     baseDamage: number,
-    _sourcePos?: Vector3
-  ): { finalDamage: number; isCrit: boolean } {
+    _sourcePos?: Vector3,
+    customCritChance?: number,
+    customCritDamage?: number
+  ): { finalDamage: number; isCrit: boolean; critTier: number } {
     let finalDamage = baseDamage;
     let isCrit = false;
+    let critTier = 0;
 
-    // Item Proc: Crit Visor (Uncommon)
-    if (Math.random() < this.player.critChance) {
-      finalDamage = Math.round(finalDamage * 2.0);
-      isCrit = true;
-      SoundManager.playCrit();
+    // Crit chance: clamp to [0, 10.0] (max 1000%)
+    // Crit damage: clamp to [0, 1.0] (max 100%)
+    const effectiveCritChance = Math.min(10.0, Math.max(0, customCritChance ?? this.player.critChance));
+    const effectiveCritDamage = Math.min(1.0, Math.max(0, customCritDamage ?? this.player.critDamage));
+
+    if (effectiveCritChance > 0) {
+      const guaranteedTiers = Math.floor(effectiveCritChance);
+      const remainder = effectiveCritChance - guaranteedTiers;
+      critTier = guaranteedTiers + (Math.random() < remainder ? 1 : 0);
+
+      if (critTier > 0) {
+        isCrit = true;
+        const multiplier = 1.0 + critTier * effectiveCritDamage;
+        finalDamage = Math.round(finalDamage * multiplier);
+        SoundManager.playCrit();
+      }
     }
 
     // Item Proc: Pulse Rounds (Common) - chance to inflict extra bleed over 3 sec (180% damage)
@@ -225,7 +239,6 @@ export class CombatDirector {
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
       const bleedDps = (finalDamage * 1.8) / 3.0;
       enemy.addBleed(bleedDps, 3.0, myId);
-      isCrit = true;
     }
 
     // Item Proc: Chain Lightning Coil (Uncommon)
@@ -268,7 +281,7 @@ export class CombatDirector {
       }
     }
 
-    return { finalDamage, isCrit };
+    return { finalDamage, isCrit, critTier };
   }
 
   public onLocalPlayerEnemyKill(enemy?: Enemy): void {
@@ -287,7 +300,7 @@ export class CombatDirector {
         this.player.singularityKillCounter = 0;
         const centerPos = enemy.position.clone();
         const pullRadius = 7.5;
-        const baseDmg = 25 * this.player.damageMultiplier;
+        const baseDmg = 25 * this.player.getDamageMultiplier();
         const singularityDmg = Math.round(baseDmg * (6.0 + (singularityStacks - 1) * 2.0));
         const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
         const nearby = this.enemyManager.getNearbyEnemies(centerPos.x, centerPos.z, pullRadius, this.scratchNearbyEnemies);
@@ -329,7 +342,7 @@ export class CombatDirector {
     if (detonatorStacks > 0 && enemy && enemy.position) {
       SoundManager.playShoot();
       const radius = 4.0 + detonatorStacks * 1.0;
-      const baseDmg = 25 * this.player.damageMultiplier;
+      const baseDmg = 25 * this.player.getDamageMultiplier();
       const explosionDmg = Math.round(baseDmg * (2.0 + detonatorStacks * 0.5));
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
       const nearby = this.enemyManager.getNearbyEnemies(enemy.position.x, enemy.position.z, radius, this.scratchNearbyEnemies);
@@ -404,18 +417,24 @@ export class CombatDirector {
 
         if (dx * dx + dz * dz <= hitDist * hitDist) {
           proj.hitEnemies.add(enemy.id);
-          const baseDmg = proj.damage * this.player.damageMultiplier;
-          const { finalDamage, isCrit } = this.applyCombatProcOnEnemyHit(enemy, baseDmg, proj.position);
+          const baseDmg = proj.damage * this.player.getDamageMultiplier(proj.sourceWeaponId);
+          const { finalDamage, isCrit, critTier } = this.applyCombatProcOnEnemyHit(
+            enemy,
+            baseDmg,
+            proj.position,
+            proj.critChance,
+            proj.critDamage
+          );
           const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
 
           if (proj.isOrbiting) {
-            const bleedDps = (proj.bleedDps || 8) * this.player.damageMultiplier;
+            const bleedDps = (proj.bleedDps || 8) * this.player.getDamageMultiplier(proj.sourceWeaponId);
             enemy.addBleed(bleedDps, 3.0, myId);
           }
 
           if (this.net.role === 'client') {
             const isDead = enemy.takeDamage(finalDamage, proj.position, myId);
-            this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit || finalDamage > 28, this.engine.camera);
+            this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit, this.engine.camera, false, critTier);
             SoundManager.playHit();
             this.player.totalDamageDealt += finalDamage;
 
@@ -439,7 +458,7 @@ export class CombatDirector {
             });
           } else {
             this.player.totalDamageDealt += finalDamage;
-            this.enemyManager.damageEnemy(enemy, finalDamage, proj.position, this.engine.camera, myId);
+            this.enemyManager.damageEnemy(enemy, finalDamage, proj.position, this.engine.camera, myId, true, isCrit, critTier);
           }
 
           const destroyed = proj.onHit();
@@ -486,7 +505,7 @@ export class CombatDirector {
         }
 
         if (highestHpEnemy) {
-          const baseDmg = 25 * this.player.damageMultiplier;
+          const baseDmg = 25 * this.player.getDamageMultiplier();
           const strikeDmg = Math.round(baseDmg * 8.0);
           const strikePos = highestHpEnemy.position.clone();
           const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');

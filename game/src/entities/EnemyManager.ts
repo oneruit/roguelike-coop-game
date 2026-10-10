@@ -732,11 +732,13 @@ export class EnemyManager {
     sourcePos?: Vector3,
     camera?: Camera,
     hitter: string = 'p1',
-    showDamageNumber: boolean = true
+    showDamageNumber: boolean = true,
+    isCrit: boolean = false,
+    critTier: number = 1
   ) {
     const isDead = enemy.takeDamage(amount, sourcePos, hitter);
     if (showDamageNumber && camera) {
-      this.damageNumbers.spawnDamage(enemy.position, amount, amount > 28, camera);
+      this.damageNumbers.spawnDamage(enemy.position, amount, isCrit, camera, false, critTier);
     }
     SoundManager.playHit();
     return isDead;

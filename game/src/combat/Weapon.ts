@@ -15,6 +15,11 @@ import { TextureManager } from '../core/TextureManager';
 import { BalanceManager } from '../balance/BalanceManager';
 import { WeaponBalanceConfig } from '../balance/BalanceTypes';
 import type { MeleeAttackInfo, MeleeWeaponId } from '../shared/types';
+import {
+  type WeaponGrade,
+  WEAPON_GRADES,
+  getGradeTier
+} from './WeaponGrades';
 
 export interface WeaponInfo {
   id: string;
@@ -23,6 +28,7 @@ export interface WeaponInfo {
   iconImage?: string;
   level: number;
   maxLevel: number;
+  grade?: WeaponGrade;
   description: string;
 }
 
@@ -106,6 +112,12 @@ export abstract class Weapon {
   }
   public level: number = 1;
   public maxLevel: number = 20;
+  public grade: WeaponGrade = 'common';
+  public critChance: number = 0;
+  public critDamage: number = 0;
+  public bonusDamage: number = 0;
+  public cooldownBonus: number = 0;
+  public upgradeHistory: WeaponGrade[] = [];
   public cooldownMultiplier: number = 1.0;
   public cooldown: number;
   public baseCooldown: number;
@@ -152,8 +164,24 @@ export abstract class Weapon {
     this.recalculateStats();
   }
 
+  public applyGradeUpgrade(grade: WeaponGrade = 'common'): void {
+    const cfg = WEAPON_GRADES[grade];
+    if (getGradeTier(grade) > getGradeTier(this.grade)) {
+      this.grade = grade;
+    }
+    this.upgradeHistory.push(grade);
+    const extraDamage = Math.round(this.damagePerLevel * (cfg.damageMultiplierBonus - 1.0));
+    this.bonusDamage += extraDamage;
+    this.critChance = Math.min(10.0, this.critChance + cfg.critChanceBonus);
+    this.critDamage = Math.min(1.0, this.critDamage + cfg.critDamageBonus);
+    this.cooldownBonus = Math.min(0.60, this.cooldownBonus + cfg.cooldownReductionBonus);
+    if (cfg.cooldownReductionBonus > 0) {
+      this.cooldown = Math.max(0.08, Number((this.cooldown * (1 - cfg.cooldownReductionBonus)).toFixed(3)));
+    }
+  }
+
   public recalculateStats(): void {
-    this.damage = this.baseDamage + (this.level - 1) * this.damagePerLevel;
+    this.damage = Math.round(this.baseDamage + (this.level - 1) * this.damagePerLevel + this.bonusDamage);
   }
 
   public abstract update(
@@ -184,8 +212,8 @@ export abstract class Weapon {
     this.onMeleeAttack?.({ weaponId, x: position.x, y: position.y, z: position.z, radius, angle });
   }
 
-  public abstract upgrade(): void;
-  public abstract getNextUpgradeDescription(): string;
+  public abstract upgrade(grade?: WeaponGrade): void;
+  public abstract getNextUpgradeDescription(grade?: WeaponGrade): string;
 
   public getInfo(): WeaponInfo {
     return {
@@ -195,6 +223,7 @@ export abstract class Weapon {
       iconImage: this.iconImage,
       level: this.level,
       maxLevel: this.maxLevel,
+      grade: this.grade,
       description: this.getNextUpgradeDescription()
     };
   }
@@ -284,23 +313,29 @@ export class BowWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) {
-      const nextCd = Math.max(0.40, Number((this.cooldown * 0.93).toFixed(3)));
-      if (nextCd < this.cooldown) perks.push('-7% перезарядки');
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const perks: string[] = [`+${dmg} к урону`];
+    if ([4, 8, 12, 16, 20].includes(nextLvl) || grade === 'legendary') {
+      perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
     }
-    return perks.join(', ');
+    if ([3, 6, 9, 13, 17].includes(nextLvl) || grade === 'rare' || grade === 'legendary') {
+      perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    }
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -383,23 +418,29 @@ export class KukriWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
-    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
-    if ([10, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) {
-      const nextCd = Math.max(0.25, Number((this.cooldown * 0.94).toFixed(3)));
-      if (nextCd < this.cooldown) perks.push('-6% перезарядки');
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const perks: string[] = [`+${dmg} к урону`];
+    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl) || grade === 'rare' || grade === 'legendary') {
+      perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
     }
-    return perks.join(', ');
+    if ([10, 20].includes(nextLvl) || grade === 'legendary') {
+      perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    }
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -483,18 +524,27 @@ export class OrbitingBarrierWeapon extends Weapon {
     });
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к прямому урону`, '+2 к урону кровотечения/сек', '+0.20м радиус орбиты'];
-    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
-    return perks.join(', ');
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const bleedBonus = Math.round(2 * cfg.damageMultiplierBonus);
+    const perks: string[] = [`+${dmg} к прямому урону`, `+${bleedBonus} к урону кровотечения/с`, '+0.20м радиус'];
+    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl) || grade === 'rare' || grade === 'legendary') {
+      perks.push(`+1 коса (всего ${this.orbCount + 1})`);
+    }
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -616,18 +666,23 @@ export class HolyAuraWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    const perks: string[] = ['+0.20м радиус кольца', `+${this.damagePerLevel} урона`];
-    const nextCd = Math.max(0.22, Number((this.cooldown * 0.96).toFixed(3)));
-    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    return perks.join(', ');
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const radBonus = grade === 'legendary' ? '+0.45м' : (grade === 'rare' ? '+0.30м' : '+0.20м');
+    const perks: string[] = [`${radBonus} радиус кольца`, `+${dmg} урона огнем`];
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -699,18 +754,23 @@ export class KatanaSlashWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    const perks: string[] = ['+0.14м радиус взмаха', `+${this.damagePerLevel} урона`];
-    const nextCd = Math.max(0.30, Number((this.cooldown * 0.96).toFixed(3)));
-    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    return perks.join(', ');
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const radBonus = grade === 'legendary' ? '+0.35м' : (grade === 'rare' ? '+0.22м' : '+0.14м');
+    const perks: string[] = [`${radBonus} радиус взмаха`, `+${dmg} урона`];
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -781,18 +841,23 @@ export class WhirlwindSlashWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    const perks: string[] = ['+0.12м радиус вихря', `+${this.damagePerLevel} урона`];
-    const nextCd = Math.max(0.20, Number((this.cooldown * 0.96).toFixed(3)));
-    if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    return perks.join(', ');
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const radBonus = grade === 'legendary' ? '+0.30м' : (grade === 'rare' ? '+0.20м' : '+0.12м');
+    const perks: string[] = [`${radBonus} радиус вихря`, `+${dmg} урона`];
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -863,18 +928,25 @@ export class GreatswordWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    const perks: string[] = ['+0.15м радиус взмаха', `+${this.damagePerLevel} урона`];
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const radBonus = grade === 'legendary' ? '+0.35м' : (grade === 'rare' ? '+0.25м' : '+0.15м');
+    const perks: string[] = [`${radBonus} радиус взмаха`, `+${dmg} урона`];
     const nextCd = Math.max(0.35, Number((this.cooldown * 0.96).toFixed(3)));
     if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -954,18 +1026,24 @@ export class FlailWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
-    const perks: string[] = ['+0.14м радиус цепа', `+${this.damagePerLevel} урона`, 'сильнее отброс'];
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+    const perks: string[] = ['+0.14м радиус цепа', `+${dmg} урона`, 'сильнее отброс'];
     const nextCd = Math.max(0.25, Number((this.cooldown * 0.96).toFixed(3)));
     if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -1052,23 +1130,29 @@ export class AstralStaffWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    const perks: string[] = [`+${dmg} к урону`];
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 снаряд веером (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierceCount + 1})`);
     if ([2, 5, 7, 10, 14, 17].includes(nextLvl)) {
       const nextCd = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
       if (nextCd < this.cooldown) perks.push('-6% перезарядки');
     }
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -1163,23 +1247,29 @@ export class ChakramWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    const perks: string[] = [`+${dmg} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 возвращающийся чакрам (всего ${this.chakramCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) {
       const nextCd = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
       if (nextCd < this.cooldown) perks.push('-6% перезарядки');
     }
     if ([2, 5, 10, 15].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -1267,23 +1357,29 @@ export class LightningStrikeWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    const perks: string[] = [`+${dmg} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 разряд молнии (всего ${this.strikeCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) {
       const nextCd = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
       if (nextCd < this.cooldown) perks.push('-8% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.30м радиус взрыва (всего ${(this.strikeRadius + 0.30).toFixed(2)}м)`);
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -1369,23 +1465,29 @@ export class IceSpikeWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    const perks: string[] = [`+${dmg} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 ледяной шип (всего ${this.spikeCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) {
       const nextCd = Math.max(0.35, Number((this.cooldown * 0.93).toFixed(3)));
       if (nextCd < this.cooldown) perks.push('-7% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -1481,23 +1583,29 @@ export class FireballWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    const perks: string[] = [`+${dmg} к урону`];
     if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 огненный шар (всего ${this.fireballCount + 1})`);
     if ([3, 6, 9, 13, 17].includes(nextLvl)) {
       const nextCd = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
       if (nextCd < this.cooldown) perks.push('-8% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
@@ -1591,20 +1699,26 @@ export class AssaultRifleWeapon extends Weapon {
     }
   }
 
-  public upgrade() {
+  public upgrade(grade: WeaponGrade = 'common') {
     if (this.level >= this.maxLevel) return;
     this.level++;
+    this.applyGradeUpgrade(grade);
     this.recalculateStats();
   }
 
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const nextLvl = this.level + 1;
-    const perks: string[] = [`+${this.damagePerLevel} к урону`];
+    const perks: string[] = [`+${dmg} к урону`];
     if ([5, 10, 15, 20].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+5% скорострельности`);
-    return perks.join(', ');
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
 
