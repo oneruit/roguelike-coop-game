@@ -13,7 +13,8 @@ import {
 import { GemType } from '../drops/Gem';
 import { TextureManager, SpriteDirection, DirectionalTextures, BossTextures, MonsterTextures } from '../core/TextureManager';
 
-export type BossAnimState = 'WALK' | 'ATTACK';
+export type EnemyAnimState = 'WALK' | 'ATTACK';
+export type BossAnimState = EnemyAnimState;
 
 import { EnemyType } from '../shared/types';
 export type { EnemyType };
@@ -76,10 +77,17 @@ export class Enemy {
   private spriteMaterial: MeshBasicMaterial;
   private shadowMesh: Mesh;
 
-  // Boss Animation States
-  public animState: BossAnimState = 'WALK';
+  // Animation & Attack State (2 states: WALK and ATTACK)
+  public animState: EnemyAnimState = 'WALK';
   public attackAnimTimer = 0;
   public attackCooldownTimer = 0;
+  public readonly attackDuration = 0.5;
+  public hasDealtDamageThisAttack = false;
+  public pendingAttackHit = false;
+  public attackTargetId = 'p1';
+  public get hasAttackAnimation(): boolean {
+    return !!((this.isBoss && this.bossTextures?.attack) || this.monsterTextures?.attack);
+  }
   private bossAnimFrameTimer = 0;
   private monsterAnimFrameTimer = 0;
   private bossTextures?: BossTextures;
@@ -148,8 +156,7 @@ export class Enemy {
       const rawBoss = TextureManager.loadBossTextures(bossBase);
       this.bossTextures = {
         walk: rawBoss.walk.clone(),
-        attack: rawBoss.attack.clone(),
-        idle: rawBoss.idle ? rawBoss.idle.clone() : undefined
+        attack: rawBoss.attack.clone()
       };
       this.bossTextures.walk.needsUpdate = true;
       this.bossTextures.attack.needsUpdate = true;
@@ -159,10 +166,10 @@ export class Enemy {
         const rawMonster = TextureManager.loadMonsterTextures(monsterBase);
         this.monsterTextures = {
           walk: rawMonster.walk.clone(),
-          attack: rawMonster.attack ? rawMonster.attack.clone() : undefined,
-          idle: rawMonster.idle ? rawMonster.idle.clone() : undefined
+          attack: rawMonster.attack.clone()
         };
         this.monsterTextures.walk.needsUpdate = true;
+        this.monsterTextures.attack.needsUpdate = true;
       }
     }
     this.textures = TextureManager.loadDirectional(config.texturePrefix);
@@ -246,12 +253,16 @@ export class Enemy {
     }
   }
 
-  public triggerAttack() {
-    if (this.isBoss && this.bossTextures && this.animState !== 'ATTACK' && this.attackCooldownTimer <= 0) {
+  public triggerAttack(targetId: string = 'p1') {
+    if (this.hasAttackAnimation && this.animState !== 'ATTACK' && this.attackCooldownTimer <= 0) {
       this.animState = 'ATTACK';
-      this.attackAnimTimer = 0.5;
+      this.attackAnimTimer = this.attackDuration;
+      this.attackCooldownTimer = this.isBoss ? 1.0 : 0.8;
+      this.hasDealtDamageThisAttack = false;
+      this.pendingAttackHit = false;
+      this.attackTargetId = targetId;
       this.bossAnimFrameTimer = 0;
-      this.attackCooldownTimer = 1.0;
+      this.monsterAnimFrameTimer = 0;
     }
   }
 
@@ -267,15 +278,8 @@ export class Enemy {
     let frameCol = 0;
 
     if (this.animState === 'ATTACK') {
-      this.attackAnimTimer -= dt;
-      // Attack frames over 0.5s duration
-      const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / 0.5)));
+      const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
       frameCol = Math.floor(progress * cols);
-
-      if (this.attackAnimTimer <= 0) {
-        this.animState = 'WALK';
-        this.bossAnimFrameTimer = 0;
-      }
     } else {
       // 8-10 FPS walk cycle adapted to frame count
       this.bossAnimFrameTimer += dt * (cols === 4 ? 8 : 10);
@@ -305,15 +309,22 @@ export class Enemy {
   private updateMonsterAnimation(dt: number) {
     if (!this.monsterTextures) return;
 
-    const tex = this.monsterTextures.walk;
+    const tex = this.animState === 'ATTACK' ? this.monsterTextures.attack : this.monsterTextures.walk;
     const img = (tex as any).image as { width?: number; height?: number } | undefined;
     const cols = (img && img.width && img.height && img.height > 0)
       ? Math.round((img.width / img.height) * 4)
       : 4;
 
-    const fps = this.speed > 5 ? 10 : 8;
-    this.monsterAnimFrameTimer += dt * fps;
-    const frameCol = Math.floor(this.monsterAnimFrameTimer) % cols;
+    let frameCol = 0;
+
+    if (this.animState === 'ATTACK') {
+      const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
+      frameCol = Math.floor(progress * cols);
+    } else {
+      const fps = this.speed > 5 ? 10 : 8;
+      this.monsterAnimFrameTimer += dt * fps;
+      frameCol = Math.floor(this.monsterAnimFrameTimer) % cols;
+    }
 
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
@@ -351,6 +362,28 @@ export class Enemy {
       this.flashTimer -= dt;
     }
 
+    if (this.attackCooldownTimer > 0) {
+      this.attackCooldownTimer -= dt;
+    }
+
+    // Process attack animation & hit registration strictly on frame 2 (the 3rd frame)
+    if (this.animState === 'ATTACK') {
+      this.attackAnimTimer -= dt;
+      const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
+      const frameCol = Math.floor(progress * 4); // 4 frames: 0, 1, 2, 3
+
+      // Damage is registered ONLY on the 3rd frame (frame index 2)
+      if (frameCol === 2 && !this.hasDealtDamageThisAttack) {
+        this.hasDealtDamageThisAttack = true;
+        this.pendingAttackHit = true;
+      }
+
+      if (this.attackAnimTimer <= 0) {
+        this.animState = 'WALK';
+        this.attackAnimTimer = 0;
+      }
+    }
+
     // Knockback handling (Immortal Reaper is completely immune to knockback)
     const kbSq = this.knockbackVelocity.lengthSq();
     if (kbSq > 0.01) {
@@ -364,12 +397,8 @@ export class Enemy {
     const dz = playerPos.z - this.position.z;
     const distSq = dx * dx + dz * dz;
 
-    if (this.isBoss && this.bossTextures) {
-      if (this.attackCooldownTimer > 0) {
-        this.attackCooldownTimer -= dt;
-      }
-
-      const attackDist = this.type === 'hydra' ? 5.2 : 4.8;
+    if (this.hasAttackAnimation) {
+      const attackDist = this.isBoss ? (this.type === 'hydra' ? 5.2 : 4.8) : ((this.width + this.height) * 0.28 + 0.6);
       if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.canAttack && this.animState !== 'ATTACK') {
         this.triggerAttack();
       }
@@ -379,7 +408,7 @@ export class Enemy {
         const invDist = 1 / dist;
         const normX = dx * invDist;
         const normZ = dz * invDist;
-        const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.35 : this.speed) * this.spellControl.movementFactor;
+        const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.25 : this.speed) * this.spellControl.movementFactor;
         this.position.x += normX * moveSpeed * dt;
         this.position.z += normZ * moveSpeed * dt;
 
@@ -553,12 +582,10 @@ export class Enemy {
     if (this.bossTextures) {
       this.bossTextures.walk.dispose();
       this.bossTextures.attack.dispose();
-      if (this.bossTextures.idle) this.bossTextures.idle.dispose();
     }
     if (this.monsterTextures) {
       this.monsterTextures.walk.dispose();
-      if (this.monsterTextures.attack) this.monsterTextures.attack.dispose();
-      if (this.monsterTextures.idle) this.monsterTextures.idle.dispose();
+      this.monsterTextures.attack.dispose();
     }
   }
 }

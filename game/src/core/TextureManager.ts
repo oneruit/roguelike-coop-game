@@ -32,13 +32,11 @@ export interface AnimatedCharacterTextures {
 export interface BossTextures {
   walk: Texture;
   attack: Texture;
-  idle?: Texture;
 }
 
 export interface MonsterTextures {
   walk: Texture;
-  attack?: Texture;
-  idle?: Texture;
+  attack: Texture;
 }
 
 export type SwordsmanTextures = AnimatedCharacterTextures;
@@ -289,50 +287,58 @@ export class TextureManager {
     '/textures/bosses/boss_sheriff_left.png',
     '/textures/bosses/boss_sheriff_right.png',
 
-    // Monsters (Animated Walk Cycles & 4 Directions)
+    // Monsters (Animated Walk & Attack Cycles + 4 Directions)
     '/textures/monsters/monster_coyote_walk.png',
+    '/textures/monsters/monster_coyote_attack.png',
     '/textures/monsters/monster_coyote_front.png',
     '/textures/monsters/monster_coyote_back.png',
     '/textures/monsters/monster_coyote_left.png',
     '/textures/monsters/monster_coyote_right.png',
 
     '/textures/monsters/monster_crawler_walk.png',
+    '/textures/monsters/monster_crawler_attack.png',
     '/textures/monsters/monster_crawler_front.png',
     '/textures/monsters/monster_crawler_back.png',
     '/textures/monsters/monster_crawler_left.png',
     '/textures/monsters/monster_crawler_right.png',
 
     '/textures/monsters/monster_cactus_walk.png',
+    '/textures/monsters/monster_cactus_attack.png',
     '/textures/monsters/monster_cactus_front.png',
     '/textures/monsters/monster_cactus_back.png',
     '/textures/monsters/monster_cactus_left.png',
     '/textures/monsters/monster_cactus_right.png',
 
     '/textures/monsters/monster_skeleton_walk.png',
+    '/textures/monsters/monster_skeleton_attack.png',
     '/textures/monsters/monster_skeleton_front.png',
     '/textures/monsters/monster_skeleton_back.png',
     '/textures/monsters/monster_skeleton_left.png',
     '/textures/monsters/monster_skeleton_right.png',
 
     '/textures/monsters/monster_ghost_walk.png',
+    '/textures/monsters/monster_ghost_attack.png',
     '/textures/monsters/monster_ghost_front.png',
     '/textures/monsters/monster_ghost_back.png',
     '/textures/monsters/monster_ghost_left.png',
     '/textures/monsters/monster_ghost_right.png',
 
     '/textures/monsters/monster_scorpion_walk.png',
+    '/textures/monsters/monster_scorpion_attack.png',
     '/textures/monsters/monster_scorpion_front.png',
     '/textures/monsters/monster_scorpion_back.png',
     '/textures/monsters/monster_scorpion_left.png',
     '/textures/monsters/monster_scorpion_right.png',
 
     '/textures/monsters/monster_brute_walk.png',
+    '/textures/monsters/monster_brute_attack.png',
     '/textures/monsters/monster_brute_front.png',
     '/textures/monsters/monster_brute_back.png',
     '/textures/monsters/monster_brute_left.png',
     '/textures/monsters/monster_brute_right.png',
 
     '/textures/monsters/monster_bison_walk.png',
+    '/textures/monsters/monster_bison_attack.png',
     '/textures/monsters/monster_bison_front.png',
     '/textures/monsters/monster_bison_back.png',
     '/textures/monsters/monster_bison_left.png',
@@ -478,8 +484,7 @@ export class TextureManager {
 
     return {
       walk: loadPixel(`/textures/monsters/${baseName}_walk.png`),
-      attack: loadPixel(`/textures/monsters/${baseName}_attack.png`),
-      idle: loadPixel(`/textures/monsters/${baseName}_idle.png`)
+      attack: loadPixel(`/textures/monsters/${baseName}_attack.png`)
     };
   }
 
@@ -681,17 +686,16 @@ export class TextureManager {
       canvas.width = 128;
       canvas.height = 128;
       const ctx = canvas.getContext('2d')!;
-      const cx = 64;
-      const cy = 64;
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1.0, 0.65);
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 60);
       grad.addColorStop(0, 'rgba(0, 0, 0, 0.72)');
       grad.addColorStop(0.35, 'rgba(0, 0, 0, 0.45)');
       grad.addColorStop(0.7, 'rgba(0, 0, 0, 0.18)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(1.0, 0.65);
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(0, 0, 60, 0, Math.PI * 2);

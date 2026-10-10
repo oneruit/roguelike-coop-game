@@ -1,29 +1,28 @@
 ---
 name: monster-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (WALK, ATTACK, IDLE across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in chibi/pixel art style with 10px bottom margin and ground anchoring into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in chibi/pixel art style with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
 ---
 
 # Monster Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating **4-frame animated monsters and regular enemies** into the game engine.
 
-Standardizing on **separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **chibi pixel art proportions**, a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
+Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **chibi pixel art proportions**, a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
 
 ---
 
 ## 1. Standard Architecture & Specifications
 
-### 1.1 The 4 Standard Assets per Monster
-Every animated monster comprises 4 core texture assets in `public/textures/monsters/`:
+### 1.1 The 3 Standard Assets per Monster (2 States + Portrait)
+Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state is not needed. The **PORTRAIT** is automatically extracted from the 1st frame (Row 0, Col 0 - Front view) via the python script:
 
 | Texture File | Action State | Layout | Frame Cell Size | Total Resolution |
 | :--- | :--- | :--- | :--- | :--- |
 | `monster_<name>_walk.png` | **WALK** (run, creeping stalk, pack sprint) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_attack.png` *(optional)* | **ATTACK** (bite, claw strike, sting) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_idle.png` *(optional)* | **IDLE** (growling, breathing, twitching) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_front.png` | **PORTRAIT** (avatar, bestiary card icon) | 1 frame icon | $128 \times 128$ px | **$128 \times 128$ px** |
+| `monster_<name>_attack.png` | **ATTACK** (bite, claw strike, sting) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
+| `monster_<name>_front.png` | **PORTRAIT** (avatar, bestiary icon from 1st frame) | 1 frame icon | $128 \times 128$ px | **$128 \times 128$ px** |
 
-*Note:* The script also automatically generates static directional fallbacks for all 4 directions: `monster_<name>_{front,back,left,right}.png`.
+*Note:* `process_monster_sheets.py` also automatically extracts static directional fallbacks for all 4 directions: `monster_<name>_{front,back,left,right}.png`.
 
 ---
 
@@ -44,6 +43,10 @@ Every animated monster comprises 4 core texture assets in `public/textures/monst
 
 4. **Natural Clean Alpha Edges (No Artificial 1px Black Border):**
    - Natural pixel art antialiasing without thick artificial 1px black borders.
+
+5. **Contact Ground Shadow:**
+   - Monsters cast a realistic contact ground shadow mesh (`shadowMesh = TextureManager.createShadowMesh(radius)`), placed at local $y = 0.03$, exactly matching the hero player pattern.
+   - The shadow texture is a centered radial gradient ellipse ($1.0 \times 0.65$ ratio) centered at local $(0,0)$.
 
 ---
 
@@ -89,17 +92,17 @@ With plane geometry translation $+0.928$ along the $Y$ axis:
 2. **Direction Drift Prevention:**
    - Diffusion models often turn left profiles towards the viewer.
    - **Solution:** The `--mirror-left` flag in `process_monster_sheets.py` takes Row 2 (Right) and mirrors it horizontally into Row 1 (Left), ensuring 100% stable profile symmetry without cadence flips.
-3. **4-Frame Rhythmic Cycles:**
+3. **4-Frame Rhythmic Cycles & 3rd Frame Hit Registration:**
    - **WALK (4 frames):**
      * Column 0: Front-left and back-right paws step forward
      * Column 1: Neutral passing stance (paws grounded)
      * Column 2: Front-right and back-left paws step forward
      * Column 3: Neutral passing stance
-   - **ATTACK (4 frames):**
-     * Column 0: Crouch / tension windup (anticipation)
-     * Column 1: Forward lunge with bite/claw strike (strike)
-     * Column 2: Strike follow-through / impact contact (impact)
-     * Column 3: Recovery back to trot stance (recovery)
+   - **ATTACK (4 frames over 0.5s duration):**
+     * Column 0 (Frame 1): Crouch / tension windup (anticipation)
+     * Column 1 (Frame 2): Forward lunge with bite/claw strike (strike launch)
+     * Column 2 (Frame 3): **STRIKE IMPACT! Hit damage against player is registered strictly on this 3rd frame** (`frameCol === 2`).
+     * Column 3 (Frame 4): Recovery back to trot stance (recovery)
 
 ---
 
@@ -192,18 +195,36 @@ python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.
 
 ## 5. Engine Integration Checklist
 
-### Step 5.1: Dynamic UV Columns Detection in `Enemy.ts`
-When rendering an animated monster, the engine dynamically determines `cols`:
+### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+When an animated monster attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
-const tex = this.monsterTextures.walk;
-const img = (tex as any).image as { width?: number; height?: number } | undefined;
-const cols = (img && img.width && img.height && img.height > 0)
-  ? Math.round((img.width / img.height) * 4)
-  : 4;
+// Authoritative simulation in Enemy.updateSimulation
+if (this.animState === 'ATTACK') {
+  this.attackAnimTimer -= dt;
+  const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
+  const frameCol = Math.floor(progress * 4);
 
-tex.repeat.set(1 / cols, 1 / 4);
-tex.offset.set(frameCol / cols, (3 - row) / 4);
+  // Damage is registered strictly on the 3rd frame (index 2)
+  if (frameCol === 2 && !this.hasDealtDamageThisAttack) {
+    this.hasDealtDamageThisAttack = true;
+    this.pendingAttackHit = true;
+  }
+
+  if (this.attackAnimTimer <= 0) {
+    this.animState = 'WALK';
+    this.attackAnimTimer = 0;
+  }
+}
+```
+
+### Step 5.2: Contact Ground Shadow Mesh
+Monsters receive a contact ground shadow identical to the hero player:
+
+```typescript
+const shadowRadius = Math.max(0.6, (this.width + this.height) * 0.22);
+this.shadowMesh = TextureManager.createShadowMesh(shadowRadius);
+this.mesh.add(this.shadowMesh);
 ```
 
 ---

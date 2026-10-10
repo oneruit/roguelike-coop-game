@@ -1,29 +1,28 @@
 ---
 name: boss-animation-pipeline
-description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (WALK, ATTACK, IDLE across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) with ground anchoring and anti-drift rules into the game engine.
+description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine.
 ---
 
 # Boss Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating **4-frame animated boss monsters** into the game engine.
 
-Standardizing on **separate animation images** (one per action state) and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$160 \times 160$ pixel cells** (total resolution **$640 \times 640$ px**), generous margins for melee cleaves and shockwaves, strict **boss anatomical consistency rules**, and **ground anchoring** so massive boss monsters stand firmly on the ground.
+Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$160 \times 160$ pixel cells** (total resolution **$640 \times 640$ px**), generous margins for melee cleaves and shockwaves, strict **boss anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so massive boss monsters stand firmly on the ground.
 
 ---
 
 ## 1. Standard Architecture & Specifications
 
-### 1.1 The 4 Standard Assets per Boss
-Every boss comprises 4 core texture assets in `public/textures/bosses/`:
+### 1.1 The 3 Standard Assets per Boss (2 States + Portrait)
+Bosses strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state is not needed. The **PORTRAIT** is automatically extracted from the 1st frame (Row 0, Col 0 - Front view) via the python script:
 
 | Texture File | Action State | Layout | Frame Cell Size | Total Resolution |
 | :--- | :--- | :--- | :--- | :--- |
 | `boss_<name>_walk.png` | **WALK** (heavy stride, pursuit) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
 | `boss_<name>_attack.png` | **ATTACK** (windup, crushing slam/strike) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
-| `boss_<name>_idle.png` *(optional)* | **IDLE** (menacing breathing, rage aura) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
-| `boss_<name>_front.png` | **PORTRAIT** (boss HP bar avatar, card icon) | 1 frame icon | $160 \times 160$ px | **$160 \times 160$ px** |
+| `boss_<name>_front.png` | **PORTRAIT** (boss HP bar avatar, card icon from 1st frame) | 1 frame icon | $160 \times 160$ px | **$160 \times 160$ px** |
 
-*Note:* The processing script also automatically exports directional fallbacks for all 4 directions: `boss_<name>_{front,back,left,right}.png`.
+*Note:* `process_boss_sheets.py` also automatically exports directional fallbacks for all 4 directions: `boss_<name>_{front,back,left,right}.png`.
 
 ---
 
@@ -44,6 +43,10 @@ Every boss comprises 4 core texture assets in `public/textures/bosses/`:
 
 4. **Natural Clean Alpha Edges (No Artificial 1px Black Border):**
    - Authentic pixel art antialiasing without harsh artificial 1px solid black bounding boxes.
+
+5. **Contact Ground Shadow:**
+   - Bosses cast a heavy contact ground shadow mesh (`shadowMesh = TextureManager.createShadowMesh(radius)`), placed at local $y = 0.03$, following the exact player pattern.
+   - The shadow texture is a centered radial gradient ellipse ($1.0 \times 0.65$ ratio) centered at local $(0,0)$.
 
 ---
 
@@ -90,9 +93,13 @@ With plane geometry translation $+1.82$ along the $Y$ axis:
 2. **Direction Drift Prevention:**
    - Generative diffusion models frequently twist left profiles into semi-front views.
    - **Solution:** `--mirror-left` flag is enabled by default in `process_boss_sheets.py`. Row 2 (Right) is generated in a clean right profile and horizontally mirrored into Row 1 (Left), guaranteeing 100% matched cadence and zero directional drift.
-3. **4-Frame Rhythmic Cycles:**
+3. **4-Frame Rhythmic Cycles & 3rd Frame Hit Registration:**
    - **WALK (4 frames):** Left foot forward $\to$ passing stance $\to$ right foot forward $\to$ passing stance.
-   - **ATTACK (4 frames):** Anticipation windup $\to$ crushing slam with flash $\to$ impact crater shockwave $\to$ return to combat stance.
+   - **ATTACK (4 frames over 0.5s duration):**
+     * Column 0 (Frame 1): Heavy anticipation windup raising massive volcanic claw;
+     * Column 1 (Frame 2): Brutal forward slam launch;
+     * Column 2 (Frame 3): **CRUSHING IMPACT STRIKE! Hit damage against player is registered strictly on this 3rd frame** (`frameCol === 2`). Fiery shockwave expands;
+     * Column 3 (Frame 4): Impact follow-through and recovery return to combat stance.
 
 ---
 
@@ -162,36 +169,36 @@ python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py \
 
 ## 5. Engine Integration Checklist
 
-### Step 5.1: Dynamic UV Columns Detection in `Enemy.ts`
-The game engine dynamically determines columns (supporting both the 4-frame standard and legacy 6-column sheets):
+### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+When an animated boss attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
-private updateBossAnimation(dt: number) {
-  if (!this.bossTextures) return;
+// Authoritative simulation in Enemy.updateSimulation
+if (this.animState === 'ATTACK') {
+  this.attackAnimTimer -= dt;
+  const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
+  const frameCol = Math.floor(progress * 4);
 
-  const tex = this.animState === 'ATTACK' ? this.bossTextures.attack : this.bossTextures.walk;
-  const img = (tex as any).image as { width?: number; height?: number } | undefined;
-  const cols = (img && img.width && img.height && img.height > 0)
-    ? Math.round((img.width / img.height) * 4)
-    : 4;
-
-  let frameCol = 0;
-  if (this.animState === 'ATTACK') {
-    this.attackAnimTimer -= dt;
-    const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / 0.5)));
-    frameCol = Math.floor(progress * cols);
-    if (this.attackAnimTimer <= 0) {
-      this.animState = 'WALK';
-      this.bossAnimFrameTimer = 0;
-    }
-  } else {
-    this.bossAnimFrameTimer += dt * 8; // 8 FPS walk rhythm
-    frameCol = Math.floor(this.bossAnimFrameTimer) % cols;
+  // Damage is registered strictly on the 3rd frame (index 2)
+  if (frameCol === 2 && !this.hasDealtDamageThisAttack) {
+    this.hasDealtDamageThisAttack = true;
+    this.pendingAttackHit = true;
   }
 
-  tex.repeat.set(1 / cols, 1 / 4);
-  tex.offset.set(frameCol / cols, (3 - row) / 4);
+  if (this.attackAnimTimer <= 0) {
+    this.animState = 'WALK';
+    this.attackAnimTimer = 0;
+  }
 }
+```
+
+### Step 5.2: Contact Ground Shadow Mesh
+Bosses receive a contact ground shadow identical to the hero player:
+
+```typescript
+const shadowRadius = Math.max(0.6, (this.width + this.height) * 0.22);
+this.shadowMesh = TextureManager.createShadowMesh(shadowRadius);
+this.mesh.add(this.shadowMesh);
 ```
 
 ---

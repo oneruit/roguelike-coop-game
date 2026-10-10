@@ -343,24 +343,50 @@ export class EnemyManager {
         enemy.position.y = this.getElevation(enemy.position.x, enemy.position.z);
       }
 
-      // Check collision with targeted player
-      const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
-      if (enemy.canAttack && closestDistSq < collisionRadius * collisionRadius) {
-        const now = performance.now();
-        const lastHit = this.lastTargetHitTimes.get(closestTargetId) || 0;
-        if (now - lastHit > 380) {
-          this.lastTargetHitTimes.set(closestTargetId, now);
-          if (enemy.isBoss) {
-            enemy.triggerAttack();
+      // Check attack and collision with targeted player
+      if (enemy.canAttack) {
+        if (enemy.hasAttackAnimation) {
+          const attackReach = (enemy.width + enemy.height) * 0.28 + 0.6;
+          if (closestDistSq <= attackReach * attackReach && enemy.animState !== 'ATTACK' && enemy.attackCooldownTimer <= 0) {
+            enemy.triggerAttack(closestTargetId);
           }
-          if (closestTargetId === 'p1') {
-            onPlayerDamage(enemy.damage, enemy.isImmortal);
-          } else if (onRemoteDamage) {
-            onRemoteDamage(closestTargetId, enemy.damage, enemy.isImmortal);
-          } else if (onPartnerDamage) {
-            onPartnerDamage(enemy.damage, enemy.isImmortal);
+
+          if (enemy.pendingAttackHit) {
+            enemy.pendingAttackHit = false;
+            // Strike damage lands strictly on 3rd frame if target is within reach
+            const hitReach = (enemy.width + enemy.height) * 0.36 + 0.9;
+            if (closestDistSq <= hitReach * hitReach) {
+              const hitTargetId = enemy.attackTargetId || closestTargetId;
+              const now = performance.now();
+              this.lastTargetHitTimes.set(hitTargetId, now);
+              if (hitTargetId === 'p1') {
+                onPlayerDamage(enemy.damage, enemy.isImmortal);
+              } else if (onRemoteDamage) {
+                onRemoteDamage(hitTargetId, enemy.damage, enemy.isImmortal);
+              } else if (onPartnerDamage) {
+                onPartnerDamage(enemy.damage, enemy.isImmortal);
+              }
+              SoundManager.playPlayerHurt();
+            }
           }
-          SoundManager.playPlayerHurt();
+        } else {
+          // Fallback for non-animated enemies (e.g. Immortal Reaper)
+          const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
+          if (closestDistSq < collisionRadius * collisionRadius) {
+            const now = performance.now();
+            const lastHit = this.lastTargetHitTimes.get(closestTargetId) || 0;
+            if (now - lastHit > 380) {
+              this.lastTargetHitTimes.set(closestTargetId, now);
+              if (closestTargetId === 'p1') {
+                onPlayerDamage(enemy.damage, enemy.isImmortal);
+              } else if (onRemoteDamage) {
+                onRemoteDamage(closestTargetId, enemy.damage, enemy.isImmortal);
+              } else if (onPartnerDamage) {
+                onPartnerDamage(enemy.damage, enemy.isImmortal);
+              }
+              SoundManager.playPlayerHurt();
+            }
+          }
         }
       }
 
