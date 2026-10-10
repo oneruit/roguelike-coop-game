@@ -12,6 +12,7 @@ export class InputManager {
   public onToggleDevMode?: () => void;
   public onToggleMap?: () => void;
   public onToggleDebugHud?: () => void;
+  public onToggleInventory?: () => void;
   public onInteract?: () => void;
   public onDash?: () => void;
 
@@ -22,6 +23,11 @@ export class InputManager {
   }
 
   private onKeyDown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement | null;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+      return;
+    }
+
     this.keys[e.code] = true;
 
     if (e.code === 'KeyE' || e.code === 'KeyF') {
@@ -33,6 +39,12 @@ export class InputManager {
     if (e.code === 'Space' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
       if (this.onDash) {
         this.onDash();
+      }
+    }
+
+    if (e.code === 'KeyI' || e.code === 'KeyC') {
+      if (this.onToggleInventory) {
+        this.onToggleInventory();
       }
     }
 
