@@ -42,8 +42,9 @@ export class EnemyManager {
       speed: 5.4,
       damage: 8,
       width: 2.1,
-      height: 1.6,
-      gemType: 'blue'
+      height: 2.1,
+      gemType: 'blue',
+      animated: true
     },
     crawler: {
       type: 'crawler',
@@ -53,8 +54,9 @@ export class EnemyManager {
       speed: 6.0,
       damage: 10,
       width: 2.0,
-      height: 1.2,
-      gemType: 'blue'
+      height: 2.0,
+      gemType: 'blue',
+      animated: true
     },
     cactus: {
       type: 'cactus',
@@ -63,9 +65,10 @@ export class EnemyManager {
       hp: 88,
       speed: 3.5,
       damage: 14,
-      width: 1.9,
+      width: 2.3,
       height: 2.3,
-      gemType: 'blue'
+      gemType: 'blue',
+      animated: true
     },
     skeleton: {
       type: 'skeleton',
@@ -74,9 +77,10 @@ export class EnemyManager {
       hp: 110,
       speed: 3.8,
       damage: 16,
-      width: 1.9,
+      width: 2.4,
       height: 2.4,
-      gemType: 'green'
+      gemType: 'green',
+      animated: true
     },
     ghost: {
       type: 'ghost',
@@ -85,9 +89,10 @@ export class EnemyManager {
       hp: 140,
       speed: 4.0,
       damage: 18,
-      width: 1.7,
-      height: 2.5,
-      gemType: 'green'
+      width: 2.4,
+      height: 2.4,
+      gemType: 'green',
+      animated: true
     },
     scorpion: {
       type: 'scorpion',
@@ -97,8 +102,9 @@ export class EnemyManager {
       speed: 3.2,
       damage: 22,
       width: 2.3,
-      height: 2.1,
-      gemType: 'green'
+      height: 2.3,
+      gemType: 'green',
+      animated: true
     },
     brute: {
       type: 'brute',
@@ -107,9 +113,10 @@ export class EnemyManager {
       hp: 350,
       speed: 2.6,
       damage: 28,
-      width: 2.5,
+      width: 2.7,
       height: 2.7,
-      gemType: 'green'
+      gemType: 'green',
+      animated: true
     },
     bison: {
       type: 'bison',
@@ -118,9 +125,10 @@ export class EnemyManager {
       hp: 720,
       speed: 4.8,
       damage: 35,
-      width: 3.4,
-      height: 1.9,
-      gemType: 'red'
+      width: 3.2,
+      height: 3.2,
+      gemType: 'red',
+      animated: true
     },
     boss: {
       type: 'boss',

@@ -18,43 +18,43 @@ Every boss comprises 4 core texture assets in `public/textures/bosses/`:
 
 | Texture File | Action State | Layout | Frame Cell Size | Total Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| `boss_<name>_walk.png` | **WALK** (тяжёлая поступь, преследование) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
-| `boss_<name>_attack.png` | **ATTACK** (замах, сокрушительный удар/хлыст) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
-| `boss_<name>_idle.png` *(опц.)* | **IDLE** (грозное дыхание, аура ярости) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
-| `boss_<name>_front.png` | **PORTRAIT** (аватар полоски HP босса, иконка) | 1 frame icon | $160 \times 160$ px | **$160 \times 160$ px** |
+| `boss_<name>_walk.png` | **WALK** (heavy stride, pursuit) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
+| `boss_<name>_attack.png` | **ATTACK** (windup, crushing slam/strike) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
+| `boss_<name>_idle.png` *(optional)* | **IDLE** (menacing breathing, rage aura) | 4 cols $\times$ 4 rows (16 frames) | $160 \times 160$ px | **$640 \times 640$ px** |
+| `boss_<name>_front.png` | **PORTRAIT** (boss HP bar avatar, card icon) | 1 frame icon | $160 \times 160$ px | **$160 \times 160$ px** |
 
-*Примечание:* Скрипт также автоматически экспортирует статические фолбэки для 4 направлений: `boss_<name>_{front,back,left,right}.png`.
+*Note:* The processing script also automatically exports directional fallbacks for all 4 directions: `boss_<name>_{front,back,left,right}.png`.
 
 ---
 
 ### 1.2 Core Visual Standards for Bosses
 
 1. **Boss Proportions & Silhouette:**
-   - Масштабные, внушительные пропорции (в 2.5–4 раза крупнее обычных героев).
-   - Читаемый массивный силуэт: демонические рога, шипы, бронепластины, массивные когти, хвосты или пламенные крылья.
-   - Опасный акцентный элемент: светящиеся глаза (багровые `#EF4444`, инфернально-пурпурные `#A855F7` или огненно-рыжие `#F97316`).
+   - Massive, imposing proportions (2.5 to 4 times larger than regular heroes).
+   - Highly readable, heavy silhouette: demonic horns, spikes, heavy armor plating, claws, tails, or blazing wings.
+   - Distinctive threat accent: glowing eyes (crimson `#EF4444`, infernal purple `#A855F7`, or blazing orange `#F97316`).
 
 2. **Boss Height & Headroom Limits:**
-   - Высота тела босса в кадре: **до 120–130 пикселей** (`char_h = 120.0`, `max_h = 130.0`) внутри ячейки $160 \times 160$.
-   - Это гарантирует запас сверху не менее 25–30 пикселей для рогов, корон, поднятых лап и эффектов ярости.
+   - Boss body height in frame: **up to 120–130 pixels** (`char_h = 120.0`, `max_h = 130.0`) inside the $160 \times 160$ cell.
+   - Guarantees at least 25–30 pixels of overhead clearance for horns, crowns, raised claws, and rage effects.
 
-3. **Отступ снизу 24px и заземление (`target_feet_y = 136`):**
-   - Точка касания лап/ног с землёй зафиксирована на **$y = 136$** (`target_feet_y = 136` для ячейки 160px).
-   - Это оставляет буфер **24 пикселя снизу** ($160 - 136 = 24$ px), чтобы волны сотрясения земли, удары когтей о камни и трещины не обрезались краем спрайта.
+3. **24px Bottom Margin & Ground Anchoring (`target_feet_y = 136`):**
+   - The contact point where the boss's feet/paws touch the ground is anchored at **$y = 136$** (`target_feet_y = 136` in a 160px cell).
+   - This leaves a clean **24px margin at the bottom** ($160 - 136 = 24$ px) so ground shockwaves, stomp craters, and dust bursts are never clipped by the sprite boundary.
 
-4. **Чистые альфа-края (No Artificial 1px Black Border):**
-   - Натуральный пиксель-арт без грубых искусственных черных контуров в 1px.
+4. **Natural Clean Alpha Edges (No Artificial 1px Black Border):**
+   - Authentic pixel art antialiasing without harsh artificial 1px solid black bounding boxes.
 
 ---
 
 ### 1.3 Directional Row Mapping (Rows 0 to 3)
-В UV-координатах Three.js $V = 0$ внизу, $V = 1$ вверху.
-Строки сверху вниз:
+In Three.js UV coordinates, $V = 0$ is at the bottom and $V = 1$ is at the top.
+Rows from top to bottom map to:
 
-- **Row 0 (Top, $y \in [0, 160)$)**: **Front** — вид спереди (босс движется вниз к игроку).
-- **Row 1 ($y \in [160, 320)$)**: **Left** — вид слева (босс движется влево; отзеркаливается из Row 2).
-- **Row 2 ($y \in [320, 480)$)**: **Right** — вид справа (босс движется вправо).
-- **Row 3 (Bottom, $y \in [480, 640)$)**: **Back** — вид со спины (босс движется вверх).
+- **Row 0 (Top, $y \in [0, 160)$)**: **Front** — front-facing view (boss moving down towards player).
+- **Row 1 ($y \in [160, 320)$)**: **Left** — left-facing view (boss moving left; mirrored from Row 2).
+- **Row 2 ($y \in [320, 480)$)**: **Right** — right-facing view (boss moving right).
+- **Row 3 (Bottom, $y \in [480, 640)$)**: **Back** — back-facing view (boss moving up away from camera).
 
 ```
 +---------------+---------------+---------------+---------------+
@@ -71,32 +71,32 @@ Every boss comprises 4 core texture assets in `public/textures/bosses/`:
 ---
 
 ### 1.4 Three.js Ground Anchoring Math for Bosses
-Для плоскости Three.js размером $5.2 \times 5.2$ метра и точкой опоры $y = 136$ в ячейке 160px:
+For a Three.js plane geometry of size $5.2 \times 5.2$ units with contact point $y = 136$ in a 160px cell:
 
 $$\text{anchorFactor} = \left(\frac{136}{160} - 0.5\right) = 0.85 - 0.5 = \mathbf{0.35}$$
 
 $$\text{translation}_y = \text{height} \times 0.35 = 5.2 \times 0.35 = \mathbf{1.82}$$
 
-При смещении плоскости на $+1.82$ по оси $Y$:
-- Лапы босса стоят точно на уровне земли ($y = 0.000$) прямо на тени `shadowMesh`.
-- Нижний буфер 24px распространяется под землю в диапазон $y \in [-0.39, 0.000]$, отображая трещины и пыль без зазоров и клиппинга.
+With plane geometry translation $+1.82$ along the $Y$ axis:
+- The boss's feet touch down exactly at ground level ($y = 0.000$) resting on the contact shadow `shadowMesh`.
+- The 24px downward buffer extends into $y \in [-0.39, 0.000]$, rendering ground slams and shockwaves without gaps or clipping.
 
 ---
 
 ## 2. Boss Generation Artifact Prevention Rules
 
-1. **Анатомическая персистентность (Persistent Anatomy):**
-   - У босса строго фиксированное число конечностей, рогов и хвостов (например, ровно 2 массивных рога, ровно 2 лапы с когтями, 1 шипастый хвост). Запрещено появление случайных лишних конечностей или исчезновение хвоста при поворотах.
-2. **Предотвращение дрейфа сторон (Direction Drift):**
-   - В диффузионных моделях профиль влево часто страдает от разворота морды в камеру.
-   - **Решение:** В пайплайне по умолчанию активен флаг `--mirror-left`. Строка Row 2 (Right) генерируется в чистый правый профиль и автоматически отзеркаливается в Row 1 (Left). Это гарантирует 100% идентичный тайминг шагов и идеальный боковой профиль.
-3. **4-кадровые ритмичные циклы:**
-   - **WALK (4 кадра):** Шаг левой лапой $\to$ фаза прохождения $\to$ шаг правой лапой $\to$ фаза прохождения.
-   - **ATTACK (4 кадра):** Замах/телеграф $\to$ сокрушительный удар со вспышкой $\to$ остаточный след/трещина $\to$ возврат в стойку.
+1. **Persistent Anatomy:**
+   - Strictly defined limb and feature counts (e.g. exactly 2 curved horns, 2 clawed arms, 1 spiked tail). Disallow spontaneous extra limbs or disappearing tails during directional rotations.
+2. **Direction Drift Prevention:**
+   - Generative diffusion models frequently twist left profiles into semi-front views.
+   - **Solution:** `--mirror-left` flag is enabled by default in `process_boss_sheets.py`. Row 2 (Right) is generated in a clean right profile and horizontally mirrored into Row 1 (Left), guaranteeing 100% matched cadence and zero directional drift.
+3. **4-Frame Rhythmic Cycles:**
+   - **WALK (4 frames):** Left foot forward $\to$ passing stance $\to$ right foot forward $\to$ passing stance.
+   - **ATTACK (4 frames):** Anticipation windup $\to$ crushing slam with flash $\to$ impact crater shockwave $\to$ return to combat stance.
 
 ---
 
-## 3. Master Generation Prompts (Пример: Demon Boss)
+## 3. Master Generation Prompts (Example: Infernal Demon Boss)
 
 ### Master PORTRAIT Prompt (`boss_demon_front.png`)
 ```text
@@ -142,7 +142,7 @@ Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit
 
 ## 4. Automated Processing Script
 
-Скрипт `.agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py`:
+Script `.agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py`:
 
 ```bash
 python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py \
@@ -163,7 +163,7 @@ python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py \
 ## 5. Engine Integration Checklist
 
 ### Step 5.1: Dynamic UV Columns Detection in `Enemy.ts`
-В движке босс автоматически определяет число колонок (поддерживая как новый 4-кадровый стандарт, так и легаси 6-кадровый):
+The game engine dynamically determines columns (supporting both the 4-frame standard and legacy 6-column sheets):
 
 ```typescript
 private updateBossAnimation(dt: number) {
@@ -199,7 +199,7 @@ private updateBossAnimation(dt: number) {
 ## 6. Verification Checklist
 
 1. `python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py ...` -> Exit code 0.
-2. Проверка разрешения:
-   - Спрайтшиты `boss_<name>_{walk,attack}.png`: $640 \times 640$ px (4 cols $\times$ 4 rows @ 160x160).
-   - Портрет `boss_<name>_front.png`: $160 \times 160$ px.
-3. `npm run typecheck` и `npm run build` — 0 ошибок.
+2. Resolution verification:
+   - Sprite sheets `boss_<name>_{walk,attack}.png`: $640 \times 640$ px (4 cols $\times$ 4 rows @ 160x160).
+   - Portrait `boss_<name>_front.png`: $160 \times 160$ px.
+3. `npm run typecheck` and `npm run build` — 0 errors.

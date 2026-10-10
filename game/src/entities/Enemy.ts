@@ -81,6 +81,7 @@ export class Enemy {
   public attackAnimTimer = 0;
   public attackCooldownTimer = 0;
   private bossAnimFrameTimer = 0;
+  private monsterAnimFrameTimer = 0;
   private bossTextures?: BossTextures;
   private monsterTextures?: MonsterTextures;
 
@@ -144,11 +145,24 @@ export class Enemy {
     // 1. Load Textures
     if (this.isBoss && !this.isImmortal) {
       const bossBase = config.texturePrefix ? config.texturePrefix.replace(/^.*[\\/]/, '') : 'boss_demon';
-      this.bossTextures = TextureManager.loadBossTextures(bossBase);
+      const rawBoss = TextureManager.loadBossTextures(bossBase);
+      this.bossTextures = {
+        walk: rawBoss.walk.clone(),
+        attack: rawBoss.attack.clone(),
+        idle: rawBoss.idle ? rawBoss.idle.clone() : undefined
+      };
+      this.bossTextures.walk.needsUpdate = true;
+      this.bossTextures.attack.needsUpdate = true;
     } else if (config.animated && !this.isImmortal) {
       const monsterBase = config.texturePrefix ? config.texturePrefix.replace(/^.*[\\/]/, '') : '';
       if (monsterBase) {
-        this.monsterTextures = TextureManager.loadMonsterTextures(monsterBase);
+        const rawMonster = TextureManager.loadMonsterTextures(monsterBase);
+        this.monsterTextures = {
+          walk: rawMonster.walk.clone(),
+          attack: rawMonster.attack ? rawMonster.attack.clone() : undefined,
+          idle: rawMonster.idle ? rawMonster.idle.clone() : undefined
+        };
+        this.monsterTextures.walk.needsUpdate = true;
       }
     }
     this.textures = TextureManager.loadDirectional(config.texturePrefix);
@@ -165,7 +179,9 @@ export class Enemy {
       if (!cachedGeom) {
         cachedGeom = new PlaneGeometry(this.width, this.height);
         // Anchor at feet so sprite sits cleanly on the ground
-        cachedGeom.translate(0, this.height / 2, 0);
+        // For animated monsters: target_feet_y = 118 in 128px cell -> (118/128 - 0.5) = 0.421875
+        const anchorFactor = config.animated ? 0.421875 : 0.5;
+        cachedGeom.translate(0, this.height * anchorFactor, 0);
         Enemy.geometryCache.set(this.type, cachedGeom);
       }
       geom = cachedGeom;
@@ -225,7 +241,7 @@ export class Enemy {
 
   public setDirection(dir: SpriteDirection) {
     this.currentDir = dir;
-    if (!this.bossTextures) {
+    if (!this.bossTextures && !this.monsterTextures) {
       this.spriteMaterial.map = this.textures[dir];
     }
   }
@@ -295,8 +311,9 @@ export class Enemy {
       ? Math.round((img.width / img.height) * 4)
       : 4;
 
-    this.animTimer += dt * 8;
-    const frameCol = Math.floor(this.animTimer) % cols;
+    const fps = this.speed > 5 ? 10 : 8;
+    this.monsterAnimFrameTimer += dt * fps;
+    const frameCol = Math.floor(this.monsterAnimFrameTimer) % cols;
 
     if (this.spriteMaterial.map !== tex) {
       this.spriteMaterial.map = tex;
@@ -533,5 +550,15 @@ export class Enemy {
     this.bleedStacks = [];
     scene.remove(this.mesh);
     this.spriteMaterial.dispose();
+    if (this.bossTextures) {
+      this.bossTextures.walk.dispose();
+      this.bossTextures.attack.dispose();
+      if (this.bossTextures.idle) this.bossTextures.idle.dispose();
+    }
+    if (this.monsterTextures) {
+      this.monsterTextures.walk.dispose();
+      if (this.monsterTextures.attack) this.monsterTextures.attack.dispose();
+      if (this.monsterTextures.idle) this.monsterTextures.idle.dispose();
+    }
   }
 }

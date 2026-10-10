@@ -102,6 +102,7 @@ def align_and_pack_boss_sheet(
 
     row_baselines = []
     char_heights = []
+    char_widths = []
 
     for r in range(rows):
         y0 = int(round(r * row_h))
@@ -115,12 +116,17 @@ def align_and_pack_boss_sheet(
             ys, xs = np.where(cell_a > 25)
             if len(ys) > 0:
                 feet_in_row.append(y0 + ys.max())
-                char_heights.append(ys.max() - ys.min())
+                char_heights.append(ys.max() - ys.min() + 1)
+                char_widths.append(xs.max() - xs.min() + 1)
 
         row_baselines.append(np.median(feet_in_row) if len(feet_in_row) > 0 else (y1 - 4))
 
     ref_h = np.median(char_heights) if len(char_heights) > 0 else (row_h * 0.8)
+    ref_w = np.max(char_widths) if len(char_widths) > 0 else (col_w * 0.8)
     scale = min(target_char_h / float(ref_h), max_char_h / float(ref_h)) if ref_h > 0 else 1.0
+    max_allowed_w = cell_size - 10
+    if ref_w * scale > max_allowed_w and ref_w > 0:
+        scale = max_allowed_w / float(ref_w)
 
     out_sheet = np.zeros((rows * cell_size, cols * cell_size, 4), dtype=np.uint8)
 
@@ -155,6 +161,14 @@ def align_and_pack_boss_sheet(
 
             new_w = max(1, int(round(sw * scale)))
             new_h = max(1, int(round(sh * scale)))
+            if new_w > (cell_size - 6):
+                w_factor = (cell_size - 6) / float(new_w)
+                new_w = max(1, int(round(new_w * w_factor)))
+                new_h = max(1, int(round(new_h * w_factor)))
+            if new_h > (cell_size - 6):
+                h_factor = (cell_size - 6) / float(new_h)
+                new_w = max(1, int(round(new_w * h_factor)))
+                new_h = max(1, int(round(new_h * h_factor)))
 
             sp_img = Image.fromarray(sprite)
             sp_scaled = np.array(sp_img.resize((new_w, new_h), Image.Resampling.LANCZOS))
