@@ -2008,6 +2008,7 @@ body, html {
   pointer-events: auto;
   cursor: pointer;
   opacity: 0.85;
+  white-space: nowrap;
   transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
 }
 
@@ -2022,7 +2023,7 @@ body, html {
 }
 
 .bp-m-lvl15 {
-  left: 95%;
+  left: 94%;
   top: 4%;
 }
 
@@ -2034,6 +2035,7 @@ body, html {
   letter-spacing: 0.3px;
   text-shadow: 0 1px 2px #000;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .bp-m-chest {
@@ -2102,7 +2104,8 @@ body, html {
 
 .bp-slot-card {
   position: relative;
-  flex: 1 1 14.28%;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2112,13 +2115,17 @@ body, html {
 }
 
 .bp-slot-card.bp-slot-free {
-  flex: 0 0 13%;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .bp-slot-free .bp-slot-box {
+  width: clamp(28px, 2.2vw, 36px);
+  height: clamp(28px, 2.2vw, 36px);
   background: transparent;
   border-color: transparent;
   box-shadow: none;
+  margin-bottom: 2px;
 }
 
 .bp-slot-free .bp-lock-icon {
@@ -2128,22 +2135,25 @@ body, html {
 .bp-free-ribbon {
   display: inline-block;
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(7.5px, 0.62vw, 9.5px);
-  font-weight: 900;
-  letter-spacing: 0.6px;
+  font-size: clamp(6.5px, 0.52vw, 8px);
+  font-weight: 800;
+  letter-spacing: 0.2px;
   color: #f8fafc;
   text-transform: uppercase;
-  text-shadow: 0 1px 2px #000, 0 0 3px #000;
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  text-shadow: 0 1px 2px #000;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 3px;
-  padding: 1px 4px;
-  margin-top: 2px;
-  line-height: 1.1;
+  padding: 1.5px 3.5px;
+  line-height: 1;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  max-width: 88%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   transition: border-color 0.16s ease, color 0.16s ease;
 }
 
@@ -2154,8 +2164,8 @@ body, html {
 }
 
 .bp-slot-box {
-  width: clamp(34px, 2.7vw, 44px);
-  height: clamp(34px, 2.7vw, 44px);
+  width: clamp(32px, 2.5vw, 40px);
+  height: clamp(32px, 2.5vw, 40px);
   background: #101722;
   border: 1.5px solid #283749;
   border-radius: 6px;
@@ -2175,16 +2185,16 @@ body, html {
 }
 
 .bp-slot-img {
-  width: 82%;
-  height: 82%;
+  width: 80%;
+  height: 80%;
   object-fit: contain;
   image-rendering: pixelated;
   transition: transform 0.16s ease;
 }
 
 .bp-slot-free-box .bp-badge-img {
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
@@ -2258,7 +2268,7 @@ body, html {
 
 .bp-slot-lvl {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(8px, 0.6vw, 9.5px);
+  font-size: clamp(7.5px, 0.58vw, 9px);
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.3px;
@@ -2266,6 +2276,7 @@ body, html {
   line-height: 1;
   margin-top: 2px;
   pointer-events: none;
+  white-space: nowrap;
 }
 
 .bp-slot-card.unlocked .bp-slot-lvl,
