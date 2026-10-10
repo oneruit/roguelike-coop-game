@@ -38,6 +38,9 @@ export interface ProjectileOptions {
   isIceSpike?: boolean;
   isFireball?: boolean;
   bleedDps?: number;
+  sourceWeaponId?: string;
+  critChance?: number;
+  critDamage?: number;
 }
 
 export class Projectile {
@@ -62,6 +65,9 @@ export class Projectile {
   public isAlive = true;
   public hitEnemies = new Set<string>(); // avoid hitting same enemy multiple times per frame
   public bleedDps: number = 0;
+  public sourceWeaponId?: string;
+  public critChance?: number;
+  public critDamage?: number;
 
   // Orbiting projectile specific
   public isOrbiting = false;
@@ -259,6 +265,9 @@ export class Projectile {
     this.isFireball = !!options.isFireball;
     this.curveSign = options.curveSign ?? 1;
     this.bleedDps = options.bleedDps ?? 0;
+    this.sourceWeaponId = options.sourceWeaponId;
+    this.critChance = options.critChance;
+    this.critDamage = options.critDamage;
     this.maxLifetime = options.lifetime;
 
     this.mesh = new Group();

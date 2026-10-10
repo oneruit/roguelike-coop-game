@@ -99,7 +99,9 @@ export class Player {
   public shield: number = 0;
   public maxShield: number = 0;
   public shieldRegenDelay: number = 0;
-  public critChance: number = 0.05; // 5% base crit chance
+  public critChance: number = 0.05; // 5% base crit chance (max 1000% / 10.0)
+  public critDamage: number = 0.50; // 50% base crit damage (max 100% / 1.0)
+  public startingWeaponId: string = '';
   public hasChronosReady: boolean = true;
   public singularityKillCounter: number = 0;
   public orbitalStrikeTimer: number = 12.0;
@@ -386,6 +388,7 @@ export class Player {
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }
+    this.startingWeaponId = this.weapons[0]?.id || heroCfg.startingWeapon || '';
     this.passiveDamageMultiplier = 1.0;
     this.passiveSpeedMultiplier = 1.0;
     this.passiveCooldownMultiplier = 1.0;
@@ -493,8 +496,11 @@ export class Player {
     this.maxShield = aegisStacks * 35;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
 
-    // Crit Chance: 5% base + 12% per Crit Visor stack, cap at 1.0 (100%)
-    this.critChance = Math.min(1.0, 0.05 + critStacks * 0.12);
+    // Crit Chance: 5% base + 12% per Crit Visor stack, cap at 10.0 (1000%)
+    this.critChance = Math.min(10.0, 0.05 + critStacks * 0.12);
+
+    // Crit Damage: 50% base, cap at 1.0 (100%)
+    this.critDamage = Math.min(1.0, 0.50);
 
     // Leather Vest % damage reduction: 10% per stack, cap at 70%
     this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.10);
@@ -520,6 +526,21 @@ export class Player {
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
     const baseDmg = this.isOneHitKill ? 50.0 : (this.baseDamageMultiplier * this.passiveDamageMultiplier);
     this.damageMultiplier = baseDmg * (1 + dmgBonus);
+  }
+
+  /**
+   * Calculates effective damage multiplier for a given weapon.
+   * Per rule: initial hero damage bonus applies ONLY to their starting weapon!
+   * Other weapons receive 1.0 * general bonuses (passive damage, altars, buffs, cheats).
+   */
+  public getDamageMultiplier(weaponId?: string): number {
+    const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
+    const generalBonus = (this.isOneHitKill ? 50.0 : this.passiveDamageMultiplier) * (1 + dmgBonus);
+    const isStarting = !weaponId ||
+      weaponId === this.startingWeaponId ||
+      (this.charType === 'invoker' && (weaponId === 'invoker_invoke' || weaponId.startsWith('invoker_')));
+    const heroMultiplier = isStarting ? this.baseDamageMultiplier : 1.0;
+    return heroMultiplier * generalBonus;
   }
 
   public addSheriffStarBonus(multiplier: number = 1.02) {
@@ -593,7 +614,7 @@ export class Player {
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
     obstacleManager?: ObstacleManager,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3, critChance?: number, critDamage?: number) => void,
     getElevation?: (x: number, z: number) => number
   ) {
     if (getElevation) {
@@ -762,13 +783,27 @@ export class Player {
     this.spriteMaterial.opacity = this.activeBuffs.has('ghost') ? .4 : 1;
 
     // Update weapons
-    const damageEnemyWithMultiplier = damageEnemy
-      ? (enemy: Enemy, amount: number, sourcePos?: Vector3) => {
-          damageEnemy(enemy, amount * this.damageMultiplier, sourcePos);
-        }
-      : undefined;
     const invokeSource = this.weapons.find(weapon => weapon.id === 'invoker_invoke');
     for (const weapon of this.weapons) {
+      const damageEnemyWithMultiplier = damageEnemy
+        ? (enemy: Enemy, amount: number, sourcePos?: Vector3, critChanceBonus = 0, critDamageBonus = 0) => {
+            damageEnemy(
+              enemy,
+              amount * this.getDamageMultiplier(weapon.id),
+              sourcePos,
+              Math.min(10.0, this.critChance + weapon.critChance + critChanceBonus),
+              Math.min(1.0, this.critDamage + weapon.critDamage + critDamageBonus)
+            );
+          }
+        : undefined;
+
+      const spawnProjectileWithWeapon = (proj: Projectile) => {
+        proj.sourceWeaponId = weapon.id;
+        proj.critChance = Math.min(10.0, this.critChance + weapon.critChance);
+        proj.critDamage = Math.min(1.0, this.critDamage + weapon.critDamage);
+        spawnProjectile(proj);
+      };
+
       if (weapon instanceof InvokerWeapon) {
         weapon.setInvokeSource(invokeSource instanceof InvokerWeapon ? invokeSource : undefined);
         weapon.onSpellCast = cast => {
@@ -783,7 +818,7 @@ export class Player {
         weapon.onSpellBuff = (spell, level) => this.addBuff(createInvokerBuff(spell, level));
       }
       weapon.onMeleeAttack = this.onMeleeAttack;
-      weapon.update(dt, this.position, enemies, spawnProjectile, damageEnemyWithMultiplier);
+      weapon.update(dt, this.position, enemies, spawnProjectileWithWeapon, damageEnemyWithMultiplier);
     }
 
     // Update overhead billboard UI (Name, Level, HP Bar, Revive progress)

@@ -22,6 +22,7 @@ import {
 } from '../core/BattlePassManager';
 import { TextureManager } from '../core/TextureManager';
 import { getAssetUrl } from '../utils/assetPath';
+import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../combat/WeaponGrades';
 import type { Scene } from 'three';
 
 export interface UpgradeOption {
@@ -31,6 +32,7 @@ export interface UpgradeOption {
   iconImage?: string;
   levelTag: string;
   description: string;
+  grade?: WeaponGrade;
   apply: () => void;
 }
 
@@ -87,6 +89,7 @@ export class HUD {
 
   // The Rift HUD Elements
   private stageText: HTMLElement | null;
+  private currentStageNumber: number = 1;
   private plasmaCreditsText: HTMLElement | null;
   private diffTierLabel: HTMLElement | null;
   private diffBarFill: HTMLElement | null;
@@ -3298,6 +3301,7 @@ export class HUD {
   }
 
   public updateStageText(stageNum: number, biomeName: string) {
+    this.currentStageNumber = stageNum;
     if (this.stageText) {
       this.stageText.innerText = `${stageNum}: ${biomeName.toUpperCase()}`;
     }
@@ -3600,11 +3604,12 @@ export class HUD {
     for (const weapon of weapons) {
       currentWeaponIds.add(weapon.id);
       let slot = this.weaponsBar.querySelector<HTMLElement>(`[data-weapon-id="${weapon.id}"]`);
+      const gradeTitle = getGradeLabel(weapon.grade);
       if (!slot) {
         slot = document.createElement('div');
-        slot.className = 'weapon-slot';
+        slot.className = `weapon-slot grade-${weapon.grade}`;
         slot.setAttribute('data-weapon-id', weapon.id);
-        slot.title = `${weapon.name} (Ур. ${weapon.level})`;
+        slot.title = `${weapon.name} (Ур. ${weapon.level}, ${gradeTitle})`;
         const iconUrl = TextureManager.getWeaponBlobUrl(weapon.iconImage || getWeaponIconUrl(weapon.id));
         slot.innerHTML = `
           <img src="${iconUrl}" class="weapon-icon-img" alt="${weapon.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
@@ -3613,10 +3618,11 @@ export class HUD {
         `;
         this.weaponsBar.appendChild(slot);
       } else {
+        slot.className = `weapon-slot grade-${weapon.grade}`;
         const lvlEl = slot.querySelector<HTMLElement>('.weapon-level');
         if (lvlEl && lvlEl.innerText !== `lvl ${weapon.level}`) {
           lvlEl.innerText = `lvl ${weapon.level}`;
-          slot.title = `${weapon.name} (Ур. ${weapon.level})`;
+          slot.title = `${weapon.name} (Ур. ${weapon.level}, ${gradeTitle})`;
         }
       }
     }
@@ -3666,8 +3672,9 @@ export class HUD {
         id: 'max_arsenal_reward',
         title: 'Эликсир Героя',
         icon: '💖',
-        levelTag: 'АРСЕНАЛ МАКСИМАЛЕН',
+        levelTag: 'АРСЕНАЛ МАКСИМАЛЕН • ЛЕГЕНДАРНЫЙ',
         description: 'Все 5 оружий прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
+        grade: 'legendary',
         apply: () => {
           player.maxHp += 50;
           player.heal(player.maxHp);
@@ -3747,12 +3754,17 @@ export class HUD {
 
     options.forEach((opt, idx) => {
       const card = document.createElement('div');
-      card.className = `character-card upgrade-card card-weapon-step${isRerolled ? ' rerolled' : ''}`;
+      const gradeClass = opt.grade ? ` grade-${opt.grade}` : '';
+      card.className = `character-card upgrade-card card-weapon-step${gradeClass}${isRerolled ? ' rerolled' : ''}`;
       const iconHtml = opt.iconImage
         ? `<div class="char-portrait-wrapper upgrade-icon-wrapper"><img src="${opt.iconImage}" class="char-portrait card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
         : `<div class="char-portrait-wrapper upgrade-icon-wrapper"><div class="card-icon">${opt.icon}</div></div>`;
+      const gradeBadgeHtml = opt.grade
+        ? `<div class="card-grade-badge grade-${opt.grade}">${getGradeLabel(opt.grade).toUpperCase()}</div>`
+        : '';
       card.innerHTML = `
         <div class="card-hotkey-badge">[${idx + 1}]</div>
+        ${gradeBadgeHtml}
         ${iconHtml}
         <div class="char-name card-title">${opt.title}</div>
         <div class="char-type card-level-tag">${opt.levelTag}</div>
@@ -3990,14 +4002,17 @@ export class HUD {
     // 1. Existing weapon upgrades (up to maxLevel 20)
     for (const weapon of player.weapons) {
       if (weapon.level < weapon.maxLevel && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
+        const grade = rollWeaponGrade(this.currentStageNumber);
+        const gradeLabel = getGradeLabel(grade);
         pool.push({
           id: `upgrade_${weapon.id}`,
           title: `Улучшение: ${weapon.name}`,
           icon: weapon.icon,
           iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: `УРОВЕНЬ ${weapon.level + 1}`,
-          description: weapon.getNextUpgradeDescription(),
-          apply: () => weapon.upgrade()
+          levelTag: `УРОВЕНЬ ${weapon.level + 1} • ${gradeLabel.toUpperCase()}`,
+          description: weapon.getNextUpgradeDescription(grade),
+          grade,
+          apply: () => weapon.upgrade(grade)
         });
       }
     }
@@ -4011,19 +4026,26 @@ export class HUD {
         if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) continue;
         if (player.weapons.some(weapon => weapon.id === id)) continue;
         const def = spell ? INVOKER_SPELLS[spell] : null;
+        const grade = rollWeaponGrade(this.currentStageNumber);
+        const gradeLabel = getGradeLabel(grade);
         pool.push({
           id: 'new_' + id,
           title: 'Новое: ' + (def?.name ?? 'Invoke'),
           icon: def?.icon ?? '🔮',
           iconImage: getWeaponIconUrl(id),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
+          levelTag: `НОВОЕ ОРУЖИЕ • ${gradeLabel.toUpperCase()}`,
           description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
+          grade,
           apply: () => {
             if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
             const triggerAttack = () => player.triggerAttackAnim(0.5);
-            player.weapons.push(spell
+            const w = spell
               ? new InvokerSpellWeapon(spell, triggerAttack)
-              : new InvokerInvokeWeapon(triggerAttack));
+              : new InvokerInvokeWeapon(triggerAttack);
+            if (grade !== 'common') {
+              w.applyGradeUpgrade(grade);
+            }
+            player.weapons.push(w);
             player.recalculateStats();
           }
         });
@@ -4032,231 +4054,107 @@ export class HUD {
       // 2b. General arsenal (only for characters allowed to use generic weapons)
       const canUseGenericWeapons = canCharacterAcquireWeapon(player.charType, 'bow', player.weapons);
       if (canUseGenericWeapons) {
+        const addGenericOption = (
+          id: string,
+          title: string,
+          icon: string,
+          description: string,
+          factory: () => Weapon
+        ) => {
+          const grade = rollWeaponGrade(this.currentStageNumber);
+          const gradeLabel = getGradeLabel(grade);
+          pool.push({
+            id: 'new_' + id,
+            title: 'Новое: ' + title,
+            icon,
+            iconImage: getWeaponIconUrl(id),
+            levelTag: `НОВОЕ ОРУЖИЕ • ${gradeLabel.toUpperCase()}`,
+            description,
+            grade,
+            apply: () => {
+              const w = factory();
+              if (grade !== 'common') {
+                w.applyGradeUpgrade(grade);
+              }
+              player.weapons.push(w);
+              player.recalculateStats();
+            }
+          });
+        };
+
         const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
-      if (!hasBow) {
-        pool.push({
-          id: 'new_bow',
-          title: 'Новое: Охотничий Лук',
-          icon: '🏹',
-          iconImage: getWeaponIconUrl('bow'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов',
-          apply: () => {
-            player.weapons.push(new BowWeapon(() => player.triggerAttackAnim(0.40)));
-            player.recalculateStats();
-          }
-        });
-      }
+        if (!hasBow) {
+          addGenericOption('bow', 'Охотничий Лук', '🏹', 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов', () => new BowWeapon(() => player.triggerAttackAnim(0.40)));
+        }
 
-      const hasKukri = player.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
-      if (!hasKukri) {
-        pool.push({
-          id: 'new_kukri',
-          title: 'Новое: Нож Кукри',
-          icon: '🔪',
-          iconImage: getWeaponIconUrl('kukri'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Стремительные броски изогнутых клинков кукри в ближайших врагов',
-          apply: () => {
-            player.weapons.push(new KukriWeapon());
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasKukri = player.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
+        if (!hasKukri) {
+          addGenericOption('kukri', 'Нож Кукри', '🔪', 'Стремительные броски изогнутых клинков кукри в ближайших врагов', () => new KukriWeapon());
+        }
 
-      const hasOrbs = player.weapons.some(w => w.id === 'orbiting_barrier');
-      if (!hasOrbs) {
-        pool.push({
-          id: 'new_orbiting_barrier',
-          title: 'Новое: Коса Жнеца',
-          icon: '🌙',
-          iconImage: getWeaponIconUrl('orbiting_barrier'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение',
-          apply: () => {
-            player.weapons.push(new OrbitingBarrierWeapon());
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasOrbs = player.weapons.some(w => w.id === 'orbiting_barrier');
+        if (!hasOrbs) {
+          addGenericOption('orbiting_barrier', 'Коса Жнеца', '🌙', 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение', () => new OrbitingBarrierWeapon());
+        }
 
-      const hasAura = player.weapons.some(w => w.id === 'holy_aura');
-      if (!hasAura) {
-        pool.push({
-          id: 'new_holy_aura',
-          title: 'Новое: Огненное Кольцо',
-          icon: '🔥',
-          iconImage: getWeaponIconUrl('holy_aura'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров',
-          apply: () => {
+        const hasAura = player.weapons.some(w => w.id === 'holy_aura');
+        if (!hasAura) {
+          addGenericOption('holy_aura', 'Огненное Кольцо', '🔥', 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров', () => {
             const aura = new HolyAuraWeapon();
             aura.initVisual(this.scene, player.position);
-            player.weapons.push(aura);
-            player.recalculateStats();
-          }
-        });
-      }
+            return aura;
+          });
+        }
 
-      const hasKatana = player.weapons.some(w => w.id === 'katana_slash');
-      if (!hasKatana) {
-        pool.push({
-          id: 'new_katana_slash',
-          title: 'Новое: Рассекающий Клинок',
-          icon: '🗡️',
-          iconImage: getWeaponIconUrl('katana_slash'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Рассекает окружающих врагов смертоносным круговым ударом',
-          apply: () => {
-            player.weapons.push(new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasKatana = player.weapons.some(w => w.id === 'katana_slash');
+        if (!hasKatana) {
+          addGenericOption('katana_slash', 'Рассекающий Клинок', '🗡️', 'Рассекает окружающих врагов смертоносным круговым ударом', () => new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)));
+        }
 
-      const hasWhirlwind = player.weapons.some(w => w.id === 'whirlwind_slash');
-      if (!hasWhirlwind) {
-        pool.push({
-          id: 'new_whirlwind_slash',
-          title: 'Новое: Багровый Вихрь',
-          icon: '🌪️',
-          iconImage: getWeaponIconUrl('whirlwind_slash'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью',
-          apply: () => {
-            player.weapons.push(new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasWhirlwind = player.weapons.some(w => w.id === 'whirlwind_slash');
+        if (!hasWhirlwind) {
+          addGenericOption('whirlwind_slash', 'Багровый Вихрь', '🌪️', 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью', () => new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)));
+        }
 
-      const hasGreatsword = player.weapons.some(w => w.id === 'greatsword');
-      if (!hasGreatsword) {
-        pool.push({
-          id: 'new_greatsword',
-          title: 'Новое: Двуручный Меч',
-          icon: '⚔️',
-          iconImage: getWeaponIconUrl('greatsword'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом',
-          apply: () => {
-            player.weapons.push(new GreatswordWeapon(() => player.triggerAttackAnim(0.5)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasGreatsword = player.weapons.some(w => w.id === 'greatsword');
+        if (!hasGreatsword) {
+          addGenericOption('greatsword', 'Двуручный Меч', '⚔️', 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом', () => new GreatswordWeapon(() => player.triggerAttackAnim(0.5)));
+        }
 
-      const hasFlail = player.weapons.some(w => w.id === 'flail');
-      if (!hasFlail) {
-        pool.push({
-          id: 'new_flail',
-          title: 'Новое: Боевой Цеп',
-          icon: '⛓️',
-          iconImage: getWeaponIconUrl('flail'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров',
-          apply: () => {
-            player.weapons.push(new FlailWeapon(() => player.triggerAttackAnim(0.45)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasFlail = player.weapons.some(w => w.id === 'flail');
+        if (!hasFlail) {
+          addGenericOption('flail', 'Боевой Цеп', '⛓️', 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров', () => new FlailWeapon(() => player.triggerAttackAnim(0.45)));
+        }
 
-      const hasStaff = player.weapons.some(w => w.id === 'astral_staff');
-      if (!hasStaff) {
-        pool.push({
-          id: 'new_astral_staff',
-          title: 'Новое: Звёздный Посох',
-          icon: '🔮',
-          iconImage: getWeaponIconUrl('astral_staff'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Магический посох, запускающий скоростные пробивающие звёздные снаряды',
-          apply: () => {
-            player.weapons.push(new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasStaff = player.weapons.some(w => w.id === 'astral_staff');
+        if (!hasStaff) {
+          addGenericOption('astral_staff', 'Звёздный Посох', '🔮', 'Магический посох, запускающий скоростные пробивающие звёздные снаряды', () => new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)));
+        }
 
-      const hasChakram = player.weapons.some(w => w.id === 'chakram');
-      if (!hasChakram) {
-        pool.push({
-          id: 'new_chakram',
-          title: 'Новое: Танцующий Чакрам',
-          icon: '🪃',
-          iconImage: getWeaponIconUrl('chakram'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением',
-          apply: () => {
-            player.weapons.push(new ChakramWeapon(() => player.triggerAttackAnim(0.42)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasChakram = player.weapons.some(w => w.id === 'chakram');
+        if (!hasChakram) {
+          addGenericOption('chakram', 'Танцующий Чакрам', '🪃', 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением', () => new ChakramWeapon(() => player.triggerAttackAnim(0.42)));
+        }
 
-      const hasLightning = player.weapons.some(w => w.id === 'lightning_strike');
-      if (!hasLightning) {
-        pool.push({
-          id: 'new_lightning_strike',
-          title: 'Новое: Удар Молнии',
-          icon: '⚡',
-          iconImage: getWeaponIconUrl('lightning_strike'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху',
-          apply: () => {
-            player.weapons.push(new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasLightning = player.weapons.some(w => w.id === 'lightning_strike');
+        if (!hasLightning) {
+          addGenericOption('lightning_strike', 'Удар Молнии', '⚡', 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху', () => new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)));
+        }
 
-      const hasIceSpike = player.weapons.some(w => w.id === 'ice_spike');
-      if (!hasIceSpike) {
-        pool.push({
-          id: 'new_ice_spike',
-          title: 'Новое: Ледяной Шип',
-          icon: '🧊',
-          iconImage: getWeaponIconUrl('ice_spike'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском',
-          apply: () => {
-            player.weapons.push(new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasIceSpike = player.weapons.some(w => w.id === 'ice_spike');
+        if (!hasIceSpike) {
+          addGenericOption('ice_spike', 'Ледяной Шип', '🧊', 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском', () => new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)));
+        }
 
-      const hasFireball = player.weapons.some(w => w.id === 'fireball');
-      if (!hasFireball) {
-        pool.push({
-          id: 'new_fireball',
-          title: 'Новое: Огненный Шар',
-          icon: '☄️',
-          iconImage: getWeaponIconUrl('fireball'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области',
-          apply: () => {
-            player.weapons.push(new FireballWeapon(() => player.triggerAttackAnim(0.42)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasFireball = player.weapons.some(w => w.id === 'fireball');
+        if (!hasFireball) {
+          addGenericOption('fireball', 'Огненный Шар', '☄️', 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области', () => new FireballWeapon(() => player.triggerAttackAnim(0.42)));
+        }
 
-      const hasRifle = player.weapons.some(w => w.id === 'assault_rifle');
-      if (!hasRifle) {
-        pool.push({
-          id: 'new_assault_rifle',
-          title: 'Новое: Штурмовая Винтовка',
-          icon: '🔫',
-          iconImage: getWeaponIconUrl('assault_rifle'),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль',
-          apply: () => {
-            player.weapons.push(new AssaultRifleWeapon(() => player.triggerAttackAnim(0.20)));
-            player.recalculateStats();
-          }
-        });
-      }
+        const hasRifle = player.weapons.some(w => w.id === 'assault_rifle');
+        if (!hasRifle) {
+          addGenericOption('assault_rifle', 'Штурмовая Винтовка', '🔫', 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль', () => new AssaultRifleWeapon(() => player.triggerAttackAnim(0.20)));
+        }
       }
     }
 

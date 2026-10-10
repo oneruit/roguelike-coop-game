@@ -374,14 +374,15 @@ export class SimulationView {
       Object.values(this.state.draftBalance.weapons)[0];
     const heroCfg =
       this.state.draftBalance.heroes[this.sim.hero] ||
-      DEFAULT_BALANCE.heroes[this.sim.hero] || { damageMultiplier: 1.0 };
-    const heroMult = heroCfg.damageMultiplier || 1.0;
+      DEFAULT_BALANCE.heroes[this.sim.hero] || { damageMultiplier: 1.0, startingWeapon: '' };
+    const isStarting = slot.weaponId === heroCfg.startingWeapon || (heroCfg.id === 'invoker' && slot.weaponId.startsWith('invoker_'));
+    const heroMult = isStarting ? (heroCfg.damageMultiplier || 1.0) : 1.0;
     const sheriffMult = 1 + this.sim.sheriffStacks * 0.02;
     const runeMult = this.sim.damageRuneActive ? 1.3 : 1.0;
 
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.12);
+    const effectiveCritChance = Math.min(10.0, baseCritChance + this.sim.critVisorStacks * 0.12);
     const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
 
     const globalDmgMult = heroMult * sheriffMult * runeMult * expectedCritMult;
@@ -465,7 +466,7 @@ export class SimulationView {
     const kpiCritSub = document.getElementById('sim-kpi-crit-sub');
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.12);
+    const effectiveCritChance = Math.min(10.0, baseCritChance + this.sim.critVisorStacks * 0.12);
     const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
 
     if (kpiCrit) {

@@ -480,12 +480,18 @@ class Game {
       this.enemyManager.enemies,
       this.combatDirector.spawnProjectile,
       this.engine.obstacleManager,
-      (enemy, amount, sourcePos) => {
-        const { finalDamage, isCrit } = this.combatDirector.applyCombatProcOnEnemyHit(enemy, amount, sourcePos);
+      (enemy, amount, sourcePos, critChance, critDamage) => {
+        const { finalDamage, isCrit, critTier } = this.combatDirector.applyCombatProcOnEnemyHit(
+          enemy,
+          amount,
+          sourcePos,
+          critChance,
+          critDamage
+        );
 
         if (this.net.role === 'client') {
           const isDead = enemy.takeDamage(finalDamage, sourcePos, this.net.mySlotId);
-          this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit || finalDamage > 28, this.engine.camera);
+          this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit, this.engine.camera, false, critTier);
           SoundManager.playHit();
           this.player.totalDamageDealt += finalDamage;
 
@@ -509,7 +515,16 @@ class Game {
           });
         } else {
           this.player.totalDamageDealt += finalDamage;
-          this.enemyManager.damageEnemy(enemy, finalDamage, sourcePos, this.engine.camera, this.net.mySlotId || 'p1');
+          this.enemyManager.damageEnemy(
+            enemy,
+            finalDamage,
+            sourcePos,
+            this.engine.camera,
+            this.net.mySlotId || 'p1',
+            true,
+            isCrit,
+            critTier
+          );
         }
       }
     );

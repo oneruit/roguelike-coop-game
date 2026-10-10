@@ -2,6 +2,7 @@ import { Vector3 } from "three";
 import type { Enemy } from "../entities/Enemy";
 import type { Projectile } from "./Projectile";
 import { Weapon, findClosestEnemies } from "./Weapon";
+import { type WeaponGrade, WEAPON_GRADES } from "./WeaponGrades";
 import { BalanceManager } from "../balance/BalanceManager";
 import { SoundManager } from "../core/SoundManager";
 import {
@@ -135,20 +136,34 @@ export class InvokerWeapon extends Weapon {
     this.onTriggerAttack?.();
     SoundManager.playMagic();
   }
-  public upgrade(): void {
+  public upgrade(grade: WeaponGrade = 'common'): void {
     if (this.level < this.maxLevel) {
       this.level++;
+      this.applyGradeUpgrade(grade);
       this.recalculateStats();
     }
   }
-  public getNextUpgradeDescription(): string {
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
     if (this.level >= this.maxLevel) return "Максимальный уровень";
-    return this.spell === null
-      ? `+${Math.round((100 * this.damagePerLevel) / INVOKE_BASE_DAMAGE)}% базового урона всех заклинаний; −4% перезарядки; +3.5% радиуса; сильнее контроль и усиления`
-      : (this.damagePerLevel > 0
-          ? "+" + this.damagePerLevel + " к урону; "
-          : "Усиливает эффект; ") +
-          "−2.5% перезарядки, больше область действия";
+    const cfg = WEAPON_GRADES[grade];
+    const dmgBonusPct = Math.round(((100 * this.damagePerLevel) / INVOKE_BASE_DAMAGE) * cfg.damageMultiplierBonus);
+    const perks: string[] = [];
+    if (this.spell === null) {
+      perks.push(`+${dmgBonusPct}% базового урона всех заклинаний`);
+      perks.push("−4% перезарядки, +3.5% радиуса");
+    } else {
+      if (this.damagePerLevel > 0) {
+        const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+        perks.push(`+${dmg} к урону`);
+      } else {
+        perks.push("Усиливает эффект");
+      }
+      perks.push("−2.5% перезарядки, больше область действия");
+    }
+    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
+    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    return `[${cfg.name.toUpperCase()}] ${perks.join("; ")}`;
   }
 }
 export class InvokerInvokeWeapon extends InvokerWeapon {

@@ -819,6 +819,22 @@ body, html {
   box-shadow: 0 0 8px rgba(0, 132, 255, 0.4);
 }
 
+.weapon-slot.grade-common {
+  border-color: rgba(148, 163, 184, 0.4);
+}
+.weapon-slot.grade-uncommon {
+  border-color: rgba(34, 197, 94, 0.7);
+  box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.2), 0 0 8px rgba(34, 197, 94, 0.3);
+}
+.weapon-slot.grade-rare {
+  border-color: rgba(59, 130, 246, 0.8);
+  box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.25), 0 0 12px rgba(59, 130, 246, 0.4);
+}
+.weapon-slot.grade-legendary {
+  border-color: rgba(245, 158, 11, 0.9);
+  box-shadow: inset 0 0 14px rgba(245, 158, 11, 0.3), 0 0 16px rgba(245, 158, 11, 0.5);
+}
+
 /* PoE Party List */
 .poe-party-list {
   display: flex;
@@ -5247,6 +5263,78 @@ body, html {
   padding: 20px 14px 16px !important;
   min-height: 290px;
   justify-content: space-between;
+  position: relative;
+}
+
+/* Weapon Grades Cards */
+.upgrade-card.grade-common {
+  border-color: rgba(148, 163, 184, 0.45) !important;
+}
+
+.upgrade-card.grade-uncommon {
+  border-color: rgba(34, 197, 94, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15) !important;
+}
+.upgrade-card.grade-uncommon:hover {
+  border-color: #22c55e !important;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.35) !important;
+}
+
+.upgrade-card.grade-rare {
+  border-color: rgba(59, 130, 246, 0.7) !important;
+  box-shadow: 0 4px 24px rgba(59, 130, 246, 0.2) !important;
+}
+.upgrade-card.grade-rare:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 8px 34px rgba(59, 130, 246, 0.45) !important;
+}
+
+.upgrade-card.grade-legendary {
+  border-color: rgba(245, 158, 11, 0.8) !important;
+  background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.95) 75%) !important;
+  box-shadow: 0 4px 30px rgba(245, 158, 11, 0.3) !important;
+}
+.upgrade-card.grade-legendary:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 10px 40px rgba(245, 158, 11, 0.6) !important;
+}
+
+/* Card Grade Badge */
+.card-grade-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.card-grade-badge.grade-common {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+.card-grade-badge.grade-uncommon {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  text-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+}
+.card-grade-badge.grade-rare {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+.card-grade-badge.grade-legendary {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.7);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
 }
 
 .upgrade-icon-wrapper {
@@ -6114,6 +6202,27 @@ body, html {
   color: #f43f5e;
   font-size: 21px;
   text-shadow: 0 0 10px rgba(244, 63, 94, 0.7), 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.dmg-crit-t1 {
+  color: #f59e0b !important;
+  font-size: 20px !important;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.8), 0 2px 6px rgba(0, 0, 0, 0.9) !important;
+}
+
+.dmg-crit-t2 {
+  color: #ef4444 !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 14px rgba(239, 68, 68, 0.9), 0 2px 6px rgba(0, 0, 0, 0.9) !important;
+}
+
+.dmg-crit-t3 {
+  color: #c084fc !important;
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: 0 0 18px rgba(192, 132, 252, 1), 0 0 8px #fbbf24, 0 2px 6px rgba(0, 0, 0, 0.9) !important;
 }
 
 .dmg-number.dmg-xp {
