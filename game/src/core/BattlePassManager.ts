@@ -15,26 +15,26 @@ export const BP_SEASON_ID = 'season_1';
 export const BP_SEASON_TITLE = 'БОЕВОЙ ПРОПУСК';
 export const BP_SEASON_SUBTITLE = 'СЕЗОН 1: ТЕНИ ДРЕВНЕГО ЛЕСА';
 export const BP_MAX_LEVEL = 15;
-export const BP_POINTS_PER_LEVEL = 10;
-export const BP_MAX_POINTS = (BP_MAX_LEVEL - 1) * BP_POINTS_PER_LEVEL; // 140 pts to reach Lvl 15
+export const BP_POINTS_PER_LEVEL = 200;
+export const BP_MAX_POINTS = (BP_MAX_LEVEL - 1) * BP_POINTS_PER_LEVEL; // 2800 pts to reach Lvl 15
 
 /**
  * Calculates Battle Pass experience points awarded for a run based on survival time:
- * - < 5 minutes (0..299s): 2 points
- * - < 10 minutes (300..599s): 4 points
- * - < 15 minutes (600..899s): 6 points
- * - < 20 minutes (900..1199s): 9 points
- * - < 30 minutes (1200..1799s): 10 points
- * - >= 30 minutes (Victory): 10 points
+ * - < 5 minutes (0..299s): 20 points
+ * - < 10 minutes (300..599s): 50 points
+ * - < 15 minutes (600..899s): 100 points
+ * - < 20 minutes (900..1199s): 150 points
+ * - < 30 minutes (1200..1799s): 200 points
+ * - >= 30 minutes (Victory): 200 points
  */
 export function calculateBattlePassPoints(gameTimeSeconds: number): number {
   const safeTime = Math.max(0, gameTimeSeconds);
   const minutes = safeTime / 60;
-  if (minutes < 5) return 2;
-  if (minutes < 10) return 4;
-  if (minutes < 15) return 6;
-  if (minutes < 20) return 9;
-  return 10; // 20 to 30 mins and 30+ min victory
+  if (minutes < 5) return 20;
+  if (minutes < 10) return 50;
+  if (minutes < 15) return 100;
+  if (minutes < 20) return 150;
+  return 200; // 20 to 30 mins and 30+ min victory
 }
 
 export const BATTLE_PASS_REWARDS: BattlePassReward[] = [

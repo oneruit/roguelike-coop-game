@@ -3862,11 +3862,11 @@ export class HUD {
       }
       if (this.gameOverBpReason) {
         let ruleHint = 'выживание в бою';
-        if (ptsAwarded === 2) ruleHint = 'до 5 мин: +2 ОП';
-        else if (ptsAwarded === 4) ruleHint = 'до 10 мин: +4 ОП';
-        else if (ptsAwarded === 6) ruleHint = 'до 15 мин: +6 ОП';
-        else if (ptsAwarded === 9) ruleHint = 'до 20 мин: +9 ОП';
-        else if (ptsAwarded === 10) ruleHint = 'до 30 мин / победа: +10 ОП';
+        if (ptsAwarded === 20) ruleHint = 'до 5 мин: +20 ОП';
+        else if (ptsAwarded === 50) ruleHint = 'до 10 мин: +50 ОП';
+        else if (ptsAwarded === 100) ruleHint = 'до 15 мин: +100 ОП';
+        else if (ptsAwarded === 150) ruleHint = 'до 20 мин: +150 ОП';
+        else if (ptsAwarded === 200) ruleHint = 'до 30 мин / победа: +200 ОП';
         this.gameOverBpReason.innerText = `Выживание: ${timeStr} (${ruleHint})`;
       }
       if (this.gameOverBpLevelBadge) {
@@ -3876,7 +3876,7 @@ export class HUD {
         this.gameOverBpBarFill.style.width = `${fillPct}%`;
       }
       if (this.gameOverBpXpText) {
-        this.gameOverBpXpText.innerText = currentLevel >= BP_MAX_LEVEL ? '10 / 10 ОП (МАКС)' : `${currentPtsInLvl} / ${BP_POINTS_PER_LEVEL} ОП`;
+        this.gameOverBpXpText.innerText = currentLevel >= BP_MAX_LEVEL ? `${BP_POINTS_PER_LEVEL} / ${BP_POINTS_PER_LEVEL} ОП (МАКС)` : `${currentPtsInLvl} / ${BP_POINTS_PER_LEVEL} ОП`;
       }
       if (this.gameOverBpLevelup) {
         if (battlePassResult && battlePassResult.leveledUp) {

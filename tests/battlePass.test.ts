@@ -23,40 +23,40 @@ if (typeof globalThis.localStorage === 'undefined') {
 
 describe('Battle Pass Survival XP System', () => {
   test('awarded points match the exact survival duration rules requested', () => {
-    // 1. If died before 5 minutes (< 300s): 2 points
-    assert.equal(calculateBattlePassPoints(0), 2, '0s should give 2 points');
-    assert.equal(calculateBattlePassPoints(60), 2, '1m should give 2 points');
-    assert.equal(calculateBattlePassPoints(180), 2, '3m should give 2 points');
-    assert.equal(calculateBattlePassPoints(299), 2, '4m 59s should give 2 points');
+    // 1. If died before 5 minutes (< 300s): 20 points
+    assert.equal(calculateBattlePassPoints(0), 20, '0s should give 20 points');
+    assert.equal(calculateBattlePassPoints(60), 20, '1m should give 20 points');
+    assert.equal(calculateBattlePassPoints(180), 20, '3m should give 20 points');
+    assert.equal(calculateBattlePassPoints(299), 20, '4m 59s should give 20 points');
 
-    // 2. If died before 10 minutes (300s..599s): 4 points
-    assert.equal(calculateBattlePassPoints(300), 4, '5m 00s should give 4 points');
-    assert.equal(calculateBattlePassPoints(420), 4, '7m should give 4 points');
-    assert.equal(calculateBattlePassPoints(599), 4, '9m 59s should give 4 points');
+    // 2. If died before 10 minutes (300s..599s): 50 points
+    assert.equal(calculateBattlePassPoints(300), 50, '5m 00s should give 50 points');
+    assert.equal(calculateBattlePassPoints(420), 50, '7m should give 50 points');
+    assert.equal(calculateBattlePassPoints(599), 50, '9m 59s should give 50 points');
 
-    // 3. If died before 15 minutes (600s..899s): 6 points
-    assert.equal(calculateBattlePassPoints(600), 6, '10m 00s should give 6 points');
-    assert.equal(calculateBattlePassPoints(750), 6, '12m 30s should give 6 points');
-    assert.equal(calculateBattlePassPoints(899), 6, '14m 59s should give 6 points');
+    // 3. If died before 15 minutes (600s..899s): 100 points
+    assert.equal(calculateBattlePassPoints(600), 100, '10m 00s should give 100 points');
+    assert.equal(calculateBattlePassPoints(750), 100, '12m 30s should give 100 points');
+    assert.equal(calculateBattlePassPoints(899), 100, '14m 59s should give 100 points');
 
-    // 4. If died before 20 minutes (900s..1199s): 9 points
-    assert.equal(calculateBattlePassPoints(900), 9, '15m 00s should give 9 points');
-    assert.equal(calculateBattlePassPoints(1050), 9, '17m 30s should give 9 points');
-    assert.equal(calculateBattlePassPoints(1199), 9, '19m 59s should give 9 points');
+    // 4. If died before 20 minutes (900s..1199s): 150 points
+    assert.equal(calculateBattlePassPoints(900), 150, '15m 00s should give 150 points');
+    assert.equal(calculateBattlePassPoints(1050), 150, '17m 30s should give 150 points');
+    assert.equal(calculateBattlePassPoints(1199), 150, '19m 59s should give 150 points');
 
-    // 5. If died between 20 and 30 minutes, or survived 30 minutes (>= 1200s): 10 points
-    assert.equal(calculateBattlePassPoints(1200), 10, '20m 00s should give 10 points');
-    assert.equal(calculateBattlePassPoints(1500), 10, '25m 00s should give 10 points');
-    assert.equal(calculateBattlePassPoints(1799), 10, '29m 59s should give 10 points');
-    assert.equal(calculateBattlePassPoints(1800), 10, '30m 00s (victory) should give 10 points');
-    assert.equal(calculateBattlePassPoints(2400), 10, '40m should give 10 points');
+    // 5. If died between 20 and 30 minutes, or survived 30 minutes (>= 1200s): 200 points
+    assert.equal(calculateBattlePassPoints(1200), 200, '20m 00s should give 200 points');
+    assert.equal(calculateBattlePassPoints(1500), 200, '25m 00s should give 200 points');
+    assert.equal(calculateBattlePassPoints(1799), 200, '29m 59s should give 200 points');
+    assert.equal(calculateBattlePassPoints(1800), 200, '30m 00s (victory) should give 200 points');
+    assert.equal(calculateBattlePassPoints(2400), 200, '40m should give 200 points');
   });
 
   test('Battle Pass rewards configuration has all 15 levels and milestone chests', () => {
     assert.equal(BATTLE_PASS_REWARDS.length, 15, 'Should have exactly 15 levels of rewards');
     assert.equal(BP_MAX_LEVEL, 15);
-    assert.equal(BP_POINTS_PER_LEVEL, 10);
-    assert.equal(BP_MAX_POINTS, 140);
+    assert.equal(BP_POINTS_PER_LEVEL, 200);
+    assert.equal(BP_MAX_POINTS, 2800);
 
     for (let i = 1; i <= 15; i++) {
       const reward = BATTLE_PASS_REWARDS.find((r) => r.level === i);
@@ -87,27 +87,37 @@ describe('Battle Pass Survival XP System', () => {
     assert.equal(bp.getPointsInCurrentLevel(), 0);
     assert.equal(bp.getProgressPercent(), 0);
 
-    // Add points for 4 minute death (2 points)
+    // Add points for 4 minute death (20 points)
     const run1 = bp.addPointsForSurvival(240);
-    assert.equal(run1.pointsAwarded, 2);
+    assert.equal(run1.pointsAwarded, 20);
     assert.equal(run1.oldLevel, 1);
     assert.equal(run1.newLevel, 1);
     assert.equal(run1.leveledUp, false);
-    assert.equal(bp.getPoints(), 2);
-    assert.equal(bp.getPointsInCurrentLevel(), 2);
+    assert.equal(bp.getPoints(), 20);
+    assert.equal(bp.getPointsInCurrentLevel(), 20);
 
-    // Add points for 18 minute death (9 points) -> total 11 points (level 2!)
+    // Add points for 18 minute death (150 points) -> total 170 points (still level 1)
     const run2 = bp.addPointsForSurvival(18 * 60);
-    assert.equal(run2.pointsAwarded, 9);
+    assert.equal(run2.pointsAwarded, 150);
     assert.equal(run2.oldLevel, 1);
-    assert.equal(run2.newLevel, 2);
-    assert.equal(run2.leveledUp, true);
-    assert.equal(bp.getPoints(), 11);
-    assert.equal(bp.getLevel(), 2);
-    assert.equal(bp.getPointsInCurrentLevel(), 1);
+    assert.equal(run2.newLevel, 1);
+    assert.equal(run2.leveledUp, false);
+    assert.equal(bp.getPoints(), 170);
+    assert.equal(bp.getLevel(), 1);
+    assert.equal(bp.getPointsInCurrentLevel(), 170);
 
-    // Level up directly to max level 15 (140 points)
-    prog.data.battlePass.points = 140;
+    // Add another run with 50 points -> total 220 points (level 2!)
+    const run3 = bp.addPointsForSurvival(7 * 60);
+    assert.equal(run3.pointsAwarded, 50);
+    assert.equal(run3.oldLevel, 1);
+    assert.equal(run3.newLevel, 2);
+    assert.equal(run3.leveledUp, true);
+    assert.equal(bp.getPoints(), 220);
+    assert.equal(bp.getLevel(), 2);
+    assert.equal(bp.getPointsInCurrentLevel(), 20);
+
+    // Level up directly to max level 15 (2800 points)
+    prog.data.battlePass.points = 2800;
     assert.equal(bp.getLevel(), 15);
     assert.equal(bp.getProgressPercent(), 100);
     assert.equal(bp.isLevelUnlocked(15), true);
@@ -118,7 +128,7 @@ describe('Battle Pass Survival XP System', () => {
     prog.data.walletCoins = 500;
     prog.data.battlePass = {
       seasonId: 'season_1',
-      points: 20, // Reached level 3
+      points: 400, // Reached level 3 (200 * 2)
       claimedLevels: []
     };
 
