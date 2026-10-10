@@ -1,6 +1,6 @@
 ---
 name: boss-animation-pipeline
-description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine.
+description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) in menacing 16-bit dark fantasy pixel art style (strictly NO anime/chibi/cute) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine.
 ---
 
 # Boss Animation Pipeline Skill
@@ -28,10 +28,12 @@ Bosses strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state i
 
 ### 1.2 Core Visual Standards for Bosses
 
-1. **Boss Proportions & Silhouette:**
-   - Massive, imposing proportions (2.5 to 4 times larger than regular heroes).
+1. **Boss Proportions & Threat Demeanor:**
+   - Massive, imposing dark fantasy proportions (2.5 to 4 times larger than regular heroes).
    - Highly readable, heavy silhouette: demonic horns, spikes, heavy armor plating, claws, tails, or blazing wings.
    - Distinctive threat accent: glowing eyes (crimson `#EF4444`, infernal purple `#A855F7`, or blazing orange `#F97316`).
+   - **Strict Exclusions:** Bosses are terrifying dark fantasy colossi and overlords — **STRICTLY NO anime style, NO chibi proportions, NO kawaii, NO cute/adorable expression, NO cartoon look, NO childish appearance**.
+   - Clean 16-bit pixel art style with hard pixel edges, limited color palette, and high contrast.
 
 2. **Boss Height & Headroom Limits:**
    - Boss body height in frame: **up to 120–130 pixels** (`char_h = 120.0`, `max_h = 130.0`) inside the $160 \times 160$ cell.
@@ -108,42 +110,66 @@ With plane geometry translation $+1.82$ along the $Y$ axis:
 
 ### Master PORTRAIT Prompt (`boss_demon_front.png`)
 ```text
-160x160 menacing pixel art boss portrait of Infernal Demon Overlord.
+160x160 menacing pixel art boss portrait of Infernal Demon Overlord, a terrifying dark fantasy boss.
+
 Gigantic demonic beast, sharp obsidian curved horns, glowing red volcanic eyes, molten magma cracks across blackened spiked plate chest, terrifying demonic maw, smoke rising from shoulders.
-Pure solid white background rgb(255,255,255), clean 16-bit RPG boss icon.
+
+Pure solid white background rgb(255,255,255), clean 16-bit RPG boss icon, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ### Master WALK Prompt (`boss_demon_walk.png`)
 ```text
 2D pixel art boss sprite sheet of menacing Infernal Demon Overlord.
-Massive demonic beast: curved obsidian horns, glowing red molten eyes, spiked volcanic armor, clawed hands, heavy demon hooves.
+
+Massive demonic beast: curved obsidian horns, glowing red molten eyes, spiked volcanic armor, clawed hands, heavy demon hooves. Exactly 2 arms, 2 hooves, 2 horns, 1 spiked tail.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: WALK heavy stomping 4-frame cycle across 4 columns: heavy steps shaking the ground, tail swishing, magma veins glowing.
-Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ### Master ATTACK Prompt (`boss_demon_attack.png`)
 *(Provide Master Portrait & WALK in `ImagePaths`)*
 ```text
 2D pixel art boss sprite sheet of the same Infernal Demon Overlord from reference images.
-Identical boss design: obsidian horns, molten magma veins, spiked armor.
+
+Identical boss design: massive demonic beast, obsidian horns, molten magma veins, spiked armor.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: ATTACK devastating 4-frame slam sequence across 4 columns:
 Column 0: heavy anticipation windup raising massive volcanic claw;
 Column 1: brutal ground smash with fiery red shockwave and volcanic sparks;
-Column 2: impact crater follow-through;
+Column 2: impact crater follow-through (damage hit frame);
 Column 3: recovery return to combat stance.
-Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ---
