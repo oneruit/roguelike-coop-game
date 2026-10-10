@@ -55,7 +55,6 @@ export class Player {
   private spriteMesh: Mesh;
   private spriteMaterial: MeshBasicMaterial;
   private customDepthMaterial!: MeshDepthMaterial;
-  private shadowMesh: Mesh;
 
   // Directional Textures & Animated State Machine
   private animatedTextures!: AnimatedCharacterTextures;
@@ -205,10 +204,6 @@ export class Player {
     this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
     this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
-
-    // Ground Shadow
-    this.shadowMesh = TextureManager.createShadowMesh(0.75);
-    this.mesh.add(this.shadowMesh);
 
     // Hero Light Glow
     const light = new PointLight(0xf59e0b, 1.4, 9);
