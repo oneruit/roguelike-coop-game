@@ -736,11 +736,12 @@ export class EnemyManager {
     hitter: string = 'p1',
     showDamageNumber: boolean = true,
     isCrit: boolean = false,
-    critTier: number = 1
+    critTier: number = 1,
+    critMultiplier: number = 1.5
   ) {
     const isDead = enemy.takeDamage(amount, sourcePos, hitter);
     if (showDamageNumber && camera) {
-      this.damageNumbers.spawnDamage(enemy.position, amount, isCrit, camera, false, critTier);
+      this.damageNumbers.spawnDamage(enemy.position, amount, isCrit, camera, false, critTier, critMultiplier);
     }
     SoundManager.playHit();
     return isDead;

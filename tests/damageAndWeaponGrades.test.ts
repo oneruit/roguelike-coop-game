@@ -25,54 +25,45 @@ import {
 } from '../game/src/items/RiftItemSystem';
 
 test('Critical strike caps and tier calculations', () => {
-  // Max crit chance = 1000% (10.0), max crit damage = 100% (1.0)
-  const maxCritChance = 10.0;
-  const maxCritDamage = 1.0;
+  // Max crit chance = 100% (1.0), max crit damage = 1000% (10.0)
+  const maxCritChance = 1.0;
+  const maxCritDamage = 10.0;
 
-  // Tier calculation logic:
-  // tier = Math.floor(chance) + (random < remainder ? 1 : 0)
-  const computeTier = (chance: number, rand: number): number => {
+  // Chance calculation logic clamped to 1.0 (100%)
+  const isCrit = (chance: number, rand: number): boolean => {
     const clamped = Math.min(maxCritChance, Math.max(0, chance));
-    const floorTier = Math.floor(clamped);
-    const remainder = clamped - floorTier;
-    return floorTier + (rand < remainder ? 1 : 0);
+    return rand < clamped;
   };
 
   // At 0% crit chance
-  assert.equal(computeTier(0, 0.5), 0);
+  assert.equal(isCrit(0, 0.5), false);
 
   // At 50% crit chance (0.50)
-  assert.equal(computeTier(0.5, 0.3), 1); // rand < 0.5 -> tier 1
-  assert.equal(computeTier(0.5, 0.7), 0); // rand >= 0.5 -> tier 0
+  assert.equal(isCrit(0.5, 0.3), true); // rand < 0.5
+  assert.equal(isCrit(0.5, 0.7), false); // rand >= 0.5
 
-  // At 150% crit chance (1.50)
-  assert.equal(computeTier(1.5, 0.2), 2); // rand < 0.5 -> tier 2
-  assert.equal(computeTier(1.5, 0.8), 1); // rand >= 0.5 -> tier 1
+  // At 100% crit chance (1.0) -> guaranteed crit
+  assert.equal(isCrit(1.0, 0.999), true);
 
-  // At 1000% crit chance (10.0) -> guaranteed tier 10
-  assert.equal(computeTier(10.0, 0.999), 10);
+  // Over 100% (e.g. 1.5) -> clamped to 1.0
+  assert.equal(isCrit(1.5, 0.999), true);
 
-  // Over 1000% (e.g. 15.0) -> clamped to 10.0
-  assert.equal(computeTier(15.0, 0.5), 10);
-
-  // Damage scaling: baseDamage * (1 + tier * critDamage)
-  const computeDamage = (baseDamage: number, tier: number, critDmg: number): number => {
+  // Damage scaling: baseDamage * (1 + (crit ? critDamage : 0))
+  const computeDamage = (baseDamage: number, hasCrit: boolean, critDmg: number): number => {
     const clampedCritDmg = Math.min(maxCritDamage, Math.max(0, critDmg));
-    return Math.round(baseDamage * (1 + tier * clampedCritDmg));
+    return Math.round(baseDamage * (1 + (hasCrit ? clampedCritDmg : 0)));
   };
 
-  // Tier 0: no bonus
-  assert.equal(computeDamage(100, 0, 0.50), 100);
-  // Tier 1 with 50% crit dmg -> 150
-  assert.equal(computeDamage(100, 1, 0.50), 150);
-  // Tier 2 with 50% crit dmg -> 200
-  assert.equal(computeDamage(100, 2, 0.50), 200);
-  // Tier 1 with 100% crit dmg (cap) -> 200
-  assert.equal(computeDamage(100, 1, 1.0), 200);
-  // Tier 3 with 100% crit dmg -> 400
-  assert.equal(computeDamage(100, 3, 1.0), 400);
-  // Crit dmg over 100% (1.5) gets clamped to 1.0 -> 200
-  assert.equal(computeDamage(100, 1, 1.5), 200);
+  // No crit: no bonus
+  assert.equal(computeDamage(100, false, 0.50), 100);
+  // Crit with 50% crit dmg -> 150
+  assert.equal(computeDamage(100, true, 0.50), 150);
+  // Crit with 200% crit dmg -> 300
+  assert.equal(computeDamage(100, true, 2.0), 300);
+  // Crit with 1000% crit dmg (cap) -> 1100
+  assert.equal(computeDamage(100, true, 10.0), 1100);
+  // Crit dmg over 1000% (15.0) gets clamped to 10.0 -> 1100
+  assert.equal(computeDamage(100, true, 15.0), 1100);
 });
 
 test('Weapon grade definitions and biome probabilities', () => {
@@ -243,17 +234,16 @@ test('Rift Items have at least 3 items per grade and proper rarity mapping', () 
   assert.equal(RIFT_ITEMS.energy_amplifier.rarity, 'rare');
 });
 
-test('Chest drops roll 2 items, allow duplicates, and depend on biome stage', () => {
+test('Chest drops roll 2 items, do not allow duplicates, and depend on biome stage', () => {
   // 1. rollChestDropPair returns exactly 2 items
   const pair = rollChestDropPair(1);
   assert.equal(pair.length, 2);
   assert.ok(pair[0].id);
   assert.ok(pair[1].id);
 
-  // 2. Duplicates can roll (independent rolls)
-  // Deterministic RNG that rolls the same item both times:
-  const pairSame = rollChestDropPair(1, () => 0.001); // rolls legendary (e.g. chronos_hourglass) twice
-  assert.equal(pairSame[0].id, pairSame[1].id);
+  // 2. Duplicates must NOT roll: distinct items guaranteed
+  const pairSame = rollChestDropPair(1, () => 0.001);
+  assert.notEqual(pairSame[0].id, pairSame[1].id);
 
   // 3. Stage probability scaling
   // Stage 1 with RNG = 0.5 rolls common item
@@ -268,10 +258,10 @@ test('Chest drops roll 2 items, allow duplicates, and depend on biome stage', ()
 test('Rare items correctly modify player stats and caps', () => {
   const calculatePlayerStats = (items: Map<RiftItemId, number>, baseDamageMult: number = 1.0) => {
     const lensStacks = items.get('crit_lens') || 0;
-    const critChance = Math.min(10.0, Math.max(0, 0.05 + (lensStacks * 0.15)));
+    const critChance = Math.min(1.0, Math.max(0, 0.05 + (lensStacks * 0.03)));
 
     const hollowStacks = items.get('heavy_hollowpoint') || 0;
-    const critDamage = Math.min(1.0, Math.max(0, 0.50 + (hollowStacks * 0.20)));
+    const critDamage = Math.min(10.0, Math.max(0, 0.50 + (hollowStacks * 0.20)));
 
     const ampStacks = items.get('energy_amplifier') || 0;
     const ampMult = 1.0 + (ampStacks * 0.18);
@@ -286,10 +276,10 @@ test('Rare items correctly modify player stats and caps', () => {
   assert.equal(base.critDamage, 0.50);
   assert.equal(base.damageMult, 1.0);
 
-  // 1 stack of crit_lens (+15% crit chance)
+  // 1 stack of crit_lens (+3% crit chance)
   items.set('crit_lens', 1);
   const withLens = calculatePlayerStats(items);
-  assert.equal(Math.round(withLens.critChance * 100) / 100, 0.20);
+  assert.equal(Math.round(withLens.critChance * 100) / 100, 0.08);
 
   // 1 stack of heavy_hollowpoint (+20% crit damage)
   items.set('heavy_hollowpoint', 1);
@@ -301,13 +291,13 @@ test('Rare items correctly modify player stats and caps', () => {
   const withAmp = calculatePlayerStats(items);
   assert.equal(Math.round(withAmp.damageMult * 100) / 100, 1.18);
 
-  // Test crit damage cap: 100% (1.0)
-  items.set('heavy_hollowpoint', 5);
+  // Test crit damage cap: 1000% (10.0)
+  items.set('heavy_hollowpoint', 60);
   const cappedDmg = calculatePlayerStats(items);
-  assert.equal(cappedDmg.critDamage, 1.0); // capped at 100%
+  assert.equal(cappedDmg.critDamage, 10.0); // capped at 1000%
 
-  // Test crit chance cap: 1000% (10.0)
-  items.set('crit_lens', 80);
+  // Test crit chance cap: 100% (1.0)
+  items.set('crit_lens', 50);
   const cappedChance = calculatePlayerStats(items);
-  assert.equal(cappedChance.critChance, 10.0); // capped at 1000%
+  assert.equal(cappedChance.critChance, 1.0); // capped at 100%
 });

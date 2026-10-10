@@ -38,9 +38,11 @@ export class MapManager {
   }
 
   // Minimap DOM & Canvas
+  private minimapContainer: HTMLElement;
   private minimapCanvas: HTMLCanvasElement;
   private minimapCtx: CanvasRenderingContext2D;
   private elMinimapCoords: HTMLElement;
+  private elMinimapHint: HTMLElement | null;
 
   // Full Map Modal DOM & Canvas
   private mapModal: HTMLElement;
@@ -50,6 +52,7 @@ export class MapManager {
   private btnCloseMap: HTMLElement;
 
   public isOpen = false;
+  public isCenterOverlay = false;
   public onStateChange?: (isOpen: boolean) => void;
 
   private animTimer = 0;
@@ -80,9 +83,11 @@ export class MapManager {
     this.riftTeleporter = riftTeleporter;
 
     // Minimap elements
+    this.minimapContainer = document.getElementById('minimap-container')!;
     this.minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
     this.minimapCtx = this.minimapCanvas.getContext('2d')!;
     this.elMinimapCoords = document.getElementById('minimap-coords')!;
+    this.elMinimapHint = this.minimapContainer?.querySelector('.minimap-hint') ?? null;
 
     // Full Map modal elements
     this.mapModal = document.getElementById('map-modal')!;
@@ -101,6 +106,26 @@ export class MapManager {
     this.bindEvents();
   }
 
+  public toggleCenterOverlay(): boolean {
+    this.isCenterOverlay = !this.isCenterOverlay;
+    this.applyOverlayMode();
+    return this.isCenterOverlay;
+  }
+
+  public applyOverlayMode() {
+    if (this.isCenterOverlay) {
+      this.minimapContainer.classList.add('center-mode');
+      this.minimapCanvas.width = 460;
+      this.minimapCanvas.height = 460;
+      if (this.elMinimapHint) this.elMinimapHint.innerText = '[TAB] В угол';
+    } else {
+      this.minimapContainer.classList.remove('center-mode');
+      this.minimapCanvas.width = 170;
+      this.minimapCanvas.height = 170;
+      if (this.elMinimapHint) this.elMinimapHint.innerText = '[TAB] Карта';
+    }
+  }
+
   private bindEvents() {
     this.btnCloseMap?.addEventListener('click', () => {
       this.close();
@@ -111,7 +136,7 @@ export class MapManager {
     });
 
     document.getElementById('minimap-container')?.addEventListener('click', () => {
-      this.toggle();
+      this.toggleCenterOverlay();
     });
 
     // Zoom with mouse wheel over map
@@ -283,20 +308,25 @@ export class MapManager {
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.clip();
 
-    // Dark desert sand gradient background
-    const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
-    bgGrad.addColorStop(0, '#2b1a13');
-    bgGrad.addColorStop(0.7, '#1f120c');
-    bgGrad.addColorStop(1, '#140b07');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, w, h);
+    // Background
+    if (this.isCenterOverlay) {
+      ctx.fillStyle = 'rgba(10, 20, 36, 0.45)';
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
+      bgGrad.addColorStop(0, '#2b1a13');
+      bgGrad.addColorStop(0.7, '#1f120c');
+      bgGrad.addColorStop(1, '#140b07');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+    }
 
-    // Subtle radar range rings (15m, 30m, 45m)
-    // Scale: 1 world unit = 1.7 pixels
-    const scale = 1.7;
-    ctx.strokeStyle = 'rgba(217, 139, 74, 0.22)';
+    // Subtle radar range rings
+    const scale = this.isCenterOverlay ? 1.45 : 1.7;
+    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(56, 189, 248, 0.25)' : 'rgba(217, 139, 74, 0.22)';
     ctx.lineWidth = 1;
-    [15, 30, 42].forEach(dist => {
+    const ringDists = this.isCenterOverlay ? [20, 45, 75, 110] : [15, 30, 42];
+    ringDists.forEach(dist => {
       ctx.beginPath();
       ctx.arc(cx, cy, dist * scale, 0, Math.PI * 2);
       ctx.stroke();
@@ -533,14 +563,14 @@ export class MapManager {
     ctx.restore(); // Exit clip
 
     // 5. Compass Bezel Frame (Weathered Brass & Cardinal Ticks)
-    ctx.strokeStyle = '#c2884f';
-    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(56, 189, 248, 0.45)' : '#c2884f';
+    ctx.lineWidth = this.isCenterOverlay ? 2.5 : 3.5;
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.strokeStyle = '#452a1b';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(14, 165, 233, 0.25)' : '#452a1b';
+    ctx.lineWidth = this.isCenterOverlay ? 1.5 : 2;
     ctx.beginPath();
     ctx.arc(cx, cy, radius + 2.5, 0, Math.PI * 2);
     ctx.stroke();

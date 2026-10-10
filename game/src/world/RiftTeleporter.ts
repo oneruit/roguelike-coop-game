@@ -134,31 +134,16 @@ export class RiftTeleporter {
     let justCompleted = false;
 
     if (this.state === 'CHARGING') {
-      // Check if at least one player is within radius
-      this.isPlayerInsideZone = false;
-      for (const pos of playerPositions) {
-        const distSq = pos.distanceToSquared(this.position);
-        if (distSq <= this.chargeRadius * this.chargeRadius) {
-          this.isPlayerInsideZone = true;
-          break;
-        }
-      }
-
-      // Charge speed: ~75 seconds to full charge (1.0 / 75 per sec)
-      if (this.isPlayerInsideZone) {
-        this.chargeProgress = Math.min(1.0, this.chargeProgress + dt / 75.0);
-        this.zoneDomeMat.opacity = 0.45 + Math.sin(Date.now() * 0.005) * 0.2;
-      } else {
-        // Paused charge when out of zone
-        this.zoneDomeMat.opacity = 0.2;
-      }
-
-      // Check completion criteria: 100% charged AND boss defeated
-      if (this.chargeProgress >= 1.0 && this.isBossDefeated) {
+      // Zone capture is no longer required; player must defeat the stage boss to unlock the portal
+      if (this.isBossDefeated) {
         this.state = 'WARP_READY';
+        this.chargeProgress = 1.0;
+        this.zoneDome.visible = true;
         this.zoneDomeMat.color.setHex(0x10b981); // Emerald green for stable rift!
         this.zoneDomeMat.opacity = 0.6;
         justCompleted = true;
+      } else {
+        this.zoneDomeMat.opacity = 0.35 + Math.sin(Date.now() * 0.005) * 0.15;
       }
     }
 

@@ -175,12 +175,18 @@ export abstract class Weapon {
 
   public awakenGrade(): void {
     this.awakenedGrade++;
-    this.gradeStatMultiplier = Math.pow(2, this.awakenedGrade);
+    this.gradeStatMultiplier = this.awakenedGrade === 1 ? 2.0 : this.awakenedGrade >= 2 ? 3.0 : 1.0;
     this.level = 1;
     this.bonusDamage = 0;
     this.cooldownBonus = 0;
     this.upgradeHistory = [];
     this.recalculateStats();
+  }
+
+  public getGradePrefix(): string {
+    if (this.awakenedGrade >= 2) return '[ГРЕЙД III • x3] ';
+    if (this.awakenedGrade === 1) return '[ГРЕЙД II • x2] ';
+    return '';
   }
 
   public recalculateStats(): void {
@@ -337,7 +343,7 @@ export class BowWeapon extends Weapon {
       perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     }
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -441,7 +447,7 @@ export class KukriWeapon extends Weapon {
       perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     }
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -544,7 +550,7 @@ export class OrbitingBarrierWeapon extends Weapon {
       perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     }
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -681,7 +687,7 @@ export class HolyAuraWeapon extends Weapon {
     const radBonus = grade === 'legendary' ? '+0.45м' : (grade === 'rare' ? '+0.30м' : '+0.20м');
     const perks: string[] = [`${radBonus} радиус кольца`, `+${dmg} урона огнем`];
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -768,7 +774,7 @@ export class KatanaSlashWeapon extends Weapon {
     const radBonus = grade === 'legendary' ? '+0.35м' : (grade === 'rare' ? '+0.22м' : '+0.14м');
     const perks: string[] = [`${radBonus} радиус взмаха`, `+${dmg} урона`];
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -854,7 +860,7 @@ export class WhirlwindSlashWeapon extends Weapon {
     const radBonus = grade === 'legendary' ? '+0.30м' : (grade === 'rare' ? '+0.20м' : '+0.12м');
     const perks: string[] = [`${radBonus} радиус вихря`, `+${dmg} урона`];
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -942,7 +948,7 @@ export class GreatswordWeapon extends Weapon {
     const nextCd = Math.max(0.30, Number((this.cooldown * 0.93).toFixed(3)));
     if (nextCd < this.cooldown) perks.push('-7% перезарядки');
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1038,7 +1044,7 @@ export class FlailWeapon extends Weapon {
     const nextCd = Math.max(0.25, Number((this.cooldown * 0.93).toFixed(3)));
     if (nextCd < this.cooldown) perks.push('-7% перезарядки');
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1146,7 +1152,7 @@ export class AstralStaffWeapon extends Weapon {
       if (nextCd < this.cooldown) perks.push('-6% перезарядки');
     }
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1262,7 +1268,7 @@ export class ChakramWeapon extends Weapon {
     }
     if ([3, 6, 9, 12].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1371,7 +1377,7 @@ export class LightningStrikeWeapon extends Weapon {
     }
     if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.30м радиус взрыва (всего ${(this.strikeRadius + 0.30).toFixed(2)}м)`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1478,7 +1484,7 @@ export class IceSpikeWeapon extends Weapon {
     }
     if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1595,7 +1601,7 @@ export class FireballWeapon extends Weapon {
     }
     if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
@@ -1707,7 +1713,7 @@ export class AssaultRifleWeapon extends Weapon {
     if ([4, 8, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 5, 8, 11].includes(nextLvl)) perks.push(`+5% скорострельности`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
