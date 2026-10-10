@@ -1,4 +1,5 @@
-import { createInvokerBuff, SpellControlState, canAcquireInvokerWeapon } from '../shared/InvokerSpells';
+import { createInvokerBuff, SpellControlState } from '../shared/InvokerSpells';
+import { canCharacterAcquireWeapon } from '../shared/UniqueCharacters';
 import { SimInvokerWeapon } from './SimWeapons';
 import { SimVec3 } from './math/SimVector';
 import { SimRNG } from './SimRNG';
@@ -392,7 +393,7 @@ export class GameCore {
 
   public upgradePlayerWeapon(playerId: string, weaponId: string) {
     const player = this.players.get(playerId);
-    if (!player || !canAcquireInvokerWeapon(weaponId, player.weapons)) return;
+    if (!player || !canCharacterAcquireWeapon(player.charType, weaponId, player.weapons)) return;
 
     let weapon = player.weapons.find(w => w.id === weaponId);
     if (weapon) {

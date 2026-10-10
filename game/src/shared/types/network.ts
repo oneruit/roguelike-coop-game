@@ -198,6 +198,7 @@ export interface TeleporterSyncInfo {
   isActivated: boolean;
   chargeProgress: number;
   isCompleted: boolean;
+  isDiscovered?: boolean;
 }
 
 export interface HostSnapshotMessage {
