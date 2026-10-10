@@ -7,6 +7,54 @@
           <img src="/textures/ui/game_logo_rift.png" class="main-menu-logo-img" alt="THE RIFT" />
         </div>
 
+        <!-- Top Left Battle Pass Widget -->
+        <aside id="main-menu-battle-pass" class="battle-pass-widget" aria-label="Боевой пропуск">
+          <div class="battle-pass-card" id="battle-pass-card">
+            <!-- Header -->
+            <div class="bp-header" id="bp-header-btn" role="button" tabindex="0" title="Нажмите, чтобы открыть весь боевой пропуск">
+              <span class="bp-title">БОЕВОЙ ПРОПУСК</span>
+              <span class="bp-season">СЕЗОН 1: ТЕНИ ДРЕВНЕГО ЛЕСА</span>
+            </div>
+
+            <!-- Track / Progress section -->
+            <div class="bp-track-section">
+              <div class="bp-star-icon" title="Звезда сезона">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="#38bdf8">
+                  <polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" />
+                </svg>
+              </div>
+
+              <div class="bp-progress-bar-container">
+                <!-- Milestone chests above/along bar -->
+                <div class="bp-milestones">
+                  <div class="bp-milestone bp-m-lvl1" title="Уровень 1">
+                    <span class="bp-m-label">Lvl 1</span>
+                    <img src="/textures/quests/ui_quest_slot_chest.png" class="bp-m-chest" alt="Lvl 1" />
+                  </div>
+                  <div class="bp-milestone bp-m-lvl10" title="Уровень 10">
+                    <span class="bp-m-label">Lvl 10</span>
+                    <img src="/textures/quests/reward_chest.png" class="bp-m-chest" alt="Lvl 10" />
+                  </div>
+                  <div class="bp-milestone bp-m-lvl15" title="Уровень 15">
+                    <span class="bp-m-label">Lvl 15</span>
+                    <img src="/textures/quests/reward_chest.png" class="bp-m-chest bp-m-gold" alt="Lvl 15" />
+                  </div>
+                </div>
+
+                <!-- Recessed Track -->
+                <div class="bp-bar-track">
+                  <div id="bp-bar-fill" class="bp-bar-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rewards Row (Free card + 6 preview slots) -->
+            <div class="bp-rewards-row" id="bp-rewards-row">
+              <!-- Rendered dynamically via HUD.ts -->
+            </div>
+          </div>
+        </aside>
+
         <!-- Left Menu Buttons -->
         <div class="modal-card main-menu-card">
           <!-- Top HUD Accent Bracket -->
