@@ -13,6 +13,12 @@ import { PublicRoomInfo } from '../net/RoomDirectory';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
 import { ProgressionManager, SidebarQuestItem } from '../core/ProgressionManager';
+import {
+  BattlePassManager,
+  BP_MAX_LEVEL,
+  BP_POINTS_PER_LEVEL,
+  BP_MAX_POINTS
+} from '../core/BattlePassManager';
 import { TextureManager } from '../core/TextureManager';
 import type { Scene } from 'three';
 
@@ -126,6 +132,7 @@ export class HUD {
     | 'password_prompt'
     | 'char_select'
     | 'quests'
+    | 'battle_pass'
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
@@ -167,6 +174,29 @@ export class HUD {
   private btnPauseMenu: HTMLElement;
   private btnGameOverMenu: HTMLElement;
   private btnCharSelectBack: HTMLElement;
+
+  // Battle Pass elements
+  private mainMenuBattlePass: HTMLElement | null = null;
+  private bpHeaderBtn: HTMLElement | null = null;
+  private bpBarFill: HTMLElement | null = null;
+  private bpRewardsRow: HTMLElement | null = null;
+
+  private battlePassModal: HTMLElement | null = null;
+  private btnCloseBpModal: HTMLElement | null = null;
+  private bpModalCurLvl: HTMLElement | null = null;
+  private bpModalCurXp: HTMLElement | null = null;
+  private bpModalTotalXp: HTMLElement | null = null;
+  private bpModalBarFill: HTMLElement | null = null;
+  private btnBpClaimAll: HTMLElement | null = null;
+  private bpModalTiersContainer: HTMLElement | null = null;
+
+  private gameOverBpBox: HTMLElement | null = null;
+  private gameOverBpPointsGained: HTMLElement | null = null;
+  private gameOverBpReason: HTMLElement | null = null;
+  private gameOverBpLevelBadge: HTMLElement | null = null;
+  private gameOverBpBarFill: HTMLElement | null = null;
+  private gameOverBpXpText: HTMLElement | null = null;
+  private gameOverBpLevelup: HTMLElement | null = null;
 
   // Host Lobby elements
   private hostRoomCodeText: HTMLElement;
@@ -357,6 +387,29 @@ export class HUD {
     this.btnGameOverMenu = document.getElementById('btn-gameover-menu')!;
     this.btnCharSelectBack = document.getElementById('btn-char-select-back')!;
 
+    // Battle Pass Elements
+    this.mainMenuBattlePass = document.getElementById('main-menu-battle-pass');
+    this.bpHeaderBtn = document.getElementById('bp-header-btn');
+    this.bpBarFill = document.getElementById('bp-bar-fill');
+    this.bpRewardsRow = document.getElementById('bp-rewards-row');
+
+    this.battlePassModal = document.getElementById('battle-pass-modal');
+    this.btnCloseBpModal = document.getElementById('btn-close-bp-modal');
+    this.bpModalCurLvl = document.getElementById('bp-modal-cur-lvl');
+    this.bpModalCurXp = document.getElementById('bp-modal-cur-xp');
+    this.bpModalTotalXp = document.getElementById('bp-modal-total-xp');
+    this.bpModalBarFill = document.getElementById('bp-modal-bar-fill');
+    this.btnBpClaimAll = document.getElementById('btn-bp-claim-all');
+    this.bpModalTiersContainer = document.getElementById('bp-modal-tiers-container');
+
+    this.gameOverBpBox = document.getElementById('game-over-battle-pass');
+    this.gameOverBpPointsGained = document.getElementById('game-over-bp-points-gained');
+    this.gameOverBpReason = document.getElementById('game-over-bp-reason');
+    this.gameOverBpLevelBadge = document.getElementById('game-over-bp-level-badge');
+    this.gameOverBpBarFill = document.getElementById('game-over-bp-bar-fill');
+    this.gameOverBpXpText = document.getElementById('game-over-bp-xp-text');
+    this.gameOverBpLevelup = document.getElementById('game-over-bp-levelup');
+
     // Host Lobby Elements
     this.hostRoomCodeText = document.getElementById('host-room-code')!;
     this.btnCopyCode = document.getElementById('btn-copy-code')!;
@@ -476,10 +529,35 @@ export class HUD {
         this.renderQuestsModal(this.activeQuestHero);
       }
       this.updateMainMenuQuests();
+      this.updateMainMenuBattlePass();
     };
 
-    // Initial populate of main menu daily and weekly quests
+    // Battle Pass listeners & change hook
+    this.bpHeaderBtn?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.openBattlePassModal();
+    });
+    this.btnCloseBpModal?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideBattlePassModal();
+    });
+    document.getElementById('battle-pass-backdrop')?.addEventListener('click', () => {
+      this.hideBattlePassModal();
+    });
+    this.btnBpClaimAll?.addEventListener('click', () => {
+      this.handleClaimAllBattlePass();
+    });
+
+    BattlePassManager.getInstance().onBattlePassChanged = () => {
+      this.updateMainMenuBattlePass();
+      if (this.battlePassModal && !this.battlePassModal.classList.contains('hidden')) {
+        this.renderBattlePassModal();
+      }
+    };
+
+    // Initial populate of main menu daily quests, weekly quests and Battle Pass
     this.updateMainMenuQuests();
+    this.updateMainMenuBattlePass();
 
     document.getElementById('menu-btn-settings')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
@@ -1009,7 +1087,9 @@ export class HUD {
     this.hideGuide();
     this.hideCharacterSelect();
     this.hideQuestsModal();
+    this.hideBattlePassModal();
     this.updateMainMenuQuests();
+    this.updateMainMenuBattlePass();
     HUD.applyRandomMenuBackground();
     this.mainMenuModal.classList.remove('hidden');
   }
@@ -1098,6 +1178,217 @@ export class HUD {
       weeklyQuests.forEach((q) => {
         weeklyContainer.appendChild(renderQuestRow(q));
       });
+    }
+  }
+
+  public updateMainMenuBattlePass() {
+    const bp = BattlePassManager.getInstance();
+    const curLevel = bp.getLevel();
+    const progressPct = bp.getProgressPercent();
+
+    // 1. Progress Bar Fill
+    const barFill = this.bpBarFill || document.getElementById('bp-bar-fill');
+    if (barFill) {
+      barFill.style.width = `${progressPct}%`;
+    }
+
+    // 2. Milestones reached state
+    const m1 = document.querySelector('.bp-milestone.bp-m-lvl1');
+    const m10 = document.querySelector('.bp-milestone.bp-m-lvl10');
+    const m15 = document.querySelector('.bp-milestone.bp-m-lvl15');
+    if (m1) m1.classList.toggle('reached', curLevel >= 1);
+    if (m10) m10.classList.toggle('reached', curLevel >= 10);
+    if (m15) m15.classList.toggle('reached', curLevel >= 15);
+
+    // 3. Rewards Row
+    const rowContainer = this.bpRewardsRow || document.getElementById('bp-rewards-row');
+    if (!rowContainer) return;
+    rowContainer.innerHTML = '';
+
+    // Slot 0: Free pass badge card
+    const freeSlot = document.createElement('div');
+    freeSlot.className = 'bp-slot-card bp-slot-free';
+    freeSlot.setAttribute('role', 'button');
+    freeSlot.setAttribute('tabindex', '0');
+    freeSlot.setAttribute('title', 'Бесплатный боевой пропуск 1-го сезона активен для всех игроков');
+    freeSlot.innerHTML = `
+      <div class="bp-slot-box bp-slot-free-box">
+        <img src="/textures/ui/bp_badge_free.png" class="bp-slot-img bp-badge-img" alt="Бесплатно" />
+      </div>
+      <span class="bp-free-ribbon">БЕСПЛАТНО</span>
+    `;
+    freeSlot.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.openBattlePassModal();
+    });
+    rowContainer.appendChild(freeSlot);
+
+    // Visible rewards: levels 1 to 6 (or scrolling sliding window for higher levels)
+    const allRewards = bp.getAllRewards();
+    let startLvl = 1;
+    if (curLevel > 6) {
+      startLvl = Math.min(curLevel - 2, BP_MAX_LEVEL - 5);
+    }
+    const visibleRewards = allRewards.slice(startLvl - 1, startLvl - 1 + 6);
+
+    for (const reward of visibleRewards) {
+      const isUnlocked = bp.isLevelUnlocked(reward.level);
+      const isClaimed = bp.isLevelClaimed(reward.level);
+      const canClaim = bp.canClaim(reward.level);
+
+      const slot = document.createElement('div');
+      slot.className = `bp-slot-card ${canClaim ? 'claimable' : ''} ${isClaimed ? 'claimed' : isUnlocked ? 'unlocked' : 'locked'}`;
+      slot.setAttribute('data-level', reward.level.toString());
+      slot.setAttribute('role', 'button');
+      slot.setAttribute('tabindex', '0');
+
+      const tooltip = isClaimed
+        ? `Уровень ${reward.level}: ${reward.name} — Награда получена ✓`
+        : canClaim
+        ? `Уровень ${reward.level}: ${reward.name} — Нажмите, чтобы забрать (+${reward.coins} монет)!`
+        : `Уровень ${reward.level}: ${reward.name} (+${reward.coins} монет) [Требуется уровень ${reward.level}]`;
+      slot.setAttribute('title', tooltip);
+
+      const statusBadge = isClaimed
+        ? '<span class="bp-slot-check-badge" title="Получено">✓</span>'
+        : canClaim
+        ? '<span class="bp-slot-claim-sparkle" title="Забрать">!</span>'
+        : '<span class="bp-slot-lock-badge" title="Заблокировано"><svg viewBox="0 0 24 24" width="12" height="12" fill="#cbd5e1"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></span>';
+
+      slot.innerHTML = `
+        <div class="bp-slot-box">
+          <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-slot-img" alt="${reward.name}" onerror="this.style.opacity='0.2'" />
+          ${statusBadge}
+        </div>
+        <span class="bp-slot-lvl">${reward.level}</span>
+      `;
+
+      slot.addEventListener('click', () => {
+        if (canClaim) {
+          const res = bp.claimReward(reward.level);
+          if (res.success && res.reward) {
+            SoundManager.playChestOpen();
+            this.showBalanceToast(`Получена награда ур. ${reward.level}: ${res.reward.name} (+${res.reward.coins} монет)!`);
+            this.updateMainMenuBattlePass();
+          }
+        } else {
+          SoundManager.playButtonClick();
+          this.openBattlePassModal();
+        }
+      });
+
+      rowContainer.appendChild(slot);
+    }
+  }
+
+  public renderBattlePassModal() {
+    const bp = BattlePassManager.getInstance();
+    const curLevel = bp.getLevel();
+    const curPts = bp.getPoints();
+    const ptsInLvl = bp.getPointsInCurrentLevel();
+    const progressPct = bp.getProgressPercent();
+
+    if (this.bpModalCurLvl) {
+      this.bpModalCurLvl.innerText = curLevel >= BP_MAX_LEVEL ? '15 (МАКС)' : curLevel.toString();
+    }
+    if (this.bpModalCurXp) {
+      this.bpModalCurXp.innerText = curLevel >= BP_MAX_LEVEL ? `${BP_POINTS_PER_LEVEL} / ${BP_POINTS_PER_LEVEL} ОП` : `${ptsInLvl} / ${BP_POINTS_PER_LEVEL} ОП`;
+    }
+    if (this.bpModalTotalXp) {
+      this.bpModalTotalXp.innerText = `Всего: ${curPts} / ${BP_MAX_POINTS} ОП`;
+    }
+    if (this.bpModalBarFill) {
+      this.bpModalBarFill.style.width = `${progressPct}%`;
+    }
+
+    const container = this.bpModalTiersContainer || document.getElementById('bp-modal-tiers-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const allRewards = bp.getAllRewards();
+    let hasAnyClaimable = false;
+
+    for (const reward of allRewards) {
+      const isUnlocked = bp.isLevelUnlocked(reward.level);
+      const isClaimed = bp.isLevelClaimed(reward.level);
+      const canClaim = bp.canClaim(reward.level);
+      if (canClaim) hasAnyClaimable = true;
+
+      const card = document.createElement('div');
+      card.className = `bp-tier-card ${canClaim ? 'claimable' : ''} ${isClaimed ? 'claimed' : isUnlocked ? 'unlocked' : 'locked'}`;
+
+      let btnHtml = '';
+      if (isClaimed) {
+        btnHtml = `<button class="bp-tier-btn claimed" disabled>Получено ✓</button>`;
+      } else if (canClaim) {
+        btnHtml = `<button class="bp-tier-btn claim-now select-btn">ЗАБРАТЬ</button>`;
+      } else {
+        btnHtml = `<button class="bp-tier-btn locked" disabled>Требуется ур. ${reward.level}</button>`;
+      }
+
+      card.innerHTML = `
+        <div class="bp-tier-lvl-badge">УРОВЕНЬ ${reward.level}</div>
+        <div class="bp-tier-icon-wrap">
+          <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-tier-img" alt="${reward.name}" />
+        </div>
+        <div class="bp-tier-rewards-col">
+          <span class="bp-tier-reward-coin">💰 +${reward.coins} монет</span>
+          ${reward.gems ? `<span class="bp-tier-reward-gem">💎 +${reward.gems} крист.</span>` : ''}
+        </div>
+        <div class="bp-tier-info">
+          <div class="bp-tier-title">${reward.name}</div>
+          <div class="bp-tier-desc">${reward.description}</div>
+        </div>
+        <div class="bp-tier-action">
+          ${btnHtml}
+        </div>
+      `;
+
+      if (canClaim) {
+        const claimBtn = card.querySelector<HTMLButtonElement>('.bp-tier-btn.claim-now');
+        claimBtn?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const res = bp.claimReward(reward.level);
+          if (res.success && res.reward) {
+            SoundManager.playChestOpen();
+            this.showBalanceToast(`Получена награда ур. ${reward.level}: ${res.reward.name} (+${res.reward.coins} монет)!`);
+            this.renderBattlePassModal();
+            this.updateMainMenuBattlePass();
+          }
+        });
+      }
+
+      container.appendChild(card);
+    }
+
+    if (this.btnBpClaimAll) {
+      this.btnBpClaimAll.classList.toggle('hidden', !hasAnyClaimable);
+    }
+  }
+
+  public openBattlePassModal() {
+    this.renderBattlePassModal();
+    if (this.menuStack[this.menuStack.length - 1] !== 'battle_pass') {
+      this.menuStack.push('battle_pass');
+    }
+    this.battlePassModal?.classList.remove('hidden');
+  }
+
+  public hideBattlePassModal() {
+    this.menuStack = this.menuStack.filter((s) => s !== 'battle_pass');
+    this.battlePassModal?.classList.add('hidden');
+  }
+
+  public handleClaimAllBattlePass() {
+    const bp = BattlePassManager.getInstance();
+    const res = bp.claimAllAvailable();
+    if (res.claimedCount > 0) {
+      SoundManager.playChestOpen();
+      this.showBalanceToast(`Забрано ${res.claimedCount} наград: +${res.totalCoins} монет!`);
+      this.renderBattlePassModal();
+      this.updateMainMenuBattlePass();
+    } else {
+      this.showBalanceToast('Нет доступных наград для получения');
     }
   }
 
@@ -2054,6 +2345,7 @@ export class HUD {
     } else {
       this.mainMenuModal.classList.add('quests-open');
       this.questsModal.classList.add('in-main-menu');
+      this.mainMenuBattlePass?.classList.add('hidden');
       document.getElementById('menu-btn-quests')?.classList.add('active');
       this.isQuestsOpenInMenu = true;
       if (this.menuStack[this.menuStack.length - 1] !== 'quests') {
@@ -2068,6 +2360,7 @@ export class HUD {
     this.questsModal.classList.add('hidden');
     this.questsModal.classList.remove('in-main-menu');
     this.mainMenuModal.classList.remove('quests-open');
+    this.mainMenuBattlePass?.classList.remove('hidden');
     document.getElementById('menu-btn-quests')?.classList.remove('active');
     this.isQuestsOpenInMenu = false;
     this.menuStack = this.menuStack.filter((s) => s !== 'quests');
@@ -2839,6 +3132,16 @@ export class HUD {
         return 'handled';
       }
 
+      case 'battle_pass': {
+        this.hideBattlePassModal();
+        if (this.isPaused || this.menuStack.includes('pause')) {
+          this.pauseModal.classList.remove('hidden');
+        } else {
+          this.showMainMenu();
+        }
+        return 'handled';
+      }
+
       case 'pause': {
         this.hidePause();
         return 'resume';
@@ -3420,7 +3723,15 @@ export class HUD {
     isCoop: boolean = false,
     isVictory: boolean = false,
     weapons?: Weapon[],
-    allPlayersResults?: DetailedPlayerResult[]
+    allPlayersResults?: DetailedPlayerResult[],
+    battlePassResult?: {
+      pointsAwarded: number;
+      oldLevel: number;
+      newLevel: number;
+      leveledUp: boolean;
+      oldPoints: number;
+      newPoints: number;
+    }
   ) {
     if (isVictory) {
       SoundManager.playVictory();
@@ -3538,11 +3849,50 @@ export class HUD {
       this.finalLevel.innerText = `${playerStats.level}`;
     }
 
+    if (this.gameOverBpBox) {
+      const bp = BattlePassManager.getInstance();
+      const ptsAwarded = battlePassResult ? battlePassResult.pointsAwarded : 0;
+      const currentLevel = battlePassResult ? battlePassResult.newLevel : bp.getLevel();
+      const currentPtsInLvl = bp.getPointsInCurrentLevel();
+      const fillPct = currentLevel >= BP_MAX_LEVEL ? 100 : (currentPtsInLvl / BP_POINTS_PER_LEVEL) * 100;
+
+      if (this.gameOverBpPointsGained) {
+        this.gameOverBpPointsGained.innerText = `+${ptsAwarded} ОП`;
+      }
+      if (this.gameOverBpReason) {
+        let ruleHint = 'выживание в бою';
+        if (ptsAwarded === 20) ruleHint = 'до 5 мин: +20 ОП';
+        else if (ptsAwarded === 50) ruleHint = 'до 10 мин: +50 ОП';
+        else if (ptsAwarded === 100) ruleHint = 'до 15 мин: +100 ОП';
+        else if (ptsAwarded === 150) ruleHint = 'до 20 мин: +150 ОП';
+        else if (ptsAwarded === 200) ruleHint = 'до 30 мин / победа: +200 ОП';
+        this.gameOverBpReason.innerText = `Выживание: ${timeStr} (${ruleHint})`;
+      }
+      if (this.gameOverBpLevelBadge) {
+        this.gameOverBpLevelBadge.innerText = currentLevel >= BP_MAX_LEVEL ? 'МАКС. УРОВЕНЬ' : `Ур. ${currentLevel}`;
+      }
+      if (this.gameOverBpBarFill) {
+        this.gameOverBpBarFill.style.width = `${fillPct}%`;
+      }
+      if (this.gameOverBpXpText) {
+        this.gameOverBpXpText.innerText = currentLevel >= BP_MAX_LEVEL ? `${BP_POINTS_PER_LEVEL} / ${BP_POINTS_PER_LEVEL} ОП (МАКС)` : `${currentPtsInLvl} / ${BP_POINTS_PER_LEVEL} ОП`;
+      }
+      if (this.gameOverBpLevelup) {
+        if (battlePassResult && battlePassResult.leveledUp) {
+          this.gameOverBpLevelup.classList.remove('hidden');
+        } else {
+          this.gameOverBpLevelup.classList.add('hidden');
+        }
+      }
+      this.gameOverBpBox.classList.remove('hidden');
+    }
+
     this.gameOverModal.classList.remove('hidden');
   }
 
   public hideGameOver() {
     this.gameOverModal.classList.add('hidden');
+    this.updateMainMenuBattlePass();
   }
 
   private generateWeaponOptions(player: Player): UpgradeOption[] {

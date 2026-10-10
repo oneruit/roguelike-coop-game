@@ -17,6 +17,12 @@ export interface SidebarQuestItem {
   rewardLabel: string;
 }
 
+export interface BattlePassData {
+  seasonId: string;
+  points: number;
+  claimedLevels: number[];
+}
+
 export interface ProgressionData {
   accountLevel: number;
   accountXp: number;
@@ -31,6 +37,7 @@ export interface ProgressionData {
   unlockedHeroes: Record<CharacterType, boolean>;
   dailyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
   weeklyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
+  battlePass?: BattlePassData;
 }
 
 export interface QuestStepItem {
@@ -108,6 +115,11 @@ export class ProgressionManager {
       weeklyQuestsProgress: {
         weekly_goblins: { current: 2, isClaimed: false },
         weekly_resources: { current: 2, isClaimed: false }
+      },
+      battlePass: {
+        seasonId: 'season_1',
+        points: 0,
+        claimedLevels: []
       }
     };
   }
@@ -146,7 +158,16 @@ export class ProgressionManager {
             : defaults.dailyQuestsProgress,
           weeklyQuestsProgress: parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
             ? { ...defaults.weeklyQuestsProgress, ...parsed.weeklyQuestsProgress }
-            : defaults.weeklyQuestsProgress
+            : defaults.weeklyQuestsProgress,
+          battlePass: parsed.battlePass && typeof parsed.battlePass === 'object'
+            ? {
+                seasonId: typeof parsed.battlePass.seasonId === 'string' ? parsed.battlePass.seasonId : 'season_1',
+                points: Math.max(0, Number(parsed.battlePass.points) || 0),
+                claimedLevels: Array.isArray(parsed.battlePass.claimedLevels)
+                  ? parsed.battlePass.claimedLevels.map(Number).filter((n: number) => !isNaN(n))
+                  : []
+              }
+            : defaults.battlePass
         };
       }
     } catch (e) {

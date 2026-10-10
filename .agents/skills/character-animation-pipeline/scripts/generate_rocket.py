@@ -113,8 +113,13 @@ def draw_rocket_frame(dir_name='front', anim='IDLE', frame=0, total_frames=10):
         is_firing_frame = (frame % 2 == 0)
         if is_firing_frame:
             muzzle_flash_phase = 1.0 - (frame % 2) * 0.4
-            recoil_x = -2 if dir_name in ('right', 'front', 'back') else 2
-            recoil_y = 1
+            recoil_y = 2
+            if dir_name == 'right':
+                recoil_x = -2
+            elif dir_name == 'left':
+                recoil_x = 2
+            else:
+                recoil_x = 0
         else:
             recoil_x = 0
             recoil_y = 0
@@ -129,8 +134,13 @@ def draw_rocket_frame(dir_name='front', anim='IDLE', frame=0, total_frames=10):
         is_firing_frame = (frame % 2 == 0)
         if is_firing_frame:
             muzzle_flash_phase = 1.0
-            recoil_x = -2 if dir_name in ('right', 'front', 'back') else 2
-            recoil_y = 1
+            recoil_y = 2
+            if dir_name == 'right':
+                recoil_x = -2
+            elif dir_name == 'left':
+                recoil_x = 2
+            else:
+                recoil_x = 0
         tail_sway = math.sin(phase * 1.5) * 4.0
 
     # Draw direction
@@ -241,49 +251,62 @@ def _draw_front(im, cx, fy, bob_y, step_phase, tail_sway, recoil_x, recoil_y, fl
     draw_pixel(im, head_cx - 1, head_top + 14, C_FUR_DARK)
     draw_pixel(im, head_cx + 1, head_top + 14, C_FUR_DARK)
 
-    # 6. Heavy Assault Rifle / Machine Gun (carried at chest ready position)
-    gx = head_cx - 2 + recoil_x
-    gy = torso_top + 6 + recoil_y
-    # Main rifle body
-    fill_rect(im, gx, gy, gx + 18, gy + 7, C_GUN_STEEL)
-    fill_rect(im, gx, gy + 1, gx + 17, gy + 6, C_GUN_DARK)
-    # Barrel extension
-    fill_rect(im, gx + 18, gy + 2, gx + 26, gy + 5, C_GUN_STEEL)
-    fill_rect(im, gx + 26, gy + 1, gx + 29, gy + 6, C_GUN_DARK) # Muzzle brake
-    # Magazine drum / box underneath
-    fill_rect(im, gx + 6, gy + 8, gx + 13, gy + 14, C_GUN_MAG)
-    draw_pixel(im, gx + 9, gy + 11, C_GUN_HI)
-    # Glowing energy heat vents / ammo counter
-    draw_pixel(im, gx + 8, gy + 3, C_GUN_ENERGY)
-    draw_pixel(im, gx + 11, gy + 3, C_GUN_ENERGY)
-    draw_pixel(im, gx + 14, gy + 3, C_GUN_ENERGY)
+    # 6. Assault Rifle POINTING DOWN (aimed down towards feet / bottom of screen)
+    gx = head_cx + recoil_x
+    # When firing down, recoil kicks gun upward (smaller Y)
+    gy_top = torso_top + 5 - recoil_y
 
-    # Arms / Hands holding rifle
+    # Upper receiver / stock / top housing
+    fill_rect(im, gx - 3, gy_top, gx + 3, gy_top + 8, C_GUN_DARK)
+    fill_rect(im, gx - 2, gy_top + 1, gx + 2, gy_top + 7, C_GUN_STEEL)
+    draw_pixel(im, gx, gy_top + 2, C_GUN_ENERGY)
+    draw_pixel(im, gx, gy_top + 4, C_GUN_ENERGY)
+    draw_pixel(im, gx, gy_top + 6, C_GUN_ENERGY)
+
+    # Ammo drum / mag on left side of receiver
+    fill_rect(im, gx - 6, gy_top + 3, gx - 4, gy_top + 7, C_GUN_MAG)
+    draw_pixel(im, gx - 5, gy_top + 5, C_GUN_HI)
+
+    # Barrel extending DOWNWARD
+    fill_rect(im, gx - 2, gy_top + 9, gx + 2, gy_top + 17, C_GUN_STEEL)
+    fill_rect(im, gx - 1, gy_top + 9, gx + 1, gy_top + 16, C_GUN_DARK)
+    draw_pixel(im, gx, gy_top + 11, C_GUN_ENERGY)
+    draw_pixel(im, gx, gy_top + 14, C_GUN_ENERGY)
+
+    # Muzzle brake at the very bottom
+    fill_rect(im, gx - 3, gy_top + 18, gx + 3, gy_top + 21, C_GUN_DARK)
+    draw_pixel(im, gx - 2, gy_top + 19, C_GUN_HI)
+    draw_pixel(im, gx + 2, gy_top + 19, C_GUN_HI)
+    draw_pixel(im, gx, gy_top + 21, C_GUN_STEEL)
+
+    # Arms and paws holding the rifle
     # Left arm & paw
-    fill_rect(im, head_cx - 10, torso_top + 4, head_cx - 6, torso_top + 12, C_SUIT_MAIN)
-    fill_rect(im, gx + 1, gy + 3, gx + 4, gy + 7, C_FUR_DARK)
+    fill_rect(im, head_cx - 9, torso_top + 4, head_cx - 4, torso_top + 10, C_SUIT_MAIN)
+    fill_rect(im, gx - 5, gy_top + 4, gx - 2, gy_top + 8, C_FUR_DARK)
+    draw_pixel(im, gx - 4, gy_top + 5, C_FUR_LIGHT)
     # Right arm & paw
-    fill_rect(im, head_cx + 4, torso_top + 4, head_cx + 8, torso_top + 11, C_SUIT_MAIN)
-    fill_rect(im, gx + 12, gy + 4, gx + 15, gy + 8, C_FUR_DARK)
+    fill_rect(im, head_cx + 4, torso_top + 4, head_cx + 9, torso_top + 10, C_SUIT_MAIN)
+    fill_rect(im, gx + 2, gy_top + 4, gx + 5, gy_top + 8, C_FUR_DARK)
+    draw_pixel(im, gx + 3, gy_top + 5, C_FUR_LIGHT)
 
-    # 7. Muzzle Flash (during firing)
+    # 7. Muzzle Flash POINTING DOWN (bursting toward bottom of screen)
     if flash_p > 0:
-        fx = gx + 30
-        fy_m = gy + 3
+        fx = gx
+        fy_m = gy_top + 22
         # White hot core
-        fill_rect(im, fx, fy_m - 2, fx + 5, fy_m + 3, C_FLASH_CORE)
-        # Yellow fireball petals
-        fill_rect(im, fx + 5, fy_m - 4, fx + 10, fy_m + 5, C_FLASH_YELLOW)
-        fill_rect(im, fx - 1, fy_m - 5, fx + 4, fy_m - 3, C_FLASH_YELLOW)
-        fill_rect(im, fx - 1, fy_m + 4, fx + 4, fy_m + 6, C_FLASH_YELLOW)
+        fill_rect(im, fx - 2, fy_m, fx + 2, fy_m + 3, C_FLASH_CORE)
+        # Yellow fireball petals expanding downward
+        fill_rect(im, fx - 4, fy_m + 4, fx + 4, fy_m + 7, C_FLASH_YELLOW)
+        fill_rect(im, fx - 5, fy_m + 1, fx - 3, fy_m + 4, C_FLASH_YELLOW)
+        fill_rect(im, fx + 3, fy_m + 1, fx + 5, fy_m + 4, C_FLASH_YELLOW)
         # Orange flame edges and sparks
-        fill_rect(im, fx + 10, fy_m - 2, fx + 14, fy_m + 3, C_FLASH_ORANGE)
-        draw_pixel(im, fx + 15, fy_m - 5, C_FLASH_SPARK)
-        draw_pixel(im, fx + 16, fy_m + 6, C_FLASH_SPARK)
-        draw_pixel(im, fx + 12, fy_m, C_FLASH_SPARK)
-        # Empty shell casing flying out from gun chamber
-        draw_pixel(im, gx + 4, gy - 4, C_FLASH_YELLOW)
-        draw_pixel(im, gx + 5, gy - 3, C_ORANGE_HI)
+        fill_rect(im, fx - 3, fy_m + 8, fx + 3, fy_m + 10, C_FLASH_ORANGE)
+        draw_pixel(im, fx - 5, fy_m + 11, C_FLASH_SPARK)
+        draw_pixel(im, fx + 5, fy_m + 11, C_FLASH_SPARK)
+        draw_pixel(im, fx, fy_m + 12, C_FLASH_SPARK)
+        # Shell casings ejecting up and to the right
+        draw_pixel(im, gx + 5, gy_top + 2, C_FLASH_YELLOW)
+        draw_pixel(im, gx + 6, gy_top + 1, C_ORANGE_HI)
 
 
 def _draw_side(im, cx, fy, bob_y, step_phase, tail_sway, recoil_x, recoil_y, flash_p, flip=False):
@@ -438,20 +461,55 @@ def _draw_back(im, cx, fy, bob_y, step_phase, tail_sway, recoil_x, recoil_y, fla
     fill_rect(im, cx - 13, head_top + 8, cx - 11, head_top + 14, C_FUR_WHITE)
     fill_rect(im, cx + 11, head_top + 8, cx + 13, head_top + 14, C_FUR_WHITE)
 
-    # 6. Weapon peek (carried in front, barrel and muzzle sticking out to the right)
-    gx = cx + 8 + recoil_x
-    gy = torso_top + 6 + recoil_y
-    fill_rect(im, gx, gy + 1, gx + 14, gy + 4, C_GUN_STEEL)
-    fill_rect(im, gx + 14, gy, gx + 17, gy + 5, C_GUN_DARK)
+    # 6. Assault Rifle POINTING UP (raised on right shoulder, aiming UPWARD)
+    gx = cx + 6 + recoil_x
+    # When firing up, recoil kicks gun downward (larger Y)
+    gy_bot = torso_top + 8 + recoil_y
+    gy_top = head_top - 8 + recoil_y
 
-    # 7. Muzzle Flash
+    # Receiver / stock near shoulder
+    fill_rect(im, gx - 3, gy_bot - 8, gx + 3, gy_bot, C_GUN_DARK)
+    fill_rect(im, gx - 2, gy_bot - 7, gx + 2, gy_bot - 1, C_GUN_STEEL)
+    draw_pixel(im, gx, gy_bot - 4, C_GUN_ENERGY)
+    fill_rect(im, gx + 3, gy_bot - 6, gx + 6, gy_bot - 2, C_GUN_MAG)
+    draw_pixel(im, gx + 5, gy_bot - 4, C_GUN_HI)
+
+    # Barrel extending UPWARD past head
+    fill_rect(im, gx - 2, gy_top + 3, gx + 2, gy_bot - 9, C_GUN_STEEL)
+    fill_rect(im, gx - 1, gy_top + 3, gx + 1, gy_bot - 9, C_GUN_DARK)
+    draw_pixel(im, gx, gy_top + 5, C_GUN_ENERGY)
+    draw_pixel(im, gx, gy_top + 8, C_GUN_ENERGY)
+
+    # Heavy Muzzle Brake at the top
+    fill_rect(im, gx - 3, gy_top, gx + 3, gy_top + 2, C_GUN_DARK)
+    draw_pixel(im, gx - 2, gy_top + 1, C_GUN_HI)
+    draw_pixel(im, gx + 2, gy_top + 1, C_GUN_HI)
+    draw_pixel(im, gx, gy_top, C_GUN_STEEL)
+
+    # Arms and paws from behind holding rifle
+    fill_rect(im, cx + 5, torso_top + 3, cx + 10, torso_top + 9, C_SUIT_DARK)
+    fill_rect(im, gx - 1, gy_bot - 4, gx + 3, gy_bot, C_FUR_DARK)
+    fill_rect(im, cx - 7, torso_top + 3, cx - 2, torso_top + 9, C_SUIT_DARK)
+    fill_rect(im, gx - 5, gy_bot - 8, gx - 2, gy_bot - 5, C_FUR_DARK)
+
+    # 7. Muzzle Flash POINTING UP (bursting toward top of screen)
     if flash_p > 0:
-        fx = gx + 18
-        fy_m = gy + 2
-        fill_rect(im, fx, fy_m - 2, fx + 5, fy_m + 3, C_FLASH_CORE)
-        fill_rect(im, fx + 5, fy_m - 4, fx + 9, fy_m + 5, C_FLASH_YELLOW)
-        draw_pixel(im, fx + 11, fy_m - 3, C_FLASH_SPARK)
-        draw_pixel(im, fx + 12, fy_m + 4, C_FLASH_SPARK)
+        fx = gx
+        fy_m = gy_top
+        # White hot core
+        fill_rect(im, fx - 2, fy_m - 3, fx + 2, fy_m, C_FLASH_CORE)
+        # Yellow fireball petals expanding upward
+        fill_rect(im, fx - 4, fy_m - 7, fx + 4, fy_m - 4, C_FLASH_YELLOW)
+        fill_rect(im, fx - 5, fy_m - 4, fx - 3, fy_m - 1, C_FLASH_YELLOW)
+        fill_rect(im, fx + 3, fy_m - 4, fx + 5, fy_m - 1, C_FLASH_YELLOW)
+        # Orange flame edges and sparks
+        fill_rect(im, fx - 3, fy_m - 10, fx + 3, fy_m - 8, C_FLASH_ORANGE)
+        draw_pixel(im, fx - 5, fy_m - 11, C_FLASH_SPARK)
+        draw_pixel(im, fx + 5, fy_m - 11, C_FLASH_SPARK)
+        draw_pixel(im, fx, fy_m - 12, C_FLASH_SPARK)
+        # Spent shell casings ejecting
+        draw_pixel(im, gx + 6, gy_bot - 3, C_FLASH_YELLOW)
+        draw_pixel(im, gx + 7, gy_bot - 2, C_ORANGE_HI)
 
 
 def generate_all():

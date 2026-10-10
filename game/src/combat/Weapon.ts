@@ -1512,7 +1512,7 @@ export class AssaultRifleWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 18, 3);
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 18, 6);
     this.iconImage = '/textures/weapons/weapon_assault_rifle.png';
     this.onTriggerAttack = onTriggerAttack;
     this.recalculateStats();

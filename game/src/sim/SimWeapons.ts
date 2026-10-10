@@ -1208,7 +1208,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 3;
+    this.damage += 6;
     if ([5, 10, 15, 20].includes(this.level)) this.projectileCount++;
     if ([4, 8, 12, 16].includes(this.level)) this.pierce++;
     if ([2, 6, 9, 13, 17].includes(this.level)) {
@@ -1219,7 +1219,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+3 к урону'];
+    const perks: string[] = ['+6 к урону'];
     if ([5, 10, 15, 20].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 6, 9, 13, 17].includes(nextLvl)) perks.push('+5% скорострельности');

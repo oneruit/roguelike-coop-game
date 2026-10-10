@@ -1519,6 +1519,12 @@ body, html {
   pointer-events: none !important;
 }
 
+.main-menu-modal.quests-open .battle-pass-widget {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 .main-menu-backdrop {
   position: absolute;
   top: 0;
@@ -1897,6 +1903,932 @@ body, html {
   border: 1px solid #34d399;
 }
 
+
+/* ==========================================================================
+   BATTLE PASS (TOP-LEFT MAIN MENU & FULL MODAL & GAME OVER)
+   ========================================================================== */
+.battle-pass-widget {
+  position: absolute;
+  left: clamp(20px, 2.8vw, 40px);
+  top: clamp(14px, 2vh, 26px);
+  z-index: 20;
+  width: clamp(480px, 34vw, 560px);
+  aspect-ratio: 558 / 218;
+  pointer-events: auto;
+  user-select: none;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.85));
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.battle-pass-widget:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(56, 189, 248, 0.35));
+}
+
+.battle-pass-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-image: url('/textures/ui/battle_pass_panel_bg.png?v=4');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: default;
+}
+
+/* Battle Pass Widget Header - Clickable Hotspot over texture title */
+.bp-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 29%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background-color 0.16s ease;
+}
+
+.bp-header:hover {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+/* Title and Season are baked into the authentic panel texture */
+.bp-title, .bp-season {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Track Section */
+.bp-track-section {
+  position: absolute;
+  top: 29%;
+  left: 0;
+  width: 100%;
+  height: 29%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Star is already baked onto texture on the left */
+.bp-star-icon {
+  display: none;
+}
+
+.bp-progress-bar-container {
+  position: absolute;
+  top: 0;
+  left: 14.5%;
+  width: 80.5%;
+  height: 100%;
+}
+
+.bp-milestones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.bp-milestone {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 0.85;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
+}
+
+.bp-m-lvl1 {
+  left: 24.5%;
+  top: 4%;
+}
+
+.bp-m-lvl10 {
+  left: 60.5%;
+  top: 4%;
+}
+
+.bp-m-lvl15 {
+  left: 94%;
+  top: 4%;
+}
+
+.bp-m-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(8px, 0.65vw, 10px);
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px #000;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.bp-m-chest {
+  width: clamp(22px, 1.6vw, 28px);
+  height: clamp(17px, 1.25vw, 22px);
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.bp-milestone:hover .bp-m-chest {
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+}
+
+.bp-milestone.reached {
+  opacity: 1;
+}
+
+.bp-milestone.reached .bp-m-label {
+  color: #38bdf8;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.9), 0 1px 2px #000;
+}
+
+.bp-milestone.reached .bp-m-chest {
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.9)) drop-shadow(0 2px 4px #000);
+}
+
+.bp-bar-track {
+  position: absolute;
+  top: 61%;
+  left: 0;
+  width: 100%;
+  height: 9px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.bp-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(180deg, #3db8ff 0%, #1774d6 50%, #0d54a6 100%);
+  clip-path: polygon(6px 0%, 100% 0%, 100% 100%, 6px 100%, 0% 50%);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-radius: 0 3px 3px 0;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Rewards Row */
+.bp-rewards-row {
+  position: absolute;
+  top: 58%;
+  left: 3.2%;
+  width: 93.6%;
+  height: 35.5%;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.bp-slot-card {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.bp-slot-card.bp-slot-free {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.bp-slot-free .bp-slot-box {
+  width: clamp(28px, 2.2vw, 36px);
+  height: clamp(28px, 2.2vw, 36px);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  margin-bottom: 2px;
+}
+
+.bp-slot-free .bp-lock-icon {
+  display: none;
+}
+
+.bp-free-ribbon {
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(6.5px, 0.52vw, 8px);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #f8fafc;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px #000;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 3px;
+  padding: 1.5px 3.5px;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  max-width: 88%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.bp-slot-card.bp-slot-free:hover .bp-free-ribbon {
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+}
+
+.bp-slot-box {
+  width: clamp(32px, 2.5vw, 40px);
+  height: clamp(32px, 2.5vw, 40px);
+  background: #101722;
+  border: 1.5px solid #283749;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: visible;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.16s ease;
+}
+
+.bp-slot-card:hover .bp-slot-box {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5), inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.bp-slot-img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transition: transform 0.16s ease;
+}
+
+.bp-slot-free-box .bp-badge-img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.bp-slot-card:hover .bp-slot-img {
+  transform: scale(1.15);
+}
+
+/* Slot States */
+.bp-slot-card.claimable .bp-slot-box {
+  border-color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.65), inset 0 0 6px rgba(245, 158, 11, 0.35);
+  animation: bpClaimPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes bpClaimPulse {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.5), inset 0 0 4px rgba(245, 158, 11, 0.25);
+    border-color: #f59e0b;
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.9), inset 0 0 8px rgba(251, 191, 36, 0.5);
+    border-color: #fbbf24;
+  }
+}
+
+.bp-slot-claim-sparkle {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background: #f59e0b;
+  color: #0b0f19;
+  border-radius: 50%;
+  font-size: 8px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 6px #fbbf24;
+}
+
+.bp-slot-card.claimed .bp-slot-box {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.bp-slot-card.claimed .bp-slot-img {
+  filter: grayscale(0.2) brightness(0.9);
+}
+
+.bp-slot-check-badge {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 9px;
+  font-weight: 900;
+  color: #10b981;
+  text-shadow: 0 1px 2px #000, 0 0 6px rgba(16, 185, 129, 0.8);
+}
+
+.bp-slot-lock-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+}
+
+.bp-slot-lvl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(7.5px, 0.58vw, 9px);
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px #000;
+  line-height: 1;
+  margin-top: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.bp-slot-card.unlocked .bp-slot-lvl,
+.bp-slot-card.claimed .bp-slot-lvl {
+  color: #38bdf8;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.6), 0 1px 2px #000;
+}
+
+/* ==========================================================================
+   GAME OVER BATTLE PASS XP BANNER
+   ========================================================================== */
+.game-over-bp-box {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(11, 17, 32, 0.96) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.game-over-bp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-over-bp-badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
+.game-over-bp-gain {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14.5px;
+  font-weight: 900;
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.7);
+}
+
+.game-over-bp-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.game-over-bp-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.game-over-bp-lvl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f8fafc;
+  background: #1e293b;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.game-over-bp-bar-wrap {
+  flex: 1;
+  height: 9px;
+  background: #0b1118;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+  position: relative;
+}
+
+.game-over-bp-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.game-over-bp-xp {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.game-over-bp-levelup {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.85);
+  text-align: center;
+  letter-spacing: 0.8px;
+  animation: bpLevelUpPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes bpLevelUpPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+/* ==========================================================================
+   FULL BATTLE PASS MODAL
+   ========================================================================== */
+.battle-pass-modal-card {
+  max-width: 860px !important;
+  width: min(860px, 94vw) !important;
+  max-height: 88vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 20px 24px !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #0e1724 0%, #090e17 100%) !important;
+  border: 2px solid #283a4e !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(56, 189, 248, 0.2) !important;
+}
+
+.bp-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.bp-modal-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.bp-modal-header .sub-title.menu-badge-blue {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #38bdf8;
+  background: rgba(2, 132, 199, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 3px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  display: inline-block;
+}
+
+.bp-modal-main-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
+#btn-close-bp-modal.modern-back-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #cbd5e1;
+  background: #141d28;
+  border: 1.5px solid #2b3a4a;
+  border-radius: 6px;
+  padding: 7px 18px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+#btn-close-bp-modal.modern-back-btn:hover {
+  background: #1e2a3a;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+/* Rules Bar (legacy safe hidden) */
+.bp-modal-rules-bar {
+  display: none !important;
+}
+
+/* Summary Card */
+.bp-modal-summary-card {
+  background: linear-gradient(180deg, #121c2a 0%, #0c1420 100%);
+  border: 1.5px solid #233346;
+  border-radius: 8px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.bp-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.bp-summary-level-box {
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  border: 1.5px solid #38bdf8;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+.bp-summary-lvl-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.bp-summary-lvl-lbl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #e0f2fe;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.bp-summary-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bp-summary-points-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.bp-total-xp-tag {
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.bp-modal-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: #080d14;
+  border: 1px solid #1e293b;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bp-modal-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+  transition: width 0.4s ease;
+  border-radius: 3px;
+}
+
+.bp-claim-all-btn {
+  padding: 8px 18px !important;
+  font-size: 11.5px !important;
+  font-weight: 900 !important;
+}
+
+/* Plaque: СПИСОК НАГРАД */
+.bp-modal-plaque {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin: 4px auto 2px auto;
+  padding: 5px 26px;
+  background: linear-gradient(180deg, #3d2f24 0%, #291e17 100%);
+  border: 1.5px solid #5a4536;
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+}
+
+.bp-plaque-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #f1dfcc;
+  text-shadow: 0 1px 2px #000, 0 0 4px rgba(0, 0, 0, 0.8);
+  text-transform: uppercase;
+}
+
+.bp-plaque-bracket {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 5px;
+  background: #6e5340;
+  border: 1px solid #2d1f16;
+  border-radius: 2px;
+}
+
+.bp-plaque-bracket.left {
+  left: 3px;
+}
+
+.bp-plaque-bracket.right {
+  right: 3px;
+}
+
+/* Tiers Scrollable Container */
+.bp-modal-tiers-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-right: 6px;
+  max-height: 52vh;
+}
+
+.bp-modal-tiers-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bp-modal-tiers-container::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+.bp-tier-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #182230 0%, #121a24 100%);
+  border: 1.5px solid #283749;
+  border-radius: 6px;
+  padding: 7px 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 -1px 0 rgba(0, 0, 0, 0.5), 0 3px 8px rgba(0, 0, 0, 0.4);
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.bp-tier-card:hover {
+  background: linear-gradient(180deg, #1e2b3d 0%, #16202c 100%);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.bp-tier-card.claimable {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #2a2012 0%, #1b140b 100%);
+  box-shadow: inset 0 1px 0 rgba(251, 191, 36, 0.2), 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.bp-tier-card.claimed {
+  border-color: rgba(56, 75, 100, 0.4);
+  background: linear-gradient(180deg, #141c26 0%, #0f151e 100%);
+}
+
+.bp-tier-lvl-badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #94a3b8;
+  background: #0f1722;
+  border: 1px solid #1e2a38;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 82px;
+  text-align: center;
+}
+
+.bp-tier-card.claimable .bp-tier-lvl-badge {
+  color: #fbbf24;
+  border-color: #f59e0b;
+}
+
+.bp-tier-icon-wrap {
+  width: 44px;
+  height: 44px;
+  background: #0f1724;
+  border: 1.5px solid #3d2f25;
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px #1e293b, inset 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.bp-tier-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.bp-tier-rewards-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 95px;
+  flex-shrink: 0;
+}
+
+.bp-tier-reward-coin {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+.bp-tier-reward-gem {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+.bp-tier-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.bp-tier-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000;
+  line-height: 1.2;
+}
+
+.bp-tier-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bp-tier-action {
+  flex-shrink: 0;
+  min-width: 120px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bp-tier-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.bp-tier-btn.claim-now {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #0b0f19;
+  border-color: #fbbf24;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.bp-tier-btn.claim-now:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.85);
+}
+
+.bp-tier-btn.claimed {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border-color: #10b981;
+  font-weight: 800;
+  cursor: default;
+}
+
+.bp-tier-btn.locked {
+  background: #141d28;
+  color: #94a3b8;
+  border-color: #283749;
+  cursor: default;
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+  .battle-pass-widget {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 440px;
+    margin-bottom: 12px;
+  }
+}
 
 .main-menu-card {
   position: relative;
