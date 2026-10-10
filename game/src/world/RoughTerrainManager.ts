@@ -61,7 +61,8 @@ export class RoughTerrainManager {
     stageNumber: number,
     rng: SeededRNG,
     occupied: OccupiedArea[],
-    addMeshToChunk?: (chunkKey: string, mesh: Object3D) => void
+    addMeshToChunk?: (chunkKey: string, mesh: Object3D) => void,
+    biomeId?: string
   ) {
     this.clear();
 
@@ -70,42 +71,67 @@ export class RoughTerrainManager {
     let secondaryTexName: string | null = 'dune_mound.png';
     let baseRadius = 3.6;
 
-    switch (stageNumber) {
-      case 1: // Ashen Wastes (Desert) - Sand Dunes & Crescent Barchans
-        primaryTexName = 'dune_barchan.png';
-        secondaryTexName = 'dune_mound.png';
-        baseRadius = 3.8;
-        break;
-      case 2: // Derelict Sector - Scrap Metal Drifts & Industrial Slag
-        primaryTexName = 'scrap_drift.png';
-        secondaryTexName = null;
-        baseRadius = 3.4;
-        break;
-      case 3: // Bioluminescent Wilds - Spore Thickets & Toxic Mold Clumps
-        primaryTexName = 'spore_patch.png';
-        secondaryTexName = null;
-        baseRadius = 3.5;
-        break;
-      case 4: // Volcanic Caldera - Scorched Ash Mounds & Pumice
-        primaryTexName = 'ash_drift.png';
-        secondaryTexName = null;
-        baseRadius = 3.6;
-        break;
-      case 5: // Primordial Ruins - Overgrown Temple Rubble & Briars
-        primaryTexName = 'ruins_rubble.png';
-        secondaryTexName = null;
-        baseRadius = 3.8;
-        break;
-      case 6: // Rift Core - Gravitational Anomaly & Void Vortex
-        primaryTexName = 'void_distortion.png';
-        secondaryTexName = null;
-        baseRadius = 4.0;
-        break;
-      default:
-        primaryTexName = 'dune_barchan.png';
-        secondaryTexName = 'dune_mound.png';
-        baseRadius = 3.6;
-        break;
+    if (biomeId) {
+      switch (biomeId) {
+        case 'ashen_wastes':
+          primaryTexName = 'dune_barchan.png';
+          secondaryTexName = 'dune_mound.png';
+          baseRadius = 3.8;
+          break;
+        case 'derelict_sector':
+          primaryTexName = 'scrap_drift.png';
+          secondaryTexName = null;
+          baseRadius = 3.4;
+          break;
+        case 'bioluminescent_wilds':
+          primaryTexName = 'spore_patch.png';
+          secondaryTexName = null;
+          baseRadius = 3.5;
+          break;
+        case 'volcanic_caldera':
+          primaryTexName = 'ash_drift.png';
+          secondaryTexName = null;
+          baseRadius = 3.6;
+          break;
+        case 'primordial_ruins':
+          primaryTexName = 'ruins_rubble.png';
+          secondaryTexName = null;
+          baseRadius = 3.8;
+          break;
+        case 'rift_core':
+          primaryTexName = 'void_distortion.png';
+          secondaryTexName = null;
+          baseRadius = 4.0;
+          break;
+      }
+    } else {
+      switch (stageNumber) {
+        case 1:
+          primaryTexName = 'dune_barchan.png';
+          secondaryTexName = 'dune_mound.png';
+          baseRadius = 3.8;
+          break;
+        case 2:
+          primaryTexName = 'scrap_drift.png';
+          secondaryTexName = null;
+          baseRadius = 3.4;
+          break;
+        case 3:
+          primaryTexName = 'spore_patch.png';
+          secondaryTexName = null;
+          baseRadius = 3.5;
+          break;
+        case 4:
+          primaryTexName = 'void_distortion.png';
+          secondaryTexName = null;
+          baseRadius = 4.0;
+          break;
+        default:
+          primaryTexName = 'dune_barchan.png';
+          secondaryTexName = 'dune_mound.png';
+          baseRadius = 3.6;
+          break;
+      }
     }
 
     const primaryTex = RoughTerrainManager.getTexture(primaryTexName);

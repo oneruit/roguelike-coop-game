@@ -124,7 +124,7 @@ export abstract class SimWeapon {
   public icon: string;
   public iconImage: string;
   public level: number = 1;
-  public maxLevel: number = 20;
+  public maxLevel: number = 12;
   public cooldown: number;
   public timer: number = 0;
   public damage: number;
@@ -242,20 +242,20 @@ export class SimBowWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 6;
-    if ([4, 8, 12, 16, 20].includes(this.level)) this.projectileCount++;
-    if ([3, 6, 9, 13, 17].includes(this.level)) this.pierce++;
-    if ([2, 5, 7, 10, 14, 18].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) this.projectileCount++;
+    if ([4, 8, 12].includes(this.level)) this.pierce++;
+    if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.40, Number((this.cooldown * 0.93).toFixed(3)));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+6 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([2, 5, 7, 10, 14, 18].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 стрела (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-7% перезарядки');
     return perks.join(', ');
   }
 }
@@ -332,20 +332,20 @@ export class SimKukriWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 3;
-    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(this.level)) this.burstCount++;
-    if ([10, 20].includes(this.level)) this.pierce++;
-    if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(this.level)) {
+    if ([2, 4, 6, 8, 10, 12].includes(this.level)) this.burstCount++;
+    if ([6, 12].includes(this.level)) this.pierce++;
+    if ([3, 5, 7, 9, 11].includes(this.level)) {
       this.cooldown = Math.max(0.25, Number((this.cooldown * 0.94).toFixed(3)));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+3 к урону'];
-    if ([2, 4, 6, 8, 10, 12, 14, 16, 18, 20].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
-    if ([10, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([3, 5, 7, 9, 11, 13, 15, 17, 19].includes(nextLvl)) perks.push('-6% перезарядки');
+    if ([2, 4, 6, 8, 10, 12].includes(nextLvl)) perks.push(`+1 нож в серии (всего ${this.burstCount + 1})`);
+    if ([6, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    if ([3, 5, 7, 9, 11].includes(nextLvl)) perks.push('-6% перезарядки');
     return perks.join(', ');
   }
 }
@@ -407,7 +407,7 @@ export class SimWhirlwindSlashWeapon extends SimWeapon {
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     return `+0.12м радиус вихря, +4 урона, -4% перезарядки`;
   }
 }
@@ -466,7 +466,7 @@ export class SimGreatswordWeapon extends SimWeapon {
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     return `+0.15м радиус взмаха, +7 урона, -4% перезарядки`;
   }
 }
@@ -525,7 +525,7 @@ export class SimFlailWeapon extends SimWeapon {
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     return `+0.14м радиус удара, +5 урона, -4% перезарядки`;
   }
 }
@@ -600,20 +600,20 @@ export class SimAstralStaffWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage = Number((this.damage + 5).toFixed(2));
-    if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.projectileCount++;
-    if ([4, 8, 12, 16, 20].includes(this.level)) this.pierceCount++;
-    if ([2, 5, 7, 10, 14, 17].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) this.projectileCount++;
+    if ([4, 8, 12].includes(this.level)) this.pierceCount++;
+    if ([2, 5, 8, 10, 12].includes(this.level)) {
       this.cooldown = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+5 к урону'];
-    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 снаряд веером (всего ${this.projectileCount + 1})`);
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierceCount + 1})`);
-    if ([2, 5, 7, 10, 14, 17].includes(nextLvl)) perks.push('-6% перезарядки');
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 снаряд веером (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierceCount + 1})`);
+    if ([2, 5, 8, 10, 12].includes(nextLvl)) perks.push('-6% перезарядки');
     return perks.join(', ');
   }
 }
@@ -675,15 +675,15 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
     this.bleedDps = Number((this.bleedDps + 2).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.20).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.08).toFixed(2));
-    if ([3, 6, 9, 12, 15, 18, 20].includes(this.level)) this.orbCount++;
+    if ([3, 6, 9, 12].includes(this.level)) this.orbCount++;
     this.activeOrbIds = [];
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+1 к прямому урону', '+2 к урону кровотечения/сек', '+0.20м дальность орбиты'];
-    if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }
 }
@@ -729,7 +729,7 @@ export class SimHolyAuraWeapon extends SimWeapon {
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     return `+0.20м радиус, +4 урона, -4% перезарядки`;
   }
 }
@@ -788,7 +788,7 @@ export class SimKatanaSlashWeapon extends SimWeapon {
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     return `+0.14м радиус взмаха, +6 урона, -4% перезарядки`;
   }
 }
@@ -875,24 +875,24 @@ export class SimChakramWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 4;
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) {
       this.chakramCount++;
     }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
+    if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
     }
-    if ([2, 5, 10, 15].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) {
       this.flightSpeed += 1.2;
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+4 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 возвращающийся чакрам (всего ${this.chakramCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-6% перезарядки');
-    if ([2, 5, 10, 15].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 возвращающийся чакрам (всего ${this.chakramCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-6% перезарядки');
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
     return perks.join(', ');
   }
 }
@@ -953,24 +953,24 @@ export class SimLightningStrikeWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 8;
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) {
       this.strikeCount++;
     }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
+    if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
     }
-    if ([5, 10, 15].includes(this.level)) {
+    if ([4, 8, 12].includes(this.level)) {
       this.strikeRadius = Number((this.strikeRadius + 0.30).toFixed(2));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+8 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 разряд молнии (всего ${this.strikeCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
-    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.30м радиус взрыва (всего ${(this.strikeRadius + 0.30).toFixed(2)}м)`);
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 разряд молнии (всего ${this.strikeCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.30м радиус взрыва (всего ${(this.strikeRadius + 0.30).toFixed(2)}м)`);
     return perks.join(', ');
   }
 }
@@ -1031,24 +1031,24 @@ export class SimIceSpikeWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 7;
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) {
       this.spikeCount++;
     }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
+    if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.35, Number((this.cooldown * 0.93).toFixed(3)));
     }
-    if ([5, 10, 15].includes(this.level)) {
+    if ([4, 8, 12].includes(this.level)) {
       this.spikeRadius = Number((this.spikeRadius + 0.25).toFixed(2));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+7 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 ледяной шип (всего ${this.spikeCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-7% перезарядки');
-    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 ледяной шип (всего ${this.spikeCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
     return perks.join(', ');
   }
 }
@@ -1118,24 +1118,24 @@ export class SimFireballWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 10;
-    if ([4, 8, 12, 16, 20].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) {
       this.fireballCount++;
     }
-    if ([3, 6, 9, 13, 17].includes(this.level)) {
+    if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.40, Number((this.cooldown * 0.92).toFixed(3)));
     }
-    if ([5, 10, 15].includes(this.level)) {
+    if ([4, 8, 12].includes(this.level)) {
       this.explosionRadius = Number((this.explosionRadius + 0.35).toFixed(2));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+10 к урону'];
-    if ([4, 8, 12, 16, 20].includes(nextLvl)) perks.push(`+1 огненный шар (всего ${this.fireballCount + 1})`);
-    if ([3, 6, 9, 13, 17].includes(nextLvl)) perks.push('-8% перезарядки');
-    if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 огненный шар (всего ${this.fireballCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-8% перезарядки');
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
     return perks.join(', ');
   }
 }
@@ -1155,7 +1155,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
     enemies: SimEnemyRef[],
     spawnProjectile: (p: SimProjectileData) => void,
     _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
-    _triggerAnim?: (duration: number) => void,
+    triggerAnim?: (duration: number) => void,
     emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
   ) {
     this.timer += dt;
@@ -1166,7 +1166,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
       const targets = findClosestSimEnemies(enemies, player.position, this.projectileCount, 26 * 26);
       if (targets.length === 0) return;
 
-      if (_triggerAnim) _triggerAnim(0.20);
+      if (triggerAnim) triggerAnim(0.20);
       if (emitSound) emitSound('shoot');
 
       for (let i = 0; i < this.projectileCount; i++) {
@@ -1209,20 +1209,20 @@ export class SimAssaultRifleWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage += 6;
-    if ([5, 10, 15, 20].includes(this.level)) this.projectileCount++;
-    if ([4, 8, 12, 16].includes(this.level)) this.pierce++;
-    if ([2, 6, 9, 13, 17].includes(this.level)) {
+    if ([3, 6, 9, 12].includes(this.level)) this.projectileCount++;
+    if ([4, 8, 12].includes(this.level)) this.pierce++;
+    if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.09, Number((this.cooldown * 0.95).toFixed(3)));
     }
   }
 
   public getNextUpgradeDescription(): string {
-    if (this.level >= this.maxLevel) return 'Максимальный уровень (20)';
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
     const perks: string[] = ['+6 к урону'];
-    if ([5, 10, 15, 20].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
-    if ([4, 8, 12, 16].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
-    if ([2, 6, 9, 13, 17].includes(nextLvl)) perks.push('+5% скорострельности');
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('+5% скорострельности');
     return perks.join(', ');
   }
 }
@@ -1238,7 +1238,7 @@ export class SimInvokerWeapon extends SimWeapon {
     this.invokeSource = invoke?.spell === null ? invoke : undefined;
   }
   public get spellLevel(): number {
-    return Math.min(20, this.level + (this.spell ? (this.invokeSource?.level ?? 1) - 1 : 0));
+    return Math.min(12, this.level + (this.spell ? (this.invokeSource?.level ?? 1) - 1 : 0));
   }
   public onSpellControl?: (enemy: SimEnemyRef, control: SpellControl) => void;
   public onSpellBuff?: (spell: 'ghost_walk' | 'alacrity', level: number) => void;

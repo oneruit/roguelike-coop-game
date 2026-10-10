@@ -183,7 +183,7 @@ class BalanceManagerService {
       damage: 20,
       cooldown: 0.8,
       damagePerLevel: 5,
-      maxLevel: 20
+      maxLevel: 12
     };
   }
 

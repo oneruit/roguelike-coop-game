@@ -144,16 +144,16 @@ export class InvokerWeapon extends Weapon {
     }
   }
   public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
-    if (this.level >= this.maxLevel) return "Максимальный уровень";
+    if (this.level >= this.maxLevel) return "Максимальный уровень (12)";
     const cfg = WEAPON_GRADES[grade];
-    const dmgBonusPct = Math.round(((100 * this.damagePerLevel) / INVOKE_BASE_DAMAGE) * cfg.damageMultiplierBonus);
+    const dmgBonusPct = Math.round(((100 * this.damagePerLevel) / INVOKE_BASE_DAMAGE) * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
     const perks: string[] = [];
     if (this.spell === null) {
       perks.push(`+${dmgBonusPct}% базового урона всех заклинаний`);
       perks.push("−4% перезарядки, +3.5% радиуса");
     } else {
       if (this.damagePerLevel > 0) {
-        const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
+        const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
         perks.push(`+${dmg} к урону`);
       } else {
         perks.push("Усиливает эффект");
@@ -161,7 +161,8 @@ export class InvokerWeapon extends Weapon {
       perks.push("−2.5% перезарядки, больше область действия");
     }
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    return `[${cfg.name.toUpperCase()}] ${perks.join("; ")}`;
+    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join("; ")}`;
   }
 }
 export class InvokerInvokeWeapon extends InvokerWeapon {

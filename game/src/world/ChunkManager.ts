@@ -82,7 +82,8 @@ export class ChunkManager {
     seedInput: number | string = 1337,
     chestManager?: ChestManager,
     riftTeleporter?: RiftTeleporter,
-    stageNumber: number = 1
+    stageNumber: number = 1,
+    biomeId?: string
   ) {
     this.clear();
 
@@ -111,17 +112,21 @@ export class ChunkManager {
     // 1. Safe zone around world spawn origin (0, 0)
     occupied.push({ x: 0, z: 0, radius: 15.0 });
 
-    // 2. Teleporter Placement
+    // 2. Teleporter Placement (Stages 1-3 only; on stage 4 Rift Core, transition is disabled)
     let teleX = 75;
     let teleZ = 75;
     if (riftTeleporter) {
-      // Pick deterministic sector away from spawn
-      const teleAngle = rng.range(0, Math.PI * 2);
-      const teleDist = rng.range(110, 165);
-      teleX = Math.cos(teleAngle) * teleDist;
-      teleZ = Math.sin(teleAngle) * teleDist;
-      riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
-      occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
+      if (stageNumber >= 4) {
+        riftTeleporter.disableForFinalStage();
+      } else {
+        // Pick deterministic sector away from spawn
+        const teleAngle = rng.range(0, Math.PI * 2);
+        const teleDist = rng.range(110, 165);
+        teleX = Math.cos(teleAngle) * teleDist;
+        teleZ = Math.sin(teleAngle) * teleDist;
+        riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
+        occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
+      }
     }
 
     // 3. Exactly 3 Altars (radially distributed, never close to each other)
@@ -354,7 +359,8 @@ export class ChunkManager {
         } else {
           this.scene.add(mesh);
         }
-      }
+      },
+      biomeId
     );
   }
 

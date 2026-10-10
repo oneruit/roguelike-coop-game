@@ -340,7 +340,6 @@ export class GameCore {
   public drops: SimDropInternal[] = [];
   public altars: SimAltarInternal[] = [];
   public activeBoss: SimEnemyInternal | null = null;
-  public immortalBossSpawned: boolean = false;
   public lastBossMinute: number = 0;
   public obstacleManager: ObstacleManager;
 
@@ -413,7 +412,7 @@ export class GameCore {
     let weapon = player.weapons.find(w => w.id === weaponId);
     if (weapon) {
       weapon.upgrade();
-    } else {
+    } else if (player.weapons.length < 4) {
       const newW = createSimWeaponById(weaponId);
       if (newW) player.weapons.push(newW);
     }
@@ -585,23 +584,17 @@ export class GameCore {
   private updateWaves(dt: number) {
     this.spawnTimer += dt;
 
-    // Check boss minute (every 3 minutes, e.g. 3, 6, 9, 12, 15, 18, 21, 24, 27)
+    // Check boss minute (every 3 minutes, e.g. 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, ...)
     const currentMinute = Math.floor(this.gameTime / 60);
     if (currentMinute > 0 && currentMinute % 3 === 0 && currentMinute !== this.lastBossMinute) {
       this.lastBossMinute = currentMinute;
       this.spawnBoss();
     }
 
-    // Immortal Reaper at 30 min (1800s)
-    if (this.gameTime >= 1800 && !this.immortalBossSpawned) {
-      this.immortalBossSpawned = true;
-      this.spawnImmortalReaper();
-    }
-
     // Regular waves interval (scaled with active players)
     const activePlayerCount = Math.max(1, Array.from(this.players.values()).filter(p => p.isAlive).length);
-    const targetInterval = Math.max(0.35, 1.0 - (this.gameTime / 1800) * 0.5 - (activePlayerCount - 1) * 0.1);
-    const maxEnemies = Math.min(220, 60 + Math.floor(this.gameTime / 15) * 5 + (activePlayerCount - 1) * 25);
+    const targetInterval = Math.max(0.35, 1.0 - Math.min(0.65, (this.gameTime / 1800) * 0.5) - (activePlayerCount - 1) * 0.1);
+    const maxEnemies = Math.min(260, 60 + Math.floor(this.gameTime / 15) * 5 + (activePlayerCount - 1) * 25);
 
     if (this.spawnTimer >= targetInterval && this.enemies.length < maxEnemies) {
       this.spawnTimer = 0;
@@ -666,33 +659,6 @@ export class GameCore {
       name: boss.name,
       isImmortal: false,
       hp: boss.hp
-    });
-  }
-
-  private spawnImmortalReaper() {
-    const p = Array.from(this.players.values())[0];
-    const pos = new SimVec3(p ? p.position.x + 20 : 0, 0, p ? p.position.z + 20 : 0);
-    const reaperCfg: SimEnemyConfig = {
-      type: 'ghost',
-      name: 'Бессмертный Жнец',
-      hp: 99999999,
-      speed: 12.0,
-      damage: 9999,
-      width: 3.5,
-      height: 4.5,
-      gemType: 'red',
-      isBoss: true,
-      isImmortal: true
-    };
-    const reaper = new SimEnemyInternal(reaperCfg, pos);
-    this.enemies.push(reaper);
-    this.activeBoss = reaper;
-
-    this.events.push({
-      type: 'boss_spawn',
-      name: reaper.name,
-      isImmortal: true,
-      hp: reaper.hp
     });
   }
 
@@ -783,10 +749,10 @@ export class GameCore {
 
   private damagePlayer(player: SimPlayerInternal, enemy: SimEnemyInternal) {
     const isInvulnerable = player.activeBuffs.has('invulnerable');
-    if (isInvulnerable || (player.activeBuffs.has('ghost') && !enemy.isImmortal && this.gameTime < 1800)) return;
+    if (isInvulnerable || (player.activeBuffs.has('ghost') && !enemy.isImmortal)) return;
 
     let dmg = enemy.damage * (1 - player.passiveDamageReduction);
-    if (enemy.isImmortal || this.gameTime >= 1800) {
+    if (enemy.isImmortal) {
       dmg = 999999;
     }
 
@@ -807,7 +773,7 @@ export class GameCore {
       playerId: player.id,
       damage: Math.round(dmg),
       isFatal,
-      isVictory: enemy.isImmortal || this.gameTime >= 1800
+      isVictory: false
     });
     this.events.push({ type: 'sound', sound: 'player_hurt' });
   }
@@ -1185,7 +1151,7 @@ export class GameCore {
   }
 
   public isGameOver(): { isOver: boolean; isVictory: boolean } {
-    const isVictory = this.gameTime >= 1800 || (this.activeBoss?.isImmortal ?? false);
+    const isVictory = false;
 
     if (this.isCoop) {
       const anyAlive = Array.from(this.players.values()).some(p => p.isAlive && !p.isDowned);
