@@ -1292,7 +1292,7 @@ export class HUD {
       this.bpModalCurLvl.innerText = curLevel >= BP_MAX_LEVEL ? '15 (МАКС)' : curLevel.toString();
     }
     if (this.bpModalCurXp) {
-      this.bpModalCurXp.innerText = curLevel >= BP_MAX_LEVEL ? '10 / 10 ОП (Максимум)' : `${ptsInLvl} / ${BP_POINTS_PER_LEVEL} ОП текущего уровня`;
+      this.bpModalCurXp.innerText = curLevel >= BP_MAX_LEVEL ? `${BP_POINTS_PER_LEVEL} / ${BP_POINTS_PER_LEVEL} ОП` : `${ptsInLvl} / ${BP_POINTS_PER_LEVEL} ОП`;
     }
     if (this.bpModalTotalXp) {
       this.bpModalTotalXp.innerText = `Всего: ${curPts} / ${BP_MAX_POINTS} ОП`;
@@ -1327,17 +1327,17 @@ export class HUD {
       }
 
       card.innerHTML = `
-        <div class="bp-tier-lvl-badge">УРОВЕНЬ ${reward.level}${reward.isMilestone ? ' ★' : ''}</div>
+        <div class="bp-tier-lvl-badge">УРОВЕНЬ ${reward.level}</div>
         <div class="bp-tier-icon-wrap">
           <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-tier-img" alt="${reward.name}" />
+        </div>
+        <div class="bp-tier-rewards-col">
+          <span class="bp-tier-reward-coin">💰 +${reward.coins} монет</span>
+          ${reward.gems ? `<span class="bp-tier-reward-gem">💎 +${reward.gems} крист.</span>` : ''}
         </div>
         <div class="bp-tier-info">
           <div class="bp-tier-title">${reward.name}</div>
           <div class="bp-tier-desc">${reward.description}</div>
-          <div class="bp-tier-rewards-row">
-            <span class="bp-tier-reward-coin">💰 +${reward.coins} монет</span>
-            ${reward.gems ? `<span class="bp-tier-reward-gem">💎 +${reward.gems} крист.</span>` : ''}
-          </div>
         </div>
         <div class="bp-tier-action">
           ${btnHtml}
