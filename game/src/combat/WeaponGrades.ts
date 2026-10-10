@@ -10,8 +10,6 @@ export interface WeaponGradeConfig {
   glowColor: string;
   badgeBg: string;
   damageMultiplierBonus: number;
-  critChanceBonus: number;
-  critDamageBonus: number;
   cooldownReductionBonus: number;
 }
 
@@ -26,8 +24,6 @@ export const WEAPON_GRADES: Record<WeaponGrade, WeaponGradeConfig> = {
     glowColor: 'rgba(148, 163, 184, 0.3)',
     badgeBg: '#334155',
     damageMultiplierBonus: 1.0,
-    critChanceBonus: 0.0,
-    critDamageBonus: 0.0,
     cooldownReductionBonus: 0.0
   },
   uncommon: {
@@ -40,8 +36,6 @@ export const WEAPON_GRADES: Record<WeaponGrade, WeaponGradeConfig> = {
     glowColor: 'rgba(16, 185, 129, 0.4)',
     badgeBg: '#065f46',
     damageMultiplierBonus: 1.5,
-    critChanceBonus: 0.05,
-    critDamageBonus: 0.05,
     cooldownReductionBonus: 0.04
   },
   rare: {
@@ -54,8 +48,6 @@ export const WEAPON_GRADES: Record<WeaponGrade, WeaponGradeConfig> = {
     glowColor: 'rgba(56, 189, 248, 0.5)',
     badgeBg: '#0369a1',
     damageMultiplierBonus: 2.2,
-    critChanceBonus: 0.15,
-    critDamageBonus: 0.15,
     cooldownReductionBonus: 0.08
   },
   legendary: {
@@ -68,8 +60,6 @@ export const WEAPON_GRADES: Record<WeaponGrade, WeaponGradeConfig> = {
     glowColor: 'rgba(251, 191, 36, 0.6)',
     badgeBg: '#b45309',
     damageMultiplierBonus: 3.5,
-    critChanceBonus: 0.35,
-    critDamageBonus: 0.25,
     cooldownReductionBonus: 0.15
   }
 };

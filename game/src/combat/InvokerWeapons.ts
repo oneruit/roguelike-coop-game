@@ -160,8 +160,6 @@ export class InvokerWeapon extends Weapon {
       }
       perks.push("−2.5% перезарядки, больше область действия");
     }
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join("; ")}`;
   }

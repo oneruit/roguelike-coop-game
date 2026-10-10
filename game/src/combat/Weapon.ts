@@ -17,8 +17,7 @@ import { WeaponBalanceConfig } from '../balance/BalanceTypes';
 import type { MeleeAttackInfo, MeleeWeaponId } from '../shared/types';
 import {
   type WeaponGrade,
-  WEAPON_GRADES,
-  getGradeTier
+  WEAPON_GRADES
 } from './WeaponGrades';
 
 export interface WeaponInfo {
@@ -28,7 +27,7 @@ export interface WeaponInfo {
   iconImage?: string;
   level: number;
   maxLevel: number;
-  grade?: WeaponGrade;
+  upgradeHistory?: WeaponGrade[];
   description: string;
 }
 
@@ -112,9 +111,6 @@ export abstract class Weapon {
   }
   public level: number = 1;
   public maxLevel: number = 20;
-  public grade: WeaponGrade = 'common';
-  public critChance: number = 0;
-  public critDamage: number = 0;
   public bonusDamage: number = 0;
   public cooldownBonus: number = 0;
   public upgradeHistory: WeaponGrade[] = [];
@@ -166,14 +162,9 @@ export abstract class Weapon {
 
   public applyGradeUpgrade(grade: WeaponGrade = 'common'): void {
     const cfg = WEAPON_GRADES[grade];
-    if (getGradeTier(grade) > getGradeTier(this.grade)) {
-      this.grade = grade;
-    }
     this.upgradeHistory.push(grade);
     const extraDamage = Math.round(this.damagePerLevel * (cfg.damageMultiplierBonus - 1.0));
     this.bonusDamage += extraDamage;
-    this.critChance = Math.min(10.0, this.critChance + cfg.critChanceBonus);
-    this.critDamage = Math.min(1.0, this.critDamage + cfg.critDamageBonus);
     this.cooldownBonus = Math.min(0.60, this.cooldownBonus + cfg.cooldownReductionBonus);
     if (cfg.cooldownReductionBonus > 0) {
       this.cooldown = Math.max(0.08, Number((this.cooldown * (1 - cfg.cooldownReductionBonus)).toFixed(3)));
@@ -223,7 +214,7 @@ export abstract class Weapon {
       iconImage: this.iconImage,
       level: this.level,
       maxLevel: this.maxLevel,
-      grade: this.grade,
+      upgradeHistory: [...this.upgradeHistory],
       description: this.getNextUpgradeDescription()
     };
   }
@@ -332,8 +323,6 @@ export class BowWeapon extends Weapon {
     if ([3, 6, 9, 13, 17].includes(nextLvl) || grade === 'rare' || grade === 'legendary') {
       perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     }
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -437,8 +426,6 @@ export class KukriWeapon extends Weapon {
     if ([10, 20].includes(nextLvl) || grade === 'legendary') {
       perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     }
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -541,8 +528,6 @@ export class OrbitingBarrierWeapon extends Weapon {
     if ([3, 6, 9, 12, 15, 18, 20].includes(nextLvl) || grade === 'rare' || grade === 'legendary') {
       perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     }
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -679,8 +664,6 @@ export class HolyAuraWeapon extends Weapon {
     const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const radBonus = grade === 'legendary' ? '+0.45м' : (grade === 'rare' ? '+0.30м' : '+0.20м');
     const perks: string[] = [`${radBonus} радиус кольца`, `+${dmg} урона огнем`];
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -767,8 +750,6 @@ export class KatanaSlashWeapon extends Weapon {
     const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const radBonus = grade === 'legendary' ? '+0.35м' : (grade === 'rare' ? '+0.22м' : '+0.14м');
     const perks: string[] = [`${radBonus} радиус взмаха`, `+${dmg} урона`];
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -854,8 +835,6 @@ export class WhirlwindSlashWeapon extends Weapon {
     const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus);
     const radBonus = grade === 'legendary' ? '+0.30м' : (grade === 'rare' ? '+0.20м' : '+0.12м');
     const perks: string[] = [`${radBonus} радиус вихря`, `+${dmg} урона`];
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -943,8 +922,6 @@ export class GreatswordWeapon extends Weapon {
     const perks: string[] = [`${radBonus} радиус взмаха`, `+${dmg} урона`];
     const nextCd = Math.max(0.35, Number((this.cooldown * 0.96).toFixed(3)));
     if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1040,8 +1017,6 @@ export class FlailWeapon extends Weapon {
     const perks: string[] = ['+0.14м радиус цепа', `+${dmg} урона`, 'сильнее отброс'];
     const nextCd = Math.max(0.25, Number((this.cooldown * 0.96).toFixed(3)));
     if (nextCd < this.cooldown) perks.push('-4% перезарядки');
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1149,8 +1124,6 @@ export class AstralStaffWeapon extends Weapon {
       const nextCd = Math.max(0.30, Number((this.cooldown * 0.94).toFixed(3)));
       if (nextCd < this.cooldown) perks.push('-6% перезарядки');
     }
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1266,8 +1239,6 @@ export class ChakramWeapon extends Weapon {
       if (nextCd < this.cooldown) perks.push('-6% перезарядки');
     }
     if ([2, 5, 10, 15].includes(nextLvl)) perks.push('+1.2 м/с скорость полёта');
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1376,8 +1347,6 @@ export class LightningStrikeWeapon extends Weapon {
       if (nextCd < this.cooldown) perks.push('-8% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.30м радиус взрыва (всего ${(this.strikeRadius + 0.30).toFixed(2)}м)`);
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1484,8 +1453,6 @@ export class IceSpikeWeapon extends Weapon {
       if (nextCd < this.cooldown) perks.push('-7% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.25м радиус поражения (всего ${(this.spikeRadius + 0.25).toFixed(2)}м)`);
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1602,8 +1569,6 @@ export class FireballWeapon extends Weapon {
       if (nextCd < this.cooldown) perks.push('-8% перезарядки');
     }
     if ([5, 10, 15].includes(nextLvl)) perks.push(`+0.35м радиус взрыва (всего ${(this.explosionRadius + 0.35).toFixed(2)}м)`);
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
@@ -1715,8 +1680,6 @@ export class AssaultRifleWeapon extends Weapon {
     if ([5, 10, 15, 20].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12, 16].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 6, 9, 13, 17].includes(nextLvl)) perks.push(`+5% скорострельности`);
-    if (cfg.critChanceBonus > 0) perks.push(`+${Math.round(cfg.critChanceBonus * 100)}% крит. шанс`);
-    if (cfg.critDamageBonus > 0) perks.push(`+${Math.round(cfg.critDamageBonus * 100)}% крит. урон`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
     return `[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }

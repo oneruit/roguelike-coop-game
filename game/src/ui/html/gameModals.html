@@ -86,6 +86,83 @@
         </div>
       </div>
 
+      <!-- Chest Item Choice Modal (Pick 1 of 2) -->
+      <div id="chest-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card chest-choice-card modern-glass-modal">
+          <div class="modal-header">
+            <div class="sub-title menu-badge-yellow">СУНДУК РАЗЛОМА</div>
+            <h2 class="wild-west-title modern-menu-title">ВЫБЕРИТЕ 1 ИЗ 2 ПРЕДМЕТОВ [1 - 2]</h2>
+          </div>
+          <p class="chest-hint menu-tagline-modern">Нажмите [1] или [2], либо кликните по карточке, чтобы забрать артефакт</p>
+          <div id="chest-item-cards" class="chest-items-grid">
+            <!-- Dynamically populated 2 cards -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Character & Inventory Modal (I / C / HUD Button) -->
+      <div id="inventory-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop" id="inventory-backdrop"></div>
+        <div class="modal-card inventory-modal-card modern-glass-modal">
+          <div class="inventory-modal-header">
+            <div class="inventory-title-group">
+              <div class="sub-title menu-badge-blue">СНАРЯЖЕНИЕ И АРТЕФАКТЫ</div>
+              <h2 class="wild-west-title modern-menu-title" id="inventory-hero-title">ИНВЕНТАРЬ ПЕРСОНАЖА</h2>
+            </div>
+            <button id="btn-close-inventory" class="modern-back-btn" type="button" title="Закрыть [ESC] / [I]">[X] ЗАКРЫТЬ [I]</button>
+          </div>
+
+          <div class="inventory-modal-content">
+            <!-- Left Panel: Hero Stats & Passives -->
+            <div class="inventory-col inventory-left-panel">
+              <div class="inventory-card-section">
+                <div class="inventory-section-heading">
+                  <span class="inventory-heading-icon">👤</span>
+                  <span>ХАРАКТЕРИСТИКИ</span>
+                </div>
+                <div id="inventory-stats-list" class="inventory-stats-table">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <div class="inventory-card-section">
+                <div class="inventory-section-heading">
+                  <span class="inventory-heading-icon">⭐</span>
+                  <span>ПАССИВНЫЕ УСИЛЕНИЯ</span>
+                </div>
+                <div id="inventory-passives-list" class="inventory-passives-list">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Weapons & Rift Items -->
+            <div class="inventory-col inventory-right-panel">
+              <div class="inventory-card-section">
+                <div class="inventory-section-heading">
+                  <span class="inventory-heading-icon">⚔️</span>
+                  <span>ОРУЖИЕ И УЛУЧШЕНИЯ</span>
+                </div>
+                <div id="inventory-weapons-list" class="inventory-weapons-list">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <div class="inventory-card-section">
+                <div class="inventory-section-heading">
+                  <span class="inventory-heading-icon">💎</span>
+                  <span>ПРЕДМЕТЫ РАЗЛОМА</span>
+                </div>
+                <div id="inventory-items-list" class="inventory-items-grid">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Game Over / Victory Modal -->
       <div id="game-over-modal" class="modal hidden">
         <div class="modal-backdrop menu-scenic-backdrop"></div>
