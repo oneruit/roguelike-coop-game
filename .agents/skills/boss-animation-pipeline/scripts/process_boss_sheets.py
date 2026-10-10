@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 """
-Standardized Character Animation Pipeline Processor
-Processes 4 separate animation state images (IDLE, WALK, ATTACK, WALK_ATTACK) and a portrait
+Standardized Boss Animation Pipeline Processor (4-Frame Standard)
+Processes separate animation state images (WALK, ATTACK, IDLE) and a portrait
 into production-ready, standardized sprite sheets for the game engine.
 
 Standard Specifications:
-- Character Style: "Chibi" proportions (2.0 to 2.5 heads tall, expressive head, compact body)
-- Character Max Height: <= 96 pixels inside 128px cell
-- Clean Natural Outlines: No artificial 1px black borders
-- 4 separate images (one per action state)
-- Exactly 24 frames per image arranged in 6 columns x 4 rows
-- Frame cell size: 128 x 128 pixels
-- Total sheet resolution: 768 x 512 pixels (6 * 128 = 768, 4 * 128 = 512)
-- Portrait resolution: 128 x 128 pixels
+- 4 columns x 4 rows (16 frames total per sheet)
+- Default cell size: 160 x 160 pixels (total resolution: 640 x 640 pixels)
+  Also supports 128x128 (512x512) for compact bosses or 224x224 (896x896) for colossal bosses.
 - Directional row mapping:
-  * Row 0 (Top): Front / Forward-facing view
+  * Row 0 (Top): Front / Forward-facing view (moving down towards player)
   * Row 1: Left-facing view
   * Row 2: Right-facing view
-  * Row 3 (Bottom): Back / Upward-facing view
-- Bottom margin: 10px offset from bottom (target_feet_y = 118 in 128px cell)
-  Prevents combat slash arcs and ground effects from clipping while keeping characters grounded
-- Horizontal center: x = 64 in 128px cell
+  * Row 3 (Bottom): Back / Upward-facing view (moving up away from player)
+- Generous bottom buffer: target_feet_y = 136 in 160px cell (24px margin from bottom)
+  to accommodate ground shockwaves, stomp fx, claws, and impact sparks.
+- Symmetrical lateral mirroring (--mirror-left): mirrors Row 2 (Right) into Row 1 (Left)
+  to guarantee zero directional drift and matched attack/walk timing.
+- Auto-exports directional fallbacks: boss_<name>_{front,back,left,right}.png
 """
 
 import os
@@ -45,7 +42,7 @@ def detect_and_clean_background(img_arr, bg_mode='auto'):
 
     if c == 4 and bg_mode != 'chroma':
         alpha = img_arr[:, :, 3]
-        if (alpha == 0).mean() > 0.15:
+        if (alpha == 0).mean() > 0.12:
             arr = img_arr.copy()
             arr[arr[:, :, 3] < 12, 3] = 0
             return arr
@@ -82,23 +79,22 @@ def detect_and_clean_background(img_arr, bg_mode='auto'):
     return out
 
 
-def align_and_pack_sheet(
+def align_and_pack_boss_sheet(
     rgba_arr,
-    cell_size=128,
-    cols=6,
+    cell_size=160,
+    cols=4,
     rows=4,
-    target_feet_y=118,
-    target_char_h=92.0,
-    max_char_h=96.0,
+    target_feet_y=136,
+    target_char_h=120.0,
+    max_char_h=130.0,
     mirror_left=False,
     mirror_right=False
 ):
     """
-    Standardizes a 6x4 animation image into cell_size x cell_size frames (768x512).
-    Leaves a 10px margin at the bottom (target_feet_y = 118 in 128px cell).
-    Caps character height to <= 96px.
-    Supports mirror_left (mirrors Row 2 Right into Row 1 Left) and mirror_right (mirrors Row 1 into Row 2)
-    to eliminate AI direction drift and turning artifacts in lateral rows.
+    Standardizes a 4x4 animation image into cell_size x cell_size frames (e.g. 640x640).
+    Leaves generous bottom margin (target_feet_y = 136 in 160px cell).
+    Caps character height to <= max_char_h.
+    Supports mirror_left (mirrors Row 2 Right into Row 1 Left) and mirror_right.
     """
     h, w = rgba_arr.shape[:2]
     row_h = h / float(rows)
@@ -121,16 +117,14 @@ def align_and_pack_sheet(
                 feet_in_row.append(y0 + ys.max())
                 char_heights.append(ys.max() - ys.min())
 
-        row_baselines.append(np.median(feet_in_row) if len(feet_in_row) > 0 else (y1 - 3))
+        row_baselines.append(np.median(feet_in_row) if len(feet_in_row) > 0 else (y1 - 4))
 
     ref_h = np.median(char_heights) if len(char_heights) > 0 else (row_h * 0.8)
-    # Scale to target height and strictly cap at max_char_h (96px)
     scale = min(target_char_h / float(ref_h), max_char_h / float(ref_h)) if ref_h > 0 else 1.0
 
     out_sheet = np.zeros((rows * cell_size, cols * cell_size, 4), dtype=np.uint8)
 
     for r in range(rows):
-        # Determine source row if horizontal mirroring is requested
         src_r = r
         flip_horizontal = False
         if r == 1 and mirror_left:
@@ -166,12 +160,10 @@ def align_and_pack_sheet(
             sp_scaled = np.array(sp_img.resize((new_w, new_h), Image.Resampling.LANCZOS))
 
             if flip_horizontal:
-                # Mirror sprite horizontally to guarantee 100% directional accuracy
                 sp_scaled = np.fliplr(sp_scaled)
 
             bh, bw = sp_scaled.shape[:2]
 
-            # Placement with 10px margin at bottom
             global_feet = y0 + max_y
             feet_offset = global_feet - ground_y
 
@@ -179,7 +171,6 @@ def align_and_pack_sheet(
             dst_y = dst_feet_y - bh
             dst_x = (cell_size - bw) // 2
 
-            # Clamp inside frame boundaries
             dst_y = max(0, min(cell_size - bh, dst_y))
             dst_x = max(0, min(cell_size - bw, dst_x))
 
@@ -193,9 +184,9 @@ def align_and_pack_sheet(
     return Image.fromarray(out_sheet)
 
 
-def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_sheet=None):
+def process_boss_portrait(portrait_input, out_path, cell_size=160, fallback_sheet=None):
     """
-    Standardizes portrait to 128x128 pixel transparent PNG.
+    Standardizes boss portrait icon to transparent PNG.
     """
     out_path = os.path.normpath(os.path.abspath(out_path))
     if portrait_input and os.path.isfile(portrait_input):
@@ -229,11 +220,11 @@ def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_shee
                 except Exception:
                     pass
             os.replace(tmp_path, out_path)
-            print(f'[OK] Processed Portrait: {out_path} ({res.size})')
+            print(f'[OK] Processed Boss Portrait: {out_path} ({res.size})')
             return
 
-    if fallback_idle_sheet is not None:
-        crop_cell = fallback_idle_sheet.crop((0, 0, cell_size, cell_size))
+    if fallback_sheet is not None:
+        crop_cell = fallback_sheet.crop((0, 0, cell_size, cell_size))
         tmp_path = out_path + '.tmp.png'
         crop_cell.save(tmp_path)
         if os.path.exists(out_path):
@@ -242,36 +233,58 @@ def process_portrait(portrait_input, out_path, cell_size=128, fallback_idle_shee
             except Exception:
                 pass
         os.replace(tmp_path, out_path)
-        print(f'[OK] Created Portrait from IDLE Row 0 Col 0: {out_path} ({crop_cell.size})')
+        print(f'[OK] Created Boss Portrait from Row 0 Col 0: {out_path} ({crop_cell.size})')
 
 
-def process_character(
+def export_directional_fallbacks(sheet, out_dir, clean_name, cell_size=160):
+    """
+    Exports static directional 1-frame fallbacks:
+    - _front.png (Row 0, Col 0)
+    - _left.png  (Row 1, Col 0)
+    - _right.png (Row 2, Col 0)
+    - _back.png  (Row 3, Col 0)
+    """
+    dirs = [
+        ('front', 0),
+        ('left', 1),
+        ('right', 2),
+        ('back', 3)
+    ]
+    for dir_name, row in dirs:
+        x0 = 0
+        y0 = row * cell_size
+        frame = sheet.crop((x0, y0, x0 + cell_size, y0 + cell_size))
+        file_path = os.path.join(out_dir, f'{clean_name}_{dir_name}.png')
+        frame.save(file_path)
+    print(f'[OK] Exported Directional Fallbacks (_front, _left, _right, _back) into: {out_dir}')
+
+
+def process_boss(
     name,
-    idle_path,
     walk_path,
     attack_path,
-    walk_attack_path,
+    idle_path=None,
     portrait_path=None,
-    out_dir='public/textures/heroes',
-    cell_size=128,
-    cols=6,
+    out_dir='public/textures/bosses',
+    cell_size=160,
+    cols=4,
     rows=4,
-    target_feet_y=118,
-    target_char_h=92.0,
-    max_char_h=96.0,
-    mirror_left=False,
+    target_feet_y=136,
+    target_char_h=120.0,
+    max_char_h=130.0,
+    mirror_left=True,
     mirror_right=False
 ):
     out_dir = os.path.normpath(os.path.abspath(out_dir))
     os.makedirs(out_dir, exist_ok=True)
-    clean_name = name if name.startswith('hero_') else f'hero_{name}'
+    clean_name = name if name.startswith('boss_') else f'boss_{name}'
 
     inputs = {
-        'idle': idle_path,
         'walk': walk_path,
-        'attack': attack_path,
-        'walk_attack': walk_attack_path
+        'attack': attack_path
     }
+    if idle_path:
+        inputs['idle'] = idle_path
 
     processed_sheets = {}
 
@@ -283,7 +296,7 @@ def process_character(
         arr = np.array(raw_im)
         rgba = detect_and_clean_background(arr)
 
-        sheet = align_and_pack_sheet(
+        sheet = align_and_pack_boss_sheet(
             rgba,
             cell_size=cell_size,
             cols=cols,
@@ -305,45 +318,48 @@ def process_character(
                 pass
         os.replace(tmp_file, out_file)
         processed_sheets[state] = sheet
-        print(f'[OK] Processed {state.upper()}: {out_file} ({sheet.size})')
+        print(f'[OK] Processed Boss {state.upper()}: {out_file} ({sheet.size})')
 
-    # Portrait processing
+    # Portrait & Directional Fallbacks
     portrait_out = os.path.join(out_dir, f'{clean_name}_front.png')
-    process_portrait(
+    primary_sheet = processed_sheets.get('walk') or processed_sheets.get('idle')
+    process_boss_portrait(
         portrait_path,
         portrait_out,
         cell_size=cell_size,
-        fallback_idle_sheet=processed_sheets.get('idle')
+        fallback_sheet=primary_sheet
     )
 
-    print(f'\nSuccess! Standard 128x128 Chibi character package ready for "{clean_name}".')
+    if primary_sheet:
+        export_directional_fallbacks(primary_sheet, out_dir, clean_name, cell_size=cell_size)
+
+    print(f'\nSuccess! Standard 4-Frame Boss package ready for "{clean_name}".')
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process 4 separate 6x4 animation sheets into 128x128 standard.')
-    parser.add_argument('--name', '-n', required=True, help='Character name (e.g. valkyrie or hero_valkyrie)')
-    parser.add_argument('--idle', required=True, help='Path to 6x4 IDLE image')
-    parser.add_argument('--walk', required=True, help='Path to 6x4 WALK image')
-    parser.add_argument('--attack', required=True, help='Path to 6x4 ATTACK image')
-    parser.add_argument('--walk-attack', required=True, help='Path to 6x4 WALK_ATTACK image')
+    parser = argparse.ArgumentParser(description='Process 4x4 animation sheets into 4-frame standard for bosses.')
+    parser.add_argument('--name', '-n', required=True, help='Boss name (e.g. demon or boss_demon)')
+    parser.add_argument('--walk', required=True, help='Path to 4x4 WALK image')
+    parser.add_argument('--attack', required=True, help='Path to 4x4 ATTACK image')
+    parser.add_argument('--idle', help='Optional path to 4x4 IDLE image')
     parser.add_argument('--portrait', help='Optional path to portrait image')
-    parser.add_argument('--out-dir', '-o', default='public/textures/heroes', help='Output directory')
-    parser.add_argument('--cell-size', type=int, default=128, help='Frame cell size (default: 128)')
-    parser.add_argument('--cols', type=int, default=6, help='Columns per row (default: 6)')
+    parser.add_argument('--out-dir', '-o', default='public/textures/bosses', help='Output directory')
+    parser.add_argument('--cell-size', type=int, default=160, help='Frame cell size (default: 160)')
+    parser.add_argument('--cols', type=int, default=4, help='Columns per row (default: 4)')
     parser.add_argument('--rows', type=int, default=4, help='Rows (default: 4)')
-    parser.add_argument('--feet-y', type=int, default=118, help='Feet anchor Y coordinate (default: 118, 10px margin from bottom)')
-    parser.add_argument('--char-h', type=float, default=92.0, help='Target character height (default: 92.0, max 96.0)')
-    parser.add_argument('--max-h', type=float, default=96.0, help='Max allowed character height (default: 96.0)')
-    parser.add_argument('--mirror-left', action='store_true', help='Mirror Row 2 (Right) into Row 1 (Left) to eliminate orientation drift')
+    parser.add_argument('--feet-y', type=int, default=136, help='Feet anchor Y coordinate (default: 136, 24px margin from bottom in 160px cell)')
+    parser.add_argument('--char-h', type=float, default=120.0, help='Target boss height (default: 120.0)')
+    parser.add_argument('--max-h', type=float, default=130.0, help='Max allowed boss height (default: 130.0)')
+    parser.add_argument('--mirror-left', action='store_true', default=True, help='Mirror Row 2 (Right) into Row 1 (Left)')
+    parser.add_argument('--no-mirror-left', dest='mirror_left', action='store_false', help='Disable automatic left mirroring')
     parser.add_argument('--mirror-right', action='store_true', help='Mirror Row 1 (Left) into Row 2 (Right)')
 
     args = parser.parse_args()
-    process_character(
+    process_boss(
         name=args.name,
-        idle_path=args.idle,
         walk_path=args.walk,
         attack_path=args.attack,
-        walk_attack_path=args.walk_attack,
+        idle_path=args.idle,
         portrait_path=args.portrait,
         out_dir=args.out_dir,
         cell_size=args.cell_size,
@@ -355,4 +371,3 @@ if __name__ == '__main__':
         mirror_left=args.mirror_left,
         mirror_right=args.mirror_right
     )
-

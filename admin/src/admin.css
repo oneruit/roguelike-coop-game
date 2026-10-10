@@ -629,15 +629,9 @@ body {
    ========================================================================== */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
-}
-
-@media (max-width: 1150px) {
-  .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 .metric-card {
@@ -684,6 +678,10 @@ body {
 
 .circle-orange {
   background: #fff7ed;
+}
+
+.circle-amber {
+  background: #fef3c7;
 }
 
 .metric-data-wrap {
