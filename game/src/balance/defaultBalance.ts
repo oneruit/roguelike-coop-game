@@ -186,7 +186,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       icon: '🔫',
       damage: 18,
       cooldown: 0.18,
-      damagePerLevel: 3,
+      damagePerLevel: 6,
       maxLevel: 20,
       speed: 32,
       pierce: 1,
