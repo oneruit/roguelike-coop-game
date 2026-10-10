@@ -237,6 +237,17 @@ export class MapManager {
       }
     }
 
+    // 2b. Discover Rift Teleporter when approached or chunk explored
+    if (this.riftTeleporter && !this.riftTeleporter.isDiscovered) {
+      const chunkX = Math.floor(this.riftTeleporter.position.x / 50);
+      const chunkZ = Math.floor(this.riftTeleporter.position.z / 50);
+      const chunkKey = `${chunkX},${chunkZ}`;
+      const dist = this.riftTeleporter.position.distanceTo(this.player.position);
+      if (dist < 45 || this.exploredChunks.has(chunkKey) || this.riftTeleporter.state !== 'IDLE') {
+        this.riftTeleporter.isDiscovered = true;
+      }
+    }
+
     // 3. Render Minimap
     this.renderMinimap();
 
@@ -388,33 +399,38 @@ export class MapManager {
       }
     }
 
-    // 2c. Draw Rift Teleporter on Minimap
-    if (this.riftTeleporter) {
+    // 2c. Draw Rift Teleporter on Minimap (analogous to chests: shown only once discovered and within radar range)
+    if (this.riftTeleporter && this.riftTeleporter.isDiscovered) {
       const relX = (this.riftTeleporter.position.x - playerX) * scale;
       const relZ = (this.riftTeleporter.position.z - playerZ) * scale;
       const distSq = relX * relX + relZ * relZ;
 
-      let drawX = cx + relX;
-      let drawY = cy + relZ;
-      if (distSq > radius * radius) {
-        const d = Math.sqrt(distSq);
-        drawX = cx + (relX / d) * (radius - 8);
-        drawY = cy + (relZ / d) * (radius - 8);
+      if (distSq <= radius * radius) {
+        const drawX = cx + relX;
+        const drawY = cy + relZ;
+
+        const teleColor = this.riftTeleporter.state === 'WARP_READY' ? '#10b981' : this.riftTeleporter.state === 'CHARGING' ? '#f43f5e' : '#818cf8';
+        const pulse = 1 + Math.sin(this.animTimer * 4) * 0.15;
+
+        ctx.strokeStyle = teleColor;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(drawX, drawY, 7 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = teleColor;
+        ctx.beginPath();
+        ctx.arc(drawX, drawY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        ctx.font = '10px "Segoe UI", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🌀', drawX, drawY);
       }
-
-      const teleColor = this.riftTeleporter.state === 'WARP_READY' ? '#10b981' : this.riftTeleporter.state === 'CHARGING' ? '#f43f5e' : '#818cf8';
-      ctx.fillStyle = teleColor;
-      ctx.beginPath();
-      ctx.arc(drawX, drawY, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      ctx.font = '10px "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('🌀', drawX, drawY);
     }
 
     // 3. Draw Enemies (crimson dots, boss as glowing skull)
@@ -796,15 +812,12 @@ export class MapManager {
       }
     }
 
-    // 7c. Draw Teleporter on Full Map
-    if (this.riftTeleporter) {
+    // 7c. Draw Teleporter on Full Map (analogous to chests: only if discovered)
+    if (this.riftTeleporter && this.riftTeleporter.isDiscovered) {
       const tx = cx + (this.riftTeleporter.position.x - px) * mapScale;
       const tz = cy + (this.riftTeleporter.position.z - pz) * mapScale;
-      const chunkX = Math.floor(this.riftTeleporter.position.x / 50);
-      const chunkZ = Math.floor(this.riftTeleporter.position.z / 50);
-      const isVisible = this.exploredChunks.has(`${chunkX},${chunkZ}`) || this.riftTeleporter.position.distanceTo(this.player.position) < 80;
 
-      if (isVisible && tx >= 15 && tx <= w - 15 && tz >= 15 && tz <= h - 15) {
+      if (tx >= 15 && tx <= w - 15 && tz >= 15 && tz <= h - 15) {
         ctx.save();
         const teleColor = this.riftTeleporter.state === 'WARP_READY' ? '#10b981' : this.riftTeleporter.state === 'CHARGING' ? '#f43f5e' : '#818cf8';
         ctx.fillStyle = 'rgba(20, 14, 10, 0.92)';

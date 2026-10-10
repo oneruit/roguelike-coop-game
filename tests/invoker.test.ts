@@ -338,19 +338,45 @@ test("Dedicated simulation creates Invoker and reproduces casts from the same se
   assert.deepEqual(run(), run());
 });
 
-test("Dedicated upgrades reject spells without Invoke, then allow them after acquiring it", () => {
+test("Dedicated upgrades reject spells without Invoke, then allow them after acquiring it for Invoker", () => {
   const core = new GameCore({ seed: 77 });
-  const player = core.addPlayer("p1", "ronin");
-  core.upgradePlayerWeapon("p1", "invoker_sun_strike");
-  assert.equal(
-    player.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
-    false,
-  );
+  // Ronin cannot acquire invoker spells or invoke
+  const ronin = core.addPlayer("p1", "ronin");
   core.upgradePlayerWeapon("p1", "invoker_invoke");
+  assert.equal(
+    ronin.weapons.some((weapon) => weapon.id === "invoker_invoke"),
+    false,
+    "Other heroes cannot acquire Invoker abilities"
+  );
   core.upgradePlayerWeapon("p1", "invoker_sun_strike");
   assert.equal(
-    player.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
+    ronin.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
+    false,
+    "Other heroes cannot acquire Invoker spells"
+  );
+
+  // Invoker: reject spells without Invoke, then allow after acquiring Invoke
+  const invoker = core.addPlayer("p2", "invoker");
+  invoker.weapons = []; // simulate state without invoke
+  core.upgradePlayerWeapon("p2", "invoker_sun_strike");
+  assert.equal(
+    invoker.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
+    false,
+    "Invoker cannot acquire standalone spells without Invoke"
+  );
+  core.upgradePlayerWeapon("p2", "invoker_invoke");
+  core.upgradePlayerWeapon("p2", "invoker_sun_strike");
+  assert.equal(
+    invoker.weapons.some((weapon) => weapon.id === "invoker_sun_strike"),
     true,
+    "Invoker can acquire standalone spells once Invoke is owned"
+  );
+  // Invoker cannot acquire non-invoker weapons
+  core.upgradePlayerWeapon("p2", "bow");
+  assert.equal(
+    invoker.weapons.some((weapon) => weapon.id === "bow"),
+    false,
+    "Invoker cannot acquire generic weapons"
   );
 });
 

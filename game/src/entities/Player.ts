@@ -355,6 +355,7 @@ export class Player {
   public onSpellCast?: (cast: InvokerSpellCast) => void;
   public onSpellControl?: (enemy: Enemy, control: SpellControl) => void;
   public onMeleeAttack?: (attack: MeleeAttackInfo) => void;
+  public onDamageTaken?: (amount: number, currentHp: number, maxHp: number) => void;
 
   public triggerAttackAnim(duration: number = 0.5) {
     this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
@@ -885,6 +886,8 @@ export class Player {
       this.hp = Math.max(0, this.hp - finalAmount);
       this.flashTimer = 0.15;
       this.spriteMaterial.color.setHex(0xff2222);
+      SoundManager.playPlayerHurt();
+      this.onDamageTaken?.(finalAmount, this.hp, this.maxHp);
     }
 
     // Check Chronos Phylactery (Legendary Item) lethal protection

@@ -22,6 +22,7 @@ export class RiftTeleporter {
   public chargeRadius: number = 35; // 35 meters radius
   public isPlayerInsideZone: boolean = false;
   public isBossDefeated: boolean = false;
+  public isDiscovered: boolean = false;
 
   public mesh: Group;
   private ringMesh1!: Mesh;
@@ -100,6 +101,7 @@ export class RiftTeleporter {
 
   public activate(): boolean {
     if (this.state !== 'IDLE') return false;
+    this.isDiscovered = true;
     this.state = 'CHARGING';
     this.chargeProgress = 0;
     this.isBossDefeated = false;
@@ -114,6 +116,20 @@ export class RiftTeleporter {
     this.ringMesh1.rotation.z += dt * 0.8;
     this.ringMesh2.rotation.x += dt * 1.2;
     this.ringMesh2.rotation.y -= dt * 1.0;
+
+    // Check discovery radius if not yet discovered
+    if (!this.isDiscovered) {
+      if (this.state !== 'IDLE') {
+        this.isDiscovered = true;
+      } else {
+        for (const pos of playerPositions) {
+          if (pos.distanceToSquared(this.position) <= 45 * 45) {
+            this.isDiscovered = true;
+            break;
+          }
+        }
+      }
+    }
 
     let justCompleted = false;
 
@@ -156,6 +172,7 @@ export class RiftTeleporter {
     this.position.copy(newPos);
     this.mesh.position.copy(newPos);
     this.state = 'IDLE';
+    this.isDiscovered = false;
     this.chargeProgress = 0;
     this.isBossDefeated = false;
     this.isPlayerInsideZone = false;
@@ -198,13 +215,17 @@ export class RiftTeleporter {
       z: this.position.z,
       isActivated: this.state !== 'IDLE',
       chargeProgress: this.chargeProgress,
-      isCompleted: this.state === 'WARP_READY'
+      isCompleted: this.state === 'WARP_READY',
+      isDiscovered: this.isDiscovered || this.state !== 'IDLE'
     };
   }
 
-  public applySnapshot(snap: { x: number; z: number; isActivated: boolean; chargeProgress: number; isCompleted: boolean }) {
+  public applySnapshot(snap: { x: number; z: number; isActivated: boolean; chargeProgress: number; isCompleted: boolean; isDiscovered?: boolean }) {
     if (this.position.x !== snap.x || this.position.z !== snap.z) {
       this.resetForStage(new Vector3(snap.x, 0, snap.z));
+    }
+    if (snap.isDiscovered || snap.isActivated || snap.isCompleted) {
+      this.isDiscovered = true;
     }
     if (snap.isActivated && this.state === 'IDLE') {
       this.activate();
