@@ -832,5 +832,26 @@ export class SoundManager {
     osc.start();
     osc.stop(ctx.currentTime + 0.08);
   }
+
+  /**
+   * Sound when rerolling weapon selection
+   */
+  public static playReroll() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    [320, 480, 640, 820].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.035);
+      gain.gain.setValueAtTime(0.13, ctx.currentTime + idx * 0.035);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.035 + 0.12);
+      osc.connect(gain);
+      gain.connect(this.getMasterGain());
+      osc.start(ctx.currentTime + idx * 0.035);
+      osc.stop(ctx.currentTime + idx * 0.035 + 0.13);
+    });
+  }
 }
 

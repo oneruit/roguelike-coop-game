@@ -1,4 +1,4 @@
-import { selectWeaponUpgradeOptions } from './selectWeaponUpgradeOptions';
+import { selectWeaponUpgradeOptions, canRerollWeaponOptions, filterAndShuffleForReroll } from './selectWeaponUpgradeOptions';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../combat/InvokerWeapons';
 import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../shared/InvokerSpells';
 import { canCharacterAcquireWeapon } from '../shared/UniqueCharacters';
@@ -150,6 +150,8 @@ export class HUD {
   private levelUpModal: HTMLElement;
   private levelUpStepIndicator: HTMLElement;
   private levelUpTitle: HTMLElement;
+  private levelUpRerollContainer: HTMLElement | null = null;
+  private btnLevelUpReroll: HTMLButtonElement | null = null;
   private upgradeCardsContainer: HTMLElement;
   private gameOverModal: HTMLElement;
   private gameOverCard: HTMLElement;
@@ -366,6 +368,8 @@ export class HUD {
     this.levelUpModal = document.getElementById('level-up-modal')!;
     this.levelUpStepIndicator = document.getElementById('level-up-step-indicator')!;
     this.levelUpTitle = document.getElementById('level-up-title')!;
+    this.levelUpRerollContainer = document.getElementById('level-up-reroll-container');
+    this.btnLevelUpReroll = document.getElementById('btn-level-up-reroll') as HTMLButtonElement | null;
     this.upgradeCardsContainer = document.getElementById('upgrade-cards')!;
     this.gameOverModal = document.getElementById('game-over-modal')!;
     this.gameOverCard = document.getElementById('game-over-card')!;
@@ -3650,7 +3654,7 @@ export class HUD {
     const weaponOptions = this.generateWeaponOptions(player);
 
     if (weaponOptions.length > 0) {
-      this.renderWeaponStep(weaponOptions, () => {
+      this.renderWeaponStep(player, weaponOptions, () => {
         this.hideLevelUp();
         onSelect();
       });
@@ -3668,20 +3672,37 @@ export class HUD {
           player.redrawOverhead();
         }
       };
-      this.renderWeaponStep([fallbackOption], () => {
+      this.renderWeaponStep(player, [fallbackOption], () => {
         this.hideLevelUp();
         onSelect();
       });
     }
   }
 
-  private renderWeaponStep(options: UpgradeOption[], onChosen: () => void) {
+  private renderWeaponStep(
+    player: Player,
+    options: UpgradeOption[],
+    onChosen: () => void,
+    isRerolled: boolean = false
+  ) {
+    const canReroll = canRerollWeaponOptions(options);
+
     if (this.levelUpStepIndicator) {
       this.levelUpStepIndicator.innerHTML = 'ПОВЫШЕНИЕ УРОВНЯ';
       this.levelUpStepIndicator.style.color = '#fbbf24';
     }
     if (this.levelUpTitle) {
-      this.levelUpTitle.innerText = 'ВЫБЕРИТЕ ОРУЖИЕ [1 - 3]';
+      this.levelUpTitle.innerText = canReroll
+        ? 'ВЫБЕРИТЕ ОРУЖИЕ [1 - 3] ИЛИ РЕРОЛ [R]'
+        : 'ВЫБЕРИТЕ ОРУЖИЕ [1 - 3]';
+    }
+
+    if (this.levelUpRerollContainer) {
+      if (canReroll) {
+        this.levelUpRerollContainer.classList.remove('hidden');
+      } else {
+        this.levelUpRerollContainer.classList.add('hidden');
+      }
     }
 
     this.upgradeCardsContainer.innerHTML = '';
@@ -3699,14 +3720,32 @@ export class HUD {
         window.removeEventListener('keydown', this.levelUpKeyHandler);
         this.levelUpKeyHandler = null;
       }
+      if (this.btnLevelUpReroll) {
+        this.btnLevelUpReroll.onclick = null;
+      }
       options[index].apply();
       SoundManager.playShoot();
       onChosen();
     };
 
+    const handleReroll = () => {
+      if (chosen) return;
+      if (!canRerollWeaponOptions(options)) return;
+      SoundManager.playReroll();
+      const currentIds = new Set(options.map(opt => opt.id));
+      const newOptions = this.generateWeaponOptions(player, currentIds);
+      if (newOptions.length > 0) {
+        this.renderWeaponStep(player, newOptions, onChosen, true);
+      }
+    };
+
+    if (this.btnLevelUpReroll) {
+      this.btnLevelUpReroll.onclick = canReroll ? () => handleReroll() : null;
+    }
+
     options.forEach((opt, idx) => {
       const card = document.createElement('div');
-      card.className = 'character-card upgrade-card card-weapon-step';
+      card.className = `character-card upgrade-card card-weapon-step${isRerolled ? ' rerolled' : ''}`;
       const iconHtml = opt.iconImage
         ? `<div class="char-portrait-wrapper upgrade-icon-wrapper"><img src="${opt.iconImage}" class="char-portrait card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
         : `<div class="char-portrait-wrapper upgrade-icon-wrapper"><div class="card-icon">${opt.icon}</div></div>`;
@@ -3743,6 +3782,9 @@ export class HUD {
       } else if (e.code === 'Digit3' || e.code === 'Numpad3' || e.key === '3') {
         e.preventDefault();
         selectOptionByIndex(2);
+      } else if (canReroll && (e.code === 'KeyR' || e.key === 'r' || e.key === 'R' || e.key === 'к' || e.key === 'К')) {
+        e.preventDefault();
+        handleReroll();
       }
     };
 
@@ -3754,6 +3796,10 @@ export class HUD {
       window.removeEventListener('keydown', this.levelUpKeyHandler);
       this.levelUpKeyHandler = null;
     }
+    if (this.btnLevelUpReroll) {
+      this.btnLevelUpReroll.onclick = null;
+    }
+    this.levelUpRerollContainer?.classList.add('hidden');
     this.levelUpModal.classList.add('hidden');
   }
 
@@ -3936,7 +3982,7 @@ export class HUD {
     this.updateMainMenuBattlePass();
   }
 
-  private generateWeaponOptions(player: Player): UpgradeOption[] {
+  private generateWeaponOptions(player: Player, excludeIds?: ReadonlySet<string>): UpgradeOption[] {
     const pool: UpgradeOption[] = [];
 
     // 1. Existing weapon upgrades (up to maxLevel 20)
@@ -4212,7 +4258,7 @@ export class HUD {
       }
     }
 
-    const shuffled = [...pool].sort(() => 0.5 - Math.random());
+    const shuffled = filterAndShuffleForReroll(pool, excludeIds);
     return selectWeaponUpgradeOptions(shuffled, player.charType);
   }
 

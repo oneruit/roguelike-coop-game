@@ -13,11 +13,12 @@
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "server": "tsx server/dedicatedServer.ts",
-    "test": "tsx --test tests/battlePass.test.ts tests/invoker.test.ts tests/uniqueCharacters.test.ts tests/teleporterDiscovery.test.ts",
+    "test": "tsx --test tests/battlePass.test.ts tests/invoker.test.ts tests/uniqueCharacters.test.ts tests/teleporterDiscovery.test.ts tests/weaponReroll.test.ts",
     "test:invoker": "tsx --test tests/invoker.test.ts",
     "test:unique": "tsx --test tests/uniqueCharacters.test.ts",
     "test:teleporter": "tsx --test tests/teleporterDiscovery.test.ts",
-    "test:battlepass": "tsx --test tests/battlePass.test.ts"
+    "test:battlepass": "tsx --test tests/battlePass.test.ts",
+    "test:reroll": "tsx --test tests/weaponReroll.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
