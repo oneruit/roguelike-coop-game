@@ -316,15 +316,7 @@ class Game {
     };
 
     this.input.onToggleMap = () => {
-      if (this.mapManager.isOpen) {
-        this.mapManager.close();
-        return;
-      }
       if (
-        this.sessionDirector.isLevelUpActive ||
-        this.devManager.getIsOpen() ||
-        this.hud.isAnyMenuOpen() ||
-        this.sessionDirector.gameState === GameState.PAUSED ||
         this.sessionDirector.gameState === GameState.MAIN_MENU ||
         this.sessionDirector.gameState === GameState.HOST_LOBBY ||
         this.sessionDirector.gameState === GameState.JOIN_LOBBY ||
@@ -333,7 +325,7 @@ class Game {
       ) {
         return;
       }
-      this.mapManager.open();
+      this.mapManager.toggleCenterOverlay();
     };
 
     this.input.onTogglePause = () => {
@@ -601,12 +593,9 @@ class Game {
     this.mapManager.update(dt);
 
     // 8. The Rift: Teleporter, Chests, Prompts
-    // Voluntary teleporter stabilization at 5 minutes on non-final biomes
-    if (!this.biomeManager.isFinalStage() && this.enemyManager.stageTime >= 300) {
-      if (this.riftTeleporter.state === 'IDLE' || this.riftTeleporter.state === 'CHARGING') {
-        this.riftTeleporter.stabilizeVoluntaryPortal();
-        SoundManager.playTeleporterComplete();
-        this.hud.triggerAltarNotification('ПОРТАЛ СТАБИЛИЗИРОВАН', '5 минут истекли! Переход доступен (монстры усиливаются).', '🌀', '#38bdf8');
+    if (this.riftTeleporter.state === 'CHARGING') {
+      if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
+        this.riftTeleporter.isBossDefeated = true;
       }
     }
 
@@ -618,13 +607,7 @@ class Game {
         this.player.gainXp(bonusXp);
         this.player.credits = 0;
       }
-      this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Активируйте портал для перехода!', '🌀', '#10b981');
-    }
-
-    if (this.riftTeleporter.state === 'CHARGING') {
-      if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
-        this.riftTeleporter.isBossDefeated = true;
-      }
+      this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Босс повержен! Активируйте портал для перехода!', '🌀', '#10b981');
     }
 
     this.chestManager.update(dt);

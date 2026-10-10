@@ -221,6 +221,25 @@ export class DropManager {
     }
   }
 
+  /**
+   * Immediately sweeps and collects all remaining gems on the stage, awarding all their XP and passives.
+   * Invoked upon biome transitions so no experience is lost.
+   */
+  public collectAllRemainingGems(onCollect?: (xp: number, gem: Gem) => void): number {
+    let totalXp = 0;
+    for (const gem of this.gems) {
+      if (gem.isCollected) continue;
+      gem.isCollected = true;
+      totalXp += gem.xpValue;
+      if (onCollect) {
+        onCollect(gem.xpValue, gem);
+      }
+      gem.destroy(this.scene);
+    }
+    this.gems = [];
+    return totalXp;
+  }
+
   public clear() {
     for (const gem of this.gems) {
       gem.destroy(this.scene);

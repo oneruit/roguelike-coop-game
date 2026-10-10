@@ -161,7 +161,7 @@ export class InvokerWeapon extends Weapon {
       perks.push("−2.5% перезарядки, больше область действия");
     }
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    const prefix = this.awakenedGrade > 0 ? '[ГРЕЙД II • x2] ' : '';
+    const prefix = this.getGradePrefix();
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join("; ")}`;
   }
 }

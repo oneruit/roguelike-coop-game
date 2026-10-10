@@ -28,6 +28,7 @@ import { CombatDirector } from '../combat/CombatDirector';
 import { GameNetworkCoordinator } from '../net/GameNetworkCoordinator';
 import { LobbyCoordinator } from '../net/LobbyCoordinator';
 import type { RiftItemDef } from '../items/RiftItemSystem';
+import { getPassiveBuffId } from '../drops/PassiveBuffs';
 
 export enum GameState {
   MAIN_MENU,
@@ -570,6 +571,23 @@ export class SessionDirector {
   }
 
   public warpToNextStage(): void {
+    // Collect all remaining experience and passives from gems on the map before warp
+    const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
+      ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
+      if (gem.type === 'gold') {
+        const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
+        const toast = this.player.applyPassiveBuff(buffId);
+        this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
+        this.hud.updatePassivesBar(this.player);
+      }
+    });
+    if (sweptXp > 0) {
+      const levelsGained = this.player.gainXp(sweptXp);
+      if (levelsGained > 0) {
+        this.pendingLevelUps += levelsGained;
+      }
+    }
+
     const nextBiome = this.biomeManager.advanceStage();
     this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
     this.enemyManager.currentStage = this.biomeManager.stageNumber;
@@ -619,6 +637,23 @@ export class SessionDirector {
   }
 
   public applyStageTransition(stageNumber: number, biomeName?: string): void {
+    // Collect all remaining experience and passives from gems on the map before warp
+    const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
+      ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
+      if (gem.type === 'gold') {
+        const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
+        const toast = this.player.applyPassiveBuff(buffId);
+        this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
+        this.hud.updatePassivesBar(this.player);
+      }
+    });
+    if (sweptXp > 0) {
+      const levelsGained = this.player.gainXp(sweptXp);
+      if (levelsGained > 0) {
+        this.pendingLevelUps += levelsGained;
+      }
+    }
+
     const nextBiome = this.biomeManager.setStage(stageNumber);
     this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
     this.enemyManager.currentStage = stageNumber;
