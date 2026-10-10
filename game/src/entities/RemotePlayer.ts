@@ -30,7 +30,6 @@ export class RemotePlayer {
   private targetPosition: Vector3;
   private spriteMesh: Mesh;
   private spriteMaterial: MeshBasicMaterial;
-  private shadowMesh: Mesh;
 
   public id: string = 'p2';
   public name: string = 'Игрок 2';
@@ -127,10 +126,6 @@ export class RemotePlayer {
     this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
     this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
-
-    // Ground Shadow
-    this.shadowMesh = TextureManager.createShadowMesh(0.75);
-    this.mesh.add(this.shadowMesh);
 
     // Distinct Partner Halo Light (using player's assigned color)
     const partnerLight = new PointLight(this.colorHex, 1.2, 8);

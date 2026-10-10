@@ -44,9 +44,10 @@ Bosses strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state i
 4. **Natural Clean Alpha Edges (No Artificial 1px Black Border):**
    - Authentic pixel art antialiasing without harsh artificial 1px solid black bounding boxes.
 
-5. **Contact Ground Shadow:**
-   - Bosses cast a heavy contact ground shadow mesh (`shadowMesh = TextureManager.createShadowMesh(radius)`), placed at local $y = 0.03$, following the exact player pattern.
-   - The shadow texture is a centered radial gradient ellipse ($1.0 \times 0.65$ ratio) centered at local $(0,0)$.
+5. **Dynamic 2D Sprite Projected Shadows (No Artificial Ellipse):**
+   - The basic ellipse/circle contact shadow mesh under entities has been eliminated.
+   - Bosses now cast true dynamic 2D directional silhouette shadows onto the ground plane using `this.spriteMesh.castShadow = true` and `customDepthMaterial = new MeshDepthMaterial({ depthPacking: RGBADepthPacking, map: ..., alphaTest: 0.25 })`, matching the hero player.
+   - The shadow silhouette automatically animates in sync with the boss's active animation state and directional row.
 
 ---
 
@@ -192,13 +193,17 @@ if (this.animState === 'ATTACK') {
 }
 ```
 
-### Step 5.2: Contact Ground Shadow Mesh
-Bosses receive a contact ground shadow identical to the hero player:
+### Step 5.2: Dynamic 2D Sprite Projected Shadow Integration
+Bosses cast a realistic directional silhouette shadow onto the terrain matching the player:
 
 ```typescript
-const shadowRadius = Math.max(0.6, (this.width + this.height) * 0.22);
-this.shadowMesh = TextureManager.createShadowMesh(shadowRadius);
-this.mesh.add(this.shadowMesh);
+this.customDepthMaterial = new MeshDepthMaterial({
+  depthPacking: RGBADepthPacking,
+  map: this.spriteMaterial.map,
+  alphaTest: 0.25
+});
+this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
+this.spriteMesh.castShadow = true;
 ```
 
 ---
