@@ -42,14 +42,14 @@ export const BATTLE_PASS_REWARDS: BattlePassReward[] = [
     level: 1,
     name: 'Стартовый запас монет',
     description: '100 золотых монет для начала пути в Разломе',
-    icon: '/textures/quests/ui_quest_slot_coin.png',
+    icon: '/textures/ui/bp_coin.png',
     coins: 100
   },
   {
     level: 2,
     name: 'Эликсир бодрости',
     description: '150 монет и восстанавливающее зелье',
-    icon: '/textures/quests/reward_potion.png',
+    icon: '/textures/ui/bp_potion.png',
     coins: 150
   },
   {
@@ -61,9 +61,9 @@ export const BATTLE_PASS_REWARDS: BattlePassReward[] = [
   },
   {
     level: 4,
-    name: 'Кристаллы бездны',
-    description: '250 монет и осколки сияющих кристаллов',
-    icon: '/textures/quests/ui_quest_slot_gem.png',
+    name: 'Золотой самородок',
+    description: '250 монет и золотой самородок Разлома',
+    icon: '/textures/ui/bp_nugget.png',
     coins: 250,
     gems: 5
   },
@@ -76,9 +76,9 @@ export const BATTLE_PASS_REWARDS: BattlePassReward[] = [
   },
   {
     level: 6,
-    name: 'Зелье ярости теней',
-    description: '400 монет и тайный алхимический отвар',
-    icon: '/textures/quests/reward_potion.png',
+    name: 'Кристаллы бездны',
+    description: '400 монет и сияющий янтарный кристалл',
+    icon: '/textures/ui/bp_crystal.png',
     coins: 400
   },
   {
@@ -106,7 +106,7 @@ export const BATTLE_PASS_REWARDS: BattlePassReward[] = [
     level: 10,
     name: 'Железный сундук тайн',
     description: '1000 монет и редкие драгоценности',
-    icon: '/textures/quests/ui_quest_slot_chest.png',
+    icon: '/textures/ui/bp_chest_silver.png',
     coins: 1000,
     gems: 15,
     isMilestone: true
@@ -115,14 +115,14 @@ export const BATTLE_PASS_REWARDS: BattlePassReward[] = [
     level: 11,
     name: 'Большое зелье силы',
     description: '850 монет и концентрированный эликсир',
-    icon: '/textures/quests/reward_potion.png',
+    icon: '/textures/ui/bp_potion.png',
     coins: 850
   },
   {
     level: 12,
     name: 'Сверкающий сапфир',
     description: '1000 монет и сапфировый самоцвет Разлома',
-    icon: '/textures/quests/ui_quest_slot_gem.png',
+    icon: '/textures/ui/bp_crystal.png',
     coins: 1000,
     gems: 20
   },
@@ -145,7 +145,7 @@ export const BATTLE_PASS_REWARDS: BattlePassReward[] = [
     level: 15,
     name: 'Легендарный ларец леса',
     description: '3000 монет, 50 кристаллов и вечная слава покорителя Разлома!',
-    icon: '/textures/quests/reward_chest.png',
+    icon: '/textures/ui/bp_chest_wood.png',
     coins: 3000,
     gems: 50,
     isMilestone: true

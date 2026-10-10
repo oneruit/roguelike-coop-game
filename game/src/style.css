@@ -1909,142 +1909,126 @@ body, html {
    ========================================================================== */
 .battle-pass-widget {
   position: absolute;
-  left: clamp(30px, 6vw, 80px);
-  top: clamp(16px, 3.2vh, 36px);
+  left: clamp(24px, 3.5vw, 48px);
+  top: clamp(14px, 2.5vh, 28px);
   z-index: 20;
-  width: clamp(340px, 28vw, 410px);
+  width: clamp(330px, 26vw, 400px);
+  aspect-ratio: 558 / 218;
   pointer-events: auto;
   user-select: none;
-  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.75));
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.85));
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.battle-pass-widget:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(56, 189, 248, 0.35));
 }
 
 .battle-pass-card {
   position: relative;
   width: 100%;
-  background: linear-gradient(180deg, rgba(20, 29, 41, 0.94) 0%, rgba(13, 20, 29, 0.96) 100%);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(56, 75, 100, 0.8);
-  border-radius: 9px;
-  padding: 10px 14px 12px 14px;
+  height: 100%;
+  background-image: url('/textures/ui/battle_pass_panel_bg.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
   box-sizing: border-box;
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 0 16px rgba(15, 23, 42, 0.6);
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: default;
 }
 
-.battle-pass-card:hover {
-  border-color: rgba(56, 189, 248, 0.7);
-  box-shadow: 
-    0 10px 28px rgba(0, 0, 0, 0.8),
-    0 0 18px rgba(56, 189, 248, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-
-/* Battle Pass Widget Header */
+/* Battle Pass Widget Header - Clickable Hotspot over texture title */
 .bp-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 29%;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 2px 0;
-  border-radius: 4px;
-  transition: opacity 0.16s ease;
+  z-index: 2;
+  transition: background-color 0.16s ease;
 }
 
-.bp-header:hover .bp-title {
-  color: #38bdf8;
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.7), 0 2px 4px #000;
+.bp-header:hover {
+  background: rgba(56, 189, 248, 0.05);
 }
 
-.bp-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  font-size: clamp(13px, 1.1vw, 15px);
-  color: #f8fafc;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 10px rgba(56, 189, 248, 0.35);
-  line-height: 1.1;
-  transition: color 0.16s ease, text-shadow 0.16s ease;
-}
-
-.bp-season {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: clamp(8.5px, 0.7vw, 10px);
-  color: #d4a373;
-  letter-spacing: 0.9px;
-  text-transform: uppercase;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
-  margin-top: 2px;
-  line-height: 1;
+/* Title and Season are baked into the authentic panel texture */
+.bp-title, .bp-season {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Track Section */
 .bp-track-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  position: absolute;
+  top: 29%;
+  left: 0;
   width: 100%;
-  margin-top: 2px;
+  height: 29%;
+  pointer-events: none;
+  z-index: 2;
 }
 
+/* Star is already baked onto texture on the left */
 .bp-star-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 6px #38bdf8);
+  display: none;
 }
 
 .bp-progress-bar-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 14.5%;
+  width: 80.5%;
+  height: 100%;
 }
 
 .bp-milestones {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 17px;
+  height: 100%;
   pointer-events: none;
 }
 
 .bp-milestone {
   position: absolute;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 3px;
-  opacity: 0.65;
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  gap: 1px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
 }
 
 .bp-m-lvl1 {
-  left: 2%;
+  left: 24.5%;
+  top: 4%;
 }
 
 .bp-m-lvl10 {
-  left: 64%;
-  transform: translateX(-50%);
+  left: 60.5%;
+  top: 4%;
 }
 
 .bp-m-lvl15 {
-  right: 0%;
-  flex-direction: row-reverse;
+  left: 95%;
+  top: 4%;
 }
 
 .bp-m-label {
   font-family: 'Montserrat', sans-serif;
-  font-size: 8.5px;
+  font-size: clamp(7.5px, 0.6vw, 9.5px);
   font-weight: 800;
   color: #94a3b8;
   letter-spacing: 0.3px;
@@ -2053,11 +2037,17 @@ body, html {
 }
 
 .bp-m-chest {
-  width: 13px;
-  height: 13px;
+  width: clamp(18px, 1.4vw, 22px);
+  height: clamp(14px, 1.1vw, 17px);
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.bp-milestone:hover .bp-m-chest {
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
 }
 
 .bp-milestone.reached {
@@ -2066,59 +2056,79 @@ body, html {
 
 .bp-milestone.reached .bp-m-label {
   color: #38bdf8;
-  text-shadow: 0 0 6px rgba(56, 189, 248, 0.8), 0 1px 2px #000;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.9), 0 1px 2px #000;
 }
 
 .bp-milestone.reached .bp-m-chest {
-  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.8)) drop-shadow(0 1px 2px #000);
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.9)) drop-shadow(0 2px 4px #000);
 }
 
 .bp-bar-track {
+  position: absolute;
+  top: 61%;
+  left: 0;
   width: 100%;
-  height: 8px;
-  background: #0b1118;
-  border: 1px solid #1e293b;
+  height: 9px;
+  background: transparent;
+  border: none;
   border-radius: 4px;
   overflow: hidden;
-  position: relative;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.85);
+  box-shadow: none;
 }
 
 .bp-bar-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
-  border-radius: 3px;
+  background: linear-gradient(180deg, #3db8ff 0%, #1774d6 50%, #0d54a6 100%);
+  clip-path: polygon(6px 0%, 100% 0%, 100% 100%, 6px 100%, 0% 50%);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-radius: 0 3px 3px 0;
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Rewards Row */
 .bp-rewards-row {
+  position: absolute;
+  top: 58%;
+  left: 3.2%;
+  width: 93.6%;
+  height: 35.5%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-  width: 100%;
-  margin-top: 3px;
+  align-items: stretch;
+  gap: 0;
+  box-sizing: border-box;
+  z-index: 2;
 }
 
 .bp-slot-card {
   position: relative;
+  flex: 1 1 14.28%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.16s ease, filter 0.16s ease;
+  box-sizing: border-box;
 }
 
-.bp-slot-card:hover {
-  transform: translateY(-2px);
+.bp-slot-card.bp-slot-free {
+  flex: 0 0 13%;
+}
+
+.bp-slot-free .bp-slot-box {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.bp-slot-free .bp-lock-icon,
+.bp-slot-free .bp-free-ribbon {
+  display: none;
 }
 
 .bp-slot-box {
-  width: clamp(34px, 2.7vw, 40px);
-  height: clamp(34px, 2.7vw, 40px);
+  width: clamp(26px, 2.2vw, 35px);
+  height: clamp(26px, 2.2vw, 35px);
   background: #101722;
   border: 1.5px solid #283749;
   border-radius: 6px;
@@ -2126,43 +2136,27 @@ body, html {
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  overflow: visible;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.16s ease;
+}
+
+.bp-slot-card:hover .bp-slot-box {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5), inset 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .bp-slot-img {
-  width: 72%;
-  height: 72%;
+  width: 76%;
+  height: 76%;
   object-fit: contain;
   image-rendering: pixelated;
   transition: transform 0.16s ease;
 }
 
 .bp-slot-card:hover .bp-slot-img {
-  transform: scale(1.12);
-}
-
-/* Free Pass Slot Badge */
-.bp-slot-free .bp-slot-box {
-  background: #141c27;
-  border-color: #3b4d61;
-}
-
-.bp-free-ribbon {
-  margin-top: 3px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  color: #94a3b8;
-  background: #1e293b;
-  border: 1px solid #334155;
-  padding: 1px 3px;
-  border-radius: 3px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  line-height: 1;
+  transform: scale(1.15);
 }
 
 /* Slot States */
