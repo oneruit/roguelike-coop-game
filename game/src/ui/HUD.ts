@@ -21,6 +21,7 @@ import {
   BP_MAX_POINTS
 } from '../core/BattlePassManager';
 import { TextureManager } from '../core/TextureManager';
+import { getAssetUrl } from '../utils/assetPath';
 import type { Scene } from 'three';
 
 export interface UpgradeOption {
@@ -290,14 +291,15 @@ export class HUD {
 
   public static readonly MENU_BACKGROUNDS: readonly string[] = [
     '/textures/ui/menu_background_1.jpg',
-    '/textures/ui/menu_background_2.png'
+    '/textures/ui/menu_background_2.jpg'
   ];
 
   public static applyRandomMenuBackground() {
     const list = HUD.MENU_BACKGROUNDS;
     if (list.length === 0) return;
     const chosen = list[Math.floor(Math.random() * list.length)];
-    document.documentElement.style.setProperty('--menu-background-url', `url('${chosen}')`);
+    const resolvedUrl = getAssetUrl(chosen);
+    document.documentElement.style.setProperty('--menu-background-url', `url('${resolvedUrl}')`);
   }
 
   constructor(
@@ -1135,7 +1137,7 @@ export class HUD {
 
       row.innerHTML = `
         <div class="quest-card-slot icon-slot">
-          <img src="${q.icon}" alt="${q.title}" draggable="false" />
+          <img src="${getAssetUrl(q.icon)}" alt="${q.title}" draggable="false" />
         </div>
         <div class="quest-card-info">
           <div class="quest-card-name">${q.title}</div>
@@ -1145,7 +1147,7 @@ export class HUD {
           </div>
         </div>
         <div class="quest-card-reward ${q.isComplete && !q.isClaimed ? 'claimable-pulse' : ''}">
-          <img src="${q.rewardIcon}" alt="${q.rewardLabel}" draggable="false" />
+          <img src="${getAssetUrl(q.rewardIcon)}" alt="${q.rewardLabel}" draggable="false" />
           <span class="quest-card-reward-val">${q.rewardAmount}</span>
           ${statusBadge}
         </div>
@@ -1223,7 +1225,7 @@ export class HUD {
     freeSlot.setAttribute('title', 'Бесплатный боевой пропуск 1-го сезона активен для всех игроков');
     freeSlot.innerHTML = `
       <div class="bp-slot-box bp-slot-free-box">
-        <img src="/textures/ui/bp_badge_free.png" class="bp-slot-img bp-badge-img" alt="Бесплатно" />
+        <img src="${getAssetUrl('/textures/ui/bp_badge_free.png')}" class="bp-slot-img bp-badge-img" alt="Бесплатно" />
       </div>
       <span class="bp-free-ribbon">БЕСПЛАТНО</span>
     `;
@@ -2732,7 +2734,7 @@ export class HUD {
 
         itemEl.innerHTML = `
           <div class="${iconBoxClass}">
-            <img src="${q.icon}" class="quest-item-avatar" alt="${q.title}" />
+            <img src="${getAssetUrl(q.icon)}" class="quest-item-avatar" alt="${q.title}" />
           </div>
           <div class="quest-item-info">
             <div class="quest-item-title">${q.title}</div>
@@ -2777,7 +2779,7 @@ export class HUD {
     // Target avatar portrait (Leshy for chakram quest, or hero avatar)
     const targetAvatarEl = document.getElementById('quest-target-avatar') as HTMLImageElement | null;
     if (targetAvatarEl) {
-      targetAvatarEl.src = activeQuest.targetAvatar;
+      targetAvatarEl.src = getAssetUrl(activeQuest.targetAvatar);
     }
 
     // Steps checklist

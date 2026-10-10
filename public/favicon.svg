@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Void Gradient -->
+    <radialGradient id="voidGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e1035" />
+      <stop offset="70%" stop-color="#0e071c" />
+      <stop offset="100%" stop-color="#07030e" />
+    </radialGradient>
+
+    <!-- Purple Energy Wing -->
+    <linearGradient id="purpleWing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="50%" stop-color="#9333ea" />
+      <stop offset="100%" stop-color="#581c87" />
+    </linearGradient>
+
+    <!-- Blue Energy Wing -->
+    <linearGradient id="blueWing" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+
+    <!-- Rift Core Glow -->
+    <filter id="riftGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <radialGradient id="centerBurst" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="40%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="80%" stop-color="#a855f7" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Void Background -->
+  <circle cx="32" cy="32" r="30" fill="url(#voidGrad)" stroke="#6b21a8" stroke-width="1.5" />
+
+  <!-- Outer Energy Arc -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="8 4 12 3" opacity="0.6" />
+
+  <!-- Ambient Glow -->
+  <circle cx="32" cy="32" r="20" fill="url(#centerBurst)" />
+
+  <!-- Left Dimensional Wing (Purple) -->
+  <path d="M 32 8 C 21 16, 14 26, 17 38 C 19 46, 26 53, 32 56 C 27 48, 25 38, 28 28 C 30 20, 31 13, 32 8 Z" fill="url(#purpleWing)" opacity="0.95" />
+
+  <!-- Right Dimensional Wing (Blue) -->
+  <path d="M 32 8 C 43 16, 50 26, 47 38 C 45 46, 38 53, 32 56 C 37 48, 39 38, 36 28 C 34 20, 33 13, 32 8 Z" fill="url(#blueWing)" opacity="0.95" />
+
+  <!-- Jagged Rift Fracture Outer Glow -->
+  <path d="M 32 6 L 28 20 L 36 32 L 27 44 L 35 52 L 32 58" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#riftGlow)" />
+
+  <!-- Pure White Intense Rift Core Tear -->
+  <path d="M 32 6 L 28 20 L 36 32 L 27 44 L 35 52 L 32 58" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Core Spark Center -->
+  <polygon points="36,32 38,30 42,32 38,34" fill="#ffffff" />
+  <polygon points="36,32 34,30 30,32 34,34" fill="#ffffff" />
+  <polygon points="36,32 36,26 36,32 36,38" stroke="#ffffff" stroke-width="1" />
+</svg>

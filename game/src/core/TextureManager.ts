@@ -346,7 +346,7 @@ export class TextureManager {
 
     // UI & Environment
     '/textures/ui/menu_background_1.jpg',
-    '/textures/ui/menu_background_2.png'
+    '/textures/ui/menu_background_2.jpg'
   ];
 
   /**
@@ -395,22 +395,16 @@ export class TextureManager {
       })
     );
 
-    // Concurrently load and decode images in batches of 6
-    const batchSize = 6;
+    // Concurrently load and decode images in batches of 10
+    const batchSize = 10;
     for (let i = 0; i < urls.length; i += batchSize) {
       const batch = urls.slice(i, i + batchSize);
       await Promise.all(
         batch.map(async (url) => {
           try {
             const resolvedUrl = getAssetUrl(url);
-            // 1. Browser DOM Image cache and asynchronous bitmap decoding
-            const img = new Image();
-            img.src = resolvedUrl;
-            if (img.decode) {
-              await img.decode().catch(() => {});
-            }
 
-            // 2. Three.js Texture cache & GPU texture upload
+            // Three.js Texture cache & GPU texture upload
             await new Promise<void>((resolve) => {
               this.loader.load(
                 resolvedUrl,
