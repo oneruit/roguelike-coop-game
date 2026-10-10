@@ -240,13 +240,13 @@ def extract_boss(input_path, name, out_dir, cell_size=160, target_feet_y=136, co
 
     # Map rows according to specification:
     # Walk:
-    # 0: Right (Ходьба Вправо)
-    # 1: Front (Ходьба Лицом)
-    # 2: Back  (Ходьба Спиной)
+    # 0: Right (Walk Right)
+    # 1: Front (Walk Front)
+    # 2: Back  (Walk Back)
     # Attack:
-    # 3: Right (Атака Вправо)
-    # 4: Front (Атака Лицом)
-    # 5: Back  (Атака Спиной)
+    # 3: Right (Attack Right)
+    # 4: Front (Attack Front)
+    # 5: Back  (Attack Back)
     row_names = [
         'Walk Right', 'Walk Front', 'Walk Back',
         'Attack Right', 'Attack Front', 'Attack Back'

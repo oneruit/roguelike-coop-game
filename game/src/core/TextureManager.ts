@@ -282,47 +282,57 @@ export class TextureManager {
     '/textures/bosses/boss_hydra_left.png',
     '/textures/bosses/boss_hydra_right.png',
 
+    '/textures/bosses/boss_sheriff_walk.png',
+    '/textures/bosses/boss_sheriff_attack.png',
     '/textures/bosses/boss_sheriff_front.png',
     '/textures/bosses/boss_sheriff_back.png',
     '/textures/bosses/boss_sheriff_left.png',
     '/textures/bosses/boss_sheriff_right.png',
 
-    // Monsters (4 Directions)
+    // Monsters (Animated Walk Cycles & 4 Directions)
+    '/textures/monsters/monster_coyote_walk.png',
     '/textures/monsters/monster_coyote_front.png',
     '/textures/monsters/monster_coyote_back.png',
     '/textures/monsters/monster_coyote_left.png',
     '/textures/monsters/monster_coyote_right.png',
 
+    '/textures/monsters/monster_crawler_walk.png',
     '/textures/monsters/monster_crawler_front.png',
     '/textures/monsters/monster_crawler_back.png',
     '/textures/monsters/monster_crawler_left.png',
     '/textures/monsters/monster_crawler_right.png',
 
+    '/textures/monsters/monster_cactus_walk.png',
     '/textures/monsters/monster_cactus_front.png',
     '/textures/monsters/monster_cactus_back.png',
     '/textures/monsters/monster_cactus_left.png',
     '/textures/monsters/monster_cactus_right.png',
 
+    '/textures/monsters/monster_skeleton_walk.png',
     '/textures/monsters/monster_skeleton_front.png',
     '/textures/monsters/monster_skeleton_back.png',
     '/textures/monsters/monster_skeleton_left.png',
     '/textures/monsters/monster_skeleton_right.png',
 
+    '/textures/monsters/monster_ghost_walk.png',
     '/textures/monsters/monster_ghost_front.png',
     '/textures/monsters/monster_ghost_back.png',
     '/textures/monsters/monster_ghost_left.png',
     '/textures/monsters/monster_ghost_right.png',
 
+    '/textures/monsters/monster_scorpion_walk.png',
     '/textures/monsters/monster_scorpion_front.png',
     '/textures/monsters/monster_scorpion_back.png',
     '/textures/monsters/monster_scorpion_left.png',
     '/textures/monsters/monster_scorpion_right.png',
 
+    '/textures/monsters/monster_brute_walk.png',
     '/textures/monsters/monster_brute_front.png',
     '/textures/monsters/monster_brute_back.png',
     '/textures/monsters/monster_brute_left.png',
     '/textures/monsters/monster_brute_right.png',
 
+    '/textures/monsters/monster_bison_walk.png',
     '/textures/monsters/monster_bison_front.png',
     '/textures/monsters/monster_bison_back.png',
     '/textures/monsters/monster_bison_left.png',
