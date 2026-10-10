@@ -12,7 +12,7 @@ import { PlayerStats, LobbyPlayerInfo, PLAYER_COLORS, getPlayerSlotNumber } from
 import { RemotePlayer } from '../entities/RemotePlayer';
 import { PublicRoomInfo } from '../net/RoomDirectory';
 import { DifficultyDirector } from '../director/DifficultyDirector';
-import { RiftItemId, RIFT_ITEMS } from '../items/RiftItemSystem';
+import { RiftItemId, RIFT_ITEMS, type RiftItemDef } from '../items/RiftItemSystem';
 import { ProgressionManager, SidebarQuestItem } from '../core/ProgressionManager';
 import {
   BattlePassManager,
@@ -143,6 +143,7 @@ export class HUD {
     | 'char_select'
     | 'quests'
     | 'battle_pass'
+    | 'inventory'
   )[] = [];
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
@@ -157,6 +158,25 @@ export class HUD {
   private levelUpRerollContainer: HTMLElement | null = null;
   private btnLevelUpReroll: HTMLButtonElement | null = null;
   private upgradeCardsContainer: HTMLElement;
+
+  // Chest Item Selection Modal (Pick 1 of 2)
+  private chestModal: HTMLElement;
+  private chestItemCardsContainer: HTMLElement;
+  private chestKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+
+  // Character Inventory Modal
+  private inventoryModal: HTMLElement;
+  private inventoryBackdrop: HTMLElement | null;
+  private btnCloseInventory: HTMLElement | null;
+  private btnOpenInventory: HTMLElement | null;
+  private inventoryHeroTitle: HTMLElement | null;
+  private inventoryStatsList: HTMLElement | null;
+  private inventoryPassivesList: HTMLElement | null;
+  private inventoryWeaponsList: HTMLElement | null;
+  private inventoryItemsList: HTMLElement | null;
+  public cachedPlayer: Player | null = null;
+  public onInventoryToggle?: (isOpen: boolean) => void;
+
   private gameOverModal: HTMLElement;
   private gameOverCard: HTMLElement;
   private victoryBadge: HTMLElement;
@@ -376,6 +396,25 @@ export class HUD {
     this.levelUpRerollContainer = document.getElementById('level-up-reroll-container');
     this.btnLevelUpReroll = document.getElementById('btn-level-up-reroll') as HTMLButtonElement | null;
     this.upgradeCardsContainer = document.getElementById('upgrade-cards')!;
+    this.chestModal = document.getElementById('chest-modal')!;
+    this.chestItemCardsContainer = document.getElementById('chest-item-cards')!;
+
+    this.inventoryModal = document.getElementById('inventory-modal')!;
+    this.inventoryBackdrop = document.getElementById('inventory-backdrop');
+    this.btnCloseInventory = document.getElementById('btn-close-inventory');
+    this.btnOpenInventory = document.getElementById('btn-open-inventory');
+    this.inventoryHeroTitle = document.getElementById('inventory-hero-title');
+    this.inventoryStatsList = document.getElementById('inventory-stats-list');
+    this.inventoryPassivesList = document.getElementById('inventory-passives-list');
+    this.inventoryWeaponsList = document.getElementById('inventory-weapons-list');
+    this.inventoryItemsList = document.getElementById('inventory-items-list');
+
+    this.btnCloseInventory?.addEventListener('click', () => this.hideInventory());
+    this.inventoryBackdrop?.addEventListener('click', () => this.hideInventory());
+    this.btnOpenInventory?.addEventListener('click', () => {
+      if (this.cachedPlayer) this.toggleInventory(this.cachedPlayer);
+    });
+
     this.gameOverModal = document.getElementById('game-over-modal')!;
     this.gameOverCard = document.getElementById('game-over-card')!;
     this.victoryBadge = document.getElementById('victory-badge')!;
@@ -3161,6 +3200,11 @@ export class HUD {
         return 'handled';
       }
 
+      case 'inventory': {
+        this.hideInventory();
+        return 'handled';
+      }
+
       case 'pause': {
         this.hidePause();
         return 'resume';
@@ -3188,6 +3232,8 @@ export class HUD {
     activeBoss: Enemy | null,
     partnerKills?: number
   ) {
+    this.cachedPlayer = player;
+
     // XP Bar
     const xpPercent = Math.min(100, Math.max(0, (player.xp / player.xpToNextLevel) * 100));
     this.xpFill.style.width = `${xpPercent}%`;
@@ -3604,12 +3650,11 @@ export class HUD {
     for (const weapon of weapons) {
       currentWeaponIds.add(weapon.id);
       let slot = this.weaponsBar.querySelector<HTMLElement>(`[data-weapon-id="${weapon.id}"]`);
-      const gradeTitle = getGradeLabel(weapon.grade);
       if (!slot) {
         slot = document.createElement('div');
-        slot.className = `weapon-slot grade-${weapon.grade}`;
+        slot.className = 'weapon-slot';
         slot.setAttribute('data-weapon-id', weapon.id);
-        slot.title = `${weapon.name} (Ур. ${weapon.level}, ${gradeTitle})`;
+        slot.title = `${weapon.name} (Ур. ${weapon.level})`;
         const iconUrl = TextureManager.getWeaponBlobUrl(weapon.iconImage || getWeaponIconUrl(weapon.id));
         slot.innerHTML = `
           <img src="${iconUrl}" class="weapon-icon-img" alt="${weapon.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
@@ -3618,11 +3663,10 @@ export class HUD {
         `;
         this.weaponsBar.appendChild(slot);
       } else {
-        slot.className = `weapon-slot grade-${weapon.grade}`;
         const lvlEl = slot.querySelector<HTMLElement>('.weapon-level');
         if (lvlEl && lvlEl.innerText !== `lvl ${weapon.level}`) {
           lvlEl.innerText = `lvl ${weapon.level}`;
-          slot.title = `${weapon.name} (Ур. ${weapon.level}, ${gradeTitle})`;
+          slot.title = `${weapon.name} (Ур. ${weapon.level})`;
         }
       }
     }
@@ -3815,6 +3859,362 @@ export class HUD {
     }
     this.levelUpRerollContainer?.classList.add('hidden');
     this.levelUpModal.classList.add('hidden');
+  }
+
+  /**
+   * Shows chest 2-item choice modal where the player can choose 1 of 2 dropped items.
+   */
+  public showChestChoice(
+    items: [RiftItemDef, RiftItemDef],
+    player: Player,
+    onChoose: (item: RiftItemDef) => void
+  ): void {
+    SoundManager.playLevelUp();
+    this.chestModal.classList.remove('hidden');
+    this.chestItemCardsContainer.innerHTML = '';
+    let chosen = false;
+
+    const chooseItem = (item: RiftItemDef) => {
+      if (chosen) return;
+      chosen = true;
+      this.hideChestChoice();
+      onChoose(item);
+    };
+
+    items.forEach((item, idx) => {
+      const currentCount = player.riftItems.get(item.id) || 0;
+      const card = document.createElement('div');
+      card.className = `modal-card chest-choice-item-card grade-${item.rarity}`;
+
+      const rarityLabels: Record<string, string> = {
+        common: 'Обычный',
+        uncommon: 'Необычный',
+        rare: 'Редкий',
+        legendary: 'Легендарный',
+        boss: 'Босс-реликт'
+      };
+      const rarityLabel = rarityLabels[item.rarity] || item.rarity;
+
+      card.innerHTML = `
+        <div class="chest-card-top">
+          <span class="chest-hotkey-chip">[${idx + 1}]</span>
+          <span class="grade-badge grade-${item.rarity}">${rarityLabel.toUpperCase()}</span>
+        </div>
+        <div class="chest-card-icon-wrap" style="color: ${item.color}">${item.icon}</div>
+        <div class="chest-card-title" style="color: ${item.color}">${item.name}</div>
+        <div class="chest-card-desc">${item.description}</div>
+        <div class="chest-card-footer">
+          <div class="chest-card-count">
+            ${currentCount > 0 ? `В наличии: <strong>x${currentCount}</strong>` : '<span class="chest-new-tag">✨ Новый артефакт!</span>'}
+          </div>
+          <button class="action-btn select-btn chest-select-btn" type="button">
+            <span class="btn-hotkey">[${idx + 1}]</span> ВЗЯТЬ
+          </button>
+        </div>
+      `;
+
+      card.addEventListener('click', () => chooseItem(item));
+      this.chestItemCardsContainer.appendChild(card);
+    });
+
+    this.chestKeyHandler = (e: KeyboardEvent) => {
+      if (chosen) return;
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+      if (this.chestModal.classList.contains('hidden')) return;
+
+      if (e.code === 'Digit1' || e.code === 'Numpad1' || e.key === '1') {
+        e.preventDefault();
+        chooseItem(items[0]);
+      } else if (e.code === 'Digit2' || e.code === 'Numpad2' || e.key === '2') {
+        e.preventDefault();
+        chooseItem(items[1]);
+      }
+    };
+
+    window.addEventListener('keydown', this.chestKeyHandler);
+  }
+
+  public hideChestChoice(): void {
+    if (this.chestKeyHandler) {
+      window.removeEventListener('keydown', this.chestKeyHandler);
+      this.chestKeyHandler = null;
+    }
+    this.chestModal.classList.add('hidden');
+  }
+
+  public isInventoryOpen(): boolean {
+    return !this.inventoryModal.classList.contains('hidden');
+  }
+
+  public toggleInventory(player?: Player): void {
+    const targetPlayer = player || this.cachedPlayer;
+    if (!targetPlayer) return;
+
+    if (this.isInventoryOpen()) {
+      this.hideInventory();
+    } else {
+      this.showInventory(targetPlayer);
+    }
+  }
+
+  public showInventory(player: Player): void {
+    this.cachedPlayer = player;
+    this.renderInventory(player);
+    this.inventoryModal.classList.remove('hidden');
+    this.menuStack.push('inventory');
+    this.onInventoryToggle?.(true);
+  }
+
+  public hideInventory(): void {
+    if (!this.inventoryModal) return;
+    this.inventoryModal.classList.add('hidden');
+    const idx = this.menuStack.lastIndexOf('inventory');
+    if (idx !== -1) {
+      this.menuStack.splice(idx, 1);
+    }
+    this.onInventoryToggle?.(false);
+  }
+
+  public renderInventory(player: Player): void {
+    const heroName = player.displayName || player.charType || 'Странник Прерии';
+    if (this.inventoryHeroTitle) {
+      this.inventoryHeroTitle.innerText = `${heroName.toUpperCase()} • УРОВЕНЬ ${player.level}`;
+    }
+
+    // 1. Stats Table
+    if (this.inventoryStatsList) {
+      const startMult = player.getDamageMultiplier(player.startingWeaponId);
+      const genMult = player.getDamageMultiplier();
+      const critPct = (player.critChance * 100).toFixed(1);
+      const critDmgPct = (player.critDamage * 100).toFixed(1);
+      const cdrPct = Math.round((1 - player.passiveCooldownMultiplier) * 100);
+      const armorPct = Math.round(player.passiveDamageReduction * 100);
+
+      this.inventoryStatsList.innerHTML = `
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">❤️ Здоровье</span>
+          <span class="inv-stat-value">${Math.round(player.hp)} / ${player.maxHp}</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">🛡️ Энергощит</span>
+          <span class="inv-stat-value">${Math.round(player.shield)} / ${player.maxShield}</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">💖 Регенерация HP</span>
+          <span class="inv-stat-value">+${player.passiveHpRegen.toFixed(1)} / с</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">👟 Скорость</span>
+          <span class="inv-stat-value">${player.speed.toFixed(1)} (x${player.passiveSpeedMultiplier.toFixed(2)})</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">🦺 Снижение урона (Броня)</span>
+          <span class="inv-stat-value">-${armorPct}%</span>
+        </div>
+        <div class="inv-stat-row" title="Начальные бонусы героя применяются только к его стартовому оружию">
+          <span class="inv-stat-label">🎯 Урон стартового оружия</span>
+          <span class="inv-stat-value text-accent">+${Math.round((startMult - 1) * 100)}%</span>
+        </div>
+        <div class="inv-stat-row" title="Общие бонусы урона (пассивки, предметы, алтари)">
+          <span class="inv-stat-label">⚔️ Общий множитель урона</span>
+          <span class="inv-stat-value">+${Math.round((genMult - 1) * 100)}%</span>
+        </div>
+        <div class="inv-stat-row" title="Шанс критического удара (максимум 1000%)">
+          <span class="inv-stat-label">🎯 Шанс крит. урона</span>
+          <span class="inv-stat-value text-crit">${critPct}%</span>
+        </div>
+        <div class="inv-stat-row" title="Множитель критического урона (максимум 100%)">
+          <span class="inv-stat-label">💥 Крит. урон</span>
+          <span class="inv-stat-value text-crit-dmg">+${critDmgPct}%</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">⏱️ Снижение перезарядки</span>
+          <span class="inv-stat-value">-${cdrPct}%</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">🧲 Радиус сбора</span>
+          <span class="inv-stat-value">${player.pickupRadius.toFixed(1)}м</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">⬡ Кредиты Разлома</span>
+          <span class="inv-stat-value text-yellow">${player.credits}</span>
+        </div>
+        <div class="inv-stat-row">
+          <span class="inv-stat-label">💀 Убийств</span>
+          <span class="inv-stat-value">${player.kills}</span>
+        </div>
+      `;
+    }
+
+    // 2. Passives List
+    if (this.inventoryPassivesList) {
+      const passivesList = [
+        {
+          id: 'stat_sheriff_star',
+          icon: '⭐',
+          count: player.sheriffStarCount,
+          title: 'Звезда Шерифа',
+          desc: `+${Math.round((player.passiveDamageMultiplier - 1) * 100)}% к урону всех оружий`
+        },
+        {
+          id: 'stat_spurs',
+          icon: '👢',
+          count: player.spursCount,
+          title: 'Шпоры Скорохода',
+          desc: `x${player.passiveSpeedMultiplier.toFixed(2)} к скорости бега`
+        },
+        {
+          id: 'stat_flask',
+          icon: '🍶',
+          count: player.flaskCount,
+          title: 'Фляга с Виски',
+          desc: `+${player.flaskCount * 30} к макс HP (${player.maxHp} HP)`
+        },
+        {
+          id: 'stat_lasso',
+          icon: '➰',
+          count: player.lassoCount,
+          title: 'Магнитное Лассо',
+          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита`
+        },
+        {
+          id: 'stat_amulet',
+          icon: '🧿',
+          count: player.amuletCount,
+          title: 'Охотничий Амулет',
+          desc: `+${(player.amuletCount * 1.5).toFixed(1)} HP/с (всего +${player.passiveHpRegen.toFixed(1)} HP/с)`
+        },
+        {
+          id: 'stat_vest',
+          icon: '🦺',
+          count: player.vestCount,
+          title: 'Кожаный Жилет',
+          desc: `-${Math.round(player.passiveDamageReduction * 100)}% получаемого урона`
+        },
+        {
+          id: 'stat_watch',
+          icon: '⏱️',
+          count: player.watchCount,
+          title: 'Карманные Часы',
+          desc: `-${Math.min(70, player.watchCount * 8)}% к перезарядке (всего -${Math.round((1 - player.passiveCooldownMultiplier) * 100)}%)`
+        }
+      ];
+
+      const active = passivesList.filter(p => p.count > 0);
+      if (active.length === 0) {
+        this.inventoryPassivesList.innerHTML = `<div class="inv-empty-hint">Пассивные усиления ещё не получены</div>`;
+      } else {
+        this.inventoryPassivesList.innerHTML = active.map(p => `
+          <div class="inv-passive-card">
+            <span class="inv-passive-icon">${p.icon}</span>
+            <div class="inv-passive-body">
+              <div class="inv-passive-head">
+                <span class="inv-passive-title">${p.title}</span>
+                <span class="inv-passive-stacks">x${p.count}</span>
+              </div>
+              <div class="inv-passive-desc">${p.desc}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // 3. Weapons with Upgrade History
+    if (this.inventoryWeaponsList) {
+      if (player.weapons.length === 0) {
+        this.inventoryWeaponsList.innerHTML = `<div class="inv-empty-hint">Оружие пока не получено</div>`;
+      } else {
+        const gradeNames: Record<string, string> = {
+          common: 'Обычный',
+          uncommon: 'Необычный',
+          rare: 'Редкий',
+          legendary: 'Легендарный'
+        };
+
+        this.inventoryWeaponsList.innerHTML = player.weapons.map(weapon => {
+          const isStart = weapon.id === player.startingWeaponId;
+          const historyHtml = (weapon.upgradeHistory || []).map((grade, idx) => `
+            <span class="inv-grade-chip grade-${grade}">#${idx + 1} ${gradeNames[grade] || grade}</span>
+          `).join('');
+
+          return `
+            <div class="inv-weapon-card">
+              <div class="inv-weapon-top">
+                <span class="inv-weapon-icon">${weapon.icon}</span>
+                <div class="inv-weapon-title-box">
+                  <div class="inv-weapon-name-row">
+                    <span class="inv-weapon-name">${weapon.name}</span>
+                    ${isStart ? '<span class="inv-tag-start">НАЧАЛЬНОЕ</span>' : ''}
+                    <span class="inv-tag-lvl">Ур. ${weapon.level}/${weapon.maxLevel}</span>
+                  </div>
+                  <div class="inv-weapon-stat-badges">
+                    <span>Урон: <strong>${Math.round(weapon.damage)}</strong></span>
+                    <span>КД: <strong>${weapon.effectiveCooldown.toFixed(2)}с</strong></span>
+                    <span>Бонус улучшений: <strong>+${Math.round(weapon.bonusDamage * 100)}%</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="inv-weapon-history-row">
+                <span class="inv-history-label">Грейды улучшений:</span>
+                <div class="inv-history-chips">
+                  ${historyHtml || '<span class="inv-history-none">Базовое состояние (без улучшений)</span>'}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // 4. Rift Items
+    if (this.inventoryItemsList) {
+      const itemEntries = Array.from(player.riftItems.entries());
+      if (itemEntries.length === 0) {
+        this.inventoryItemsList.innerHTML = `<div class="inv-empty-hint">Сундуки Разлома ещё не открыты. Найдите контейнер в прерии!</div>`;
+      } else {
+        const rarityOrder: Record<string, number> = {
+          boss: 5,
+          legendary: 4,
+          rare: 3,
+          uncommon: 2,
+          common: 1
+        };
+        itemEntries.sort((a, b) => {
+          const defA = RIFT_ITEMS[a[0]];
+          const defB = RIFT_ITEMS[b[0]];
+          const rA = rarityOrder[defA?.rarity || 'common'] || 0;
+          const rB = rarityOrder[defB?.rarity || 'common'] || 0;
+          return rB - rA;
+        });
+
+        const rarityLabels: Record<string, string> = {
+          common: 'Обычный',
+          uncommon: 'Необычный',
+          rare: 'Редкий',
+          legendary: 'Легендарный',
+          boss: 'Босс'
+        };
+
+        this.inventoryItemsList.innerHTML = itemEntries.map(([id, count]) => {
+          const def = RIFT_ITEMS[id];
+          if (!def) return '';
+          const rarityLabel = rarityLabels[def.rarity] || def.rarity;
+
+          return `
+            <div class="inv-item-card grade-${def.rarity}">
+              <div class="inv-item-card-top">
+                <span class="inv-item-icon" style="color: ${def.color}">${def.icon}</span>
+                <span class="grade-badge grade-${def.rarity}">${rarityLabel.toUpperCase()}</span>
+                <span class="inv-item-count">x${count}</span>
+              </div>
+              <div class="inv-item-name" style="color: ${def.color}">${def.name}</div>
+              <div class="inv-item-desc">${def.description}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
   }
 
   public showGameOver(
@@ -4026,25 +4426,19 @@ export class HUD {
         if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) continue;
         if (player.weapons.some(weapon => weapon.id === id)) continue;
         const def = spell ? INVOKER_SPELLS[spell] : null;
-        const grade = rollWeaponGrade(this.currentStageNumber);
-        const gradeLabel = getGradeLabel(grade);
         pool.push({
           id: 'new_' + id,
           title: 'Новое: ' + (def?.name ?? 'Invoke'),
           icon: def?.icon ?? '🔮',
           iconImage: getWeaponIconUrl(id),
-          levelTag: `НОВОЕ ОРУЖИЕ • ${gradeLabel.toUpperCase()}`,
+          levelTag: 'НОВОЕ ОРУЖИЕ',
           description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
-          grade,
           apply: () => {
             if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
             const triggerAttack = () => player.triggerAttackAnim(0.5);
             const w = spell
               ? new InvokerSpellWeapon(spell, triggerAttack)
               : new InvokerInvokeWeapon(triggerAttack);
-            if (grade !== 'common') {
-              w.applyGradeUpgrade(grade);
-            }
             player.weapons.push(w);
             player.recalculateStats();
           }
@@ -4061,21 +4455,15 @@ export class HUD {
           description: string,
           factory: () => Weapon
         ) => {
-          const grade = rollWeaponGrade(this.currentStageNumber);
-          const gradeLabel = getGradeLabel(grade);
           pool.push({
             id: 'new_' + id,
             title: 'Новое: ' + title,
             icon,
             iconImage: getWeaponIconUrl(id),
-            levelTag: `НОВОЕ ОРУЖИЕ • ${gradeLabel.toUpperCase()}`,
+            levelTag: 'НОВОЕ ОРУЖИЕ',
             description,
-            grade,
             apply: () => {
               const w = factory();
-              if (grade !== 'common') {
-                w.applyGradeUpgrade(grade);
-              }
               player.weapons.push(w);
               player.recalculateStats();
             }

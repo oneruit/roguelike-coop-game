@@ -13,7 +13,7 @@ export function getAssetUrl(path: string): string {
     return path;
   }
 
-  const base = (import.meta.env.BASE_URL || '/').trim();
+  const base = (import.meta.env?.BASE_URL || '/').trim();
   const cleanBase = base.endsWith('/') ? base : `${base}/`;
 
   // If path is already relative with './'

@@ -185,6 +185,21 @@ class Game {
       this.engine.setTimeOfDay(mode);
       this.biomeManager.applyBiomeToScene(this.engine.scene, mode);
     };
+    this.hud.onInventoryToggle = (isOpen) => {
+      const isCoop = this.net.role !== 'solo' || this.player.isCoop;
+      if (isCoop) return;
+
+      if (isOpen) {
+        if (this.sessionDirector.gameState === GameState.PLAYING) {
+          this.sessionDirector.gameState = GameState.PAUSED;
+        }
+      } else {
+        if (this.sessionDirector.gameState === GameState.PAUSED) {
+          this.sessionDirector.gameState = GameState.PLAYING;
+          this.sessionDirector.lastTime = performance.now();
+        }
+      }
+    };
     const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
     this.engine.setShadowQuality(savedShadowQuality);
 
@@ -282,6 +297,22 @@ class Game {
       if (this.sessionDirector.gameState === GameState.PLAYING) {
         this.player.triggerDash(this.input.moveDirection);
       }
+    };
+
+    this.input.onToggleInventory = () => {
+      if (
+        this.sessionDirector.isLevelUpActive ||
+        this.mapManager.isOpen ||
+        this.devManager.getIsOpen() ||
+        this.sessionDirector.gameState === GameState.MAIN_MENU ||
+        this.sessionDirector.gameState === GameState.HOST_LOBBY ||
+        this.sessionDirector.gameState === GameState.JOIN_LOBBY ||
+        this.sessionDirector.gameState === GameState.CHARACTER_SELECT ||
+        this.sessionDirector.gameState === GameState.GAME_OVER
+      ) {
+        return;
+      }
+      this.hud.toggleInventory(this.player);
     };
 
     this.input.onToggleMap = () => {

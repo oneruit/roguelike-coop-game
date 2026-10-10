@@ -496,11 +496,13 @@ export class Player {
     this.maxShield = aegisStacks * 35;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
 
-    // Crit Chance: 5% base + 12% per Crit Visor stack, cap at 10.0 (1000%)
-    this.critChance = Math.min(10.0, 0.05 + critStacks * 0.12);
+    // Crit Chance: 5% base + 15% per Crit Lens + 12% per Crit Visor, cap at 10.0 (1000%)
+    const critLensStacks = this.getItemStacks('crit_lens');
+    this.critChance = Math.min(10.0, 0.05 + critLensStacks * 0.15 + critStacks * 0.12);
 
-    // Crit Damage: 50% base, cap at 1.0 (100%)
-    this.critDamage = Math.min(1.0, 0.50);
+    // Crit Damage: 50% base + 20% per Heavy Hollowpoint, cap at 1.0 (100%)
+    const hollowStacks = this.getItemStacks('heavy_hollowpoint');
+    this.critDamage = Math.min(1.0, 0.50 + hollowStacks * 0.20);
 
     // Leather Vest % damage reduction: 10% per stack, cap at 70%
     this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.10);
@@ -524,18 +526,20 @@ export class Player {
     this.speed = baseSpd * (1 + speedBonus);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
-    const baseDmg = this.isOneHitKill ? 50.0 : (this.baseDamageMultiplier * this.passiveDamageMultiplier);
+    const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
+    const baseDmg = this.isOneHitKill ? 50.0 : (this.baseDamageMultiplier * this.passiveDamageMultiplier * ampMult);
     this.damageMultiplier = baseDmg * (1 + dmgBonus);
   }
 
   /**
    * Calculates effective damage multiplier for a given weapon.
    * Per rule: initial hero damage bonus applies ONLY to their starting weapon!
-   * Other weapons receive 1.0 * general bonuses (passive damage, altars, buffs, cheats).
+   * Other weapons receive 1.0 * general bonuses (passive damage, altars, buffs, cheats, energy amplifier).
    */
   public getDamageMultiplier(weaponId?: string): number {
     const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
-    const generalBonus = (this.isOneHitKill ? 50.0 : this.passiveDamageMultiplier) * (1 + dmgBonus);
+    const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
+    const generalBonus = (this.isOneHitKill ? 50.0 : this.passiveDamageMultiplier * ampMult) * (1 + dmgBonus);
     const isStarting = !weaponId ||
       weaponId === this.startingWeaponId ||
       (this.charType === 'invoker' && (weaponId === 'invoker_invoke' || weaponId.startsWith('invoker_')));
@@ -791,16 +795,16 @@ export class Player {
               enemy,
               amount * this.getDamageMultiplier(weapon.id),
               sourcePos,
-              Math.min(10.0, this.critChance + weapon.critChance + critChanceBonus),
-              Math.min(1.0, this.critDamage + weapon.critDamage + critDamageBonus)
+              Math.min(10.0, this.critChance + critChanceBonus),
+              Math.min(1.0, this.critDamage + critDamageBonus)
             );
           }
         : undefined;
 
       const spawnProjectileWithWeapon = (proj: Projectile) => {
         proj.sourceWeaponId = weapon.id;
-        proj.critChance = Math.min(10.0, this.critChance + weapon.critChance);
-        proj.critDamage = Math.min(1.0, this.critDamage + weapon.critDamage);
+        proj.critChance = this.critChance;
+        proj.critDamage = this.critDamage;
         spawnProjectile(proj);
       };
 

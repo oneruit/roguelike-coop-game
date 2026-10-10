@@ -27,6 +27,7 @@ import { AssetPreloader } from './AssetPreloader';
 import { CombatDirector } from '../combat/CombatDirector';
 import { GameNetworkCoordinator } from '../net/GameNetworkCoordinator';
 import { LobbyCoordinator } from '../net/LobbyCoordinator';
+import type { RiftItemDef } from '../items/RiftItemSystem';
 
 export enum GameState {
   MAIN_MENU,
@@ -496,23 +497,46 @@ export class SessionDirector {
     if (chestData) {
       if (this.player.credits >= chestData.cost) {
         this.player.credits -= chestData.cost;
-        const item = this.chestManager.openChest(chestData.chest);
-        ProgressionManager.getInstance().recordResourceGather(1);
-        this.player.addRiftItem(item);
+        const items = this.chestManager.openChest(chestData.chest, this.biomeManager.stageNumber);
         SoundManager.playChestOpen();
         this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);
-        this.hud.triggerAltarNotification(item.name, item.description, item.icon, item.color);
 
-        if (this.net.role === 'client') {
-          this.net.notifyChestOpened(chestData.chest.id, item.id);
-        } else if (this.net.role === 'host') {
-          this.netCoordinator.pendingNetworkEvents.push({
-            type: 'chest_opened',
-            chestId: chestData.chest.id,
-            playerId: 'p1',
-            name: item.name,
-            icon: item.icon,
-            color: item.color
+        const onChosen = (chosenItem: RiftItemDef) => {
+          ProgressionManager.getInstance().recordResourceGather(1);
+          this.player.addRiftItem(chosenItem);
+          this.hud.triggerAltarNotification(chosenItem.name, chosenItem.description, chosenItem.icon, chosenItem.color);
+
+          if (this.net.role === 'client') {
+            this.net.notifyChestOpened(chestData.chest.id, chosenItem.id);
+          } else if (this.net.role === 'host') {
+            this.netCoordinator.pendingNetworkEvents.push({
+              type: 'chest_opened',
+              chestId: chestData.chest.id,
+              playerId: 'p1',
+              name: chosenItem.name,
+              icon: chosenItem.icon,
+              color: chosenItem.color
+            });
+          }
+        };
+
+        if (this.player.isCoop) {
+          this.player.addBuff({
+            type: 'invulnerable',
+            name: 'Щит выбора',
+            icon: 'DEF',
+            color: '#f59e0b',
+            duration: 8.0,
+            maxDuration: 8.0,
+            value: 1
+          });
+          this.hud.showChestChoice(items, this.player, onChosen);
+        } else {
+          this.gameState = GameState.LEVEL_UP;
+          this.hud.showChestChoice(items, this.player, (chosenItem) => {
+            onChosen(chosenItem);
+            this.gameState = GameState.PLAYING;
+            this.lastTime = performance.now();
           });
         }
       } else {

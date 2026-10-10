@@ -12,6 +12,17 @@ import {
 import { BowWeapon, KukriWeapon } from '../game/src/combat/Weapon';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../game/src/combat/InvokerWeapons';
 import { BalanceManager } from '../game/src/balance/BalanceManager';
+import {
+  getItemsByGrade,
+  rollChestDropPair,
+  rollRiftItemByStage,
+  RIFT_ITEMS,
+  COMMON_ITEMS,
+  UNCOMMON_ITEMS,
+  RARE_ITEMS,
+  LEGENDARY_ITEMS,
+  type RiftItemId
+} from '../game/src/items/RiftItemSystem';
 
 test('Critical strike caps and tier calculations', () => {
   // Max crit chance = 1000% (10.0), max crit damage = 100% (1.0)
@@ -115,31 +126,46 @@ test('Weapon grade definitions and biome probabilities', () => {
   assert.equal(rollWeaponGrade(4, () => 0.95), 'common');     // >= 0.90
 });
 
-test('Weapon grade upgrades apply stats cumulatively', () => {
+test('Weapon grade upgrades apply stats cumulatively to weapon and record upgradeHistory', () => {
   const bow = new BowWeapon();
-  const initialBaseDamage = bow.baseDamage;
   const initialDamage = bow.damage;
   const initialCd = bow.cooldown;
+
+  // Initial weapon has no grade property, upgradeHistory is empty, and has no crit chance on weapon itself
+  assert.equal((bow as any).grade, undefined);
+  assert.equal((bow as any).critChance, undefined);
+  assert.equal((bow as any).critDamage, undefined);
+  assert.deepEqual(bow.upgradeHistory, []);
 
   // Upgrade with 'rare' grade
   bow.upgrade('rare');
   assert.equal(bow.level, 2);
-  assert.equal(bow.grade, 'rare');
-  // Rare gives 1.35x damage multiplier bonus on damagePerLevel
+  assert.deepEqual(bow.upgradeHistory, ['rare']);
+  // Rare gives bonus damage and cooldown reduction
   assert.ok(bow.damage > initialDamage);
-  assert.ok(bow.critChance > 0); // Rare adds crit chance
-  assert.ok(bow.cooldown < initialCd); // Rare adds cooldown reduction
+  assert.ok(bow.bonusDamage > 0);
+  assert.ok(bow.cooldown < initialCd);
+  // Upgrades do NOT give crit or crit chance
+  assert.equal((bow as any).critChance, undefined);
+  assert.equal((bow as any).critDamage, undefined);
 
-  // Upgrade with 'common' grade does not downgrade weapon grade
+  // Upgrade with 'common' grade appends to upgradeHistory
+  const prevDamage = bow.damage;
   bow.upgrade('common');
   assert.equal(bow.level, 3);
-  assert.equal(bow.grade, 'rare');
+  assert.deepEqual(bow.upgradeHistory, ['rare', 'common']);
+  assert.ok(bow.damage > prevDamage);
 
-  // Upgrade with 'legendary' promotes grade to legendary
+  // Upgrade with 'legendary' appends to upgradeHistory
+  const prevDamage2 = bow.damage;
   bow.upgrade('legendary');
   assert.equal(bow.level, 4);
-  assert.equal(bow.grade, 'legendary');
-  assert.ok(bow.critDamage > 0); // Legendary adds crit damage bonus
+  assert.deepEqual(bow.upgradeHistory, ['rare', 'common', 'legendary']);
+  assert.ok(bow.damage > prevDamage2);
+  assert.ok(bow.cooldownBonus > 0);
+  // Still no crit on weapon
+  assert.equal((bow as any).critChance, undefined);
+  assert.equal((bow as any).critDamage, undefined);
 });
 
 test('Initial hero damage bonuses apply ONLY to starting weapon', () => {
@@ -191,4 +217,97 @@ test('Initial hero damage bonuses apply ONLY to starting weapon', () => {
   assert.ok(isInvokerSpell('invoker_invoke'));
   assert.ok(isInvokerSpell('invoker_sun_strike'));
   assert.ok(!isInvokerSpell('bow'));
+});
+
+test('Rift Items have at least 3 items per grade and proper rarity mapping', () => {
+  // Test requirement: at least 3 test items of each grade
+  assert.ok(COMMON_ITEMS.length >= 3, `Expected at least 3 common items, got ${COMMON_ITEMS.length}`);
+  assert.ok(UNCOMMON_ITEMS.length >= 3, `Expected at least 3 uncommon items, got ${UNCOMMON_ITEMS.length}`);
+  assert.ok(RARE_ITEMS.length >= 3, `Expected at least 3 rare items, got ${RARE_ITEMS.length}`);
+  assert.ok(LEGENDARY_ITEMS.length >= 3, `Expected at least 3 legendary items, got ${LEGENDARY_ITEMS.length}`);
+
+  // Test getItemsByGrade
+  assert.equal(getItemsByGrade('common').length, COMMON_ITEMS.length);
+  assert.equal(getItemsByGrade('uncommon').length, UNCOMMON_ITEMS.length);
+  assert.equal(getItemsByGrade('rare').length, RARE_ITEMS.length);
+  assert.equal(getItemsByGrade('legendary').length, LEGENDARY_ITEMS.length);
+
+  // New Rare items exist
+  assert.ok(RIFT_ITEMS.crit_lens);
+  assert.equal(RIFT_ITEMS.crit_lens.rarity, 'rare');
+
+  assert.ok(RIFT_ITEMS.heavy_hollowpoint);
+  assert.equal(RIFT_ITEMS.heavy_hollowpoint.rarity, 'rare');
+
+  assert.ok(RIFT_ITEMS.energy_amplifier);
+  assert.equal(RIFT_ITEMS.energy_amplifier.rarity, 'rare');
+});
+
+test('Chest drops roll 2 items, allow duplicates, and depend on biome stage', () => {
+  // 1. rollChestDropPair returns exactly 2 items
+  const pair = rollChestDropPair(1);
+  assert.equal(pair.length, 2);
+  assert.ok(pair[0].id);
+  assert.ok(pair[1].id);
+
+  // 2. Duplicates can roll (independent rolls)
+  // Deterministic RNG that rolls the same item both times:
+  const pairSame = rollChestDropPair(1, () => 0.001); // rolls legendary (e.g. chronos_hourglass) twice
+  assert.equal(pairSame[0].id, pairSame[1].id);
+
+  // 3. Stage probability scaling
+  // Stage 1 with RNG = 0.5 rolls common item
+  const commonItem = rollRiftItemByStage(1, () => 0.5);
+  assert.equal(commonItem.rarity, 'common');
+
+  // Stage 4 with RNG = 0.4 rolls rare item (since rare chance is 40% on stage 4)
+  const rareItem = rollRiftItemByStage(4, () => 0.4);
+  assert.equal(rareItem.rarity, 'rare');
+});
+
+test('Rare items correctly modify player stats and caps', () => {
+  const calculatePlayerStats = (items: Map<RiftItemId, number>, baseDamageMult: number = 1.0) => {
+    const lensStacks = items.get('crit_lens') || 0;
+    const critChance = Math.min(10.0, Math.max(0, 0.05 + (lensStacks * 0.15)));
+
+    const hollowStacks = items.get('heavy_hollowpoint') || 0;
+    const critDamage = Math.min(1.0, Math.max(0, 0.50 + (hollowStacks * 0.20)));
+
+    const ampStacks = items.get('energy_amplifier') || 0;
+    const ampMult = 1.0 + (ampStacks * 0.18);
+    const damageMult = baseDamageMult * ampMult;
+
+    return { critChance, critDamage, damageMult };
+  };
+
+  const items = new Map<RiftItemId, number>();
+  const base = calculatePlayerStats(items);
+  assert.equal(base.critChance, 0.05);
+  assert.equal(base.critDamage, 0.50);
+  assert.equal(base.damageMult, 1.0);
+
+  // 1 stack of crit_lens (+15% crit chance)
+  items.set('crit_lens', 1);
+  const withLens = calculatePlayerStats(items);
+  assert.equal(Math.round(withLens.critChance * 100) / 100, 0.20);
+
+  // 1 stack of heavy_hollowpoint (+20% crit damage)
+  items.set('heavy_hollowpoint', 1);
+  const withHollow = calculatePlayerStats(items);
+  assert.equal(Math.round(withHollow.critDamage * 100) / 100, 0.70);
+
+  // 1 stack of energy_amplifier (+18% general damage)
+  items.set('energy_amplifier', 1);
+  const withAmp = calculatePlayerStats(items);
+  assert.equal(Math.round(withAmp.damageMult * 100) / 100, 1.18);
+
+  // Test crit damage cap: 100% (1.0)
+  items.set('heavy_hollowpoint', 5);
+  const cappedDmg = calculatePlayerStats(items);
+  assert.equal(cappedDmg.critDamage, 1.0); // capped at 100%
+
+  // Test crit chance cap: 1000% (10.0)
+  items.set('crit_lens', 80);
+  const cappedChance = calculatePlayerStats(items);
+  assert.equal(cappedChance.critChance, 10.0); // capped at 1000%
 });

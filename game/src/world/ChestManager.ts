@@ -10,7 +10,7 @@ import {
   RingGeometry,
   DoubleSide
 } from 'three';
-import { rollRiftItem, RiftItemDef } from '../items/RiftItemSystem';
+import { rollChestDropPair, RiftItemDef } from '../items/RiftItemSystem';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { SeededRNG } from '../core/SeededRNG';
 
@@ -288,20 +288,11 @@ export class ChestManager {
   /**
    * Opens the chest, awards item and returns dropped item.
    */
-  public openChest(chest: ChestInstance): RiftItemDef {
+  public openChest(chest: ChestInstance, stageNumber: number = 1): [RiftItemDef, RiftItemDef] {
     chest.isOpened = true;
     chest.hologramMesh.visible = false;
     chest.glowMesh.visible = false;
-
-    let weights = { common: 80, uncommon: 20, legendary: 0 };
-    if (chest.tier === 'large') {
-      weights = { common: 20, uncommon: 70, legendary: 10 };
-    } else if (chest.tier === 'legendary') {
-      weights = { common: 0, uncommon: 10, legendary: 90 };
-    }
-
-    const item = rollRiftItem(weights);
-    return item;
+    return rollChestDropPair(stageNumber);
   }
 
   public clear() {

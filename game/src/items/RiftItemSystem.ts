@@ -1,19 +1,25 @@
-export type ItemRarity = 'common' | 'uncommon' | 'legendary' | 'boss';
+import { rollWeaponGrade, type WeaponGrade } from '../combat/WeaponGrades';
+
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'legendary' | 'boss';
 
 export type RiftItemId =
-  // Common (Белые)
+  // Common (Обычные / Белые)
   | 'kinetic_injector'
   | 'nanite_plating'
   | 'adrenaline_dart'
   | 'pulse_rounds'
   | 'health_vial'
-  // Uncommon (Зелёные)
+  // Uncommon (Необычные / Зелёные)
   | 'chain_lightning'
   | 'plasma_detonator'
   | 'crit_visor'
   | 'aegis_battery'
   | 'bio_leech'
-  // Legendary (Красные)
+  // Rare (Редкие / Синие)
+  | 'crit_lens'
+  | 'heavy_hollowpoint'
+  | 'energy_amplifier'
+  // Legendary (Легендарные / Оранжевые)
   | 'singularity_core'
   | 'orbital_strike'
   | 'chronos_phylactery'
@@ -32,13 +38,13 @@ export interface RiftItemDef {
 }
 
 export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
-  // --- Common (Белые) ---
+  // --- Common (Обычные) ---
   kinetic_injector: {
     id: 'kinetic_injector',
     name: 'Кинетический Ускоритель',
     rarity: 'common',
     icon: '⚡',
-    color: '#e2e8f0',
+    color: '#94a3b8',
     description: '+15% к скорострельности оружий.',
     stackText: '+15% за стак'
   },
@@ -47,7 +53,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     name: 'Нано-Броня',
     rarity: 'common',
     icon: '🛡️',
-    color: '#e2e8f0',
+    color: '#94a3b8',
     description: 'Снижает входящий урон на 4 ед. (не ниже 1).',
     stackText: '+4 снижения урона за стак'
   },
@@ -56,7 +62,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     name: 'Стимулятор Сердца',
     rarity: 'common',
     icon: '💉',
-    color: '#e2e8f0',
+    color: '#94a3b8',
     description: '+12% к скорости перемещения.',
     stackText: '+12% к скорости за стак'
   },
@@ -65,7 +71,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     name: 'Импульсный Патрон',
     rarity: 'common',
     icon: '🩸',
-    color: '#e2e8f0',
+    color: '#94a3b8',
     description: '15% шанс наложить кровотечение (наносит 180% урона за 3 сек).',
     stackText: '+15% шанс за стак'
   },
@@ -74,12 +80,12 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     name: 'Био-Инжектор',
     rarity: 'common',
     icon: '🧪',
-    color: '#e2e8f0',
+    color: '#94a3b8',
     description: '+2.5 HP/сек пассивной регенерации.',
     stackText: '+2.5 HP/сек за стак'
   },
 
-  // --- Uncommon (Зелёные) ---
+  // --- Uncommon (Необычные) ---
   chain_lightning: {
     id: 'chain_lightning',
     name: 'Тесла-Катушка',
@@ -104,7 +110,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🎯',
     color: '#22c55e',
-    description: '+12% шанс нанести критический удар (200% урона).',
+    description: '+12% к шансу нанести критический удар.',
     stackText: '+12% шанс за стак'
   },
   aegis_battery: {
@@ -126,13 +132,42 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     stackText: '+5 HP за стак'
   },
 
-  // --- Legendary (Красные) ---
+  // --- Rare (Редкие) ---
+  crit_lens: {
+    id: 'crit_lens',
+    name: 'Линза Критовика',
+    rarity: 'rare',
+    icon: '🎯',
+    color: '#38bdf8',
+    description: '+15% к шансу критического удара (суммируется вплоть до 1000%).',
+    stackText: '+15% крит. шанс за стак'
+  },
+  heavy_hollowpoint: {
+    id: 'heavy_hollowpoint',
+    name: 'Тяжёлый Наконечник',
+    rarity: 'rare',
+    icon: '💥',
+    color: '#38bdf8',
+    description: '+20% к критическому урону (суммируется вплоть до максимума 100%).',
+    stackText: '+20% крит. урон за стак'
+  },
+  energy_amplifier: {
+    id: 'energy_amplifier',
+    name: 'Квантовый Резонатор',
+    rarity: 'rare',
+    icon: '⚡',
+    color: '#38bdf8',
+    description: '+18% к общему урону всех видов оружия героя.',
+    stackText: '+18% урон за стак'
+  },
+
+  // --- Legendary (Легендарные) ---
   singularity_core: {
     id: 'singularity_core',
     name: 'Ядро Сингулярности',
     rarity: 'legendary',
     icon: '🕳️',
-    color: '#ef4444',
+    color: '#f59e0b',
     description: 'Каждое 10-е убийство создает гравитационную воронку, затягивающую мобов и взрывающуюся на 600% урона.',
     stackText: '-2 к требуемым убийствам и +200% урона за стак'
   },
@@ -141,7 +176,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     name: 'Орбитальный Удар',
     rarity: 'legendary',
     icon: '🛰️',
-    color: '#ef4444',
+    color: '#f59e0b',
     description: 'Каждые 12 сек орбитальный спутник выжигает мощнейшего врага лучом на 800% урона.',
     stackText: '-2 сек перезарядка за стак'
   },
@@ -150,7 +185,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     name: 'Кристалл Времени',
     rarity: 'legendary',
     icon: '⏳',
-    color: '#ef4444',
+    color: '#f59e0b',
     description: 'Предотвращает смертельный урон, замораживая время вокруг на 3 сек и восстанавливая 50% HP (раз за стадию).',
     stackText: '+25% исцеления за стак'
   },
@@ -192,6 +227,12 @@ export const UNCOMMON_ITEMS: RiftItemId[] = [
   'bio_leech'
 ];
 
+export const RARE_ITEMS: RiftItemId[] = [
+  'crit_lens',
+  'heavy_hollowpoint',
+  'energy_amplifier'
+];
+
 export const LEGENDARY_ITEMS: RiftItemId[] = [
   'singularity_core',
   'orbital_strike',
@@ -203,11 +244,48 @@ export const BOSS_ITEMS: RiftItemId[] = [
   'molten_scale'
 ];
 
+export function getItemsByGrade(grade: WeaponGrade): RiftItemId[] {
+  switch (grade) {
+    case 'legendary': return LEGENDARY_ITEMS;
+    case 'rare': return RARE_ITEMS;
+    case 'uncommon': return UNCOMMON_ITEMS;
+    default: return COMMON_ITEMS;
+  }
+}
+
 /**
- * Rolls an item drop based on chest rarity weights.
+ * Rolls an item drop based on stage/biome probabilities.
  */
-export function rollRiftItem(weights: { common: number; uncommon: number; legendary: number; boss?: number }): RiftItemDef {
-  const total = weights.common + weights.uncommon + weights.legendary + (weights.boss ?? 0);
+export function rollRiftItemByStage(
+  stageNumber: number,
+  rng: () => number = Math.random
+): RiftItemDef {
+  const grade = rollWeaponGrade(stageNumber, rng);
+  const items = getItemsByGrade(grade);
+  const id = items[Math.floor(rng() * items.length)];
+  return RIFT_ITEMS[id];
+}
+
+/**
+ * Rolls two independent item drops from a chest.
+ * Duplicate items can roll as per user requirement.
+ */
+export function rollChestDropPair(
+  stageNumber: number,
+  rng: () => number = Math.random
+): [RiftItemDef, RiftItemDef] {
+  return [
+    rollRiftItemByStage(stageNumber, rng),
+    rollRiftItemByStage(stageNumber, rng)
+  ];
+}
+
+/**
+ * Legacy weights roller kept for backwards compatibility.
+ */
+export function rollRiftItem(weights: { common: number; uncommon: number; rare?: number; legendary: number; boss?: number }): RiftItemDef {
+  const rareWeight = weights.rare ?? 0;
+  const total = weights.common + weights.uncommon + rareWeight + weights.legendary + (weights.boss ?? 0);
   let roll = Math.random() * total;
 
   if (roll < weights.common) {
@@ -221,6 +299,12 @@ export function rollRiftItem(weights: { common: number; uncommon: number; legend
     return RIFT_ITEMS[id];
   }
   roll -= weights.uncommon;
+
+  if (roll < rareWeight) {
+    const id = RARE_ITEMS[Math.floor(Math.random() * RARE_ITEMS.length)];
+    return RIFT_ITEMS[id];
+  }
+  roll -= rareWeight;
 
   if (roll < weights.legendary) {
     const id = LEGENDARY_ITEMS[Math.floor(Math.random() * LEGENDARY_ITEMS.length)];
