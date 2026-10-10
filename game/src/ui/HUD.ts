@@ -1236,9 +1236,8 @@ export class HUD {
       const isClaimed = bp.isLevelClaimed(reward.level);
       const canClaim = bp.canClaim(reward.level);
 
-      const isResource6 = reward.level === 6;
       const slot = document.createElement('div');
-      slot.className = `bp-slot-card ${canClaim ? 'claimable' : ''} ${isClaimed ? 'claimed' : isUnlocked ? 'unlocked' : 'locked'} ${isResource6 ? 'bp-slot-resource-6' : ''}`;
+      slot.className = `bp-slot-card ${canClaim ? 'claimable' : ''} ${isClaimed ? 'claimed' : isUnlocked ? 'unlocked' : 'locked'}`;
       slot.setAttribute('data-level', reward.level.toString());
       slot.setAttribute('role', 'button');
       slot.setAttribute('tabindex', '0');
@@ -1257,8 +1256,8 @@ export class HUD {
         : '<span class="bp-slot-lock-badge" title="Заблокировано"><svg viewBox="0 0 24 24" width="12" height="12" fill="#cbd5e1"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></span>';
 
       slot.innerHTML = `
-        <div class="bp-slot-box ${isResource6 ? 'bp-slot-box-clean' : ''}">
-          <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-slot-img ${isResource6 ? 'bp-slot-img-center' : ''}" alt="${reward.name}" onerror="this.style.opacity='0.2'" />
+        <div class="bp-slot-box">
+          <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-slot-img" alt="${reward.name}" onerror="this.style.opacity='0.2'" />
           ${statusBadge}
         </div>
         <span class="bp-slot-lvl">${reward.level}</span>
