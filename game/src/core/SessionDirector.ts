@@ -19,6 +19,7 @@ import { BiomeManager } from '../world/BiomeManager';
 import { ChestManager } from '../world/ChestManager';
 import { RiftTeleporter } from '../world/RiftTeleporter';
 import { ProgressionManager } from './ProgressionManager';
+import { BattlePassManager } from './BattlePassManager';
 import { SoundManager } from './SoundManager';
 import { SeededRNG } from './SeededRNG';
 import { UpdateNotificationUI } from '../ui/UpdateNotificationUI';
@@ -614,6 +615,8 @@ export class SessionDirector {
     ProgressionManager.getInstance().addAccountXp(50 + Math.floor(this.gameTime / 5));
     ProgressionManager.getInstance().save();
 
+    const bpResult = BattlePassManager.getInstance().addPointsForSurvival(this.gameTime);
+
     const allPlayersResults: DetailedPlayerResult[] = [];
     const mySlot = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
 
@@ -645,6 +648,6 @@ export class SessionDirector {
       });
     }
 
-    this.hud.showGameOver(timeStr, myStats, null, this.player.isCoop, isVictory, this.player.weapons, allPlayersResults);
+    this.hud.showGameOver(timeStr, myStats, null, this.player.isCoop, isVictory, this.player.weapons, allPlayersResults, bpResult);
   }
 }

@@ -167,9 +167,78 @@
             <div id="arsenal-items-list" class="arsenal-items-list"></div>
           </div>
 
+          <!-- Battle Pass XP Reward Summary Box -->
+          <div id="game-over-battle-pass" class="game-over-bp-box">
+            <div class="game-over-bp-header">
+              <span class="game-over-bp-badge">БОЕВОЙ ПРОПУСК • СЕЗОН 1</span>
+              <span id="game-over-bp-points-gained" class="game-over-bp-gain">+0 ОП</span>
+            </div>
+            <div class="game-over-bp-body">
+              <div class="game-over-bp-desc" id="game-over-bp-reason">Выживание 00:00</div>
+              <div class="game-over-bp-progress-row">
+                <span id="game-over-bp-level-badge" class="game-over-bp-lvl">Ур. 1</span>
+                <div class="game-over-bp-bar-wrap">
+                  <div id="game-over-bp-bar-fill" class="game-over-bp-bar-fill" style="width: 0%;"></div>
+                </div>
+                <span id="game-over-bp-xp-text" class="game-over-bp-xp">0 / 200 ОП</span>
+              </div>
+              <div id="game-over-bp-levelup" class="game-over-bp-levelup hidden">
+                ✨ НОВЫЙ УРОВЕНЬ БОЕВОГО ПРОПУСКА!
+              </div>
+            </div>
+          </div>
+
           <div class="pause-actions" style="margin-top: 20px;">
             <button id="btn-restart" class="action-btn select-btn">Возродиться</button>
             <button id="btn-gameover-menu" class="action-btn modern-back-btn">В главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Battle Pass Full Season Details Modal -->
+      <div id="battle-pass-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop" id="battle-pass-backdrop"></div>
+        <div class="modal-card battle-pass-modal-card modern-glass-modal">
+          <div class="bp-modal-header">
+            <div class="bp-modal-title-wrap">
+              <div class="sub-title menu-badge-blue">СЕЗОН 1: ТЕНИ ДРЕВНЕГО ЛЕСА</div>
+              <h2 class="bp-modal-main-title">БОЕВОЙ ПРОПУСК</h2>
+            </div>
+            <button id="btn-close-bp-modal" class="modern-back-btn" title="Закрыть [ESC]">[X] НАЗАД</button>
+          </div>
+
+          <!-- Current Season Progress Overview Card -->
+          <div class="bp-modal-summary-card">
+            <div class="bp-summary-left">
+              <div class="bp-summary-level-box">
+                <span class="bp-summary-lvl-num" id="bp-modal-cur-lvl">1</span>
+                <span class="bp-summary-lvl-lbl">УРОВЕНЬ</span>
+              </div>
+              <div class="bp-summary-info">
+                <div class="bp-summary-points-row">
+                  <span id="bp-modal-cur-xp">0 / 200 ОП текущего уровня</span>
+                  <span id="bp-modal-total-xp" class="bp-total-xp-tag">Всего: 0 / 2800 ОП</span>
+                </div>
+                <div class="bp-modal-bar-wrap">
+                  <div id="bp-modal-bar-fill" class="bp-modal-bar-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+            <button id="btn-bp-claim-all" class="action-btn select-btn bp-claim-all-btn">
+              Забрать всё доступное
+            </button>
+          </div>
+
+          <!-- Plaque: СПИСОК НАГРАД -->
+          <div class="bp-modal-plaque">
+            <span class="bp-plaque-bracket left"></span>
+            <span class="bp-plaque-title">СПИСОК НАГРАД</span>
+            <span class="bp-plaque-bracket right"></span>
+          </div>
+
+          <!-- All 15 Level Tiers Scrollable Grid -->
+          <div class="bp-modal-tiers-container" id="bp-modal-tiers-container">
+            <!-- Dynamically populated via HUD.ts -->
           </div>
         </div>
       </div>
