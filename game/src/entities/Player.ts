@@ -1112,6 +1112,7 @@ export class Player {
     return true;
   }
 
+  /** onLevelGained queues upgrades; the returned count is for visual feedback only. */
   public gainXp(amount: number): number {
     this.xp += amount;
     let levelsGained = 0;

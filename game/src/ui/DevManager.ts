@@ -282,10 +282,7 @@ export class DevManager {
     });
 
     document.getElementById('dev-btn-xp1000')?.addEventListener('click', () => {
-      const levels = this.player.gainXp(1000);
-      if (levels > 0) {
-        this.onTriggerLevelUp(levels);
-      }
+      this.player.gainXp(1000);
       if (this.isCoop() && this.isHost()) {
         this.onBroadcastDevAction?.('xp_1000', 1000);
       }

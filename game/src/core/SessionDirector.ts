@@ -77,6 +77,12 @@ export class SessionDirector {
   public isTrainingMode = false;
   public pendingLevelUps = 0;
   public isLevelUpActive = false;
+  private isChestChoiceActive = false;
+  private rewardChoiceVersion = 0;
+
+  public get isRewardChoiceActive(): boolean {
+    return this.isLevelUpActive || this.isChestChoiceActive;
+  }
   public isWarping = false;
   public lastTime = performance.now();
 
@@ -119,7 +125,7 @@ export class SessionDirector {
 
     this.player.onLevelGained = (levels: number) => {
       this.pendingLevelUps += levels;
-      if (!this.isWarping && !this.isLevelUpActive && this.gameState === GameState.PLAYING) {
+      if (!this.isWarping && !this.isRewardChoiceActive && this.gameState === GameState.PLAYING) {
         this.triggerLevelUp();
       }
     };
@@ -343,8 +349,7 @@ export class SessionDirector {
     this.netCoordinator.allPlayerStats.clear();
     this.combatDirector.recentlyDeadEnemyIds.clear();
     this.netCoordinator.pendingDamageToClients.clear();
-    this.pendingLevelUps = 0;
-    this.isLevelUpActive = false;
+    this.resetRewardChoices();
     this.hud.resetBossUI();
     this.gameState = GameState.MAIN_MENU;
     this.updateUI.onRunEnded();
@@ -359,16 +364,35 @@ export class SessionDirector {
     }
   }
 
+  private resetRewardChoices(): void {
+    this.rewardChoiceVersion++;
+    this.pendingLevelUps = 0;
+    this.isLevelUpActive = false;
+    this.isChestChoiceActive = false;
+    this.hud.resetLevelUpState();
+  }
+
+  private finishRewardChoice(): void {
+    if (this.isRewardChoiceActive) return;
+    if (this.pendingLevelUps > 0) {
+      this.triggerLevelUp();
+    } else if (!this.player.isCoop && this.gameState === GameState.LEVEL_UP) {
+      this.gameState = GameState.PLAYING;
+      this.lastTime = performance.now();
+    }
+  }
+
   public triggerLevelUp(): void {
-    if (this.isLevelUpActive) return;
-    if (this.pendingLevelUps <= 0) return;
+    if (this.isRewardChoiceActive || this.isWarping || this.pendingLevelUps <= 0) return;
+    if (this.gameState !== GameState.PLAYING && this.gameState !== GameState.LEVEL_UP) return;
 
     this.pendingLevelUps--;
     this.isLevelUpActive = true;
+    const version = this.rewardChoiceVersion;
+    let completed = false;
 
     if (this.player.isCoop) {
-      // In co-op, non-blocking level up so teammate doesn't freeze!
-      // Give a 7s safety shield for the 2-step selection
+      // Keep the shared world running while this player chooses an upgrade.
       this.player.addBuff({
         type: 'invulnerable',
         name: 'Щит выбора',
@@ -378,24 +402,16 @@ export class SessionDirector {
         maxDuration: 7.0,
         value: 1
       });
-      this.hud.showLevelUp(this.player, () => {
-        this.isLevelUpActive = false;
-        if (this.pendingLevelUps > 0) {
-          this.triggerLevelUp();
-        }
-      });
     } else {
       this.gameState = GameState.LEVEL_UP;
-      this.hud.showLevelUp(this.player, () => {
-        this.isLevelUpActive = false;
-        if (this.pendingLevelUps > 0) {
-          this.triggerLevelUp();
-        } else {
-          this.gameState = GameState.PLAYING;
-          this.lastTime = performance.now();
-        }
-      });
     }
+
+    this.hud.showLevelUp(this.player, () => {
+      if (completed || version !== this.rewardChoiceVersion) return;
+      completed = true;
+      this.isLevelUpActive = false;
+      this.finishRewardChoice();
+    });
   }
 
   public restartGame(pos?: Vector3, keepSeed: boolean = false): void {
@@ -457,11 +473,9 @@ export class SessionDirector {
       this.netCoordinator.partnerReviveTimers.clear();
       this.combatDirector.recentlyDeadEnemyIds.clear();
       this.netCoordinator.pendingDamageToClients.clear();
-      this.pendingLevelUps = 0;
-      this.isLevelUpActive = false;
+      this.resetRewardChoices();
       this.hud.resetBossUI();
       this.merchantManager.reset();
-      this.hud.resetLevelUpState();
       this.gameTime = 0;
       this.gameState = GameState.PLAYING;
       this.updateUI.setCombatActive(true);
@@ -472,7 +486,7 @@ export class SessionDirector {
   }
 
   public handleInteract(): void {
-    if (this.gameState !== GameState.PLAYING || !this.player.isAlive || this.player.isDowned) {
+    if (this.gameState !== GameState.PLAYING || this.isRewardChoiceActive || !this.player.isAlive || this.player.isDowned) {
       return;
     }
 
@@ -533,6 +547,12 @@ export class SessionDirector {
         // Global magnet pull for all XP gems & passive crystals on map
         this.dropManager.attractAllGemsTo(this.player.position);
 
+        // Reserve the reward screen before XP can enqueue a level-up.
+        this.isChestChoiceActive = true;
+        const version = this.rewardChoiceVersion;
+        let completed = false;
+        if (!this.player.isCoop) this.gameState = GameState.LEVEL_UP;
+
         // Bonus XP cache from chest
         const bonusXp = 20 + this.biomeManager.stageNumber * 10;
         this.player.gainXp(bonusXp);
@@ -553,17 +573,11 @@ export class SessionDirector {
         }
 
         const onChosen = (chosenItem: RiftItemDef) => {
+          if (completed || version !== this.rewardChoiceVersion) return;
+          completed = true;
           ProgressionManager.getInstance().recordResourceGather(1);
           this.player.addRiftItem(chosenItem);
           this.hud.triggerAltarNotification(chosenItem.name, chosenItem.description, chosenItem.icon, chosenItem.color);
-
-          if (this.pendingLevelUps > 0) {
-            setTimeout(() => {
-              if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
-                this.triggerLevelUp();
-              }
-            }, 100);
-          }
 
           if (this.net.role === 'client') {
             this.net.notifyChestOpened(chestData.chest.id, chosenItem.id);
@@ -577,6 +591,9 @@ export class SessionDirector {
               color: chosenItem.color
             });
           }
+
+          this.isChestChoiceActive = false;
+          this.finishRewardChoice();
         };
 
         if (this.player.isCoop) {
@@ -589,15 +606,8 @@ export class SessionDirector {
             maxDuration: 8.0,
             value: 1
           });
-          this.hud.showChestChoice(items, this.player, onChosen);
-        } else {
-          this.gameState = GameState.LEVEL_UP;
-          this.hud.showChestChoice(items, this.player, (chosenItem) => {
-            onChosen(chosenItem);
-            this.gameState = GameState.PLAYING;
-            this.lastTime = performance.now();
-          });
         }
+        this.hud.showChestChoice(items, this.player, onChosen);
       } else {
         SoundManager.playHit();
       }
@@ -733,6 +743,7 @@ export class SessionDirector {
   }
 
   public triggerGameOver(isVictory: boolean = false): void {
+    this.resetRewardChoices();
     this.gameState = GameState.GAME_OVER;
     this.updateUI.onRunEnded();
     const mins = Math.floor(this.gameTime / 60);

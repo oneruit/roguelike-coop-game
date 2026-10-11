@@ -309,7 +309,7 @@ class Game {
 
     this.input.onToggleInventory = () => {
       if (
-        this.sessionDirector.isLevelUpActive ||
+        this.sessionDirector.isRewardChoiceActive ||
         this.mapManager.isOpen ||
         this.devManager.getIsOpen() ||
         this.sessionDirector.gameState === GameState.MAIN_MENU ||
@@ -325,6 +325,7 @@ class Game {
 
     this.input.onToggleMap = () => {
       if (
+        this.sessionDirector.isRewardChoiceActive ||
         this.sessionDirector.gameState === GameState.MAIN_MENU ||
         this.sessionDirector.gameState === GameState.HOST_LOBBY ||
         this.sessionDirector.gameState === GameState.JOIN_LOBBY ||
@@ -345,7 +346,7 @@ class Game {
         this.devManager.toggle();
         return;
       }
-      if (this.sessionDirector.isLevelUpActive || this.sessionDirector.gameState === GameState.GAME_OVER) {
+      if (this.sessionDirector.isRewardChoiceActive || this.sessionDirector.gameState === GameState.GAME_OVER) {
         return;
       }
 
@@ -767,8 +768,6 @@ class Game {
           }
           if (levelsGained > 0) {
             this.damageNumbers.spawnLevelUp(this.player.position, this.player.level, this.engine.camera);
-            this.sessionDirector.pendingLevelUps += levelsGained;
-            this.sessionDirector.triggerLevelUp();
           }
         }
       }
