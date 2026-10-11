@@ -3662,7 +3662,7 @@ export class HUD {
     }
   }
 
-  private updateWeaponsBar(weapons: Weapon[]) {
+  public updateWeaponsBar(weapons: Weapon[]) {
     const currentWeaponIds = new Set<string>();
     for (const weapon of weapons) {
       currentWeaponIds.add(weapon.id);
@@ -3794,6 +3794,9 @@ export class HUD {
         this.btnLevelUpReroll.onclick = null;
       }
       options[index].apply();
+      player.recalculateStats();
+      this.updateWeaponsBar(player.weapons);
+      this.updatePassivesBar(player);
       SoundManager.playShoot();
       onChosen();
     };
@@ -4435,7 +4438,10 @@ export class HUD {
           levelTag: `УРОВЕНЬ ${weapon.level + 1}/${effectiveCap} • ${gradeLabel.toUpperCase()}`,
           description: weapon.getNextUpgradeDescription(grade),
           grade,
-          apply: () => weapon.upgrade(grade)
+          apply: () => {
+            weapon.upgrade(grade);
+            player.recalculateStats();
+          }
         });
       }
     }
