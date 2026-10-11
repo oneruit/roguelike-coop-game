@@ -254,10 +254,10 @@ export class EnemyManager {
     this.stageTime += dt;
     this.spawnTimer += dt;
 
-    // 1. Spawning Boss every 5 minutes endlessly (minute 5, 10, 15, 20, 25, 30, 35, 40...)
+    // 1. Spawning Boss every 5 minutes only starting from minute 20 (minute 20, 25, 30, 35, 40...)
     const currentMinute = Math.floor(this.gameTime / 60);
     if (
-      currentMinute >= 5 &&
+      currentMinute >= 20 &&
       currentMinute % 5 === 0 &&
       currentMinute > this.lastBossMinute
     ) {
@@ -689,9 +689,9 @@ export class EnemyManager {
     const angle = Math.random() * Math.PI * 2;
     const distance = 18 + Math.random() * 5;
     const spawnPos = new Vector3(
-      Math.max(-244, Math.min(244, playerPos.x + Math.cos(angle) * distance)),
+      Math.max(-219, Math.min(219, playerPos.x + Math.cos(angle) * distance)),
       0,
-      Math.max(-244, Math.min(244, playerPos.z + Math.sin(angle) * distance))
+      Math.max(-219, Math.min(219, playerPos.z + Math.sin(angle) * distance))
     );
     if (this.getElevation) {
       spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
@@ -787,9 +787,13 @@ export class EnemyManager {
   public setGameTime(seconds: number) {
     this.gameTime = Math.max(0, seconds);
     const minute = Math.floor(this.gameTime / 60);
-    this.lastBossMinute = Math.floor(minute / 5) * 5;
-    if (minute % 5 === 0 && seconds % 60 < 2) {
-      this.lastBossMinute = Math.max(0, this.lastBossMinute - 5);
+    if (minute < 20) {
+      this.lastBossMinute = 0;
+    } else {
+      this.lastBossMinute = Math.floor(minute / 5) * 5;
+      if (minute % 5 === 0 && seconds % 60 < 2) {
+        this.lastBossMinute = Math.max(15, this.lastBossMinute - 5);
+      }
     }
     if (this.gameTime < 1800) {
       this.immortalBossSpawned = false;

@@ -29,6 +29,7 @@ import { GameNetworkCoordinator } from '../net/GameNetworkCoordinator';
 import { LobbyCoordinator } from '../net/LobbyCoordinator';
 import type { RiftItemDef } from '../items/RiftItemSystem';
 import { getPassiveBuffId } from '../drops/PassiveBuffs';
+import { MerchantManager } from '../world/MerchantManager';
 
 export enum GameState {
   MAIN_MENU,
@@ -68,6 +69,7 @@ export class SessionDirector {
   private netCoordinator: GameNetworkCoordinator;
   public lobbyCoordinator?: LobbyCoordinator;
   private remotePlayers: Map<string, RemotePlayer>;
+  public merchantManager: MerchantManager;
 
   public gameState: GameState = GameState.MAIN_MENU;
   public gameTime = 0;
@@ -75,6 +77,7 @@ export class SessionDirector {
   public isTrainingMode = false;
   public pendingLevelUps = 0;
   public isLevelUpActive = false;
+  public isWarping = false;
   public lastTime = performance.now();
 
   constructor(
@@ -93,7 +96,8 @@ export class SessionDirector {
     updateUI: UpdateNotificationUI,
     combatDirector: CombatDirector,
     netCoordinator: GameNetworkCoordinator,
-    remotePlayers: Map<string, RemotePlayer>
+    remotePlayers: Map<string, RemotePlayer>,
+    merchantManager: MerchantManager
   ) {
     this.engine = engine;
     this.player = player;
@@ -111,6 +115,14 @@ export class SessionDirector {
     this.combatDirector = combatDirector;
     this.netCoordinator = netCoordinator;
     this.remotePlayers = remotePlayers;
+    this.merchantManager = merchantManager;
+
+    this.player.onLevelGained = (levels: number) => {
+      this.pendingLevelUps += levels;
+      if (!this.isWarping && !this.isLevelUpActive && this.gameState === GameState.PLAYING) {
+        this.triggerLevelUp();
+      }
+    };
 
     this.wireCoordinatorCallbacks();
   }
@@ -432,6 +444,7 @@ export class SessionDirector {
 
       this.player.credits = 0;
       this.player.riftItems.clear();
+      this.chestManager.chronosDroppedInCurrentBiome = false;
       this.player.recalculateStats();
       this.enemyManager.currentStage = 1;
       this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
@@ -447,6 +460,8 @@ export class SessionDirector {
       this.pendingLevelUps = 0;
       this.isLevelUpActive = false;
       this.hud.resetBossUI();
+      this.merchantManager.reset();
+      this.hud.resetLevelUpState();
       this.gameTime = 0;
       this.gameState = GameState.PLAYING;
       this.updateUI.setCombatActive(true);
@@ -458,6 +473,13 @@ export class SessionDirector {
 
   public handleInteract(): void {
     if (this.gameState !== GameState.PLAYING || !this.player.isAlive || this.player.isDowned) {
+      return;
+    }
+
+    // 0. Check Merchant interaction
+    const merchantInteraction = this.merchantManager.getInteraction(this.player.position);
+    if (merchantInteraction.canInteract) {
+      this.hud.showMerchant(this.merchantManager, this.player);
       return;
     }
 
@@ -500,7 +522,11 @@ export class SessionDirector {
     if (chestData) {
       if (this.player.credits >= chestData.cost) {
         this.player.credits -= chestData.cost;
-        const items = this.chestManager.openChest(chestData.chest, this.biomeManager.stageNumber);
+        const items = this.chestManager.openChest(
+          chestData.chest,
+          this.biomeManager.stageNumber,
+          (id) => this.player.isStatMaxedForItem(id)
+        );
         SoundManager.playChestOpen();
         this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);
 
@@ -509,10 +535,7 @@ export class SessionDirector {
 
         // Bonus XP cache from chest
         const bonusXp = 20 + this.biomeManager.stageNumber * 10;
-        const chestLevels = this.player.gainXp(bonusXp);
-        if (chestLevels > 0) {
-          this.pendingLevelUps += chestLevels;
-        }
+        this.player.gainXp(bonusXp);
 
         // Protective safety shockwave: knock back nearby monsters
         for (const enemy of this.enemyManager.enemies) {
@@ -582,6 +605,9 @@ export class SessionDirector {
   }
 
   public warpToNextStage(): void {
+    this.isWarping = true;
+    this.merchantManager.reset();
+
     // Collect all remaining experience and passives from gems on the map before warp
     const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
       ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
@@ -593,10 +619,7 @@ export class SessionDirector {
       }
     });
     if (sweptXp > 0) {
-      const levelsGained = this.player.gainXp(sweptXp);
-      if (levelsGained > 0) {
-        this.pendingLevelUps += levelsGained;
-      }
+      this.player.gainXp(sweptXp);
     }
 
     const nextBiome = this.biomeManager.advanceStage();
@@ -646,16 +669,18 @@ export class SessionDirector {
       });
     }
 
-    if (this.pendingLevelUps > 0) {
-      setTimeout(() => {
-        if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
-          this.triggerLevelUp();
-        }
-      }, 500);
-    }
+    setTimeout(() => {
+      this.isWarping = false;
+      if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+        this.triggerLevelUp();
+      }
+    }, 600);
   }
 
   public applyStageTransition(stageNumber: number, biomeName?: string): void {
+    this.isWarping = true;
+    this.merchantManager.reset();
+
     // Collect all remaining experience and passives from gems on the map before warp
     const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
       ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
@@ -667,10 +692,7 @@ export class SessionDirector {
       }
     });
     if (sweptXp > 0) {
-      const levelsGained = this.player.gainXp(sweptXp);
-      if (levelsGained > 0) {
-        this.pendingLevelUps += levelsGained;
-      }
+      this.player.gainXp(sweptXp);
     }
 
     const nextBiome = this.biomeManager.setStage(stageNumber);
@@ -702,13 +724,12 @@ export class SessionDirector {
     SoundManager.playTeleporterComplete();
     this.hud.triggerAltarNotification(`ЭТАП ${stageNumber}`, biomeName || nextBiome.name, '🌀', '#38bdf8');
 
-    if (this.pendingLevelUps > 0) {
-      setTimeout(() => {
-        if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
-          this.triggerLevelUp();
-        }
-      }, 500);
-    }
+    setTimeout(() => {
+      this.isWarping = false;
+      if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+        this.triggerLevelUp();
+      }
+    }, 600);
   }
 
   public triggerGameOver(isVictory: boolean = false): void {

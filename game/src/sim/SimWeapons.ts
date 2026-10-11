@@ -1146,7 +1146,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
   private pierce: number = 1;
 
   constructor() {
-    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 18);
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 15);
   }
 
   public update(
@@ -1163,7 +1163,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const targets = findClosestSimEnemies(enemies, player.position, this.projectileCount, 26 * 26);
+      const targets = findClosestSimEnemies(enemies, player.position, this.projectileCount, 18.2 * 18.2);
       if (targets.length === 0) return;
 
       if (triggerAnim) triggerAnim(0.20);

@@ -184,9 +184,9 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'assault_rifle',
       name: 'Штурмовая Винтовка',
       icon: '🔫',
-      damage: 18,
+      damage: 15,
       cooldown: 0.18,
-      damagePerLevel: 9,
+      damagePerLevel: 8,
       maxLevel: 12,
       speed: 32,
       pierce: 1,
@@ -195,7 +195,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     }
   },
   heroes: {
-    invoker: { id:'invoker', name:'Инвокер', maxHp:100, baseSpeed:8.5, damageMultiplier:1.2,
+    invoker: { id:'invoker', name:'Инвокер', maxHp:100, baseSpeed:8.5, damageMultiplier:3.0,
       startingWeapon:'invoker_invoke', role:'Маг десяти случайных заклинаний: урон, контроль и усиления' },
     ronin: {
       id: 'ronin',
@@ -361,6 +361,13 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     basePickupRadius: 3.5,
     maxArmorReduction: 0.75,
     goldGemChanceNormal: 0.01,
-    goldGemChanceBoss: 0.40
+    goldGemChanceBoss: 0.40,
+    merchantSpawnInterval: 180,
+    merchantStayDuration: 120,
+    merchantPriceCommon: 40,
+    merchantPriceUncommon: 80,
+    merchantPriceRare: 150,
+    merchantPriceLegendary: 300,
+    merchantPriceBoss: 500
   }
 };

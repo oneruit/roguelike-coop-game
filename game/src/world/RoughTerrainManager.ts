@@ -163,18 +163,18 @@ export class RoughTerrainManager {
         })
       : null;
 
-    // Scatter 1-2 rough patches per chunk across the 10x10 world (-5 to 4 chunks)
-    for (let cx = -5; cx <= 4; cx++) {
-      for (let cz = -5; cz <= 4; cz++) {
+    // Scatter 1-2 rough patches per chunk across the 9x9 world (-4 to 4 chunks)
+    for (let cx = -4; cx <= 4; cx++) {
+      for (let cz = -4; cz <= 4; cz++) {
         const chunkKey = `${cx},${cz}`;
         const patchCount = rng.next() < 0.8 ? (rng.next() < 0.5 ? 2 : 1) : 0;
 
         for (let p = 0; p < patchCount; p++) {
-          const px = cx * 50 + rng.range(6.0, 44.0);
-          const pz = cz * 50 + rng.range(6.0, 44.0);
+          const px = cx * 50 + rng.range(-20.0, 20.0);
+          const pz = cz * 50 + rng.range(-20.0, 20.0);
 
           // Boundary margin check
-          if (Math.abs(px) > 230 || Math.abs(pz) > 230) continue;
+          if (Math.abs(px) > 205 || Math.abs(pz) > 205) continue;
 
           // Check distance to occupied areas (spawn, teleporter, altars, oasis, chests)
           let overlapsOccupied = false;

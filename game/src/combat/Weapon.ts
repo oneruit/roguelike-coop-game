@@ -514,7 +514,7 @@ export class OrbitingBarrierWeapon extends Weapon {
           color: 0xef4444,
           isOrbiting: true,
           orbitRadius: this.orbitRadius,
-          orbitSpeed: this.orbitSpeed
+          orbitSpeed: this.orbitSpeed * (1 / Math.max(0.2, this.cooldownMultiplier))
         });
         orb.orbitAngle = angle;
         this.orbs.push(orb);
@@ -522,9 +522,10 @@ export class OrbitingBarrierWeapon extends Weapon {
       }
     }
 
+    const effectiveOrbitSpeed = this.orbitSpeed * (1 / Math.max(0.2, this.cooldownMultiplier));
     this.orbs.forEach((orb) => {
       orb.orbitRadius = this.orbitRadius;
-      orb.orbitSpeed = this.orbitSpeed;
+      orb.orbitSpeed = effectiveOrbitSpeed;
       orb.damage = this.damage;
       orb.bleedDps = this.bleedDps;
       orb.radius = Number((0.32 + (this.level - 1) * 0.015).toFixed(3));
@@ -1617,7 +1618,7 @@ export class AssaultRifleWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 18, 6);
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 15, 6);
     this.iconImage = '/textures/weapons/weapon_assault_rifle.png';
     this.onTriggerAttack = onTriggerAttack;
     this.recalculateStats();
@@ -1654,7 +1655,7 @@ export class AssaultRifleWeapon extends Weapon {
       if (enemies.length === 0) return;
       this.timer = 0;
 
-      const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount, 26 * 26);
+      const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount, 18.2 * 18.2);
       if (candidates.length === 0) return;
 
       if (this.onTriggerAttack) {
@@ -1685,7 +1686,7 @@ export class AssaultRifleWeapon extends Weapon {
           speed: this.projectileSpeed,
           damage: this.damage,
           pierce: this.pierce,
-          lifetime: 1.6,
+          lifetime: 1.12,
           radius: 0.28,
           color: 0xffaa22
         });

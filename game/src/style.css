@@ -642,10 +642,7 @@ body, html {
 }
 
 #active-passives-bar {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  max-width: 320px;
+  display: none !important;
 }
 
 .passive-slot {
@@ -1078,6 +1075,10 @@ body, html {
   flex-wrap: wrap;
 }
 
+.poe-member-items {
+  display: none !important;
+}
+
 .poe-weapon-pill, .poe-buff-pill, .poe-item-pill {
   display: inline-flex;
   align-items: center;
@@ -1121,7 +1122,7 @@ body, html {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid rgba(0, 132, 255, 0.35);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 7px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 132, 255, 0.18);
   transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1136,7 +1137,7 @@ body, html {
 #minimap-canvas {
   width: 160px;
   height: 160px;
-  border-radius: 14px;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #080d18;
   display: block;
@@ -2071,13 +2072,8 @@ body, html {
   transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
 }
 
-.bp-m-lvl1 {
-  left: 24.5%;
-  top: 4%;
-}
-
 .bp-m-lvl10 {
-  left: 60.5%;
+  left: 24.5%;
   top: 4%;
 }
 
@@ -7608,13 +7604,13 @@ body, html {
     bottom: 12px !important;
     right: 12px !important;
     padding: 4px !important;
-    border-radius: 14px !important;
+    border-radius: 8px !important;
   }
 
   #minimap-canvas {
     width: 105px !important;
     height: 105px !important;
-    border-radius: 10px !important;
+    border-radius: 4px !important;
   }
 
   .minimap-footer {
@@ -8899,8 +8895,232 @@ body, html {
   .chest-items-grid {
     grid-template-columns: 1fr;
   }
+  .merchant-items-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
+/* ==========================================================================
+   INVENTORY WEAPON GRADE & EXTENDED STATS
+   ========================================================================== */
+.inv-weapon-grade-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
 
+.inv-weapon-grade-badge.badge-grade1 {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
 
+.inv-weapon-grade-badge.badge-grade2 {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
+}
 
+.inv-weapon-grade-badge.badge-grade3 {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.inv-weapon-stat-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inv-weapon-stat-chip strong {
+  color: #f8fafc;
+}
+
+/* ==========================================================================
+   MERCHANT MODAL (Торговец Разлома)
+   ========================================================================== */
+.merchant-modal-card {
+  max-width: 920px;
+  width: 92%;
+  background: rgba(15, 12, 24, 0.96) !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.2), 0 20px 40px rgba(0, 0, 0, 0.8) !important;
+}
+
+.merchant-modal-header {
+  margin-bottom: 12px;
+}
+
+.merchant-credits-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.merchant-credits-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.merchant-credits-value {
+  font-size: 16px;
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+.merchant-hint {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.merchant-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+
+.merchant-item-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.merchant-item-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.merchant-item-card.is-sold {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.merchant-item-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.merchant-item-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.merchant-item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.merchant-item-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.merchant-item-rarity {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.merchant-item-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #94a3b8;
+  flex-grow: 1;
+}
+
+.merchant-item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+}
+
+.merchant-item-price {
+  font-size: 15px;
+  font-weight: 900;
+  color: #fbbf24;
+}
+
+.merchant-badge-sold {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  border-radius: 6px;
+}
+
+.merchant-buy-btn {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+  border: 1px solid #f59e0b;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.merchant-buy-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}
+
+.merchant-buy-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.merchant-footer {
+  display: flex;
+  justify-content: flex-end;
+}

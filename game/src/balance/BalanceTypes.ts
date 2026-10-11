@@ -61,6 +61,13 @@ export interface GlobalBalanceConfig {
   maxArmorReduction: number;
   goldGemChanceNormal: number;
   goldGemChanceBoss: number;
+  merchantSpawnInterval: number;
+  merchantStayDuration: number;
+  merchantPriceCommon: number;
+  merchantPriceUncommon: number;
+  merchantPriceRare: number;
+  merchantPriceLegendary: number;
+  merchantPriceBoss: number;
 }
 
 export interface GameBalanceState {

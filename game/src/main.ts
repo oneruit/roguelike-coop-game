@@ -31,6 +31,7 @@ import { CombatDirector } from './combat/CombatDirector';
 import { GameNetworkCoordinator } from './net/GameNetworkCoordinator';
 import { SessionDirector, GameState } from './core/SessionDirector';
 import { LobbyCoordinator } from './net/LobbyCoordinator';
+import { MerchantManager } from './world/MerchantManager';
 
 class Game {
   private engine: Engine;
@@ -48,6 +49,7 @@ class Game {
   private biomeManager: BiomeManager;
   private chestManager: ChestManager;
   private riftTeleporter: RiftTeleporter;
+  private merchantManager: MerchantManager;
 
   private combatDirector: CombatDirector;
   private netCoordinator: GameNetworkCoordinator;
@@ -84,6 +86,10 @@ class Game {
     this.biomeManager = new BiomeManager();
     this.chestManager = new ChestManager(this.engine.scene);
     this.riftTeleporter = new RiftTeleporter(this.engine.scene, new Vector3(75, 0, 75));
+    this.merchantManager = new MerchantManager(this.engine.scene, this.biomeManager);
+    this.merchantManager.onMerchantSpawn = () => {
+      this.hud.triggerAltarNotification('ТОРГОВЕЦ РАЗЛОМА', 'Таинственный купец прибыл в сектор!', '💰', '#f59e0b');
+    };
 
     // Live Game Balance sync with Supabase
     BalanceManager.init()
@@ -127,6 +133,7 @@ class Game {
       this.chestManager,
       this.riftTeleporter
     );
+    this.mapManager.setMerchantManager(this.merchantManager);
 
     this.mapManager.onStateChange = (isOpen) => {
       const isCoop = this.net.role !== 'solo' || this.player.isCoop;
@@ -237,7 +244,8 @@ class Game {
       this.updateUI,
       this.combatDirector,
       this.netCoordinator,
-      this.remotePlayers
+      this.remotePlayers,
+      this.merchantManager
     );
 
     // Lobby Coordinator
@@ -602,33 +610,42 @@ class Game {
     const { justCompleted } = this.riftTeleporter.update(dt, allPlayerPositions);
     if (justCompleted) {
       SoundManager.playTeleporterComplete();
-      if (this.player.credits > 0) {
-        const bonusXp = this.player.credits * 2;
-        this.player.gainXp(bonusXp);
-        this.player.credits = 0;
-      }
+      // Award stage completion bonus XP without deleting credits so player can spend them at the merchant!
+      const bonusXp = Math.max(100, Math.round(this.player.credits * 1.5));
+      this.player.gainXp(bonusXp);
       this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Босс повержен! Активируйте портал для перехода!', '🌀', '#10b981');
     }
 
     this.chestManager.update(dt);
 
-    const telePrompt = this.riftTeleporter.getInteraction(this.player.position);
-    if (telePrompt.canInteract) {
-      this.hud.showInteractionPrompt(telePrompt.prompt);
+    // 8b. Merchant simulation & HUD timer
+    this.merchantManager.update(dt, (x, z) => this.engine.chunkManager.getElevation(x, z));
+    if (this.hud.isMerchantOpen()) {
+      this.hud.updateMerchantTimer(this.merchantManager);
+    }
+
+    const merchantPrompt = this.merchantManager.getInteraction(this.player.position);
+    if (merchantPrompt.canInteract) {
+      this.hud.showInteractionPrompt(merchantPrompt.prompt);
     } else {
-      const chestData = this.chestManager.getClosestInteractableChest(
-        this.player.position,
-        this.sessionDirector.gameTime,
-        this.biomeManager.stageNumber
-      );
-      if (chestData) {
-        const canAfford = this.player.credits >= chestData.cost;
-        const msg = canAfford
-          ? `[E] Открыть контейнер (${chestData.cost} ⬡)`
-          : `[E] Недостаточно кредитов (${chestData.cost} ⬡, у вас ${this.player.credits} ⬡)`;
-        this.hud.showInteractionPrompt(msg);
+      const telePrompt = this.riftTeleporter.getInteraction(this.player.position);
+      if (telePrompt.canInteract) {
+        this.hud.showInteractionPrompt(telePrompt.prompt);
       } else {
-        this.hud.hideInteractionPrompt();
+        const chestData = this.chestManager.getClosestInteractableChest(
+          this.player.position,
+          this.sessionDirector.gameTime,
+          this.biomeManager.stageNumber
+        );
+        if (chestData) {
+          const canAfford = this.player.credits >= chestData.cost;
+          const msg = canAfford
+            ? `[E] Открыть контейнер (${chestData.cost} ⬡)`
+            : `[E] Недостаточно кредитов (${chestData.cost} ⬡, у вас ${this.player.credits} ⬡)`;
+          this.hud.showInteractionPrompt(msg);
+        } else {
+          this.hud.hideInteractionPrompt();
+        }
       }
     }
 
