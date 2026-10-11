@@ -650,16 +650,6 @@ class Game {
       }
     }
 
-    if (this.biomeManager.isFinalStage()) {
-      this.hud.updateTeleporterHUD(false, 0, false, false);
-    } else {
-      this.hud.updateTeleporterHUD(
-        this.riftTeleporter.state === 'CHARGING',
-        this.riftTeleporter.chargeProgress,
-        this.riftTeleporter.isPlayerInsideZone,
-        this.riftTeleporter.state === 'WARP_READY'
-      );
-    }
 
     // 9. Enemies simulation
     if (this.net.role !== 'client') {
