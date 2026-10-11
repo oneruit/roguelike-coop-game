@@ -822,6 +822,10 @@ class Game {
         this.player.isCoop ? this.net.role : 'solo',
         this.net.lobbyPlayers
       );
+
+      if (this.sessionDirector.pendingLevelUps > 0 && !this.sessionDirector.isLevelUpActive) {
+        this.sessionDirector.triggerLevelUp();
+      }
     }
 
     this.engine.render();
