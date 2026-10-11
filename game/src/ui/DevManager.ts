@@ -306,6 +306,13 @@ export class DevManager {
       UpdateNotifier.getInstance().simulateUpdate('1.0.1');
     });
 
+    document.getElementById('dev-btn-credits')?.addEventListener('click', () => {
+      this.player.credits += 500;
+      if (this.isCoop() && this.isHost()) {
+        this.onBroadcastDevAction?.('credits_500', 500);
+      }
+    });
+
 
     // 4. Monsters & Boss
     document.getElementById('dev-btn-spawn-boss')?.addEventListener('click', () => {

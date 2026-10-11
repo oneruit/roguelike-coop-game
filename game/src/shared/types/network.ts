@@ -126,7 +126,8 @@ export interface NetEvent {
     | 'credit_gain'
     | 'chest_opened'
     | 'teleporter_activated'
-    | 'stage_warp';
+    | 'stage_warp'
+    | 'time_freeze';
   x?: number;
   z?: number;
   val?: number | string;
@@ -144,6 +145,7 @@ export interface NetEvent {
   biomeName?: string;
   reviverId?: string;
   shot?: NetShotInfo;
+  sourcePos?: { x: number; y: number; z: number };
 }
 
 export interface LobbyPlayerInfo {
@@ -233,6 +235,7 @@ export interface ClientSyncMessage {
   revivingTargetId?: string;
   reviveProgress?: number;
   shots?: NetShotInfo[];
+  events?: NetEvent[];
 }
 
 export interface LobbyUpdateMessage {

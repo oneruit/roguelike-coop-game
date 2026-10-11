@@ -78,6 +78,7 @@ export class Player {
   public xpToNextLevel: number = 10;
   public level: number = 1;
   public onLevelGained?: (levelsGained: number) => void;
+  public onChronosTrigger?: (position: Vector3) => void;
   public pickupRadius: number = 4.2;
   public damageMultiplier: number = 1.35;
   public baseDamageMultiplier: number = 1.35;
@@ -982,12 +983,13 @@ export class Player {
         type: 'invulnerable',
         name: 'Кристалл Времени',
         icon: '⏳',
-        color: '#ef4444',
-        duration: 3.0,
-        maxDuration: 3.0,
+        color: '#38bdf8',
+        duration: 5.0,
+        maxDuration: 5.0,
         value: 1
       });
-      SoundManager.playTeleporterComplete();
+      SoundManager.playTimeFreeze();
+      this.onChronosTrigger?.(this.position.clone());
       return false;
     }
 

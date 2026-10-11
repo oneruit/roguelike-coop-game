@@ -370,6 +370,7 @@ export class SessionDirector {
     this.isLevelUpActive = false;
     this.isChestChoiceActive = false;
     this.hud.resetLevelUpState();
+    this.hud.hideMerchant?.();
   }
 
   private finishRewardChoice(): void {
@@ -464,7 +465,6 @@ export class SessionDirector {
       this.player.recalculateStats();
       this.enemyManager.currentStage = 1;
       this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
-      this.hud.updateTeleporterHUD(false, 0, false, false);
 
       this.mapManager.setSeed(this.currentSeed);
       this.mapManager.clear();
@@ -493,6 +493,19 @@ export class SessionDirector {
     // 0. Check Merchant interaction
     const merchantInteraction = this.merchantManager.getInteraction(this.player.position);
     if (merchantInteraction.canInteract) {
+      if (!this.player.isCoop) {
+        this.gameState = GameState.PAUSED;
+      } else {
+        this.player.addBuff({
+          type: 'invulnerable',
+          name: 'Щит торговли',
+          icon: 'DEF',
+          color: '#f59e0b',
+          duration: 10.0,
+          maxDuration: 10.0,
+          value: 1.0
+        });
+      }
       this.hud.showMerchant(this.merchantManager, this.player);
       return;
     }

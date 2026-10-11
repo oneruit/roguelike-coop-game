@@ -207,6 +207,21 @@ class Game {
         }
       }
     };
+    this.hud.onMerchantToggle = (isOpen) => {
+      const isCoop = this.net.role !== 'solo' || this.player.isCoop;
+      if (isCoop) return;
+
+      if (isOpen) {
+        if (this.sessionDirector.gameState === GameState.PLAYING) {
+          this.sessionDirector.gameState = GameState.PAUSED;
+        }
+      } else {
+        if (this.sessionDirector.gameState === GameState.PAUSED) {
+          this.sessionDirector.gameState = GameState.PLAYING;
+          this.sessionDirector.lastTime = performance.now();
+        }
+      }
+    };
     const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
     this.engine.setShadowQuality(savedShadowQuality);
 
@@ -226,6 +241,14 @@ class Game {
       this.combatDirector,
       this.remotePlayers
     );
+
+    this.player.onChronosTrigger = (pos) => {
+      this.enemyManager.freezeAndKnockbackAll(pos, 5.0, 25.0);
+      this.combatDirector.spawnChronosShockwave(pos);
+      if (this.net.role !== 'solo') {
+        this.netCoordinator.broadcastTimeFreeze(pos);
+      }
+    };
 
     // Session Director
     this.sessionDirector = new SessionDirector(
@@ -650,16 +673,6 @@ class Game {
       }
     }
 
-    if (this.biomeManager.isFinalStage()) {
-      this.hud.updateTeleporterHUD(false, 0, false, false);
-    } else {
-      this.hud.updateTeleporterHUD(
-        this.riftTeleporter.state === 'CHARGING',
-        this.riftTeleporter.chargeProgress,
-        this.riftTeleporter.isPlayerInsideZone,
-        this.riftTeleporter.state === 'WARP_READY'
-      );
-    }
 
     // 9. Enemies simulation
     if (this.net.role !== 'client') {

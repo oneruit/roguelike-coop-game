@@ -201,6 +201,10 @@ export class SimEnemyInternal {
   public readonly spellControl = new SpellControlState();
   public bleedStacks: { dps: number; remainingTime: number; hitter: string }[] = [];
   public bleedTimer: number = 0;
+  public freezeTimer: number = 0;
+  public get isFrozen(): boolean {
+    return this.freezeTimer > 0 || this.spellControl.freeze > 0;
+  }
 
   constructor(cfg: SimEnemyConfig, pos: SimVec3, id?: string) {
     this.id = id || Math.random().toString(36).substring(2, 9);
@@ -217,6 +221,28 @@ export class SimEnemyInternal {
     this.isBoss = !!cfg.isBoss;
     this.isImmortal = !!cfg.isImmortal;
     this.eliteAffix = cfg.eliteAffix;
+  }
+
+  public freeze(duration: number): void {
+    this.freezeTimer = Math.max(this.freezeTimer, duration);
+  }
+
+  public knockbackFrom(sourcePos: SimVec3, distance: number): void {
+    const dx = this.position.x - sourcePos.x;
+    const dz = this.position.z - sourcePos.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+    let dirX: number;
+    let dirZ: number;
+    if (dist > 0.0001) {
+      dirX = dx / dist;
+      dirZ = dz / dist;
+    } else {
+      const angle = Math.random() * Math.PI * 2;
+      dirX = Math.cos(angle);
+      dirZ = Math.sin(angle);
+    }
+    this.position.x += dirX * distance;
+    this.position.z += dirZ * distance;
   }
 
   public addBleed(dps: number, duration: number, hitter: string): void {
@@ -433,6 +459,14 @@ export class GameCore {
       targetId: downed.id,
       reviverId: reviver.id
     });
+  }
+
+  public freezeAndKnockbackAll(center: SimVec3, freezeDuration = 5.0, knockbackDistance = 25.0): void {
+    for (const enemy of this.enemies) {
+      if (!enemy.isAlive) continue;
+      enemy.freeze(freezeDuration);
+      enemy.knockbackFrom(center, knockbackDistance);
+    }
   }
 
   // -------------------------------------------------------------
@@ -668,6 +702,9 @@ export class GameCore {
     for (const enemy of this.enemies) {
       if (!enemy.isAlive) continue;
 
+      if (enemy.freezeTimer > 0) {
+        enemy.freezeTimer = Math.max(0, enemy.freezeTimer - dt);
+      }
       enemy.spellControl.update(dt);
       // Process bleed ticks
       if (enemy.bleedStacks.length > 0) {
@@ -720,7 +757,7 @@ export class GameCore {
       const dz = target.position.z - enemy.position.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
 
-      if (dist > 0.05) {
+      if (!enemy.isFrozen && dist > 0.05) {
         const vx = (dx / dist) * enemy.speed * enemy.spellControl.movementFactor * dt;
         const vz = (dz / dist) * enemy.speed * enemy.spellControl.movementFactor * dt;
         enemy.position.x += vx;
@@ -737,7 +774,7 @@ export class GameCore {
 
       // Contact collision damage with player
       const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
-      if (enemy.spellControl.canAttack && dist <= collisionRadius) {
+      if (!enemy.isFrozen && enemy.spellControl.canAttack && dist <= collisionRadius) {
         const now = this.gameTime;
         if (now - target.lastHitTimeByEnemy >= 0.38) {
           target.lastHitTimeByEnemy = now;

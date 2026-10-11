@@ -1,7 +1,7 @@
 import { InvokerSpellEffects } from './InvokerSpellEffects';
 import type { NetEvent } from '../shared/types';
 import type { InvokerSpellCast, SpellControl } from '../shared/InvokerSpells';
-import { Vector3, Frustum } from 'three';
+import { Vector3, Frustum, RingGeometry, Mesh, MeshBasicMaterial, DoubleSide, AdditiveBlending } from 'three';
 import { Projectile } from './Projectile';
 import { Enemy } from '../entities/Enemy';
 import { Player } from '../entities/Player';
@@ -30,6 +30,14 @@ export class CombatDirector {
   private scratchNearbyEnemies: Enemy[] = [];
   private meleeEffects: MeleeAttackEffects;
   private spellEffects: InvokerSpellEffects;
+  private chronosShockwaves: {
+    mesh: Mesh;
+    geometry: RingGeometry;
+    material: MeshBasicMaterial;
+    age: number;
+    maxAge: number;
+    maxRadius: number;
+  }[] = [];
 
   constructor(
     engine: Engine,
@@ -369,9 +377,49 @@ export class CombatDirector {
     }
   }
 
+  public spawnChronosShockwave(center: Vector3): void {
+    const geometry = new RingGeometry(0.8, 1.3, 48);
+    const material = new MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.9,
+      side: DoubleSide,
+      blending: AdditiveBlending,
+      depthWrite: false
+    });
+    const mesh = new Mesh(geometry, material);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(center.x, 0.15, center.z);
+    this.engine.scene.add(mesh);
+
+    this.chronosShockwaves.push({
+      mesh,
+      geometry,
+      material,
+      age: 0,
+      maxAge: 0.55,
+      maxRadius: 25.0
+    });
+  }
+
   public updateProjectiles(dt: number): void {
     this.meleeEffects.update(dt);
     this.spellEffects.update(dt);
+
+    for (let i = this.chronosShockwaves.length - 1; i >= 0; i--) {
+      const sw = this.chronosShockwaves[i];
+      sw.age += dt;
+      const progress = Math.min(1.0, sw.age / sw.maxAge);
+      const currentScale = 1.0 + (sw.maxRadius - 1.0) * Math.sin(progress * Math.PI * 0.5);
+      sw.mesh.scale.set(currentScale, currentScale, 1.0);
+      sw.material.opacity = Math.max(0, 0.9 * (1.0 - progress));
+      if (sw.age >= sw.maxAge) {
+        this.engine.scene.remove(sw.mesh);
+        sw.geometry.dispose();
+        sw.material.dispose();
+        this.chronosShockwaves.splice(i, 1);
+      }
+    }
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const proj = this.projectiles[i];
       let centerPos = this.player.position;
@@ -562,6 +610,12 @@ export class CombatDirector {
       p.destroy(this.engine.scene);
     }
     this.projectiles = [];
+    for (const sw of this.chronosShockwaves) {
+      this.engine.scene.remove(sw.mesh);
+      sw.geometry.dispose();
+      sw.material.dispose();
+    }
+    this.chronosShockwaves = [];
     this.pendingClientHits = [];
     this.pendingSpellControls = [];
     this.pendingLocalShots = [];
