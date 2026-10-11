@@ -618,9 +618,9 @@ export class GameCore {
   private updateWaves(dt: number) {
     this.spawnTimer += dt;
 
-    // Check boss minute (every 5 minutes starting from minute 20: 20, 25, 30, ...)
+    // Check boss minute (every 5 minutes starting from minute 15: 15, 20, 25, 30, ...)
     const currentMinute = Math.floor(this.gameTime / 60);
-    if (currentMinute >= 20 && currentMinute % 5 === 0 && currentMinute !== this.lastBossMinute) {
+    if (currentMinute >= 15 && currentMinute % 5 === 0 && currentMinute !== this.lastBossMinute) {
       this.lastBossMinute = currentMinute;
       this.spawnBoss();
     }
@@ -646,9 +646,9 @@ export class GameCore {
     if (this.gameTime > 180) types.push('cactus');
     if (this.gameTime > 360) types.push('skeleton');
     if (this.gameTime > 600) types.push('ghost');
-    if (this.gameTime > 900) types.push('scorpion');
-    if (this.gameTime > 1200) types.push('brute');
-    if (this.gameTime > 1500) types.push('bison');
+    if (this.gameTime > 750) types.push('scorpion');
+    if (this.gameTime > 900) types.push('brute');
+    if (this.gameTime > 1050) types.push('bison');
 
     const spawnCount = Math.min(8, 2 + Math.floor(this.gameTime / 120) + Math.floor(playerCount * 0.6));
 
