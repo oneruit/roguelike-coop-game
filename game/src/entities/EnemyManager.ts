@@ -219,7 +219,7 @@ export class EnemyManager {
   public getHpMultiplier(): number {
     const minute = this.gameTime / 60;
     const baseMult = 1 + (minute * 0.35 + Math.pow(minute / 4.0, 1.8) * 0.45) * 1.5;
-    const mPost = Math.max(0, minute - 20);
+    const mPost = Math.max(0, minute - 15);
     const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
     return (baseMult + hpPostSurge) * overstay.hpMult;
@@ -228,7 +228,7 @@ export class EnemyManager {
   public getDamageMultiplier(): number {
     const minute = this.gameTime / 60;
     const baseMult = 1 + (minute * 0.15 + Math.pow(minute / 6.0, 1.5) * 0.30) * 1.5;
-    const mPost = Math.max(0, minute - 20);
+    const mPost = Math.max(0, minute - 15);
     const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
     return (baseMult + dmgPostSurge) * overstay.dmgMult;
@@ -236,7 +236,7 @@ export class EnemyManager {
 
   public getSpeedMultiplier(): number {
     const minute = this.gameTime / 60;
-    const mPost = Math.max(0, minute - 20);
+    const mPost = Math.max(0, minute - 15);
     return Math.min(1.65, 1 + (minute * 0.012) * 1.5 + mPost * 0.01);
   }
 
@@ -259,10 +259,10 @@ export class EnemyManager {
     this.stageTime += dt;
     this.spawnTimer += dt;
 
-    // 1. Spawning Boss every 5 minutes only starting from minute 20 (minute 20, 25, 30, 35, 40...)
+    // 1. Spawning Boss every 5 minutes only starting from minute 15 (minute 15, 20, 25, 30, 35, 40...)
     const currentMinute = Math.floor(this.gameTime / 60);
     if (
-      currentMinute >= 20 &&
+      currentMinute >= 15 &&
       currentMinute % 5 === 0 &&
       currentMinute > this.lastBossMinute
     ) {
@@ -488,7 +488,7 @@ export class EnemyManager {
     } else {
       const baseTierHp = baseHp * (1 + ((tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0) * 1.5);
       const baseTierDmg = baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
-      const tierPost = Math.max(0, tier - 4);
+      const tierPost = Math.max(0, tier - 3);
       const postHpMult = 1 + Math.pow(tierPost / 1.5, 2.0) * 0.8;
       const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
 
@@ -838,12 +838,12 @@ export class EnemyManager {
   public setGameTime(seconds: number) {
     this.gameTime = Math.max(0, seconds);
     const minute = Math.floor(this.gameTime / 60);
-    if (minute < 20) {
+    if (minute < 15) {
       this.lastBossMinute = 0;
     } else {
       this.lastBossMinute = Math.floor(minute / 5) * 5;
       if (minute % 5 === 0 && seconds % 60 < 2) {
-        this.lastBossMinute = Math.max(15, this.lastBossMinute - 5);
+        this.lastBossMinute = Math.max(10, this.lastBossMinute - 5);
       }
     }
     if (this.gameTime < 2400) {
