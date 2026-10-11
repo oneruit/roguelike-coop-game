@@ -77,6 +77,7 @@ export class Player {
   public xp: number = 0;
   public xpToNextLevel: number = 10;
   public level: number = 1;
+  public onLevelGained?: (levelsGained: number) => void;
   public pickupRadius: number = 4.2;
   public damageMultiplier: number = 1.35;
   public baseDamageMultiplier: number = 1.35;
@@ -498,8 +499,11 @@ export class Player {
     // Speed: +12% per Adrenaline Dart stack
     speedBonus += adrenalineStacks * 0.12;
 
-    // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.5 HP/s per Amulet stack, max 50
-    this.passiveHpRegen = Math.min(50, (this.amuletCount * 1.5) + (vialStacks * 2.5) + (titanHeartStacks * 15));
+    // Speed: +12% per Adrenaline Dart stack
+    speedBonus += adrenalineStacks * 0.12;
+
+    // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, NO LIMIT
+    this.passiveHpRegen = (this.amuletCount * 1.0) + (vialStacks * 2.5) + (titanHeartStacks * 15);
 
     // Max Shield: +35 shield per Aegis Battery stack
     this.maxShield = aegisStacks * 35;
@@ -517,11 +521,12 @@ export class Player {
     this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.01);
 
     // Attack Cooldown Multiplier:
-    // Pocket watch: -1% cooldown per stack, up to 70% reduction (floor 0.30)
+    // Pocket watch: -1% cooldown per stack, capped at 25% reduction (floor 0.75)
     // Kinetic Injector: -15% cooldown per stack (0.85^stacks)
     // Overclock module: -10% cooldown per stack (0.90^stacks)
     // Combined floor 0.15
-    const watchMult = Math.max(0.30, 1 - this.watchCount * 0.01);
+    const watchReduction = Math.min(0.25, this.watchCount * 0.01);
+    const watchMult = 1 - watchReduction;
     const injectorMult = Math.pow(0.85, injectorStacks);
     const overclockMult = Math.pow(0.90, overclockStacks);
     this.passiveCooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);
@@ -535,6 +540,9 @@ export class Player {
     // Apply speed cheat or base speed * passive multiplier + speed buff
     const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
     this.speed = baseSpd * (1 + speedBonus);
+
+    // Sheriff Star additive scaling: 100 stacks = +200%, 138 stacks = +276%
+    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
     const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
@@ -558,8 +566,7 @@ export class Player {
     return heroMultiplier * generalBonus;
   }
 
-  public addSheriffStarBonus(multiplier: number = 1.02) {
-    this.passiveDamageMultiplier *= multiplier;
+  public addSheriffStarBonus(_multiplier?: number) {
     this.sheriffStarCount++;
     this.recalculateStats();
   }
@@ -570,7 +577,7 @@ export class Player {
     this.recalculateStats();
   }
 
-  public addHpRegen(_amount: number = 1.5) {
+  public addHpRegen(_amount: number = 1.0) {
     this.amuletCount++;
     this.recalculateStats();
   }
@@ -580,9 +587,11 @@ export class Player {
     this.recalculateStats();
   }
 
-  public addCooldownReduction(_pct: number = 0.08) {
-    this.watchCount++;
-    this.recalculateStats();
+  public addCooldownReduction(_pct: number = 0.01) {
+    if (this.watchCount < 25) {
+      this.watchCount++;
+      this.recalculateStats();
+    }
   }
 
   public addFlaskBonus(hpIncrease: number = 30) {
@@ -597,11 +606,33 @@ export class Player {
     this.recalculateStats();
   }
 
+  public isStatMaxedForItem(itemId: string): boolean {
+    if (itemId === 'crit_lens' || itemId === 'crit_visor') {
+      return this.critChance >= 1.0;
+    }
+    if (itemId === 'heavy_hollowpoint') {
+      return this.critDamage >= 10.0;
+    }
+    if (itemId === 'stat_watch') {
+      return this.watchCount >= 25 || (1 - this.passiveCooldownMultiplier) >= 0.25;
+    }
+    if (itemId === 'stat_vest') {
+      return this.passiveDamageReduction >= 0.70 || this.vestCount >= 70;
+    }
+    if (itemId === 'stat_spurs') {
+      return this.passiveSpeedMultiplier >= 2.5;
+    }
+    if (itemId === 'stat_lasso') {
+      return this.pickupRadius >= 25;
+    }
+    return false;
+  }
+
   public applyPassiveBuff(id: PassiveBuffId): string {
     switch (id) {
       case 'stat_sheriff_star':
-        this.addSheriffStarBonus(1.02);
-        return `⭐ +2% Урон (${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
+        this.addSheriffStarBonus();
+        return `⭐ +2% Урон (+${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
       case 'stat_spurs':
         this.addSpeedBonus(1.03);
         return `👢 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)})`;
@@ -612,14 +643,15 @@ export class Player {
         this.addLassoBonus(1.35);
         return `➰ +35% Радиус магнита (${this.pickupRadius.toFixed(1)}м)`;
       case 'stat_amulet':
-        this.addHpRegen(1.5);
-        return `🧿 +1.5 Реген HP/с (${this.passiveHpRegen.toFixed(1)}/с)`;
+        this.addHpRegen(1.0);
+        return `🧿 +1 HP/с Реген (+${this.passiveHpRegen.toFixed(1)}/с)`;
       case 'stat_vest':
         this.addDamageReduction(0.10);
-        return `🦺 -10% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
+        return `🦺 -1% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
       case 'stat_watch':
-        this.addCooldownReduction(0.08);
-        return `⏱️ +8% Скорость атаки (-${Math.round((1 - this.passiveCooldownMultiplier) * 100)}% кд)`;
+        this.addCooldownReduction(0.01);
+        const cdrPct = Math.round(Math.min(0.25, this.watchCount * 0.01) * 100);
+        return `⏱️ -1% КД (-${cdrPct}% / макс. 25%)`;
     }
   }
 
@@ -1088,6 +1120,9 @@ export class Player {
       this.level++;
       levelsGained++;
       this.xpToNextLevel = this.calculateXpToNextLevel(this.level);
+    }
+    if (levelsGained > 0 && this.onLevelGained) {
+      this.onLevelGained(levelsGained);
     }
     return levelsGained;
   }

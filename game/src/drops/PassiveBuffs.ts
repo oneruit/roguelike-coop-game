@@ -43,19 +43,19 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_amulet',
     title: 'Охотничий Амулет',
     icon: '🧿',
-    description: '+1.5 HP/сек регенерации'
+    description: '+1 HP/сек регенерации (без лимита)'
   },
   stat_vest: {
     id: 'stat_vest',
     title: 'Кожаный Жилет',
     icon: '🦺',
-    description: '-1% к получаемому урону от мобов'
+    description: '-1% к получаемому урону от мобов (макс. 70%)'
   },
   stat_watch: {
     id: 'stat_watch',
     title: 'Карманные Часы',
     icon: '⏱️',
-    description: '-1% к времени перезарядки оружий'
+    description: '-1% к времени перезарядки оружий (макс. 25%)'
   }
 };
 
@@ -71,15 +71,22 @@ export const PASSIVE_BUFF_IDS: PassiveBuffId[] = [
 
 /**
  * Deterministically pick a passive buff ID based on seed (or random if no seed provided).
+ * Optionally excludes passives that are already maxed out for the player.
  */
-export function getPassiveBuffId(seed?: string): PassiveBuffId {
+export function getPassiveBuffId(
+  seed?: string,
+  filterPredicate?: (id: PassiveBuffId) => boolean
+): PassiveBuffId {
+  const pool = filterPredicate ? PASSIVE_BUFF_IDS.filter(filterPredicate) : PASSIVE_BUFF_IDS;
+  const available = pool.length > 0 ? pool : PASSIVE_BUFF_IDS;
+
   if (seed) {
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
       hash = (hash * 31 + seed.charCodeAt(i)) | 0;
     }
-    const idx = Math.abs(hash) % PASSIVE_BUFF_IDS.length;
-    return PASSIVE_BUFF_IDS[idx];
+    const idx = Math.abs(hash) % available.length;
+    return available[idx];
   }
-  return PASSIVE_BUFF_IDS[Math.floor(Math.random() * PASSIVE_BUFF_IDS.length)];
+  return available[Math.floor(Math.random() * available.length)];
 }

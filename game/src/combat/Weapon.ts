@@ -514,7 +514,7 @@ export class OrbitingBarrierWeapon extends Weapon {
           color: 0xef4444,
           isOrbiting: true,
           orbitRadius: this.orbitRadius,
-          orbitSpeed: this.orbitSpeed
+          orbitSpeed: this.orbitSpeed * (1 / Math.max(0.2, this.cooldownMultiplier))
         });
         orb.orbitAngle = angle;
         this.orbs.push(orb);
@@ -522,9 +522,10 @@ export class OrbitingBarrierWeapon extends Weapon {
       }
     }
 
+    const effectiveOrbitSpeed = this.orbitSpeed * (1 / Math.max(0.2, this.cooldownMultiplier));
     this.orbs.forEach((orb) => {
       orb.orbitRadius = this.orbitRadius;
-      orb.orbitSpeed = this.orbitSpeed;
+      orb.orbitSpeed = effectiveOrbitSpeed;
       orb.damage = this.damage;
       orb.bleedDps = this.bleedDps;
       orb.radius = Number((0.32 + (this.level - 1) * 0.015).toFixed(3));
