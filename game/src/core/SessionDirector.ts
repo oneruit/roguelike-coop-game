@@ -156,7 +156,8 @@ export class SessionDirector {
   }
 
   public toggleDevMode(): void {
-    if (!this.isTrainingMode) {
+    const isDev = typeof __APP_MODE__ !== 'undefined' ? __APP_MODE__ === 'development' : false;
+    if (!this.isTrainingMode && !isDev) {
       return;
     }
     if (this.net.role === 'client') {

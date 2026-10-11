@@ -5033,9 +5033,10 @@ export class HUD {
    */
   public setTrainingModeActive(active: boolean) {
     this.isTrainingModeActive = active;
+    const isDev = typeof __APP_MODE__ !== 'undefined' ? __APP_MODE__ === 'development' : false;
     const mobileDevBtn = document.getElementById('btn-dev-mobile-trigger');
     const pauseDevBtn = document.getElementById('btn-pause-dev');
-    if (active) {
+    if (active || isDev) {
       mobileDevBtn?.classList.remove('hidden');
       pauseDevBtn?.classList.remove('hidden');
     } else {
