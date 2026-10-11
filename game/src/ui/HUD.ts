@@ -3720,6 +3720,8 @@ export class HUD {
   }
 
   public resetLevelUpState(): void {
+    this.hideLevelUp();
+    this.hideChestChoice();
     this.rerollsRemaining = 2;
     this.nextLevelUpExcludedIds = null;
   }
@@ -3998,7 +4000,7 @@ export class HUD {
     });
 
     this.levelUpKeyHandler = (e: KeyboardEvent) => {
-      if (chosen) return;
+      if (chosen || e.repeat || e.defaultPrevented) return;
       const active = document.activeElement;
       if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
       if (this.levelUpModal.classList.contains('hidden')) return;
@@ -4182,7 +4184,7 @@ export class HUD {
     });
 
     this.chestKeyHandler = (e: KeyboardEvent) => {
-      if (chosen) return;
+      if (chosen || e.repeat || e.defaultPrevented) return;
       const active = document.activeElement;
       if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
       if (this.chestModal.classList.contains('hidden')) return;
