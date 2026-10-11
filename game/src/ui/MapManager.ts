@@ -235,8 +235,8 @@ export class MapManager {
     // 1. Update Exploration radius around player
     const px = this.player.position.x;
     const pz = this.player.position.z;
-    const currentCx = Math.floor(px / 50);
-    const currentCz = Math.floor(pz / 50);
+    const currentCx = Math.round(px / 50);
+    const currentCz = Math.round(pz / 50);
 
     for (let dx = -1; dx <= 1; dx++) {
       for (let dz = -1; dz <= 1; dz++) {
@@ -244,12 +244,16 @@ export class MapManager {
       }
     }
 
-    // 2. Discover nearby altars
+    // 2. Discover nearby altars (and remove used/captured single-use altars)
     for (const altar of this.altarManager.altars) {
       const key = `${Math.round(altar.position.x)},${Math.round(altar.position.z)}`;
+      if (altar.isCaptured || (altar as any).isSpent) {
+        this.discoveredAltars.delete(key);
+        continue;
+      }
       const dist = altar.position.distanceTo(this.player.position);
 
-      const chunkKey = `${Math.floor(altar.position.x / 50)},${Math.floor(altar.position.z / 50)}`;
+      const chunkKey = `${Math.round(altar.position.x / 50)},${Math.round(altar.position.z / 50)}`;
       if (dist < 60 || this.exploredChunks.has(chunkKey)) {
         this.discoveredAltars.set(key, {
           type: altar.config.type,
@@ -307,43 +311,51 @@ export class MapManager {
       this.elMinimapCoords.innerText = `${px}, ${pz}`;
     }
 
-    // Circular clip path for the radar view
+    // Square clip path matching interactive tactical map style
+    const margin = 4;
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.rect(margin, margin, w - margin * 2, h - margin * 2);
     ctx.clip();
 
-    // Background
-    if (this.isCenterOverlay) {
-      ctx.fillStyle = 'rgba(10, 20, 36, 0.45)';
-      ctx.fillRect(0, 0, w, h);
-    } else {
-      const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
-      bgGrad.addColorStop(0, '#2b1a13');
-      bgGrad.addColorStop(0.7, '#1f120c');
-      bgGrad.addColorStop(1, '#140b07');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, w, h);
+    // Background matching interactive map tactical theme
+    ctx.fillStyle = 'rgba(6, 12, 22, 0.70)';
+    ctx.fillRect(0, 0, w, h);
+
+    // Subtle tactical grid lines (matching interactive map style)
+    ctx.strokeStyle = 'rgba(0, 132, 255, 0.12)';
+    ctx.lineWidth = 1;
+    for (let gx = margin; gx <= w - margin; gx += 28) {
+      ctx.beginPath();
+      ctx.moveTo(gx, margin);
+      ctx.lineTo(gx, h - margin);
+      ctx.stroke();
+    }
+    for (let gy = margin; gy <= h - margin; gy += 28) {
+      ctx.beginPath();
+      ctx.moveTo(margin, gy);
+      ctx.lineTo(w - margin, gy);
+      ctx.stroke();
     }
 
-    // Subtle radar range rings
-    const scale = this.isCenterOverlay ? 1.45 : 1.7;
-    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(56, 189, 248, 0.25)' : 'rgba(217, 139, 74, 0.22)';
+    // Concentric tactical range rings (cyan style matching interactive map, maintaining same detection radius)
+    const scale = 1.7;
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.20)';
     ctx.lineWidth = 1;
-    const ringDists = this.isCenterOverlay ? [20, 45, 75, 110] : [15, 30, 42];
+    const ringDists = [15, 30, 42];
     ringDists.forEach(dist => {
       ctx.beginPath();
       ctx.arc(cx, cy, dist * scale, 0, Math.PI * 2);
       ctx.stroke();
     });
 
-    // Crosshairs
-    ctx.strokeStyle = 'rgba(217, 139, 74, 0.15)';
+    // Crosshairs in cyan tactical tint
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.22)';
     ctx.beginPath();
-    ctx.moveTo(cx, cy - radius);
-    ctx.lineTo(cx, cy + radius);
-    ctx.moveTo(cx - radius, cy);
-    ctx.lineTo(cx + radius, cy);
+    ctx.moveTo(cx, margin);
+    ctx.lineTo(cx, h - margin);
+    ctx.moveTo(margin, cy);
+    ctx.lineTo(w - margin, cy);
     ctx.stroke();
 
     const playerX = this.player.position.x;
@@ -359,8 +371,9 @@ export class MapManager {
       }
     }
 
-    // 2. Draw Altars (colored glowing diamonds & capture rings)
+    // 2. Draw Altars (colored glowing diamonds & capture rings, skip spent altars)
     for (const altar of this.discoveredAltars.values()) {
+      if (altar.isCaptured) continue;
       const relX = (altar.pos.x - playerX) * scale;
       const relZ = (altar.pos.z - playerZ) * scale;
       const distSq = relX * relX + relZ * relZ;
@@ -567,32 +580,53 @@ export class MapManager {
 
     ctx.restore(); // Exit clip
 
-    // 5. Compass Bezel Frame (Weathered Brass & Cardinal Ticks)
-    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(56, 189, 248, 0.45)' : '#c2884f';
-    ctx.lineWidth = this.isCenterOverlay ? 2.5 : 3.5;
+    // 5. Square Tactical Frame matching Interactive Map style
+    ctx.strokeStyle = 'rgba(0, 132, 255, 0.40)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(margin, margin, w - margin * 2, h - margin * 2);
+
+    // Sleek Corner Accents (L-corners in bright cyan)
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    const cornerSize = 8;
+    // Top-Left
     ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.moveTo(margin, margin + cornerSize);
+    ctx.lineTo(margin, margin);
+    ctx.lineTo(margin + cornerSize, margin);
+    ctx.stroke();
+    // Top-Right
+    ctx.beginPath();
+    ctx.moveTo(w - margin - cornerSize, margin);
+    ctx.lineTo(w - margin, margin);
+    ctx.lineTo(w - margin, margin + cornerSize);
+    ctx.stroke();
+    // Bottom-Left
+    ctx.beginPath();
+    ctx.moveTo(margin, h - margin - cornerSize);
+    ctx.lineTo(margin, h - margin);
+    ctx.lineTo(margin + cornerSize, h - margin);
+    ctx.stroke();
+    // Bottom-Right
+    ctx.beginPath();
+    ctx.moveTo(w - margin - cornerSize, h - margin);
+    ctx.lineTo(w - margin, h - margin);
+    ctx.lineTo(w - margin, h - margin - cornerSize);
     ctx.stroke();
 
-    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(14, 165, 233, 0.25)' : '#452a1b';
-    ctx.lineWidth = this.isCenterOverlay ? 1.5 : 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius + 2.5, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Cardinal Points (N, S, W, E)
-    ctx.font = 'bold 11px "Cinzel", serif';
+    // Cardinal Points (N, S, W, E) styled in modern tactical font
+    ctx.font = 'bold 9px Montserrat, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     // North (top)
-    ctx.fillStyle = '#f43f5e';
-    ctx.fillText('N', cx, 9);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('N', cx, margin + 7);
 
-    ctx.fillStyle = '#d4af37';
-    ctx.fillText('S', cx, h - 8);
-    ctx.fillText('W', 9, cy);
-    ctx.fillText('E', w - 8, cy);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('S', cx, h - margin - 6);
+    ctx.fillText('W', margin + 6, cy);
+    ctx.fillText('E', w - margin - 6, cy);
   }
 
   /**
@@ -612,59 +646,67 @@ export class MapManager {
     const px = Math.round(this.player.position.x);
     const pz = Math.round(this.player.position.z);
     if (this.elMinimapCoords) {
-      this.elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${this.exploredChunks.size}/100 зон`;
+      this.elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${this.exploredChunks.size}/81 зон`;
     }
 
     // 1. Semi-transparent dark tactical backdrop
     ctx.fillStyle = 'rgba(6, 12, 22, 0.40)';
     ctx.fillRect(0, 0, w, h);
 
-    // 2. Chunks & Fog of War (10x10 chunks, 50m each from -250 to +250)
-    for (let cx = -5; cx <= 4; cx++) {
-      for (let cz = -5; cz <= 4; cz++) {
-        const chunkX = (cx + 5) * 50;
-        const chunkZ = (cz + 5) * 50;
+    // 2. World Coordinate Transform for 9x9 chunks (450x450m bounds, -225 to +225)
+    const halfWorld = 225;
+    const worldSize = 450;
+    const toScreenX = (worldX: number) => ((worldX + halfWorld) / worldSize) * w;
+    const toScreenZ = (worldZ: number) => ((worldZ + halfWorld) / worldSize) * h;
+    const chunkScreenW = (50 / worldSize) * w;
+    const chunkScreenH = (50 / worldSize) * h;
+
+    // Chunks & Fog of War (9x9 chunks, 50m each from cx = -4..4, cz = -4..4)
+    for (let cx = -4; cx <= 4; cx++) {
+      for (let cz = -4; cz <= 4; cz++) {
+        const chunkX = toScreenX(cx * 50 - 25);
+        const chunkZ = toScreenZ(cz * 50 - 25);
         const key = `${cx},${cz}`;
         const isExplored = this.exploredChunks.has(key);
 
         if (!isExplored) {
           // Fog of War (Туман войны)
           ctx.fillStyle = 'rgba(8, 14, 24, 0.88)';
-          ctx.fillRect(chunkX, chunkZ, 50, 50);
+          ctx.fillRect(chunkX, chunkZ, chunkScreenW + 0.5, chunkScreenH + 0.5);
 
           ctx.strokeStyle = 'rgba(30, 48, 77, 0.40)';
           ctx.lineWidth = 1;
-          ctx.strokeRect(chunkX, chunkZ, 50, 50);
+          ctx.strokeRect(chunkX, chunkZ, chunkScreenW, chunkScreenH);
 
           // Subtle diagonal fog hatch lines
           ctx.beginPath();
-          ctx.moveTo(chunkX, chunkZ + 25);
-          ctx.lineTo(chunkX + 25, chunkZ);
-          ctx.moveTo(chunkX, chunkZ + 50);
-          ctx.lineTo(chunkX + 50, chunkZ);
-          ctx.moveTo(chunkX + 25, chunkZ + 50);
-          ctx.lineTo(chunkX + 50, chunkZ + 25);
+          ctx.moveTo(chunkX, chunkZ + chunkScreenH * 0.5);
+          ctx.lineTo(chunkX + chunkScreenW * 0.5, chunkZ);
+          ctx.moveTo(chunkX, chunkZ + chunkScreenH);
+          ctx.lineTo(chunkX + chunkScreenW, chunkZ);
+          ctx.moveTo(chunkX + chunkScreenW * 0.5, chunkZ + chunkScreenH);
+          ctx.lineTo(chunkX + chunkScreenW, chunkZ + chunkScreenH * 0.5);
           ctx.stroke();
         } else {
           // Explored zone
           ctx.fillStyle = 'rgba(20, 38, 64, 0.35)';
-          ctx.fillRect(chunkX, chunkZ, 50, 50);
+          ctx.fillRect(chunkX, chunkZ, chunkScreenW + 0.5, chunkScreenH + 0.5);
 
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.20)';
           ctx.lineWidth = 1;
-          ctx.strokeRect(chunkX, chunkZ, 50, 50);
+          ctx.strokeRect(chunkX, chunkZ, chunkScreenW, chunkScreenH);
         }
       }
     }
 
     // 3. XP Gems & Passive drops on ground (in explored chunks)
     for (const gem of this.dropManager.gems) {
-      const gcx = Math.floor(gem.position.x / 50);
-      const gcz = Math.floor(gem.position.z / 50);
+      const gcx = Math.round(gem.position.x / 50);
+      const gcz = Math.round(gem.position.z / 50);
       if (this.exploredChunks.has(`${gcx},${gcz}`)) {
-        const gx = gem.position.x + 250;
-        const gz = gem.position.z + 250;
-        if (gx >= 0 && gx <= 500 && gz >= 0 && gz <= 500) {
+        const gx = toScreenX(gem.position.x);
+        const gz = toScreenZ(gem.position.z);
+        if (gx >= 0 && gx <= w && gz >= 0 && gz <= h) {
           ctx.fillStyle = gem.type === 'gold' ? '#f59e0b' : '#38bdf8';
           ctx.beginPath();
           ctx.arc(gx, gz, gem.type === 'gold' ? 2.5 : 1.5, 0, Math.PI * 2);
@@ -673,38 +715,35 @@ export class MapManager {
       }
     }
 
-    // 4. Chests (if chestManager available and in explored chunk)
+    // 4. Chests (Unopened chests only, opened chests removed)
     if (this.chestManager) {
       for (const chest of this.chestManager.chests) {
-        const ccx = Math.floor(chest.position.x / 50);
-        const ccz = Math.floor(chest.position.z / 50);
+        if (chest.isOpened) continue; // Completely remove picked-up/opened chests
+        const ccx = Math.round(chest.position.x / 50);
+        const ccz = Math.round(chest.position.z / 50);
         if (this.exploredChunks.has(`${ccx},${ccz}`)) {
-          const cxPos = chest.position.x + 250;
-          const czPos = chest.position.z + 250;
-          if (cxPos >= 0 && cxPos <= 500 && czPos >= 0 && czPos <= 500) {
+          const cxPos = toScreenX(chest.position.x);
+          const czPos = toScreenZ(chest.position.z);
+          if (cxPos >= 0 && cxPos <= w && czPos >= 0 && czPos <= h) {
+            ctx.shadowColor = '#fbbf24';
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = '#fbbf24';
             ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            if (chest.isOpened) {
-              ctx.fillStyle = '#64748b';
-              ctx.fillText('📦', cxPos, czPos);
-            } else {
-              ctx.shadowColor = '#fbbf24';
-              ctx.shadowBlur = 6;
-              ctx.fillStyle = '#fbbf24';
-              ctx.fillText('📦', cxPos, czPos);
-              ctx.shadowBlur = 0;
-            }
+            ctx.fillText('📦', cxPos, czPos);
+            ctx.shadowBlur = 0;
           }
         }
       }
     }
 
-    // 5. Discovered Altars
+    // 5. Discovered Altars (Remove once captured/spent)
     for (const altar of this.discoveredAltars.values()) {
-      const ax = altar.pos.x + 250;
-      const az = altar.pos.z + 250;
-      if (ax >= 0 && ax <= 500 && az >= 0 && az <= 500) {
+      if (altar.isCaptured || (altar as any).isSpent) continue;
+      const ax = toScreenX(altar.pos.x);
+      const az = toScreenZ(altar.pos.z);
+      if (ax >= 0 && ax <= w && az >= 0 && az <= h) {
         ctx.fillStyle = altar.color;
         ctx.beginPath();
         ctx.arc(ax, az, 8, 0, Math.PI * 2);
@@ -717,20 +756,14 @@ export class MapManager {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(altar.icon || '⛩️', ax, az);
-
-        if (altar.isCaptured) {
-          ctx.fillStyle = '#10b981';
-          ctx.font = 'bold 8px sans-serif';
-          ctx.fillText('✓', ax + 7, az - 6);
-        }
       }
     }
 
     // 6. Discovered Rift Teleporter
     if (this.riftTeleporter && this.riftTeleporter.isDiscovered) {
-      const tx = this.riftTeleporter.position.x + 250;
-      const tz = this.riftTeleporter.position.z + 250;
-      if (tx >= 0 && tx <= 500 && tz >= 0 && tz <= 500) {
+      const tx = toScreenX(this.riftTeleporter.position.x);
+      const tz = toScreenZ(this.riftTeleporter.position.z);
+      if (tx >= 0 && tx <= w && tz >= 0 && tz <= h) {
         const isReady = this.riftTeleporter.state === 'WARP_READY';
         const pulse = Math.sin(this.animTimer * 4) * 2;
         const color = isReady ? '#10b981' : '#f59e0b';
@@ -755,9 +788,9 @@ export class MapManager {
     // 7. Active Boss
     if (this.enemyManager.activeBoss && this.enemyManager.activeBoss.isAlive) {
       const boss = this.enemyManager.activeBoss;
-      const bx = boss.position.x + 250;
-      const bz = boss.position.z + 250;
-      if (bx >= 0 && bx <= 500 && bz >= 0 && bz <= 500) {
+      const bx = toScreenX(boss.position.x);
+      const bz = toScreenZ(boss.position.z);
+      if (bx >= 0 && bx <= w && bz >= 0 && bz <= h) {
         const bPulse = Math.sin(this.animTimer * 6) * 3;
         ctx.strokeStyle = '#ef4444';
         ctx.lineWidth = 2;
@@ -781,9 +814,9 @@ export class MapManager {
     // 8. Teammates / Partners (Co-op)
     const partnerList = this.partners.length > 0 ? this.partners : this.partner ? [this.partner] : [];
     for (const rp of partnerList) {
-      const rx = rp.position.x + 250;
-      const rz = rp.position.z + 250;
-      if (rx >= 0 && rx <= 500 && rz >= 0 && rz <= 500) {
+      const rx = toScreenX(rp.position.x);
+      const rz = toScreenZ(rp.position.z);
+      if (rx >= 0 && rx <= w && rz >= 0 && rz <= h) {
         ctx.fillStyle = rp.colorCss || '#06b6d4';
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1.5;
@@ -800,36 +833,83 @@ export class MapManager {
       }
     }
 
-    // 9. Local Player Marker
-    const pxPos = this.player.position.x + 250;
-    const pzPos = this.player.position.z + 250;
-    if (pxPos >= 0 && pxPos <= 500 && pzPos >= 0 && pzPos <= 500) {
-      // Radar ping ring
-      const pingR = (this.animTimer * 18) % 22;
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
-      ctx.lineWidth = 1.5;
+    // 9. Local Player Marker - Significantly Enhanced Display
+    const pxPos = toScreenX(this.player.position.x);
+    const pzPos = toScreenZ(this.player.position.z);
+    if (pxPos >= 0 && pxPos <= w && pzPos >= 0 && pzPos <= h) {
+      // 9a. Double expanding sonar pulse rings
+      const r1 = (this.animTimer * 20) % 26;
+      const a1 = Math.max(0, 1 - r1 / 26) * 0.8;
+      ctx.strokeStyle = `rgba(56, 189, 248, ${a1})`;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.arc(pxPos, pzPos, pingR, 0, Math.PI * 2);
+      ctx.arc(pxPos, pzPos, r1, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Directional arrow / chevron based on player mesh rotation
+      const r2 = (this.animTimer * 20 + 13) % 26;
+      const a2 = Math.max(0, 1 - r2 / 26) * 0.8;
+      ctx.strokeStyle = `rgba(251, 191, 36, ${a2})`;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(pxPos, pzPos, r2, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 9b. Glowing beacon core
+      ctx.save();
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 12;
+
+      // Outer golden beacon ring
+      ctx.fillStyle = '#f59e0b';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(pxPos, pzPos, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Bright center core
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(pxPos, pzPos, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 9c. Directional chevron pointer based on player orientation
       ctx.save();
       ctx.translate(pxPos, pzPos);
       ctx.rotate(-this.player.mesh.rotation.y);
 
-      ctx.fillStyle = '#f59e0b';
-      ctx.strokeStyle = '#ffffff';
+      ctx.fillStyle = '#fef08a';
+      ctx.strokeStyle = '#0f172a';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(0, -9);
-      ctx.lineTo(6, 6);
-      ctx.lineTo(0, 3);
-      ctx.lineTo(-6, 6);
+      ctx.moveTo(0, -13);
+      ctx.lineTo(8, 8);
+      ctx.lineTo(0, 4);
+      ctx.lineTo(-8, 8);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-
       ctx.restore();
+
+      // 9d. High-visibility [ВЫ] badge above player
+      const badgeText = '[ВЫ]';
+      ctx.font = 'bold 9px Montserrat, sans-serif';
+      const textW = ctx.measureText(badgeText).width;
+      const badgeY = pzPos - 17;
+      ctx.fillStyle = 'rgba(8, 16, 32, 0.88)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(pxPos - textW / 2 - 4, badgeY - 7, textW + 8, 12, 3);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(badgeText, pxPos, badgeY - 1);
     }
 
     // 10. Top Bar (Header with title and exploration %)
@@ -838,7 +918,7 @@ export class MapManager {
     ctx.textAlign = 'left';
     ctx.fillText('ИНТЕРАКТИВНАЯ КАРТА [TAB]', 8, 14);
 
-    const exploredPct = Math.round((this.exploredChunks.size / 100) * 100);
+    const exploredPct = Math.min(100, Math.round((this.exploredChunks.size / 81) * 100));
     ctx.textAlign = 'right';
     ctx.fillStyle = '#38bdf8';
     ctx.fillText(`ТУМАН ВОЙНЫ: ${exploredPct}% ОТКРЫТО`, 492, 14);
@@ -1010,6 +1090,7 @@ export class MapManager {
 
     // 7. Discovered Altars (fixed top-down coordinates: Z mapped to vertical canvas axis)
     for (const altar of this.discoveredAltars.values()) {
+      if (altar.isCaptured || (altar as any).isSpent) continue;
       const ax = cx + (altar.pos.x - px) * mapScale;
       const az = cy + (altar.pos.z - pz) * mapScale;
 
@@ -1034,17 +1115,17 @@ export class MapManager {
         ctx.fillText(altar.name, ax, az + 22);
 
         ctx.font = '9px "Segoe UI", sans-serif';
-        ctx.fillStyle = altar.isCaptured ? '#888' : altar.color;
-        const statusText = altar.isCaptured ? '[ПЕРЕЗАРЯДКА]' : '[АКТИВЕН]';
-        ctx.fillText(statusText, ax, az + 34);
+        ctx.fillStyle = altar.color;
+        ctx.fillText('[АКТИВЕН]', ax, az + 34);
       }
     }
 
-    // 7b. Draw Chests on Full Map (in explored chunk or visible range)
+    // 7b. Draw Chests on Full Map (Unopened chests only)
     if (this.chestManager) {
       for (const chest of this.chestManager.chests) {
-        const chunkX = Math.floor(chest.position.x / 50);
-        const chunkZ = Math.floor(chest.position.z / 50);
+        if (chest.isOpened) continue; // Completely remove opened/picked-up chests
+        const chunkX = Math.round(chest.position.x / 50);
+        const chunkZ = Math.round(chest.position.z / 50);
         const chunkKey = `${chunkX},${chunkZ}`;
         const distToPlayer = chest.position.distanceTo(this.player.position);
 
@@ -1059,38 +1140,22 @@ export class MapManager {
           const tierLabel = chest.tier === 'legendary' ? 'Легендарная капсула' : chest.tier === 'large' ? 'Большой контейнер' : 'Малый контейнер';
 
           ctx.save();
-          if (chest.isOpened) {
-            ctx.fillStyle = 'rgba(30, 20, 15, 0.75)';
-            ctx.strokeStyle = 'rgba(140, 140, 140, 0.6)';
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.arc(screenX, screenZ, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
+          ctx.fillStyle = 'rgba(20, 14, 10, 0.9)';
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(screenX, screenZ, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
 
-            ctx.font = 'bold 9px sans-serif';
-            ctx.fillStyle = '#888888';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('✓', screenX, screenZ);
-          } else {
-            ctx.fillStyle = 'rgba(20, 14, 10, 0.9)';
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(screenX, screenZ, 12, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
+          ctx.font = '12px "Segoe UI", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('📦', screenX, screenZ);
 
-            ctx.font = '12px "Segoe UI", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('📦', screenX, screenZ);
-
-            ctx.font = 'bold 10px "Cinzel", serif';
-            ctx.fillStyle = '#2d180d';
-            ctx.fillText(tierLabel, screenX, screenZ + 18);
-          }
+          ctx.font = 'bold 10px "Cinzel", serif';
+          ctx.fillStyle = '#2d180d';
+          ctx.fillText(tierLabel, screenX, screenZ + 18);
           ctx.restore();
         }
       }
@@ -1159,18 +1224,28 @@ export class MapManager {
     const playerScreenX = cx;
     const playerScreenZ = cy;
 
-    const pPulse = Math.sin(this.animTimer * 5) * 3;
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+    // Dual expanding sonar pulses
+    const pr1 = (this.animTimer * 22) % 30;
+    const pa1 = Math.max(0, 1 - pr1 / 30) * 0.7;
+    ctx.strokeStyle = `rgba(245, 158, 11, ${pa1})`;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(playerScreenX, playerScreenZ, 18 + pPulse, 0, Math.PI * 2);
+    ctx.arc(playerScreenX, playerScreenZ, pr1, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const pr2 = (this.animTimer * 22 + 15) % 30;
+    const pa2 = Math.max(0, 1 - pr2 / 30) * 0.7;
+    ctx.strokeStyle = `rgba(56, 189, 248, ${pa2})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(playerScreenX, playerScreenZ, pr2, 0, Math.PI * 2);
     ctx.stroke();
 
     ctx.fillStyle = '#f59e0b';
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(playerScreenX, playerScreenZ, 8, 0, Math.PI * 2);
+    ctx.arc(playerScreenX, playerScreenZ, 9, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
@@ -1181,8 +1256,8 @@ export class MapManager {
     else if (this.player.currentDir === 'left') angle = Math.PI;
     else if (this.player.currentDir === 'right') angle = 0;
 
-    const tipX = playerScreenX + Math.cos(angle) * 16;
-    const tipY = playerScreenZ + Math.sin(angle) * 16;
+    const tipX = playerScreenX + Math.cos(angle) * 17;
+    const tipY = playerScreenZ + Math.sin(angle) * 17;
     const sideX1 = playerScreenX + Math.cos(angle + 2.5) * 9;
     const sideY1 = playerScreenZ + Math.sin(angle + 2.5) * 9;
     const sideX2 = playerScreenX + Math.cos(angle - 2.5) * 9;
@@ -1190,7 +1265,7 @@ export class MapManager {
 
     ctx.fillStyle = '#fef08a';
     ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.2;
     ctx.beginPath();
     ctx.moveTo(tipX, tipY);
     ctx.lineTo(sideX1, sideY1);
@@ -1275,10 +1350,10 @@ export class MapManager {
     // 11. Update Header Stats Bar
     if (this.elFullMapStats) {
       const exploredAreaM2 = this.exploredChunks.size * 2500;
-      const percent = Math.min(100, Math.round((this.exploredChunks.size / 100) * 100));
+      const percent = Math.min(100, Math.round((this.exploredChunks.size / 81) * 100));
       this.elFullMapStats.innerHTML = `
-        <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} / 100 чанков</strong> (${percent}%, ${exploredAreaM2} м²)</div>
-        <div class="map-stat-item">Алтари: <strong>${this.discoveredAltars.size} / 3</strong></div>
+        <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} / 81 чанков</strong> (${percent}%, ${exploredAreaM2} м²)</div>
+        <div class="map-stat-item">Алтари: <strong>${this.discoveredAltars.size} / 6</strong></div>
         <div class="map-stat-item">Предметов: <strong>${this.dropManager.gems.length}</strong></div>
         <div class="map-stat-item" id="btn-copy-seed-stat" style="cursor: pointer; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); padding: 2px 8px; border-radius: 4px;" title="Нажмите, чтобы скопировать seed карты">Seed: <strong style="color: #f59e0b;">#${this.currentSeed}</strong> 📋</div>
         <div class="map-stat-item">Координаты: <strong>${Math.round(px)}, ${Math.round(pz)}</strong></div>

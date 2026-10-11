@@ -642,10 +642,7 @@ body, html {
 }
 
 #active-passives-bar {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  max-width: 320px;
+  display: none !important;
 }
 
 .passive-slot {
@@ -1078,6 +1075,10 @@ body, html {
   flex-wrap: wrap;
 }
 
+.poe-member-items {
+  display: none !important;
+}
+
 .poe-weapon-pill, .poe-buff-pill, .poe-item-pill {
   display: inline-flex;
   align-items: center;
@@ -1121,7 +1122,7 @@ body, html {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1.5px solid rgba(0, 132, 255, 0.35);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 7px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 132, 255, 0.18);
   transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1136,7 +1137,7 @@ body, html {
 #minimap-canvas {
   width: 160px;
   height: 160px;
-  border-radius: 14px;
+  border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #080d18;
   display: block;
@@ -7608,13 +7609,13 @@ body, html {
     bottom: 12px !important;
     right: 12px !important;
     padding: 4px !important;
-    border-radius: 14px !important;
+    border-radius: 8px !important;
   }
 
   #minimap-canvas {
     width: 105px !important;
     height: 105px !important;
-    border-radius: 10px !important;
+    border-radius: 4px !important;
   }
 
   .minimap-footer {

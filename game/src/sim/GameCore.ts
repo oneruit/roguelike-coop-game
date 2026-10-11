@@ -584,9 +584,9 @@ export class GameCore {
   private updateWaves(dt: number) {
     this.spawnTimer += dt;
 
-    // Check boss minute (every 3 minutes, e.g. 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, ...)
+    // Check boss minute (every 5 minutes starting from minute 20: 20, 25, 30, ...)
     const currentMinute = Math.floor(this.gameTime / 60);
-    if (currentMinute > 0 && currentMinute % 3 === 0 && currentMinute !== this.lastBossMinute) {
+    if (currentMinute >= 20 && currentMinute % 5 === 0 && currentMinute !== this.lastBossMinute) {
       this.lastBossMinute = currentMinute;
       this.spawnBoss();
     }

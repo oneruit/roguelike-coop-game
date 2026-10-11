@@ -29,13 +29,13 @@ export class ChunkManager {
   private altarManager: AltarManager;
   private obstacleManager: ObstacleManager;
 
-  // Fixed World Dimensions: 500x500 meters (10x10 chunks of 50m each)
+  // Fixed World Dimensions: 450x450 meters (9x9 chunks of 50m each)
   public static readonly CHUNK_SIZE = 50;
-  public static readonly GRID_SIZE = 10;
-  public static readonly MAP_SIZE = 500;
-  public static readonly HALF_MAP = 250;
-  public static readonly MIN_CHUNK = -5;
-  public static readonly MAX_CHUNK = 4; // -5 to 4 inclusive = 10 chunks
+  public static readonly GRID_SIZE = 9;
+  public static readonly MAP_SIZE = 450;
+  public static readonly HALF_MAP = 225;
+  public static readonly MIN_CHUNK = -4;
+  public static readonly MAX_CHUNK = 4; // -4 to 4 inclusive = 9 chunks
 
   public currentSeed: number = 1337;
   public currentSeedString: string = '1337';
@@ -129,22 +129,24 @@ export class ChunkManager {
       }
     }
 
-    // 3. Exactly 3 Altars (radially distributed, never close to each other)
-    const buffPool: BuffType[] = ['damage', 'speed', 'regen', 'invulnerable'];
+    // 3. Exactly 6 Altars (radially distributed, single-use)
+    const buffPool: BuffType[] = ['damage', 'speed', 'regen', 'invulnerable', 'damage', 'speed'];
     rng.shuffle(buffPool);
-    const chosenBuffs = buffPool.slice(0, 3);
+    const chosenBuffs = buffPool.slice(0, 6);
 
     const baseAltarAngle = rng.range(0, Math.PI * 2);
-    for (let i = 0; i < 3; i++) {
-      const sectorAngle = baseAltarAngle + (i * (Math.PI * 2 / 3)) + rng.range(-0.25, 0.25);
-      const dist = rng.range(85, 160);
+    for (let i = 0; i < 6; i++) {
+      const sectorAngle = baseAltarAngle + (i * (Math.PI * 2 / 6)) + rng.range(-0.20, 0.20);
+      const dist = rng.range(65, 145);
       const ax = Math.cos(sectorAngle) * dist;
       const az = Math.sin(sectorAngle) * dist;
 
       const altar = new Altar(chosenBuffs[i], new Vector3(ax, 0, az));
       this.altarManager.registerAltar(altar);
 
-      const altarChunkKey = `${Math.floor(ax / ChunkManager.CHUNK_SIZE)},${Math.floor(az / ChunkManager.CHUNK_SIZE)}`;
+      const altarChunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(ax / ChunkManager.CHUNK_SIZE)));
+      const altarChunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(az / ChunkManager.CHUNK_SIZE)));
+      const altarChunkKey = `${altarChunkX},${altarChunkZ}`;
       this.obstacleManager.addObstacle(altarChunkKey, {
         x: ax,
         z: az,
@@ -159,7 +161,7 @@ export class ChunkManager {
     const oasisCount = 2;
     for (let o = 0; o < oasisCount; o++) {
       const oasisAngle = (o * Math.PI) + rng.range(0.35, 0.85);
-      const oasisDist = rng.range(80, 140);
+      const oasisDist = rng.range(70, 130);
       const ox = Math.cos(oasisAngle) * oasisDist;
       const oz = Math.sin(oasisAngle) * oasisDist;
 
@@ -168,8 +170,8 @@ export class ChunkManager {
       this.scene.add(oasis.group);
       this.oasisGroups.push(oasis.group);
 
-      const chunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(ox / ChunkManager.CHUNK_SIZE)));
-      const chunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(oz / ChunkManager.CHUNK_SIZE)));
+      const chunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(ox / ChunkManager.CHUNK_SIZE)));
+      const chunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(oz / ChunkManager.CHUNK_SIZE)));
       const chunkKey = `${chunkX},${chunkZ}`;
 
       this.obstacleManager.addObstacle(chunkKey, {
@@ -208,13 +210,13 @@ export class ChunkManager {
         const key = `${cx},${cz}`;
         const chunkGroup = new Group();
 
-        const worldCenterX = cx * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
-        const worldCenterZ = cz * ChunkManager.CHUNK_SIZE + ChunkManager.CHUNK_SIZE / 2;
+        const worldCenterX = cx * ChunkManager.CHUNK_SIZE;
+        const worldCenterZ = cz * ChunkManager.CHUNK_SIZE;
 
-        const minX = cx * ChunkManager.CHUNK_SIZE - 1;
-        const minZ = cz * ChunkManager.CHUNK_SIZE - 1;
-        const maxX = (cx + 1) * ChunkManager.CHUNK_SIZE + 1;
-        const maxZ = (cz + 1) * ChunkManager.CHUNK_SIZE + 1;
+        const minX = worldCenterX - ChunkManager.CHUNK_SIZE / 2 - 1;
+        const minZ = worldCenterZ - ChunkManager.CHUNK_SIZE / 2 - 1;
+        const maxX = worldCenterX + ChunkManager.CHUNK_SIZE / 2 + 1;
+        const maxZ = worldCenterZ + ChunkManager.CHUNK_SIZE / 2 + 1;
 
         (chunkGroup as any).boundingBox = new Box3(
           new Vector3(minX, -6, minZ),
@@ -368,7 +370,7 @@ export class ChunkManager {
    * Generates decorative and solid perimeter rock formations along boundaries.
    */
   private generatePerimeterBoulders(rng: SeededRNG) {
-    const margin = 244;
+    const margin = 220;
     const step = 9.5;
 
     for (let coord = -margin; coord <= margin; coord += step) {
@@ -383,8 +385,8 @@ export class ChunkManager {
   }
 
   private placeBoundaryRock(x: number, z: number, rng: SeededRNG) {
-    const cx = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(x / ChunkManager.CHUNK_SIZE)));
-    const cz = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.floor(z / ChunkManager.CHUNK_SIZE)));
+    const cx = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(x / ChunkManager.CHUNK_SIZE)));
+    const cz = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(z / ChunkManager.CHUNK_SIZE)));
     const key = `${cx},${cz}`;
     const chunkGroup = this.activeChunks.get(key);
     if (!chunkGroup) return;

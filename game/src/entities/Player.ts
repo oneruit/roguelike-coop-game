@@ -513,15 +513,15 @@ export class Player {
     const hollowStacks = this.getItemStacks('heavy_hollowpoint');
     this.critDamage = Math.min(10.0, 0.50 + hollowStacks * 0.20 + voidCatalystStacks * 0.40);
 
-    // Leather Vest % damage reduction: 10% per stack, cap at 70%
-    this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.10);
+    // Leather Vest % damage reduction: 1% per stack, cap at 70%
+    this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.01);
 
     // Attack Cooldown Multiplier:
-    // Pocket watch: -8% cooldown per stack, up to 70% reduction (floor 0.30)
+    // Pocket watch: -1% cooldown per stack, up to 70% reduction (floor 0.30)
     // Kinetic Injector: -15% cooldown per stack (0.85^stacks)
     // Overclock module: -10% cooldown per stack (0.90^stacks)
     // Combined floor 0.15
-    const watchMult = Math.max(0.30, 1 - this.watchCount * 0.08);
+    const watchMult = Math.max(0.30, 1 - this.watchCount * 0.01);
     const injectorMult = Math.pow(0.85, injectorStacks);
     const overclockMult = Math.pow(0.90, overclockStacks);
     this.passiveCooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);
@@ -780,9 +780,9 @@ export class Player {
       obstacleManager.resolveEntityCollision(this.position, 0.45);
     }
 
-    // Clamp to 500x500 map bounds (-243 to 243)
-    this.position.x = Math.max(-243, Math.min(243, this.position.x));
-    this.position.z = Math.max(-243, Math.min(243, this.position.z));
+    // Clamp to 450x450 map bounds (-218 to 218)
+    this.position.x = Math.max(-218, Math.min(218, this.position.x));
+    this.position.z = Math.max(-218, Math.min(218, this.position.z));
     this.position.y = 0;
 
     this.mesh.position.copy(this.position);

@@ -3702,7 +3702,8 @@ export class HUD {
     if (this.isAutoLevelUp) {
       const weaponOptions = this.generateWeaponOptions(player);
       if (weaponOptions.length > 0) {
-        weaponOptions[0].apply();
+        const chosen = this.selectAutoLevelUpOption(weaponOptions, player);
+        chosen.apply();
       } else {
         // All weapons maxed at level 12 / awakened cap: provide fallback reward
         player.maxHp += 50;
@@ -3747,6 +3748,60 @@ export class HUD {
         onSelect();
       });
     }
+  }
+
+  private selectAutoLevelUpOption(options: UpgradeOption[], player: Player): UpgradeOption {
+    // 1. Graded/awakened weapons below their cap -> upgrade them to max
+    const awakenedUpgrades = options.filter(opt => {
+      if (!opt.id.startsWith('upgrade_')) return false;
+      const weaponId = opt.id.replace('upgrade_', '');
+      const weapon = player.weapons.find(w => w.id === weaponId);
+      if (!weapon) return false;
+      const g = weapon.awakenedGrade ?? 0;
+      return g > 0 && weapon.level < player.getAwakenedCap(g);
+    });
+    if (awakenedUpgrades.length > 0) {
+      return awakenedUpgrades[0];
+    }
+
+    // 2. Awakening grades (Grade II or Grade III) when at cap or ready
+    const awakenOptions = options.filter(opt =>
+      opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_')
+    );
+    if (awakenOptions.length > 0) {
+      return awakenOptions[0];
+    }
+
+    // 3. Normal weapon upgrades (for weapons not yet at maxLevel)
+    const normalUpgrades = options.filter(opt => {
+      if (!opt.id.startsWith('upgrade_')) return false;
+      const weaponId = opt.id.replace('upgrade_', '');
+      const weapon = player.weapons.find(w => w.id === weaponId);
+      return weapon ? weapon.level < weapon.maxLevel : false;
+    });
+    if (normalUpgrades.length > 0) {
+      return normalUpgrades[0];
+    }
+
+    // 4. New weapons (to expand arsenal)
+    const newWeaponOptions = options.filter(opt => opt.id.startsWith('new_'));
+    if (newWeaponOptions.length > 0) {
+      return newWeaponOptions[0];
+    }
+
+    // 5. Damage elixir
+    const damageOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
+    if (damageOpt) {
+      return damageOpt;
+    }
+
+    // 6. HP / Fallback options
+    const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
+    if (hpOpt) {
+      return hpOpt;
+    }
+
+    return options[0];
   }
 
   private renderWeaponStep(
@@ -4117,7 +4172,7 @@ export class HUD {
           icon: '⏱️',
           count: player.watchCount,
           title: 'Карманные Часы',
-          desc: `-${Math.min(70, player.watchCount * 8)}% к перезарядке (всего -${Math.round((1 - player.passiveCooldownMultiplier) * 100)}%)`
+          desc: `-${Math.min(70, player.watchCount * 1)}% к перезарядке (всего -${Math.round((1 - player.passiveCooldownMultiplier) * 100)}%)`
         }
       ];
 
@@ -4527,9 +4582,20 @@ export class HUD {
       }
 
       // Offer HP option (always guaranteed) + up to 2 other choices (upgrades or awakenings)
-      const candidateOthers = [...upgradeOptions, ...awakeningOptions];
-      const shuffledOthers = filterAndShuffleForReroll(candidateOthers, excludeIds);
-      const chosenOthers: UpgradeOption[] = [];
+      // Prioritize upgrade options for awakened weapons that are currently below their cap
+      const awakenedUpgrades = upgradeOptions.filter(opt => {
+        const weaponId = opt.id.replace('upgrade_', '');
+        const weapon = player.weapons.find(w => w.id === weaponId);
+        if (!weapon) return false;
+        const g = weapon.awakenedGrade ?? 0;
+        return g > 0 && weapon.level < player.getAwakenedCap(g);
+      });
+      const otherCandidates = [
+        ...upgradeOptions.filter(o => !awakenedUpgrades.includes(o)),
+        ...awakeningOptions
+      ];
+      const shuffledOthers = filterAndShuffleForReroll(otherCandidates, excludeIds);
+      const chosenOthers: UpgradeOption[] = [...awakenedUpgrades];
       for (const opt of shuffledOthers) {
         if (chosenOthers.length >= 2) break;
         if (!chosenOthers.some(o => o.id === opt.id)) {
@@ -4677,91 +4743,9 @@ export class HUD {
     return selectWeaponUpgradeOptions(shuffled, player.charType);
   }
 
-  public updatePassivesBar(player: Player) {
+  public updatePassivesBar(_player: Player) {
     if (!this.passivesBar) return;
-
-    const passivesList = [
-      {
-        id: 'stat_sheriff_star',
-        icon: '⭐',
-        count: player.sheriffStarCount,
-        title: 'Звезда Шерифа',
-        desc: `+${Math.round((player.passiveDamageMultiplier - 1) * 100)}% к урону всех оружий`
-      },
-      {
-        id: 'stat_spurs',
-        icon: '👢',
-        count: player.spursCount,
-        title: 'Шпоры Скорохода',
-        desc: `x${player.passiveSpeedMultiplier.toFixed(2)} к скорости бега`
-      },
-      {
-        id: 'stat_flask',
-        icon: '🍶',
-        count: player.flaskCount,
-        title: 'Фляга с Виски',
-        desc: `+${player.flaskCount * 30} к макс HP (${player.maxHp} HP)`
-      },
-      {
-        id: 'stat_lasso',
-        icon: '➰',
-        count: player.lassoCount,
-        title: 'Магнитное Лассо',
-        desc: `${player.pickupRadius.toFixed(1)}м радиус магнита`
-      },
-      {
-        id: 'stat_amulet',
-        icon: '🧿',
-        count: player.amuletCount,
-        title: 'Охотничий Амулет',
-        desc: `+${(player.amuletCount * 1.5).toFixed(1)} HP/с (всего +${player.passiveHpRegen.toFixed(1)} HP/с)`
-      },
-      {
-        id: 'stat_vest',
-        icon: '🦺',
-        count: player.vestCount,
-        title: 'Кожаный Жилет',
-        desc: `-${Math.round(player.passiveDamageReduction * 100)}% получаемого урона`
-      },
-      {
-        id: 'stat_watch',
-        icon: '⏱️',
-        count: player.watchCount,
-        title: 'Карманные Часы',
-        desc: `-${Math.min(70, player.watchCount * 8)}% к перезарядке (всего -${Math.round((1 - player.passiveCooldownMultiplier) * 100)}%)`
-      }
-    ];
-
-    const activeList = passivesList.filter(p => p.count > 0);
-    const activeIds = new Set(activeList.map(p => p.id));
-
-    for (const p of activeList) {
-      let slot = this.passivesBar.querySelector<HTMLElement>(`[data-passive-id="${p.id}"]`);
-      if (!slot) {
-        slot = document.createElement('div');
-        slot.className = 'passive-slot';
-        slot.setAttribute('data-passive-id', p.id);
-        slot.innerHTML = `
-          <span class="passive-icon">${p.icon}</span>
-          <span class="passive-count">x${p.count}</span>
-        `;
-        this.passivesBar.appendChild(slot);
-      } else {
-        const countEl = slot.querySelector<HTMLElement>('.passive-count');
-        if (countEl && countEl.innerText !== `x${p.count}`) {
-          countEl.innerText = `x${p.count}`;
-        }
-      }
-      slot.title = `${p.title} (x${p.count})\n${p.desc}`;
-    }
-
-    const slots = Array.from(this.passivesBar.querySelectorAll<HTMLElement>('.passive-slot'));
-    for (const slot of slots) {
-      const id = slot.getAttribute('data-passive-id');
-      if (id && !activeIds.has(id)) {
-        slot.remove();
-      }
-    }
+    this.passivesBar.innerHTML = '';
   }
 
   /**

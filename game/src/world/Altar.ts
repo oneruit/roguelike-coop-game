@@ -113,6 +113,7 @@ export class Altar {
   public captureTime = 3.2; // seconds to capture
   public captureProgress = 0; // 0.0 to 1.0
   public isCaptured = false;
+  public isSpent = false;
   public rechargeTimer = 0;
   public rechargeDuration = 75; // seconds until reactivation
 
@@ -326,18 +327,10 @@ export class Altar {
     ctx.textAlign = 'center';
     ctx.fillText(`[${this.config.icon}] ${this.config.name}`, 192, 42);
 
-    if (this.isCaptured) {
+    if (this.isCaptured || this.isSpent) {
       ctx.font = 'bold 18px "Segoe UI", sans-serif';
-      ctx.fillStyle = this.config.colorCss;
-      const secLeft = Math.ceil(this.rechargeTimer);
-      ctx.fillText(`АКТИВЕН (Перезарядка: ${secLeft}с)`, 192, 75);
-
-      // Recharging progress bar
-      const rechargePct = (this.rechargeDuration - this.rechargeTimer) / this.rechargeDuration;
-      ctx.fillStyle = '#332018';
-      ctx.fillRect(36, 92, 312, 16);
-      ctx.fillStyle = this.config.colorCss;
-      ctx.fillRect(36, 92, 312 * Math.max(0, Math.min(1, rechargePct)), 16);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('[ИСПОЛЬЗОВАНО]', 192, 75);
     } else {
       // Subtitle perk
       ctx.font = '16px "Segoe UI", sans-serif';
@@ -376,12 +369,7 @@ export class Altar {
     allowCapture: boolean = true,
     allPlayers?: { position: Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
-    if (this.isCaptured) {
-      this.rechargeTimer -= dt;
-      if (this.rechargeTimer <= 0) {
-        this.isCaptured = false;
-        this.captureProgress = 0;
-      }
+    if (this.isCaptured || this.isSpent) {
       return;
     }
 
@@ -407,10 +395,11 @@ export class Altar {
       SoundManager.playAltarCapturing(this.captureProgress);
 
       if (this.captureProgress >= 1.0) {
-        // Capture Complete!
+        // Capture Complete (Single-use)!
         this.captureProgress = 1.0;
         this.isCaptured = true;
-        this.rechargeTimer = this.rechargeDuration;
+        this.isSpent = true;
+        this.rechargeTimer = Infinity;
 
         // Shockwave trigger
         this.isShockwaving = true;
@@ -494,10 +483,11 @@ export class Altar {
 
   /** Apply a capture decided by the host without replaying the local capture logic. */
   public applyRemoteCapture() {
-    if (this.isCaptured) return;
+    if (this.isCaptured || this.isSpent) return;
     this.captureProgress = 1;
     this.isCaptured = true;
-    this.rechargeTimer = this.rechargeDuration;
+    this.isSpent = true;
+    this.rechargeTimer = Infinity;
     this.isShockwaving = true;
     this.shockwaveTimer = 0;
     this.shockwaveMat.opacity = 1.0;

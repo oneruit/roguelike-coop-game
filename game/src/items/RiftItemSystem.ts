@@ -286,10 +286,14 @@ export function getItemsByGrade(grade: WeaponGrade): RiftItemId[] {
  */
 export function rollRiftItemByStage(
   stageNumber: number,
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
+  excludeChronos: boolean = false
 ): RiftItemDef {
   const grade = rollWeaponGrade(stageNumber, rng);
-  const items = getItemsByGrade(grade);
+  let items = getItemsByGrade(grade);
+  if (excludeChronos && grade === 'legendary') {
+    items = items.filter(id => id !== 'chronos_phylactery');
+  }
   const id = items[Math.floor(rng() * items.length)];
   return RIFT_ITEMS[id];
 }
@@ -299,13 +303,15 @@ export function rollRiftItemByStage(
  */
 export function rollChestDropPair(
   stageNumber: number,
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
+  excludeChronos: boolean = false
 ): [RiftItemDef, RiftItemDef] {
-  const item1 = rollRiftItemByStage(stageNumber, rng);
-  let item2 = rollRiftItemByStage(stageNumber, rng);
+  const item1 = rollRiftItemByStage(stageNumber, rng, excludeChronos);
+  const excludeForSecond = excludeChronos || item1.id === 'chronos_phylactery';
+  let item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond);
   let attempts = 0;
   while (item2.id === item1.id && attempts < 25) {
-    item2 = rollRiftItemByStage(stageNumber, rng);
+    item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond);
     attempts++;
   }
   // Guarantee non-duplicate options
@@ -315,7 +321,7 @@ export function rollChestDropPair(
       ...UNCOMMON_ITEMS,
       ...RARE_ITEMS,
       ...LEGENDARY_ITEMS
-    ].filter(id => id !== item1.id);
+    ].filter(id => id !== item1.id && (!excludeForSecond || id !== 'chronos_phylactery'));
     if (candidates.length > 0) {
       const fallbackId = candidates[Math.floor(rng() * candidates.length)];
       item2 = RIFT_ITEMS[fallbackId];
