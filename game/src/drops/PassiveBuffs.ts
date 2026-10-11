@@ -49,13 +49,13 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_vest',
     title: 'Кожаный Жилет',
     icon: '🦺',
-    description: '-10% к получаемому урону от мобов'
+    description: '-1% к получаемому урону от мобов'
   },
   stat_watch: {
     id: 'stat_watch',
     title: 'Карманные Часы',
     icon: '⏱️',
-    description: '+8% к скорости атаки оружий'
+    description: '-1% к времени перезарядки оружий'
   }
 };
 

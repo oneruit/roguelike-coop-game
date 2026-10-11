@@ -432,6 +432,7 @@ export class SessionDirector {
 
       this.player.credits = 0;
       this.player.riftItems.clear();
+      this.chestManager.chronosDroppedInCurrentBiome = false;
       this.player.recalculateStats();
       this.enemyManager.currentStage = 1;
       this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
