@@ -214,23 +214,26 @@ export interface SpellControl {
   slowFactor?: number;
   slowDuration?: number;
   stunDuration?: number;
+  freezeDuration?: number;
   disarmDuration?: number;
   pushX?: number;
   pushZ?: number;
 }
 /** Countdown state shared by the browser and dedicated simulation. */
 export class SpellControlState {
+  public freeze = 0;
   public stun = 0;
   public slow = 0;
   public slowFactor = 1;
   public disarm = 0;
   public get canAttack(): boolean {
-    return this.stun <= 0 && this.disarm <= 0;
+    return this.freeze <= 0 && this.stun <= 0 && this.disarm <= 0;
   }
   public get movementFactor(): number {
-    return this.stun > 0 ? 0 : this.slow > 0 ? this.slowFactor : 1;
+    return (this.freeze > 0 || this.stun > 0) ? 0 : this.slow > 0 ? this.slowFactor : 1;
   }
   public update(dt: number): void {
+    this.freeze = Math.max(0, this.freeze - dt);
     this.stun = Math.max(0, this.stun - dt);
     this.disarm = Math.max(0, this.disarm - dt);
     this.slow = Math.max(0, this.slow - dt);
@@ -247,6 +250,7 @@ export class SpellControlState {
       Number.isFinite(value)
         ? Math.max(0, Math.min(8, value!)) * resistance
         : 0;
+    this.freeze = Math.max(this.freeze, duration(control.freezeDuration));
     this.stun = Math.max(this.stun, duration(control.stunDuration));
     this.disarm = Math.max(this.disarm, duration(control.disarmDuration));
     if (

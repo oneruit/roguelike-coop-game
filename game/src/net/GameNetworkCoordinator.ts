@@ -47,6 +47,7 @@ export class GameNetworkCoordinator {
   public pendingDamageToClients: Map<string, number> = new Map();
   public pendingNetworkEvents: NetEvent[] = [];
   public pendingClientCollectedGems: string[] = [];
+  public pendingClientEvents: NetEvent[] = [];
 
   private lastClientLocalHitTime = 0;
   public gameTime = 0;
@@ -400,6 +401,11 @@ export class GameNetworkCoordinator {
           SoundManager.playTeleporterActivate();
           this.hud.triggerBossWarning('ХРАНИТЕЛЬ РАЗЛОМА', event.stage || 1);
         }
+      } else if (event.type === 'time_freeze' && event.sourcePos) {
+        const freezePos = new Vector3(event.sourcePos.x, event.sourcePos.y, event.sourcePos.z);
+        this.enemyManager.freezeAndKnockbackAll(freezePos, 5.0, 25.0);
+        this.combatDirector.spawnChronosShockwave(freezePos);
+        SoundManager.playTimeFreeze();
       }
     }
 
@@ -535,6 +541,18 @@ export class GameNetworkCoordinator {
             chestId,
             playerId: clientId
           });
+        }
+      }
+    }
+
+    if (msg.events && msg.events.length > 0) {
+      for (const ev of msg.events) {
+        if (ev.type === 'time_freeze' && ev.sourcePos) {
+          const freezePos = new Vector3(ev.sourcePos.x, ev.sourcePos.y, ev.sourcePos.z);
+          this.enemyManager.freezeAndKnockbackAll(freezePos, 5.0, 25.0);
+          this.combatDirector.spawnChronosShockwave(freezePos);
+          SoundManager.playTimeFreeze();
+          this.pendingNetworkEvents.push(ev);
         }
       }
     }
@@ -713,7 +731,8 @@ export class GameNetworkCoordinator {
         shots: this.combatDirector.pendingLocalShots.splice(0),
         isRevivingPartner: isReviving,
         revivingTargetId,
-        reviveProgress: highestReviveProgress
+        reviveProgress: highestReviveProgress,
+        events: this.pendingClientEvents.splice(0)
       };
       this.combatDirector.pendingClientHits = [];
       this.pendingClientCollectedGems = [];
@@ -915,6 +934,18 @@ export class GameNetworkCoordinator {
       if (!remote.isDowned) return false;
     }
     return true;
+  }
+
+  public broadcastTimeFreeze(pos: Vector3): void {
+    const ev: NetEvent = {
+      type: 'time_freeze',
+      sourcePos: { x: pos.x, y: pos.y, z: pos.z }
+    };
+    if (this.net.role === 'host') {
+      this.pendingNetworkEvents.push(ev);
+    } else if (this.net.role === 'client') {
+      this.pendingClientEvents.push(ev);
+    }
   }
 }
 

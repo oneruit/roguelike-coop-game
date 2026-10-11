@@ -755,6 +755,26 @@ export class EnemyManager {
     }
   }
 
+  /**
+   * Freezes all active monsters and bosses for the given duration, and knocks them back
+   * away from the specified center position by the given distance.
+   */
+  public freezeAndKnockbackAll(
+    center: Vector3,
+    freezeDuration: number = 5.0,
+    knockbackDistance: number = 25.0
+  ): void {
+    for (const enemy of this.enemies) {
+      if (!enemy.isAlive) continue;
+      enemy.freeze(freezeDuration);
+      enemy.knockbackFrom(center, knockbackDistance, 0.25);
+    }
+    if (this.activeBoss && this.activeBoss.isAlive && !this.enemies.includes(this.activeBoss)) {
+      this.activeBoss.freeze(freezeDuration);
+      this.activeBoss.knockbackFrom(center, knockbackDistance, 0.25);
+    }
+  }
+
   public spawnSpecificEnemy(type: EnemyType | 'reaper', playerPos: Vector3) {
     if (type === 'reaper') {
       this.spawnImmortalBossNow(playerPos);

@@ -853,5 +853,41 @@ export class SoundManager {
       osc.stop(ctx.currentTime + idx * 0.035 + 0.13);
     });
   }
+
+  /**
+   * Sound when Time Crystal activates (temporal freeze + deep shockwave)
+   */
+  public static playTimeFreeze() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+
+    // 1. Deep sub-bass drop / time warp
+    const bassOsc = ctx.createOscillator();
+    const bassGain = ctx.createGain();
+    bassOsc.type = 'sine';
+    bassOsc.frequency.setValueAtTime(140, ctx.currentTime);
+    bassOsc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.6);
+    bassGain.gain.setValueAtTime(0.35, ctx.currentTime);
+    bassGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+    bassOsc.connect(bassGain);
+    bassGain.connect(this.getMasterGain());
+    bassOsc.start(ctx.currentTime);
+    bassOsc.stop(ctx.currentTime + 0.75);
+
+    // 2. High crystalline freeze chime chords (ice shimmer)
+    [880, 1174.66, 1396.91, 1760].forEach((freq, idx) => {
+      const chimeOsc = ctx.createOscillator();
+      const chimeGain = ctx.createGain();
+      chimeOsc.type = 'triangle';
+      chimeOsc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.05);
+      chimeGain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.05);
+      chimeGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.05 + 0.8);
+      chimeOsc.connect(chimeGain);
+      chimeGain.connect(this.getMasterGain());
+      chimeOsc.start(ctx.currentTime + idx * 0.05);
+      chimeOsc.stop(ctx.currentTime + idx * 0.05 + 0.85);
+    });
+  }
 }
 

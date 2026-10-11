@@ -242,6 +242,14 @@ class Game {
       this.remotePlayers
     );
 
+    this.player.onChronosTrigger = (pos) => {
+      this.enemyManager.freezeAndKnockbackAll(pos, 5.0, 25.0);
+      this.combatDirector.spawnChronosShockwave(pos);
+      if (this.net.role !== 'solo') {
+        this.netCoordinator.broadcastTimeFreeze(pos);
+      }
+    };
+
     // Session Director
     this.sessionDirector = new SessionDirector(
       this.engine,

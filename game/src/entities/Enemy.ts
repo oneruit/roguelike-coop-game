@@ -63,9 +63,55 @@ export class Enemy {
   public creditsValue: number = 3;
   public isAlive = true;
   public readonly spellControl = new SpellControlState();
-  public get canAttack(): boolean { return this.spellControl.canAttack; }
+  public get canAttack(): boolean { return !this.isFrozen && this.spellControl.canAttack; }
   public lastHitBy: string = 'p1';
   public boundingRadius: number;
+
+  // Freeze mechanic (applies to both monsters and bosses: they stand completely in place)
+  public freezeTimer = 0;
+  public get isFrozen(): boolean {
+    return this.freezeTimer > 0 || this.spellControl.freeze > 0;
+  }
+  public freeze(duration: number): void {
+    this.freezeTimer = Math.max(this.freezeTimer, duration);
+    this.pendingAttackHit = false;
+    if (this.animState === 'ATTACK') {
+      this.animState = 'WALK';
+      this.attackAnimTimer = 0;
+    }
+  }
+
+  // Forced knockback (e.g. Time Crystal, pushes both monsters and bosses by distance)
+  private forcedKnockbackTimer = 0;
+  private forcedKnockbackVelocity = new Vector3();
+
+  public knockbackFrom(sourcePos: Vector3, distance: number, duration = 0.25): void {
+    const dx = this.position.x - sourcePos.x;
+    const dz = this.position.z - sourcePos.z;
+    const distSq = dx * dx + dz * dz;
+    let dirX: number;
+    let dirZ: number;
+    if (distSq > 0.0001) {
+      const invDist = 1 / Math.sqrt(distSq);
+      dirX = dx * invDist;
+      dirZ = dz * invDist;
+    } else {
+      const angle = Math.random() * Math.PI * 2;
+      dirX = Math.cos(angle);
+      dirZ = Math.sin(angle);
+    }
+
+    if (duration <= 0) {
+      this.position.x += dirX * distance;
+      this.position.z += dirZ * distance;
+      this.forcedKnockbackTimer = 0;
+      this.forcedKnockbackVelocity.set(0, 0, 0);
+    } else {
+      this.forcedKnockbackTimer = duration;
+      const speed = distance / duration;
+      this.forcedKnockbackVelocity.set(dirX * speed, 0, dirZ * speed);
+    }
+  }
 
   // Stacking Bleed System
   public bleedStacks: BleedStack[] = [];
@@ -98,6 +144,8 @@ export class Enemy {
   private animTimer = Math.random() * Math.PI * 2;
   private flashTimer = 0;
   public knockbackVelocity = new Vector3();
+  private freezeAuraMesh?: Mesh;
+  private freezeAuraMaterial?: MeshBasicMaterial;
 
   private static geometryCache = new Map<EnemyType, PlaneGeometry>();
 
@@ -224,6 +272,20 @@ export class Enemy {
     this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
     this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
+
+    // Visual freeze frost ring indicator (visible when isFrozen is true)
+    const freezeGeom = new RingGeometry(this.width * 0.35, this.width * 0.58, 16);
+    freezeGeom.rotateX(-Math.PI / 2);
+    this.freezeAuraMaterial = new MeshBasicMaterial({
+      color: 0x38bdf8,
+      side: DoubleSide,
+      transparent: true,
+      opacity: 0.8
+    });
+    this.freezeAuraMesh = new Mesh(freezeGeom, this.freezeAuraMaterial);
+    this.freezeAuraMesh.position.y = 0.05;
+    this.freezeAuraMesh.visible = false;
+    this.mesh.add(this.freezeAuraMesh);
 
     // Boss special key light
     if (this.isImmortal) {
@@ -369,6 +431,11 @@ export class Enemy {
    */
   public updateSimulation(dt: number, playerPos: Vector3) {
     if (!this.isAlive) return;
+
+    if (this.freezeTimer > 0) {
+      this.freezeTimer = Math.max(0, this.freezeTimer - dt);
+    }
+
     this.spellControl.update(dt);
 
     if (this.bleedStacks.length > 0) {
@@ -384,7 +451,7 @@ export class Enemy {
     }
 
     // Process attack animation & hit registration strictly on frame 2 (the 3rd frame)
-    if (this.animState === 'ATTACK') {
+    if (this.animState === 'ATTACK' && !this.isFrozen) {
       this.attackAnimTimer -= dt;
       const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
       const frameCol = Math.floor(progress * 4); // 4 frames: 0, 1, 2, 3
@@ -401,6 +468,14 @@ export class Enemy {
       }
     }
 
+    // Forced knockback handling (e.g. Time Crystal, pushes both monsters and bosses)
+    if (this.forcedKnockbackTimer > 0) {
+      const step = Math.min(dt, this.forcedKnockbackTimer);
+      this.position.x += this.forcedKnockbackVelocity.x * step;
+      this.position.z += this.forcedKnockbackVelocity.z * step;
+      this.forcedKnockbackTimer -= step;
+    }
+
     // Knockback handling (Immortal Reaper is completely immune to knockback)
     const kbSq = this.knockbackVelocity.lengthSq();
     if (kbSq > 0.01) {
@@ -409,56 +484,58 @@ export class Enemy {
       this.knockbackVelocity.multiplyScalar(Math.pow(0.08, dt * 5));
     }
 
-    // Move towards player (zero Vector3 heap allocations)
-    const dx = playerPos.x - this.position.x;
-    const dz = playerPos.z - this.position.z;
-    const distSq = dx * dx + dz * dz;
+    // Move towards player (zero Vector3 heap allocations) — disabled while frozen ("стоят на месте")
+    if (!this.isFrozen) {
+      const dx = playerPos.x - this.position.x;
+      const dz = playerPos.z - this.position.z;
+      const distSq = dx * dx + dz * dz;
 
-    if (this.hasAttackAnimation) {
-      const attackDist = this.isBoss ? (this.type === 'hydra' ? 5.2 : 4.8) : ((this.width + this.height) * 0.28 + 0.6);
-      if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.canAttack && this.animState !== 'ATTACK') {
-        this.triggerAttack();
-      }
-
-      if (distSq > 0.0625) { // 0.25m squared
-        const dist = Math.sqrt(distSq);
-        const invDist = 1 / dist;
-        const normX = dx * invDist;
-        const normZ = dz * invDist;
-        const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.25 : this.speed) * this.spellControl.movementFactor;
-        this.position.x += normX * moveSpeed * dt;
-        this.position.z += normZ * moveSpeed * dt;
-
-        let newDir: SpriteDirection = this.currentDir;
-        if (Math.abs(dx) >= Math.abs(dz)) {
-          newDir = dx < 0 ? 'left' : 'right';
-        } else {
-          newDir = dz < 0 ? 'back' : 'front';
+      if (this.hasAttackAnimation) {
+        const attackDist = this.isBoss ? (this.type === 'hydra' ? 5.2 : 4.8) : ((this.width + this.height) * 0.28 + 0.6);
+        if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.canAttack && this.animState !== 'ATTACK') {
+          this.triggerAttack();
         }
 
-        if (newDir !== this.currentDir && this.animState !== 'ATTACK') {
-          this.setDirection(newDir);
-        }
-      }
-    } else {
-      if (distSq > 0.0625) { // 0.25m squared
-        const dist = Math.sqrt(distSq);
-        const invDist = 1 / dist;
-        const normX = dx * invDist;
-        const normZ = dz * invDist;
-        this.position.x += normX * this.speed * this.spellControl.movementFactor * dt;
-        this.position.z += normZ * this.speed * this.spellControl.movementFactor * dt;
+        if (distSq > 0.0625) { // 0.25m squared
+          const dist = Math.sqrt(distSq);
+          const invDist = 1 / dist;
+          const normX = dx * invDist;
+          const normZ = dz * invDist;
+          const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.25 : this.speed) * this.spellControl.movementFactor;
+          this.position.x += normX * moveSpeed * dt;
+          this.position.z += normZ * moveSpeed * dt;
 
-        // Determine 4-directional sprite based on movement towards player
-        let newDir: SpriteDirection = this.currentDir;
-        if (Math.abs(dx) >= Math.abs(dz)) {
-          newDir = dx < 0 ? 'left' : 'right';
-        } else {
-          newDir = dz < 0 ? 'back' : 'front';
-        }
+          let newDir: SpriteDirection = this.currentDir;
+          if (Math.abs(dx) >= Math.abs(dz)) {
+            newDir = dx < 0 ? 'left' : 'right';
+          } else {
+            newDir = dz < 0 ? 'back' : 'front';
+          }
 
-        if (newDir !== this.currentDir) {
-          this.setDirection(newDir);
+          if (newDir !== this.currentDir && this.animState !== 'ATTACK') {
+            this.setDirection(newDir);
+          }
+        }
+      } else {
+        if (distSq > 0.0625) { // 0.25m squared
+          const dist = Math.sqrt(distSq);
+          const invDist = 1 / dist;
+          const normX = dx * invDist;
+          const normZ = dz * invDist;
+          this.position.x += normX * this.speed * this.spellControl.movementFactor * dt;
+          this.position.z += normZ * this.speed * this.spellControl.movementFactor * dt;
+
+          // Determine 4-directional sprite based on movement towards player
+          let newDir: SpriteDirection = this.currentDir;
+          if (Math.abs(dx) >= Math.abs(dz)) {
+            newDir = dx < 0 ? 'left' : 'right';
+          } else {
+            newDir = dz < 0 ? 'back' : 'front';
+          }
+
+          if (newDir !== this.currentDir) {
+            this.setDirection(newDir);
+          }
         }
       }
     }
@@ -486,29 +563,40 @@ export class Enemy {
     this.mesh.visible = true;
     this.mesh.position.copy(this.position);
 
-    this.animTimer += dt * (this.speed > 5 ? 14 : 9);
-
-    if (this.isBoss && this.bossTextures) {
-      this.updateBossAnimation(dt);
-    } else if (this.monsterTextures) {
-      this.updateMonsterAnimation(dt);
-    } else {
-      // Walking / Bobbing animation
-      if (this.isImmortal) {
-        this.spriteMesh.position.y = Math.sin(this.animTimer * 0.4) * 0.35 + 0.15;
-        this.spriteMesh.rotation.z = Math.sin(this.animTimer * 0.25) * 0.04;
-      } else if (this.type === 'ghost') {
-        this.spriteMesh.position.y = Math.sin(this.animTimer * 0.5) * 0.25;
-        this.spriteMesh.rotation.z = Math.sin(this.animTimer * 0.3) * 0.05;
-      } else {
-        this.spriteMesh.position.y = Math.abs(Math.sin(this.animTimer)) * (this.isBoss ? 0.08 : 0.12);
-        this.spriteMesh.rotation.z = Math.sin(this.animTimer) * 0.06;
+    if (this.freezeAuraMesh) {
+      this.freezeAuraMesh.visible = this.isFrozen;
+      if (this.isFrozen) {
+        this.freezeAuraMesh.rotation.z += dt * 0.75;
       }
     }
 
-    // Hit flash handling
+    if (!this.isFrozen) {
+      this.animTimer += dt * (this.speed > 5 ? 14 : 9);
+
+      if (this.isBoss && this.bossTextures) {
+        this.updateBossAnimation(dt);
+      } else if (this.monsterTextures) {
+        this.updateMonsterAnimation(dt);
+      } else {
+        // Walking / Bobbing animation
+        if (this.isImmortal) {
+          this.spriteMesh.position.y = Math.sin(this.animTimer * 0.4) * 0.35 + 0.15;
+          this.spriteMesh.rotation.z = Math.sin(this.animTimer * 0.25) * 0.04;
+        } else if (this.type === 'ghost') {
+          this.spriteMesh.position.y = Math.sin(this.animTimer * 0.5) * 0.25;
+          this.spriteMesh.rotation.z = Math.sin(this.animTimer * 0.3) * 0.05;
+        } else {
+          this.spriteMesh.position.y = Math.abs(Math.sin(this.animTimer)) * (this.isBoss ? 0.08 : 0.12);
+          this.spriteMesh.rotation.z = Math.sin(this.animTimer) * 0.06;
+        }
+      }
+    }
+
+    // Hit flash / freeze color handling
     if (this.flashTimer > 0) {
       this.spriteMaterial.color.setHex(this.isImmortal ? 0xc084fc : 0xff3333);
+    } else if (this.isFrozen) {
+      this.spriteMaterial.color.setHex(0x67e8f9); // Icy cyan frost tint
     } else {
       this.spriteMaterial.color.setHex(this.isImmortal ? 0x380949 : 0xffffff);
     }
@@ -596,6 +684,10 @@ export class Enemy {
     this.bleedStacks = [];
     scene.remove(this.mesh);
     this.spriteMaterial.dispose();
+    if (this.freezeAuraMesh) {
+      this.freezeAuraMesh.geometry.dispose();
+      this.freezeAuraMaterial?.dispose();
+    }
     if (this.customDepthMaterial) {
       this.customDepthMaterial.dispose();
     }
