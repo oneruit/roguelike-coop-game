@@ -94,10 +94,6 @@ export class HUD {
   private plasmaCreditsText: HTMLElement | null;
   private diffTierLabel: HTMLElement | null;
   private diffBarFill: HTMLElement | null;
-  private teleporterEventContainer: HTMLElement | null;
-  private teleporterStatusText: HTMLElement | null;
-  private teleporterZoneText: HTMLElement | null;
-  private teleporterBarFill: HTMLElement | null;
   private interactionPrompt: HTMLElement | null;
   private interactionPromptText: HTMLElement | null;
   private itemInventoryTray: HTMLElement | null;
@@ -376,10 +372,6 @@ export class HUD {
     this.plasmaCreditsText = document.getElementById('plasma-credits');
     this.diffTierLabel = document.getElementById('diff-tier-label');
     this.diffBarFill = document.getElementById('diff-bar-fill');
-    this.teleporterEventContainer = document.getElementById('teleporter-event-container');
-    this.teleporterStatusText = document.getElementById('teleporter-status-text');
-    this.teleporterZoneText = document.getElementById('teleporter-zone-text');
-    this.teleporterBarFill = document.getElementById('teleporter-bar-fill');
     this.interactionPrompt = document.getElementById('interaction-prompt');
     this.interactionPromptText = document.getElementById('interaction-prompt-text');
     this.itemInventoryTray = document.getElementById('item-inventory-tray');
@@ -3391,46 +3383,6 @@ export class HUD {
     }
   }
 
-  public updateTeleporterHUD(isCharging: boolean, progress: number, isPlayerInside: boolean, isWarpReady: boolean) {
-    if (!this.teleporterEventContainer) return;
-
-    if (!isCharging && !isWarpReady) {
-      this.teleporterEventContainer.classList.add('hidden');
-      return;
-    }
-
-    this.teleporterEventContainer.classList.remove('hidden');
-
-    if (isWarpReady) {
-      if (this.teleporterStatusText) this.teleporterStatusText.innerText = 'РАЗЛОМ СТАБИЛИЗИРОВАН!';
-      if (this.teleporterZoneText) {
-        this.teleporterZoneText.innerText = 'ГОТОВ К ПЕРЕХОДУ [E]';
-        this.teleporterZoneText.style.color = '#10b981';
-      }
-      if (this.teleporterBarFill) {
-        this.teleporterBarFill.style.width = '100%';
-        this.teleporterBarFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
-      }
-      return;
-    }
-
-    const pct = Math.min(100, Math.max(0, Math.round(progress * 100)));
-    if (this.teleporterStatusText) this.teleporterStatusText.innerText = `ЗАРЯДКА: ${pct}%`;
-    if (this.teleporterBarFill) {
-      this.teleporterBarFill.style.width = `${pct}%`;
-      this.teleporterBarFill.style.background = 'linear-gradient(90deg, #4f46e5, #818cf8)';
-    }
-
-    if (this.teleporterZoneText) {
-      if (isPlayerInside) {
-        this.teleporterZoneText.innerText = 'В ЗОНЕ';
-        this.teleporterZoneText.style.color = '#10b981';
-      } else {
-        this.teleporterZoneText.innerText = 'ВНЕ ЗОНЫ (ПАУЗА)';
-        this.teleporterZoneText.style.color = '#f43f5e';
-      }
-    }
-  }
 
   public showInteractionPrompt(text: string) {
     if (this.interactionPrompt && this.interactionPromptText) {

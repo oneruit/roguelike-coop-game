@@ -464,7 +464,6 @@ export class SessionDirector {
       this.player.recalculateStats();
       this.enemyManager.currentStage = 1;
       this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
-      this.hud.updateTeleporterHUD(false, 0, false, false);
 
       this.mapManager.setSeed(this.currentSeed);
       this.mapManager.clear();
