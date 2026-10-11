@@ -795,10 +795,7 @@ export class GameNetworkCoordinator {
         break;
       case 'xp_1000':
         if (typeof value === 'number' && value > 0) {
-          const lvls = this.player.gainXp(value);
-          if (lvls > 0) {
-            this.onLevelUpTrigger?.(lvls);
-          }
+          this.player.gainXp(value);
         }
         break;
       case 'all_weapons':
