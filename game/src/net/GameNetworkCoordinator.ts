@@ -807,6 +807,11 @@ export class GameNetworkCoordinator {
       case 'vacuum':
         this.dropManager.vacuumAll();
         break;
+      case 'credits_500':
+        if (typeof value === 'number' && value > 0) {
+          this.player.credits += value;
+        }
+        break;
     }
   }
 

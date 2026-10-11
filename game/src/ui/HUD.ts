@@ -141,7 +141,9 @@ export class HUD {
     | 'quests'
     | 'battle_pass'
     | 'inventory'
+    | 'merchant'
   )[] = [];
+  public onMerchantToggle?: (isOpen: boolean) => void;
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
   public onTimeOfDayChanged?: (mode: 'day' | 'night') => void;
@@ -421,9 +423,9 @@ export class HUD {
 
     // Merchant Modal
     this.merchantModal = document.getElementById('merchant-modal');
-    this.merchantCloseBtn = document.getElementById('merchant-close-btn');
+    this.merchantCloseBtn = document.getElementById('btn-close-merchant') || document.getElementById('merchant-close-btn');
     this.merchantTimerBadge = document.getElementById('merchant-timer-badge');
-    this.merchantCreditsVal = document.getElementById('merchant-credits-val');
+    this.merchantCreditsVal = document.getElementById('merchant-player-credits') || document.getElementById('merchant-credits-val');
     this.merchantItemsContainer = document.getElementById('merchant-items-container');
 
     this.merchantCloseBtn?.addEventListener('click', () => this.hideMerchant());
@@ -1178,6 +1180,7 @@ export class HUD {
     this.hideCharacterSelect();
     this.hideQuestsModal();
     this.hideBattlePassModal();
+    this.hideMerchant();
     this.updateMainMenuQuests();
     this.updateMainMenuBattlePass();
     HUD.applyRandomMenuBackground();
@@ -3235,6 +3238,11 @@ export class HUD {
         return 'handled';
       }
 
+      case 'merchant': {
+        this.hideMerchant();
+        return 'handled';
+      }
+
       case 'pause': {
         this.hidePause();
         return 'resume';
@@ -3993,10 +4001,18 @@ export class HUD {
 
   public showMerchant(merchant: MerchantManager, player: Player): void {
     if (!this.merchantModal) return;
+    this.cachedPlayer = player;
     this.isMerchantActive = true;
     this.merchantModal.classList.remove('hidden');
+    if (!this.menuStack.includes('merchant')) {
+      this.menuStack.push('merchant');
+    }
+    if (!merchant.stock || merchant.stock.length === 0) {
+      merchant.stock = merchant.generateStock();
+    }
     this.updateMerchantTimer(merchant);
     this.renderMerchantItems(merchant, player);
+    this.onMerchantToggle?.(true);
 
     if (this.merchantKeyHandler) {
       window.removeEventListener('keydown', this.merchantKeyHandler);
@@ -4004,7 +4020,7 @@ export class HUD {
     this.merchantKeyHandler = (e: KeyboardEvent) => {
       const active = document.activeElement;
       if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
-      if (e.code === 'Escape' || e.code === 'KeyE') {
+      if (e.code === 'KeyE') {
         e.preventDefault();
         this.hideMerchant();
       }
@@ -4019,6 +4035,11 @@ export class HUD {
     }
     this.isMerchantActive = false;
     this.merchantModal?.classList.add('hidden');
+    const idx = this.menuStack.lastIndexOf('merchant');
+    if (idx !== -1) {
+      this.menuStack.splice(idx, 1);
+    }
+    this.onMerchantToggle?.(false);
   }
 
   public updateMerchantTimer(merchant: MerchantManager): void {
@@ -4032,15 +4053,17 @@ export class HUD {
   }
 
   private renderMerchantItems(merchant: MerchantManager, player: Player): void {
-    if (!this.merchantItemsContainer || !this.merchantCreditsVal) return;
-    this.merchantCreditsVal.innerText = `${player.credits} ⬡`;
+    if (this.merchantCreditsVal) {
+      this.merchantCreditsVal.innerText = `⬡ ${player.credits}`;
+    }
+    if (!this.merchantItemsContainer) return;
     this.merchantItemsContainer.innerHTML = '';
 
     merchant.stock.forEach((item) => {
       const isSold = merchant.isSold(item, player);
       const canAfford = player.credits >= item.price;
       const card = document.createElement('div');
-      card.className = `merchant-item-card rarity-${item.rarity}`;
+      card.className = `merchant-item-card rarity-${item.rarity}${isSold ? ' is-sold' : ''}`;
 
       card.innerHTML = `
         <div class="merchant-item-top">
@@ -4056,7 +4079,7 @@ export class HUD {
           ${
             isSold
               ? `<span class="merchant-badge-sold">SOLD</span>`
-              : `<button class="merchant-buy-btn" ${canAfford ? '' : 'disabled'}>${canAfford ? `КУПИТЬ (${item.price} ⬡)` : 'НЕДОСТАТОЧНО'}</button>`
+              : `<button class="merchant-buy-btn" type="button" ${canAfford ? '' : 'disabled'}>${canAfford ? `КУПИТЬ (${item.price} ⬡)` : `НЕДОСТАТОЧНО (${item.price} ⬡)`}</button>`
           }
         </div>
       `;
@@ -4067,9 +4090,18 @@ export class HUD {
           buyBtn.addEventListener('click', () => {
             const res = merchant.buyItem(item, player);
             if (res.success) {
-              SoundManager.playShoot();
+              SoundManager.playItemPickup();
               this.renderMerchantItems(merchant, player);
               this.updatePassivesBar(player);
+              if (this.plasmaCreditsText) {
+                this.plasmaCreditsText.innerText = `⬡ ${player.credits}`;
+              }
+              this.triggerAltarNotification(
+                `КУПЛЕНО: ${item.name}`,
+                item.description,
+                item.icon,
+                item.color
+              );
             }
           });
         }
@@ -4514,6 +4546,9 @@ export class HUD {
       newPoints: number;
     }
   ) {
+    this.hideMerchant();
+    this.hideInventory();
+
     if (isVictory) {
       SoundManager.playVictory();
       this.gameOverCard.classList.add('victory-mode');
