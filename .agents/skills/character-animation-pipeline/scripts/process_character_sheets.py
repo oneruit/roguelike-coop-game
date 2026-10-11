@@ -82,6 +82,53 @@ def detect_and_clean_background(img_arr, bg_mode='auto'):
     return out
 
 
+def find_row_splits(rgba_arr, rows=4):
+    """Finds natural zero/minimal alpha boundaries between rows."""
+    h = rgba_arr.shape[0]
+    row_h = h / float(rows)
+    alpha = rgba_arr[:, :, 3]
+    row_sums = (alpha > 20).sum(axis=1)
+
+    splits = [0]
+    for r in range(1, rows):
+        expected_y = int(round(r * row_h))
+        radius = int(round(0.18 * row_h))
+        win_y0 = max(splits[-1] + 20, expected_y - radius)
+        win_y1 = min(h - 20, expected_y + radius)
+        win = row_sums[win_y0:win_y1]
+        zero_indices = np.where(win == 0)[0]
+        if len(zero_indices) > 0:
+            best_y = win_y0 + zero_indices[len(zero_indices) // 2]
+        else:
+            best_y = win_y0 + int(np.argmin(win))
+        splits.append(best_y)
+    splits.append(h)
+    return splits
+
+
+def find_column_splits(row_rgba, cols=6):
+    """Finds natural zero/minimal alpha boundaries between columns in a row."""
+    w = row_rgba.shape[1]
+    col_w = w / float(cols)
+    col_sums = (row_rgba[:, :, 3] > 20).sum(axis=0)
+
+    splits = [0]
+    for c in range(1, cols):
+        expected_x = int(round(c * col_w))
+        radius = int(round(0.25 * col_w))
+        win_x0 = max(splits[-1] + 20, expected_x - radius)
+        win_x1 = min(w - 20, expected_x + radius)
+        win = col_sums[win_x0:win_x1]
+        zero_indices = np.where(win == 0)[0]
+        if len(zero_indices) > 0:
+            best_x = win_x0 + zero_indices[len(zero_indices) // 2]
+        else:
+            best_x = win_x0 + int(np.argmin(win))
+        splits.append(best_x)
+    splits.append(w)
+    return splits
+
+
 def align_and_pack_sheet(
     rgba_arr,
     cell_size=128,
@@ -101,20 +148,21 @@ def align_and_pack_sheet(
     to eliminate AI direction drift and turning artifacts in lateral rows.
     """
     h, w = rgba_arr.shape[:2]
-    row_h = h / float(rows)
-    col_w = w / float(cols)
+    row_splits = find_row_splits(rgba_arr, rows=rows)
 
     row_baselines = []
     char_heights = []
+    col_splits_by_row = []
 
     for r in range(rows):
-        y0 = int(round(r * row_h))
-        y1 = int(round((r + 1) * row_h))
-        feet_in_row = []
+        y0, y1 = row_splits[r], row_splits[r + 1]
+        row_rgba = rgba_arr[y0:y1, :]
+        c_splits = find_column_splits(row_rgba, cols=cols)
+        col_splits_by_row.append(c_splits)
 
+        feet_in_row = []
         for c in range(cols):
-            x0 = int(round(c * col_w))
-            x1 = int(round((c + 1) * col_w))
+            x0, x1 = c_splits[c], c_splits[c + 1]
             cell_a = rgba_arr[y0:y1, x0:x1, 3]
             ys, xs = np.where(cell_a > 25)
             if len(ys) > 0:
@@ -123,7 +171,7 @@ def align_and_pack_sheet(
 
         row_baselines.append(np.median(feet_in_row) if len(feet_in_row) > 0 else (y1 - 3))
 
-    ref_h = np.median(char_heights) if len(char_heights) > 0 else (row_h * 0.8)
+    ref_h = np.median(char_heights) if len(char_heights) > 0 else (h / float(rows) * 0.8)
     # Scale to target height and strictly cap at max_char_h (96px)
     scale = min(target_char_h / float(ref_h), max_char_h / float(ref_h)) if ref_h > 0 else 1.0
 
@@ -140,13 +188,12 @@ def align_and_pack_sheet(
             src_r = 1
             flip_horizontal = True
 
-        y0 = int(round(src_r * row_h))
-        y1 = int(round((src_r + 1) * row_h))
+        y0, y1 = row_splits[src_r], row_splits[src_r + 1]
+        c_splits = col_splits_by_row[src_r]
         ground_y = row_baselines[src_r]
 
         for c in range(cols):
-            x0 = int(round(c * col_w))
-            x1 = int(round((c + 1) * col_w))
+            x0, x1 = c_splits[c], c_splits[c + 1]
             cell_raw = rgba_arr[y0:y1, x0:x1]
 
             ys, xs = np.where(cell_raw[:, :, 3] > 20)
@@ -189,6 +236,30 @@ def align_and_pack_sheet(
             mask = sp_scaled[:, :, 3] > 0
             target_slice = out_sheet[out_y0:out_y0 + bh, out_x0:out_x0 + bw]
             target_slice[mask] = sp_scaled[mask]
+
+    # Clean small floating noise specks (< 35px) in each cell
+    for r in range(rows):
+        for c in range(cols):
+            cell = out_sheet[r * cell_size:(r + 1) * cell_size, c * cell_size:(c + 1) * cell_size]
+            alpha = cell[:, :, 3]
+            visited = np.zeros(alpha.shape, dtype=bool)
+            for cy in range(cell_size):
+                for cx in range(cell_size):
+                    if alpha[cy, cx] > 20 and not visited[cy, cx]:
+                        component = []
+                        queue = [(cy, cx)]
+                        visited[cy, cx] = True
+                        while queue:
+                            qy, qx = queue.pop()
+                            component.append((qy, qx))
+                            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                                ny, nx = qy + dy, qx + dx
+                                if 0 <= ny < cell_size and 0 <= nx < cell_size and alpha[ny, nx] > 20 and not visited[ny, nx]:
+                                    visited[ny, nx] = True
+                                    queue.append((ny, nx))
+                        if len(component) < 35:
+                            for qy, qx in component:
+                                cell[qy, qx, 3] = 0
 
     return Image.fromarray(out_sheet)
 
