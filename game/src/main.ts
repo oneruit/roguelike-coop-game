@@ -207,6 +207,21 @@ class Game {
         }
       }
     };
+    this.hud.onMerchantToggle = (isOpen) => {
+      const isCoop = this.net.role !== 'solo' || this.player.isCoop;
+      if (isCoop) return;
+
+      if (isOpen) {
+        if (this.sessionDirector.gameState === GameState.PLAYING) {
+          this.sessionDirector.gameState = GameState.PAUSED;
+        }
+      } else {
+        if (this.sessionDirector.gameState === GameState.PAUSED) {
+          this.sessionDirector.gameState = GameState.PLAYING;
+          this.sessionDirector.lastTime = performance.now();
+        }
+      }
+    };
     const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
     this.engine.setShadowQuality(savedShadowQuality);
 
