@@ -509,7 +509,10 @@ export class SessionDirector {
 
         // Bonus XP cache from chest
         const bonusXp = 20 + this.biomeManager.stageNumber * 10;
-        this.player.gainXp(bonusXp);
+        const chestLevels = this.player.gainXp(bonusXp);
+        if (chestLevels > 0) {
+          this.pendingLevelUps += chestLevels;
+        }
 
         // Protective safety shockwave: knock back nearby monsters
         for (const enemy of this.enemyManager.enemies) {
@@ -530,6 +533,14 @@ export class SessionDirector {
           ProgressionManager.getInstance().recordResourceGather(1);
           this.player.addRiftItem(chosenItem);
           this.hud.triggerAltarNotification(chosenItem.name, chosenItem.description, chosenItem.icon, chosenItem.color);
+
+          if (this.pendingLevelUps > 0) {
+            setTimeout(() => {
+              if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+                this.triggerLevelUp();
+              }
+            }, 100);
+          }
 
           if (this.net.role === 'client') {
             this.net.notifyChestOpened(chestData.chest.id, chosenItem.id);
@@ -634,6 +645,14 @@ export class SessionDirector {
         biomeName: nextBiome.name
       });
     }
+
+    if (this.pendingLevelUps > 0) {
+      setTimeout(() => {
+        if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+          this.triggerLevelUp();
+        }
+      }, 500);
+    }
   }
 
   public applyStageTransition(stageNumber: number, biomeName?: string): void {
@@ -682,6 +701,14 @@ export class SessionDirector {
 
     SoundManager.playTeleporterComplete();
     this.hud.triggerAltarNotification(`ЭТАП ${stageNumber}`, biomeName || nextBiome.name, '🌀', '#38bdf8');
+
+    if (this.pendingLevelUps > 0) {
+      setTimeout(() => {
+        if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+          this.triggerLevelUp();
+        }
+      }, 500);
+    }
   }
 
   public triggerGameOver(isVictory: boolean = false): void {
