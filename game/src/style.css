@@ -2072,13 +2072,8 @@ body, html {
   transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
 }
 
-.bp-m-lvl1 {
-  left: 24.5%;
-  top: 4%;
-}
-
 .bp-m-lvl10 {
-  left: 60.5%;
+  left: 24.5%;
   top: 4%;
 }
 

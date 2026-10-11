@@ -1268,10 +1268,8 @@ export class HUD {
     }
 
     // 2. Milestones reached state
-    const m1 = document.querySelector('.bp-milestone.bp-m-lvl1');
     const m10 = document.querySelector('.bp-milestone.bp-m-lvl10');
     const m15 = document.querySelector('.bp-milestone.bp-m-lvl15');
-    if (m1) m1.classList.toggle('reached', curLevel >= 1);
     if (m10) m10.classList.toggle('reached', curLevel >= 10);
     if (m15) m15.classList.toggle('reached', curLevel >= 15);
 
