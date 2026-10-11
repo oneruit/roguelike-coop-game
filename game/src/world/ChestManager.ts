@@ -290,11 +290,15 @@ export class ChestManager {
   /**
    * Opens the chest, awards item and returns dropped item.
    */
-  public openChest(chest: ChestInstance, stageNumber: number = 1): [RiftItemDef, RiftItemDef] {
+  public openChest(
+    chest: ChestInstance,
+    stageNumber: number = 1,
+    isItemMaxed?: (id: string) => boolean
+  ): [RiftItemDef, RiftItemDef] {
     chest.isOpened = true;
     chest.hologramMesh.visible = false;
     chest.glowMesh.visible = false;
-    const pair = rollChestDropPair(stageNumber, Math.random, this.chronosDroppedInCurrentBiome);
+    const pair = rollChestDropPair(stageNumber, Math.random, this.chronosDroppedInCurrentBiome, isItemMaxed);
     if (pair[0].id === 'chronos_phylactery' || pair[1].id === 'chronos_phylactery') {
       this.chronosDroppedInCurrentBiome = true;
     }

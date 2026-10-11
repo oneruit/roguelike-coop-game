@@ -361,6 +361,13 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     basePickupRadius: 3.5,
     maxArmorReduction: 0.75,
     goldGemChanceNormal: 0.01,
-    goldGemChanceBoss: 0.40
+    goldGemChanceBoss: 0.40,
+    merchantSpawnInterval: 180,
+    merchantStayDuration: 120,
+    merchantPriceCommon: 40,
+    merchantPriceUncommon: 80,
+    merchantPriceRare: 150,
+    merchantPriceLegendary: 300,
+    merchantPriceBoss: 500
   }
 };

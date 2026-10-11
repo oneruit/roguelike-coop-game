@@ -283,16 +283,22 @@ export function getItemsByGrade(grade: WeaponGrade): RiftItemId[] {
 
 /**
  * Rolls an item drop based on stage/biome probabilities.
+ * Filters out items whose parameters are already maxed out for the player.
  */
 export function rollRiftItemByStage(
   stageNumber: number,
   rng: () => number = Math.random,
-  excludeChronos: boolean = false
+  excludeChronos: boolean = false,
+  isItemMaxed?: (id: string) => boolean
 ): RiftItemDef {
   const grade = rollWeaponGrade(stageNumber, rng);
   let items = getItemsByGrade(grade);
   if (excludeChronos && grade === 'legendary') {
     items = items.filter(id => id !== 'chronos_phylactery');
+  }
+  if (isItemMaxed) {
+    const unmaxed = items.filter(id => !isItemMaxed(id));
+    if (unmaxed.length > 0) items = unmaxed;
   }
   const id = items[Math.floor(rng() * items.length)];
   return RIFT_ITEMS[id];
@@ -300,28 +306,34 @@ export function rollRiftItemByStage(
 
 /**
  * Rolls two distinct item drops from a chest (no duplicates allowed).
+ * Filters out items whose parameters are already maxed out for the player.
  */
 export function rollChestDropPair(
   stageNumber: number,
   rng: () => number = Math.random,
-  excludeChronos: boolean = false
+  excludeChronos: boolean = false,
+  isItemMaxed?: (id: string) => boolean
 ): [RiftItemDef, RiftItemDef] {
-  const item1 = rollRiftItemByStage(stageNumber, rng, excludeChronos);
+  const item1 = rollRiftItemByStage(stageNumber, rng, excludeChronos, isItemMaxed);
   const excludeForSecond = excludeChronos || item1.id === 'chronos_phylactery';
-  let item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond);
+  let item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond, isItemMaxed);
   let attempts = 0;
   while (item2.id === item1.id && attempts < 25) {
-    item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond);
+    item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond, isItemMaxed);
     attempts++;
   }
   // Guarantee non-duplicate options
   if (item2.id === item1.id) {
-    const candidates = [
+    let candidates = [
       ...COMMON_ITEMS,
       ...UNCOMMON_ITEMS,
       ...RARE_ITEMS,
       ...LEGENDARY_ITEMS
     ].filter(id => id !== item1.id && (!excludeForSecond || id !== 'chronos_phylactery'));
+    if (isItemMaxed) {
+      const unmaxed = candidates.filter(id => !isItemMaxed(id));
+      if (unmaxed.length > 0) candidates = unmaxed;
+    }
     if (candidates.length > 0) {
       const fallbackId = candidates[Math.floor(rng() * candidates.length)];
       item2 = RIFT_ITEMS[fallbackId];

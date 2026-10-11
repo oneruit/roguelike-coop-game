@@ -35,6 +35,25 @@ export function renderGlobal(
           ${renderStatControl(state, 'global', '', 'maxArmorReduction', 'Макс. снижение урона (Cap)', g.maxArmorReduction, 0.3, 0.95, 0.05)}
         </div>
       </div>
+
+      <div>
+        <h4 style="margin-bottom: 14px; color: #f59e0b; font-size:14px; font-weight:700;">Торговец Разлома (Тайминг)</h4>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${renderStatControl(state, 'global', '', 'merchantSpawnInterval', 'Интервал появления (сек)', g.merchantSpawnInterval ?? 180, 30, 600, 10)}
+          ${renderStatControl(state, 'global', '', 'merchantStayDuration', 'Время визита (сек)', g.merchantStayDuration ?? 120, 20, 300, 10)}
+        </div>
+      </div>
+
+      <div>
+        <h4 style="margin-bottom: 14px; color: #f59e0b; font-size:14px; font-weight:700;">Торговец (Цены за предметы ⬡)</h4>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${renderStatControl(state, 'global', '', 'merchantPriceCommon', 'Обычный (Common) ⬡', g.merchantPriceCommon ?? 40, 5, 500, 5)}
+          ${renderStatControl(state, 'global', '', 'merchantPriceUncommon', 'Необычный (Uncommon) ⬡', g.merchantPriceUncommon ?? 80, 10, 1000, 10)}
+          ${renderStatControl(state, 'global', '', 'merchantPriceRare', 'Редкий (Rare) ⬡', g.merchantPriceRare ?? 150, 20, 2000, 10)}
+          ${renderStatControl(state, 'global', '', 'merchantPriceLegendary', 'Легендарный (Legendary) ⬡', g.merchantPriceLegendary ?? 300, 50, 5000, 25)}
+          ${renderStatControl(state, 'global', '', 'merchantPriceBoss', 'Босс (Boss) ⬡', g.merchantPriceBoss ?? 500, 100, 10000, 50)}
+        </div>
+      </div>
     </div>
   `;
 

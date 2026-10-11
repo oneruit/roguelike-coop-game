@@ -1,4 +1,4 @@
-import { selectWeaponUpgradeOptions, canRerollWeaponOptions, filterAndShuffleForReroll } from './selectWeaponUpgradeOptions';
+import { selectWeaponUpgradeOptions, filterAndShuffleForReroll } from './selectWeaponUpgradeOptions';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../combat/InvokerWeapons';
 import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../shared/InvokerSpells';
 import { canCharacterAcquireWeapon } from '../shared/UniqueCharacters';
@@ -23,6 +23,7 @@ import {
 import { TextureManager } from '../core/TextureManager';
 import { getAssetUrl } from '../utils/assetPath';
 import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../combat/WeaponGrades';
+import { MerchantManager } from '../world/MerchantManager';
 import type { Scene } from 'three';
 
 export interface UpgradeOption {
@@ -157,12 +158,23 @@ export class HUD {
   private levelUpTitle: HTMLElement;
   private levelUpRerollContainer: HTMLElement | null = null;
   private btnLevelUpReroll: HTMLButtonElement | null = null;
+  public rerollsRemaining: number = 2;
+  public nextLevelUpExcludedIds: Set<string> | null = null;
   private upgradeCardsContainer: HTMLElement;
 
   // Chest Item Selection Modal (Pick 1 of 2)
   private chestModal: HTMLElement;
   private chestItemCardsContainer: HTMLElement;
   private chestKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+
+  // Merchant Modal
+  private merchantModal: HTMLElement | null = null;
+  private merchantCloseBtn: HTMLElement | null = null;
+  private merchantTimerBadge: HTMLElement | null = null;
+  private merchantCreditsVal: HTMLElement | null = null;
+  private merchantItemsContainer: HTMLElement | null = null;
+  private isMerchantActive: boolean = false;
+  private merchantKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
   // Character Inventory Modal
   private inventoryModal: HTMLElement;
@@ -414,6 +426,17 @@ export class HUD {
     this.btnOpenInventory?.addEventListener('click', () => {
       if (this.cachedPlayer) this.toggleInventory(this.cachedPlayer);
     });
+
+    // Merchant Modal
+    this.merchantModal = document.getElementById('merchant-modal');
+    this.merchantCloseBtn = document.getElementById('merchant-close-btn');
+    this.merchantTimerBadge = document.getElementById('merchant-timer-badge');
+    this.merchantCreditsVal = document.getElementById('merchant-credits-val');
+    this.merchantItemsContainer = document.getElementById('merchant-items-container');
+
+    this.merchantCloseBtn?.addEventListener('click', () => this.hideMerchant());
+    const merchantBackdrop = this.merchantModal?.querySelector('.modal-backdrop');
+    merchantBackdrop?.addEventListener('click', () => this.hideMerchant());
 
     this.gameOverModal = document.getElementById('game-over-modal')!;
     this.gameOverCard = document.getElementById('game-over-card')!;
@@ -3696,9 +3719,17 @@ export class HUD {
     }
   }
 
+  public resetLevelUpState(): void {
+    this.rerollsRemaining = 2;
+    this.nextLevelUpExcludedIds = null;
+  }
+
   public showLevelUp(player: Player, onSelect: () => void) {
+    const excludedIds = this.nextLevelUpExcludedIds ?? undefined;
+    this.nextLevelUpExcludedIds = null;
+
     if (this.isAutoLevelUp) {
-      const weaponOptions = this.generateWeaponOptions(player);
+      const weaponOptions = this.generateWeaponOptions(player, excludedIds);
       if (weaponOptions.length > 0) {
         const chosen = this.selectAutoLevelUpOption(weaponOptions, player);
         chosen.apply();
@@ -3719,7 +3750,7 @@ export class HUD {
     SoundManager.playLevelUp();
     this.levelUpModal.classList.remove('hidden');
 
-    const weaponOptions = this.generateWeaponOptions(player);
+    const weaponOptions = this.generateWeaponOptions(player, excludedIds);
 
     if (weaponOptions.length > 0) {
       this.renderWeaponStep(player, weaponOptions, () => {
@@ -3749,55 +3780,102 @@ export class HUD {
   }
 
   private selectAutoLevelUpOption(options: UpgradeOption[], player: Player): UpgradeOption {
-    // 1. Graded/awakened weapons below their cap -> upgrade them to max
-    const awakenedUpgrades = options.filter(opt => {
-      if (!opt.id.startsWith('upgrade_')) return false;
-      const weaponId = opt.id.replace('upgrade_', '');
-      const weapon = player.weapons.find(w => w.id === weaponId);
-      if (!weapon) return false;
-      const g = weapon.awakenedGrade ?? 0;
-      return g > 0 && weapon.level < player.getAwakenedCap(g);
-    });
-    if (awakenedUpgrades.length > 0) {
-      return awakenedUpgrades[0];
+    // Graded/awakened weapons (awakenedGrade >= 1)
+    const gradedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 1);
+    const numGraded = gradedWeapons.length;
+
+    // STAGE 4: All 4 weapons have grade -> randomly upgrade all 4 up to level 12
+    if (numGraded >= 4) {
+      const weaponsUnder12 = gradedWeapons.filter(w => w.level < 12);
+      if (weaponsUnder12.length > 0) {
+        const eligibleOptions = options.filter(opt =>
+          opt.id.startsWith('upgrade_') &&
+          weaponsUnder12.some(w => opt.id === `upgrade_${w.id}`)
+        );
+        if (eligibleOptions.length > 0) {
+          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
+        }
+      }
+      // If all 4 are level 12: Grade III awakening or stat elixirs
+      const awaken3 = options.filter(opt => opt.id.startsWith('awaken3_'));
+      if (awaken3.length > 0) return awaken3[Math.floor(Math.random() * awaken3.length)];
+      const dmgOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
+      if (dmgOpt) return dmgOpt;
+      const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
+      if (hpOpt) return hpOpt;
     }
 
-    // 2. Awakening grades (Grade II or Grade III) when at cap or ready
-    const awakenOptions = options.filter(opt =>
-      opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_')
-    );
-    if (awakenOptions.length > 0) {
-      return awakenOptions[0];
+    // STAGE 3: 3 weapons have grade
+    if (numGraded === 3) {
+      const weaponsUnder10 = gradedWeapons.filter(w => w.level < 10);
+      if (weaponsUnder10.length > 0) {
+        // Randomly upgrade all 3 up to level 10
+        const eligibleOptions = options.filter(opt =>
+          opt.id.startsWith('upgrade_') &&
+          weaponsUnder10.some(w => opt.id === `upgrade_${w.id}`)
+        );
+        if (eligibleOptions.length > 0) {
+          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
+        }
+      } else {
+        // When all 3 reach level 10: take grade for 4th weapon
+        const awaken4 = options.find(opt => opt.id.startsWith('awaken_'));
+        if (awaken4) return awaken4;
+      }
     }
 
-    // 3. Normal weapon upgrades (for weapons not yet at maxLevel)
-    const normalUpgrades = options.filter(opt => {
-      if (!opt.id.startsWith('upgrade_')) return false;
-      const weaponId = opt.id.replace('upgrade_', '');
-      const weapon = player.weapons.find(w => w.id === weaponId);
-      return weapon ? weapon.level < weapon.maxLevel : false;
-    });
-    if (normalUpgrades.length > 0) {
-      return normalUpgrades[0];
+    // STAGE 2: 2 weapons have grade
+    if (numGraded === 2) {
+      const weaponsUnder8 = gradedWeapons.filter(w => w.level < 8);
+      if (weaponsUnder8.length > 0) {
+        // Randomly upgrade weapons 1 and 2 up to level 8
+        const eligibleOptions = options.filter(opt =>
+          opt.id.startsWith('upgrade_') &&
+          weaponsUnder8.some(w => opt.id === `upgrade_${w.id}`)
+        );
+        if (eligibleOptions.length > 0) {
+          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
+        }
+      } else {
+        // When both weapons reach level 8: take grade for 3rd weapon
+        const awaken3 = options.find(opt => opt.id.startsWith('awaken_'));
+        if (awaken3) return awaken3;
+      }
     }
 
-    // 4. New weapons (to expand arsenal)
-    const newWeaponOptions = options.filter(opt => opt.id.startsWith('new_'));
-    if (newWeaponOptions.length > 0) {
-      return newWeaponOptions[0];
+    // STAGE 1: 0 or 1 weapon has grade
+    if (numGraded < 2) {
+      // Prioritize awaken when available
+      const awaken = options.find(opt => opt.id.startsWith('awaken_'));
+      if (awaken) return awaken;
+
+      // Randomly upgrade weapons toward level 6
+      const normalUpgrades = options.filter(opt => {
+        if (!opt.id.startsWith('upgrade_')) return false;
+        const weaponId = opt.id.replace('upgrade_', '');
+        const weapon = player.weapons.find(w => w.id === weaponId);
+        return weapon ? weapon.level < 6 : false;
+      });
+      if (normalUpgrades.length > 0) {
+        return normalUpgrades[Math.floor(Math.random() * normalUpgrades.length)];
+      }
     }
 
-    // 5. Damage elixir
+    // General Fallbacks
+    const anyAwaken = options.find(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_'));
+    if (anyAwaken) return anyAwaken;
+
+    const anyUpgrade = options.filter(opt => opt.id.startsWith('upgrade_'));
+    if (anyUpgrade.length > 0) return anyUpgrade[Math.floor(Math.random() * anyUpgrade.length)];
+
+    const anyNew = options.find(opt => opt.id.startsWith('new_'));
+    if (anyNew) return anyNew;
+
     const damageOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
-    if (damageOpt) {
-      return damageOpt;
-    }
+    if (damageOpt) return damageOpt;
 
-    // 6. HP / Fallback options
     const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
-    if (hpOpt) {
-      return hpOpt;
-    }
+    if (hpOpt) return hpOpt;
 
     return options[0];
   }
@@ -3808,7 +3886,7 @@ export class HUD {
     onChosen: () => void,
     isRerolled: boolean = false
   ) {
-    const canReroll = canRerollWeaponOptions(options);
+    const canReroll = this.rerollsRemaining > 0;
 
     if (this.levelUpStepIndicator) {
       this.levelUpStepIndicator.innerHTML = 'ПОВЫШЕНИЕ УРОВНЯ';
@@ -3823,6 +3901,9 @@ export class HUD {
     if (this.levelUpRerollContainer) {
       if (canReroll) {
         this.levelUpRerollContainer.classList.remove('hidden');
+        if (this.btnLevelUpReroll) {
+          this.btnLevelUpReroll.innerHTML = `🎲 <span class="btn-hotkey">[R]</span> Пропустить уровень (Рерол ${this.rerollsRemaining}/2)`;
+        }
       } else {
         this.levelUpRerollContainer.classList.add('hidden');
       }
@@ -3855,14 +3936,32 @@ export class HUD {
     };
 
     const handleReroll = () => {
-      if (chosen) return;
-      if (!canRerollWeaponOptions(options)) return;
+      if (chosen || this.rerollsRemaining <= 0) return;
+      chosen = true;
+      this.rerollsRemaining--;
       SoundManager.playReroll();
-      const currentIds = new Set(options.map(opt => opt.id));
-      const newOptions = this.generateWeaponOptions(player, currentIds);
-      if (newOptions.length > 0) {
-        this.renderWeaponStep(player, newOptions, onChosen, true);
+
+      // Skip current level-up choice and guarantee different weapons next level
+      const excluded = new Set<string>();
+      for (const opt of options) {
+        excluded.add(opt.id);
+        const wId = opt.id.replace(/^(upgrade_|new_|awaken_|awaken3_)/, '');
+        excluded.add('upgrade_' + wId);
+        excluded.add('new_' + wId);
+        excluded.add('awaken_' + wId);
+        excluded.add('awaken3_' + wId);
       }
+      this.nextLevelUpExcludedIds = excluded;
+
+      if (this.levelUpKeyHandler) {
+        window.removeEventListener('keydown', this.levelUpKeyHandler);
+        this.levelUpKeyHandler = null;
+      }
+      if (this.btnLevelUpReroll) {
+        this.btnLevelUpReroll.onclick = null;
+      }
+      this.hideLevelUp();
+      onChosen();
     };
 
     if (this.btnLevelUpReroll) {
@@ -3932,6 +4031,98 @@ export class HUD {
     }
     this.levelUpRerollContainer?.classList.add('hidden');
     this.levelUpModal.classList.add('hidden');
+  }
+
+  public isMerchantOpen(): boolean {
+    return this.isMerchantActive && !this.merchantModal?.classList.contains('hidden');
+  }
+
+  public showMerchant(merchant: MerchantManager, player: Player): void {
+    if (!this.merchantModal) return;
+    this.isMerchantActive = true;
+    this.merchantModal.classList.remove('hidden');
+    this.updateMerchantTimer(merchant);
+    this.renderMerchantItems(merchant, player);
+
+    if (this.merchantKeyHandler) {
+      window.removeEventListener('keydown', this.merchantKeyHandler);
+    }
+    this.merchantKeyHandler = (e: KeyboardEvent) => {
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+      if (e.code === 'Escape' || e.code === 'KeyE') {
+        e.preventDefault();
+        this.hideMerchant();
+      }
+    };
+    window.addEventListener('keydown', this.merchantKeyHandler);
+  }
+
+  public hideMerchant(): void {
+    if (this.merchantKeyHandler) {
+      window.removeEventListener('keydown', this.merchantKeyHandler);
+      this.merchantKeyHandler = null;
+    }
+    this.isMerchantActive = false;
+    this.merchantModal?.classList.add('hidden');
+  }
+
+  public updateMerchantTimer(merchant: MerchantManager): void {
+    if (!this.merchantTimerBadge || !this.isMerchantOpen()) return;
+    const minutes = Math.floor(Math.max(0, merchant.timer) / 60);
+    const seconds = Math.floor(Math.max(0, merchant.timer) % 60);
+    this.merchantTimerBadge.innerText = `Осталось: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    if (!merchant.isActive) {
+      this.hideMerchant();
+    }
+  }
+
+  private renderMerchantItems(merchant: MerchantManager, player: Player): void {
+    if (!this.merchantItemsContainer || !this.merchantCreditsVal) return;
+    this.merchantCreditsVal.innerText = `${player.credits} ⬡`;
+    this.merchantItemsContainer.innerHTML = '';
+
+    merchant.stock.forEach((item) => {
+      const isSold = merchant.isSold(item, player);
+      const canAfford = player.credits >= item.price;
+      const card = document.createElement('div');
+      card.className = `merchant-item-card rarity-${item.rarity}`;
+
+      card.innerHTML = `
+        <div class="merchant-item-top">
+          <div class="merchant-item-icon">${item.icon}</div>
+          <div class="merchant-item-meta">
+            <span class="merchant-item-name">${item.name}</span>
+            <span class="merchant-item-rarity" style="color: ${item.color}">${item.rarity.toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="merchant-item-desc">${item.description}</div>
+        <div class="merchant-item-bottom">
+          <div class="merchant-item-price">${item.price} ⬡</div>
+          ${
+            isSold
+              ? `<span class="merchant-badge-sold">SOLD</span>`
+              : `<button class="merchant-buy-btn" ${canAfford ? '' : 'disabled'}>${canAfford ? `КУПИТЬ (${item.price} ⬡)` : 'НЕДОСТАТОЧНО'}</button>`
+          }
+        </div>
+      `;
+
+      if (!isSold) {
+        const buyBtn = card.querySelector<HTMLButtonElement>('.merchant-buy-btn');
+        if (buyBtn && canAfford) {
+          buyBtn.addEventListener('click', () => {
+            const res = merchant.buyItem(item, player);
+            if (res.success) {
+              SoundManager.playShoot();
+              this.renderMerchantItems(merchant, player);
+              this.updatePassivesBar(player);
+            }
+          });
+        }
+      }
+
+      this.merchantItemsContainer!.appendChild(card);
+    });
   }
 
   /**
@@ -4128,14 +4319,14 @@ export class HUD {
           icon: '⭐',
           count: player.sheriffStarCount,
           title: 'Звезда Шерифа',
-          desc: `+${Math.round((player.passiveDamageMultiplier - 1) * 100)}% к урону всех оружий`
+          desc: `+${player.sheriffStarCount * 2}% к урону всех оружий (складывается, x${player.passiveDamageMultiplier.toFixed(2)})`
         },
         {
           id: 'stat_spurs',
           icon: '👢',
           count: player.spursCount,
           title: 'Шпоры Скорохода',
-          desc: `x${player.passiveSpeedMultiplier.toFixed(2)} к скорости бега`
+          desc: `+${player.spursCount * 3}% к скорости бега (x${player.passiveSpeedMultiplier.toFixed(2)}, макс. 2.5x)`
         },
         {
           id: 'stat_flask',
@@ -4149,28 +4340,28 @@ export class HUD {
           icon: '➰',
           count: player.lassoCount,
           title: 'Магнитное Лассо',
-          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита`
+          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита (макс. 25м)`
         },
         {
           id: 'stat_amulet',
           icon: '🧿',
           count: player.amuletCount,
           title: 'Охотничий Амулет',
-          desc: `+${(player.amuletCount * 1.5).toFixed(1)} HP/с (всего +${player.passiveHpRegen.toFixed(1)} HP/с)`
+          desc: `+${player.amuletCount * 1} HP/с регенерации (всего +${player.passiveHpRegen.toFixed(1)} HP/с, без лимита)`
         },
         {
           id: 'stat_vest',
           icon: '🦺',
           count: player.vestCount,
           title: 'Кожаный Жилет',
-          desc: `-${Math.round(player.passiveDamageReduction * 100)}% получаемого урона`
+          desc: `-${Math.round(player.passiveDamageReduction * 100)}% получаемого урона (макс. 70%)`
         },
         {
           id: 'stat_watch',
           icon: '⏱️',
           count: player.watchCount,
           title: 'Карманные Часы',
-          desc: `-${Math.min(70, player.watchCount * 1)}% к перезарядке (всего -${Math.round((1 - player.passiveCooldownMultiplier) * 100)}%)`
+          desc: `-${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к перезарядке (макс. 25%)`
         }
       ];
 
@@ -4193,7 +4384,7 @@ export class HUD {
       }
     }
 
-    // 3. Weapons with Upgrade History
+    // 3. Weapons with Upgrade History & Extended Stats
     if (this.inventoryWeaponsList) {
       if (player.weapons.length === 0) {
         this.inventoryWeaponsList.innerHTML = `<div class="inv-empty-hint">Оружие пока не получено</div>`;
@@ -4207,8 +4398,17 @@ export class HUD {
 
         this.inventoryWeaponsList.innerHTML = player.weapons.map(weapon => {
           const isStart = weapon.id === player.startingWeaponId;
+          const gradeLevel = (weapon.awakenedGrade ?? 0) + 1;
+          const gradeLabel = gradeLevel === 1 ? 'ГРЕЙД I' : gradeLevel === 2 ? 'ГРЕЙД II' : 'ГРЕЙД III';
+          const badgeClass = `badge-grade${Math.min(3, gradeLevel)}`;
+
           const historyHtml = (weapon.upgradeHistory || []).map((grade, idx) => `
             <span class="inv-grade-chip grade-${grade}">#${idx + 1} ${gradeNames[grade] || grade}</span>
+          `).join('');
+
+          const stats = this.getWeaponDetailedInventoryStats(weapon);
+          const statChipsHtml = stats.map(s => `
+            <span class="inv-weapon-stat-chip">${s.label}: <strong>${s.value}</strong></span>
           `).join('');
 
           return `
@@ -4218,13 +4418,12 @@ export class HUD {
                 <div class="inv-weapon-title-box">
                   <div class="inv-weapon-name-row">
                     <span class="inv-weapon-name">${weapon.name}</span>
+                    <span class="inv-weapon-grade-badge ${badgeClass}">${gradeLabel}</span>
                     ${isStart ? '<span class="inv-tag-start">НАЧАЛЬНОЕ</span>' : ''}
                     <span class="inv-tag-lvl">Ур. ${weapon.level}/${weapon.maxLevel}</span>
                   </div>
-                  <div class="inv-weapon-stat-badges">
-                    <span>Урон: <strong>${Math.round(weapon.damage)}</strong></span>
-                    <span>КД: <strong>${weapon.effectiveCooldown.toFixed(2)}с</strong></span>
-                    <span>Бонус улучшений: <strong>+${Math.round(weapon.bonusDamage * 100)}%</strong></span>
+                  <div class="inv-weapon-stat-badges" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+                    ${statChipsHtml}
                   </div>
                 </div>
               </div>
@@ -4288,6 +4487,60 @@ export class HUD {
         }).join('');
       }
     }
+  }
+
+  private getWeaponDetailedInventoryStats(weapon: Weapon): { label: string; value: string }[] {
+    const dps = Math.round(weapon.damage / Math.max(0.08, weapon.effectiveCooldown));
+    const stats: { label: string; value: string }[] = [
+      { label: 'Урон', value: `${Math.round(weapon.damage)}` },
+      { label: 'КД', value: `${weapon.effectiveCooldown.toFixed(2)}с` },
+      { label: 'DPS', value: `${dps}` }
+    ];
+
+    if (weapon.bonusDamage > 0) {
+      stats.push({ label: 'Бонус урона', value: `+${Math.round(weapon.bonusDamage * 100)}%` });
+    }
+
+    const anyW = weapon as any;
+    if (typeof anyW.radius === 'number') {
+      stats.push({ label: 'Радиус', value: `${anyW.radius}м` });
+    } else if (typeof anyW.slashRadius === 'number') {
+      stats.push({ label: 'Радиус', value: `${anyW.slashRadius}м` });
+    } else if (typeof anyW.orbitRadius === 'number') {
+      stats.push({ label: 'Радиус орбиты', value: `${anyW.orbitRadius}м` });
+    } else if (typeof anyW.explosionRadius === 'number') {
+      stats.push({ label: 'Радиус взрыва', value: `${anyW.explosionRadius}м` });
+    } else if (typeof anyW.strikeRadius === 'number') {
+      stats.push({ label: 'Радиус удара', value: `${anyW.strikeRadius}м` });
+    }
+
+    if (typeof anyW.projectileCount === 'number') {
+      stats.push({ label: 'Снаряды', value: `${anyW.projectileCount}` });
+    } else if (typeof anyW.orbCount === 'number') {
+      stats.push({ label: 'Сферы', value: `${anyW.orbCount}` });
+    } else if (typeof anyW.strikeCount === 'number') {
+      stats.push({ label: 'Удары', value: `${anyW.strikeCount}` });
+    } else if (typeof anyW.burstCount === 'number') {
+      stats.push({ label: 'Очередь', value: `${anyW.burstCount}` });
+    }
+
+    if (typeof anyW.pierce === 'number') {
+      stats.push({ label: 'Пробивание', value: `${anyW.pierce}` });
+    }
+
+    if (typeof anyW.projectileSpeed === 'number') {
+      stats.push({ label: 'Скорость', value: `${anyW.projectileSpeed} м/с` });
+    } else if (typeof anyW.orbitSpeed === 'number') {
+      stats.push({ label: 'Скорость орбиты', value: `${anyW.orbitSpeed}` });
+    }
+
+    if (typeof anyW.bleedDps === 'number') {
+      stats.push({ label: 'Кровотечение', value: `${anyW.bleedDps}/с` });
+    } else if (typeof anyW.burnDps === 'number') {
+      stats.push({ label: 'Горение', value: `${anyW.burnDps}/с` });
+    }
+
+    return stats;
   }
 
   public showGameOver(

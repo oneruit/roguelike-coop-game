@@ -7,6 +7,7 @@ import { ObstacleManager } from '../world/ObstacleManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
 import { ChestManager } from '../world/ChestManager';
 import { RiftTeleporter } from '../world/RiftTeleporter';
+import { MerchantManager } from '../world/MerchantManager';
 
 export interface DiscoveredAltar {
   type: BuffType;
@@ -25,6 +26,7 @@ export class MapManager {
   private obstacleManager?: ObstacleManager;
   public chestManager?: ChestManager;
   public riftTeleporter?: RiftTeleporter;
+  public merchantManager?: MerchantManager;
   public partner: RemotePlayer | null = null;
   public partners: RemotePlayer[] = [];
 
@@ -227,6 +229,10 @@ export class MapManager {
 
   public setRiftTeleporter(riftTeleporter: RiftTeleporter) {
     this.riftTeleporter = riftTeleporter;
+  }
+
+  public setMerchantManager(merchantManager: MerchantManager) {
+    this.merchantManager = merchantManager;
   }
 
   public update(dt: number) {
@@ -479,6 +485,33 @@ export class MapManager {
         ctx.textBaseline = 'middle';
         ctx.fillText('🌀', drawX, drawY);
       }
+    }
+
+    // 2d. Draw Rift Merchant on Minimap
+    if (this.merchantManager && this.merchantManager.isActive) {
+      const relX = (this.merchantManager.position.x - playerX) * scale;
+      const relZ = (this.merchantManager.position.z - playerZ) * scale;
+      const distSq = relX * relX + relZ * relZ;
+      let mx = cx + relX;
+      let my = cy + relZ;
+      if (distSq > radius * radius) {
+        const d = Math.sqrt(distSq);
+        mx = cx + (relX / d) * (radius - 12);
+        my = cy + (relZ / d) * (radius - 12);
+      }
+      const pulse = 1 + Math.sin(this.animTimer * 5) * 0.2;
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(mx, my, 7 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      ctx.font = '11px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('💰', mx, my);
     }
 
     // 3. Draw Enemies (crimson dots, boss as glowing skull)
@@ -782,6 +815,34 @@ export class MapManager {
         ctx.font = 'bold 8px Montserrat, sans-serif';
         ctx.fillStyle = color;
         ctx.fillText(isReady ? 'РАЗЛОМ' : 'БОСС НУЖЕН', tx, tz + 14);
+      }
+    }
+
+    // 6b. Rift Merchant on Full Map
+    if (this.merchantManager && this.merchantManager.isActive) {
+      const mx = toScreenX(this.merchantManager.position.x);
+      const mz = toScreenZ(this.merchantManager.position.z);
+      if (mx >= 0 && mx <= w && mz >= 0 && mz <= h) {
+        const pulse = Math.sin(this.animTimer * 5) * 2;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(mx, mz, 10 + pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('💰', mx, mz);
+
+        ctx.font = 'bold 9px Montserrat, sans-serif';
+        ctx.fillStyle = '#fef08a';
+        ctx.fillText('ТОРГОВЕЦ', mx, mz + 15);
       }
     }
 
