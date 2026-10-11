@@ -324,7 +324,7 @@ export class GameNetworkCoordinator {
 
     for (const event of msg.events || []) {
       if (event.type === 'boss_spawn') {
-        if (event.val === 'reaper' || this.gameTime >= 1800) {
+        if (event.val === 'reaper' || this.gameTime >= 2400) {
           this.hud.triggerImmortalBossWarning(event.name);
         } else {
           this.hud.triggerBossWarning(event.name, typeof event.val === 'number' ? event.val : undefined);
@@ -416,7 +416,7 @@ export class GameNetworkCoordinator {
       const now = performance.now();
       if (now - this.lastClientLocalHitTime > 320) {
         this.lastClientLocalHitTime = now;
-        const isVictoryDeath = this.gameTime >= 1800 || (this.enemyManager.activeBoss?.isImmortal ?? false);
+        const isVictoryDeath = this.gameTime >= 2400 || (this.enemyManager.activeBoss?.isImmortal ?? false);
         const died = this.player.takeDamage(myDamageTaken, isVictoryDeath);
         SoundManager.playPlayerHurt();
         if (died) {

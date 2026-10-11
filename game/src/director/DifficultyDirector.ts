@@ -92,10 +92,15 @@ export class DifficultyDirector {
   }
 
   /**
-   * Probability of an enemy spawning as an Elite variant (0% up to 45%).
+   * Probability of an enemy spawning as an Elite variant (0% up to 45% before 20m, ramping up to 70% at 35-40m+).
    */
   public static getEliteSpawnChance(gameTime: number, stage: number = 1): number {
+    const timeMinutes = gameTime / 60;
     const baseChance = (gameTime / 1200) * 0.35 + (stage - 1) * 0.05;
+    if (timeMinutes > 20) {
+      const postBonus = (timeMinutes - 20) * 0.015; // +1.5% per minute after 20m
+      return Math.min(0.70, Math.max(0, baseChance + postBonus));
+    }
     return Math.min(0.45, Math.max(0, baseChance));
   }
 }
