@@ -24,7 +24,8 @@ export class DamageNumberManager {
     isCrit = false,
     camera?: Camera,
     isBleed = false,
-    critTier = 1
+    critTier = 1,
+    critMultiplier = 1.5
   ) {
     if (!DamageNumberManager.damageEnabled) return;
     const el = document.createElement('div');
@@ -32,13 +33,35 @@ export class DamageNumberManager {
     el.className = `dmg-number ${isCrit ? `dmg-crit ${tierClass}` : ''} ${isBleed ? 'dmg-bleed' : ''}`;
     let suffix = '';
     if (isCrit) {
-      if (critTier >= 3) {
-        suffix = `!x${critTier}`;
-      } else if (critTier === 2) {
+      const critPercent = critMultiplier * 100;
+      let critColor = '#ef4444';
+      let shadowColor = '#991b1b';
+
+      if (critPercent <= 200) {
+        suffix = '!';
+        critColor = '#ef4444'; // Red
+        shadowColor = '#991b1b';
+      } else if (critPercent <= 400) {
         suffix = '!!';
+        critColor = '#dc2626'; // Red
+        shadowColor = '#7f1d1d';
+      } else if (critPercent <= 600) {
+        suffix = '!';
+        critColor = '#f97316'; // Orange
+        shadowColor = '#c2410c';
+      } else if (critPercent <= 800) {
+        suffix = '!!';
+        critColor = '#ea580c'; // Deep Orange
+        shadowColor = '#9a3412';
       } else {
         suffix = '!';
+        critColor = '#a855f7'; // Purple
+        shadowColor = '#6b21a8';
       }
+
+      el.style.color = critColor;
+      el.style.textShadow = `0 0 10px ${shadowColor}, 0 2px 4px rgba(0, 0, 0, 0.85)`;
+      el.style.fontWeight = '900';
     } else if (isBleed) {
       suffix = '🩸';
     }

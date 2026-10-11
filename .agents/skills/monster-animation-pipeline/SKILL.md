@@ -1,13 +1,13 @@
 ---
 name: monster-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in chibi/pixel art style with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in menacing 16-bit pixel art style (strictly NO anime/chibi/cute) with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
 ---
 
 # Monster Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating **4-frame animated monsters and regular enemies** into the game engine.
 
-Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **chibi pixel art proportions**, a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
+Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **compact aggressive monster proportions** (menacing beasts, ferocious vermin, undead), a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
 
 ---
 
@@ -28,10 +28,11 @@ Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state
 
 ### 1.2 Core Visual Standards for Monsters
 
-1. **Chibi / Compact Pixel Art Proportions:**
+1. **Compact Aggressive Monster Proportions & Threat Demeanor:**
    - High readability in top-down / 2.5D isometric view.
-   - Expressive eyes/snout, compact torso, clearly silhouetted paws, pincers, or tails.
-   - Stylistically harmonious with heroes (16-bit chibi style).
+   - Expressive predatory eyes/snout, compact muscular torso, clearly silhouetted paws, pincers, spines, or tails.
+   - **Strict Exclusions:** Monsters are dangerous predators, beasts, and undead — **STRICTLY NO anime, NO chibi proportions, NO kawaii, NO cute/friendly expressions, NO cartoon pet look**.
+   - Clean 16-bit pixel art style with hard pixel edges, limited color palette, and high contrast.
 
 2. **Monster Height Limit:**
    - Monster height **must not exceed 96 pixels** (`height <= 96px`) inside the $128 \times 128$ cell.
@@ -107,51 +108,118 @@ With plane geometry translation $+0.928$ along the $Y$ axis:
 
 ---
 
-## 3. Master Generation Prompts (Monster Examples)
+## 3. Monster Concept Sheet & Human Approval Protocol (Phase 0 Approval Gate)
+
+To prevent monster anatomical drift and ensure visual satisfaction before generating multi-frame animation sheets, all monster creation follows a mandatory human approval workflow:
+
+### Step 3.1: Monster Concept Sheet Generation (`monster_<name>_concept.png`)
+Generate a single composite **Monster Concept Sheet** featuring 3 distinct sections on pure solid white background `rgb(255,255,255)`:
+1. **Left section (Bestiary Portrait / Snout View):** Close-up 128x128 menacing monster icon (sharp predatory eyes, bared fangs, horns, antennae, threat snarl).
+2. **Center section (Full-Body Monster Sprite):** Full-body compact aggressive beast/vermin/undead sprite in front combat stance (height $\le 96$ px, 10px bottom margin, predatory posture, paws/claws/carapace).
+3. **Right section (Signature Attack Feature / Threat Detail):** Standalone close-up detail of the monster's primary weapon or natural attack feature (e.g. venomous stinger, crushing pincers, gnashing jaw, barbed spikes).
+
+#### Master Concept Sheet Prompt (Example: Prairie Coyote)
+```text
+Monster concept reference sheet of Prairie Coyote, a vicious and deadly desert predator beast.
+
+Three clear distinct sections on pure solid white background rgb(255,255,255):
+1. Left section: close-up 128x128 menacing monster portrait icon, snarling aggressive muzzle, sharp bared white fangs, glowing amber eyes, alert pointed ears, no cute or friendly expression.
+2. Center section: full-body compact aggressive beast sprite in front combat stance, muscular canine frame, sturdy paws, spiky sandy-brown fur, bushy tail, exactly 4 legs and 1 tail.
+3. Right section: isolated detailed display of open snapping predator jaws and sharp white canine teeth.
+
+Clean 16-bit pixel art game assets, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
+```
+
+### Step 3.2: Human Approval Gateway (`ask_question` Interactive Check)
+The agent MUST display `monster_<name>_concept.png` in chat and request developer approval via `ask_question`:
+- **Question:** *"Сгенерирован концепт-лист монстра (портрет, силуэт в полный рост, боевые детали). Подойдёт ли такой дизайн или нужны правки?"*
+- **Options:**
+  - `(Recommended) Утвердить концепт (перейти к генерации листов анимаций WALK и ATTACK)`
+  - `Внести правки в монстра (указать, что изменить: окрас, форму рогов/клешней, свирепость, детали)`
+- **Iteration Loop:** If the developer requests adjustments, the agent modifies the prompt tokens, regenerates `monster_<name>_concept.png`, and asks again.
+- **NEVER generate animation sheets before the monster concept is approved by the human developer.**
+
+### Step 3.3: Reference Image Conditioning (`ImagePaths: [concept_path]`)
+When generating `monster_<name>_walk.png` and `monster_<name>_attack.png`, **always pass the approved concept image** via `ImagePaths` in `generate_image`.
+
+---
+
+## 4. Master Generation Prompts (Monster Examples)
 
 ### Example 1: Prairie Coyote (`monster_coyote`)
 
 #### Master PORTRAIT Prompt (`monster_coyote_front.png`)
 ```text
-128x128 chibi pixel art monster portrait of Prairie Coyote.
-Fierce cute desert coyote beast, sandy brown fur, pointed alert ears, amber glowing eyes, sharp white fangs.
-Pure solid white background rgb(255,255,255), clean 16-bit RPG monster icon.
+128x128 menacing pixel art monster portrait of Prairie Coyote, a vicious and deadly desert predator.
+
+Compact aggressive beast proportions, muscular canine frame, sturdy paws, predatory stance, strong readable silhouette.
+
+Snarling aggressive expression, sharp glowing amber eyes, bared white fangs, alert pointed ears, no friendly or cute expression.
+
+Sandy brown fur with dusty grey undertones, coarse spiky coat texture, bushy tail.
+
+Pure solid white background rgb(255,255,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 #### Master WALK Prompt (`monster_coyote_walk.png`)
 ```text
-2D chibi pixel art monster sprite sheet of Prairie Coyote.
-Quadruped canine beast: sandy brown fur, bushy tail, alert pointed ears, amber eyes. Exactly 4 legs, 1 tail. No extra limbs.
+2D pixel art monster sprite sheet of Prairie Coyote, a vicious desert predator beast.
+
+Compact aggressive beast proportions, muscular canine frame, sturdy paws, bushy tail, alert pointed ears, amber predatory eyes, sharp fangs. Exactly 4 legs, 1 tail. No extra limbs.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: WALK rhythmic 4-frame running trot cycle across 4 columns:
 Column 0: front-left and rear-right paws reach forward;
 Column 1: paws meet ground in passing stance;
 Column 2: front-right and rear-left paws reach forward;
 Column 3: paws meet ground in passing stance.
-Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 #### Master ATTACK Prompt (`monster_coyote_attack.png`)
 ```text
-2D chibi pixel art monster sprite sheet of the same Prairie Coyote from reference images.
-Quadruped canine: sandy brown fur, amber eyes, sharp fangs.
+2D pixel art monster sprite sheet of the same vicious Prairie Coyote from reference images.
+
+Identical monster design: compact muscular canine frame, sandy brown fur, amber predatory eyes, sharp bared fangs. Exactly 4 legs, 1 tail.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: ATTACK 4-frame bite lunge across 4 columns:
 Column 0: crouching anticipation coil;
 Column 1: forward lunging bite snap with open jaws;
-Column 2: bite clamp impact;
+Column 2: bite clamp impact (damage hit frame);
 Column 3: landing back into trot stance.
-Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG monster design, vicious and dangerous wilderness beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon pet look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ---
@@ -160,21 +228,30 @@ Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit
 
 #### Master WALK Prompt (`monster_scorpion_walk.png`)
 ```text
-2D chibi pixel art monster sprite sheet of Desert Scorpion.
-Arachnid monster: chitinous red-brown carapace, 2 large front pincers, raised segmented tail with venomous glowing green stinger. Exactly 2 pincers and 1 tail.
+2D pixel art monster sprite sheet of Desert Scorpion, a deadly venomous arachnid creature.
+
+Compact aggressive creature proportions: chitinous red-brown carapace, 2 large front pincers, raised segmented tail with venomous glowing green stinger. Exactly 2 pincers, 8 legs, and 1 tail. No extra limbs.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
-Animation: WALK scuttling 4-frame cycle across 4 columns: alternating legs scuttle, pincers snapping gently, tail arching.
-Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Animation: WALK scuttling 4-frame cycle across 4 columns: alternating legs scuttle, pincers snapping aggressively, tail arched ready to strike.
+
+Characters anchored with 10px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG monster design, vicious and dangerous arachnid beast.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon bug look, no childish appearance, no soft pastel colors, no friendly appearance, no photorealism, no smooth gradients.
 ```
 
 ---
 
-## 4. Automated Processing Script
+## 5. Automated Processing Script
 
 Script `.agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py`:
 
@@ -194,9 +271,9 @@ python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.
 
 ---
 
-## 5. Engine Integration Checklist
+## 6. Engine Integration Checklist
 
-### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+### Step 6.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
 When an animated monster attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
@@ -219,7 +296,7 @@ if (this.animState === 'ATTACK') {
 }
 ```
 
-### Step 5.2: Dynamic 2D Sprite Projected Shadow Integration
+### Step 6.2: Dynamic 2D Sprite Projected Shadow Integration
 Monsters cast a realistic directional silhouette shadow onto the terrain matching the player:
 
 ```typescript
@@ -234,7 +311,7 @@ this.spriteMesh.castShadow = true;
 
 ---
 
-## 6. Verification Checklist
+## 7. Verification Checklist
 
 1. `python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py ...` -> Exit code 0.
 2. Resolution verification:

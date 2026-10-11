@@ -7,12 +7,16 @@ export interface DifficultyTier {
 
 export const DIFFICULTY_TIERS: DifficultyTier[] = [
   { name: 'ЛЕГКО', nameEn: 'EASY', minTime: 0, color: '#22c55e' },
-  { name: 'НОРМАЛЬНО', nameEn: 'NORMAL', minTime: 180, color: '#38bdf8' },
-  { name: 'СЛОЖНО', nameEn: 'HARD', minTime: 360, color: '#f59e0b' },
-  { name: 'БЕЗУМИЕ', nameEn: 'INSANE', minTime: 540, color: '#f97316' },
-  { name: 'НЕВОЗМОЖНО', nameEn: 'IMPOSSIBLE', minTime: 780, color: '#ef4444' },
-  { name: 'Я ВИЖУ ТЕБЯ', nameEn: 'I SEE YOU', minTime: 1080, color: '#a855f7' },
-  { name: 'КОНЕЦ МИРА', nameEn: 'THE RIFT AWAKENS', minTime: 1500, color: '#ec4899' }
+  { name: 'НОРМАЛЬНО', nameEn: 'NORMAL', minTime: 300, color: '#38bdf8' },
+  { name: 'СЛОЖНО', nameEn: 'HARD', minTime: 600, color: '#f59e0b' },
+  { name: 'БЕЗУМИЕ', nameEn: 'INSANE', minTime: 900, color: '#f97316' },
+  { name: 'НЕВОЗМОЖНО', nameEn: 'IMPOSSIBLE', minTime: 1200, color: '#ef4444' },
+  { name: 'Я ВИЖУ ТЕБЯ', nameEn: 'I SEE YOU', minTime: 1500, color: '#a855f7' },
+  { name: 'КОНЕЦ МИРА', nameEn: 'THE RIFT AWAKENS', minTime: 1800, color: '#ec4899' },
+  { name: 'БЕСКОНЕЧНЫЙ РАЗЛОМ', nameEn: 'ENDLESS RIFT', minTime: 2100, color: '#8b5cf6' },
+  { name: 'АПОКАЛИПСИС', nameEn: 'APOCALYPSE', minTime: 2400, color: '#f43f5e' },
+  { name: 'СИНГУЛЯРНОСТЬ', nameEn: 'SINGULARITY', minTime: 2700, color: '#e11d48' },
+  { name: 'ХАОС БЕЗДНЫ', nameEn: 'VOID CHAOS', minTime: 3000, color: '#9333ea' }
 ];
 
 export class DifficultyDirector {
@@ -44,7 +48,7 @@ export class DifficultyDirector {
 
   /**
    * Computes the global difficulty coefficient D(t, players, stage).
-   * Enemy HP, damage, and spawn rates scale by this coefficient.
+   * Scales infinitely without flattening.
    */
   public static getDifficultyCoefficient(gameTime: number, playerCount: number = 1, stage: number = 1): number {
     const timeMinutes = gameTime / 60;
@@ -53,6 +57,29 @@ export class DifficultyDirector {
     const stageFactor = Math.pow(1.15, Math.max(0, stage - 1));
 
     return timeFactor * coopFactor * stageFactor;
+  }
+
+  /**
+   * Biome Overstay Multiplier: if players stay longer than 5 minutes (300s) on a non-final biome,
+   * monsters gain exponential +20% HP and +15% damage for every extra 10 seconds.
+   */
+  public static getBiomeOverstayMultiplier(stageTime: number, isFinalStage: boolean = false): {
+    hpMult: number;
+    dmgMult: number;
+    extraSeconds: number;
+    extraMinutes: number;
+  } {
+    if (isFinalStage || stageTime <= 300) {
+      return { hpMult: 1.0, dmgMult: 1.0, extraSeconds: 0, extraMinutes: 0 };
+    }
+    const extraSeconds = stageTime - 300;
+    const extraIntervals = extraSeconds / 10;
+    return {
+      hpMult: Math.pow(1.20, extraIntervals),
+      dmgMult: Math.pow(1.15, extraIntervals),
+      extraSeconds,
+      extraMinutes: extraSeconds / 60
+    };
   }
 
   /**

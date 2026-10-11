@@ -316,15 +316,7 @@ class Game {
     };
 
     this.input.onToggleMap = () => {
-      if (this.mapManager.isOpen) {
-        this.mapManager.close();
-        return;
-      }
       if (
-        this.sessionDirector.isLevelUpActive ||
-        this.devManager.getIsOpen() ||
-        this.hud.isAnyMenuOpen() ||
-        this.sessionDirector.gameState === GameState.PAUSED ||
         this.sessionDirector.gameState === GameState.MAIN_MENU ||
         this.sessionDirector.gameState === GameState.HOST_LOBBY ||
         this.sessionDirector.gameState === GameState.JOIN_LOBBY ||
@@ -333,7 +325,7 @@ class Game {
       ) {
         return;
       }
-      this.mapManager.open();
+      this.mapManager.toggleCenterOverlay();
     };
 
     this.input.onTogglePause = () => {
@@ -566,7 +558,7 @@ class Game {
     // 4. Remote teammates & Revive logic
     this.netCoordinator.updateRevives(dt);
     if (this.netCoordinator.isTeamWiped()) {
-      const isVictory = this.sessionDirector.gameTime >= 1800 || (this.enemyManager.activeBoss?.isImmortal ?? false);
+      const isVictory = false;
       this.sessionDirector.triggerGameOver(isVictory);
     }
 
@@ -601,6 +593,12 @@ class Game {
     this.mapManager.update(dt);
 
     // 8. The Rift: Teleporter, Chests, Prompts
+    if (this.riftTeleporter.state === 'CHARGING') {
+      if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
+        this.riftTeleporter.isBossDefeated = true;
+      }
+    }
+
     const { justCompleted } = this.riftTeleporter.update(dt, allPlayerPositions);
     if (justCompleted) {
       SoundManager.playTeleporterComplete();
@@ -609,13 +607,7 @@ class Game {
         this.player.gainXp(bonusXp);
         this.player.credits = 0;
       }
-      this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Активируйте портал для перехода!', '🌀', '#10b981');
-    }
-
-    if (this.riftTeleporter.state === 'CHARGING') {
-      if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
-        this.riftTeleporter.isBossDefeated = true;
-      }
+      this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Босс повержен! Активируйте портал для перехода!', '🌀', '#10b981');
     }
 
     this.chestManager.update(dt);
@@ -640,12 +632,16 @@ class Game {
       }
     }
 
-    this.hud.updateTeleporterHUD(
-      this.riftTeleporter.state === 'CHARGING',
-      this.riftTeleporter.chargeProgress,
-      this.riftTeleporter.isPlayerInsideZone,
-      this.riftTeleporter.state === 'WARP_READY'
-    );
+    if (this.biomeManager.isFinalStage()) {
+      this.hud.updateTeleporterHUD(false, 0, false, false);
+    } else {
+      this.hud.updateTeleporterHUD(
+        this.riftTeleporter.state === 'CHARGING',
+        this.riftTeleporter.chargeProgress,
+        this.riftTeleporter.isPlayerInsideZone,
+        this.riftTeleporter.state === 'WARP_READY'
+      );
+    }
 
     // 9. Enemies simulation
     if (this.net.role !== 'client') {
@@ -670,7 +666,7 @@ class Game {
         dt,
         this.player.position,
         (damage: number, isImmortalHit?: boolean) => {
-          const isVictoryDeath = isImmortalHit || this.sessionDirector.gameTime >= 1800;
+          const isVictoryDeath = Boolean(isImmortalHit);
           const died = this.player.takeDamage(damage, isVictoryDeath);
           if (died) {
             this.sessionDirector.triggerGameOver(isVictoryDeath);
@@ -681,7 +677,7 @@ class Game {
         (targetId: string, damage: number, isImmortalHit?: boolean) => {
           const remote = this.remotePlayers.get(targetId);
           if (remote) {
-            const isVictoryDeath = isImmortalHit || this.sessionDirector.gameTime >= 1800;
+            const isVictoryDeath = Boolean(isImmortalHit);
             if (!isVictoryDeath && remote.activeBuffs.has('ghost')) return;
             remote.hp = Math.max(0, remote.hp - damage);
             const cur = this.netCoordinator.pendingDamageToClients.get(targetId) || 0;
@@ -712,7 +708,7 @@ class Game {
             const dz = enemy.position.z - this.player.position.z;
             if (dx * dx + dz * dz < collisionRadius * collisionRadius) {
               this.lastClientLocalHitTime = now;
-              const isVictoryDeath = enemy.isImmortal || this.sessionDirector.gameTime >= 1800;
+              const isVictoryDeath = Boolean(enemy.isImmortal);
               const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
               SoundManager.playPlayerHurt();
               if (died) {
@@ -826,6 +822,10 @@ class Game {
         this.player.isCoop ? this.net.role : 'solo',
         this.net.lobbyPlayers
       );
+
+      if (this.sessionDirector.pendingLevelUps > 0 && !this.sessionDirector.isLevelUpActive) {
+        this.sessionDirector.triggerLevelUp();
+      }
     }
 
     this.engine.render();

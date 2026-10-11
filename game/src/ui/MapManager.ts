@@ -38,9 +38,11 @@ export class MapManager {
   }
 
   // Minimap DOM & Canvas
+  private minimapContainer: HTMLElement;
   private minimapCanvas: HTMLCanvasElement;
   private minimapCtx: CanvasRenderingContext2D;
   private elMinimapCoords: HTMLElement;
+  private elMinimapHint: HTMLElement | null;
 
   // Full Map Modal DOM & Canvas
   private mapModal: HTMLElement;
@@ -50,6 +52,7 @@ export class MapManager {
   private btnCloseMap: HTMLElement;
 
   public isOpen = false;
+  public isCenterOverlay = false;
   public onStateChange?: (isOpen: boolean) => void;
 
   private animTimer = 0;
@@ -80,9 +83,11 @@ export class MapManager {
     this.riftTeleporter = riftTeleporter;
 
     // Minimap elements
+    this.minimapContainer = document.getElementById('minimap-container')!;
     this.minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
     this.minimapCtx = this.minimapCanvas.getContext('2d')!;
     this.elMinimapCoords = document.getElementById('minimap-coords')!;
+    this.elMinimapHint = this.minimapContainer?.querySelector('.minimap-hint') ?? null;
 
     // Full Map modal elements
     this.mapModal = document.getElementById('map-modal')!;
@@ -101,6 +106,26 @@ export class MapManager {
     this.bindEvents();
   }
 
+  public toggleCenterOverlay(): boolean {
+    this.isCenterOverlay = !this.isCenterOverlay;
+    this.applyOverlayMode();
+    return this.isCenterOverlay;
+  }
+
+  public applyOverlayMode() {
+    if (this.isCenterOverlay) {
+      this.minimapContainer.classList.add('center-mode');
+      this.minimapCanvas.width = 500;
+      this.minimapCanvas.height = 500;
+      if (this.elMinimapHint) this.elMinimapHint.innerText = '[TAB] Свернуть карту';
+    } else {
+      this.minimapContainer.classList.remove('center-mode');
+      this.minimapCanvas.width = 170;
+      this.minimapCanvas.height = 170;
+      if (this.elMinimapHint) this.elMinimapHint.innerText = '[TAB] Карта';
+    }
+  }
+
   private bindEvents() {
     this.btnCloseMap?.addEventListener('click', () => {
       this.close();
@@ -111,7 +136,7 @@ export class MapManager {
     });
 
     document.getElementById('minimap-container')?.addEventListener('click', () => {
-      this.toggle();
+      this.toggleCenterOverlay();
     });
 
     // Zoom with mouse wheel over map
@@ -261,6 +286,11 @@ export class MapManager {
    * Renders the real-time circular Minimap in the corner of the screen.
    */
   private renderMinimap() {
+    if (this.isCenterOverlay) {
+      this.renderCenterSquareMap();
+      return;
+    }
+
     const ctx = this.minimapCtx;
     const w = this.minimapCanvas.width;
     const h = this.minimapCanvas.height;
@@ -283,20 +313,25 @@ export class MapManager {
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.clip();
 
-    // Dark desert sand gradient background
-    const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
-    bgGrad.addColorStop(0, '#2b1a13');
-    bgGrad.addColorStop(0.7, '#1f120c');
-    bgGrad.addColorStop(1, '#140b07');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, w, h);
+    // Background
+    if (this.isCenterOverlay) {
+      ctx.fillStyle = 'rgba(10, 20, 36, 0.45)';
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
+      bgGrad.addColorStop(0, '#2b1a13');
+      bgGrad.addColorStop(0.7, '#1f120c');
+      bgGrad.addColorStop(1, '#140b07');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+    }
 
-    // Subtle radar range rings (15m, 30m, 45m)
-    // Scale: 1 world unit = 1.7 pixels
-    const scale = 1.7;
-    ctx.strokeStyle = 'rgba(217, 139, 74, 0.22)';
+    // Subtle radar range rings
+    const scale = this.isCenterOverlay ? 1.45 : 1.7;
+    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(56, 189, 248, 0.25)' : 'rgba(217, 139, 74, 0.22)';
     ctx.lineWidth = 1;
-    [15, 30, 42].forEach(dist => {
+    const ringDists = this.isCenterOverlay ? [20, 45, 75, 110] : [15, 30, 42];
+    ringDists.forEach(dist => {
       ctx.beginPath();
       ctx.arc(cx, cy, dist * scale, 0, Math.PI * 2);
       ctx.stroke();
@@ -533,14 +568,14 @@ export class MapManager {
     ctx.restore(); // Exit clip
 
     // 5. Compass Bezel Frame (Weathered Brass & Cardinal Ticks)
-    ctx.strokeStyle = '#c2884f';
-    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(56, 189, 248, 0.45)' : '#c2884f';
+    ctx.lineWidth = this.isCenterOverlay ? 2.5 : 3.5;
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.strokeStyle = '#452a1b';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = this.isCenterOverlay ? 'rgba(14, 165, 233, 0.25)' : '#452a1b';
+    ctx.lineWidth = this.isCenterOverlay ? 1.5 : 2;
     ctx.beginPath();
     ctx.arc(cx, cy, radius + 2.5, 0, Math.PI * 2);
     ctx.stroke();
@@ -558,6 +593,255 @@ export class MapManager {
     ctx.fillText('S', cx, h - 8);
     ctx.fillText('W', 9, cy);
     ctx.fillText('E', w - 8, cy);
+  }
+
+  /**
+   * Renders the square full-world interactive overlay map (Diablo / PoE TAB style).
+   * Displays all 10x10 chunks across the 500x500 world bounds without bezel or round border.
+   * Shrouds unexplored chunks in Fog of War (туман войны).
+   * Displays all discovered altars, teleporter, chests, bosses, teammates, and player.
+   */
+  private renderCenterSquareMap() {
+    const ctx = this.minimapCtx;
+    const w = this.minimapCanvas.width; // 500
+    const h = this.minimapCanvas.height; // 500
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Update coords in footer
+    const px = Math.round(this.player.position.x);
+    const pz = Math.round(this.player.position.z);
+    if (this.elMinimapCoords) {
+      this.elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${this.exploredChunks.size}/100 зон`;
+    }
+
+    // 1. Semi-transparent dark tactical backdrop
+    ctx.fillStyle = 'rgba(6, 12, 22, 0.40)';
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. Chunks & Fog of War (10x10 chunks, 50m each from -250 to +250)
+    for (let cx = -5; cx <= 4; cx++) {
+      for (let cz = -5; cz <= 4; cz++) {
+        const chunkX = (cx + 5) * 50;
+        const chunkZ = (cz + 5) * 50;
+        const key = `${cx},${cz}`;
+        const isExplored = this.exploredChunks.has(key);
+
+        if (!isExplored) {
+          // Fog of War (Туман войны)
+          ctx.fillStyle = 'rgba(8, 14, 24, 0.88)';
+          ctx.fillRect(chunkX, chunkZ, 50, 50);
+
+          ctx.strokeStyle = 'rgba(30, 48, 77, 0.40)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(chunkX, chunkZ, 50, 50);
+
+          // Subtle diagonal fog hatch lines
+          ctx.beginPath();
+          ctx.moveTo(chunkX, chunkZ + 25);
+          ctx.lineTo(chunkX + 25, chunkZ);
+          ctx.moveTo(chunkX, chunkZ + 50);
+          ctx.lineTo(chunkX + 50, chunkZ);
+          ctx.moveTo(chunkX + 25, chunkZ + 50);
+          ctx.lineTo(chunkX + 50, chunkZ + 25);
+          ctx.stroke();
+        } else {
+          // Explored zone
+          ctx.fillStyle = 'rgba(20, 38, 64, 0.35)';
+          ctx.fillRect(chunkX, chunkZ, 50, 50);
+
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.20)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(chunkX, chunkZ, 50, 50);
+        }
+      }
+    }
+
+    // 3. XP Gems & Passive drops on ground (in explored chunks)
+    for (const gem of this.dropManager.gems) {
+      const gcx = Math.floor(gem.position.x / 50);
+      const gcz = Math.floor(gem.position.z / 50);
+      if (this.exploredChunks.has(`${gcx},${gcz}`)) {
+        const gx = gem.position.x + 250;
+        const gz = gem.position.z + 250;
+        if (gx >= 0 && gx <= 500 && gz >= 0 && gz <= 500) {
+          ctx.fillStyle = gem.type === 'gold' ? '#f59e0b' : '#38bdf8';
+          ctx.beginPath();
+          ctx.arc(gx, gz, gem.type === 'gold' ? 2.5 : 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    // 4. Chests (if chestManager available and in explored chunk)
+    if (this.chestManager) {
+      for (const chest of this.chestManager.chests) {
+        const ccx = Math.floor(chest.position.x / 50);
+        const ccz = Math.floor(chest.position.z / 50);
+        if (this.exploredChunks.has(`${ccx},${ccz}`)) {
+          const cxPos = chest.position.x + 250;
+          const czPos = chest.position.z + 250;
+          if (cxPos >= 0 && cxPos <= 500 && czPos >= 0 && czPos <= 500) {
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            if (chest.isOpened) {
+              ctx.fillStyle = '#64748b';
+              ctx.fillText('📦', cxPos, czPos);
+            } else {
+              ctx.shadowColor = '#fbbf24';
+              ctx.shadowBlur = 6;
+              ctx.fillStyle = '#fbbf24';
+              ctx.fillText('📦', cxPos, czPos);
+              ctx.shadowBlur = 0;
+            }
+          }
+        }
+      }
+    }
+
+    // 5. Discovered Altars
+    for (const altar of this.discoveredAltars.values()) {
+      const ax = altar.pos.x + 250;
+      const az = altar.pos.z + 250;
+      if (ax >= 0 && ax <= 500 && az >= 0 && az <= 500) {
+        ctx.fillStyle = altar.color;
+        ctx.beginPath();
+        ctx.arc(ax, az, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(altar.icon || '⛩️', ax, az);
+
+        if (altar.isCaptured) {
+          ctx.fillStyle = '#10b981';
+          ctx.font = 'bold 8px sans-serif';
+          ctx.fillText('✓', ax + 7, az - 6);
+        }
+      }
+    }
+
+    // 6. Discovered Rift Teleporter
+    if (this.riftTeleporter && this.riftTeleporter.isDiscovered) {
+      const tx = this.riftTeleporter.position.x + 250;
+      const tz = this.riftTeleporter.position.z + 250;
+      if (tx >= 0 && tx <= 500 && tz >= 0 && tz <= 500) {
+        const isReady = this.riftTeleporter.state === 'WARP_READY';
+        const pulse = Math.sin(this.animTimer * 4) * 2;
+        const color = isReady ? '#10b981' : '#f59e0b';
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(tx, tz, 10 + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🌀', tx, tz);
+
+        ctx.font = 'bold 8px Montserrat, sans-serif';
+        ctx.fillStyle = color;
+        ctx.fillText(isReady ? 'РАЗЛОМ' : 'БОСС НУЖЕН', tx, tz + 14);
+      }
+    }
+
+    // 7. Active Boss
+    if (this.enemyManager.activeBoss && this.enemyManager.activeBoss.isAlive) {
+      const boss = this.enemyManager.activeBoss;
+      const bx = boss.position.x + 250;
+      const bz = boss.position.z + 250;
+      if (bx >= 0 && bx <= 500 && bz >= 0 && bz <= 500) {
+        const bPulse = Math.sin(this.animTimer * 6) * 3;
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(bx, bz, 11 + bPulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('💀', bx, bz);
+
+        const hpPct = Math.max(0, boss.hp / boss.maxHp);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(bx - 12, bz + 12, 24, 3);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(bx - 12, bz + 12, 24 * hpPct, 3);
+      }
+    }
+
+    // 8. Teammates / Partners (Co-op)
+    const partnerList = this.partners.length > 0 ? this.partners : this.partner ? [this.partner] : [];
+    for (const rp of partnerList) {
+      const rx = rp.position.x + 250;
+      const rz = rp.position.z + 250;
+      if (rx >= 0 && rx <= 500 && rz >= 0 && rz <= 500) {
+        ctx.fillStyle = rp.colorCss || '#06b6d4';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(rx, rz, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = 'bold 8px sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(rp.id.startsWith('p') ? `P${rp.id.slice(1)}` : 'P2', rx, rz);
+      }
+    }
+
+    // 9. Local Player Marker
+    const pxPos = this.player.position.x + 250;
+    const pzPos = this.player.position.z + 250;
+    if (pxPos >= 0 && pxPos <= 500 && pzPos >= 0 && pzPos <= 500) {
+      // Radar ping ring
+      const pingR = (this.animTimer * 18) % 22;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(pxPos, pzPos, pingR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Directional arrow / chevron based on player mesh rotation
+      ctx.save();
+      ctx.translate(pxPos, pzPos);
+      ctx.rotate(-this.player.mesh.rotation.y);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, -9);
+      ctx.lineTo(6, 6);
+      ctx.lineTo(0, 3);
+      ctx.lineTo(-6, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // 10. Top Bar (Header with title and exploration %)
+    ctx.font = 'bold 10px Montserrat, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+    ctx.textAlign = 'left';
+    ctx.fillText('ИНТЕРАКТИВНАЯ КАРТА [TAB]', 8, 14);
+
+    const exploredPct = Math.round((this.exploredChunks.size / 100) * 100);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`ТУМАН ВОЙНЫ: ${exploredPct}% ОТКРЫТО`, 492, 14);
   }
 
   /**

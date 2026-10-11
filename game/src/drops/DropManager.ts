@@ -22,12 +22,42 @@ export class DropManager {
     this.scene = scene;
   }
 
+  private condenseXp(amount: number, targetPos?: Vector3) {
+    if (amount <= 0 || this.gems.length === 0) return;
+    let bestGem: Gem | null = null;
+    let bestDistSq = Infinity;
+
+    for (const g of this.gems) {
+      if (g.type === 'gold' || g.isCollected) continue;
+      if (targetPos) {
+        const d = g.position.distanceToSquared(targetPos);
+        if (d < bestDistSq) {
+          bestDistSq = d;
+          bestGem = g;
+        }
+      } else {
+        bestGem = g;
+        break;
+      }
+    }
+
+    if (bestGem) {
+      bestGem.xpValue += amount;
+      if (bestGem.type === 'blue' && bestGem.xpValue >= 25) {
+        bestGem.type = 'green';
+      } else if (bestGem.xpValue >= 75) {
+        bestGem.type = 'red';
+      }
+    }
+  }
+
   public spawnGem(position: Vector3, type: GemType = 'blue', id?: string) {
-    // If ground is cluttered, discard oldest common uncollected gem
+    // If ground is cluttered, condense oldest common uncollected gem into remaining gems
     if (this.gems.length >= DropManager.MAX_GEMS) {
       const nonGoldIdx = this.gems.findIndex(g => g.type !== 'gold');
       const oldest = nonGoldIdx !== -1 ? this.gems.splice(nonGoldIdx, 1)[0] : this.gems.shift();
       if (oldest) {
+        this.condenseXp(oldest.xpValue);
         oldest.destroy(this.scene);
       }
     }
@@ -37,6 +67,16 @@ export class DropManager {
     this.gems.push(gem);
     this.scene.add(gem.mesh);
     return gem;
+  }
+
+  /**
+   * Attracts all gems and passive crystals across the map directly to the target position.
+   * Triggered upon opening chests or picking up rift magnets.
+   */
+  public attractAllGemsTo(_targetPos?: Vector3) {
+    for (const gem of this.gems) {
+      gem.isAttracted = true;
+    }
   }
 
   /**
@@ -65,8 +105,13 @@ export class DropManager {
         }
       }
 
-      // Cull gems left far behind in the world
+      // Cull regular gems left far behind in the world, condensing their XP near the player
       if (!gem.isAttracted && minDistanceSq > 65 * 65) {
+        if (gem.type === 'gold') {
+          // Gold passive crystals NEVER despawn! They persist indefinitely.
+          continue;
+        }
+        this.condenseXp(gem.xpValue, closest.position);
         gem.destroy(this.scene);
         this.gems.splice(i, 1);
         continue;
@@ -174,6 +219,25 @@ export class DropManager {
       const inFrustum = frustum.intersectsSphere(this.tempSphere);
       gem.updateVisuals(dt, inFrustum);
     }
+  }
+
+  /**
+   * Immediately sweeps and collects all remaining gems on the stage, awarding all their XP and passives.
+   * Invoked upon biome transitions so no experience is lost.
+   */
+  public collectAllRemainingGems(onCollect?: (xp: number, gem: Gem) => void): number {
+    let totalXp = 0;
+    for (const gem of this.gems) {
+      if (gem.isCollected) continue;
+      gem.isCollected = true;
+      totalXp += gem.xpValue;
+      if (onCollect) {
+        onCollect(gem.xpValue, gem);
+      }
+      gem.destroy(this.scene);
+    }
+    this.gems = [];
+    return totalXp;
   }
 
   public clear() {

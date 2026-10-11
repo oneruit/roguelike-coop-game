@@ -523,8 +523,8 @@ test("Mastery preserves the global cooldown floor at maximum haste", () => {
     [new InvokerInvokeWeapon(), new InvokerSpellWeapon("sun_strike")],
     [new SimInvokerWeapon(), new SimInvokerWeapon("sun_strike")]
   ] as const) {
-    while (invoke.level < 20) invoke.upgrade();
-    while (spell.level < 20) spell.upgrade();
+    while (invoke.level < invoke.maxLevel) invoke.upgrade();
+    while (spell.level < spell.maxLevel) spell.upgrade();
     spell.setInvokeSource(invoke as never);
     spell.cooldownMultiplier = 0.001;
     assert.equal(spell.effectiveCooldown, 0.08);

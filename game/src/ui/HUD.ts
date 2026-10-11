@@ -733,6 +733,23 @@ export class HUD {
       });
     }
 
+    const mapOpacitySlider = document.getElementById('settings-map-opacity') as HTMLInputElement | null;
+    const mapOpacityVal = document.getElementById('settings-map-opacity-val');
+    if (mapOpacitySlider) {
+      const savedMapOpacity = localStorage.getItem('wildwest_map_opacity');
+      const initialMapOpacity = savedMapOpacity !== null ? parseInt(savedMapOpacity, 10) : 65;
+      mapOpacitySlider.value = String(initialMapOpacity);
+      if (mapOpacityVal) mapOpacityVal.innerText = `${initialMapOpacity}%`;
+      document.documentElement.style.setProperty('--map-overlay-opacity', String(initialMapOpacity / 100));
+
+      mapOpacitySlider.addEventListener('input', () => {
+        const val = parseInt(mapOpacitySlider.value, 10);
+        if (mapOpacityVal) mapOpacityVal.innerText = `${val}%`;
+        localStorage.setItem('wildwest_map_opacity', String(val));
+        document.documentElement.style.setProperty('--map-overlay-opacity', String(val / 100));
+      });
+    }
+
     const perfOverlayCheckbox = document.getElementById('settings-perf-overlay') as HTMLInputElement | null;
     if (perfOverlayCheckbox) {
       const saved = localStorage.getItem('wildwest_show_perf');
@@ -3645,7 +3662,7 @@ export class HUD {
     }
   }
 
-  private updateWeaponsBar(weapons: Weapon[]) {
+  public updateWeaponsBar(weapons: Weapon[]) {
     const currentWeaponIds = new Set<string>();
     for (const weapon of weapons) {
       currentWeaponIds.add(weapon.id);
@@ -3687,7 +3704,7 @@ export class HUD {
       if (weaponOptions.length > 0) {
         weaponOptions[0].apply();
       } else {
-        // All 5 weapons are maxed at level 20: provide fallback reward
+        // All weapons maxed at level 12 / awakened cap: provide fallback reward
         player.maxHp += 50;
         player.heal(player.maxHp);
         player.redrawOverhead();
@@ -3711,13 +3728,13 @@ export class HUD {
         onSelect();
       });
     } else {
-      // All 5 weapons are maxed at level 20: provide fallback reward
+      // All weapons maxed fallback reward
       const fallbackOption: UpgradeOption = {
         id: 'max_arsenal_reward',
         title: 'Эликсир Героя',
         icon: '💖',
         levelTag: 'АРСЕНАЛ МАКСИМАЛЕН • ЛЕГЕНДАРНЫЙ',
-        description: 'Все 5 оружий прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
+        description: 'Все оружия прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
         grade: 'legendary',
         apply: () => {
           player.maxHp += 50;
@@ -3777,6 +3794,9 @@ export class HUD {
         this.btnLevelUpReroll.onclick = null;
       }
       options[index].apply();
+      player.recalculateStats();
+      this.updateWeaponsBar(player.weapons);
+      this.updatePassivesBar(player);
       SoundManager.playShoot();
       onChosen();
     };
@@ -4020,11 +4040,11 @@ export class HUD {
           <span class="inv-stat-label">⚔️ Общий множитель урона</span>
           <span class="inv-stat-value">+${Math.round((genMult - 1) * 100)}%</span>
         </div>
-        <div class="inv-stat-row" title="Шанс критического удара (максимум 1000%)">
+        <div class="inv-stat-row" title="Шанс критического удара (максимум 100%)">
           <span class="inv-stat-label">🎯 Шанс крит. урона</span>
           <span class="inv-stat-value text-crit">${critPct}%</span>
         </div>
-        <div class="inv-stat-row" title="Множитель критического урона (максимум 100%)">
+        <div class="inv-stat-row" title="Множитель критического урона (максимум 1000%)">
           <span class="inv-stat-label">💥 Крит. урон</span>
           <span class="inv-stat-value text-crit-dmg">+${critDmgPct}%</span>
         </div>
@@ -4397,28 +4417,135 @@ export class HUD {
   }
 
   private generateWeaponOptions(player: Player, excludeIds?: ReadonlySet<string>): UpgradeOption[] {
-    const pool: UpgradeOption[] = [];
+    const allMaxed = player.areAllWeaponsMaxed();
+    const anyAwakened = player.weapons.some(w => (w.awakenedGrade ?? 0) > 0);
+    const inAwakeningPhase = anyAwakened || allMaxed;
 
-    // 1. Existing weapon upgrades (up to maxLevel 20)
+    // 1. Existing weapon upgrades
+    const upgradeOptions: UpgradeOption[] = [];
     for (const weapon of player.weapons) {
-      if (weapon.level < weapon.maxLevel && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
+      const g = weapon.awakenedGrade ?? 0;
+      const effectiveCap = g > 0 ? player.getAwakenedCap(g) : weapon.maxLevel;
+      if (weapon.level < effectiveCap && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
         const grade = rollWeaponGrade(this.currentStageNumber);
         const gradeLabel = getGradeLabel(grade);
-        pool.push({
+        const prefix = weapon.getGradePrefix();
+        upgradeOptions.push({
           id: `upgrade_${weapon.id}`,
-          title: `Улучшение: ${weapon.name}`,
+          title: `${prefix}Улучшение: ${weapon.name}`,
           icon: weapon.icon,
           iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: `УРОВЕНЬ ${weapon.level + 1} • ${gradeLabel.toUpperCase()}`,
+          levelTag: `УРОВЕНЬ ${weapon.level + 1}/${effectiveCap} • ${gradeLabel.toUpperCase()}`,
           description: weapon.getNextUpgradeDescription(grade),
           grade,
-          apply: () => weapon.upgrade(grade)
+          apply: () => {
+            weapon.upgrade(grade);
+            player.recalculateStats();
+          }
         });
       }
     }
 
-    // 2. New weapons if player has less than 5 weapons
-    if (player.weapons.length < 5) {
+    // 2. Post-max progression & Grade Awakening
+    if (inAwakeningPhase) {
+      const hpOption: UpgradeOption = {
+        id: 'bonus_health_elixir',
+        title: 'Эликсир Жизни (+50 HP)',
+        icon: '❤️',
+        levelTag: 'БОНУС ЗДОРОВЬЯ',
+        description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
+        grade: 'rare',
+        apply: () => {
+          player.maxHp += 50;
+          player.hp = Math.min(player.maxHp, player.hp + 50);
+          player.recalculateStats();
+        }
+      };
+
+      const damageOption: UpgradeOption = {
+        id: 'bonus_damage_elixir',
+        title: 'Эликсир Могущества (+10% урона)',
+        icon: '⚡',
+        levelTag: 'БОНУС УРОНА',
+        description: 'Увеличивает весь наносимый урон героя на +10%.',
+        grade: 'legendary',
+        apply: () => {
+          player.damageMultiplier += 0.10;
+          player.recalculateStats();
+        }
+      };
+
+      const awakeningOptions: UpgradeOption[] = [];
+
+      // 2a. Grade II Awakening for unawakened weapons (grade 0)
+      const unawakenedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 0);
+      const nextAwakenedCount = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 1).length + 1;
+      let targetCapAfterAwaken = 6;
+      if (nextAwakenedCount === 2) targetCapAfterAwaken = 8;
+      else if (nextAwakenedCount === 3) targetCapAfterAwaken = 10;
+      else if (nextAwakenedCount >= 4) targetCapAfterAwaken = 12;
+
+      for (const weapon of unawakenedWeapons) {
+        awakeningOptions.push({
+          id: `awaken_${weapon.id}`,
+          title: `Пробуждение Грейда II: ${weapon.name}`,
+          icon: '🌟',
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+          levelTag: `ГРЕЙД II • СБРОС (МАКС. ${targetCapAfterAwaken})`,
+          description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до ${targetCapAfterAwaken} ур.`,
+          grade: 'legendary',
+          apply: () => {
+            weapon.awakenGrade();
+            player.recalculateStats();
+          }
+        });
+      }
+
+      // 2b. Grade III Awakening for Grade II weapons that reached level 12 (or when all weapons are at Grade II)
+      const allGrade2OrHigher = player.weapons.every(w => (w.awakenedGrade ?? 0) >= 1);
+      const grade2Weapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 1 && (w.level >= 12 || allGrade2OrHigher));
+      const nextGrade3Count = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 2).length + 1;
+      let targetCapGrade3 = 6;
+      if (nextGrade3Count === 2) targetCapGrade3 = 8;
+      else if (nextGrade3Count === 3) targetCapGrade3 = 10;
+      else if (nextGrade3Count >= 4) targetCapGrade3 = 12;
+
+      for (const weapon of grade2Weapons) {
+        awakeningOptions.push({
+          id: `awaken3_${weapon.id}`,
+          title: `Пробуждение Грейда III: ${weapon.name}`,
+          icon: '🔥',
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+          levelTag: `ГРЕЙД III • СБРОС (МАКС. ${targetCapGrade3})`,
+          description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до ${targetCapGrade3} ур.`,
+          grade: 'legendary',
+          apply: () => {
+            weapon.awakenGrade();
+            player.recalculateStats();
+          }
+        });
+      }
+
+      // Offer HP option (always guaranteed) + up to 2 other choices (upgrades or awakenings)
+      const candidateOthers = [...upgradeOptions, ...awakeningOptions];
+      const shuffledOthers = filterAndShuffleForReroll(candidateOthers, excludeIds);
+      const chosenOthers: UpgradeOption[] = [];
+      for (const opt of shuffledOthers) {
+        if (chosenOthers.length >= 2) break;
+        if (!chosenOthers.some(o => o.id === opt.id)) {
+          chosenOthers.push(opt);
+        }
+      }
+      if (chosenOthers.length < 2 && !chosenOthers.some(o => o.id === damageOption.id)) {
+        chosenOthers.push(damageOption);
+      }
+      return [hpOption, ...chosenOthers];
+    }
+
+    const pool: UpgradeOption[] = [...upgradeOptions];
+
+    // 3. New weapons if player has less than 4 weapons and not maxed
+    if (player.weapons.length < 4 && !allMaxed) {
       // 2a. Character-specific / Invoker spells
       const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
       for (const spell of invokerWeapons) {

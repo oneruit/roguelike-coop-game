@@ -15,6 +15,7 @@ export type RiftItemId =
   | 'crit_visor'
   | 'aegis_battery'
   | 'bio_leech'
+  | 'overclock_module'
   // Rare (Редкие / Синие)
   | 'crit_lens'
   | 'heavy_hollowpoint'
@@ -23,6 +24,8 @@ export type RiftItemId =
   | 'singularity_core'
   | 'orbital_strike'
   | 'chronos_phylactery'
+  | 'titan_heart'
+  | 'void_catalyst'
   // Boss (Жёлтые)
   | 'golem_core'
   | 'molten_scale';
@@ -110,8 +113,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🎯',
     color: '#22c55e',
-    description: '+12% к шансу нанести критический удар.',
-    stackText: '+12% шанс за стак'
+    description: '+2.4% к шансу нанести критический удар.',
+    stackText: '+2.4% шанс за стак'
   },
   aegis_battery: {
     id: 'aegis_battery',
@@ -131,6 +134,15 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     description: 'Восстанавливает +5 HP при каждом уничтожении врага.',
     stackText: '+5 HP за стак'
   },
+  overclock_module: {
+    id: 'overclock_module',
+    name: 'Модуль Разгона',
+    rarity: 'uncommon',
+    icon: '⚙️',
+    color: '#22c55e',
+    description: '+10% к скорости атаки всех оружий героя.',
+    stackText: '+10% к скорости за стак'
+  },
 
   // --- Rare (Редкие) ---
   crit_lens: {
@@ -139,8 +151,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'rare',
     icon: '🎯',
     color: '#38bdf8',
-    description: '+15% к шансу критического удара (суммируется вплоть до 1000%).',
-    stackText: '+15% крит. шанс за стак'
+    description: '+3% к шансу критического удара (суммируется вплоть до 100%).',
+    stackText: '+3% крит. шанс за стак'
   },
   heavy_hollowpoint: {
     id: 'heavy_hollowpoint',
@@ -148,7 +160,7 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'rare',
     icon: '💥',
     color: '#38bdf8',
-    description: '+20% к критическому урону (суммируется вплоть до максимума 100%).',
+    description: '+20% к критическому урону (суммируется вплоть до 1000%).',
     stackText: '+20% крит. урон за стак'
   },
   energy_amplifier: {
@@ -189,6 +201,24 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     description: 'Предотвращает смертельный урон, замораживая время вокруг на 3 сек и восстанавливая 50% HP (раз за стадию).',
     stackText: '+25% исцеления за стак'
   },
+  titan_heart: {
+    id: 'titan_heart',
+    name: 'Сердце Титана',
+    rarity: 'legendary',
+    icon: '🫀',
+    color: '#f59e0b',
+    description: '+150 к максимальному здоровью и +15 HP/сек регенерации.',
+    stackText: '+150 HP и +15 HP/сек за стак'
+  },
+  void_catalyst: {
+    id: 'void_catalyst',
+    name: 'Катализатор Бездны',
+    rarity: 'legendary',
+    icon: '🔮',
+    color: '#f59e0b',
+    description: '+40% к критическому урону и +15% к общему урону героя.',
+    stackText: '+40% крит. урон и +15% урон за стак'
+  },
 
   // --- Boss (Жёлтые) ---
   golem_core: {
@@ -220,11 +250,9 @@ export const COMMON_ITEMS: RiftItemId[] = [
 ];
 
 export const UNCOMMON_ITEMS: RiftItemId[] = [
-  'chain_lightning',
-  'plasma_detonator',
   'crit_visor',
-  'aegis_battery',
-  'bio_leech'
+  'bio_leech',
+  'overclock_module'
 ];
 
 export const RARE_ITEMS: RiftItemId[] = [
@@ -234,9 +262,9 @@ export const RARE_ITEMS: RiftItemId[] = [
 ];
 
 export const LEGENDARY_ITEMS: RiftItemId[] = [
-  'singularity_core',
-  'orbital_strike',
-  'chronos_phylactery'
+  'chronos_phylactery',
+  'titan_heart',
+  'void_catalyst'
 ];
 
 export const BOSS_ITEMS: RiftItemId[] = [
@@ -267,17 +295,33 @@ export function rollRiftItemByStage(
 }
 
 /**
- * Rolls two independent item drops from a chest.
- * Duplicate items can roll as per user requirement.
+ * Rolls two distinct item drops from a chest (no duplicates allowed).
  */
 export function rollChestDropPair(
   stageNumber: number,
   rng: () => number = Math.random
 ): [RiftItemDef, RiftItemDef] {
-  return [
-    rollRiftItemByStage(stageNumber, rng),
-    rollRiftItemByStage(stageNumber, rng)
-  ];
+  const item1 = rollRiftItemByStage(stageNumber, rng);
+  let item2 = rollRiftItemByStage(stageNumber, rng);
+  let attempts = 0;
+  while (item2.id === item1.id && attempts < 25) {
+    item2 = rollRiftItemByStage(stageNumber, rng);
+    attempts++;
+  }
+  // Guarantee non-duplicate options
+  if (item2.id === item1.id) {
+    const candidates = [
+      ...COMMON_ITEMS,
+      ...UNCOMMON_ITEMS,
+      ...RARE_ITEMS,
+      ...LEGENDARY_ITEMS
+    ].filter(id => id !== item1.id);
+    if (candidates.length > 0) {
+      const fallbackId = candidates[Math.floor(rng() * candidates.length)];
+      item2 = RIFT_ITEMS[fallbackId];
+    }
+  }
+  return [item1, item2];
 }
 
 /**

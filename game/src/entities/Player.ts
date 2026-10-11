@@ -99,8 +99,8 @@ export class Player {
   public shield: number = 0;
   public maxShield: number = 0;
   public shieldRegenDelay: number = 0;
-  public critChance: number = 0.05; // 5% base crit chance (max 1000% / 10.0)
-  public critDamage: number = 0.50; // 50% base crit damage (max 100% / 1.0)
+  public critChance: number = 0.05; // 5% base crit chance (max 100% / 1.0)
+  public critDamage: number = 0.50; // 50% base crit damage (max 1000% / 10.0)
   public startingWeaponId: string = '';
   public hasChronosReady: boolean = true;
   public singularityKillCounter: number = 0;
@@ -409,7 +409,8 @@ export class Player {
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.baseSpeed = heroCfg.baseSpeed;
-    const bonusHp = this.flaskCount * 30;
+    const titanBonus = this.getItemStacks('titan_heart') * 150;
+    const bonusHp = this.flaskCount * 30 + titanBonus;
     const newMaxHp = heroCfg.maxHp + bonusHp;
     const hpRatio = this.maxHp > 0 ? this.hp / this.maxHp : 1.0;
     this.maxHp = newMaxHp;
@@ -437,6 +438,11 @@ export class Player {
   public addRiftItem(itemDef: RiftItemDef) {
     const cur = this.getItemStacks(itemDef.id);
     this.riftItems.set(itemDef.id, cur + 1);
+    if (itemDef.id === 'titan_heart') {
+      this.maxHp += 150;
+      this.hp = Math.min(this.maxHp, this.hp + 150);
+      this.redrawOverhead();
+    }
     this.recalculateStats();
   }
 
@@ -485,24 +491,27 @@ export class Player {
     const vialStacks = this.getItemStacks('health_vial');
     const aegisStacks = this.getItemStacks('aegis_battery');
     const critStacks = this.getItemStacks('crit_visor');
+    const titanHeartStacks = this.getItemStacks('titan_heart');
+    const overclockStacks = this.getItemStacks('overclock_module');
+    const voidCatalystStacks = this.getItemStacks('void_catalyst');
 
     // Speed: +12% per Adrenaline Dart stack
     speedBonus += adrenalineStacks * 0.12;
 
-    // HP Regen: +2.5 HP/s per Health Vial stack, +1.5 HP/s per Amulet stack, max 30
-    this.passiveHpRegen = Math.min(30, (this.amuletCount * 1.5) + (vialStacks * 2.5));
+    // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.5 HP/s per Amulet stack, max 50
+    this.passiveHpRegen = Math.min(50, (this.amuletCount * 1.5) + (vialStacks * 2.5) + (titanHeartStacks * 15));
 
     // Max Shield: +35 shield per Aegis Battery stack
     this.maxShield = aegisStacks * 35;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
 
-    // Crit Chance: 5% base + 15% per Crit Lens + 12% per Crit Visor, cap at 10.0 (1000%)
+    // Crit Chance: 5% base + 3% per Crit Lens + 2.4% per Crit Visor, cap at 1.0 (100%)
     const critLensStacks = this.getItemStacks('crit_lens');
-    this.critChance = Math.min(10.0, 0.05 + critLensStacks * 0.15 + critStacks * 0.12);
+    this.critChance = Math.min(1.0, 0.05 + critLensStacks * 0.03 + critStacks * 0.024);
 
-    // Crit Damage: 50% base + 20% per Heavy Hollowpoint, cap at 1.0 (100%)
+    // Crit Damage: 50% base + 20% per Heavy Hollowpoint + 40% per Void Catalyst, cap at 10.0 (1000%)
     const hollowStacks = this.getItemStacks('heavy_hollowpoint');
-    this.critDamage = Math.min(1.0, 0.50 + hollowStacks * 0.20);
+    this.critDamage = Math.min(10.0, 0.50 + hollowStacks * 0.20 + voidCatalystStacks * 0.40);
 
     // Leather Vest % damage reduction: 10% per stack, cap at 70%
     this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.10);
@@ -510,10 +519,12 @@ export class Player {
     // Attack Cooldown Multiplier:
     // Pocket watch: -8% cooldown per stack, up to 70% reduction (floor 0.30)
     // Kinetic Injector: -15% cooldown per stack (0.85^stacks)
-    // Combined floor 0.20
+    // Overclock module: -10% cooldown per stack (0.90^stacks)
+    // Combined floor 0.15
     const watchMult = Math.max(0.30, 1 - this.watchCount * 0.08);
     const injectorMult = Math.pow(0.85, injectorStacks);
-    this.passiveCooldownMultiplier = Math.max(0.20, watchMult * injectorMult);
+    const overclockMult = Math.pow(0.90, overclockStacks);
+    this.passiveCooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);
     for (const weapon of this.weapons) {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
@@ -795,8 +806,8 @@ export class Player {
               enemy,
               amount * this.getDamageMultiplier(weapon.id),
               sourcePos,
-              Math.min(10.0, this.critChance + critChanceBonus),
-              Math.min(1.0, this.critDamage + critDamageBonus)
+              Math.min(1.0, this.critChance + critChanceBonus),
+              Math.min(10.0, this.critDamage + critDamageBonus)
             );
           }
         : undefined;
@@ -1004,25 +1015,47 @@ export class Player {
     return this.isOneHitKill;
   }
 
+  public static readonly MAX_WEAPONS = 4;
+
+  public getAwakenedCap(grade: number = 1): number {
+    const count = this.weapons.filter(w => (w.awakenedGrade ?? 0) >= grade).length;
+    switch (count) {
+      case 1: return 6;
+      case 2: return 8;
+      case 3: return 10;
+      case 4: return 12;
+      default: return 12;
+    }
+  }
+
+  public areAllWeaponsMaxed(): boolean {
+    if (this.weapons.length < Player.MAX_WEAPONS) return false;
+    return this.weapons.every(w => {
+      const g = w.awakenedGrade ?? 0;
+      const cap = g > 0 ? this.getAwakenedCap(g) : 12;
+      return w.level >= cap;
+    });
+  }
+
   public giveAllWeapons(scene: Scene) {
     const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
-    if (!hasBow && this.weapons.length < 5) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+    if (!hasBow && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
 
     const hasKukri = this.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
-    if (!hasKukri && this.weapons.length < 5) this.weapons.push(new KukriWeapon());
+    if (!hasKukri && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KukriWeapon());
 
     const hasOrbs = this.weapons.some(w => w.id === 'orbiting_barrier');
-    if (!hasOrbs && this.weapons.length < 5) this.weapons.push(new OrbitingBarrierWeapon());
+    if (!hasOrbs && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new OrbitingBarrierWeapon());
 
     const hasAura = this.weapons.some(w => w.id === 'holy_aura');
-    if (!hasAura && this.weapons.length < 5) {
+    if (!hasAura && this.weapons.length < Player.MAX_WEAPONS) {
       const aura = new HolyAuraWeapon();
       aura.initVisual(scene, this.position);
       this.weapons.push(aura);
     }
 
     const hasKatana = this.weapons.some(w => w.id === 'katana_slash');
-    if (!hasKatana && this.weapons.length < 5) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
+    if (!hasKatana && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
     this.recalculateStats();
   }
 

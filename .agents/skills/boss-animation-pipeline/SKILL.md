@@ -1,6 +1,6 @@
 ---
 name: boss-animation-pipeline
-description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine.
+description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) in menacing 16-bit dark fantasy pixel art style (strictly NO anime/chibi/cute) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine.
 ---
 
 # Boss Animation Pipeline Skill
@@ -28,10 +28,12 @@ Bosses strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state i
 
 ### 1.2 Core Visual Standards for Bosses
 
-1. **Boss Proportions & Silhouette:**
-   - Massive, imposing proportions (2.5 to 4 times larger than regular heroes).
+1. **Boss Proportions & Threat Demeanor:**
+   - Massive, imposing dark fantasy proportions (2.5 to 4 times larger than regular heroes).
    - Highly readable, heavy silhouette: demonic horns, spikes, heavy armor plating, claws, tails, or blazing wings.
    - Distinctive threat accent: glowing eyes (crimson `#EF4444`, infernal purple `#A855F7`, or blazing orange `#F97316`).
+   - **Strict Exclusions:** Bosses are terrifying dark fantasy colossi and overlords — **STRICTLY NO anime style, NO chibi proportions, NO kawaii, NO cute/adorable expression, NO cartoon look, NO childish appearance**.
+   - Clean 16-bit pixel art style with hard pixel edges, limited color palette, and high contrast.
 
 2. **Boss Height & Headroom Limits:**
    - Boss body height in frame: **up to 120–130 pixels** (`char_h = 120.0`, `max_h = 130.0`) inside the $160 \times 160$ cell.
@@ -104,51 +106,114 @@ With plane geometry translation $+1.82$ along the $Y$ axis:
 
 ---
 
-## 3. Master Generation Prompts (Example: Infernal Demon Boss)
+## 3. Boss Colossus Concept Sheet & Human Approval Protocol (Phase 0 Approval Gate)
+
+Bosses are high-impact centerpiece encounters with massive visual presence ($160 \times 160$ px frames, 2.5–4x scale). To eliminate wasted iterations and guarantee satisfaction with the boss's menacing dark fantasy aesthetic, all boss creation requires a mandatory **Phase 0 Concept Approval Gate**:
+
+### Step 3.1: Boss Concept Sheet Generation (`boss_<name>_concept.png`)
+Generate a single composite **Boss Concept Sheet** featuring 3 distinct sections on pure solid white background `rgb(255,255,255)`:
+1. **Left section (Boss HP Bar Portrait / Visage View):** Close-up 160x160 terrifying boss portrait (glowing volcanic/infernal eyes, obsidian horns, demonic maw, spiked crowns, aura of supreme threat).
+2. **Center section (Colossal Full-Body Sprite):** Full-body colossal boss sprite in front-facing combat stance (height up to 120–130 px, 24px bottom margin, massive shoulders, heavy hooves/claws, spikes, magma veins, monstrous silhouette).
+3. **Right section (Signature Slam Weapon / Cataclysm Feature):** Standalone close-up detail of the boss's cataclysmic weapon or signature attack organ (e.g. molten magma cleaver, colossal volcanic crushing claw, infernal chained flail).
+
+#### Master Concept Sheet Prompt (Example: Infernal Demon Overlord)
+```text
+Boss concept reference sheet of Infernal Demon Overlord, a terrifying colossal dark fantasy boss.
+
+Three clear distinct sections on pure solid white background rgb(255,255,255):
+1. Left section: close-up 160x160 menacing boss portrait icon, terrifying demonic maw, sharp curved obsidian horns, blazing red volcanic eyes, rising dark smoke, molten magma veins.
+2. Center section: colossal full-body demonic overlord sprite in front combat stance, imposing heavy proportions, massive shoulders with magma cracks, blackened spiked plate armor, heavy demon hooves, spiked tail, clawed hands.
+3. Right section: isolated detailed display of the colossal volcanic crushing claw with glowing molten magma cracks and fiery embers.
+
+Clean 16-bit pixel art game assets, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
+```
+
+### Step 3.2: Human Approval Gateway (`ask_question` Interactive Check)
+The agent MUST display `boss_<name>_concept.png` in chat and request developer approval via `ask_question`:
+- **Question:** *"Сгенерирован концепт-лист босса (портрет для полоски HP, колоссальный силуэт в полный рост, боевые детали). Подойдёт ли такой дизайн или нужны правки?"*
+- **Options:**
+  - `(Recommended) Утвердить концепт босса (перейти к генерации листов анимаций WALK и ATTACK)`
+  - `Внести правки в босса (указать, что изменить: рога, масштаб, лавовые эффекты, броню, оружие)`
+- **Iteration Loop:** If adjustments are requested, the agent updates prompt tokens, regenerates `boss_<name>_concept.png`, and asks again.
+- **NEVER generate animation sheets before the boss concept is approved by the human developer.**
+
+### Step 3.3: Reference Image Conditioning (`ImagePaths: [concept_path]`)
+When generating `boss_<name>_walk.png` and `boss_<name>_attack.png`, **always pass the approved concept image** via `ImagePaths` in `generate_image` to lock in identical horns, colors, magma veins, and equipment across all frames.
+
+---
+
+## 4. Master Generation Prompts (Example: Infernal Demon Boss)
 
 ### Master PORTRAIT Prompt (`boss_demon_front.png`)
 ```text
-160x160 menacing pixel art boss portrait of Infernal Demon Overlord.
+160x160 menacing pixel art boss portrait of Infernal Demon Overlord, a terrifying dark fantasy boss.
+
 Gigantic demonic beast, sharp obsidian curved horns, glowing red volcanic eyes, molten magma cracks across blackened spiked plate chest, terrifying demonic maw, smoke rising from shoulders.
-Pure solid white background rgb(255,255,255), clean 16-bit RPG boss icon.
+
+Pure solid white background rgb(255,255,255), clean 16-bit RPG boss icon, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, clear readable silhouette.
+
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ### Master WALK Prompt (`boss_demon_walk.png`)
 ```text
 2D pixel art boss sprite sheet of menacing Infernal Demon Overlord.
-Massive demonic beast: curved obsidian horns, glowing red molten eyes, spiked volcanic armor, clawed hands, heavy demon hooves.
+
+Massive demonic beast: curved obsidian horns, glowing red molten eyes, spiked volcanic armor, clawed hands, heavy demon hooves. Exactly 2 arms, 2 hooves, 2 horns, 1 spiked tail.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: WALK heavy stomping 4-frame cycle across 4 columns: heavy steps shaking the ground, tail swishing, magma veins glowing.
-Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ### Master ATTACK Prompt (`boss_demon_attack.png`)
 *(Provide Master Portrait & WALK in `ImagePaths`)*
 ```text
 2D pixel art boss sprite sheet of the same Infernal Demon Overlord from reference images.
-Identical boss design: obsidian horns, molten magma veins, spiked armor.
+
+Identical boss design: massive demonic beast, obsidian horns, molten magma veins, spiked armor.
+
 Grid layout: exactly 4 columns and 4 rows (16 frames total).
 Pure solid white background rgb(255,255,255) without grid lines.
+
 Row 0: facing front / forward towards player.
 Row 1: STRICT 100% profile facing LEFT only for all 4 columns.
 Row 2: STRICT 100% profile facing RIGHT only for all 4 columns.
 Row 3: facing back / away from player.
+
 Animation: ATTACK devastating 4-frame slam sequence across 4 columns:
 Column 0: heavy anticipation windup raising massive volcanic claw;
 Column 1: brutal ground smash with fiery red shockwave and volcanic sparks;
-Column 2: impact crater follow-through;
+Column 2: impact crater follow-through (damage hit frame);
 Column 3: recovery return to combat stance.
-Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art.
+
+Characters anchored with 24px bottom margin inside each frame cell. Clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast.
+
+Dark fantasy RPG boss design, terrifying and monstrous colossal overlord.
+
+No anime style, no chibi proportions, no kawaii style, no cute expression, no cartoon look, no childish appearance, no soft pastel colors, no friendly face, no photorealism, no smooth gradients.
 ```
 
 ---
 
-## 4. Automated Processing Script
+## 5. Automated Processing Script
 
 Script `.agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py`:
 
@@ -168,9 +233,9 @@ python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py \
 
 ---
 
-## 5. Engine Integration Checklist
+## 6. Engine Integration Checklist
 
-### Step 5.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
+### Step 6.1: 2-State Animation & 3rd Frame Hit Registration in `Enemy.ts`
 When an animated boss attacks, the engine cycles 4 frames over 0.5s and registers damage strictly on the 3rd frame (`frameCol === 2`):
 
 ```typescript
@@ -193,7 +258,7 @@ if (this.animState === 'ATTACK') {
 }
 ```
 
-### Step 5.2: Dynamic 2D Sprite Projected Shadow Integration
+### Step 6.2: Dynamic 2D Sprite Projected Shadow Integration
 Bosses cast a realistic directional silhouette shadow onto the terrain matching the player:
 
 ```typescript
@@ -208,7 +273,7 @@ this.spriteMesh.castShadow = true;
 
 ---
 
-## 6. Verification Checklist
+## 7. Verification Checklist
 
 1. `python .agents/skills/boss-animation-pipeline/scripts/process_boss_sheets.py ...` -> Exit code 0.
 2. Resolution verification:

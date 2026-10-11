@@ -211,24 +211,32 @@ export class EnemyManager {
     return enemy;
   }
 
+  public stageTime: number = 0;
+
   /**
-   * Continuous progressive scaling multipliers based on elapsed minutes in prairie
+   * Continuous progressive scaling multipliers with endless scaling and biome overstay penalties.
    */
   public getHpMultiplier(): number {
     const minute = this.gameTime / 60;
-    // Progressive scaling scaled up 1.5x across 0 to 30 min
-    return 1 + (minute * 0.28 + Math.pow(minute / 4.5, 1.7) * 0.4) * 1.5;
+    const baseMult = 1 + (minute * 0.28 + Math.pow(minute / 4.5, 1.7) * 0.4) * 1.5;
+    const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
+    return baseMult * overstay.hpMult;
   }
 
   public getDamageMultiplier(): number {
     const minute = this.gameTime / 60;
-    // Damage scaling scaled up 1.5x across 0 to 30 min
-    return 1 + (minute * 0.12 + Math.pow(minute / 8, 1.4) * 0.25) * 1.5;
+    const baseMult = 1 + (minute * 0.12 + Math.pow(minute / 8, 1.4) * 0.25) * 1.5;
+    const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
+    return baseMult * overstay.dmgMult;
   }
 
   public getSpeedMultiplier(): number {
     const minute = this.gameTime / 60;
-    return Math.min(1.45, 1 + (minute * 0.012) * 1.5);
+    return Math.min(1.5, 1 + (minute * 0.012) * 1.5);
+  }
+
+  public resetStageTime(): void {
+    this.stageTime = 0;
   }
 
   public update(
@@ -243,25 +251,19 @@ export class EnemyManager {
     isPartnerAlive: boolean = true
   ) {
     this.gameTime += dt;
+    this.stageTime += dt;
     this.spawnTimer += dt;
 
-    // 1. Spawning Boss every 5 minutes (minute 5, 10, 15, 20, 25)
+    // 1. Spawning Boss every 5 minutes endlessly (minute 5, 10, 15, 20, 25, 30, 35, 40...)
     const currentMinute = Math.floor(this.gameTime / 60);
     if (
       currentMinute >= 5 &&
-      currentMinute < 30 &&
       currentMinute % 5 === 0 &&
       currentMinute > this.lastBossMinute
     ) {
       this.lastBossMinute = currentMinute;
       const tier = Math.floor(currentMinute / 5);
       this.spawnTieredBoss(playerPos, tier);
-    }
-
-    // 2. Minute 30 (1800s) Immortal Boss Trigger!
-    if (this.gameTime >= 1800 && !this.immortalBossSpawned) {
-      this.immortalBossSpawned = true;
-      this.spawnImmortalBoss(playerPos);
     }
 
     // Dynamic spawn interval (gets faster over time, down to 0.18s per wave)
@@ -734,11 +736,12 @@ export class EnemyManager {
     hitter: string = 'p1',
     showDamageNumber: boolean = true,
     isCrit: boolean = false,
-    critTier: number = 1
+    critTier: number = 1,
+    critMultiplier: number = 1.5
   ) {
     const isDead = enemy.takeDamage(amount, sourcePos, hitter);
     if (showDamageNumber && camera) {
-      this.damageNumbers.spawnDamage(enemy.position, amount, isCrit, camera, false, critTier);
+      this.damageNumbers.spawnDamage(enemy.position, amount, isCrit, camera, false, critTier, critMultiplier);
     }
     SoundManager.playHit();
     return isDead;
@@ -923,6 +926,7 @@ export class EnemyManager {
     this.totalKills = 0;
     this.spawnTimer = 0;
     this.gameTime = 0;
+    this.stageTime = 0;
     this.activeBoss = null;
     this.bossSpawned = false;
     this.lastBossMinute = 0;
