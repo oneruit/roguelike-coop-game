@@ -89,6 +89,10 @@ export class UpdateNotifier {
 
   public async checkForUpdate(): Promise<boolean> {
     if (this.isChecking) return this.isUpdateAvailable;
+    // In local development, HMR handles code updates; avoid false-positive update alerts
+    if (typeof __APP_MODE__ !== 'undefined' && __APP_MODE__ === 'development') {
+      return false;
+    }
     this.isChecking = true;
     this.lastCheckTime = Date.now();
 

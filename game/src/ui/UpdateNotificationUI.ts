@@ -47,11 +47,13 @@ export class UpdateNotificationUI {
 
   private initMainMenuVersion(): void {
     const notifier = UpdateNotifier.getInstance();
+    const isDev = typeof __APP_MODE__ !== 'undefined' ? __APP_MODE__ === 'development' : import.meta.env.DEV;
+    const modeBadge = isDev ? ' [DEV]' : '';
     if (this.mainMenuVersionText) {
-      this.mainMenuVersionText.textContent = `v${notifier.currentVersion.version}`;
+      this.mainMenuVersionText.textContent = `v${notifier.currentVersion.version}${modeBadge}`;
     }
     if (this.mainMenuVersionTag) {
-      this.mainMenuVersionTag.title = `Версия клиента: v${notifier.currentVersion.version}`;
+      this.mainMenuVersionTag.title = `Версия клиента: v${notifier.currentVersion.version}${isDev ? ' (Development mode)' : ' (Production)'}`;
     }
   }
 

@@ -102,21 +102,41 @@ export default defineConfig(({ command }) => {
       process.env.BASE_PATH ||
       (process.env.GITHUB_ACTIONS && process.env.GITHUB_REPOSITORY
         ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/`
-        : './'),
+        : isBuild
+        ? './'
+        : '/'),
     plugins: [versionPlugin(isBuild, currentBuildTime, currentBuildId), htmlPartialsPlugin()],
     define: {
       __APP_VERSION__: JSON.stringify(appVersion),
       __APP_BUILD_TIME__: JSON.stringify(currentBuildTime),
       __APP_BUILD_ID__: JSON.stringify(currentBuildId),
+      __APP_MODE__: JSON.stringify(isBuild ? 'production' : 'development'),
     },
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: true,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         input: {
           main: path.resolve(process.cwd(), 'index.html'),
           game: path.resolve(process.cwd(), 'game/index.html')
+        },
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('three')) {
+                return 'three';
+              }
+              if (id.includes('@supabase')) {
+                return 'supabase';
+              }
+              if (id.includes('peerjs')) {
+                return 'peerjs';
+              }
+              return 'vendor';
+            }
+          }
         }
       }
     },

@@ -94,6 +94,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist-admin',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: {
         admin: resolve(process.cwd(), 'admin/index.html')
