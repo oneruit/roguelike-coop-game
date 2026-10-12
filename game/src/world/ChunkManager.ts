@@ -7,7 +7,7 @@ import {
   Mesh,
   type Frustum
 } from 'three';
-import { TerrainProps, TerrainMaterials } from './TerrainProps';
+import { TerrainMaterials } from './TerrainProps';
 import { Altar } from './Altar';
 import { AltarManager } from './AltarManager';
 import { ObstacleManager } from './ObstacleManager';
@@ -157,34 +157,6 @@ export class ChunkManager {
       occupied.push({ x: ax, z: az, radius: 9.5 });
     }
 
-    // 3.5. Oases Placement (Majestic desert oasis sanctuary with water & palms; solid collision)
-    const oasisCount = 2;
-    for (let o = 0; o < oasisCount; o++) {
-      const oasisAngle = (o * Math.PI) + rng.range(0.35, 0.85);
-      const oasisDist = rng.range(70, 130);
-      const ox = Math.cos(oasisAngle) * oasisDist;
-      const oz = Math.sin(oasisAngle) * oasisDist;
-
-      const oasis = TerrainProps.createOasis(() => rng.next());
-      oasis.group.position.set(ox, 0, oz);
-      this.scene.add(oasis.group);
-      this.oasisGroups.push(oasis.group);
-
-      const chunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(ox / ChunkManager.CHUNK_SIZE)));
-      const chunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(oz / ChunkManager.CHUNK_SIZE)));
-      const chunkKey = `${chunkX},${chunkZ}`;
-
-      this.obstacleManager.addObstacle(chunkKey, {
-        x: ox,
-        z: oz,
-        radius: oasis.radius,
-        type: 'oasis'
-      });
-
-      // Clearance area to prevent overlapping props, chests, or dunes
-      occupied.push({ x: ox, z: oz, radius: oasis.radius + 6.0 });
-    }
-
     // 4. Chests Placement (deterministic, non-overlapping)
     if (chestManager) {
       const placedChests = chestManager.generateStageChests(
@@ -201,9 +173,7 @@ export class ChunkManager {
       }
     }
 
-    // 5. Environmental Obstacles across all 100 chunks
-    // Guarantee that obstacles do NOT cluster and have minimum 6.5m distance between each other
-    const placedObstaclePositions: { x: number; z: number }[] = [];
+    // 5. Build terrain chunks across all 100 chunks
 
     for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
       for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
@@ -258,98 +228,12 @@ export class ChunkManager {
         floorMesh.receiveShadow = true;
         chunkGroup.add(floorMesh);
 
-        // Scattered 3D Props with strict separation
-        const candidateCount = 8;
-        let chunkObstaclesCount = 0;
-
-        for (let a = 0; a < candidateCount && chunkObstaclesCount < 4; a++) {
-          const candX = cx * ChunkManager.CHUNK_SIZE + rng.range(5.0, 45.0);
-          const candZ = cz * ChunkManager.CHUNK_SIZE + rng.range(5.0, 45.0);
-
-          // Boundary safe margin
-          if (Math.abs(candX) > 235 || Math.abs(candZ) > 235) continue;
-
-          // Distance check to all occupied zones (spawn, teleporter, altars, chests)
-          let overlapsOccupied = false;
-          for (const occ of occupied) {
-            if (Math.hypot(candX - occ.x, candZ - occ.z) < occ.radius + 3.0) {
-              overlapsOccupied = true;
-              break;
-            }
-          }
-          if (overlapsOccupied) continue;
-
-          // Strict separation from all existing obstacles (minimum 6.8m)
-          let tooCloseToOtherObstacle = false;
-          for (const obs of placedObstaclePositions) {
-            if (Math.hypot(candX - obs.x, candZ - obs.z) < 6.8) {
-              tooCloseToOtherObstacle = true;
-              break;
-            }
-          }
-          if (tooCloseToOtherObstacle) continue;
-
-          // Valid placement! Choose prop type
-          const propRoll = rng.next();
-          let prop: Group;
-          let obsRadius = 0.55;
-          let obsType: 'cactus' | 'tree' | 'boulder' | 'landmark' = 'cactus';
-
-          if (propRoll < 0.40) {
-            prop = TerrainProps.createCactus(() => rng.next());
-            obsRadius = 0.55;
-            obsType = 'cactus';
-          } else if (propRoll < 0.70) {
-            prop = TerrainProps.createTree(() => rng.next());
-            obsRadius = 0.70;
-            obsType = 'tree';
-          } else if (propRoll < 0.88) {
-            prop = TerrainProps.createBoulder(() => rng.next());
-            obsRadius = 0.95;
-            obsType = 'boulder';
-          } else {
-            prop = rng.next() < 0.5
-              ? TerrainProps.createWagonWheel(() => rng.next())
-              : TerrainProps.createTrailPost(() => rng.next());
-            obsRadius = 0.50;
-            obsType = 'landmark';
-          }
-
-          prop.position.set(candX, 0, candZ);
-          chunkGroup.add(prop);
-
-          this.obstacleManager.addObstacle(key, {
-            x: candX,
-            z: candZ,
-            radius: obsRadius,
-            type: obsType
-          });
-
-          placedObstaclePositions.push({ x: candX, z: candZ });
-          chunkObstaclesCount++;
-        }
-
-        // Secondary purely visual sagebrush tufts (no collision, 2-3 per chunk)
-        const scrubCount = 2 + rng.rangeInt(0, 1);
-        for (let s = 0; s < scrubCount; s++) {
-          const sx = cx * ChunkManager.CHUNK_SIZE + rng.range(4.0, 46.0);
-          const sz = cz * ChunkManager.CHUNK_SIZE + rng.range(4.0, 46.0);
-          if (Math.hypot(sx, sz) < 10.0) continue;
-
-          const scrub = TerrainProps.createScrub(() => rng.next());
-          scrub.position.set(sx, 0, sz);
-          chunkGroup.add(scrub);
-        }
-
         this.activeChunks.set(key, chunkGroup);
         this.scene.add(chunkGroup);
       }
     }
 
-    // 6. Natural Perimeter Canyon Boulders along the 500x500 map borders
-    this.generatePerimeterBoulders(rng);
-
-    // 7. Procedural Rough Terrain Zones (Dunes & Barchans in Desert, Biome equivalents)
+    // 6. Procedural Rough Terrain Zones (Dunes & Barchans in Desert, Biome equivalents)
     this.roughTerrainManager.generateForStage(
       stageNumber,
       rng,
@@ -364,45 +248,6 @@ export class ChunkManager {
       },
       biomeId
     );
-  }
-
-  /**
-   * Generates decorative and solid perimeter rock formations along boundaries.
-   */
-  private generatePerimeterBoulders(rng: SeededRNG) {
-    const margin = 220;
-    const step = 9.5;
-
-    for (let coord = -margin; coord <= margin; coord += step) {
-      // North & South walls
-      this.placeBoundaryRock(coord, margin, rng);
-      this.placeBoundaryRock(coord, -margin, rng);
-
-      // East & West walls
-      this.placeBoundaryRock(margin, coord, rng);
-      this.placeBoundaryRock(-margin, coord, rng);
-    }
-  }
-
-  private placeBoundaryRock(x: number, z: number, rng: SeededRNG) {
-    const cx = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(x / ChunkManager.CHUNK_SIZE)));
-    const cz = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(z / ChunkManager.CHUNK_SIZE)));
-    const key = `${cx},${cz}`;
-    const chunkGroup = this.activeChunks.get(key);
-    if (!chunkGroup) return;
-
-    const boulder = TerrainProps.createBoulder(() => rng.next());
-    const scale = 1.35 + rng.range(0, 0.45);
-    boulder.scale.set(scale, scale * 1.2, scale);
-    boulder.position.set(x, 0, z);
-    chunkGroup.add(boulder);
-
-    this.obstacleManager.addObstacle(key, {
-      x,
-      z,
-      radius: 2.2 * scale,
-      type: 'boulder'
-    });
   }
 
   /**

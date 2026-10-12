@@ -22,17 +22,18 @@ export class DropManager {
     this.scene = scene;
   }
 
-  private condenseXp(amount: number, targetPos?: Vector3) {
-    if (amount <= 0 || this.gems.length === 0) return;
+  private condenseXp(amount: number, targetPos?: Vector3, gemToExclude?: Gem) {
+    if (amount <= 0) return;
     let bestGem: Gem | null = null;
     let bestDistSq = Infinity;
 
+    // Search for nearest visible uncollected XP gem to targetPos (within screen distance <= 22m)
     for (const g of this.gems) {
-      if (g.type === 'gold' || g.isCollected) continue;
+      if (g === gemToExclude || g.type === 'gold' || g.isCollected) continue;
       if (targetPos) {
-        const d = g.position.distanceToSquared(targetPos);
-        if (d < bestDistSq) {
-          bestDistSq = d;
+        const dSq = g.position.distanceToSquared(targetPos);
+        if (dSq <= 22 * 22 && dSq < bestDistSq) {
+          bestDistSq = dSq;
           bestGem = g;
         }
       } else {
@@ -42,12 +43,25 @@ export class DropManager {
     }
 
     if (bestGem) {
-      bestGem.xpValue += amount;
-      if (bestGem.type === 'blue' && bestGem.xpValue >= 25) {
-        bestGem.type = 'green';
-      } else if (bestGem.xpValue >= 75) {
-        bestGem.type = 'red';
+      bestGem.addXp(amount);
+    } else if (targetPos) {
+      // If no visible crystal exists near the player, spawn one within visible range
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 8 + Math.random() * 4;
+      const spawnPos = new Vector3(
+        targetPos.x + Math.cos(angle) * dist,
+        0,
+        targetPos.z + Math.sin(angle) * dist
+      );
+      if (this.getElevation) {
+        spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
       }
+      const newGem = new Gem('blue', spawnPos);
+      newGem.getElevation = this.getElevation;
+      newGem.xpValue = 0;
+      newGem.addXp(amount);
+      this.gems.push(newGem);
+      this.scene.add(newGem.mesh);
     }
   }
 
@@ -57,7 +71,7 @@ export class DropManager {
       const nonGoldIdx = this.gems.findIndex(g => g.type !== 'gold');
       const oldest = nonGoldIdx !== -1 ? this.gems.splice(nonGoldIdx, 1)[0] : this.gems.shift();
       if (oldest) {
-        this.condenseXp(oldest.xpValue);
+        this.condenseXp(oldest.xpValue, position, oldest);
         oldest.destroy(this.scene);
       }
     }
@@ -105,13 +119,13 @@ export class DropManager {
         }
       }
 
-      // Cull regular gems left far behind in the world, condensing their XP near the player
-      if (!gem.isAttracted && minDistanceSq > 65 * 65) {
+      // Cull regular gems left far behind in the world, condensing their XP near the player into closest visible crystal
+      if (!gem.isAttracted && minDistanceSq > 32 * 32) {
         if (gem.type === 'gold') {
           // Gold passive crystals NEVER despawn! They persist indefinitely.
           continue;
         }
-        this.condenseXp(gem.xpValue, closest.position);
+        this.condenseXp(gem.xpValue, closest.position, gem);
         gem.destroy(this.scene);
         this.gems.splice(i, 1);
         continue;

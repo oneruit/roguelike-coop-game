@@ -472,6 +472,22 @@ export class Player {
     this.recalculateStats();
   }
 
+  public removeRiftItem(id: RiftItemId, count: number = 1): void {
+    const cur = this.getItemStacks(id);
+    if (cur <= count) {
+      this.riftItems.delete(id);
+    } else {
+      this.riftItems.set(id, cur - count);
+    }
+    if (id === 'titan_heart') {
+      const reduction = 150 * Math.min(cur, count);
+      this.maxHp = Math.max(100, this.maxHp - reduction);
+      this.hp = Math.min(this.maxHp, this.hp);
+      this.redrawOverhead();
+    }
+    this.recalculateStats();
+  }
+
   public triggerDash(moveDir: Vector3): boolean {
     if (this.dashCooldown > 0 || this.isDashing || this.isDowned || !this.isAlive) {
       return false;
@@ -1019,9 +1035,10 @@ export class Player {
 
     // Check Chronos Phylactery (Legendary Item) lethal protection
     const chronosStacks = this.getItemStacks('chronos_phylactery');
-    if (this.hp <= 0 && this.hasChronosReady && chronosStacks > 0) {
-      this.hasChronosReady = false;
-      const healPercent = Math.min(1.0, 0.50 + (chronosStacks - 1) * 0.25);
+    if (this.hp <= 0 && chronosStacks > 0) {
+      // Consume 1 Time Crystal from inventory per use
+      this.removeRiftItem('chronos_phylactery', 1);
+      const healPercent = 0.50;
       this.hp = Math.round(this.maxHp * healPercent);
       this.addBuff({
         type: 'invulnerable',
@@ -1095,24 +1112,13 @@ export class Player {
 
   public static readonly MAX_WEAPONS = 4;
 
-  public getAwakenedCap(grade: number = 1): number {
-    const count = this.weapons.filter(w => (w.awakenedGrade ?? 0) >= grade).length;
-    switch (count) {
-      case 1: return 6;
-      case 2: return 8;
-      case 3: return 10;
-      case 4: return 12;
-      default: return 12;
-    }
+  public getAwakenedCap(_grade: number = 1): number {
+    return 12;
   }
 
   public areAllWeaponsMaxed(): boolean {
     if (this.weapons.length < Player.MAX_WEAPONS) return false;
-    return this.weapons.every(w => {
-      const g = w.awakenedGrade ?? 0;
-      const cap = g > 0 ? this.getAwakenedCap(g) : 12;
-      return w.level >= cap;
-    });
+    return this.weapons.every(w => w.level >= 12);
   }
 
   public giveAllWeapons(scene: Scene) {
