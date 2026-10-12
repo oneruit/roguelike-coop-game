@@ -49,12 +49,32 @@
   }
 
   /* Minimap relocated on mobile so it does not collide with Top HUD */
-  #minimap-container {
+  .minimap-wrapper {
     top: auto !important;
     bottom: 12px !important;
     right: 12px !important;
+    gap: 4px !important;
+  }
+
+  #minimap-container {
     padding: 4px !important;
     border-radius: 8px !important;
+  }
+
+  .minimap-stats-panel {
+    width: 105px !important;
+    gap: 3px !important;
+  }
+
+  .minimap-stats-panel .stat-badge {
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+  }
+
+  .hud-bottom-xp {
+    bottom: 6px !important;
+    width: calc(100vw - 160px) !important;
+    left: calc(50% - 60px) !important;
   }
 
   #minimap-canvas {
@@ -176,7 +196,17 @@
 
   /* Dev Panel Modal */
   .dev-card {
-    padding: 16px 12px !important;
+    padding: 14px 10px !important;
+    max-height: 92vh !important;
+  }
+
+  .dev-sections-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .dev-full-section {
+    grid-column: span 2 !important;
   }
 
   .dev-title {
@@ -244,6 +274,14 @@
     justify-content: space-between !important;
   }
 
+  .dev-sections-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dev-full-section {
+    grid-column: span 1 !important;
+  }
+
   .dev-btn-grid {
     grid-template-columns: 1fr !important;
   }
@@ -283,6 +321,36 @@
 
   .death-title {
     font-size: 26px !important;
+  }
+}
+
+@media (max-height: 720px) {
+  .dev-card {
+    max-height: 94vh !important;
+    padding: 12px 14px !important;
+  }
+
+  .dev-header {
+    margin-bottom: 8px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .dev-telemetry-bar {
+    padding: 4px 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .dev-section {
+    padding: 8px 10px !important;
+  }
+
+  .settings-card {
+    max-height: 94vh !important;
+    padding: 18px 16px !important;
+  }
+
+  .hud-bottom-xp {
+    bottom: 4px !important;
   }
 }
 

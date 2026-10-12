@@ -275,8 +275,8 @@ export class HUD {
     };
     this.gameOverUI.onMenuClicked = () => {
       this.hideGameOver();
-      this.showMainMenu();
       this.onReturnToMenu?.();
+      this.showMainMenu();
     };
 
     this.bindMainMenuListeners();
@@ -525,8 +525,8 @@ export class HUD {
 
     this.btnPauseMenu?.addEventListener('click', () => {
       this.hidePause();
-      this.showMainMenu();
       this.onReturnToMenu?.();
+      this.showMainMenu();
     });
 
     document.getElementById('btn-dev-mobile-trigger')?.addEventListener('click', () => {
@@ -1191,6 +1191,10 @@ export class HUD {
 
   public resetBossUI() {
     this.inGameOverlayUI.resetBossUI();
+  }
+
+  public resetSessionHUD() {
+    this.inGameOverlayUI.resetSessionHUD();
   }
 
   public updateWeaponsBar(weapons: Weapon[]) {

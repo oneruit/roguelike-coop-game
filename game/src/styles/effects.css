@@ -1,13 +1,31 @@
 /* ==========================================================================
    DEVELOPER CONSOLE (KEY P)
    ========================================================================== */
+/* Dev modal backdrop - transparent so map is visible */
+#dev-panel-modal .modal-backdrop {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#dev-panel-modal .modal-backdrop::after {
+  display: none !important;
+}
+
 .dev-card {
-  max-width: 920px !important;
+  max-width: 960px !important;
   width: 95vw !important;
-  padding: 28px 26px !important;
-  border-color: rgba(0, 132, 255, 0.35) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 132, 255, 0.2) !important;
+  max-height: min(90vh, 850px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 20px 22px !important;
+  border-color: rgba(0, 132, 255, 0.45) !important;
+  background: rgba(8, 16, 32, 0.82) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 132, 255, 0.25) !important;
   text-align: left;
+  box-sizing: border-box !important;
 }
 
 .dev-header {
@@ -87,7 +105,27 @@
 .dev-sections-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: 100%;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.dev-sections-container::-webkit-scrollbar {
+  width: 6px;
+}
+.dev-sections-container::-webkit-scrollbar-track {
+  background: rgba(10, 20, 36, 0.5);
+  border-radius: 4px;
+}
+.dev-sections-container::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.4);
+  border-radius: 4px;
+}
+.dev-sections-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.75);
 }
 
 .dev-section {

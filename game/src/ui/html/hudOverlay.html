@@ -5,41 +5,20 @@
       </div>
 
       <div id="hud-top">
-        <div id="xp-bar-container">
-          <div id="xp-bar-fill"></div>
-          <div id="xp-text">LVL <span id="player-level">1</span></div>
-        </div>
-
         <div id="stats-panel">
           <div class="stat-badge stage-badge">
             <span class="stat-label">STAGE</span>
             <span id="stage-text">1: ПУСТЫНЯ</span>
           </div>
-          <div class="stat-badge credits-badge">
-            <span class="stat-label">CREDITS</span>
-            <span id="plasma-credits">⬡ 0</span>
-          </div>
-          <div class="stat-badge timer-badge">
-            <span class="stat-label">TIME</span>
-            <span id="game-timer">00:00</span>
-          </div>
           <div class="stat-badge difficulty-badge" id="difficulty-badge" title="Сложность мира растет с течением времени!">
             <span class="stat-label" id="diff-tier-label">ЛЕГКО</span>
             <div class="diff-bar-bg"><div id="diff-bar-fill"></div></div>
-          </div>
-          <div class="stat-badge kill-badge">
-            <span class="stat-label">KILLS</span>
-            <span id="kill-count">0</span>
-            <span id="coop-kills-detail" class="hidden coop-kills-detail">
-              (<span class="my-kills-tag">Вы: <strong id="my-kills-count">0</strong></span> | <span class="partner-kills-tag">П2: <strong id="partner-kills-count">0</strong></span>)
-            </span>
           </div>
           <div id="coop-badge" class="stat-badge coop-badge hidden">
             <span class="stat-label">ONLINE</span>
             <span id="coop-room-name">КООП</span>
           </div>
         </div>
-
 
         <!-- Boss Health Bar Container (shown when boss spawns) -->
         <div id="boss-hp-container" class="hidden">
@@ -63,12 +42,32 @@
       <!-- Floating Mobile Dev Trigger Button (Training Mode Only) -->
       <button id="btn-dev-mobile-trigger" class="btn-dev-mobile-trigger hidden" title="Панель разработчика">DEV</button>
 
-      <!-- Minimap Radar in top-right corner -->
-      <div id="minimap-container" title="Нажмите, чтобы открыть карту [TAB]">
-        <canvas id="minimap-canvas" width="170" height="170"></canvas>
-        <div class="minimap-footer">
-          <span id="minimap-coords" class="minimap-coords">0, 0</span>
-          <span class="minimap-hint">[TAB] Карта</span>
+      <!-- Minimap Radar & In-Game Session Stats in top-right corner -->
+      <div class="minimap-wrapper">
+        <div id="minimap-container" title="Нажмите, чтобы открыть карту [TAB]">
+          <canvas id="minimap-canvas" width="170" height="170"></canvas>
+          <div class="minimap-footer">
+            <span id="minimap-coords" class="minimap-coords">0, 0</span>
+            <span class="minimap-hint">[TAB] Карта</span>
+          </div>
+        </div>
+
+        <div id="minimap-stats-panel" class="minimap-stats-panel">
+          <div class="stat-badge timer-badge">
+            <span class="stat-label">TIME</span>
+            <span id="game-timer">00:00</span>
+          </div>
+          <div class="stat-badge credits-badge">
+            <span class="stat-label">CREDITS</span>
+            <span id="plasma-credits">0</span>
+          </div>
+          <div class="stat-badge kill-badge">
+            <span class="stat-label">KILLS</span>
+            <span id="kill-count">0</span>
+            <span id="coop-kills-detail" class="hidden coop-kills-detail">
+              (<span class="my-kills-tag">Вы: <strong id="my-kills-count">0</strong></span> | <span class="partner-kills-tag">П2: <strong id="partner-kills-count">0</strong></span>)
+            </span>
+          </div>
         </div>
       </div>
 
@@ -147,6 +146,14 @@
         </div>
         <!-- Path of Exile Style Party List -->
         <div id="poe-party-list" class="poe-party-list"></div>
+      </div>
+
+      <!-- Bottom Level & XP Progression Bar -->
+      <div id="hud-bottom-xp" class="hud-bottom-xp">
+        <div id="xp-text">LVL <span id="player-level">1</span></div>
+        <div id="xp-bar-container">
+          <div id="xp-bar-fill"></div>
+        </div>
       </div>
 
       <!-- Controls Hint -->
