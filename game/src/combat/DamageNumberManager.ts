@@ -25,12 +25,13 @@ export class DamageNumberManager {
     camera?: Camera,
     isBleed = false,
     critTier = 1,
-    critMultiplier = 1.5
+    critMultiplier = 1.5,
+    isBurn = false
   ) {
     if (!DamageNumberManager.damageEnabled) return;
     const el = document.createElement('div');
     const tierClass = isCrit ? (critTier >= 3 ? 'dmg-crit-t3' : (critTier === 2 ? 'dmg-crit-t2' : 'dmg-crit-t1')) : '';
-    el.className = `dmg-number ${isCrit ? `dmg-crit ${tierClass}` : ''} ${isBleed ? 'dmg-bleed' : ''}`;
+    el.className = `dmg-number ${isCrit ? `dmg-crit ${tierClass}` : ''} ${isBleed ? 'dmg-bleed' : ''} ${isBurn ? 'dmg-burn' : ''}`;
     let suffix = '';
     if (isCrit) {
       const critPercent = critMultiplier * 100;
@@ -64,11 +65,17 @@ export class DamageNumberManager {
       el.style.fontWeight = '900';
     } else if (isBleed) {
       suffix = '🩸';
+    } else if (isBurn) {
+      suffix = '🔥';
     }
     el.innerText = `${Math.round(amount)}${suffix}`;
     if (isBleed) {
       el.style.color = '#f87171';
       el.style.textShadow = '0 0 6px #991b1b, 0 1px 2px #000';
+      el.style.fontWeight = '800';
+    } else if (isBurn) {
+      el.style.color = '#facc15';
+      el.style.textShadow = '0 0 6px #ca8a04, 0 1px 2px #000';
       el.style.fontWeight = '800';
     }
 

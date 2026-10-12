@@ -162,6 +162,7 @@ export class EnemyManager {
   public onBossDefeat?: () => void;
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
+  public onBurnDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
   public camera?: Camera;
 
   public activePlayerCount: number = 1;
@@ -206,6 +207,14 @@ export class EnemyManager {
       }
       if (this.onBleedDamage) {
         this.onBleedDamage(e, tickDamage, isDead, hitter, sourceWeaponId);
+      }
+    };
+    enemy.onBurnDamage = (e, tickDamage, isDead, hitter, sourceWeaponId) => {
+      if (this.camera) {
+        this.damageNumbers.spawnDamage(e.position, tickDamage, false, this.camera, false, 1, 1.5, true);
+      }
+      if (this.onBurnDamage) {
+        this.onBurnDamage(e, tickDamage, isDead, hitter, sourceWeaponId);
       }
     };
     return enemy;

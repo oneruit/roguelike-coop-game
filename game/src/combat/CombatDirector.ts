@@ -300,10 +300,11 @@ export class CombatDirector {
   }
 
   public onLocalPlayerEnemyKill(enemy?: Enemy): void {
-    // Item Proc: Bio-Leech (+2 HP per stack)
+    // Item Proc: Bio-Leech (+2 HP and +0.6% max HP per stack)
     const leechStacks = this.player.getItemStacks('bio_leech');
     if (leechStacks > 0) {
-      this.player.heal(leechStacks * 2);
+      const healAmount = Math.max(1, Math.round(leechStacks * (2 + this.player.maxHp * 0.006)));
+      this.player.heal(healAmount);
     }
 
     // Item Proc: Singularity Core (Legendary: every 10 kills [-2/stack, min 3] creates black hole pull & 600% [+200%/stack] explosion)

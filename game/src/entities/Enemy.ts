@@ -195,6 +195,7 @@ export class Enemy {
   public bleedStacks: BleedStack[] = [];
   private bleedTickTimer = 0;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
+  public onBurnDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
 
   // 4-Directional Sprites
   private textures: DirectionalTextures;
@@ -536,7 +537,9 @@ export class Enemy {
           if (isDead) {
             this.isAlive = false;
           }
-          if (this.onBleedDamage) {
+          if (this.onBurnDamage) {
+            this.onBurnDamage(this, tickAmount, isDead, this.burnHitter, this.burnSourceWeaponId);
+          } else if (this.onBleedDamage) {
             this.onBleedDamage(this, tickAmount, isDead, this.burnHitter, this.burnSourceWeaponId);
           }
         }

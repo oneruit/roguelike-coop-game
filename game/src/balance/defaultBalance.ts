@@ -372,9 +372,9 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     }
   },
   passives: {
-    stat_sheriff_star: {
-      id: 'stat_sheriff_star',
-      name: 'Звезда Шерифа',
+    stat_amplifier: {
+      id: 'stat_amplifier',
+      name: 'Усилитель',
       icon: '⭐',
       description: '+2% к урону всех оружий',
       baseValue: 2,
@@ -382,16 +382,37 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       scalingType: 'additive',
       notes: 'Аддитивное масштабирование: 100 стаков = +200%, без ограничения'
     },
-    stat_spurs: {
-      id: 'stat_spurs',
-      name: 'Ковбойские Шпоры',
-      icon: '👢',
-      description: '+3% к скорости передвижения (макс. 2.5x)',
+    stat_sheriff_star: {
+      id: 'stat_sheriff_star',
+      name: 'Усилитель',
+      icon: '⭐',
+      description: '+2% к урону всех оружий',
+      baseValue: 2,
+      perStackValue: 2,
+      scalingType: 'additive',
+      notes: 'Аддитивное масштабирование: 100 стаков = +200%, без ограничения'
+    },
+    stat_speed_boots: {
+      id: 'stat_speed_boots',
+      name: 'Ботинки Скорости',
+      icon: '🥾',
+      description: '+3% к скорости передвижения (макс. 3.0x)',
       baseValue: 3,
       perStackValue: 3,
-      maxValue: 250,
+      maxValue: 300,
       scalingType: 'multiplicative',
-      notes: 'Мультипликативный множитель скорости: x1.03 за стак, потолок x2.5'
+      notes: 'Мультипликативный множитель скорости: x1.03 на 1 ур., угасающая эффективность до потолка x3.0'
+    },
+    stat_spurs: {
+      id: 'stat_spurs',
+      name: 'Ботинки Скорости',
+      icon: '🥾',
+      description: '+3% к скорости передвижения (макс. 3.0x)',
+      baseValue: 3,
+      perStackValue: 3,
+      maxValue: 300,
+      scalingType: 'multiplicative',
+      notes: 'Мультипликативный множитель скорости: x1.03 на 1 ур., угасающая эффективность до потолка x3.0'
     },
     stat_flask: {
       id: 'stat_flask',
@@ -403,16 +424,27 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       scalingType: 'additive',
       notes: 'Увеличивает макс. HP и сразу восполняет текущее здоровье'
     },
+    stat_magnet: {
+      id: 'stat_magnet',
+      name: 'Магнит',
+      icon: '🧲',
+      description: '+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м)',
+      baseValue: 4,
+      perStackValue: 10,
+      maxValue: 50,
+      scalingType: 'diminishing',
+      notes: 'Базовый 4м, +10% на 1 ур., угасающая эффективность до 50м на 300 ур.'
+    },
     stat_lasso: {
       id: 'stat_lasso',
-      name: 'Магнитное Лассо',
-      icon: '➰',
-      description: '+35% к радиусу притяжения кристаллов',
-      baseValue: 35,
-      perStackValue: 35,
-      maxValue: 25,
-      scalingType: 'multiplicative',
-      notes: '4.2м * 1.35^n, максимальный радиус ограничен 25 метрами'
+      name: 'Магнит',
+      icon: '🧲',
+      description: '+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м)',
+      baseValue: 4,
+      perStackValue: 10,
+      maxValue: 50,
+      scalingType: 'diminishing',
+      notes: 'Базовый 4м, +10% на 1 ур., угасающая эффективность до 50м на 300 ур.'
     },
     stat_amulet: {
       id: 'stat_amulet',
@@ -454,10 +486,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'common',
       icon: '⚡',
       color: '#94a3b8',
-      description: '+15% к скорострельности оружий',
-      stackText: '+15% за стак',
-      baseValue: 15,
-      scaling: '0.85^n множитель перезарядки'
+      description: '+10% к скорострельности оружий',
+      stackText: '+10% за стак',
+      baseValue: 10,
+      scaling: '0.90^n множитель перезарядки'
     },
     nanite_plating: {
       id: 'nanite_plating',
@@ -531,10 +563,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'uncommon',
       icon: '🎯',
       color: '#22c55e',
-      description: '+2.4% к шансу нанести критический удар',
-      stackText: '+2.4% шанс за стак',
-      baseValue: 2.4,
-      scaling: '+2.4% шанс крита за стак'
+      description: '+3.0% к шансу нанести критический удар',
+      stackText: '+3.0% шанс за стак',
+      baseValue: 3.0,
+      scaling: '+3% шанс крита за стак'
     },
     aegis_battery: {
       id: 'aegis_battery',
@@ -542,10 +574,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'uncommon',
       icon: '💠',
       color: '#22c55e',
-      description: 'Постоянно генерирует энергощит до +35 HP, восстанавливающийся вне боя',
-      stackText: '+35 макс. емкости щита за стак',
-      baseValue: 35,
-      scaling: '+35 к емкости щита'
+      description: 'Постоянно генерирует энергощит до +50 HP, восстанавливающийся вне боя',
+      stackText: '+50 макс. емкости щита за стак',
+      baseValue: 50,
+      scaling: '+50 к емкости щита'
     },
     bio_leech: {
       id: 'bio_leech',
@@ -553,10 +585,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'uncommon',
       icon: '🧬',
       color: '#22c55e',
-      description: 'Восстанавливает +2 HP при каждом уничтожении врага',
-      stackText: '+2 HP за стак',
+      description: 'Восстанавливает +2 HP и 0.6% от макс. HP при каждом уничтожении врага',
+      stackText: '+2 HP и +0.6% за стак',
       baseValue: 2,
-      scaling: '+2 HP за уничтожение'
+      scaling: '+2 HP и +0.6% от макс. HP за уничтожение'
     },
     overclock_module: {
       id: 'overclock_module',
@@ -564,10 +596,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'uncommon',
       icon: '⚙️',
       color: '#22c55e',
-      description: '+10% к скорости атаки всех оружий героя',
-      stackText: '+10% к скорости за стак',
-      baseValue: 10,
-      scaling: '0.90^n множитель перезарядки'
+      description: '+18% к скорости атаки всех оружий героя',
+      stackText: '+18% к скорости за стак',
+      baseValue: 18,
+      scaling: '0.82^n множитель перезарядки'
     },
     crit_lens: {
       id: 'crit_lens',
@@ -575,10 +607,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'rare',
       icon: '🔍',
       color: '#3b82f6',
-      description: '+3.0% к шансу нанести критический удар (макс. 100%)',
-      stackText: '+3.0% шанс за стак',
-      baseValue: 3.0,
-      scaling: '+3% шанс крита за стак'
+      description: '+6.0% к шансу нанести критический удар (макс. 100%)',
+      stackText: '+6.0% шанс за стак',
+      baseValue: 6.0,
+      scaling: '+6% шанс крита за стак'
     },
     heavy_hollowpoint: {
       id: 'heavy_hollowpoint',
@@ -685,7 +717,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     dashDuration: 0.22,
     baseCritChance: 0.05,
     baseCritDamageMult: 2.0,
-    basePickupRadius: 10.0,
+    basePickupRadius: 4.0,
     maxArmorReduction: 0.75,
     goldGemChanceNormal: 0.01,
     goldGemChanceBoss: 0.40,

@@ -491,6 +491,25 @@ class Game {
       }
     };
 
+    this.enemyManager.onBurnDamage = (enemy, dmg, isDead, hitter, sourceWeaponId) => {
+      const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      if (hitter === myId) {
+        this.player.totalDamageDealt += dmg;
+        if (sourceWeaponId) {
+          this.player.recordWeaponDamage(sourceWeaponId, dmg);
+        }
+      }
+      if (this.net.role === 'client') {
+        this.combatDirector.pendingClientHits.push({
+          enemyId: enemy.id,
+          damage: dmg,
+          sourceX: enemy.position.x,
+          sourceZ: enemy.position.z,
+          isFatal: isDead
+        });
+      }
+    };
+
     // Altar captured
     this.engine.altarManager.onAltarCaptured = (altar) => {
       ProgressionManager.getInstance().recordResourceGather(1);
