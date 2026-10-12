@@ -1,0 +1,420 @@
+/* ==========================================================================
+   ROW ACCORDION LIST STYLES (NOVASITE TABLES)
+   ========================================================================== */
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+.accordion-table-header {
+  display: grid;
+  align-items: center;
+  padding: 10px 18px;
+  background: transparent;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  user-select: none;
+  margin-bottom: 8px;
+}
+
+.weapons-table-cols {
+  grid-template-columns: 28px 250px 120px 100px 110px 110px 110px 1fr;
+  gap: 12px;
+}
+
+.heroes-table-cols {
+  grid-template-columns: 28px 250px 120px 120px 130px 140px 110px 1fr;
+  gap: 12px;
+}
+
+.monsters-table-cols {
+  grid-template-columns: 28px 250px 120px 120px 120px 120px 110px 1fr;
+  gap: 12px;
+}
+
+.bosses-table-cols {
+  grid-template-columns: 28px 250px 130px 120px 120px 150px 110px 1fr;
+  gap: 12px;
+}
+
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Single Accordion Item */
+.accordion-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+
+.accordion-item:hover {
+  background: var(--bg-surface-hover);
+  border-color: #cbd5e1;
+}
+
+.accordion-item.is-modified {
+  border-left: 4px solid var(--accent-warning) !important;
+}
+
+.accordion-item.is-expanded {
+  border-color: var(--accent-primary);
+  border-left: 4px solid var(--accent-primary);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+}
+
+/* Row Header */
+.accordion-row-header {
+  display: grid;
+  align-items: center;
+  padding: 12px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.accordion-col-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chevron-arrow {
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+  display: inline-block;
+}
+
+.accordion-item.is-expanded .chevron-arrow {
+  transform: rotate(90deg);
+  color: var(--accent-primary);
+}
+
+.accordion-col-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Texture Image Icon */
+.item-texture {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: var(--radius-xs);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.item-identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-id-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.accordion-col-stat {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-highlight {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.stat-highlight-gold {
+  color: var(--accent-warning);
+  font-weight: 700;
+}
+
+.accordion-col-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge-chip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.badge-modified {
+  background: var(--accent-warning-subtle);
+  color: var(--accent-warning);
+  border: 1px solid #fed7aa;
+}
+
+.badge-default {
+  background: #f1f5f9;
+  color: var(--text-secondary);
+}
+
+.accordion-col-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   DRAWER EXPANDED BODY
+   ========================================================================== */
+.accordion-row-body {
+  display: none;
+  background: var(--bg-drawer);
+  border-top: 1px solid var(--border-subtle);
+  padding: 20px 24px;
+  animation: slideDrawer 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDrawer {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.accordion-item.is-expanded .accordion-row-body {
+  display: block;
+}
+
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.drawer-header-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.drawer-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.drawer-scaling-badge {
+  font-size: 12px;
+  font-weight: 600;
+  background: #eff6ff;
+  color: var(--accent-primary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #bfdbfe;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Controls Grid */
+.drawer-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px 24px;
+}
+
+.stat-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.stat-val-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-val-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-heading);
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.stat-val-badge.val-changed {
+  color: var(--accent-warning);
+  background: var(--accent-warning-subtle);
+  border-color: #fed7aa;
+}
+
+.stat-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: #e2e8f0;
+  outline: none;
+  cursor: pointer;
+}
+
+.stat-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.4);
+  transition: transform 0.1s ease;
+}
+
+.stat-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+.stat-input {
+  width: 76px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-heading);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 8px;
+  text-align: right;
+  outline: none;
+}
+
+.stat-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.stat-input.is-changed {
+  border-color: var(--accent-warning);
+  color: var(--accent-warning);
+}
+
+/* Drawer Footer */
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.dps-preview-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.dps-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.dps-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dps-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+/* ==========================================================================
+   SORTABLE ACCORDION TABLE HEADERS
+   ========================================================================== */
+.sortable-col {
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s ease;
+}
+
+.sortable-col:hover {
+  color: var(--accent-primary);
+}
+
+.sortable-col .sort-icon {
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.sortable-col.is-sorted {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.sortable-col.is-sorted .sort-icon {
+  color: var(--accent-primary);
+}
