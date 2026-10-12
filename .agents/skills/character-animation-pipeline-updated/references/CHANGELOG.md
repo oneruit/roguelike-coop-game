@@ -3,12 +3,12 @@
 1. Standard animation states reduced from four (`IDLE`, `WALK`, `ATTACK`, `WALK_ATTACK`) to three (`IDLE`, `WALK`, `ATTACK`). `WALK_ATTACK` is not a required runtime asset.
 2. Each state remains a separate 6×4 sheet at 128×128 per cell (768×512 overall).
 3. Authoritative row mapping:
-   - Row 0: `FRONT` (лицо)
-   - Row 1: `BACK` (спина)
-   - Row 2 (3rd row): `RIGHT` (вправо)
-   - Row 3 (4th row): `LEFT` (влево)
+   - Row 0: `FRONT` (face)
+   - Row 1: `BACK` (back)
+   - Row 2 (3rd row): `RIGHT` (right)
+   - Row 3 (4th row): `LEFT` (left)
    Default pipeline standard `fbrl` aligns directly with Three.js `ANIM_LAYOUT_V2`.
-4. Strict Profile Rule: In Row 2 (RIGHT) and Row 3 (LEFT), the character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso angled towards camera.
+4. Strict Profile Rule: In Row 2 (RIGHT) and Row 3 (LEFT), the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso angled towards camera.
 5. Camera instructions describe a stable 2.5D orthographic game camera tilted approximately 30° downward.
 6. Turnaround / reference approval stage: static 4-view or 5-in-1 reference sheet before generating animation sheets.
 7. Replaced archetype-specific prompt examples with a reusable master character identity template plus modular state prompts.

@@ -12,14 +12,14 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 | Cell Dimensions | 128 × 128 px |
 | Total Resolution | 768 × 512 px (or 1536 × 1024 px for high-res source) |
 | Background | Pure solid magenta chromakey `rgb(255,0,255)` (`#ff00ff`) |
-| Direction Rows (Top to Bottom) | Row 0: `FRONT` (лицо)<br>Row 1: `BACK` (спина)<br>Row 2 (3rd row): `RIGHT` (вправо — тело боком, лицо в профиль)<br>Row 3 (4th row): `LEFT` (влево — тело боком, лицо в профиль) |
+| Direction Rows (Top to Bottom) | Row 0: `FRONT` (face)<br>Row 1: `BACK` (back)<br>Row 2 (3rd row): `RIGHT` (right — body sideways, face strictly in profile)<br>Row 3 (4th row): `LEFT` (left — body sideways, face strictly in profile) |
 
 ---
 
 ## 2. Mandatory Directional Profile Rule
 
-* **Row 2 (3rd row — RIGHT)**: The character walks to the RIGHT. The **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso or head angled towards the camera.
-* **Row 3 (4th row — LEFT)**: The character walks to the LEFT. The **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 2 (3rd row — RIGHT)**: The character walks to the RIGHT. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 3 (4th row — LEFT)**: The character walks to the LEFT. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
 
 ---
 

@@ -522,9 +522,6 @@ export class Player {
     // Speed: +12% per Adrenaline Dart stack
     speedBonus += adrenalineStacks * 0.12;
 
-    // Speed: +12% per Adrenaline Dart stack
-    speedBonus += adrenalineStacks * 0.12;
-
     // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, NO LIMIT
     this.passiveHpRegen = (this.amuletCount * 1.0) + (vialStacks * 2.5) + (titanHeartStacks * 15);
 
@@ -629,7 +626,20 @@ export class Player {
     this.recalculateStats();
   }
 
+  /**
+   * Calculates damage reduction provided by Nanite Plating (Нано-Броня).
+   * Level 1 gives 5%, diminishing returns up to 60% at level 20, capped at 60%.
+   */
+  public getNaniteDamageReduction(): number {
+    const stacks = this.getItemStacks('nanite_plating');
+    if (stacks <= 0) return 0;
+    return Math.min(0.60, 0.05 * Math.pow(stacks, Math.log(12) / Math.log(20)));
+  }
+
   public isStatMaxedForItem(itemId: string): boolean {
+    if (itemId === 'nanite_plating') {
+      return this.getItemStacks('nanite_plating') >= 20;
+    }
     if (itemId === 'crit_lens' || itemId === 'crit_visor') {
       return this.critChance >= 1.0;
     }
@@ -976,10 +986,11 @@ export class Player {
 
     this.shieldRegenDelay = 3.5;
 
-    // Apply Nanite Plating flat reduction
-    const naniteStacks = this.getItemStacks('nanite_plating');
-    const flatReduction = naniteStacks * 4;
-    let finalAmount = ignoreInvuln ? amount : Math.max(1, (amount - flatReduction) * (1 - this.passiveDamageReduction));
+    // Apply Nanite Plating damage reduction (diminishing returns, max 60% at lvl 20)
+    const naniteReduction = this.getNaniteDamageReduction();
+    let finalAmount = ignoreInvuln
+      ? amount
+      : Math.max(1, (amount * (1 - naniteReduction)) * (1 - this.passiveDamageReduction));
 
     // Absorb with shield first
     if (this.shield > 0) {

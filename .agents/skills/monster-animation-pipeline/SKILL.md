@@ -135,10 +135,10 @@ No anime style, no chibi proportions, no kawaii style, no cute expression, no ca
 
 ### Step 3.2: Human Approval Gateway (`ask_question` Interactive Check)
 The agent MUST display `monster_<name>_concept.png` in chat and request developer approval via `ask_question`:
-- **Question:** *"Сгенерирован концепт-лист монстра (портрет, силуэт в полный рост, боевые детали). Подойдёт ли такой дизайн или нужны правки?"*
+- **Question:** *"Monster concept sheet generated (portrait, full-body silhouette, combat details). Does this design work or are revisions needed?"*
 - **Options:**
-  - `(Recommended) Утвердить концепт (перейти к генерации листов анимаций WALK и ATTACK)`
-  - `Внести правки в монстра (указать, что изменить: окрас, форму рогов/клешней, свирепость, детали)`
+  - `(Recommended) Approve concept (proceed to generating WALK and ATTACK animation sheets)`
+  - `Request revisions (specify changes: color, horns/claws shape, ferocity, details)`
 - **Iteration Loop:** If the developer requests adjustments, the agent modifies the prompt tokens, regenerates `monster_<name>_concept.png`, and asks again.
 - **NEVER generate animation sheets before the monster concept is approved by the human developer.**
 

@@ -133,10 +133,10 @@ No anime style, no chibi proportions, no kawaii style, no cute expression, no ca
 
 ### Step 3.2: Human Approval Gateway (`ask_question` Interactive Check)
 The agent MUST display `boss_<name>_concept.png` in chat and request developer approval via `ask_question`:
-- **Question:** *"Сгенерирован концепт-лист босса (портрет для полоски HP, колоссальный силуэт в полный рост, боевые детали). Подойдёт ли такой дизайн или нужны правки?"*
+- **Question:** *"Boss concept sheet generated (HP bar portrait, colossal full-body silhouette, combat details). Does this design work or are revisions needed?"*
 - **Options:**
-  - `(Recommended) Утвердить концепт босса (перейти к генерации листов анимаций WALK и ATTACK)`
-  - `Внести правки в босса (указать, что изменить: рога, масштаб, лавовые эффекты, броню, оружие)`
+  - `(Recommended) Approve boss concept (proceed to generating WALK and ATTACK animation sheets)`
+  - `Request changes to boss (specify what to adjust: horns, scale, lava effects, armor, weapon)`
 - **Iteration Loop:** If adjustments are requested, the agent updates prompt tokens, regenerates `boss_<name>_concept.png`, and asks again.
 - **NEVER generate animation sheets before the boss concept is approved by the human developer.**
 

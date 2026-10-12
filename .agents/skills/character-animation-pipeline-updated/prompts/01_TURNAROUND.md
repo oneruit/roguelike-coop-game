@@ -11,9 +11,9 @@ Four full-body standing views arranged horizontally left-to-right on one canvas:
 1. `FRONT` — Frontal view facing the viewer / camera.
 2. `BACK` — Direct rear view facing away.
 3. `RIGHT` — Strict right-facing profile view.
-   **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No 3/4 turn.
+   **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No 3/4 turn.
 4. `LEFT` — Strict left-facing profile view.
-   **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No 3/4 turn.
+   **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No 3/4 turn.
 
 ### Option B: 5-in-1 Character Reference Canvas
 A single reference canvas with 5 designated panels:

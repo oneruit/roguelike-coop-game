@@ -70,9 +70,9 @@ In all multi-view sheets and directional spritesheets, the standard row mapping 
 * **Row 0 (1st row)**: `FRONT` — Character faces directly toward the camera / screen bottom.
 * **Row 1 (2nd row)**: `BACK` — Character faces directly away toward the top of the screen.
 * **Row 2 (3rd row)**: `RIGHT` — Character faces to the RIGHT.
-  **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+  **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
 * **Row 3 (4th row)**: `LEFT` — Character faces to the LEFT.
-  **MANDATORY PROFILE RULE**: When drawn facing LEFT, the character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+  **MANDATORY PROFILE RULE**: When drawn facing LEFT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
 
 ---
 

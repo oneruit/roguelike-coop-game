@@ -92,9 +92,9 @@ The authoritative row mapping from top to bottom is:
 1. `Row 0`: `FRONT` — Character faces toward the camera / screen bottom.
 2. `Row 1`: `BACK` — Character faces away toward the screen top.
 3. `Row 2 (3rd row)`: `RIGHT` — Character faces to the RIGHT.
-   - **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso angled towards camera.
+   - **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso angled towards camera.
 4. `Row 3 (4th row)`: `LEFT` — Character faces to the LEFT.
-   - **MANDATORY PROFILE RULE**: When drawn facing LEFT, the character's **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso angled towards camera.
+   - **MANDATORY PROFILE RULE**: When drawn facing LEFT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso angled towards camera.
 
 *(Note: In Three.js `CharacterAnimator.ts`, this corresponds to standard `ANIM_LAYOUT_V2` with `rowMap: { front: 0, back: 1, right: 2, left: 3 }`.)*
 
@@ -165,7 +165,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/process_chara
 ### 2. `scripts/validate_sheets.py`
 Validates both exact dimensions (768×512) AND facing directions:
 - Verifies that Row 2 (3rd row) is facing RIGHT and Row 3 (4th row) is facing LEFT.
-- Verifies that in both profile rows, the body is turned sideways (боком) and face is in profile (в профиль).
+- Verifies that in both profile rows, the body is turned sideways and face is in profile.
 - Checks horizontal flip alignment: `IoU(flip(Row2), Row3) > IoU(Row2, Row3)`.
 
 ```bash
@@ -183,7 +183,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 - [ ] Dual input respected: direct prompt/image executed directly, brief descriptions auto-enriched via defaults.
 - [ ] Exactly three animation sheets exist: IDLE, WALK, ATTACK (6×4 grid, 128×128 cells, 768×512 px).
 - [ ] Row mapping: Row 0 FRONT, Row 1 BACK, Row 2 (3rd row) RIGHT, Row 3 (4th row) LEFT.
-- [ ] **Strict Profile Checked**: In Row 2 and Row 3, character body is ALWAYS sideways (боком) and face in profile (в профиль), no 3/4 turn.
+- [ ] **Strict Profile Checked**: In Row 2 and Row 3, character body is ALWAYS sideways and face in profile, no 3/4 turn.
 - [ ] Background is pure solid magenta `rgb(255,0,255)` (`#ff00ff`) in generation sources.
 - [ ] Magenta is keyed out globally (inside and outside character).
 - [ ] No magenta aura / halo remains (defringed with 1px crisp black outline).

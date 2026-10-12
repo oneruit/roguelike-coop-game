@@ -1,58 +1,58 @@
-# 📊 Полный справочник баланса игры (Balance Reference Guide)
+# 📊 Complete Game Balance Reference Guide
 
-> Документ сформирован на основе кодовой базы проекта (`src/combat`, `src/entities`, `src/drops`, `src/items`, `src/director`, `src/world`).  
-> Предназначен для анализа игрового баланса, поиска узких мест (bottlenecks) и внесения правок в числовые параметры.
-
----
-
-## 📑 Содержание
-1. [Характеристики персонажей (Героев)](#1-характеристики-персонажей-героев)
-2. [Оружие: урон, тайминги и 20 уровней улучшений](#2-оружие-урон-тайминги-и-20-уровней-улучшений)
-3. [Пассивки и реликвии из сундуков (Rift Items)](#3-пассивки-и-реликвии-из-сундуков-rift-items)
-4. [Дроп с монстров: кристаллы опыта и пассивные баффы](#4-дроп-с-монстров-кристаллы-опыта-и-пассивные-баффы)
-5. [Характеристики монстров и формулы прогрессии](#5-характеристики-монстров-и-формулы-прогрессии)
-6. [Характеристики боссов и скейлинг по времени / стадиям](#6-характеристики-боссов-и-скейлинг-по-времени--стадиям)
+> This document is based on the project codebase (`src/combat`, `src/entities`, `src/drops`, `src/items`, `src/director`, `src/world`).  
+> Designed for analyzing game balance, identifying bottlenecks, and adjusting numerical parameters.
 
 ---
 
-## 1. Характеристики персонажей (Героев)
+## 📑 Table of Contents
+1. [Character (Hero) Attributes](#1-character-hero-attributes)
+2. [Weapons: Damage, Timings, and 20 Upgrade Levels](#2-weapons-damage-timings-and-20-upgrade-levels)
+3. [Passives & Relics from Chests (Rift Items)](#3-passives--relics-from-chests-rift-items)
+4. [Monster Drops: Experience Gems & Passive Buffs](#4-monster-drops-experience-gems--passive-buffs)
+5. [Monster Attributes & Scaling Formulas](#5-monster-attributes--scaling-formulas)
+6. [Boss Attributes & Scaling by Time / Stages](#6-boss-attributes--scaling-by-time--stages)
 
-В игре представлено **6 уникальных героев**. Выбор персонажа определяет базовое здоровье, скорость перемещения, базовый множитель наносимого урона и начальное стартовое оружие.
+---
 
-### 1.1. Сравнительная таблица базовых характеристик героев
+## 1. Character (Hero) Attributes
 
-| Герой | Идентификатор | Стартовое оружие | Базовое HP | Базовая скорость | Множитель урона | Ключевая роль / Особенность |
+The game features **6 unique heroes**. Character selection determines base health, movement speed, base damage multiplier, and initial starting weapon.
+
+### 1.1. Hero Base Attribute Comparison Table
+
+| Hero | ID | Starting Weapon | Base HP | Base Speed | Damage Multiplier | Core Role / Trait |
 | :--- | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Рен (Ронин)** | `ronin` | Багровый вихрь (`whirlwind_slash`) | **115** | 8.6 м/с | **x1.35** | Сбалансированный боец ближнего боя с вихревой круговой зачисткой |
-| **Каэла (Валькирия)** | `valkyrie` | Двуручный меч (`greatsword`) | **135** *(макс.)* | 8.2 м/с *(мин.)* | **x1.45** *(макс.)* | Сверхживучий танк с максимальным разовым уроном и широким взмахом |
-| **Бригитта** | `flail` | Боевой цеп (`flail`) | **125** | 8.5 м/с | **x1.40** | Физический контроль толпы с сильным отбрасыванием мобов |
-| **Ария (Чародейка)** | `sorceress` | Звёздный посох (`astral_staff`) | **105** *(мин.)* | 8.8 м/с | **x1.30** | Дальнобойный маг с пробивающими веерными зарядами, уязвима вблизи |
-| **Кира** | `chakram` | Танцующий чакрам (`chakram`) | **115** | 8.7 м/с | **x1.35** | Мобильный скирмишер с рикошетящими бумерангами сквозь толпу |
-| **Эльф лучник** | `archer` | Охотничий лук (`bow`) | **110** | 8.9 м/с *(макс.)* | **x1.35** | Сверхбыстрый снайпер с дальнобойными пробивающими стрелами |
+| **Ren (Ronin)** | `ronin` | Crimson Whirlwind (`whirlwind_slash`) | **115** | 8.6 m/s | **x1.35** | Balanced melee fighter with circular AOE clearing |
+| **Kaela (Valkyrie)** | `valkyrie` | Greatsword (`greatsword`) | **135** *(max)* | 8.2 m/s *(min)* | **x1.45** *(max)* | Ultra-durable tank with highest single-hit damage and wide arc |
+| **Brigitte** | `flail` | Flail (`flail`) | **125** | 8.5 m/s | **x1.40** | Physical crowd control with heavy enemy knockback |
+| **Aria (Sorceress)** | `sorceress` | Astral Staff (`astral_staff`) | **105** *(min)* | 8.8 m/s | **x1.30** | Long-range mage with piercing fan projectiles, fragile up close |
+| **Kira** | `chakram` | Dancing Chakram (`chakram`) | **115** | 8.7 m/s | **x1.35** | Mobile skirmisher with ricocheting boomerangs cutting through crowds |
+| **Elf Archer** | `archer` | Hunting Bow (`bow`) | **110** | 8.9 m/s *(max)* | **x1.35** | High-speed sniper with long-range piercing arrows |
 
 ---
 
-### 1.2. Общие базовые параметры персонажей
+### 1.2. Shared Base Character Attributes
 
-| Параметр | Базовое значение | Способ улучшения / Модификатор | Максимальный предел (Cap) |
+| Attribute | Base Value | Upgrade Source / Modifier | Hard Cap |
 | :--- | :---: | :--- | :---: |
-| **Тактический рывок (Dash)** | КД: **2.5 сек**, длит.: **0.22 сек** | Скорость во время рывка: **x2.5** от текущей скорости | Полная неуязвимость к коллизиям |
-| **Шанс критического удара** | **5% (0.05)** | +12% за стак «Очков Снайпера» (`crit_visor`) | 100% |
-| **Критический урон** | **200% (x2.0)** | Фиксирован | x2.0 |
-| **Радиус сбора кристаллов (Магнит)** | **3.5 м** | x1.35 за стак «Магнитного Лассо» (`stat_lasso`) | **25.0 м** |
-| **Регенерация здоровья** | **0 HP/сек** | +1.5 HP/с («Охотничий Амулет»), +2.5 HP/с («Био-Инжектор») | **30.0 HP/сек** |
-| **Снижение урона (Броня)** | **0%** | +10% («Кожаный Жилет»), +8% («Нано-Броня») | **75% (0.75)** |
-| **Снижение перезарядки (CDR)** | **0%** | -8% («Карманные Часы»), x0.85 («Кинетический Ускоритель») | **70-80%** (КД не ниже 0.12–0.30с) |
-| **Энергощит** | **0 HP** | +35 HP за стак «Гипер-Щита» (`aegis_battery`) | Реген 25% щита/сек вне боя (задержка 3с) |
+| **Tactical Dash** | CD: **2.5 s**, dur: **0.22 s** | Dash speed: **x2.5** current movement speed | Full collision invulnerability |
+| **Critical Strike Chance** | **5% (0.05)** | +12% per stack of Sniper Visor (`crit_visor`) | 100% |
+| **Critical Strike Damage** | **200% (x2.0)** | Fixed | x2.0 |
+| **Pickup Radius (Magnet)** | **3.5 m** | x1.35 per stack of Magnetic Lasso (`stat_lasso`) | **25.0 m** |
+| **Health Regeneration** | **0 HP/s** | +1.5 HP/s (Hunter's Amulet), +2.5 HP/s (Bio-Injector) | **30.0 HP/s** |
+| **Damage Reduction (Armor)** | **0%** | +10% (Leather Vest), diminishing returns (Nano-Plating) | **75% (0.75)** |
+| **Cooldown Reduction (CDR)** | **0%** | -8% (Pocket Watch), x0.85 (Kinetic Accelerator) | **70-80%** (CD min 0.12–0.30s) |
+| **Energy Shield** | **0 HP** | +35 HP per stack of Aegis Battery (`aegis_battery`) | Regens 25% shield/s out of combat (3s delay) |
 
 ---
 
-### 1.3. Формула прогрессии уровней персонажа (Experience Curve)
+### 1.3. Character Experience Progression Curve
 
-Требуемый опыт для перехода с уровня $L$ на уровень $L+1$:
+Experience required to progress from level $L$ to level $L+1$:
 $$\text{XP}(L) = \lfloor 10 \cdot L^{1.5} \cdot 1.2 \rfloor = \lfloor 12 \cdot L^{1.5} \rfloor$$
 
-| Уровень (L) | Опыт до следующего уровня ($\Delta\text{XP}$) | Суммарный накопленный опыт ($\sum\text{XP}$) |
+| Level (L) | XP to Next Level ($\Delta\text{XP}$) | Cumulative Experience ($\sum\text{XP}$) |
 | :---: | :---: | :---: |
 | **1** | 12 XP | 0 XP |
 | **2** | 33 XP | 12 XP |
@@ -71,351 +71,351 @@ $$\text{XP}(L) = \lfloor 10 \cdot L^{1.5} \cdot 1.2 \rfloor = \lfloor 12 \cdot L
 
 ---
 
-## 2. Оружие: урон, тайминги и 20 уровней улучшений
+## 2. Weapons: Damage, Timings, and 20 Upgrade Levels
 
-Все виды оружия в игре развиваются до **20 уровня**. Всего доступно **13 видов оружия**.
+All weapons in the game scale up to **Level 20**. There are **13 weapons** available.
 
-### 2.1. Сводная таблица начальных (Level 1) характеристик оружий
+### 2.1. Summary Table of Base (Level 1) Weapon Attributes
 
-| Оружие | ID | Иконка | Урон (L1) | Кулдаун (L1) | Радиус / Дальность | Снаряды / Взмахи | Пробивание | Механика атаки |
+| Weapon | ID | Icon | Damage (L1) | Cooldown (L1) | Radius / Range | Projectiles / Swings | Pierce | Attack Mechanics |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Охотничий Лук** | `bow` | 🏹 | **25** | 0.85 с | Вся видимость | 1 стрела | 2 врага | Высокоскоростные стрелы (24 м/с) |
-| **Нож Кукри** | `kukri` | 🔪 | **11** | 0.65 с | Вся видимость | 2 ножа | 1 враг | Серийные броски вращающихся клинков |
-| **Коса Жнеца** | `orbiting_barrier` | 🌙 | **4** (+8 bleed/с) | 0.00 с (пост.) | 2.5 м (орбита) | 2 косы | Бесконечно | Вращающиеся косы, накладывают стакающееся кровотечение |
-| **Огненное Кольцо** | `holy_aura` | 🔥 | **15** | 0.50 с | 3.5 м (аура) | Пульсация | Все в радиусе | Анимированное кольцо пламени с периодическим уроном |
-| **Рассекающий Клинок**| `katana_slash` | 🗡️ | **24** | 0.60 с | 3.8 м | 1 взмах | Все в радиусе | Дуговой силовой рубящий удар |
-| **Багровый Вихрь** | `whirlwind_slash` | 🌪️ | **15** | 0.42 с | 3.6 м | 1 вихрь | Все в радиусе | Быстрый парный вихревой взмах |
-| **Двуручный Меч** | `greatsword` | ⚔️ | **30** | 0.70 с | 4.2 м | 1 взмах | Все в радиусе | Тяжелый круговой удар с огромной зоной |
-| **Боевой Цеп** | `flail` | ⛓️ | **19** | 0.52 с | 3.9 м | 1 взмах | Все в радиусе | Сильный отброс мобов (Knockback 0.35) |
-| **Звёздный Посох** | `astral_staff` | 🔮 | **21** | 0.65 с | 22 м | 1 снаряд | 2 врага | Магические астральные сферы (16 м/с) |
-| **Танцующий Чакрам** | `chakram` | 🪃 | **19** | 0.70 с | 20 м | 1 чакрам | Бесконечно | Возвращающийся бумеранг по дуге (14.5 м/с) |
-| **Удар Молнии** | `lightning_strike` | ⚡ | **42** | 1.20 с | 22 м (дист.) / 2.4 м (сплеш) | 1 молния | Сплеш-АОЕ | Грозовой вертикальный разряд с небес |
-| **Ледяной Шип** | `ice_spike` | 🧊 | **36** | 1.10 с | 18 м (дист.) / 2.0 м (сплеш) | 1 шип | Сплеш-АОЕ | Пронзающие ледяные пики из-под земли снизу |
-| **Огненный Шар** | `fireball` | ☄️ | **52** | 1.35 с | 22 м (дист.) / 2.5 м (сплеш) | 1 шар | Сплеш-АОЕ | Падающий с неба огненный метеор с детонацией (28 м/с) |
-| **Штурмовая Винтовка** | `assault_rifle` | 🔫 | **13** | 0.18 с | 32 м (дист.) | 1 пуля | 1 враг | Ураганная автоматическая стрельба |
+| **Hunting Bow** | `bow` | 🏹 | **25** | 0.85 s | Full visibility | 1 arrow | 2 enemies | High-speed arrows (24 m/s) |
+| **Kukri Knife** | `kukri` | 🔪 | **11** | 0.65 s | Full visibility | 2 knives | 1 enemy | Rapid burst of spinning thrown blades |
+| **Reaper Scythe** | `orbiting_barrier` | 🌙 | **4** (+8 bleed/s) | 0.00 s (continuous) | 2.5 m (orbit) | 2 scythes | Infinite | Orbiting scythes applying stacking bleed |
+| **Ring of Fire** | `holy_aura` | 🔥 | **15** | 0.50 s | 3.5 m (aura) | Pulse | All in radius | Animated expanding flame ring with tick damage |
+| **Katana Slash** | `katana_slash` | 🗡️ | **24** | 0.60 s | 3.8 m | 1 swing | All in radius | Arc cleave power slash |
+| **Crimson Whirlwind** | `whirlwind_slash` | 🌪️ | **15** | 0.42 s | 3.6 m | 1 whirlwind | All in radius | Rapid dual whirlwind cleave |
+| **Greatsword** | `greatsword` | ⚔️ | **30** | 0.70 s | 4.2 m | 1 swing | All in radius | Heavy circular swing with massive coverage |
+| **Flail** | `flail` | ⛓️ | **19** | 0.52 s | 3.9 m | 1 swing | All in radius | Heavy enemy knockback (Knockback 0.35) |
+| **Astral Staff** | `astral_staff` | 🔮 | **21** | 0.65 s | 22 m | 1 projectile | 2 enemies | Astral arcane bolts (16 m/s) |
+| **Dancing Chakram** | `chakram` | 🪃 | **19** | 0.70 s | 20 m | 1 chakram | Infinite | Returning arc boomerang (14.5 m/s) |
+| **Lightning Strike** | `lightning_strike` | ⚡ | **42** | 1.20 s | 22 m (dist) / 2.4 m (splash) | 1 strike | Splash AOE | Vertical lightning bolt from the heavens |
+| **Ice Spike** | `ice_spike` | 🧊 | **36** | 1.10 s | 18 m (dist) / 2.0 m (splash) | 1 spike | Splash AOE | Piercing ice spikes erupting from the ground |
+| **Fireball** | `fireball` | ☄️ | **52** | 1.35 s | 22 m (dist) / 2.5 m (splash) | 1 ball | Splash AOE | Falling meteor detonating on impact (28 m/s) |
+| **Assault Rifle** | `assault_rifle` | 🔫 | **13** | 0.18 s | 32 m (dist) | 1 bullet | 1 enemy | Rapid automatic rifle fire |
 
 ---
 
-### 2.2. Прогрессия каждого оружия по уровням (до 20 уровня)
+### 2.2. Weapon Level-by-Level Scaling (Up to Level 20)
 
-#### 1. Охотничий Лук (`bow`)
-- **База**: 26 урона, 0.85с КД, 1 стрела, 2 пробития.
-- **Прирост за уровень**: +6 урона на каждом уровне.
-- **Вехи снарядов**: +1 стрела на уровнях **[4, 8, 12, 16, 20]** *(всего до 6 стрел)*.
-- **Вехи пробивания**: +1 пробивание на уровнях **[3, 6, 9, 13, 17]** *(всего до 7 врагов)*.
-- **Вехи КД**: -7% перезарядки на уровнях **[2, 5, 7, 10, 14, 18]** *(мин. 0.40с)*.
-- **Характеристики на Level 20**: **140 урона**, **6 стрел**, **7 пробитий**, **0.54с КД**.
+#### 1. Hunting Bow (`bow`)
+- **Base**: 26 damage, 0.85s CD, 1 arrow, 2 pierce.
+- **Growth per level**: +6 damage per level.
+- **Projectile milestones**: +1 arrow at levels **[4, 8, 12, 16, 20]** *(up to 6 arrows)*.
+- **Pierce milestones**: +1 pierce at levels **[3, 6, 9, 13, 17]** *(up to 7 enemies)*.
+- **Cooldown milestones**: -7% cooldown at levels **[2, 5, 7, 10, 14, 18]** *(min 0.40s)*.
+- **Level 20 Stats**: **140 damage**, **6 arrows**, **7 pierce**, **0.54s CD**.
 
-#### 2. Нож Кукри (`kukri`)
-- **База**: 12 урона, 0.65с КД, 2 ножа в очереди, 1 пробитие.
-- **Прирост за уровень**: +3 урона на каждом уровне.
-- **Вехи очереди**: +1 нож в серии на уровнях **[2, 4, 6, 8, 10, 12, 14, 16, 18, 20]** *(всего до 12 ножей)*.
-- **Вехи пробивания**: +1 пробивание на уровнях **[10, 20]** *(всего до 3 врагов)*.
-- **Вехи КД**: -6% перезарядки на уровнях **[3, 5, 7, 9, 11, 13, 15, 17, 19]** *(мин. 0.25с)*.
-- **Характеристики на Level 20**: **69 урона**, **12 ножей в залпе**, **3 пробития**, **0.37с КД**.
+#### 2. Kukri Knife (`kukri`)
+- **Base**: 12 damage, 0.65s CD, 2 burst knives, 1 pierce.
+- **Growth per level**: +3 damage per level.
+- **Burst milestones**: +1 knife per burst at levels **[2, 4, 6, 8, 10, 12, 14, 16, 18, 20]** *(up to 12 knives)*.
+- **Pierce milestones**: +1 pierce at levels **[10, 20]** *(up to 3 enemies)*.
+- **Cooldown milestones**: -6% cooldown at levels **[3, 5, 7, 9, 11, 13, 15, 17, 19]** *(min 0.25s)*.
+- **Level 20 Stats**: **69 damage**, **12 knives per burst**, **3 pierce**, **0.37s CD**.
 
-#### 3. Коса Жнеца (`orbiting_barrier`)
-- **База**: 4 прямого урона, 8 урона/сек кровотечения (длительность 3.0с = 24 суммарного урона за стак, стакается неограниченно при повторных касаниях кос), 2 косы, радиус 2.5м, скорость 3.8 рад/с. Модели кос вращаются вокруг героя и накладывают стакающееся кровотечение на всех задетых монстров.
-- **Прирост за уровень**: +1 прямого урона, +2 к DPS кровотечения (+6 суммарного урона за стак), +0.20м радиус орбиты, +0.08 скорость орбиты за каждый уровень.
-- **Вехи кос**: +1 коса на уровнях **[3, 6, 9, 12, 15, 18, 20]** *(всего до 9 кос)*.
-- **Характеристики на Level 20**: **23 прямого урона**, **46 DPS кровотечения** (138 суммарного урона за 3с с одного стака), **9 кос**, **6.30м радиус орбиты**, **5.32 рад/с скорость**.
+#### 3. Reaper Scythe (`orbiting_barrier`)
+- **Base**: 4 direct damage, 8 bleed damage/s (duration 3.0s = 24 total damage per stack, stacks indefinitely on successive contacts), 2 scythes, 2.5m radius, 3.8 rad/s speed. Scythes orbit around the hero, inflicting stacking bleed on touched monsters.
+- **Growth per level**: +1 direct damage, +2 bleed DPS (+6 total damage per stack), +0.20m orbit radius, +0.08 orbit speed per level.
+- **Scythe milestones**: +1 scythe at levels **[3, 6, 9, 12, 15, 18, 20]** *(up to 9 scythes)*.
+- **Level 20 Stats**: **23 direct damage**, **46 bleed DPS** (138 total damage over 3s from a single stack), **9 scythes**, **6.30m orbit radius**, **5.32 rad/s speed**.
 
-#### 4. Огненное Кольцо (`holy_aura`)
-- **База**: 16 урона, 0.50с КД (тик), радиус 3.5м. Анимированная покадровая спрайтовая текстура бушующего пламени (16 кадров в сетке 4х4, 18 FPS).
-- **Прирост за уровень**: +4 урона, +0.20м радиус, -4% КД (мин. 0.22с) за каждый уровень.
-- **Характеристики на Level 20**: **92 урона**, **7.30м радиус АОЕ**, **0.23с интервал тика**.
+#### 4. Ring of Fire (`holy_aura`)
+- **Base**: 16 damage, 0.50s CD (tick), 3.5m radius. Frame-by-frame animated blazing fire sprite sheet (16 frames in a 4x4 grid, 18 FPS).
+- **Growth per level**: +4 damage, +0.20m radius, -4% CD (min 0.22s) per level.
+- **Level 20 Stats**: **92 damage**, **7.30m AOE radius**, **0.23s tick interval**.
 
-#### 5. Рассекающий Клинок (`katana_slash`)
-- **База**: 25 урона, 0.60с КД, радиус взмаха 3.8м.
-- **Прирост за уровень**: +6 урона, +0.14м радиус взмаха, -4% КД (мин. 0.30с) за каждый уровень.
-- **Характеристики на Level 20**: **139 урона**, **6.46м радиус взмаха**, **0.30с КД**.
+#### 5. Katana Slash (`katana_slash`)
+- **Base**: 25 damage, 0.60s CD, 3.8m swing radius.
+- **Growth per level**: +6 damage, +0.14m swing radius, -4% CD (min 0.30s) per level.
+- **Level 20 Stats**: **139 damage**, **6.46m swing radius**, **0.30s CD**.
 
-#### 6. Багровый Вихрь (`whirlwind_slash`)
-- **База**: 16 урона, 0.42с КД, радиус вихря 3.6м.
-- **Прирост за уровень**: +4 урона, +0.12м радиус вихря, -4% КД (мин. 0.20с) за каждый уровень.
-- **Характеристики на Level 20**: **92 урона**, **5.88м радиус вихря**, **0.20с КД**.
+#### 6. Crimson Whirlwind (`whirlwind_slash`)
+- **Base**: 16 damage, 0.42s CD, 3.6m whirlwind radius.
+- **Growth per level**: +4 damage, +0.12m whirlwind radius, -4% CD (min 0.20s) per level.
+- **Level 20 Stats**: **92 damage**, **5.88m whirlwind radius**, **0.20s CD**.
 
-#### 7. Двуручный Меч (`greatsword`)
-- **База**: 32 урона, 0.70с КД, радиус взмаха 4.2м.
-- **Прирост за уровень**: +7 урона, +0.15м радиус взмаха, -4% КД (мин. 0.35с) за каждый уровень.
-- **Характеристики на Level 20**: **165 урона**, **7.05м радиус взмаха**, **0.35с КД**.
+#### 7. Greatsword (`greatsword`)
+- **Base**: 32 damage, 0.70s CD, 4.2m swing radius.
+- **Growth per level**: +7 damage, +0.15m swing radius, -4% CD (min 0.35s) per level.
+- **Level 20 Stats**: **165 damage**, **7.05m swing radius**, **0.35s CD**.
 
-#### 8. Боевой Цеп (`flail`)
-- **База**: 20 урона, 0.52с КД, радиус 3.9м, отброс (Knockback) 0.35.
-- **Прирост за уровень**: +5 урона, +0.14м радиус цепа, +0.02 сила отброса, -4% КД (мин. 0.25с) за каждый уровень.
-- **Характеристики на Level 20**: **115 урона**, **6.56м радиус цепа**, **0.73 сила отброса**, **0.25с КД**.
+#### 8. Flail (`flail`)
+- **Base**: 20 damage, 0.52s CD, 3.9m radius, knockback 0.35.
+- **Growth per level**: +5 damage, +0.14m flail radius, +0.02 knockback force, -4% CD (min 0.25s) per level.
+- **Level 20 Stats**: **115 damage**, **6.56m flail radius**, **0.73 knockback force**, **0.25s CD**.
 
-#### 9. Звёздный Посох (`astral_staff`)
-- **База**: 22 урона, 0.65с КД, 1 снаряд, 2 пробития.
-- **Прирост за уровень**: +5 урона на каждом уровне.
-- **Вехи снарядов**: +1 снаряд веером на уровнях **[3, 6, 9, 12, 15, 18, 20]** *(всего до 8 сфер)*.
-- **Вехи пробивания**: +1 пробивание на уровнях **[4, 8, 12, 16, 20]** *(всего до 7 врагов)*.
-- **Вехи КД**: -6% перезарядки на уровнях **[2, 5, 7, 10, 14, 17]** *(мин. 0.30с)*.
-- **Характеристики на Level 20**: **117 урона**, **8 сфер веером**, **7 пробитий**, **0.45с КД**.
+#### 9. Astral Staff (`astral_staff`)
+- **Base**: 22 damage, 0.65s CD, 1 bolt, 2 pierce.
+- **Growth per level**: +5 damage per level.
+- **Projectile milestones**: +1 bolt in fan arc at levels **[3, 6, 9, 12, 15, 18, 20]** *(up to 8 bolts)*.
+- **Pierce milestones**: +1 pierce at levels **[4, 8, 12, 16, 20]** *(up to 7 enemies)*.
+- **Cooldown milestones**: -6% cooldown at levels **[2, 5, 7, 10, 14, 17]** *(min 0.30s)*.
+- **Level 20 Stats**: **117 damage**, **8 fan bolts**, **7 pierce**, **0.45s CD**.
 
-#### 10. Танцующий Чакрам (`chakram`)
-- **База**: 20 урона, 0.70с КД, 1 чакрам, бесконечное пробитие, скорость полета 14.5 м/с.
-- **Прирост за уровень**: +4 урона на каждом уровне.
-- **Вехи чакрамов**: +1 чакрам на уровнях **[4, 8, 12, 16, 20]** *(всего до 6 чакрамов)*.
-- **Вехи скорости полета**: +1.2 м/с на уровнях **[2, 5, 10, 15]** *(до 19.3 м/с)*.
-- **Вехи КД**: -6% перезарядки на уровнях **[3, 6, 9, 13, 17]** *(мин. 0.30с)*.
-- **Характеристики на Level 20**: **96 урона**, **6 чакрамов**, **19.3 м/с скорость**, **0.51с КД**.
+#### 10. Dancing Chakram (`chakram`)
+- **Base**: 20 damage, 0.70s CD, 1 chakram, infinite pierce, 14.5 m/s flight speed.
+- **Growth per level**: +4 damage per level.
+- **Chakram milestones**: +1 chakram at levels **[4, 8, 12, 16, 20]** *(up to 6 chakrams)*.
+- **Flight speed milestones**: +1.2 m/s at levels **[2, 5, 10, 15]** *(up to 19.3 m/s)*.
+- **Cooldown milestones**: -6% cooldown at levels **[3, 6, 9, 13, 17]** *(min 0.30s)*.
+- **Level 20 Stats**: **96 damage**, **6 chakrams**, **19.3 m/s speed**, **0.51s CD**.
 
-#### 11. Удар Молнии (`lightning_strike`)
-- **База**: 45 урона, 1.20с КД, 1 разряд, радиус сплеша 2.4м, дальность 22м.
-- **Прирост за уровень**: +8 урона на каждом уровне.
-- **Вехи разрядов**: +1 разряд молнии на уровнях **[4, 8, 12, 16, 20]** *(всего до 6 молний)*.
-- **Вехи радиуса сплеша**: +0.30м на уровнях **[5, 10, 15]** *(до 3.3м)*.
-- **Вехи КД**: -8% перезарядки на уровнях **[3, 6, 9, 13, 17]** *(мин. 0.40с)*.
-- **Характеристики на Level 20**: **197 урона**, **6 разрядов**, **3.30м радиус взрыва**, **0.79с КД**.
+#### 11. Lightning Strike (`lightning_strike`)
+- **Base**: 45 damage, 1.20s CD, 1 strike, 2.4m splash radius, 22m range.
+- **Growth per level**: +8 damage per level.
+- **Strike milestones**: +1 lightning bolt at levels **[4, 8, 12, 16, 20]** *(up to 6 bolts)*.
+- **Splash radius milestones**: +0.30m at levels **[5, 10, 15]** *(up to 3.3m)*.
+- **Cooldown milestones**: -8% cooldown at levels **[3, 6, 9, 13, 17]** *(min 0.40s)*.
+- **Level 20 Stats**: **197 damage**, **6 bolts**, **3.30m blast radius**, **0.79s CD**.
 
-#### 12. Ледяной Шип (`ice_spike`)
-- **База**: 38 урона, 1.10с КД, 1 шип, радиус поражения 2.0м, дальность 18м.
-- **Прирост за уровень**: +7 урона на каждом уровне.
-- **Вехи шипов**: +1 ледяной шип на уровнях **[4, 8, 12, 16, 20]** *(всего до 6 шипов)*.
-- **Вехи радиуса поражения**: +0.25м на уровнях **[5, 10, 15]** *(до 2.75м)*.
-- **Вехи КД**: -7% перезарядки на уровнях **[3, 6, 9, 13, 17]** *(мин. 0.35с)*.
-- **Характеристики на Level 20**: **171 урона**, **6 ледяных шипов**, **2.75м радиус поражения**, **0.76с КД**.
+#### 12. Ice Spike (`ice_spike`)
+- **Base**: 38 damage, 1.10s CD, 1 spike, 2.0m blast radius, 18m range.
+- **Growth per level**: +7 damage per level.
+- **Spike milestones**: +1 ice spike at levels **[4, 8, 12, 16, 20]** *(up to 6 spikes)*.
+- **Blast radius milestones**: +0.25m at levels **[5, 10, 15]** *(up to 2.75m)*.
+- **Cooldown milestones**: -7% cooldown at levels **[3, 6, 9, 13, 17]** *(min 0.35s)*.
+- **Level 20 Stats**: **171 damage**, **6 ice spikes**, **2.75m blast radius**, **0.76s CD**.
 
-#### 13. Огненный Шар (`fireball`)
-- **База**: 55 урона, 1.35с КД, 1 шар, радиус взрыва 2.5м, дальность 22м, скорость падения 28 м/с.
-- **Прирост за уровень**: +10 урона на каждом уровне.
-- **Вехи шаров**: +1 огненный шар на уровнях **[4, 8, 12, 16, 20]** *(всего до 6 шаров)*.
-- **Вехи радиуса взрыва**: +0.35м на уровнях **[5, 10, 15]** *(до 3.55м)*.
-- **Вехи КД**: -8% перезарядки на уровнях **[3, 6, 9, 13, 17]** *(мин. 0.40с)*.
-- **Характеристики на Level 20**: **245 урона**, **6 огненных шаров**, **3.55м радиус взрыва**, **0.89с КД**, **28 м/с скорость падения**.
+#### 13. Fireball (`fireball`)
+- **Base**: 55 damage, 1.35s CD, 1 fireball, 2.5m blast radius, 22m range, 28 m/s speed.
+- **Growth per level**: +10 damage per level.
+- **Fireball milestones**: +1 fireball at levels **[4, 8, 12, 16, 20]** *(up to 6 fireballs)*.
+- **Blast radius milestones**: +0.35m at levels **[5, 10, 15]** *(up to 3.55m)*.
+- **Cooldown milestones**: -8% cooldown at levels **[3, 6, 9, 13, 17]** *(min 0.40s)*.
+- **Level 20 Stats**: **245 damage**, **6 fireballs**, **3.55m blast radius**, **0.89s CD**, **28 m/s impact speed**.
 
 ---
 
-## 3. Пассивки и реликвии из сундуков (Rift Items)
+## 3. Passives & Relics from Chests (Rift Items)
 
-Сундуки генерируются детерминированно (по 16 штук на стадию). Открытие сундука требует золота, которое выпадает при убийстве монстров.
+Chests spawn deterministically (16 per stage). Opening a chest requires gold dropped by monsters.
 
-### 3.1. Таблица типов сундуков и шансов выпадения
+### 3.1. Chest Types and Drop Rate Table
 
-| Тип сундука | Базовая стоимость | Шанс: Common (Белые) | Шанс: Uncommon (Зелёные) | Шанс: Legendary (Красные) | Вес появления на карте |
+| Chest Type | Base Cost | Common Chance (White) | Uncommon Chance (Green) | Legendary Chance (Red) | Map Spawn Weight |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Обычный сундук (Small)** | **25 золота** | **80%** | **20%** | **0%** | ~55% всех сундуков |
-| **Большой сундук (Large)** | **50 золота** | **20%** | **70%** | **10%** | ~30-45% сундуков |
-| **Легендарный сундук** | **100 золота** | **0%** | **10%** | **90%** | 15% (со 2 стадии) |
+| **Small Chest** | **25 Gold** | **80%** | **20%** | **0%** | ~55% of all chests |
+| **Large Chest** | **50 Gold** | **20%** | **70%** | **10%** | ~30-45% of chests |
+| **Legendary Chest** | **100 Gold** | **0%** | **10%** | **90%** | 15% (from stage 2) |
 
-> 💡 **Формула динамической стоимости сундука по времени и стадии**:  
+> 💡 **Dynamic Chest Cost Formula across Time and Stage**:  
 > $$\text{Cost}(t, \text{stage}) = \text{round}\left(\text{BaseCost} \cdot \left(1 + \frac{t}{300}\right)^{0.75} \cdot 1.1^{\text{stage} - 1}\right)$$
 
 ---
 
-### 3.2. Таблица предметов и реликвий из сундуков
+### 3.2. Chest Items and Relics Table
 
-| Предмет | ID | Редкость | Иконка | Базовый эффект | Эффект за стак |
+| Item | ID | Rarity | Icon | Base Effect | Effect per Stack |
 | :--- | :--- | :---: | :---: | :--- | :--- |
-| **Кинетический Ускоритель** | `kinetic_injector` | Common | ⚡ | **+15%** к скорострельности оружий | Умножает КД на $\times 0.85^{\text{stacks}}$ |
-| **Нано-Броня** | `nanite_plating` | Common | 🛡️ | Снижает входящий урон на **4 ед.** и дает **+8%** сопротивления | +4 снижения урона и +8% сопротивления за стак (макс. 75%) |
-| **Стимулятор Сердца** | `adrenaline_dart` | Common | 💉 | **+12%** к скорости перемещения героя | +12% к скорости за стак |
-| **Импульсный Патрон** | `pulse_rounds` | Common | 🩸 | **15%** шанс наложить кровотечение (180% урона за 3 сек) | +15% шанс за стак |
-| **Био-Инжектор** | `health_vial` | Common | 🧪 | **+2.5 HP/сек** постоянной регенерации здоровья | +2.5 HP/сек за стак |
-| **Тесла-Катушка** | `chain_lightning` | Uncommon | 🌩️ | **25%** шанс выпустить цепную молнию по 3 целям (160% урона) | +2 цели и +30% урона за стак |
-| **Плазменный Детонатор** | `plasma_detonator` | Uncommon | 💥 | При убийстве враг взрывается (радиус 4м, **200%** урона) | +1м радиус и +50% урона за стак |
-| **Очки Снайпера** | `crit_visor` | Uncommon | 🎯 | **+12%** к шансу крита (базовый множитель x2.0) | +12% к шансу крита за стак |
-| **Гипер-Щит Защиты** | `aegis_battery` | Uncommon | 💠 | Добавляет энергощит емкостью **+35 HP**, восстанавливается вне боя | +35 макс. емкости щита за стак |
-| **Био-Пипетка** | `bio_leech` | Uncommon | 🧬 | Восстанавливает **+5 HP** при каждом убийстве монстра | +5 HP за стак |
-| **Ядро Сингулярности** | `singularity_core` | Legendary | 🕳️ | Каждое **10-е убийство** создает черную дыру с взрывом на **600%** урона | -2 требуемых убийства, +200% урона за стак |
-| **Орбитальный Удар** | `orbital_strike` | Legendary | 🛰️ | Каждые **12 сек** спутниковый луч испепеляет сильнейшего врага на **800%** | -2 сек КД за стак |
-| **Кристалл Времени** | `chronos_phylactery`| Legendary | ⏳ | Защита от смерти: замораживает всех монстров и боссов на **5 сек**, отталкивает на **25м** и лечит **50% HP** (раз за стадию) | +25% исцеления за стак |
-| **Око Титана** | `golem_core` | Boss (Желтый) | 👁️ | Периодический кинетический луч со станом врагов | +50% урона луча за стак |
-| **Огненная Чешуя** | `molten_scale` | Boss (Желтый) | 🔥 | Оставляет за героем огненный след, обжигающий преследователей | +40% урона огня за стак |
+| **Kinetic Injector** | `kinetic_injector` | Common | ⚡ | **+15%** weapon attack speed | Multiplies CD by $\times 0.85^{\text{stacks}}$ |
+| **Nanite Plating** | `nanite_plating` | Common | 🛡️ | Diminishing damage reduction (5% at L1 up to 60% at L20) | Diminishing returns scaling up to 60% cap |
+| **Adrenaline Dart** | `adrenaline_dart` | Common | 💉 | **+12%** movement speed | +12% movement speed per stack |
+| **Pulse Rounds** | `pulse_rounds` | Common | 🩸 | **15%** chance to inflict bleed (180% damage over 3s) | +15% chance per stack |
+| **Bio-Injector** | `health_vial` | Common | 🧪 | **+2.5 HP/s** passive health regeneration | +2.5 HP/s per stack |
+| **Chain Lightning** | `chain_lightning` | Uncommon | 🌩️ | **25%** chance to trigger chain lightning on 3 targets (160% damage) | +2 targets and +30% damage per stack |
+| **Plasma Detonator** | `plasma_detonator` | Uncommon | 💥 | On kill, enemy explodes (4m radius, **200%** damage) | +1m radius and +50% damage per stack |
+| **Sniper Visor** | `crit_visor` | Uncommon | 🎯 | **+12%** critical strike chance (base x2.0 damage) | +12% crit chance per stack |
+| **Aegis Battery** | `aegis_battery` | Uncommon | 💠 | Grants an energy shield with **+35 HP**, recharges out of combat | +35 max shield capacity per stack |
+| **Bio-Leech** | `bio_leech` | Uncommon | 🧬 | Restores **+5 HP** per monster kill | +5 HP per stack |
+| **Singularity Core** | `singularity_core` | Legendary | 🕳️ | Every **10th kill** spawns a black hole detonating for **600%** damage | -2 kills required, +200% damage per stack |
+| **Orbital Strike** | `orbital_strike` | Legendary | 🛰️ | Every **12 s**, an orbital beam incinerates the strongest enemy for **800%** | -2 s CD per stack |
+| **Chronos Phylactery**| `chronos_phylactery`| Legendary | ⏳ | Cheat-death: freezes monsters & bosses for **5 s**, knocks back **25m**, heals **50% HP** (once per stage) | +25% healing per stack |
+| **Titan Eye** | `golem_core` | Boss (Yellow) | 👁️ | Periodic kinetic beam stunning enemies | +50% beam damage per stack |
+| **Molten Scale** | `molten_scale` | Boss (Yellow) | 🔥 | Leaves a fiery trail behind the hero burning pursuers | +40% fire damage per stack |
 
 ---
 
-## 4. Дроп с монстров: кристаллы опыта и пассивные баффы
+## 4. Monster Drops: Experience Gems & Passive Buffs
 
-### 4.1. Типы кристаллов (Gems)
+### 4.1. Gem Types
 
-| Тип кристалла | Цвет | Модель / Аура | Даваемый опыт (XP) | Дополнительный эффект |
+| Gem Type | Color | Model / Aura | Experience (XP) | Extra Effect |
 | :--- | :---: | :---: | :---: | :--- |
-| **Blue Gem** | Голубой (`#00e5ff`) | Октаэдр 0.28м | **3 XP** | Базовый кристалл с рядовых монстров |
-| **Green Gem** | Зеленый (`#00e676`) | Октаэдр 0.36м | **12 XP** | Падает с сильных монстров (скелеты, призраки, скорпионы, громилы) |
-| **Red Gem** | Красный (`#ff1744`) | Октаэдр 0.45м | **40 XP** | Падает с бизонов, элиты и боссов |
-| **Gold Gem** | Золотой (`#ffd700`) | Октаэдр с золотым тором | **20 XP** | **Дает постоянную случайную пассивку забега!** |
+| **Blue Gem** | Light Blue (`#00e5ff`) | Octahedron 0.28m | **3 XP** | Standard gem from common monsters |
+| **Green Gem** | Green (`#00e676`) | Octahedron 0.36m | **12 XP** | Drops from tougher foes (skeletons, ghosts, scorpions, brutes) |
+| **Red Gem** | Red (`#ff1744`) | Octahedron 0.45m | **40 XP** | Drops from bisons, elites, and bosses |
+| **Gold Gem** | Gold (`#ffd700`) | Octahedron with golden torus | **20 XP** | **Grants a permanent random run passive buff!** |
 
 ---
 
-### 4.2. Вероятности выпадения дропа с монстров
+### 4.2. Monster Drop Probability Table
 
-| Категория противника | Представители | Дроп кристаллов опыта | Шанс золотого кристалла (Пассивки) | Золото (Кредиты) |
+| Enemy Category | Examples | XP Gem Drop | Gold Gem Chance (Passives) | Gold (Credits) |
 | :--- | :--- | :---: | :---: | :---: |
-| **Рядовые мобы** | Койот, Тварь, Кактус | Синий кристалл (3 XP) | **1.0%** | 3 золота |
-| **Средние мобы** | Скелет, Призрак | Зеленый кристалл (12 XP) | **1.0%** | 3 золота |
-| **Крепкие мобы (Tough)**| Скорпион, Громила, Бизон | Зеленый / Красный (12-40 XP) | **3.0%** | 3 золота |
-| **Элитный моб (Affix)** | Любой монстр с аурой | Зеленый / Красный (12-40 XP) | **3.0%** | **16 золота** |
-| **Босс стадии / 5-мин** | Демон, Гидра | **5 + 2*Tier Красных** (280-440 XP) | **40.0%** | **100-270 золота** |
+| **Common Mobs** | Coyote, Crawler, Cactus | Blue Gem (3 XP) | **1.0%** | 3 Gold |
+| **Medium Mobs** | Skeleton, Ghost | Green Gem (12 XP) | **1.0%** | 3 Gold |
+| **Tough Mobs** | Scorpion, Brute, Bison | Green / Red (12-40 XP) | **3.0%** | 3 Gold |
+| **Elite Mobs (Affix)** | Any monster with an aura | Green / Red (12-40 XP) | **3.0%** | **16 Gold** |
+| **Stage / 5-min Boss** | Demon, Hydra | **5 + 2*Tier Red Gems** (280-440 XP) | **40.0%** | **100-270 Gold** |
 
 ---
 
-### 4.3. Таблица пассивных баффов из золотых кристаллов (`PassiveBuffs`)
+### 4.3. Passive Buffs from Gold Gems (`PassiveBuffs`)
 
-При подборе золотого кристалла игрок получает одну из 7 пассивок:
+Picking up a gold gem awards one of 7 passives:
 
-| Пассивка | ID | Иконка | Эффект за 1 кристалл | Предельный максимум (Cap) | Влияние на баланс |
+| Passive | ID | Icon | Effect per Gem | Maximum Cap | Balance Impact |
 | :--- | :--- | :---: | :--- | :---: | :--- |
-| **Звезда Шерифа** | `stat_sheriff_star` | ⭐ | **+2%** к общему множителю урона | Нет капа (мультипликативно) | К 20 минуте даёт +20–40% суммарного ДПС |
-| **Шпоры Скорохода** | `stat_spurs` | 👢 | **+3%** к скорости бега | **x2.5** (макс. 20–22 м/с) | Позволяет комфортно кайтить бизонов и боссов |
-| **Фляга с Виски** | `stat_flask` | 🍶 | **+30 к макс. HP** + полное мгновенное исцеление | Нет капа | Экстренное спасение и разгон пула здоровья |
-| **Магнитное Лассо** | `stat_lasso` | ➰ | **+35%** к радиусу сбора опыта | **25.0 метров** | Позволяет собирать весь опыт, не приближаясь к толпе |
-| **Охотничий Амулет** | `stat_amulet` | 🧿 | **+1.5 HP/сек** постоянной регенерации | **30.0 HP/сек** | Базовая пассивная выживаемость |
-| **Кожаный Жилет** | `stat_vest` | 🦺 | **-10%** получаемого урона от мобов | **70% (0.70)** | Ключевой защитный стат против высокоуровневых атак |
-| **Карманные Часы** | `stat_watch` | ⏱️ | **+8%** к скорости атаки оружий (-8% КД) | **70% (0.30 multiplier)** | Разгоняет скорострельность всех видов оружия |
+| **Sheriff Star** | `stat_sheriff_star` | ⭐ | **+2%** global damage multiplier | No cap (multiplicative) | Adds +20–40% total DPS by minute 20 |
+| **Fleet Spurs** | `stat_spurs` | 👢 | **+3%** movement speed | **x2.5** (max 20–22 m/s) | Allows comfortable kiting of bisons and bosses |
+| **Whiskey Flask** | `stat_flask` | 🍶 | **+30 Max HP** + full instant heal | No cap | Emergency rescue and health pool scaling |
+| **Magnetic Lasso** | `stat_lasso` | ➰ | **+35%** XP pickup radius | **25.0 meters** | Vacuums XP without entering monster packs |
+| **Hunter's Amulet** | `stat_amulet` | 🧿 | **+1.5 HP/s** health regeneration | **30.0 HP/s** | Core passive sustain |
+| **Leather Vest** | `stat_vest` | 🦺 | **-10%** damage taken | **70% (0.70)** | Crucial defensive stat against high-tier attacks |
+| **Pocket Watch** | `stat_watch` | ⏱️ | **+8%** weapon attack speed (-8% CD) | **70% (0.30 multiplier)** | Amplifies fire rate across all weapons |
 
 ---
 
-### 4.4. Временные баффы с Алтарей (`Altar`)
+### 4.4. Temporary Buffs from Altars (`Altar`)
 
-| Алтарь | Иконка | Длительность | Эффект |
+| Altar | Icon | Duration | Effect |
 | :--- | :---: | :---: | :--- |
-| **Алтарь Ярости** | ⚔️ | **25 сек** | **+80%** к общему урону героя |
-| **Алтарь Ветра** | ⚡ | **20 сек** | **+60%** к скорости перемещения |
-| **Алтарь Жизни** | 💖 | **18 сек** | **+12 HP/сек** регенерации здоровья |
-| **Алтарь Неуязвимости** | 🛡️ | **12 сек** | **100% неуязвимость** ко всем видам урона |
+| **Altar of Wrath** | ⚔️ | **25 s** | **+80%** hero damage |
+| **Altar of Wind** | ⚡ | **20 s** | **+60%** movement speed |
+| **Altar of Life** | 💖 | **18 s** | **+12 HP/s** health regeneration |
+| **Altar of Invulnerability** | 🛡️ | **12 s** | **100% invulnerability** to all damage |
 
 ---
 
-## 5. Характеристики монстров и формулы прогрессии
+## 5. Monster Attributes & Scaling Formulas
 
-### 5.1. Базовые характеристики типов монстров (на 0-й минуте)
+### 5.1. Base Monster Attributes (Minute 0)
 
-| Монстр | ID | Здоровье (HP) | Скорость | Урон за удар | Размер хитбокса | Кристалл XP | Особенности поведения |
+| Monster | ID | Health (HP) | Speed | Damage per Hit | Hitbox Size | XP Gem | Behavioral Traits |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Кровожадный койот** | `coyote` | **52** | 5.4 м/с | **10** | 2.1 x 1.6 м | Blue (3 XP) | Стартовый стайный моб, бежит напрямую к герою |
-| **Ползучая тварь** | `crawler` | **45** | 6.0 м/с | **12** | 2.0 x 1.2 м | Blue (3 XP) | Быстрый преследователь с низким HP |
-| **Кактусовый зомби** | `cactus` | **95** | 3.5 м/с | **16** | 1.9 x 2.3 м | Blue (3 XP) | Медленный плотный зомби |
-| **Бандит-скелет** | `skeleton` | **120** | 3.8 м/с | **18** | 1.9 x 2.4 м | Green (12 XP) | Среднеуровневый костяной боец |
-| **Призрак ковбоя** | `ghost` | **150** | 4.0 м/с | **20** | 1.7 x 2.5 м | Green (12 XP) | **Пролетает сквозь кактусы, камни и препятствия!** |
-| **Скорпион-ползун** | `scorpion` | **210** | 3.2 м/с | **25** | 2.3 x 2.1 м | Green (12 XP) | Крепкий танк первой линии |
-| **Пустынный громила** | `brute` | **380** | 2.6 м/с | **32** | 2.5 x 2.7 м | Green (12 XP) | Тяжёлый бронированный монстр |
-| **Белый бизон-убийца**| `bison` | **800** | 4.8 м/с | **40** | 3.4 x 1.9 м | Red (40 XP) | **Быстрый смертоносный танк** (чардж-атаки) |
+| **Bloodthirsty Coyote** | `coyote` | **52** | 5.4 m/s | **10** | 2.1 x 1.6 m | Blue (3 XP) | Starter pack runner, charges straight at hero |
+| **Crawling Vermin** | `crawler` | **45** | 6.0 m/s | **12** | 2.0 x 1.2 m | Blue (3 XP) | Fast chaser with low HP |
+| **Cactus Zombie** | `cactus` | **95** | 3.5 m/s | **16** | 1.9 x 2.3 m | Blue (3 XP) | Slow, bulky zombie |
+| **Skeleton Bandit** | `skeleton` | **120** | 3.8 m/s | **18** | 1.9 x 2.4 m | Green (12 XP) | Mid-tier skeletal warrior |
+| **Cowboy Phantom** | `ghost` | **150** | 4.0 m/s | **20** | 1.7 x 2.5 m | Green (12 XP) | **Phases through obstacles, rocks, and cacti!** |
+| **Desert Scorpion** | `scorpion` | **210** | 3.2 m/s | **25** | 2.3 x 2.1 m | Green (12 XP) | Tough frontline tank |
+| **Desert Brute** | `brute` | **380** | 2.6 m/s | **32** | 2.5 x 2.7 m | Green (12 XP) | Heavy armored juggernaut |
+| **White Killer Bison** | `bison` | **800** | 4.8 m/s | **40** | 3.4 x 1.9 m | Red (40 XP) | **Fast, deadly bruiser** (charge attacks) |
 
 ---
 
-### 5.2. Элитные свойства монстров (Elite Affixes)
+### 5.2. Elite Affixes
 
-Шанс появления элитного монстра:
-$P_{\text{elite}}(m, \text{stage}) = \begin{cases} 
+Elite spawn chance:
+$$P_{\text{elite}}(m, \text{stage}) = \begin{cases} 
 \min\left(0.35, \; \frac{m}{20} \cdot 0.35 + (\text{stage} - 1) \cdot 0.05\right), & m \le 15 \\
 \min\left(0.70, \; 0.26 + (m - 15) \cdot 0.016\right), & m > 15 
-\end{cases}
+\end{cases}$$
 
-- При спавне элитный моб получает:
-  - **HP**: $\mathbf{\times 2.2}$ от текущего масштабированного здоровья.
-  - **Урон**: $\mathbf{\times 1.35}$ от текущего масштабированного урона.
-  - **Дроп золота**: **16 кредитов** (вместо 3).
-  - **Визуальная аура**:
-    - 🔥 **Пылающий (`blazing`)**: Огненно-красная аура (`#ef4444`).
-    - ❄️ **Ледяной (`glacial`)**: Ледяная лазурная аура (`#38bdf8`).
-    - ⚡ **Перегруженный (`overloading`)**: Грозовая фиолетовая аура (`#818cf8`).
+- On spawn, an elite monster receives:
+  - **HP**: $\mathbf{\times 2.2}$ scaled base health.
+  - **Damage**: $\mathbf{\times 1.35}$ scaled base damage.
+  - **Gold drop**: **16 credits** (instead of 3).
+  - **Visual aura**:
+    - 🔥 **Blazing (`blazing`)**: Crimson flame aura (`#ef4444`).
+    - ❄️ **Glacial (`glacial`)**: Frosted azure aura (`#38bdf8`).
+    - ⚡ **Overloading (`overloading`)**: Electric violet aura (`#818cf8`).
 
 ---
 
-### 5.3. Формулы масштабирования монстров по времени (0–40 минут)
+### 5.3. Monster Time Scaling Formulas (0–40 Minutes)
 
-Пусть $m = \frac{\text{gameTime}}{60}$ (прошедшее время в минутах), а $m_{\text{post}} = \max(0, m - 15)$:
+Let $m = \frac{\text{gameTime}}{60}$ (elapsed minutes) and $m_{\text{post}} = \max(0, m - 15)$:
 $$\text{HpMult}(m) = 1 + \left(0.35 \cdot m + \left(\frac{m}{4.0}\right)^{1.8} \cdot 0.45\right) \cdot 1.5 + \left(\frac{m_{\text{post}}}{3.5}\right)^{2.3} \cdot 3.5 \cdot (1 + 0.15 \cdot m_{\text{post}})$$
 $$\text{DmgMult}(m) = 1 + \left(0.15 \cdot m + \left(\frac{m}{6.0}\right)^{1.5} \cdot 0.30\right) \cdot 1.5 + \left(\frac{m_{\text{post}}}{4.0}\right)^{2.0} \cdot 1.8 \cdot (1 + 0.10 \cdot m_{\text{post}})$$
 $$\text{SpeedMult}(m) = \min\left(1.65, \; 1 + (0.012 \cdot m) \cdot 1.5 + m_{\text{post}} \cdot 0.01\right)$$
 
-#### Таблица множителей характеристик монстров по времени забега:
+#### Monster Scaling Multiplier Table:
 
-| Время (мин) | Множитель HP ($\\text{HpMult}$) | Множитель урона ($\\text{DmgMult}$) | Множитель скорости ($\\text{SpdMult}$) | Шанс элиты | Интервал спавна волн |
+| Elapsed (min) | HP Multiplier ($\text{HpMult}$) | Damage Multiplier ($\text{DmgMult}$) | Speed Multiplier ($\text{SpdMult}$) | Elite Chance | Wave Spawn Interval |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0 мин** | **x1.00** | **x1.00** | **x1.00** | 0% | 1.00 сек |
-| **5 мин** | **x4.60** | **x2.50** | **x1.09** | 9% | 0.25 сек |
-| **10 мин** | **x9.80** | **x4.20** | **x1.18** | 18% | 0.18 сек |
-| **15 мин** | **x16.10** | **x6.20** | **x1.27** | **26%** | **0.18 сек** |
-| **20 мин** | **x37.70** | **x12.50** | **x1.41** | 35% | 0.18 сек |
-| **25 мин** | **x130.60** | **x33.00** | **x1.55** | 51% | 0.16 сек |
-| **30 мин** | **x366.60** | **x76.10** | **x1.65** *(кап)* | 59% | 0.15 сек |
-| **35 мин** | **x829.20** | **x150.20** | **x1.65** *(кап)* | 67% | 0.14 сек |
-| **40 мин** | **x1615.70** | **x263.80** | **x1.65** *(кап)* | **70%** *(кап)* | **0.14 сек** *(кап)* |
+| **0 min** | **x1.00** | **x1.00** | **x1.00** | 0% | 1.00 s |
+| **5 min** | **x4.60** | **x2.50** | **x1.09** | 9% | 0.25 s |
+| **10 min** | **x9.80** | **x4.20** | **x1.18** | 18% | 0.18 s |
+| **15 min** | **x16.10** | **x6.20** | **x1.27** | **26%** | **0.18 s** |
+| **20 min** | **x37.70** | **x12.50** | **x1.41** | 35% | 0.18 s |
+| **25 min** | **x130.60** | **x33.00** | **x1.55** | 51% | 0.16 s |
+| **30 min** | **x366.60** | **x76.10** | **x1.65** *(cap)* | 59% | 0.15 s |
+| **35 min** | **x829.20** | **x150.20** | **x1.65** *(cap)* | 67% | 0.14 s |
+| **40 min** | **x1615.70** | **x263.80** | **x1.65** *(cap)* | **70%** *(cap)* | **0.14 s** *(cap)* |
 
-> 📌 **Пример**: На 15-й минуте Койот имеет **837 HP** и наносит **62 урона** (точка перелома). На 20-й минуте Койот имеет **1 960 HP** и наносит **125 урона**, а Бизон — **30 160 HP** и **500 урона**. На 40-й минуте Койот имеет **84 016 HP** и наносит **2 638 урона**, а Бизон — **1 292 560 HP** и **10 552 урона**!
+> 📌 **Example**: At minute 15, a Coyote has **837 HP** and deals **62 damage** (inflection point). At minute 20, a Coyote has **1,960 HP** and deals **125 damage**, while a Bison has **30,160 HP** and **500 damage**. At minute 40, a Coyote has **84,016 HP** and deals **2,638 damage**, while a Bison has **1,292,560 HP** and **10,552 damage**!
 
 ---
 
-### 5.4. Расписание волн монстров (Spawn Wave Schedule)
+### 5.4. Monster Wave Schedule
 
-| Таймлайн (мин) | Появляющиеся виды врагов | Количество мобов в пачке | Макс. лимит мобов на карте |
+| Timeline (min) | Active Enemy Types | Spawns per Wave | Max Concurrent Enemies |
 | :--- | :--- | :--- | :---: |
-| **00:00 – 01:00** | Койоты, Ползучие твари | 1 моб | 95 мобов |
-| **01:00 – 02:00** | Койоты, Твари, Кактусы, Скелеты | 1–2 моба | 97 мобов |
-| **02:00 – 03:00** | Кактусы, Скелеты, Скорпионы, Призраки | 1–2 моба | 99 мобов |
-| **03:00 – 04:00** | Громилы, Скорпионы, Призраки, Скелеты | 1–2 моба | 101 моб |
-| **04:00 – 05:00** | Бизоны, Громилы, Скорпионы, Призраки | 2 моба | 103 моба |
-| **05:00 – 10:00** | Тяжёлый фронт: Бизоны и Громилы со Скорпионами | 3 моба | 105–115 мобов |
-| **10:00 – 15:00** | Смешанные агрессивные орды с частыми Бизонами | 3–4 моба | 115–125 мобов |
-| **15:00 – 20:00** | Непрерывные волны Бизонов, Громил и Призраков | 4–5 мобов | 125–135 мобов |
-| **20:00 – 25:00** | Непрекращающиеся элитные толпы Бизонов и Громил | 5 мобов | 135–145 мобов |
-| **25:00 – 30:00** | Void Breach: штурм тяжелого фронта | 6 мобов | 155–170 мобов |
-| **30:00 – 35:00** | Endless Rift: непрерывные волны Бизонов и Призраков | 7 мобов | 175–195 мобов |
-| **35:00 – 40:00** | Apocalypse: предельная плотность элитных танков | 8 мобов | **до 220 мобов** (до 260 в коопе) |
-| **40:00+** | **Void Singularity**: кульминационный финал забега | 8 мобов | 220 мобов |
+| **00:00 – 01:00** | Coyotes, Crawlers | 1 mob | 95 mobs |
+| **01:00 – 02:00** | Coyotes, Crawlers, Cacti, Skeletons | 1–2 mobs | 97 mobs |
+| **02:00 – 03:00** | Cacti, Skeletons, Scorpions, Ghosts | 1–2 mobs | 99 mobs |
+| **03:00 – 04:00** | Brutes, Scorpions, Ghosts, Skeletons | 1–2 mobs | 101 mobs |
+| **04:00 – 05:00** | Bisons, Brutes, Scorpions, Ghosts | 2 mobs | 103 mobs |
+| **05:00 – 10:00** | Heavy frontline: Bisons and Brutes with Scorpions | 3 mobs | 105–115 mobs |
+| **10:00 – 15:00** | Mixed aggressive hordes with frequent Bisons | 3–4 mobs | 115–125 mobs |
+| **15:00 – 20:00** | Continuous waves of Bisons, Brutes, and Ghosts | 4–5 mobs | 125–135 mobs |
+| **20:00 – 25:00** | Relentless elite swarms of Bisons and Brutes | 5 mobs | 135–145 mobs |
+| **25:00 – 30:00** | Void Breach: armored rush assault | 6 mobs | 155–170 mobs |
+| **30:00 – 35:00** | Endless Rift: incessant waves of Bisons and Ghosts | 7 mobs | 175–195 mobs |
+| **35:00 – 40:00** | Apocalypse: maximum density of elite tanks | 8 mobs | **up to 220 mobs** (up to 260 in co-op) |
+| **40:00+** | **Void Singularity**: run climax | 8 mobs | 220 mobs |
 
 ---
 
-## 6. Характеристики боссов и скейлинг по времени / стадиям
+## 6. Boss Attributes & Scaling by Time / Stages
 
-### 6.1. Базовые боссы
+### 6.1. Base Bosses
 
-| Босс | ID | Базовое HP | Базовый урон | Скорость | Габариты | Дроп |
+| Boss | ID | Base HP | Base Damage | Speed | Dimensions | Drops |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Кровавый демон** | `boss` | **7 600** | **45** | 2.4 м/с | 7.8 x 7.8 м | 5-15 Красных кристаллов, 40% Золотой кристалл, 100+ золота |
-| **Трехглавая гидра** | `hydra` | **28 000** | **65** | 2.3 м/с | 10.0 x 10.0 м | 9 Красных кристаллов, 40% Золотой кристалл, 100+ золота |
-| **Бессмертный Жнец** | `boss` (reaper) | **99 999 999** | **99 999** | **7.6 м/с** | 5.6 x 5.2 м | Неубиваем (завершает забег на 40-й минуте) |
+| **Blood Demon** | `boss` | **7,600** | **45** | 2.4 m/s | 7.8 x 7.8 m | 5-15 Red Gems, 40% Gold Gem, 100+ Gold |
+| **Three-Headed Hydra** | `hydra` | **28,000** | **65** | 2.3 m/s | 10.0 x 10.0 m | 9 Red Gems, 40% Gold Gem, 100+ Gold |
+| **Immortal Reaper** | `boss` (reaper) | **99,999,999** | **99,999** | **7.6 m/s** | 5.6 x 5.2 m | Invulnerable (ends run at minute 40) |
 
 ---
 
-### 6.2. 5-минутные цикличные боссы (Survival Bosses)
+### 6.2. 5-Minute Periodic Bosses (Survival Bosses)
 
-Каждые 5 минут (начиная с 15-й минуты: 15, 20, 25, 30, 35, 40 мин) появляется босс соответствующего тира $T$:
+Every 5 minutes (starting from minute 5, then 10, 15, 20, 25, etc.), a boss of tier $T$ spawns:
 $$\text{TierHp}(T) = \text{round}\left(7600 \cdot \left(1 + \left((T - 1) \cdot 2.2 + (T - 1)^{1.6} \cdot 1.0\right) \cdot 1.5\right)\right)$$
 $$\text{TierDmg}(T) = \text{round}\left(45 \cdot \left(1 + \left((T - 1) \cdot 0.6 + (T - 1)^{1.3} \cdot 0.2\right) \cdot 1.5\right)\right)$$
 $$\text{TierSpd}(T) = 2.4 + (T - 1) \cdot 0.18 \cdot 1.5$$
 
-| Время | Тир (T) | Имя босса | Здоровье (HP) | Урон | Скорость | Награда при победе |
+| Time | Tier (T) | Boss Name | Health (HP) | Damage | Speed | Defeat Rewards |
 | :---: | :---: | :--- | :---: | :---: | :---: | :--- |
-| **05:00** | **Тир 1** | Кровавый демон | **7 600** | **45** | 2.40 м/с | 7 Красных кристаллов (280 XP) + 40% Пассивка |
-| **10:00** | **Тир 2** | Древняя трехглавая гидра | **28 000** | **65** | 2.30 м/с | 9 Красных кристаллов (360 XP) + 40% Пассивка |
-| **15:00** | **Тир 3** | Кровавый демон (Ур. 3) | **87 874** | **134** | 2.94 м/с | 11 Красных кристаллов (440 XP) + 40% Пассивка |
-| **20:00** | **Тир 4** | Кровавый демон (Ур. 4) | **184 150** | **238** | 3.21 м/с | 13 Красных кристаллов (520 XP) + 40% Пассивка |
-| **25:00** | **Тир 5** | Кровавый демон (Ур. 5) | **307 266** | **357** | 3.48 м/с | 15 Красных кристаллов (600 XP) + 40% Пассивка |
-| **40:00** | **Конец** | Бессмертный Жнец Прерии | **99 999 999** | **99 999** | **7.60 м/с** | Смерть персонажа (победный финал забега) |
+| **05:00** | **Tier 1** | Blood Demon | **7,600** | **45** | 2.40 m/s | 7 Red Gems (280 XP) + 40% Passive |
+| **10:00** | **Tier 2** | Ancient Three-Headed Hydra | **28,000** | **65** | 2.30 m/s | 9 Red Gems (360 XP) + 40% Passive |
+| **15:00** | **Tier 3** | Blood Demon (Lvl 3) | **87,874** | **134** | 2.94 m/s | 11 Red Gems (440 XP) + 40% Passive |
+| **20:00** | **Tier 4** | Blood Demon (Lvl 4) | **184,150** | **238** | 3.21 m/s | 13 Red Gems (520 XP) + 40% Passive |
+| **25:00** | **Tier 5** | Blood Demon (Lvl 5) | **307,266** | **357** | 3.48 m/s | 15 Red Gems (600 XP) + 40% Passive |
+| **40:00** | **Final** | Prairie Immortal Reaper | **99,999,999** | **99,999** | **7.60 m/s** | Character death (run victory outro) |
 
 ---
 
-### 6.3. Боссы Телепорта по стадиям (Rift Teleporter Bosses)
+### 6.3. Rift Teleporter Bosses
 
-При активации Телепорта Разлома спавнится тематический страж стадии. Его характеристики зависят от глобального коэффициента сложности:
+Activating a Rift Teleporter spawns a biome-themed guardian. Its attributes scale with global difficulty:
 $$D(t, \text{players}, \text{stage}) = \left(1 + 0.08 \cdot \frac{t}{60}\right) \cdot (1 + 0.35 \cdot (\text{players} - 1)) \cdot 1.15^{\text{stage} - 1}$$
 $$\text{BossHp}(\text{stage}) = \text{round}(7600 \cdot (1.2 + (\text{stage} - 1) \cdot 1.5) \cdot D)$$
 $$\text{BossDmg}(\text{stage}) = \text{round}(45 \cdot (1 + (\text{stage} - 1) \cdot 0.3) \cdot (1 + (D - 1) \cdot 0.2))$$
 
-| Стадия | Биом | Имя стража телепорта | Базовое HP (Solo, ~4 мин) | Базовый урон | Награда |
+| Stage | Biome | Guardian Name | Base HP (Solo, ~4 min) | Base Damage | Reward |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| **1** | Пустыня (Ashen Wastes) | **Кровавый Страж Разлома** | **12 038 HP** | **48** | 150 золота, 7 Красных сфер |
-| **2** | Руины Сектора (Derelict Sector) | **Древняя трёхглавая гидра** | **31 150 HP** | **71** | 180 золота, 9 Красных сфер |
-| **3** | Ксено-Джунгли (Biolum Wilds) | **Споровая Владычица Ксено-Леса** | **55 640 HP** | **98** | 210 золота, 11 Красных сфер |
-| **4** | Базальтовая Кальдера (Volcanic) | **Магматический Колосс Кальдеры** | **88 920 HP** | **131** | 240 золота, 13 Красных сфер |
-| **5** | Руины Предтеч (Primordial) | **Первородный Страж Предтеч** | **133 400 HP** | **172** | 270 золота, 15 Красных сфер |
-| **6** | Эпицентр Разлома (Rift Core) | **Архитектор Разлома** | **192 100 HP** | **222** | 300 золота, Победа в цикле! |
+| **1** | Ashen Wastes | **Blood Rift Guardian** | **12,038 HP** | **48** | 150 Gold, 7 Red Gems |
+| **2** | Derelict Sector | **Ancient Three-Headed Hydra** | **31,150 HP** | **71** | 180 Gold, 9 Red Gems |
+| **3** | Biolum Wilds | **Xeno-Spore Matron** | **55,640 HP** | **98** | 210 Gold, 11 Red Gems |
+| **4** | Volcanic Caldera | **Magma Colossus** | **88,920 HP** | **131** | 240 Gold, 13 Red Gems |
+| **5** | Primordial Ruins | **Primordial Guardian** | **133,400 HP** | **172** | 270 Gold, 15 Red Gems |
+| **6** | Rift Core | **Rift Architect** | **192,100 HP** | **222** | 300 Gold, Cycle Victory! |
 
 ---
 
-## 7. Практические выводы для геймдизайна и правок баланса
+## 7. Practical Design Notes & Balance Tuning Insights
 
-1. **Баланс оружия**:
-   - Самый высокий точечный DPS на 20 уровне имеет **Удар Молнии** (197 урона $\times$ 6 молний = 1 182 урона за разряд) и **Охотничий Лук** (140 урона $\times$ 6 стрел с 7 пробитиями = 840–5880 урона за залп).
-   - Лучшее оружие для контроля и кайта — **Боевой цеп** (отброс 0.73) и **Нож Кукри** (12 ножей в залпе каждые 0.37с).
-   - **Коса Жнеца** на 20 уровне формирует смертоносный вихрь из 9 вращающихся кос в радиусе 6.3м, быстро накапливающий сокрушительные стаки кровотечения (46 DPS на стак) на любых врагах в орбите.
-2. **Баланс выживаемости**:
-   - Кап снижения урона (75%) достигается комбинацией 5–6 стаков жилетов / нано-брони. Это обязательный показатель для выживания после 15-й минуты, когда урон рядовых врагов превышает 150 единиц.
-   - Щит от «Гипер-Щита» (`aegis_battery`) регенерирует 25% в секунду уже через 3 секунды вне урона, что делает его крайне эффективным для мобильных стрелков (Ария, Эльф).
-3. **Кривая сложности**:
-   - Экспоненциальный скачок здоровья мобов начинается после **10-й минуты** (множитель HP x13.68 $\to$ x50.96 на 20-й мин). Без легендарных предметов или прокачки оружия выше 10 уровня зачистка орд замедляется.
-   - В кооперативе каждый дополнительный игрок увеличивает здоровье боссов на +35% и плотность мобов в волне на +35%, сохраняя сложность честной для команды.
+1. **Weapon Balance**:
+   - Highest single-target burst at Level 20 belongs to **Lightning Strike** (197 damage $\times$ 6 bolts = 1,182 damage per cast) and **Hunting Bow** (140 damage $\times$ 6 arrows with 7 pierce = 840–5,880 damage per salvo).
+   - Top weapons for crowd control and kiting are **Flail** (knockback 0.73) and **Kukri Knife** (12 burst knives every 0.37s).
+   - **Reaper Scythe** at Level 20 forms a lethal barrier of 9 rotating scythes in a 6.3m radius, rapidly applying devastating bleed stacks (46 DPS per stack) to all caught entities.
+2. **Survivability Tuning**:
+   - Damage reduction caps at 75%, achievable through stacked vests and nanite plating. Crucial for surviving past minute 15, when basic enemy hits exceed 150 damage.
+   - Aegis Battery shields regenerate 25% per second after just 3 seconds out of combat, favoring mobile kiting playstyles (Aria, Archer).
+3. **Difficulty Curve**:
+   - The exponential health surge begins after **minute 10** (HP mult x13.68 $\to$ x50.96 at min 20). Without legendary drops or weapons leveled past 10, horde clearing slows considerably.
+   - In multiplayer co-op, each additional player adds +35% boss HP and +35% mob wave density, preserving challenge without overwhelming the team.
