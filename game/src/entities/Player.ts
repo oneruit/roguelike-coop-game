@@ -97,6 +97,7 @@ export class Player {
   public amuletCount: number = 0;
   public vestCount: number = 0;
   public watchCount: number = 0;
+  public mightElixirCount: number = 0;
 
   // The Rift: Item Inventory & Economy
   public riftItems: Map<RiftItemId, number> = new Map();
@@ -427,6 +428,7 @@ export class Player {
     this.amuletCount = 0;
     this.vestCount = 0;
     this.watchCount = 0;
+    this.mightElixirCount = 0;
     this.pickupRadius = 4.2;
     this.recalculateStats();
   }
@@ -584,7 +586,8 @@ export class Player {
     this.speed = baseSpd * (1 + speedBonus);
 
     // Sheriff Star additive scaling: 100 stacks = +200%, 138 stacks = +276%
-    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02);
+    // Elixir of Might: +10% damage per stack (+0.10)
+    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02) + (this.mightElixirCount * 0.10);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
     const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
@@ -611,6 +614,22 @@ export class Player {
   public addSheriffStarBonus(_multiplier?: number) {
     this.sheriffStarCount++;
     this.recalculateStats();
+  }
+
+  public addMightElixirBonus() {
+    this.mightElixirCount++;
+    this.recalculateStats();
+  }
+
+  public recordWeaponDamage(weaponId: string | undefined, damage: number): void {
+    if (!weaponId || damage <= 0) return;
+    let weapon = this.weapons.find(w => w.id === weaponId);
+    if (!weapon && weaponId.startsWith('invoker_')) {
+      weapon = this.weapons.find(w => w.id === 'invoker_invoke');
+    }
+    if (weapon) {
+      weapon.damageDealt += damage;
+    }
   }
 
   public addSpeedBonus(multiplier: number = 1.03) {
@@ -716,7 +735,7 @@ export class Player {
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
     obstacleManager?: ObstacleManager,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3, critChance?: number, critDamage?: number) => void,
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3, critChance?: number, critDamage?: number, weaponId?: string) => void,
     getElevation?: (x: number, z: number) => number
   ) {
     if (getElevation) {
@@ -894,7 +913,8 @@ export class Player {
               amount * this.getDamageMultiplier(weapon.id),
               sourcePos,
               Math.min(1.0, this.critChance + critChanceBonus),
-              Math.min(10.0, this.critDamage + critDamageBonus)
+              Math.min(10.0, this.critDamage + critDamageBonus),
+              weapon.id
             );
           }
         : undefined;
@@ -1203,6 +1223,10 @@ export class Player {
     this.amuletCount = 0;
     this.vestCount = 0;
     this.watchCount = 0;
+    this.mightElixirCount = 0;
+    for (const w of this.weapons) {
+      w.damageDealt = 0;
+    }
     this.passiveDamageMultiplier = 1.0;
     this.passiveSpeedMultiplier = 1.0;
     this.passiveCooldownMultiplier = 1.0;

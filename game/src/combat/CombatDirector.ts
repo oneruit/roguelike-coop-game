@@ -473,7 +473,7 @@ export class CombatDirector {
 
           if (proj.isOrbiting) {
             const bleedDps = (proj.bleedDps || 8) * this.player.getDamageMultiplier(proj.sourceWeaponId);
-            enemy.addBleed(bleedDps, 3.0, myId);
+            enemy.addBleed(bleedDps, 3.0, myId, proj.sourceWeaponId);
           }
 
           if (this.net.role === 'client') {
@@ -481,6 +481,7 @@ export class CombatDirector {
             this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit, this.engine.camera, false, critTier, critMultiplier);
             SoundManager.playHit();
             this.player.totalDamageDealt += finalDamage;
+            this.player.recordWeaponDamage(proj.sourceWeaponId, finalDamage);
 
             if (isDead) {
               this.player.kills++;
@@ -502,6 +503,7 @@ export class CombatDirector {
             });
           } else {
             this.player.totalDamageDealt += finalDamage;
+            this.player.recordWeaponDamage(proj.sourceWeaponId, finalDamage);
             this.enemyManager.damageEnemy(enemy, finalDamage, proj.position, this.engine.camera, myId, true, isCrit, critTier, critMultiplier);
           }
 

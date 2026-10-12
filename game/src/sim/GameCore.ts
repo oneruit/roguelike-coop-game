@@ -74,6 +74,7 @@ export class SimPlayerInternal {
   public passiveCooldownMultiplier: number = 1.0;
   public passiveHpRegen: number = 0;
   public passiveDamageReduction: number = 0;
+  public mightElixirCount: number = 0;
 
   // The Rift Economy & Shields
   public credits: number = 0;
@@ -161,7 +162,7 @@ export class SimPlayerInternal {
 
   public getDamageMultiplier(weaponId?: string): number {
     const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
-    const generalBonus = this.passiveDamageMultiplier * (1 + dmgBonus);
+    const generalBonus = (this.passiveDamageMultiplier + this.mightElixirCount * 0.10) * (1 + dmgBonus);
     const isStarting = !weaponId ||
       weaponId === this.startingWeapon ||
       (this.charType === 'invoker' && (weaponId === 'invoker_invoke' || weaponId.startsWith('invoker_')));
@@ -185,7 +186,7 @@ export class SimPlayerInternal {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
     this.speed = this.baseSpeed * this.passiveSpeedMultiplier * (1 + speedBonus);
-    this.damageMultiplier = this.baseDamageMultiplier * this.passiveDamageMultiplier * (1 + dmgBonus);
+    this.damageMultiplier = this.baseDamageMultiplier * (this.passiveDamageMultiplier + this.mightElixirCount * 0.10) * (1 + dmgBonus);
   }
 }
 

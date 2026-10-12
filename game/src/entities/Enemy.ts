@@ -42,6 +42,7 @@ export interface BleedStack {
   dps: number;
   remainingTime: number;
   hitter: string;
+  sourceWeaponId?: string;
 }
 
 export class Enemy {
@@ -116,7 +117,7 @@ export class Enemy {
   // Stacking Bleed System
   public bleedStacks: BleedStack[] = [];
   private bleedTickTimer = 0;
-  public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string) => void;
+  public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
 
   // 4-Directional Sprites
   private textures: DirectionalTextures;
@@ -636,9 +637,9 @@ export class Enemy {
     return false;
   }
 
-  public addBleed(dps: number, duration: number = 3.0, hitter: string = 'p1'): void {
+  public addBleed(dps: number, duration: number = 3.0, hitter: string = 'p1', sourceWeaponId?: string): void {
     if (this.isImmortal || !this.isAlive) return;
-    this.bleedStacks.push({ dps, remainingTime: duration, hitter });
+    this.bleedStacks.push({ dps, remainingTime: duration, hitter, sourceWeaponId });
     if (this.bleedStacks.length > 50) {
       this.bleedStacks.shift();
     }
@@ -652,12 +653,16 @@ export class Enemy {
       this.bleedTickTimer = 0;
       let totalDmg = 0;
       let lastHitter = 'p1';
+      let lastSourceWeaponId: string | undefined = undefined;
 
       for (let i = this.bleedStacks.length - 1; i >= 0; i--) {
         const stack = this.bleedStacks[i];
         stack.remainingTime -= elapsed;
         totalDmg += stack.dps * elapsed;
         lastHitter = stack.hitter;
+        if (stack.sourceWeaponId) {
+          lastSourceWeaponId = stack.sourceWeaponId;
+        }
         if (stack.remainingTime <= 0) {
           this.bleedStacks.splice(i, 1);
         }
@@ -673,7 +678,7 @@ export class Enemy {
           this.isAlive = false;
         }
         if (this.onBleedDamage) {
-          this.onBleedDamage(this, tickAmount, isDead, lastHitter);
+          this.onBleedDamage(this, tickAmount, isDead, lastHitter, lastSourceWeaponId);
         }
       }
     }

@@ -113,6 +113,7 @@ export abstract class Weapon {
   public damage: number;
   public baseDamage: number;
   public damagePerLevel: number = 5;
+  public damageDealt: number = 0;
   public onMeleeAttack?: (attack: MeleeAttackInfo) => void;
 
   public get effectiveCooldown(): number {

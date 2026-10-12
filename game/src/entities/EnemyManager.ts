@@ -161,7 +161,7 @@ export class EnemyManager {
   public onImmortalBossSpawn?: (boss: Enemy) => void;
   public onBossDefeat?: () => void;
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
-  public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string) => void;
+  public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
   public camera?: Camera;
 
   public activePlayerCount: number = 1;
@@ -200,12 +200,12 @@ export class EnemyManager {
   }
 
   private registerEnemy(enemy: Enemy): Enemy {
-    enemy.onBleedDamage = (e, tickDamage, isDead, hitter) => {
+    enemy.onBleedDamage = (e, tickDamage, isDead, hitter, sourceWeaponId) => {
       if (this.camera) {
         this.damageNumbers.spawnDamage(e.position, tickDamage, false, this.camera, true);
       }
       if (this.onBleedDamage) {
-        this.onBleedDamage(e, tickDamage, isDead, hitter);
+        this.onBleedDamage(e, tickDamage, isDead, hitter, sourceWeaponId);
       }
     };
     return enemy;
