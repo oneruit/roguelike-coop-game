@@ -197,9 +197,8 @@ export class Projectile {
   private static lightningRingGeom: RingGeometry | null = null;
   private static lightningDiscGeom: CircleGeometry | null = null;
 
-  // Shared assets for Ice Spike (Crossed Planes analogous to Lightning)
+  // Shared assets for Ice Spike
   private static iceSpikeGeomA: PlaneGeometry | null = null;
-  private static iceSpikeGeomB: PlaneGeometry | null = null;
   private static iceGroundRingGeom: RingGeometry | null = null;
 
   // Shared assets for Fireball (Crossed Planes analogous to Lightning)
@@ -276,19 +275,14 @@ export class Projectile {
     this.mesh = new Group();
 
     if (this.isIceSpike) {
-      if (!Projectile.iceSpikeGeomA || !Projectile.iceSpikeGeomB || !Projectile.iceGroundRingGeom) {
-        const w = 2.4;
-        const h = 5.2;
+      if (!Projectile.iceSpikeGeomA || !Projectile.iceGroundRingGeom) {
+        const w = 2.5;
+        const h = 5.0;
         const ga = new PlaneGeometry(w, h);
-        ga.translate(0, h / 2, 0);
+        ga.translate(0, h / 2, 0); // Pivot at bottom center
         Projectile.iceSpikeGeomA = ga;
 
-        const gb = new PlaneGeometry(w, h);
-        gb.translate(0, h / 2, 0);
-        gb.rotateY(Math.PI / 2);
-        Projectile.iceSpikeGeomB = gb;
-
-        const ring = new RingGeometry(0.15, 1.0, 20);
+        const ring = new RingGeometry(0.2, 1.2, 24);
         ring.rotateX(-Math.PI / 2);
         Projectile.iceGroundRingGeom = ring;
       }
@@ -296,32 +290,35 @@ export class Projectile {
       this.iceSpikeMaterial = new MeshBasicMaterial({
         map: TextureManager.getIceSpikeTexture(),
         transparent: true,
-        opacity: 0.95 * Projectile.vfxOpacity,
-        blending: AdditiveBlending,
-        depthWrite: false,
+        alphaTest: 0.05,
+        depthWrite: true,
         side: DoubleSide,
+        opacity: 1.0 * Projectile.vfxOpacity,
         visible: Projectile.vfxOpacity > 0.005
       });
 
       this.iceSpikeGroup = new Group();
       const spikeA = new Mesh(Projectile.iceSpikeGeomA, this.iceSpikeMaterial);
-      const spikeB = new Mesh(Projectile.iceSpikeGeomB, this.iceSpikeMaterial);
-      this.iceSpikeGroup.add(spikeA, spikeB);
-      // Start submerged below ground
-      this.iceSpikeGroup.position.y = -5.2;
+      this.iceSpikeGroup.add(spikeA);
+      // Standard 2.5D isometric tilt matching all entities and rifts
+      this.iceSpikeGroup.rotation.x = -Math.PI / 4.8;
+      // Start scaled down at ground level for thrust eruption
+      this.iceSpikeGroup.scale.set(0.1, 0.0, 0.1);
       this.mesh.add(this.iceSpikeGroup);
 
       this.iceGroundRingMat = new MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
-        opacity: 0.9 * Projectile.vfxOpacity,
+        opacity: 0.85 * Projectile.vfxOpacity,
         blending: AdditiveBlending,
         depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
         side: DoubleSide,
         visible: Projectile.vfxOpacity > 0.005
       });
       this.iceGroundRingMesh = new Mesh(Projectile.iceGroundRingGeom!, this.iceGroundRingMat);
-      this.iceGroundRingMesh.position.y = 0.04;
+      this.iceGroundRingMesh.position.y = 0.03;
       this.iceGroundRingMesh.scale.set(this.radius, this.radius, this.radius);
       this.mesh.add(this.iceGroundRingMesh);
     } else if (this.isFireball) {
@@ -607,21 +604,24 @@ export class Projectile {
     if (this.isIceSpike) {
       const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
       if (this.iceSpikeGroup) {
-        if (progress < 0.25) {
-          // Rapidly thrust upwards from underneath the ground (-5.2 to 0)
-          const t = progress / 0.25;
+        if (progress < 0.22) {
+          // Rapid thrust eruption upwards from ground base
+          const t = progress / 0.22;
           const easeOut = Math.sin((t * Math.PI) / 2);
-          this.iceSpikeGroup.position.y = -5.2 * (1 - easeOut);
+          const sY = Math.min(1.06, easeOut * 1.06);
+          const sXZ = 0.3 + easeOut * 0.7;
+          this.iceSpikeGroup.scale.set(sXZ, sY, sXZ);
         } else if (progress < 0.65) {
-          // Peak extension with subtle crystalline tremor
-          this.iceSpikeGroup.position.y = 0.0 + (Math.random() - 0.5) * 0.04;
+          // Fully extended crystal spike with subtle tremor
+          const tremor = (Math.random() - 0.5) * 0.03;
+          this.iceSpikeGroup.scale.set(1.0 + tremor, 1.0 + tremor, 1.0 + tremor);
         } else {
           // Shatter and dissolve
           const t = (progress - 0.65) / 0.35;
           const fade = Math.max(0, 1 - t);
           this.iceSpikeGroup.scale.set(fade, fade, fade);
           if (this.iceSpikeMaterial) {
-            this.iceSpikeMaterial.opacity = fade * 0.95 * Projectile.vfxOpacity;
+            this.iceSpikeMaterial.opacity = fade * Projectile.vfxOpacity;
             this.iceSpikeMaterial.visible = Projectile.vfxOpacity > 0.005;
           }
         }
@@ -629,7 +629,7 @@ export class Projectile {
       if (this.iceGroundRingMesh && this.iceGroundRingMat) {
         const ringScale = this.radius * (0.6 + progress * 0.9);
         this.iceGroundRingMesh.scale.set(ringScale, ringScale, ringScale);
-        this.iceGroundRingMat.opacity = Math.max(0, (1 - progress) * 0.9) * Projectile.vfxOpacity;
+        this.iceGroundRingMat.opacity = Math.max(0, (1 - progress) * 0.85) * Projectile.vfxOpacity;
         this.iceGroundRingMat.visible = Projectile.vfxOpacity > 0.005;
       }
       return;

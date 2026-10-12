@@ -540,7 +540,7 @@ export class IceSpikeWeapon extends Weapon {
       strikeTargets.forEach((pos, idx) => {
         setTimeout(() => {
           const proj = new Projectile({
-            position: new Vector3(pos.x, -2.9, pos.z),
+            position: new Vector3(pos.x, 0, pos.z),
             direction: new Vector3(0, 1, 0),
             speed: 0,
             damage: this.damage,

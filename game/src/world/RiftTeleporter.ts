@@ -8,6 +8,8 @@ import {
   DoubleSide,
   RingGeometry,
   PointLight,
+  MeshDepthMaterial,
+  RGBADepthPacking,
   type Texture
 } from 'three';
 import { TextureManager } from '../core/TextureManager';
@@ -17,7 +19,6 @@ export type TeleporterState = 'IDLE' | 'CHARGING' | 'COMPLETED' | 'WARP_READY';
 export interface RiftUpdateResult {
   justCompleted: boolean;
   justTouched?: boolean;
-  justEnteredWarp?: boolean;
 }
 
 /**
@@ -25,12 +26,11 @@ export interface RiftUpdateResult {
  * - Closed state: Dark ominous cosmic tear in reality, pulsating with dark eldritch veins.
  * - On touch or interaction [E]: The boss emerges from the rift and the portal opens.
  * - Open state: Radiant glowing interdimensional gateway with swirling celestial vortex.
- * - Sized exactly 1.2x of boss 'Древняя трехглавая гидра' (Hydra size 10.0 -> Rift size 12.0).
+ * - Sized 8.0 units with contact shadow and directional shadow casting.
+ * - Warp transition to next biome triggers ONLY via interaction prompt [E].
  */
 export class RiftTeleporter {
-  public static readonly HYDRA_BOSS_SIZE = 10.0;
-  public static readonly RIFT_SCALE_MULTIPLIER = 1.2;
-  public static readonly RIFT_SIZE = RiftTeleporter.HYDRA_BOSS_SIZE * RiftTeleporter.RIFT_SCALE_MULTIPLIER; // 12.0 units
+  public static readonly RIFT_SIZE = 8.0; // 8.0 units
 
   private scene: Scene;
   public position: Vector3;
@@ -45,6 +45,8 @@ export class RiftTeleporter {
   public mesh: Group;
   private riftSprite!: Mesh;
   private riftSpriteMat!: MeshBasicMaterial;
+  private customDepthMaterial!: MeshDepthMaterial;
+  private shadowMesh!: Mesh;
   private groundAura!: Mesh;
   private groundAuraMat!: MeshBasicMaterial;
   private riftLight!: PointLight;
@@ -67,7 +69,7 @@ export class RiftTeleporter {
     this.riftClosedTex = TextureManager.getRiftClosedTexture();
     this.riftOpenTex = TextureManager.getRiftOpenTexture();
 
-    // 1. Central 2.5D Rift Sprite (12.0 x 12.0 - 1.2x larger than Ancient Hydra)
+    // 1. Central 2.5D Rift Sprite (8.0 x 8.0)
     const riftGeom = new PlaneGeometry(RiftTeleporter.RIFT_SIZE, RiftTeleporter.RIFT_SIZE);
     // Anchor pivot near bottom so the dimensional tear hovers just slightly above terrain
     riftGeom.translate(0, RiftTeleporter.RIFT_SIZE * 0.45, 0);
@@ -80,14 +82,27 @@ export class RiftTeleporter {
       depthWrite: true
     });
 
+    this.customDepthMaterial = new MeshDepthMaterial({
+      depthPacking: RGBADepthPacking,
+      map: this.riftClosedTex,
+      alphaTest: 0.15
+    });
+
     this.riftSprite = new Mesh(riftGeom, this.riftSpriteMat);
     // Standard 2.5D isometric tilt matching players, bosses, and trees
     this.riftSprite.rotation.x = -Math.PI / 4.8;
+    this.riftSprite.customDepthMaterial = this.customDepthMaterial;
+    this.riftSprite.castShadow = true;
     this.riftSprite.renderOrder = 1;
     this.mesh.add(this.riftSprite);
 
-    // 2. Ground Energy Aura Ring
-    const auraGeom = new RingGeometry(2.0, 5.8, 48);
+    // 2. High-performance contact ground shadow
+    this.shadowMesh = TextureManager.createShadowMesh(2.6);
+    this.shadowMesh.position.y = 0.03;
+    this.mesh.add(this.shadowMesh);
+
+    // 3. Ground Energy Aura Ring (scaled for 8.0m rift)
+    const auraGeom = new RingGeometry(1.4, 4.0, 48);
     auraGeom.rotateX(-Math.PI / 2);
     this.groundAuraMat = new MeshBasicMaterial({
       color: 0x7c3aed, // Faint dark violet when closed
@@ -100,9 +115,9 @@ export class RiftTeleporter {
     this.groundAura.position.y = 0.08;
     this.mesh.add(this.groundAura);
 
-    // 3. Radiant Point Light
-    this.riftLight = new PointLight(0x7c3aed, 1.2, 16);
-    this.riftLight.position.set(0, 3.5, 0);
+    // 4. Radiant Point Light
+    this.riftLight = new PointLight(0x7c3aed, 1.2, 14);
+    this.riftLight.position.set(0, 2.8, 0);
     this.mesh.add(this.riftLight);
   }
 
@@ -116,6 +131,10 @@ export class RiftTeleporter {
     // Awaken and open the rift: switch to radiant glowing open vortex!
     this.riftSpriteMat.map = this.riftOpenTex;
     this.riftSpriteMat.needsUpdate = true;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.riftOpenTex;
+      this.customDepthMaterial.needsUpdate = true;
+    }
     this.groundAuraMat.color.setHex(0x38bdf8); // Bright radiant cyan
     this.groundAuraMat.opacity = 0.65;
     this.riftLight.color.setHex(0x38bdf8);
@@ -144,7 +163,6 @@ export class RiftTeleporter {
 
     let justCompleted = false;
     let justTouched = false;
-    let justEnteredWarp = false;
 
     if (this.state === 'IDLE') {
       // Pulsating dormant rift: breathing scale & subtle ground aura flicker
@@ -153,9 +171,9 @@ export class RiftTeleporter {
       this.groundAuraMat.opacity = 0.28 + Math.sin(this.animTimer * 2.6) * 0.12;
       this.groundAura.rotation.y += dt * 0.25;
 
-      // Check contact touch: when player physically touches the rift
+      // Check contact touch: when player physically approaches the rift to awaken it
       for (const pos of playerPositions) {
-        if (pos.distanceToSquared(this.position) <= 4.2 * 4.2) {
+        if (pos.distanceToSquared(this.position) <= 3.8 * 3.8) {
           justTouched = true;
           break;
         }
@@ -178,21 +196,14 @@ export class RiftTeleporter {
       }
     } else if (this.state === 'WARP_READY') {
       // Radiant stabilized portal humming with interdimensional power
+      // Warp to next biome triggers strictly on [E] interaction, not on automatic walk-in
       const pulse = 1.02 + Math.sin(this.animTimer * 3.2) * 0.04;
       this.riftSprite.scale.set(pulse, pulse, pulse);
       this.groundAura.rotation.y += dt * 0.5;
       this.groundAuraMat.opacity = 0.60 + Math.sin(this.animTimer * 3.0) * 0.15;
-
-      // Check if player physically enters into the center of the open rift
-      for (const pos of playerPositions) {
-        if (pos.distanceToSquared(this.position) <= 3.8 * 3.8) {
-          justEnteredWarp = true;
-          break;
-        }
-      }
     }
 
-    return { justCompleted, justTouched, justEnteredWarp };
+    return { justCompleted, justTouched };
   }
 
   /**
@@ -211,11 +222,15 @@ export class RiftTeleporter {
     // Reset visuals to closed dormant rift
     this.riftSpriteMat.map = this.riftClosedTex;
     this.riftSpriteMat.needsUpdate = true;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.riftClosedTex;
+      this.customDepthMaterial.needsUpdate = true;
+    }
     this.groundAuraMat.color.setHex(0x7c3aed);
     this.groundAuraMat.opacity = 0.35;
     this.riftLight.color.setHex(0x7c3aed);
     this.riftLight.intensity = 1.2;
-    this.riftLight.distance = 16;
+    this.riftLight.distance = 14;
   }
 
   /**
@@ -243,6 +258,10 @@ export class RiftTeleporter {
 
     this.riftSpriteMat.map = this.riftOpenTex;
     this.riftSpriteMat.needsUpdate = true;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.riftOpenTex;
+      this.customDepthMaterial.needsUpdate = true;
+    }
     this.groundAuraMat.color.setHex(0x10b981);
     this.groundAuraMat.opacity = 0.75;
     this.riftLight.color.setHex(0x34d399);
@@ -256,8 +275,8 @@ export class RiftTeleporter {
     }
 
     const distSq = playerPos.distanceToSquared(this.position);
-    // 12m portal footprint: interaction range 6.5 meters
-    if (distSq > 6.5 * 6.5) {
+    // 8m portal footprint: interaction range 5.5 meters
+    if (distSq > 5.5 * 5.5) {
       return { canInteract: false, prompt: '', action: null };
     }
 
@@ -283,6 +302,7 @@ export class RiftTeleporter {
   public destroy() {
     this.scene.remove(this.mesh);
     this.riftSpriteMat.dispose();
+    this.customDepthMaterial?.dispose();
     this.groundAuraMat.dispose();
     this.riftLight.dispose();
   }
@@ -314,6 +334,10 @@ export class RiftTeleporter {
       this.isBossDefeated = true;
       this.riftSpriteMat.map = this.riftOpenTex;
       this.riftSpriteMat.needsUpdate = true;
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = this.riftOpenTex;
+        this.customDepthMaterial.needsUpdate = true;
+      }
       this.groundAuraMat.color.setHex(0x10b981);
       this.groundAuraMat.opacity = 0.75;
       this.riftLight.color.setHex(0x34d399);

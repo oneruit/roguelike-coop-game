@@ -309,15 +309,18 @@ export class BiomeManager {
       scene.fog = new FogExp2(fogColor, fogDensity);
     }
 
-    // 2. Lights in the scene
+    // 2. Lights in the scene (brightened for map clarity)
     scene.traverse((obj) => {
       if (obj instanceof AmbientLight) {
         obj.color.setHex(ambColor);
+        obj.intensity = Math.max(obj.intensity, 1.20);
       } else if (obj instanceof DirectionalLight) {
         obj.color.setHex(dirColor);
+        obj.intensity = Math.max(obj.intensity, 1.55);
       } else if (obj instanceof HemisphereLight) {
         obj.color.setHex(hemiSky);
         obj.groundColor.setHex(hemiGnd);
+        obj.intensity = Math.max(obj.intensity, 0.80);
       }
     });
 
