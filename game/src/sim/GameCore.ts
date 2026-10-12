@@ -138,6 +138,11 @@ export class SimPlayerInternal {
       this.hp = 110;
       this.baseSpeed = 8.6;
       this.baseDamageMultiplier = 1.40;
+    } else if (charType === 'amazon') {
+      this.maxHp = 120;
+      this.hp = 120;
+      this.baseSpeed = 9.0;
+      this.baseDamageMultiplier = 1.35;
     } else {
       this.maxHp = 115;
       this.hp = 115;

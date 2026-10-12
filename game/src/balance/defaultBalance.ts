@@ -268,6 +268,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.40,
       startingWeapon: 'astral_staff',
       role: 'Маг смерти: дальнобойные мистические снаряды и контроль поля боя'
+    },
+    amazon: {
+      id: 'amazon',
+      name: 'Амазонка',
+      maxHp: 120,
+      baseSpeed: 9.0,
+      damageMultiplier: 1.35,
+      startingWeapon: 'orbiting_barrier',
+      role: 'Мистическая воительница: парящие защитные и атакующие магические сферы'
     }
   },
   monsters: {

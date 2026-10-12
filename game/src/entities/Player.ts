@@ -47,6 +47,7 @@ import type { MeleeAttackInfo } from '../shared/types';
 
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
+import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
 
 
 export class Player {
@@ -58,6 +59,7 @@ export class Player {
 
   // Directional Textures & Animated State Machine
   private animatedTextures!: AnimatedCharacterTextures;
+  private animator?: CharacterAnimator;
   public animState: HeroAnimState = 'IDLE';
   public attackAnimTimer: number = 0;
   private animFrameTimer: number = 0;
@@ -170,7 +172,7 @@ export class Player {
       // 128x128 chibi standard: feet anchored at y=118 in 128px cell (10px bottom margin)
       // translation = (118 / 128 - 0.5) * 3.6 = 0.421875 * 3.6 = 1.51875
       // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
-      const is128Standard = charType === 'valkyrie' || charType === 'necromancer';
+      const is128Standard = charType === 'valkyrie' || charType === 'necromancer' || charType === 'amazon';
       const translateY = is128Standard ? 1.51875 : 0.975;
       geom.translate(0, translateY, 0);
       Player.geometryCache.set(charType, geom);
@@ -186,6 +188,9 @@ export class Player {
     this.roninGeom = Player.getCharacterGeometry('ronin');
 
     this.loadCharacterTextures(this.charType);
+    if (this.charType === 'amazon') {
+      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
+    }
 
     this.spriteMaterial = new MeshBasicMaterial({
       map: this.animatedTextures.idle,
@@ -305,7 +310,9 @@ export class Player {
 
   private loadCharacterTextures(charType: CharacterType) {
     const raw =
-      charType === 'invoker'
+      charType === 'amazon'
+        ? TextureManager.loadAmazonTextures()
+        : charType === 'invoker'
         ? TextureManager.loadInvokerTextures()
         : charType === 'valkyrie'
         ? TextureManager.loadValkyrieTextures()
@@ -338,6 +345,11 @@ export class Player {
   public setCharacter(charType: CharacterType = 'ronin') {
     this.charType = charType;
     this.loadCharacterTextures(this.charType);
+    if (this.charType === 'amazon') {
+      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
+    } else {
+      this.animator = undefined;
+    }
     this.spriteMesh.geometry = Player.getCharacterGeometry(this.charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
     if (this.customDepthMaterial) {
@@ -356,6 +368,9 @@ export class Player {
 
   public setDirection(dir: SpriteDirection) {
     this.currentDir = dir;
+    if (this.animator) {
+      this.animator.setDirection(dir);
+    }
   }
 
   public onSpellCast?: (cast: InvokerSpellCast) => void;
@@ -365,6 +380,9 @@ export class Player {
 
   public triggerAttackAnim(duration: number = 0.5) {
     this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
+    if (this.animator) {
+      this.animator.triggerAttack(duration);
+    }
   }
 
   private applyCharacterPerks() {
@@ -389,6 +407,8 @@ export class Player {
       this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
     } else if (this.charType === 'rocket') {
       this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20)));
+    } else if (this.charType === 'amazon') {
+      this.weapons.push(new OrbitingBarrierWeapon());
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }
@@ -806,7 +826,7 @@ export class Player {
       this.animFrameTimer = 0;
     }
 
-    this.updateAnimatedCharacterAnimation(dt);
+    this.updateAnimatedCharacterAnimation(dt, isMoving);
     this.spriteMesh.position.y = 0.05;
     this.spriteMesh.rotation.z = 0;
 
@@ -883,8 +903,14 @@ export class Player {
     }
   }
 
-  private updateAnimatedCharacterAnimation(dt: number) {
+  private updateAnimatedCharacterAnimation(dt: number, isMoving: boolean = false) {
     if (!this.animatedTextures) return;
+
+    if (this.animator) {
+      this.animator.update(dt, isMoving, this.spriteMaterial, this.customDepthMaterial);
+      this.animState = this.animator.animState;
+      return;
+    }
 
     // Config for each of the 4 states: texture, column frame count, and playback FPS
     const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
@@ -1238,6 +1264,8 @@ export class Player {
           ? 'Ракета'
           : this.charType === 'necromancer'
           ? 'Мортис'
+          : this.charType === 'amazon'
+          ? 'Амазонка'
           : 'Рен';
       ctx.fillText(`${this.displayName} (${heroName}) [L${this.level}]`, w / 2, 24);
 

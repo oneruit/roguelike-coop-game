@@ -1335,6 +1335,8 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
       return new SimBowWeapon();
     case 'rocket':
       return new SimAssaultRifleWeapon();
+    case 'amazon':
+      return new SimOrbitingBarrierWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();

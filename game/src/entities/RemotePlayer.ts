@@ -231,7 +231,9 @@ export class RemotePlayer {
 
   private loadCharacterTextures(charType: CharacterType) {
     const raw =
-      charType === 'invoker'
+      charType === 'amazon'
+        ? TextureManager.loadAmazonTextures()
+        : charType === 'invoker'
         ? TextureManager.loadInvokerTextures()
         : charType === 'valkyrie'
         ? TextureManager.loadValkyrieTextures()
@@ -428,8 +430,11 @@ export class RemotePlayer {
     this.animFrameTimer += dt * cfg.fps;
     const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
 
+    const isV2Standard = this.charType === 'amazon';
     const isNewStandard = this.charType === 'necromancer';
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = isNewStandard
+    const DIR_ROW_MAP: Record<SpriteDirection, number> = isV2Standard
+      ? { front: 0, back: 1, right: 2, left: 3 }
+      : isNewStandard
       ? { front: 0, back: 1, left: 2, right: 3 }
       : { front: 0, left: 1, right: 2, back: 3 };
     const row = DIR_ROW_MAP[this.currentDir] ?? 0;
@@ -513,6 +518,8 @@ export class RemotePlayer {
           ? 'Ракета'
           : this.charType === 'necromancer'
           ? 'Мортис'
+          : this.charType === 'amazon'
+          ? 'Амазонка'
           : 'Рен';
       ctx.fillText(`${this.name} (${heroName}) [L${this.level}]`, w / 2, 24);
 

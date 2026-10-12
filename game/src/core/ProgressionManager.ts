@@ -107,6 +107,7 @@ export class ProgressionManager {
         rocket: true,    // Rocket Raccoon (unlocked)
         invoker: true,   // Invoker (unlocked)
         necromancer: true, // Mortis (unlocked)
+        amazon: true,    // Amazon (unlocked)
         archer: false    // Elf: Locked! (Buy / Achievement)
       },
       dailyQuestsProgress: {
@@ -153,6 +154,7 @@ export class ProgressionManager {
             rocket: parsed.unlockedHeroes?.rocket ?? true,
             invoker: true,
             necromancer: parsed.unlockedHeroes?.necromancer ?? true,
+            amazon: parsed.unlockedHeroes?.amazon ?? true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
           },
           dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
@@ -191,7 +193,7 @@ export class ProgressionManager {
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
-    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker' || hero === 'necromancer') return true; // TODO
+    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker' || hero === 'necromancer' || hero === 'amazon') return true; // TODO
     if (hero === 'archer') {
       return Boolean(this.data.unlockedHeroes.archer);
     }
@@ -612,6 +614,28 @@ export class ProgressionManager {
             crystals: 30
           },
           unlockConditionHint: 'Разблокирован по умолчанию'
+        };
+
+      case 'amazon':
+        return {
+          hero: 'amazon',
+          heroName: 'Амазонка',
+          heroSubtitle: '«Мистическая Воительница»',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_reaper_scythe.png'),
+          weaponName: 'Сферы Защиты',
+          avatarIcon: getAssetUrl('/textures/heroes/hero_amazon_front.png'),
+          questTitle: 'Танец Стихий',
+          questDesc: 'Грозная воительница джунглей, повелевающая защитными и атакующими магическими сферами.',
+          steps: [
+            'Доступна сразу всем защитникам Рифта.'
+          ],
+          rewards: {
+            potions: 3,
+            coins: 1500,
+            rings: 3,
+            crystals: 30
+          },
+          unlockConditionHint: 'Разблокирована по умолчанию'
         };
 
       case 'archer':
