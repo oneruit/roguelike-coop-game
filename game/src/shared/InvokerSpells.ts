@@ -243,9 +243,11 @@ export class SpellControlState {
     control: SpellControl,
     isBoss = false,
     isImmortal = false,
+    extraResistance = 0,
   ): void {
     if (isImmortal) return;
-    const resistance = isBoss ? 0.35 : 1;
+    const baseMult = isBoss ? 0.35 : 1;
+    const resistance = baseMult * Math.max(0.05, 1 - extraResistance);
     const duration = (value: number | undefined) =>
       Number.isFinite(value)
         ? Math.max(0, Math.min(8, value!)) * resistance
@@ -258,9 +260,12 @@ export class SpellControlState {
       Number.isFinite(control.slowFactor)
     ) {
       this.slow = Math.max(this.slow, duration(control.slowDuration));
+      const minSlowFactor = isBoss
+        ? Math.min(0.95, 0.70 + extraResistance * 0.25)
+        : Math.min(0.85, 0.20 + extraResistance * 0.65);
       this.slowFactor = Math.min(
         this.slowFactor,
-        Math.max(isBoss ? 0.7 : 0.2, Math.min(1, control.slowFactor!)),
+        Math.max(minSlowFactor, Math.min(1, control.slowFactor!)),
       );
     }
   }

@@ -565,10 +565,16 @@ export class LevelUpUI {
       }
     };
 
-    if (allMaxed || pool.length < 3) {
+    if (allMaxed) {
       if (!pool.some(o => o.id === hpOption.id)) pool.push(hpOption);
       if (!pool.some(o => o.id === damageOption.id)) pool.push(damageOption);
       if (!pool.some(o => o.id === speedOption.id)) pool.push(speedOption);
+    } else if (pool.length < 3) {
+      const elixirs = [hpOption, damageOption, speedOption];
+      for (const elixir of elixirs) {
+        if (pool.length >= 3) break;
+        if (!pool.some(o => o.id === elixir.id)) pool.push(elixir);
+      }
     }
 
     const shuffled = filterAndShuffleForReroll(pool, excludeIds);

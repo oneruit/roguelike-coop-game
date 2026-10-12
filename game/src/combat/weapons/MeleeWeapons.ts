@@ -148,14 +148,14 @@ export class KatanaSlashWeapon extends Weapon {
       if (enemies.length === 0) return;
 
       const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
-      const radSq = this.slashRadius * this.slashRadius;
       let hitCount = 0;
 
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
         const dx = enemy.position.x - playerPos.x;
         const dz = enemy.position.z - playerPos.z;
-        if (dx * dx + dz * dz <= radSq) {
+        const effectiveRadius = this.slashRadius + (enemy.width + enemy.height) * 0.20;
+        if (dx * dx + dz * dz <= effectiveRadius * effectiveRadius) {
           if (damageEnemy) {
             damageEnemy(enemy, this.damage, playerPos);
           } else {
@@ -235,14 +235,14 @@ export class WhirlwindSlashWeapon extends Weapon {
       if (enemies.length === 0) return;
 
       const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
-      const radSq = this.slashRadius * this.slashRadius;
       let hitCount = 0;
 
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
         const dx = enemy.position.x - playerPos.x;
         const dz = enemy.position.z - playerPos.z;
-        if (dx * dx + dz * dz <= radSq) {
+        const effectiveRadius = this.slashRadius + (enemy.width + enemy.height) * 0.20;
+        if (dx * dx + dz * dz <= effectiveRadius * effectiveRadius) {
           if (damageEnemy) {
             damageEnemy(enemy, this.damage, playerPos);
           } else {
@@ -321,14 +321,14 @@ export class GreatswordWeapon extends Weapon {
       if (enemies.length === 0) return;
 
       const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
-      const radSq = this.slashRadius * this.slashRadius;
       let hitCount = 0;
 
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
         const dx = enemy.position.x - playerPos.x;
         const dz = enemy.position.z - playerPos.z;
-        if (dx * dx + dz * dz <= radSq) {
+        const effectiveRadius = this.slashRadius + (enemy.width + enemy.height) * 0.20;
+        if (dx * dx + dz * dz <= effectiveRadius * effectiveRadius) {
           if (damageEnemy) {
             damageEnemy(enemy, this.damage, playerPos);
           } else {
@@ -412,14 +412,14 @@ export class FlailWeapon extends Weapon {
       if (enemies.length === 0) return;
 
       const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
-      const radSq = this.flailRadius * this.flailRadius;
       let hitCount = 0;
 
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
         const dx = enemy.position.x - playerPos.x;
         const dz = enemy.position.z - playerPos.z;
-        if (dx * dx + dz * dz <= radSq) {
+        const effectiveRadius = this.flailRadius + (enemy.width + enemy.height) * 0.20;
+        if (dx * dx + dz * dz <= effectiveRadius * effectiveRadius) {
           if (damageEnemy) {
             damageEnemy(enemy, this.damage, playerPos);
           } else {
