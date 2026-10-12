@@ -9,8 +9,10 @@ export const TEXTURE_MAP: Record<string, string> = {
   'weapon-fireball': '/textures/weapons/weapon_fireball.png',
   'weapon-bow': '/textures/weapons/weapon_bow.png',
   'weapon-kukri': '/textures/weapons/weapon_kukri.png',
+  'weapon-reaper_scythe': '/textures/weapons/weapon_reaper_scythe.png',
   'weapon-orbiting_barrier': '/textures/weapons/weapon_reaper_scythe.png',
-  'weapon-holy_aura': '/textures/weapons/weapon_holy_aura.png',
+  'weapon-fire_ring': '/textures/weapons/weapon_fire_ring.png',
+  'weapon-holy_aura': '/textures/weapons/weapon_fire_ring.png',
   'weapon-katana_slash': '/textures/weapons/weapon_katana_slash.png',
   'weapon-whirlwind_slash': '/textures/weapons/weapon_whirlwind_slash.png',
   'weapon-greatsword': '/textures/weapons/weapon_greatsword.png',
@@ -55,7 +57,9 @@ export const WEAPON_COLORS: Record<string, string> = {
   fireball: '#ef4444',
   bow: '#10b981',
   kukri: '#f59e0b',
+  reaper_scythe: '#8b5cf6',
   orbiting_barrier: '#8b5cf6',
+  fire_ring: '#f97316',
   holy_aura: '#f97316',
   katana_slash: '#ec4899',
   whirlwind_slash: '#dc2626',
@@ -156,20 +160,31 @@ export function toPluralCategory(category: string): keyof GameBalanceState {
 
 export function getEntityTexture(category: string, id: string): string {
   const singular = toSingularCategory(category);
-  const key = `${singular}-${id}`;
-  if (TEXTURE_MAP[key]) {
-    return TEXTURE_MAP[key];
+  const cleanId = (id || '').trim().toLowerCase().replace(/\s+/g, '_');
+  const key = `${singular}-${cleanId}`;
+  let rawPath = TEXTURE_MAP[key] || TEXTURE_MAP[`${singular}-${id}`];
+  if (!rawPath) {
+    switch (singular) {
+      case 'hero':
+        rawPath = `/textures/heroes/hero_${cleanId}_front.png`;
+        break;
+      case 'weapon':
+        rawPath = `/textures/weapons/weapon_${cleanId}.png`;
+        break;
+      case 'monster':
+        rawPath = `/textures/monsters/monster_${cleanId}_front.png`;
+        break;
+      case 'boss':
+        rawPath = `/textures/bosses/boss_${cleanId}_front.png`;
+        break;
+      default:
+        rawPath = '/textures/vfx/vfx_bullet.png';
+        break;
+    }
   }
-  switch (singular) {
-    case 'hero':
-      return `/textures/heroes/hero_${id}_front.png`;
-    case 'weapon':
-      return `/textures/weapons/weapon_${id}.png`;
-    case 'monster':
-      return `/textures/monsters/monster_${id}_front.png`;
-    case 'boss':
-      return `/textures/bosses/boss_${id}_front.png`;
-    default:
-      return '/textures/weapons/bullet_revolver.png';
-  }
+
+  const base = (import.meta.env?.BASE_URL || '/').trim();
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const cleanPath = rawPath.startsWith('/') ? rawPath.slice(1) : rawPath;
+  return `${cleanBase}${cleanPath}`;
 }

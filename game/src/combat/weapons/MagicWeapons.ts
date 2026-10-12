@@ -17,10 +17,10 @@ import { BalanceManager } from '../../balance/BalanceManager';
 import { type WeaponGrade, WEAPON_GRADES } from '../WeaponGrades';
 
 /**
- * Reaper's Scythe (Коса Жнеца) - previously Orbiting Barrier
+ * Reaper's Scythe (Коса Жнеца)
  * Rotating scythes circle the hero, cutting through monsters to deal base damage and apply stacking bleed DoT.
  */
-export class OrbitingBarrierWeapon extends Weapon {
+export class ReaperScytheWeapon extends Weapon {
   private orbCount: number = 2;
   private orbs: Projectile[] = [];
   private orbitRadius: number = 2.5;
@@ -28,13 +28,13 @@ export class OrbitingBarrierWeapon extends Weapon {
   private bleedDps: number = 8;
 
   constructor() {
-    super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4, 2);
+    super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 4, 2);
     this.recalculateStats();
   }
 
   public override recalculateStats(): void {
     super.recalculateStats();
-    const cfg = BalanceManager.getWeaponConfig('orbiting_barrier');
+    const cfg = BalanceManager.getWeaponConfig('reaper_scythe');
     const baseBleed = cfg?.bleedDps ?? 8;
     const baseRadius = cfg?.orbitRadius ?? 2.5;
     const baseSpeed = cfg?.orbitSpeed ?? 3.8;
@@ -117,17 +117,17 @@ export class OrbitingBarrierWeapon extends Weapon {
 }
 
 /**
- * Fire Ring (Огненное Кольцо) - previously Holy Aura
+ * Fire Ring (Огненное Кольцо)
  * Fiery ring of blazing animated flames surrounding the hero, searing all monsters within its perimeter.
  */
-export class HolyAuraWeapon extends Weapon {
+export class FireRingWeapon extends Weapon {
   private static vfxOpacity: number = 1.0;
-  private static instances = new Set<HolyAuraWeapon>();
+  private static instances = new Set<FireRingWeapon>();
 
   public static setVfxOpacity(val: number) {
     const clamped = Math.max(0, Math.min(1, val));
-    HolyAuraWeapon.vfxOpacity = clamped;
-    for (const inst of HolyAuraWeapon.instances) {
+    FireRingWeapon.vfxOpacity = clamped;
+    for (const inst of FireRingWeapon.instances) {
       if (inst.auraMat) {
         inst.auraMat.opacity = 0.95 * clamped;
         inst.auraMat.visible = clamped > 0.005;
@@ -142,13 +142,13 @@ export class HolyAuraWeapon extends Weapon {
   private animFrameTimer: number = 0;
 
   constructor() {
-    super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16, 7);
+    super('fire_ring', 'Огненное Кольцо', '🔥', 0.50, 16, 7);
     this.recalculateStats();
   }
 
   public override recalculateStats(): void {
     super.recalculateStats();
-    const cfg = BalanceManager.getWeaponConfig('holy_aura');
+    const cfg = BalanceManager.getWeaponConfig('fire_ring');
     const baseRad = cfg?.explosionRadius ?? 3.5;
     this.radius = Number((baseRad + (this.level - 1) * 0.35).toFixed(2));
     this.cooldown = Math.max(0.20, Number((this.baseCooldown * Math.pow(0.93, this.level - 1)).toFixed(3)));
@@ -179,12 +179,12 @@ export class HolyAuraWeapon extends Weapon {
     if (this.timer >= this.effectiveCooldown) {
       this.timer = 0;
 
-      const radSq = this.radius * this.radius;
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
         const dx = enemy.position.x - playerPos.x;
         const dz = enemy.position.z - playerPos.z;
-        if (dx * dx + dz * dz <= radSq) {
+        const effectiveRadius = this.radius + (enemy.width + enemy.height) * 0.20;
+        if (dx * dx + dz * dz <= effectiveRadius * effectiveRadius) {
           if (damageEnemy) {
             damageEnemy(enemy, this.damage, playerPos);
           } else {
@@ -205,20 +205,20 @@ export class HolyAuraWeapon extends Weapon {
       map: this.fireTex,
       side: DoubleSide,
       transparent: true,
-      opacity: 0.95 * HolyAuraWeapon.vfxOpacity,
+      opacity: 0.95 * FireRingWeapon.vfxOpacity,
       blending: AdditiveBlending,
       depthWrite: false,
-      visible: HolyAuraWeapon.vfxOpacity > 0.005
+      visible: FireRingWeapon.vfxOpacity > 0.005
     });
     this.auraMesh = new Mesh(geom, this.auraMat);
     this.auraMesh.rotation.x = -Math.PI / 2;
     this.auraMesh.position.set(playerPos.x, 0.08, playerPos.z);
     scene.add(this.auraMesh);
-    HolyAuraWeapon.instances.add(this);
+    FireRingWeapon.instances.add(this);
   }
 
   public destroy(scene: Scene) {
-    HolyAuraWeapon.instances.delete(this);
+    FireRingWeapon.instances.delete(this);
     if (this.auraMesh) {
       scene.remove(this.auraMesh);
       this.auraMesh.geometry.dispose();
@@ -691,3 +691,6 @@ export class FireballWeapon extends Weapon {
     return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }
+
+export { ReaperScytheWeapon as OrbitingBarrierWeapon, FireRingWeapon as HolyAuraWeapon };
+

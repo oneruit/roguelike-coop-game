@@ -4,8 +4,8 @@ import {
   Weapon,
   BowWeapon,
   KukriWeapon,
-  OrbitingBarrierWeapon,
-  HolyAuraWeapon,
+  ReaperScytheWeapon,
+  FireRingWeapon,
   KatanaSlashWeapon,
   WhirlwindSlashWeapon,
   GreatswordWeapon,
@@ -23,6 +23,7 @@ import { canCharacterAcquireWeapon } from '../../shared/UniqueCharacters';
 import { selectWeaponUpgradeOptions, filterAndShuffleForReroll, canRerollWeaponOptions } from '../selectWeaponUpgradeOptions';
 import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../../combat/WeaponGrades';
 import { SoundManager } from '../../core/SoundManager';
+import { TextureManager } from '../../core/TextureManager';
 
 export interface UpgradeOption {
   id: string;
@@ -43,8 +44,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     dual_revolvers: '/textures/weapons/weapon_kukri.png',
     orbiting_barrier: '/textures/weapons/weapon_reaper_scythe.png',
     reaper_scythe: '/textures/weapons/weapon_reaper_scythe.png',
-    holy_aura: '/textures/weapons/weapon_holy_aura.png',
-    fire_ring: '/textures/weapons/weapon_holy_aura.png',
+    holy_aura: '/textures/weapons/weapon_fire_ring.png',
+    fire_ring: '/textures/weapons/weapon_fire_ring.png',
     katana_slash: '/textures/weapons/weapon_katana_slash.png',
     whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
     greatsword: '/textures/weapons/weapon_greatsword.png',
@@ -57,7 +58,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     assault_rifle: '/textures/weapons/weapon_assault_rifle.png',
     invoker_invoke: '/textures/weapons/weapon_invoker_invoke.png'
   };
-  return map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
+  const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
+  return TextureManager.getWeaponBlobUrl(path);
 }
 
 export interface LevelUpUIElements {
@@ -458,15 +460,15 @@ export class LevelUpUI {
           addGenericOption('kukri', 'Нож Кукри', '🔪', 'Стремительные броски изогнутых клинков кукри в ближайших врагов', () => new KukriWeapon());
         }
 
-        const hasOrbs = player.weapons.some(w => w.id === 'orbiting_barrier');
+        const hasOrbs = player.weapons.some(w => w.id === 'reaper_scythe' || w.id === 'orbiting_barrier');
         if (!hasOrbs) {
-          addGenericOption('orbiting_barrier', 'Коса Жнеца', '🌙', 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение', () => new OrbitingBarrierWeapon());
+          addGenericOption('reaper_scythe', 'Коса Жнеца', '🌙', 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение', () => new ReaperScytheWeapon());
         }
 
-        const hasAura = player.weapons.some(w => w.id === 'holy_aura');
+        const hasAura = player.weapons.some(w => w.id === 'fire_ring' || w.id === 'holy_aura');
         if (!hasAura) {
-          addGenericOption('holy_aura', 'Огненное Кольцо', '🔥', 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров', () => {
-            const aura = new HolyAuraWeapon();
+          addGenericOption('fire_ring', 'Огненное Кольцо', '🔥', 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров', () => {
+            const aura = new FireRingWeapon();
             aura.initVisual(this.ctx.getScene(), player.position);
             return aura;
           });
@@ -563,10 +565,16 @@ export class LevelUpUI {
       }
     };
 
-    if (allMaxed || pool.length < 3) {
+    if (allMaxed) {
       if (!pool.some(o => o.id === hpOption.id)) pool.push(hpOption);
       if (!pool.some(o => o.id === damageOption.id)) pool.push(damageOption);
       if (!pool.some(o => o.id === speedOption.id)) pool.push(speedOption);
+    } else if (pool.length < 3) {
+      const elixirs = [hpOption, damageOption, speedOption];
+      for (const elixir of elixirs) {
+        if (pool.length >= 3) break;
+        if (!pool.some(o => o.id === elixir.id)) pool.push(elixir);
+      }
     }
 
     const shuffled = filterAndShuffleForReroll(pool, excludeIds);

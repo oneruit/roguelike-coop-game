@@ -12,7 +12,8 @@ export class ProgressionView {
     monsterCategory: 'monsters',
     monsterMetric: 'hp',
     selectedMonsters: new Set(['coyote', 'crawler', 'scorpion', 'brute', 'bison']),
-    selectedBosses: new Set(['boss', 'hydra'])
+    selectedBosses: new Set(['boss', 'hydra']),
+    monsterTimeLimit: 120
   };
 
   constructor(state: BalanceState) {
@@ -131,6 +132,44 @@ export class ProgressionView {
         this.renderMonstersProgression();
       });
     });
+
+    const timeSlider = document.getElementById('prog-monsters-time-slider') as HTMLInputElement | null;
+    if (timeSlider) {
+      timeSlider.addEventListener('input', () => {
+        const val = parseInt(timeSlider.value, 10);
+        this.chartState.monsterTimeLimit = val;
+        this.updateTimeSliderUI(val);
+        this.renderMonstersProgression();
+      });
+    }
+
+    const presetBtns = document.querySelectorAll<HTMLButtonElement>('.prog-time-preset');
+    presetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const timeVal = parseInt(btn.getAttribute('data-time') || '120', 10);
+        this.chartState.monsterTimeLimit = timeVal;
+        if (timeSlider) timeSlider.value = String(timeVal);
+        this.updateTimeSliderUI(timeVal);
+        this.renderMonstersProgression();
+      });
+    });
+  }
+
+  private updateTimeSliderUI(timeVal: number): void {
+    const label = document.getElementById('prog-monsters-time-val');
+    if (label) label.textContent = `${timeVal} мин`;
+
+    const countEl = document.getElementById('prog-monsters-points-count');
+    if (countEl) {
+      const points = Math.floor(timeVal / 5) + 1;
+      countEl.textContent = `(${points} точек)`;
+    }
+
+    const presetBtns = document.querySelectorAll<HTMLButtonElement>('.prog-time-preset');
+    presetBtns.forEach((btn) => {
+      const t = parseInt(btn.getAttribute('data-time') || '0', 10);
+      btn.classList.toggle('active', t === timeVal);
+    });
   }
 
   public render(): void {
@@ -178,7 +217,8 @@ export class ProgressionView {
 
     SvgChartRenderer.renderLineChart(chartContainer, seriesList, {
       xLabels,
-      fillArea: false
+      fillArea: false,
+      minWidthPerPoint: 38
     });
   }
 
@@ -221,8 +261,9 @@ export class ProgressionView {
     const chartContainer = document.getElementById('chart-monsters-progression');
     if (!chartContainer) return;
 
-    // 0 to 60 minutes with 5 minutes interval
-    const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60];
+    const maxMinutes = this.chartState.monsterTimeLimit || 120;
+    const pointCount = Math.floor(maxMinutes / 5) + 1;
+    const minutes = Array.from({ length: pointCount }, (_, i) => i * 5);
     const xLabels = minutes.map((m) => `${m} мин`);
 
     const isBosses = this.chartState.monsterCategory === 'bosses';
@@ -245,13 +286,13 @@ export class ProgressionView {
     if (title) {
       const catLabel = isBosses ? 'боссов' : 'монстров';
       const metricLabel = metric === 'hp' ? 'здоровья (HP)' : metric === 'damage' ? 'контактного урона' : 'скорости бега';
-      title.textContent = `Масштабирование ${metricLabel} ${catLabel} во времени (0-60 минут, интервал 5 мин)`;
+      title.textContent = `Масштабирование ${metricLabel} ${catLabel} во времени (0-${maxMinutes} минут, интервал 5 мин)`;
     }
 
     const subtitle = document.querySelector('#prog-view-monsters .chart-card-subtitle');
     if (subtitle) {
       subtitle.textContent =
-        'Формула движка: базовый рост + пост-15м экспоненциальный штурм (интервал 5 мин, до 60 мин выживания)';
+        `Формула движка: базовый рост + пост-15м экспоненциальный штурм (интервал 5 мин, до ${maxMinutes} мин выживания)`;
     }
 
     const seriesList: ChartSeries[] = [];
@@ -292,7 +333,8 @@ export class ProgressionView {
 
     SvgChartRenderer.renderLineChart(chartContainer, seriesList, {
       xLabels,
-      fillArea: false
+      fillArea: false,
+      minWidthPerPoint: 42
     });
   }
 

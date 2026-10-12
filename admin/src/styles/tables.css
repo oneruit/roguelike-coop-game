@@ -428,3 +428,33 @@
 .sortable-col.is-sorted .sort-icon {
   color: var(--accent-primary);
 }
+
+/* ==========================================================================
+   RESPONSIVE TABLE HORIZONTAL SCROLLING
+   ========================================================================== */
+#tab-weapons,
+#tab-heroes,
+#tab-monsters,
+#tab-bosses,
+#tab-passives,
+#tab-items {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+}
+
+#tab-weapons .accordion-table-header,
+#tab-weapons .accordion-list,
+#tab-heroes .accordion-table-header,
+#tab-heroes .accordion-list,
+#tab-monsters .accordion-table-header,
+#tab-monsters .accordion-list,
+#tab-bosses .accordion-table-header,
+#tab-bosses .accordion-list,
+#tab-passives .accordion-table-header,
+#tab-passives .accordion-list,
+#tab-items .accordion-table-header,
+#tab-items .accordion-list {
+  min-width: 860px;
+}

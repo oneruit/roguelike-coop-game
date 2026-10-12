@@ -51,8 +51,8 @@ test('Unique Character System - Invoker weapon acquisition rules', () => {
   const genericWeapons = [
     'bow',
     'kukri',
-    'orbiting_barrier',
-    'holy_aura',
+    'reaper_scythe',
+    'fire_ring',
     'katana_slash',
     'whirlwind_slash',
     'greatsword',

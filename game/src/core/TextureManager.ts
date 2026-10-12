@@ -58,7 +58,7 @@ export class TextureManager {
     if (rel.startsWith('hero_')) return `/textures/heroes/${rel}`;
     if (rel.startsWith('monster_')) return `/textures/monsters/${rel}`;
     if (rel.startsWith('boss_')) return `/textures/bosses/${rel}`;
-    if (rel.startsWith('weapon_') || rel === 'bullet_revolver.png') return `/textures/weapons/${rel}`;
+    if (rel.startsWith('weapon_')) return `/textures/weapons/${rel}`;
     if (rel.startsWith('vfx_')) return `/textures/vfx/${rel}`;
     if (rel.startsWith('quest_') || rel.startsWith('reward_') || rel.startsWith('ui_quest')) return `/textures/quests/${rel}`;
     if (rel === 'game_logo_rift.png' || rel.startsWith('menu_background')) return `/textures/ui/${rel}`;
@@ -84,13 +84,12 @@ export class TextureManager {
     '/textures/weapons/weapon_chakram.png',
     '/textures/weapons/weapon_flail.png',
     '/textures/weapons/weapon_greatsword.png',
-    '/textures/weapons/weapon_holy_aura.png',
+    '/textures/weapons/weapon_fire_ring.png',
     '/textures/weapons/weapon_katana_slash.png',
     '/textures/weapons/weapon_kukri.png',
     '/textures/weapons/weapon_lightning_strike.png',
     '/textures/weapons/weapon_ice_spike.png',
     '/textures/weapons/weapon_fireball.png',
-    '/textures/weapons/weapon_orbiting_barrier.png',
     '/textures/weapons/weapon_reaper_scythe.png',
     '/textures/weapons/weapon_whirlwind_slash.png',
     '/textures/weapons/weapon_assault_rifle.png'
@@ -190,16 +189,15 @@ export class TextureManager {
     '/textures/weapons/weapon_chakram.png',
     '/textures/weapons/weapon_flail.png',
     '/textures/weapons/weapon_greatsword.png',
-    '/textures/weapons/weapon_holy_aura.png',
+    '/textures/weapons/weapon_fire_ring.png',
     '/textures/weapons/weapon_katana_slash.png',
     '/textures/weapons/weapon_kukri.png',
     '/textures/weapons/weapon_lightning_strike.png',
     '/textures/weapons/weapon_ice_spike.png',
     '/textures/weapons/weapon_fireball.png',
-    '/textures/weapons/weapon_orbiting_barrier.png',
     '/textures/weapons/weapon_whirlwind_slash.png',
     '/textures/weapons/weapon_reaper_scythe.png',
-    '/textures/weapons/bullet_revolver.png',
+    '/textures/vfx/vfx_bullet.png',
     '/textures/vfx/vfx_lightning.png',
     '/textures/vfx/vfx_fire_ring.png',
     '/textures/vfx/vfx_ice_spike.png',
@@ -268,16 +266,6 @@ export class TextureManager {
     '/textures/heroes/hero_amazon_walk.png',
     '/textures/heroes/hero_amazon_attack.png',
     '/textures/heroes/hero_amazon_walk_attack.png',
-
-    // Legacy Hero Avatars
-    '/textures/heroes/hero_male_front.png',
-    '/textures/heroes/hero_male_back.png',
-    '/textures/heroes/hero_male_left.png',
-    '/textures/heroes/hero_male_right.png',
-    '/textures/heroes/hero_female_front.png',
-    '/textures/heroes/hero_female_back.png',
-    '/textures/heroes/hero_female_left.png',
-    '/textures/heroes/hero_female_right.png',
 
     // Bosses
     '/textures/bosses/boss_demon_walk.png',
@@ -557,7 +545,7 @@ export class TextureManager {
   }
 
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {
-    const tex = this.load('/textures/weapons/bullet_revolver.png', renderer);
+    const tex = this.load('/textures/vfx/vfx_bullet.png', renderer);
     tex.magFilter = NearestFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;

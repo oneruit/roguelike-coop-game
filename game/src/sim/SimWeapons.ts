@@ -619,9 +619,9 @@ export class SimAstralStaffWeapon extends SimWeapon {
 }
 
 /**
- * Orbiting Barrier (Священные Подковы)
+ * Reaper's Scythe (Коса Жнеца)
  */
-export class SimOrbitingBarrierWeapon extends SimWeapon {
+export class SimReaperScytheWeapon extends SimWeapon {
   private orbCount: number = 2;
   private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
@@ -629,7 +629,7 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
   private activeOrbIds: string[] = [];
 
   constructor() {
-    super('orbiting_barrier', 'Коса Жнеца', '🌙', 0, 4);
+    super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 4);
   }
 
   public update(
@@ -689,13 +689,13 @@ export class SimOrbitingBarrierWeapon extends SimWeapon {
 }
 
 /**
- * Holy Aura (Огненное Кольцо)
+ * Fire Ring (Огненное Кольцо)
  */
-export class SimHolyAuraWeapon extends SimWeapon {
+export class SimFireRingWeapon extends SimWeapon {
   private radius: number = 3.5;
 
   constructor() {
-    super('holy_aura', 'Огненное Кольцо', '🔥', 0.50, 16);
+    super('fire_ring', 'Огненное Кольцо', '🔥', 0.50, 16);
   }
 
   public update(
@@ -1336,7 +1336,7 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'rocket':
       return new SimAssaultRifleWeapon();
     case 'amazon':
-      return new SimOrbitingBarrierWeapon();
+      return new SimReaperScytheWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();
@@ -1375,13 +1375,17 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimIceSpikeWeapon();
     case 'fireball':
       return new SimFireballWeapon();
+    case 'reaper_scythe':
     case 'orbiting_barrier':
-      return new SimOrbitingBarrierWeapon();
+      return new SimReaperScytheWeapon();
+    case 'fire_ring':
     case 'holy_aura':
-      return new SimHolyAuraWeapon();
+      return new SimFireRingWeapon();
     case 'katana_slash':
       return new SimKatanaSlashWeapon();
     default:
       return null;
   }
 }
+
+export { SimReaperScytheWeapon as SimOrbitingBarrierWeapon, SimFireRingWeapon as SimHolyAuraWeapon };

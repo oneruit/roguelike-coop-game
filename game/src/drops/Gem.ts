@@ -164,7 +164,7 @@ export class Gem {
       if (dist > 0.001) {
         const dirX = dx / dist;
         const dirZ = dz / dist;
-        const speed = 14 + (pickupRadius - dist) * 2;
+        const speed = 14 + Math.max(0, dist - pickupRadius) * 2.2;
         this.velocity.x += (dirX * speed - this.velocity.x) * Math.min(1, dt * 10);
         this.velocity.z += (dirZ * speed - this.velocity.z) * Math.min(1, dt * 10);
         this.position.x += this.velocity.x * dt;

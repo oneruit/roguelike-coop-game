@@ -24,6 +24,7 @@ This document defines the mandatory Git workflow for AI agents contributing to t
 7. `development → master` is a manual developer-controlled release.
 8. **Never enable auto-merge.** All PRs require manual review and approval by the developer before merging.
 9. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
+10. **File size limit**: Files must not exceed 1500 lines of code. If a file approaches or exceeds 1500 lines, it must be split and modularized into smaller units. See [`.agents/rules/file-size-limit.md`](.agents/rules/file-size-limit.md).
 
 ## Workflow
 

@@ -15,6 +15,7 @@ export interface ChartSeries {
 export interface ChartOptions {
   width?: number;
   height?: number;
+  minWidthPerPoint?: number;
   xLabels: string[];
   xStep?: number;
   yLabel?: string;
@@ -42,7 +43,10 @@ export class SvgChartRenderer {
     }
 
     const padding = { top: 24, right: 30, bottom: 44, left: 65 };
-    const chartWidth = options.width || container.clientWidth || 740;
+    const xCount = options.xLabels.length;
+    const minWidthPerPoint = options.minWidthPerPoint || 0;
+    const minRequiredWidth = minWidthPerPoint > 0 ? padding.left + padding.right + (xCount - 1) * minWidthPerPoint : 0;
+    const chartWidth = Math.max(minRequiredWidth, options.width || container.clientWidth || 740);
     const chartHeight = options.height || 320;
 
     const plotWidth = Math.max(100, chartWidth - padding.left - padding.right);
@@ -75,7 +79,6 @@ export class SvgChartRenderer {
       minY = 0; // standard baseline at 0 for combat stats
     }
 
-    const xCount = options.xLabels.length;
     const getX = (index: number) => padding.left + (index / Math.max(1, xCount - 1)) * plotWidth;
     const getY = (val: number) => {
       const clamped = Math.max(minY, Math.min(maxY, val));
@@ -95,6 +98,7 @@ export class SvgChartRenderer {
     svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
     svg.setAttribute('class', 'vector-chart-svg');
     svg.style.width = '100%';
+    svg.style.minWidth = `${chartWidth}px`;
     svg.style.height = `${chartHeight}px`;
 
     // Grid lines (5 horizontal levels)
@@ -205,6 +209,7 @@ export class SvgChartRenderer {
     const chartWrapper = document.createElement('div');
     chartWrapper.className = 'chart-render-wrapper';
     chartWrapper.style.position = 'relative';
+    chartWrapper.style.minWidth = `${chartWidth}px`;
     chartWrapper.appendChild(svg);
 
     const tooltip = document.createElement('div');
@@ -267,8 +272,24 @@ export class SvgChartRenderer {
 
       const ttLeft = (snapX / chartWidth) * rect.width;
       const ttTop = e.clientY - rect.top;
-      tooltip.style.left = `${Math.min(rect.width - 180, Math.max(10, ttLeft + 12))}px`;
-      tooltip.style.top = `${Math.max(10, ttTop - 40)}px`;
+
+      const ttWidth = tooltip.offsetWidth || 180;
+      const ttHeight = tooltip.offsetHeight || 100;
+
+      // Position to right of crosshair by default; flip to left if it would exceed container bounds
+      let targetLeft = ttLeft + 14;
+      if (targetLeft + ttWidth > rect.width - 12) {
+        targetLeft = ttLeft - ttWidth - 14;
+      }
+      // Safety clamp inside chart bounding rect so it never goes off-screen or underneath cursor
+      targetLeft = Math.max(8, Math.min(rect.width - ttWidth - 8, targetLeft));
+
+      // Vertical positioning: center around mouse cursor, clamped within container
+      let targetTop = ttTop - ttHeight / 2;
+      targetTop = Math.max(8, Math.min(rect.height - ttHeight - 8, targetTop));
+
+      tooltip.style.left = `${Math.round(targetLeft)}px`;
+      tooltip.style.top = `${Math.round(targetTop)}px`;
     });
 
     svg.addEventListener('mouseleave', () => {

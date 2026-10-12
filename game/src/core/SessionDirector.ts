@@ -201,6 +201,8 @@ export class SessionDirector {
     timeOfDayOption: 'random' | 'day' | 'night' = 'random'
   ): void {
     try {
+      document.body.classList.remove('is-main-menu');
+      document.body.classList.add('is-in-game');
       this.isTrainingMode = isTrainingMode;
       ProgressionManager.getInstance().isTrainingMode = isTrainingMode;
       this.hud.setTrainingModeActive(isTrainingMode);
@@ -252,6 +254,8 @@ export class SessionDirector {
 
   public startCoopGameAsHost(seedInput?: string): void {
     if (this.net.role !== 'host') return;
+    document.body.classList.remove('is-main-menu');
+    document.body.classList.add('is-in-game');
     this.hud.hideHostLobby();
 
     for (const rp of this.remotePlayers.values()) {
@@ -304,6 +308,8 @@ export class SessionDirector {
   }
 
   public startCoopGameAsClient(seed?: number): void {
+    document.body.classList.remove('is-main-menu');
+    document.body.classList.add('is-in-game');
     this.hud.hideJoinLobby();
 
     for (const rp of this.remotePlayers.values()) {

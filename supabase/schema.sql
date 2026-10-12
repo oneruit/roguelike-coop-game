@@ -96,7 +96,7 @@ VALUES
     "pierce": 1
   }'::jsonb),
 
-  ('weapon:orbiting_barrier', 'weapon', 'orbiting_barrier', 'Коса Жнеца', 'Вращающиеся косы со стакающимся кровотечением', '{
+  ('weapon:reaper_scythe', 'weapon', 'reaper_scythe', 'Коса Жнеца', 'Вращающиеся косы со стакающимся кровотечением', '{
     "damage": 4,
     "cooldown": 0.0,
     "damagePerLevel": 1,
@@ -108,7 +108,7 @@ VALUES
     "count": 2
   }'::jsonb),
 
-  ('weapon:holy_aura', 'weapon', 'holy_aura', 'Огненное Кольцо', 'Анимированная аура пламени с периодическим тиком', '{
+  ('weapon:fire_ring', 'weapon', 'fire_ring', 'Огненное Кольцо', 'Анимированная аура пламени с периодическим тиком', '{
     "damage": 16,
     "cooldown": 0.50,
     "damagePerLevel": 4,

@@ -79,14 +79,20 @@
   pointer-events: auto;
 }
 
-/* Pause Modal Backdrop: completely transparent scenic wallpaper so in-game action is visible */
-#pause-modal .modal-backdrop {
-  background: rgba(4, 10, 20, 0.45) !important;
-  backdrop-filter: blur(2px) !important;
-  -webkit-backdrop-filter: blur(2px) !important;
+/* In-Game Modal Backdrops: Translucent dark glass revealing the 3D scene */
+.in-game-modal-backdrop,
+#pause-modal .modal-backdrop,
+body.is-in-game .modal-backdrop,
+body.is-in-game .menu-scenic-backdrop {
+  background: rgba(4, 10, 20, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
-#pause-modal .modal-backdrop::after {
+.in-game-modal-backdrop::after,
+#pause-modal .modal-backdrop::after,
+body.is-in-game .modal-backdrop::after,
+body.is-in-game .menu-scenic-backdrop::after {
   display: none !important;
 }
 

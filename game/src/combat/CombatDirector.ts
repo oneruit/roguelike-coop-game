@@ -476,12 +476,17 @@ export class CombatDirector {
             enemy.addBleed(bleedDps, 3.0, myId, proj.sourceWeaponId);
           }
 
+          if (proj.isIceSpike) {
+            enemy.applySlow(0.60, 2.0);
+          }
+
           if (this.net.role === 'client') {
             const isDead = enemy.takeDamage(finalDamage, proj.position, myId);
-            this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit, this.engine.camera, false, critTier, critMultiplier);
+            const displayedDamage = enemy.lastDamageTaken > 0 ? enemy.lastDamageTaken : finalDamage;
+            this.damageNumbers.spawnDamage(enemy.position, displayedDamage, isCrit, this.engine.camera, false, critTier, critMultiplier);
             SoundManager.playHit();
-            this.player.totalDamageDealt += finalDamage;
-            this.player.recordWeaponDamage(proj.sourceWeaponId, finalDamage);
+            this.player.totalDamageDealt += displayedDamage;
+            this.player.recordWeaponDamage(proj.sourceWeaponId, displayedDamage);
 
             if (isDead) {
               this.player.kills++;
