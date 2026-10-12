@@ -297,7 +297,7 @@
                   <span class="metric-label">Пул противников</span>
                   <div class="metric-number" id="kpi-opponents-count">10 видов</div>
                   <div class="metric-trend-row">
-                    <span class="trend-neutral">Волны 0-30м</span>
+                    <span class="trend-neutral">Волны 0-60м</span>
                     <span class="trend-period" id="kpi-opponents-desc">8 крипов + 2 босса</span>
                   </div>
                 </div>
@@ -373,7 +373,7 @@
                 <span class="quick-nav-count-badge">Графики</span>
               </div>
               <div class="quick-nav-title">Графики прогрессии</div>
-              <div class="quick-nav-desc">Векторные графики кривых урона оружия от L1 до L20 и HP монстров 0-30 мин</div>
+              <div class="quick-nav-desc">Векторные графики кривых урона оружия от L1 до L20 и характеристик монстров 0-60 мин</div>
               <span class="quick-nav-action-text">Смотреть графики →</span>
             </div>
 
@@ -427,7 +427,7 @@
               <div class="chart-card-header">
                 <div>
                   <h3 class="chart-card-title">Статус системы &amp; Скейлинг волн</h3>
-                  <span class="chart-card-subtitle">Ключевые множители сложности на 15 и 30 минутах выживания</span>
+                  <span class="chart-card-subtitle">Ключевые множители сложности на интервале 0-60 минут выживания</span>
                 </div>
               </div>
               <div id="dashboard-system-status-container">
@@ -640,7 +640,7 @@
           <div class="segmented-control-bar">
             <div class="segmented-group" id="progression-view-switcher">
               <button class="segmented-btn active" data-prog-view="weapons">Оружие (L1 → L20)</button>
-              <button class="segmented-btn" data-prog-view="monsters">Монстры (0 → 30 мин)</button>
+              <button class="segmented-btn" data-prog-view="monsters">Монстры (0 → 60 мин)</button>
               <button class="segmented-btn" data-prog-view="heroes">Герои (Сравнение статов)</button>
             </div>
 
@@ -695,6 +695,11 @@
                   <button class="segmented-btn" data-metric="speed">Скорость бега</button>
                 </div>
               </div>
+
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-xs btn-outline" id="btn-prog-monsters-select-all">Выбрать все</button>
+                <button class="btn btn-xs btn-outline" id="btn-prog-monsters-clear-all">Очистить выбор</button>
+              </div>
             </div>
 
             <div id="prog-monsters-chips" class="filter-chips-grid">
@@ -704,8 +709,8 @@
             <div class="chart-card">
               <div class="chart-card-header">
                 <div>
-                  <h3 class="chart-card-title" id="prog-monsters-chart-title">Масштабирование характеристик монстров во времени (0-30 минут)</h3>
-                  <span class="chart-card-subtitle">Формула движка: База × (1 + (минута × 0.28 + (минута / 4.5)^1.7 × 0.4) × 1.5)</span>
+                  <h3 class="chart-card-title" id="prog-monsters-chart-title">Масштабирование характеристик монстров во времени (0-60 минут)</h3>
+                  <span class="chart-card-subtitle">Формула движка: Базовый рост + пост-15м экспоненциальный штурм (интервал 5 мин, до 60 мин выживания)</span>
                 </div>
               </div>
               <div id="chart-monsters-progression">

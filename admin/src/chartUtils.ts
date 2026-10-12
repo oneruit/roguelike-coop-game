@@ -16,6 +16,7 @@ export interface ChartOptions {
   width?: number;
   height?: number;
   xLabels: string[];
+  xStep?: number;
   yLabel?: string;
   yMin?: number;
   yMax?: number;
@@ -129,7 +130,7 @@ export class SvgChartRenderer {
     // X Axis Labels (sample to avoid overlap if many points)
     const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     xLabelsGroup.setAttribute('class', 'chart-x-labels');
-    const step = Math.max(1, Math.ceil(xCount / 10));
+    const step = options.xStep ?? Math.max(1, Math.ceil(xCount / 14));
     for (let i = 0; i < xCount; i++) {
       if (i % step === 0 || i === xCount - 1) {
         const xPos = getX(i);
