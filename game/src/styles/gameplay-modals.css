@@ -1023,20 +1023,23 @@ body.is-in-game .menu-scenic-backdrop::after {
   text-transform: uppercase;
 }
 
-.inv-weapon-grade-badge.badge-grade1 {
+.inv-weapon-grade-badge.badge-grade1,
+.inv-weapon-grade-badge.badge-tier3 {
   color: #94a3b8;
   background: rgba(148, 163, 184, 0.15);
   border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-.inv-weapon-grade-badge.badge-grade2 {
+.inv-weapon-grade-badge.badge-grade2,
+.inv-weapon-grade-badge.badge-tier2 {
   color: #38bdf8;
   background: rgba(56, 189, 248, 0.15);
   border: 1px solid rgba(56, 189, 248, 0.4);
   box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
 }
 
-.inv-weapon-grade-badge.badge-grade3 {
+.inv-weapon-grade-badge.badge-grade3,
+.inv-weapon-grade-badge.badge-tier1 {
   color: #f59e0b;
   background: rgba(245, 158, 11, 0.18);
   border: 1px solid rgba(245, 158, 11, 0.5);

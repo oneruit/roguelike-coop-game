@@ -8,6 +8,7 @@ import { DropManager } from '../game/src/drops/DropManager';
 import { DamageNumberManager } from '../game/src/combat/DamageNumberManager';
 import { KatanaSlashWeapon } from '../game/src/combat/weapons/MeleeWeapons';
 import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
+import { PlayerStatusManager } from '../game/src/entities/PlayerStatusManager';
 
 // Mock DOM for Three.js ImageLoader in Node.js
 if (typeof (globalThis as any).document === 'undefined') {
@@ -212,3 +213,104 @@ test('Enemy slow mechanic reduces movement speed and respects CC resistance', ()
 test('Invoker base damage multiplier is balanced', () => {
   assert.equal(DEFAULT_BALANCE.heroes.invoker.damageMultiplier, 1.40);
 });
+
+test('PlayerStatusManager handles burn, shock, and slow', () => {
+  let tickDamageDealt = 0;
+  const statusMgr = new PlayerStatusManager();
+  const maxHp = 1000;
+  const onBurnTick = (dmg: number) => { tickDamageDealt += dmg; };
+
+  // 1. Burn: 2% of 1000 max HP = 20 dmg/sec
+  statusMgr.applyBurn(3.0);
+  assert.equal(statusMgr.isBurning, true);
+  statusMgr.update(1.0, onBurnTick, maxHp);
+  assert.equal(tickDamageDealt, 20);
+  statusMgr.update(2.0, onBurnTick, maxHp);
+  assert.equal(tickDamageDealt, 60);
+  assert.equal(statusMgr.isBurning, false);
+
+  // 2. Shock: +10% incoming damage for 5s
+  statusMgr.applyShock(5.0);
+  assert.equal(statusMgr.isShocked, true);
+  assert.equal(statusMgr.incomingDamageMultiplier, 1.10);
+  statusMgr.update(5.0, onBurnTick, maxHp);
+  assert.equal(statusMgr.isShocked, false);
+  assert.equal(statusMgr.incomingDamageMultiplier, 1.0);
+
+  // 3. Slow: speed * 0.65 for 3s
+  statusMgr.applySlow(0.65, 3.0);
+  assert.equal(statusMgr.isSlowed, true);
+  assert.equal(statusMgr.movementMultiplier, 0.65);
+  statusMgr.update(3.0, onBurnTick, maxHp);
+  assert.equal(statusMgr.isSlowed, false);
+  assert.equal(statusMgr.movementMultiplier, 1.0);
+});
+
+test('Enemy status effects: Burn (2% max HP/sec), Shock (+10% damage taken), Stun (halts movement)', () => {
+  const enemy = new Enemy(
+    {
+      type: 'skeleton',
+      name: 'Skeleton',
+      texturePrefix: '/textures/monsters/monster_skeleton',
+      hp: 1000,
+      speed: 3.0,
+      damage: 10,
+      width: 1.0,
+      height: 1.0,
+      gemType: 'blue'
+    },
+    new Vector3(5, 0, 0)
+  );
+
+  // Shock test
+  assert.equal(enemy.isShocked, false);
+  enemy.applyShock(5.0);
+  assert.equal(enemy.isShocked, true);
+  enemy.takeDamage(100);
+  assert.equal(enemy.lastDamageTaken, 110, 'Shocked enemy takes 10% more damage (100 * 1.10 = 110)');
+
+  // Burn test
+  let burnDamage = 0;
+  enemy.onBleedDamage = (_target, amount) => { burnDamage += amount; };
+  enemy.applyBurn(3.0, 'p1', 'fireball');
+  assert.equal(enemy.isBurning, true);
+  enemy.updateSimulation(1.0, new Vector3(0, 0, 0));
+  // 2% of 1000 = 20 damage per second
+  assert.equal(burnDamage, 20);
+
+  // Stun test
+  enemy.stun(2.0);
+  assert.equal(enemy.isStunned, true);
+  const posX = enemy.position.x;
+  enemy.updateSimulation(0.5, new Vector3(0, 0, 0));
+  assert.equal(enemy.position.x, posX, 'Stunned enemy does not move');
+  enemy.updateSimulation(1.6, new Vector3(0, 0, 0));
+  assert.equal(enemy.isStunned, false, 'Stun expires after duration');
+});
+
+test('Weapon tiers: Tier 3 (starter), Tier 2 (grade 1), Tier 1 (grade 2)', () => {
+  const katana = new KatanaSlashWeapon();
+  assert.equal(katana.tier, 3, 'Base weapon is Tier 3 (starter/worst)');
+  assert.equal(katana.tierName, 'Тир 3');
+
+  katana.awakenedGrade = 1;
+  assert.equal(katana.tier, 2, 'Awakened Grade 1 is Tier 2');
+  assert.equal(katana.tierName, 'Тир 2');
+  assert.equal(katana.getGradePrefix(), '[ТИР 2 • x2] ');
+
+  katana.awakenedGrade = 2;
+  assert.equal(katana.tier, 1, 'Awakened Grade 2 is Tier 1 (best)');
+  assert.equal(katana.tierName, 'Тир 1');
+  assert.equal(katana.getGradePrefix(), '[ТИР 1 • x3] ');
+});
+
+test('Boss relics golem_core and molten_scale balance definitions', () => {
+  const golemCore = DEFAULT_BALANCE.items.golem_core;
+  assert.ok(golemCore, 'golem_core exists in balance');
+  assert.equal(golemCore.name, 'Око Титана');
+
+  const moltenScale = DEFAULT_BALANCE.items.molten_scale;
+  assert.ok(moltenScale, 'molten_scale exists in balance');
+  assert.equal(moltenScale.name, 'Огненная Чешуя');
+});
+

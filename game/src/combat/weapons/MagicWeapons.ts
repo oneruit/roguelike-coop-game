@@ -190,6 +190,7 @@ export class FireRingWeapon extends Weapon {
           } else {
             enemy.takeDamage(this.damage, playerPos);
           }
+          enemy.applyBurn(3.0, 'p1', this.id);
         }
       }
     }

@@ -64,7 +64,7 @@ export class Enemy {
   public creditsValue: number = 3;
   public isAlive = true;
   public readonly spellControl = new SpellControlState();
-  public get canAttack(): boolean { return !this.isFrozen && this.spellControl.canAttack; }
+  public get canAttack(): boolean { return !this.isFrozen && !this.isStunned && this.spellControl.canAttack; }
   public lastHitBy: string = 'p1';
   public boundingRadius: number;
 
@@ -78,7 +78,7 @@ export class Enemy {
   public slowFactor = 1.0;
 
   public get movementFactor(): number {
-    if (this.isFrozen || this.spellControl.movementFactor === 0) return 0;
+    if (this.isFrozen || this.isStunned || this.spellControl.movementFactor === 0) return 0;
     const activeSlow = this.slowTimer > 0 ? this.slowFactor : 1.0;
     return Math.min(activeSlow, this.spellControl.movementFactor);
   }
@@ -109,6 +109,48 @@ export class Enemy {
       this.animState = 'WALK';
       this.attackAnimTimer = 0;
     }
+  }
+
+  // Stun mechanic (completely stops movement and attacks)
+  public stunTimer = 0;
+  public get isStunned(): boolean {
+    return this.stunTimer > 0 || this.spellControl.stun > 0;
+  }
+  public stun(duration: number): void {
+    if (!this.isAlive || this.isImmortal) return;
+    const effectiveDuration = duration * Math.max(0.05, 1 - this.ccResistance);
+    this.stunTimer = Math.max(this.stunTimer, effectiveDuration);
+    this.pendingAttackHit = false;
+    if (this.animState === 'ATTACK') {
+      this.animState = 'WALK';
+      this.attackAnimTimer = 0;
+    }
+  }
+
+  // Burn mechanic (DoT: 2% max HP periodic damage for 3 seconds)
+  public burnTimer = 0;
+  public burnHitter = 'p1';
+  public burnSourceWeaponId?: string;
+  private burnTickTimer = 0;
+  public get isBurning(): boolean {
+    return this.burnTimer > 0;
+  }
+  public applyBurn(duration = 3.0, hitter = 'p1', sourceWeaponId?: string): void {
+    if (!this.isAlive || this.isImmortal) return;
+    this.burnTimer = Math.max(this.burnTimer, duration);
+    this.burnHitter = hitter;
+    if (sourceWeaponId) this.burnSourceWeaponId = sourceWeaponId;
+  }
+
+  // Shock / Electrification mechanic (+10% damage taken for 5 seconds)
+  public shockTimer = 0;
+  public get isShocked(): boolean {
+    return this.shockTimer > 0;
+  }
+  public applyShock(duration = 5.0): void {
+    if (!this.isAlive || this.isImmortal) return;
+    const effectiveDuration = duration * Math.max(0.05, 1 - this.ccResistance);
+    this.shockTimer = Math.max(this.shockTimer, effectiveDuration);
   }
 
   public get baseAttackCooldown(): number {
@@ -472,6 +514,37 @@ export class Enemy {
       this.freezeTimer = Math.max(0, this.freezeTimer - dt);
     }
 
+    if (this.stunTimer > 0) {
+      this.stunTimer = Math.max(0, this.stunTimer - dt);
+    }
+
+    if (this.shockTimer > 0) {
+      this.shockTimer = Math.max(0, this.shockTimer - dt);
+    }
+
+    if (this.burnTimer > 0) {
+      this.burnTimer = Math.max(0, this.burnTimer - dt);
+      this.burnTickTimer += dt;
+      while (this.burnTickTimer >= 1.0 && this.isAlive) {
+        this.burnTickTimer -= 1.0;
+        const tickAmount = Math.max(1, Math.round(this.maxHp * 0.02));
+        if (!this.isImmortal) {
+          this.hp -= tickAmount;
+          this.flashTimer = 0.08;
+          this.lastHitBy = this.burnHitter;
+          const isDead = this.hp <= 0;
+          if (isDead) {
+            this.isAlive = false;
+          }
+          if (this.onBleedDamage) {
+            this.onBleedDamage(this, tickAmount, isDead, this.burnHitter, this.burnSourceWeaponId);
+          }
+        }
+      }
+    } else {
+      this.burnTickTimer = 0;
+    }
+
     this.spellControl.update(dt);
 
     if (this.bleedStacks.length > 0) {
@@ -494,7 +567,7 @@ export class Enemy {
     }
 
     // Process attack animation & hit registration strictly on frame 2 (the 3rd frame)
-    if (this.animState === 'ATTACK' && !this.isFrozen) {
+    if (this.animState === 'ATTACK' && !this.isFrozen && !this.isStunned) {
       this.attackAnimTimer -= dt;
       const progress = Math.max(0, Math.min(0.999, 1 - (this.attackAnimTimer / this.attackDuration)));
       const frameCol = Math.floor(progress * 4); // 4 frames: 0, 1, 2, 3
@@ -527,8 +600,8 @@ export class Enemy {
       this.knockbackVelocity.multiplyScalar(Math.pow(0.08, dt * 5));
     }
 
-    // Move towards player (zero Vector3 heap allocations) — disabled while frozen ("стоят на месте")
-    if (!this.isFrozen) {
+    // Move towards player (zero Vector3 heap allocations) — disabled while frozen or stunned
+    if (!this.isFrozen && !this.isStunned) {
       const dx = playerPos.x - this.position.x;
       const dz = playerPos.z - this.position.z;
       const distSq = dx * dx + dz * dz;
@@ -615,7 +688,7 @@ export class Enemy {
       }
     }
 
-    if (!this.isFrozen) {
+    if (!this.isFrozen && !this.isStunned) {
       this.animTimer += dt * (this.speed > 5 ? 14 : 9);
 
       if (this.isBoss && this.bossTextures) {
@@ -637,11 +710,17 @@ export class Enemy {
       }
     }
 
-    // Hit flash / freeze color handling
+    // Hit flash / status effect color handling
     if (this.flashTimer > 0) {
       this.spriteMaterial.color.setHex(this.isImmortal ? 0xc084fc : 0xff3333);
     } else if (this.isFrozen) {
       this.spriteMaterial.color.setHex(0x67e8f9); // Icy cyan frost tint
+    } else if (this.isStunned) {
+      this.spriteMaterial.color.setHex(0xfef08a); // Pale golden stun tint
+    } else if (this.isShocked) {
+      this.spriteMaterial.color.setHex(0x93c5fd); // Electric light blue tint
+    } else if (this.isBurning) {
+      this.spriteMaterial.color.setHex(0xfb923c); // Warm blazing orange tint
     } else {
       this.spriteMaterial.color.setHex(this.isImmortal ? 0x380949 : 0xffffff);
     }
@@ -659,9 +738,13 @@ export class Enemy {
     }
 
     this.lastHitBy = hitter;
+    let incomingAmount = amount;
+    if (this.isShocked) {
+      incomingAmount = Math.round(incomingAmount * 1.10);
+    }
     const effectiveDamage = this.damageResistance > 0
-      ? Math.max(1, Math.round(amount * (1 - this.damageResistance)))
-      : amount;
+      ? Math.max(1, Math.round(incomingAmount * (1 - this.damageResistance)))
+      : incomingAmount;
     this.lastDamageTaken = effectiveDamage;
     this.hp -= effectiveDamage;
     this.flashTimer = 0.12;

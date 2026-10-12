@@ -37,6 +37,7 @@ export interface ProjectileOptions {
   isLightning?: boolean;
   isIceSpike?: boolean;
   isFireball?: boolean;
+  isKineticBeam?: boolean;
   bleedDps?: number;
   sourceWeaponId?: string;
   critChance?: number;
@@ -59,6 +60,7 @@ export class Projectile {
   public isLightning = false;
   public isIceSpike = false;
   public isFireball = false;
+  public isKineticBeam = false;
   public hasImpacted = false;
   public isCosmetic: boolean;
   public ownerId?: string;
@@ -263,6 +265,7 @@ export class Projectile {
     this.isLightning = !!options.isLightning;
     this.isIceSpike = !!options.isIceSpike;
     this.isFireball = !!options.isFireball;
+    this.isKineticBeam = !!options.isKineticBeam;
     this.curveSign = options.curveSign ?? 1;
     this.bleedDps = options.bleedDps ?? 0;
     this.sourceWeaponId = options.sourceWeaponId;
@@ -524,6 +527,26 @@ export class Projectile {
       this.mesh.add(scytheMesh);
       const scale = this.radius * 3.4;
       this.mesh.scale.set(scale, scale, scale);
+    } else if (this.isKineticBeam) {
+      const beamGeomA = new PlaneGeometry(0.45, 3.4);
+      beamGeomA.rotateX(Math.PI / 2);
+      const beamGeomB = new PlaneGeometry(0.45, 3.4);
+      beamGeomB.rotateX(Math.PI / 2);
+      beamGeomB.rotateY(Math.PI / 2);
+      const mat = new MeshBasicMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.95 * Projectile.vfxOpacity,
+        blending: AdditiveBlending,
+        depthWrite: false,
+        side: DoubleSide,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      this.mesh.add(new Mesh(beamGeomA, mat));
+      this.mesh.add(new Mesh(beamGeomB, mat));
+      const angle = Math.atan2(this.direction.x, this.direction.z);
+      this.mesh.rotation.y = angle;
+      this.mesh.scale.setScalar(this.radius);
     } else if (options.isMagic) {
       const sphere = new Mesh(Projectile.orbGeom, Projectile.getOrbMaterial(options.color));
       this.mesh.add(sphere);
@@ -748,7 +771,7 @@ export class Projectile {
 
   public onHit(): boolean {
     this.pierce -= 1;
-    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning && !this.isIceSpike && !this.isFireball) {
+    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning && !this.isIceSpike && !this.isFireball && !this.isKineticBeam) {
       this.isAlive = false;
       return true;
     }

@@ -153,8 +153,8 @@ export class GameOverUI {
           const pctNum = totalWeaponDamage > 0 ? (dmg / totalWeaponDamage) * 100 : 0;
           const pct = pctNum.toFixed(1);
           const isTop = idx === 0 && dmg > 0;
-          const gradeLevel = (w.awakenedGrade ?? 0) + 1;
-          const gradeBadge = gradeLevel > 1 ? `<span class="tag-grade">Грейд ${gradeLevel === 2 ? 'II' : 'III'}</span>` : '';
+          const tier = (w.awakenedGrade ?? 0) >= 2 ? 1 : ((w.awakenedGrade ?? 0) === 1 ? 2 : 3);
+          const gradeBadge = `<span class="tag-grade">Тир ${tier}</span>`;
 
           return `<div class="weapon-damage-item ${isTop ? 'top-damage' : ''}">
             <div class="weapon-damage-header">

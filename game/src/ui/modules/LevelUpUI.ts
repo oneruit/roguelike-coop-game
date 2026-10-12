@@ -366,10 +366,10 @@ export class LevelUpUI {
       for (const weapon of unawakenedWeapons) {
         pool.push({
           id: `awaken_${weapon.id}`,
-          title: `Пробуждение Грейда II: ${weapon.name}`,
+          title: `Пробуждение Тира 2: ${weapon.name}`,
           icon: '🌟',
           iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: 'ГРЕЙД II • СБРОС (МАКС. 12)',
+          levelTag: 'ТИР 2 • СБРОС (МАКС. 12)',
           description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до 12 ур.`,
           grade: 'legendary',
           apply: () => {
@@ -385,10 +385,10 @@ export class LevelUpUI {
         for (const weapon of grade2Weapons) {
           pool.push({
             id: `awaken3_${weapon.id}`,
-            title: `Пробуждение Грейда III: ${weapon.name}`,
+            title: `Пробуждение Тира 1: ${weapon.name}`,
             icon: '🔥',
             iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-            levelTag: 'ГРЕЙД III • СБРОС (МАКС. 12)',
+            levelTag: 'ТИР 1 • СБРОС (МАКС. 12)',
             description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до 12 ур.`,
             grade: 'legendary',
             apply: () => {
@@ -578,6 +578,16 @@ export class LevelUpUI {
     }
 
     const shuffled = filterAndShuffleForReroll(pool, excludeIds);
-    return selectWeaponUpgradeOptions(shuffled, player.charType);
+    const selected = selectWeaponUpgradeOptions(shuffled, player.charType);
+    if (allMaxed) {
+      const hasAwaken = selected.some(o => o.id.startsWith('awaken_') || o.id.startsWith('awaken3_'));
+      if (!hasAwaken) {
+        const awakenOpt = shuffled.find(o => o.id.startsWith('awaken_') || o.id.startsWith('awaken3_'));
+        if (awakenOpt && selected.length > 0) {
+          selected[0] = awakenOpt;
+        }
+      }
+    }
+    return selected;
   }
 }
