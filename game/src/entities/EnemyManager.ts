@@ -244,6 +244,26 @@ export class EnemyManager {
     this.stageTime = 0;
   }
 
+  public getLateGameCcResistance(isBoss: boolean): number {
+    const minute = this.gameTime / 60;
+    if (isBoss) {
+      // Bosses have 65% base CC resistance, scaling up to 90% at 60+ min
+      return Math.min(0.90, 0.65 + Math.max(0, minute - 15) * 0.006);
+    }
+    // Normal mobs have 0% CC resistance before 15 min, scaling up to 65% at 60+ min
+    return Math.min(0.65, Math.max(0, minute - 15) * 0.015);
+  }
+
+  public getLateGameDamageResistance(isBoss: boolean): number {
+    const minute = this.gameTime / 60;
+    if (isBoss) {
+      // Bosses have 15% base damage resistance, scaling up to 75% at 60+ min
+      return Math.min(0.75, 0.15 + Math.max(0, minute - 15) * 0.013);
+    }
+    // Normal mobs have 0% damage resistance before 20 min, scaling up to 55% at 60+ min
+    return Math.min(0.55, Math.max(0, minute - 20) * 0.012);
+  }
+
   public update(
     dt: number,
     playerPos: Vector3,
@@ -338,6 +358,9 @@ export class EnemyManager {
         continue;
       }
 
+      enemy.ccResistance = this.getLateGameCcResistance(enemy.isBoss);
+      enemy.damageResistance = this.getLateGameDamageResistance(enemy.isBoss);
+
       enemy.updateSimulation(dt, closestTargetPos);
 
       // Slide around terrain obstacles (cacti, trees, boulders, altars) for nearby grounded enemies
@@ -353,7 +376,9 @@ export class EnemyManager {
       // Check attack and collision with targeted player
       if (enemy.canAttack) {
         if (enemy.hasAttackAnimation) {
-          const attackReach = (enemy.width + enemy.height) * 0.28 + 0.6;
+          const attackReach = enemy.isBoss
+            ? Math.min(4.2, (enemy.width + enemy.height) * 0.18 + 0.6)
+            : (enemy.width + enemy.height) * 0.28 + 0.6;
           if (closestDistSq <= attackReach * attackReach && enemy.animState !== 'ATTACK' && enemy.attackCooldownTimer <= 0) {
             enemy.triggerAttack(closestTargetId);
           }
@@ -361,7 +386,9 @@ export class EnemyManager {
           if (enemy.pendingAttackHit) {
             enemy.pendingAttackHit = false;
             // Strike damage lands strictly on 3rd frame if target is within reach
-            const hitReach = (enemy.width + enemy.height) * 0.36 + 0.9;
+            const hitReach = enemy.isBoss
+              ? Math.min(5.0, (enemy.width + enemy.height) * 0.22 + 0.8)
+              : (enemy.width + enemy.height) * 0.36 + 0.9;
             if (closestDistSq <= hitReach * hitReach) {
               const hitTargetId = enemy.attackTargetId || closestTargetId;
               const now = performance.now();
@@ -377,22 +404,20 @@ export class EnemyManager {
             }
           }
         } else {
-          // Fallback for non-animated enemies (e.g. Immortal Reaper)
+          // Fallback for non-animated enemies (e.g. Cacti, Ghosts, Immortal Reaper) with individual attack cooldown
           const collisionRadius = (enemy.width + enemy.height) * 0.25 + 0.5;
-          if (closestDistSq < collisionRadius * collisionRadius) {
+          if (closestDistSq < collisionRadius * collisionRadius && enemy.attackCooldownTimer <= 0) {
+            enemy.attackCooldownTimer = enemy.baseAttackCooldown;
             const now = performance.now();
-            const lastHit = this.lastTargetHitTimes.get(closestTargetId) || 0;
-            if (now - lastHit > 380) {
-              this.lastTargetHitTimes.set(closestTargetId, now);
-              if (closestTargetId === 'p1') {
-                onPlayerDamage(enemy.damage, enemy.isImmortal);
-              } else if (onRemoteDamage) {
-                onRemoteDamage(closestTargetId, enemy.damage, enemy.isImmortal);
-              } else if (onPartnerDamage) {
-                onPartnerDamage(enemy.damage, enemy.isImmortal);
-              }
-              SoundManager.playPlayerHurt();
+            this.lastTargetHitTimes.set(closestTargetId, now);
+            if (closestTargetId === 'p1') {
+              onPlayerDamage(enemy.damage, enemy.isImmortal);
+            } else if (onRemoteDamage) {
+              onRemoteDamage(closestTargetId, enemy.damage, enemy.isImmortal);
+            } else if (onPartnerDamage) {
+              onPartnerDamage(enemy.damage, enemy.isImmortal);
             }
+            SoundManager.playPlayerHurt();
           }
         }
       }
@@ -771,8 +796,9 @@ export class EnemyManager {
     critMultiplier: number = 1.5
   ) {
     const isDead = enemy.takeDamage(amount, sourcePos, hitter);
+    const displayedDamage = enemy.lastDamageTaken > 0 ? enemy.lastDamageTaken : amount;
     if (showDamageNumber && camera) {
-      this.damageNumbers.spawnDamage(enemy.position, amount, isCrit, camera, false, critTier, critMultiplier);
+      this.damageNumbers.spawnDamage(enemy.position, displayedDamage, isCrit, camera, false, critTier, critMultiplier);
     }
     SoundManager.playHit();
     return isDead;

@@ -68,18 +68,53 @@ export class Enemy {
   public lastHitBy: string = 'p1';
   public boundingRadius: number;
 
+  // Resistance mechanics (scales in late game to prevent perma-cc and instant boss melting)
+  public ccResistance = 0; // [0..1] - reduces freeze, stun, disarm, slow duration
+  public damageResistance = 0; // [0..1] - reduces incoming direct damage
+  public lastDamageTaken = 0;
+
+  // General Slow mechanic (applicable by weapons, items, environmental hazards)
+  public slowTimer = 0;
+  public slowFactor = 1.0;
+
+  public get movementFactor(): number {
+    if (this.isFrozen || this.spellControl.movementFactor === 0) return 0;
+    const activeSlow = this.slowTimer > 0 ? this.slowFactor : 1.0;
+    return Math.min(activeSlow, this.spellControl.movementFactor);
+  }
+
+  public applySlow(factor: number, duration: number): void {
+    if (!this.isAlive || this.isImmortal) return;
+    const effectiveDuration = duration * Math.max(0.05, 1 - this.ccResistance);
+    if (effectiveDuration <= 0) return;
+    // Late game resistance prevents extreme slows (e.g. bosses remain mobile)
+    const minSlowFactor = this.isBoss
+      ? Math.min(0.95, 0.70 + this.ccResistance * 0.25)
+      : Math.min(0.85, 0.20 + this.ccResistance * 0.65);
+    const clampedFactor = Math.max(minSlowFactor, Math.min(1.0, factor));
+    this.slowTimer = Math.max(this.slowTimer, effectiveDuration);
+    this.slowFactor = Math.min(this.slowFactor, clampedFactor);
+  }
+
   // Freeze mechanic (applies to both monsters and bosses: they stand completely in place)
   public freezeTimer = 0;
   public get isFrozen(): boolean {
     return this.freezeTimer > 0 || this.spellControl.freeze > 0;
   }
   public freeze(duration: number): void {
-    this.freezeTimer = Math.max(this.freezeTimer, duration);
+    const effectiveDuration = duration * Math.max(0.05, 1 - this.ccResistance);
+    this.freezeTimer = Math.max(this.freezeTimer, effectiveDuration);
     this.pendingAttackHit = false;
     if (this.animState === 'ATTACK') {
       this.animState = 'WALK';
       this.attackAnimTimer = 0;
     }
+  }
+
+  public get baseAttackCooldown(): number {
+    if (this.isBoss) return 1.6;
+    if (this.type === 'brute' || this.type === 'bison') return 1.4;
+    return 1.1;
   }
 
   // Forced knockback (e.g. Time Crystal, pushes both monsters and bosses by distance)
@@ -307,11 +342,11 @@ export class Enemy {
   }
 
   public applySpellControl(control: SpellControl): void {
-    this.spellControl.apply(control, this.isBoss, this.isImmortal);
+    this.spellControl.apply(control, this.isBoss, this.isImmortal, this.ccResistance);
     if (this.isImmortal) return;
-    const resistance = this.isBoss ? .15 : 1;
-    if (Number.isFinite(control.pushX)) this.knockbackVelocity.x += Math.max(-12,Math.min(12,control.pushX!))*resistance;
-    if (Number.isFinite(control.pushZ)) this.knockbackVelocity.z += Math.max(-12,Math.min(12,control.pushZ!))*resistance;
+    const resistance = this.isBoss ? 0.15 : Math.max(0.15, 1.0 - this.ccResistance);
+    if (Number.isFinite(control.pushX)) this.knockbackVelocity.x += Math.max(-12, Math.min(12, control.pushX!)) * resistance;
+    if (Number.isFinite(control.pushZ)) this.knockbackVelocity.z += Math.max(-12, Math.min(12, control.pushZ!)) * resistance;
   }
 
   public setDirection(dir: SpriteDirection) {
@@ -329,7 +364,7 @@ export class Enemy {
     if (this.hasAttackAnimation && this.animState !== 'ATTACK' && this.attackCooldownTimer <= 0) {
       this.animState = 'ATTACK';
       this.attackAnimTimer = this.attackDuration;
-      this.attackCooldownTimer = this.isBoss ? 1.0 : 0.8;
+      this.attackCooldownTimer = this.baseAttackCooldown;
       this.hasDealtDamageThisAttack = false;
       this.pendingAttackHit = false;
       this.attackTargetId = targetId;
@@ -451,6 +486,13 @@ export class Enemy {
       this.attackCooldownTimer -= dt;
     }
 
+    if (this.slowTimer > 0) {
+      this.slowTimer = Math.max(0, this.slowTimer - dt);
+      if (this.slowTimer === 0) {
+        this.slowFactor = 1.0;
+      }
+    }
+
     // Process attack animation & hit registration strictly on frame 2 (the 3rd frame)
     if (this.animState === 'ATTACK' && !this.isFrozen) {
       this.attackAnimTimer -= dt;
@@ -492,7 +534,9 @@ export class Enemy {
       const distSq = dx * dx + dz * dz;
 
       if (this.hasAttackAnimation) {
-        const attackDist = this.isBoss ? (this.type === 'hydra' ? 5.2 : 4.8) : ((this.width + this.height) * 0.28 + 0.6);
+        const attackDist = this.isBoss
+          ? Math.min(4.2, (this.width + this.height) * 0.18 + 0.6)
+          : ((this.width + this.height) * 0.28 + 0.6);
         if (distSq <= attackDist * attackDist && this.attackCooldownTimer <= 0 && this.canAttack && this.animState !== 'ATTACK') {
           this.triggerAttack();
         }
@@ -502,7 +546,7 @@ export class Enemy {
           const invDist = 1 / dist;
           const normX = dx * invDist;
           const normZ = dz * invDist;
-          const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.25 : this.speed) * this.spellControl.movementFactor;
+          const moveSpeed = (this.animState === 'ATTACK' ? this.speed * 0.25 : this.speed) * this.movementFactor;
           this.position.x += normX * moveSpeed * dt;
           this.position.z += normZ * moveSpeed * dt;
 
@@ -523,8 +567,8 @@ export class Enemy {
           const invDist = 1 / dist;
           const normX = dx * invDist;
           const normZ = dz * invDist;
-          this.position.x += normX * this.speed * this.spellControl.movementFactor * dt;
-          this.position.z += normZ * this.speed * this.spellControl.movementFactor * dt;
+          this.position.x += normX * this.speed * this.movementFactor * dt;
+          this.position.z += normZ * this.speed * this.movementFactor * dt;
 
           // Determine 4-directional sprite based on movement towards player
           let newDir: SpriteDirection = this.currentDir;
@@ -615,7 +659,11 @@ export class Enemy {
     }
 
     this.lastHitBy = hitter;
-    this.hp -= amount;
+    const effectiveDamage = this.damageResistance > 0
+      ? Math.max(1, Math.round(amount * (1 - this.damageResistance)))
+      : amount;
+    this.lastDamageTaken = effectiveDamage;
+    this.hp -= effectiveDamage;
     this.flashTimer = 0.12;
     this.spriteMaterial.color.setHex(0xff3333);
 

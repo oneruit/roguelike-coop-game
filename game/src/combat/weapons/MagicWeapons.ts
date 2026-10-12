@@ -179,12 +179,12 @@ export class FireRingWeapon extends Weapon {
     if (this.timer >= this.effectiveCooldown) {
       this.timer = 0;
 
-      const radSq = this.radius * this.radius;
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
         const dx = enemy.position.x - playerPos.x;
         const dz = enemy.position.z - playerPos.z;
-        if (dx * dx + dz * dz <= radSq) {
+        const effectiveRadius = this.radius + (enemy.width + enemy.height) * 0.20;
+        if (dx * dx + dz * dz <= effectiveRadius * effectiveRadius) {
           if (damageEnemy) {
             damageEnemy(enemy, this.damage, playerPos);
           } else {

@@ -195,7 +195,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     }
   },
   heroes: {
-    invoker: { id:'invoker', name:'Инвокер', maxHp:100, baseSpeed:8.5, damageMultiplier:3.0,
+    invoker: { id:'invoker', name:'Инвокер', maxHp:100, baseSpeed:8.5, damageMultiplier:1.40,
       startingWeapon:'invoker_invoke', role:'Маг десяти случайных заклинаний: урон, контроль и усиления' },
     ronin: {
       id: 'ronin',
