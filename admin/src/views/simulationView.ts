@@ -13,7 +13,7 @@ export class SimulationView {
       { enabled: true, weaponId: 'bow', level: 8 },
       { enabled: true, weaponId: 'lightning_strike', level: 6 },
       { enabled: false, weaponId: 'whirlwind_slash', level: 5 },
-      { enabled: false, weaponId: 'holy_aura', level: 5 }
+      { enabled: false, weaponId: 'fire_ring', level: 5 }
     ],
     hero: 'valkyrie',
     sheriffStacks: 0,
@@ -171,7 +171,7 @@ export class SimulationView {
         { enabled: true, weaponId: 'katana_slash', level: 18 },
         { enabled: true, weaponId: 'whirlwind_slash', level: 15 },
         { enabled: true, weaponId: 'greatsword', level: 12 },
-        { enabled: true, weaponId: 'orbiting_barrier', level: 10 },
+        { enabled: true, weaponId: 'reaper_scythe', level: 10 },
         { enabled: false, weaponId: 'flail', level: 8 }
       ];
       this.sim.sheriffStacks = 20;
@@ -186,7 +186,7 @@ export class SimulationView {
       this.sim.slots = [
         { enabled: true, weaponId: 'fireball', level: 20 },
         { enabled: true, weaponId: 'lightning_strike', level: 16 },
-        { enabled: true, weaponId: 'holy_aura', level: 14 },
+        { enabled: true, weaponId: 'fire_ring', level: 14 },
         { enabled: true, weaponId: 'ice_spike', level: 12 },
         { enabled: false, weaponId: 'astral_staff', level: 10 }
       ];
@@ -252,7 +252,7 @@ export class SimulationView {
         { enabled: true, weaponId: 'fireball', level: 1 },
         { enabled: false, weaponId: 'kukri', level: 1 },
         { enabled: false, weaponId: 'flail', level: 1 },
-        { enabled: false, weaponId: 'holy_aura', level: 1 }
+        { enabled: false, weaponId: 'fire_ring', level: 1 }
       ];
       this.sim.sheriffStacks = 0;
       this.sim.watchStacks = 0;
@@ -268,7 +268,7 @@ export class SimulationView {
         { enabled: false, weaponId: 'bow', level: 1 },
         { enabled: false, weaponId: 'kukri', level: 1 },
         { enabled: false, weaponId: 'flail', level: 1 },
-        { enabled: false, weaponId: 'holy_aura', level: 1 }
+        { enabled: false, weaponId: 'fire_ring', level: 1 }
       ];
       this.sim.sheriffStacks = 0;
       this.sim.watchStacks = 0;
@@ -405,7 +405,9 @@ export class SimulationView {
     } else if (w.pierce) {
       cleaveFactor = Math.min(this.sim.cleaveTargets, w.pierce + 1);
     } else if (
+      w.id === 'fire_ring' ||
       w.id === 'holy_aura' ||
+      w.id === 'reaper_scythe' ||
       w.id === 'orbiting_barrier' ||
       w.id === 'whirlwind_slash' ||
       w.id === 'greatsword' ||

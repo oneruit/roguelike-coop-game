@@ -30,8 +30,8 @@ import {
   ChakramWeapon,
   BowWeapon,
   KukriWeapon,
-  OrbitingBarrierWeapon,
-  HolyAuraWeapon,
+  ReaperScytheWeapon,
+  FireRingWeapon,
   KatanaSlashWeapon,
   AssaultRifleWeapon
 } from '../combat/Weapon';
@@ -411,7 +411,7 @@ export class Player {
     } else if (this.charType === 'rocket') {
       this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20)));
     } else if (this.charType === 'amazon') {
-      this.weapons.push(new OrbitingBarrierWeapon());
+      this.weapons.push(new ReaperScytheWeapon());
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
     }
@@ -1148,12 +1148,12 @@ export class Player {
     const hasKukri = this.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
     if (!hasKukri && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KukriWeapon());
 
-    const hasOrbs = this.weapons.some(w => w.id === 'orbiting_barrier');
-    if (!hasOrbs && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new OrbitingBarrierWeapon());
+    const hasOrbs = this.weapons.some(w => w.id === 'reaper_scythe' || w.id === 'orbiting_barrier');
+    if (!hasOrbs && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new ReaperScytheWeapon());
 
-    const hasAura = this.weapons.some(w => w.id === 'holy_aura');
+    const hasAura = this.weapons.some(w => w.id === 'fire_ring' || w.id === 'holy_aura');
     if (!hasAura && this.weapons.length < Player.MAX_WEAPONS) {
-      const aura = new HolyAuraWeapon();
+      const aura = new FireRingWeapon();
       aura.initVisual(scene, this.position);
       this.weapons.push(aura);
     }

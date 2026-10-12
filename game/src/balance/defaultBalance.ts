@@ -56,8 +56,8 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       pierce: 1,
       notes: 'Серийные броски вращающихся клинков'
     },
-    orbiting_barrier: {
-      id: 'orbiting_barrier',
+    reaper_scythe: {
+      id: 'reaper_scythe',
       name: 'Коса Жнеца',
       icon: '🌙',
       damage: 4,
@@ -71,8 +71,8 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       count: 2,
       notes: 'Вращающиеся косы со стакающимся кровотечением'
     },
-    holy_aura: {
-      id: 'holy_aura',
+    fire_ring: {
+      id: 'fire_ring',
       name: 'Огненное Кольцо',
       icon: '🔥',
       damage: 15,
@@ -275,7 +275,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       maxHp: 120,
       baseSpeed: 9.0,
       damageMultiplier: 1.35,
-      startingWeapon: 'orbiting_barrier',
+      startingWeapon: 'reaper_scythe',
       role: 'Мистическая воительница: парящие защитные и атакующие магические сферы'
     }
   },
