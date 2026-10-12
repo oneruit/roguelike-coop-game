@@ -40,7 +40,7 @@ export function getHeroAvatar(charType: CharacterType): string {
     ? '/textures/heroes/hero_chakram_front.png'
     : charType === 'archer'
     ? '/textures/heroes/hero_archer_front.png'
-    : '/textures/heroes/hero_raccoon_front.png';
+    : '/textures/heroes/hero_rocket_front.png';
   return TextureManager.getAssetUrl(avatar);
 }
 
@@ -53,8 +53,10 @@ export function getWeaponIconUrl(weaponId: string): string {
     greatsword: '/textures/weapons/weapon_greatsword.png',
     flail: '/textures/weapons/weapon_flail.png',
     astral_staff: '/textures/weapons/weapon_astral_staff.png',
-    orbiting_barrier: '/textures/weapons/weapon_orbiting_barrier.png',
-    holy_aura: '/textures/weapons/weapon_holy_aura.png',
+    orbiting_barrier: '/textures/weapons/weapon_reaper_scythe.png',
+    reaper_scythe: '/textures/weapons/weapon_reaper_scythe.png',
+    holy_aura: '/textures/weapons/weapon_fire_ring.png',
+    fire_ring: '/textures/weapons/weapon_fire_ring.png',
     whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
     lightning_strike: '/textures/weapons/weapon_lightning_strike.png',
     ice_spike: '/textures/weapons/weapon_ice_spike.png',

@@ -11,7 +11,7 @@ test('Weapon Reroll System', async (t) => {
     const threeNewWeapons = [
       { id: 'new_bow' },
       { id: 'new_kukri' },
-      { id: 'new_orbiting_barrier' }
+      { id: 'new_reaper_scythe' }
     ];
     assert.equal(canRerollWeaponOptions(threeNewWeapons), true);
   });
@@ -20,14 +20,14 @@ test('Weapon Reroll System', async (t) => {
     const withOneUpgrade = [
       { id: 'upgrade_bow' },
       { id: 'new_kukri' },
-      { id: 'new_orbiting_barrier' }
+      { id: 'new_reaper_scythe' }
     ];
     assert.equal(canRerollWeaponOptions(withOneUpgrade), false);
 
     const allUpgrades = [
       { id: 'upgrade_bow' },
       { id: 'upgrade_kukri' },
-      { id: 'upgrade_orbiting_barrier' }
+      { id: 'upgrade_reaper_scythe' }
     ];
     assert.equal(canRerollWeaponOptions(allUpgrades), false);
   });
@@ -51,13 +51,13 @@ test('Weapon Reroll System', async (t) => {
     const pool = [
       { id: 'new_bow' },
       { id: 'new_kukri' },
-      { id: 'new_orbiting_barrier' },
+      { id: 'new_reaper_scythe' },
       { id: 'upgrade_heavy_colt' },
       { id: 'new_katana_slash' },
       { id: 'new_fireball' }
     ];
 
-    const excludedIds = new Set(['new_bow', 'new_kukri', 'new_orbiting_barrier']);
+    const excludedIds = new Set(['new_bow', 'new_kukri', 'new_reaper_scythe']);
     const rerolled = filterAndShuffleForReroll(pool, excludedIds);
 
     // All 6 items must be preserved
@@ -82,7 +82,7 @@ test('Weapon Reroll System', async (t) => {
     const pool = [
       { id: 'new_bow' },
       { id: 'new_kukri' },
-      { id: 'new_orbiting_barrier' }
+      { id: 'new_reaper_scythe' }
     ];
 
     // Empty excluded set
@@ -95,7 +95,7 @@ test('Weapon Reroll System', async (t) => {
     assert.equal(withUndefined.length, 3);
 
     // All items excluded (e.g. pool only has 3 items)
-    const allExcluded = new Set(['new_bow', 'new_kukri', 'new_orbiting_barrier']);
+    const allExcluded = new Set(['new_bow', 'new_kukri', 'new_reaper_scythe']);
     const withAllExcluded = filterAndShuffleForReroll(pool, allExcluded);
     assert.equal(withAllExcluded.length, 3);
     assert.equal(new Set(withAllExcluded.map((x) => x.id)).size, 3);
@@ -105,14 +105,14 @@ test('Weapon Reroll System', async (t) => {
     const pool = [
       { id: 'new_bow' },
       { id: 'new_kukri' },
-      { id: 'new_orbiting_barrier' },
+      { id: 'new_reaper_scythe' },
       { id: 'upgrade_colt' },
       { id: 'new_flail' },
       { id: 'new_fireball' }
     ];
 
     // Initial roll dealt 3 new weapons
-    const roll1 = [{ id: 'new_bow' }, { id: 'new_kukri' }, { id: 'new_orbiting_barrier' }];
+    const roll1 = [{ id: 'new_bow' }, { id: 'new_kukri' }, { id: 'new_reaper_scythe' }];
     assert.equal(canRerollWeaponOptions(roll1), true);
 
     // Player triggers reroll

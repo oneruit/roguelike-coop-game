@@ -81,8 +81,8 @@ All weapons in the game scale up to **Level 20**. There are **13 weapons** avail
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **Hunting Bow** | `bow` | 🏹 | **25** | 0.85 s | Full visibility | 1 arrow | 2 enemies | High-speed arrows (24 m/s) |
 | **Kukri Knife** | `kukri` | 🔪 | **11** | 0.65 s | Full visibility | 2 knives | 1 enemy | Rapid burst of spinning thrown blades |
-| **Reaper Scythe** | `orbiting_barrier` | 🌙 | **4** (+8 bleed/s) | 0.00 s (continuous) | 2.5 m (orbit) | 2 scythes | Infinite | Orbiting scythes applying stacking bleed |
-| **Ring of Fire** | `holy_aura` | 🔥 | **15** | 0.50 s | 3.5 m (aura) | Pulse | All in radius | Animated expanding flame ring with tick damage |
+| **Reaper Scythe** | `reaper_scythe` | 🌙 | **4** (+8 bleed/s) | 0.00 s (continuous) | 2.5 m (orbit) | 2 scythes | Infinite | Orbiting scythes applying stacking bleed |
+| **Ring of Fire** | `fire_ring` | 🔥 | **15** | 0.50 s | 3.5 m (aura) | Pulse | All in radius | Animated expanding flame ring with tick damage |
 | **Katana Slash** | `katana_slash` | 🗡️ | **24** | 0.60 s | 3.8 m | 1 swing | All in radius | Arc cleave power slash |
 | **Crimson Whirlwind** | `whirlwind_slash` | 🌪️ | **15** | 0.42 s | 3.6 m | 1 whirlwind | All in radius | Rapid dual whirlwind cleave |
 | **Greatsword** | `greatsword` | ⚔️ | **30** | 0.70 s | 4.2 m | 1 swing | All in radius | Heavy circular swing with massive coverage |
@@ -114,13 +114,13 @@ All weapons in the game scale up to **Level 20**. There are **13 weapons** avail
 - **Cooldown milestones**: -6% cooldown at levels **[3, 5, 7, 9, 11, 13, 15, 17, 19]** *(min 0.25s)*.
 - **Level 20 Stats**: **69 damage**, **12 knives per burst**, **3 pierce**, **0.37s CD**.
 
-#### 3. Reaper Scythe (`orbiting_barrier`)
+#### 3. Reaper Scythe (`reaper_scythe`)
 - **Base**: 4 direct damage, 8 bleed damage/s (duration 3.0s = 24 total damage per stack, stacks indefinitely on successive contacts), 2 scythes, 2.5m radius, 3.8 rad/s speed. Scythes orbit around the hero, inflicting stacking bleed on touched monsters.
 - **Growth per level**: +1 direct damage, +2 bleed DPS (+6 total damage per stack), +0.20m orbit radius, +0.08 orbit speed per level.
 - **Scythe milestones**: +1 scythe at levels **[3, 6, 9, 12, 15, 18, 20]** *(up to 9 scythes)*.
 - **Level 20 Stats**: **23 direct damage**, **46 bleed DPS** (138 total damage over 3s from a single stack), **9 scythes**, **6.30m orbit radius**, **5.32 rad/s speed**.
 
-#### 4. Ring of Fire (`holy_aura`)
+#### 4. Ring of Fire (`fire_ring`)
 - **Base**: 16 damage, 0.50s CD (tick), 3.5m radius. Frame-by-frame animated blazing fire sprite sheet (16 frames in a 4x4 grid, 18 FPS).
 - **Growth per level**: +4 damage, +0.20m radius, -4% CD (min 0.22s) per level.
 - **Level 20 Stats**: **92 damage**, **7.30m AOE radius**, **0.23s tick interval**.
