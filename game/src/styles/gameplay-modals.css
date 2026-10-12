@@ -810,8 +810,24 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .inv-weapon-icon {
-  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  font-size: 24px;
+}
+
+.inv-weapon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .inv-weapon-title-box {

@@ -276,13 +276,14 @@ export class Projectile {
 
     if (this.isIceSpike) {
       if (!Projectile.iceSpikeGeomA || !Projectile.iceGroundRingGeom) {
-        const w = 2.5;
-        const h = 5.0;
+        // Scaled down by 1.5x (2.5 -> 1.67, 5.0 -> 3.33)
+        const w = 1.67;
+        const h = 3.33;
         const ga = new PlaneGeometry(w, h);
         ga.translate(0, h / 2, 0); // Pivot at bottom center
         Projectile.iceSpikeGeomA = ga;
 
-        const ring = new RingGeometry(0.2, 1.2, 24);
+        const ring = new RingGeometry(0.14, 0.8, 24);
         ring.rotateX(-Math.PI / 2);
         Projectile.iceGroundRingGeom = ring;
       }

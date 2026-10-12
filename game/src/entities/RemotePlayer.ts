@@ -160,7 +160,7 @@ export class RemotePlayer {
       depthTest: false
     });
     this.overheadSprite = new Sprite(spriteMat);
-    this.overheadSprite.position.set(0, 3.0, 0);
+    this.overheadSprite.position.set(0, 3.85, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
     this.mesh.add(this.overheadSprite);
@@ -523,36 +523,57 @@ export class RemotePlayer {
           : 'Рен';
       ctx.fillText(`${this.name} (${heroName}) [L${this.level}]`, w / 2, 24);
 
-      // Health Bar
-      const barX = 26;
+      // Health Bar (XP-bar capsule style, red palette, lighter as HP drops)
+      const barX = 22;
       const barY = 48;
-      const barW = w - 52;
-      const barH = 16;
+      const barW = w - 44;
+      const barH = 17;
+      const radius = barH / 2;
 
-      // Track
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.lineWidth = 1;
+      // Track Container (matching XP-bar glass capsule)
+      ctx.fillStyle = 'rgba(6, 12, 22, 0.94)';
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(barX, barY, barW, barH, 6);
+      ctx.roundRect(barX, barY, barW, barH, radius);
       ctx.fill();
       ctx.stroke();
 
-      // Fill
+      // Fill with dynamic lightness (less HP = lighter red)
       const hpPct = Math.max(0, Math.min(1, this.hp / (this.maxHp || 100)));
-      ctx.fillStyle = hpPct > 0.5 ? '#10b981' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
-      if (hpPct > 0) {
+      const fillW = (barW - 4) * hpPct;
+      if (hpPct > 0 && fillW > 0) {
+        const lightnessFactor = 1 - hpPct; // 0 at full HP -> 1 at empty HP
+        const l1 = Math.round(38 + lightnessFactor * 32); // 38% -> 70%
+        const l2 = Math.round(50 + lightnessFactor * 30); // 50% -> 80%
+        if (ctx.createLinearGradient) {
+          const grad = ctx.createLinearGradient(barX + 2, barY, barX + 2 + fillW, barY);
+          grad.addColorStop(0, `hsl(0, 90%, ${l1}%)`);
+          grad.addColorStop(1, `hsl(0, 95%, ${l2}%)`);
+          ctx.fillStyle = grad;
+        } else {
+          ctx.fillStyle = `hsl(0, 90%, ${l1}%)`;
+        }
         ctx.beginPath();
-        ctx.roundRect(barX + 2, barY + 2, (barW - 4) * hpPct, barH - 4, 4);
+        ctx.roundRect(barX + 2, barY + 2, fillW, barH - 4, (barH - 4) / 2);
+        ctx.fill();
+
+        // Subtle XP-style glass gloss highlight on upper half
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.beginPath();
+        ctx.roundRect(barX + 4, barY + 2.5, Math.max(0, fillW - 4), (barH - 4) * 0.38, (barH - 4) * 0.19);
         ctx.fill();
       }
 
       // Numeric HP Text
       ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 4;
       ctx.font = 'bold 11px "Cinzel", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
+      ctx.shadowBlur = 0;
     }
 
     this.overheadTexture.needsUpdate = true;

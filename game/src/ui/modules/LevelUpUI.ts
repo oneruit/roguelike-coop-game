@@ -175,9 +175,6 @@ export class LevelUpUI {
     const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
     if (hpOpt) return hpOpt;
 
-    const speedOpt = options.find(opt => opt.id === 'bonus_speed_elixir');
-    if (speedOpt) return speedOpt;
-
     return options[0];
   }
 
@@ -365,19 +362,6 @@ export class LevelUpUI {
       }
     };
 
-    const speedOption: UpgradeOption = {
-      id: 'bonus_speed_elixir',
-      title: 'Эликсир Скорости (+8% скорости)',
-      icon: '👟',
-      levelTag: 'БОНУС СКОРОСТИ',
-      description: 'Увеличивает скорость передвижения героя на +8%.',
-      grade: 'rare',
-      apply: () => {
-        player.speedElixirBonus = (player.speedElixirBonus ?? 0) + 0.08;
-        player.recalculateStats();
-      }
-    };
-
     const createTier2AwakenOption = (weapon: Weapon): UpgradeOption => ({
       id: `awaken_${weapon.id}`,
       title: `Пробуждение Тира 2: ${weapon.name}`,
@@ -434,7 +418,7 @@ export class LevelUpUI {
       tier1Weapons.length === 4 &&
       weapons.every(w => w.level >= 12);
     if (allTier1Maxed) {
-      return [hpOption, damageOption, speedOption];
+      return [hpOption, damageOption];
     }
 
     const upgradeOptions: UpgradeOption[] = [];
@@ -613,9 +597,9 @@ export class LevelUpUI {
         }
       }
     }
-    // Add elixirs if pool has fewer than 3 options, ensuring always 3 choices
+    // Add elixirs if pool has fewer than 3 options
     if (pool.length < 3) {
-      const elixirs = [hpOption, speedOption];
+      const elixirs = [hpOption];
       for (const elixir of elixirs) {
         if (pool.length >= 3) break;
         if (!pool.some(o => o.id === elixir.id)) pool.push(elixir);

@@ -236,7 +236,7 @@ export class TreeManager {
             obstacleManager.addObstacle(key, {
               x: worldX,
               z: worldZ,
-              radius: config.trunkRadius * scale,
+              radius: config.trunkRadius * scale * 1.35,
               type: 'tree'
             });
 
