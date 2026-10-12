@@ -1,0 +1,182 @@
+{
+  "head": {
+    "file": "head.png",
+    "width": 175,
+    "height": 188,
+    "pivot": [
+      0.5,
+      0.9
+    ],
+    "zOrder": 10
+  },
+  "hair": {
+    "file": "hair.png",
+    "width": 141,
+    "height": 261,
+    "pivot": [
+      0.75,
+      0.15
+    ],
+    "zOrder": 1
+  },
+  "torso": {
+    "file": "torso.png",
+    "width": 120,
+    "height": 184,
+    "pivot": [
+      0.5,
+      0.85
+    ],
+    "zOrder": 9
+  },
+  "pelvis": {
+    "file": "pelvis.png",
+    "width": 146,
+    "height": 103,
+    "pivot": [
+      0.5,
+      0.4
+    ],
+    "zOrder": 8
+  },
+  "upper_arm_l": {
+    "file": "upper_arm_l.png",
+    "width": 73,
+    "height": 115,
+    "pivot": [
+      0.5,
+      0.15
+    ],
+    "zOrder": 2
+  },
+  "upper_arm_r": {
+    "file": "upper_arm_r.png",
+    "width": 73,
+    "height": 115,
+    "pivot": [
+      0.5,
+      0.15
+    ],
+    "zOrder": 14
+  },
+  "forearm_l": {
+    "file": "forearm_l.png",
+    "width": 81,
+    "height": 128,
+    "pivot": [
+      0.45,
+      0.15
+    ],
+    "zOrder": 3
+  },
+  "forearm_r": {
+    "file": "forearm_r.png",
+    "width": 81,
+    "height": 128,
+    "pivot": [
+      0.55,
+      0.15
+    ],
+    "zOrder": 15
+  },
+  "fist_l": {
+    "file": "fist_l.png",
+    "width": 64,
+    "height": 73,
+    "pivot": [
+      0.5,
+      0.2
+    ],
+    "zOrder": 4
+  },
+  "fist_r": {
+    "file": "fist_r.png",
+    "width": 64,
+    "height": 73,
+    "pivot": [
+      0.5,
+      0.2
+    ],
+    "zOrder": 16
+  },
+  "thigh_l": {
+    "file": "thigh_l.png",
+    "width": 78,
+    "height": 146,
+    "pivot": [
+      0.5,
+      0.15
+    ],
+    "zOrder": 5
+  },
+  "thigh_r": {
+    "file": "thigh_r.png",
+    "width": 77,
+    "height": 146,
+    "pivot": [
+      0.5,
+      0.15
+    ],
+    "zOrder": 11
+  },
+  "shin_l": {
+    "file": "shin_l.png",
+    "width": 74,
+    "height": 116,
+    "pivot": [
+      0.5,
+      0.15
+    ],
+    "zOrder": 6
+  },
+  "shin_r": {
+    "file": "shin_r.png",
+    "width": 73,
+    "height": 116,
+    "pivot": [
+      0.5,
+      0.15
+    ],
+    "zOrder": 12
+  },
+  "boot_l": {
+    "file": "boot_l.png",
+    "width": 82,
+    "height": 103,
+    "pivot": [
+      0.5,
+      0.2
+    ],
+    "zOrder": 7
+  },
+  "boot_r": {
+    "file": "boot_r.png",
+    "width": 81,
+    "height": 103,
+    "pivot": [
+      0.5,
+      0.2
+    ],
+    "zOrder": 13
+  },
+  "orb_purple": {
+    "file": "orb_purple.png",
+    "width": 102,
+    "height": 131,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "zOrder": 17
+  },
+  "orb_cyan": {
+    "file": "orb_cyan.png",
+    "width": 101,
+    "height": 125,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "zOrder": 18
+  }
+}

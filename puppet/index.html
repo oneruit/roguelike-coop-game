@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Rift — Программная кукольная 2D-анимация (Puppet Demo)</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="./puppet.css" />
+  </head>
+  <body>
+    <div id="app-container">
+      <!-- Three.js Viewport -->
+      <div id="viewport-container">
+        <div class="viewport-header">
+          <div class="viewport-title">
+            <span>⚔️ Puppet Animation Lab</span>
+            <span class="viewport-badge">Three.js Procedural 2D</span>
+          </div>
+          <a href="../game/index.html" class="back-link">
+            <span>🎮 Вернуться в игру</span>
+          </a>
+        </div>
+
+        <canvas id="viewport-canvas"></canvas>
+
+        <div class="viewport-hint">
+          <span>🔍 Зум: <kbd>Колесико мыши</kbd></span>
+          <span>✋ Панорамирование: <kbd>ПКМ</kbd> или <kbd>Shift + ЛКМ</kbd></span>
+          <span>🎯 Прицеливание: <kbd>Включите "Следить за мышью"</kbd></span>
+        </div>
+      </div>
+
+      <!-- Control Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <h1 class="sidebar-title">Управление анимацией</h1>
+          <p class="sidebar-subtitle">Процедурная скелетная анимация из отдельных частей тела</p>
+        </div>
+
+        <div class="sidebar-content">
+          <!-- Animation State Section -->
+          <div>
+            <div class="section-title">
+              <span>Состояния (Animation States)</span>
+            </div>
+            <div class="anim-grid">
+              <button class="btn-state active" data-anim="IDLE">🧘 Покой (Idle)</button>
+              <button class="btn-state" data-anim="WALK">🚶 Шаг (Walk)</button>
+              <button class="btn-state" data-anim="RUN">🏃 Бег (Run)</button>
+              <button class="btn-state one-shot" data-anim="ATTACK">🥊 Удар (Attack)</button>
+              <button class="btn-state one-shot" data-anim="CAST">✨ Каст (Cast)</button>
+              <button class="btn-state one-shot" data-anim="HIT">💥 Урон (Hit)</button>
+              <button class="btn-state" data-anim="DANCE">💃 Танец (Dance)</button>
+              <button class="btn-state" id="btn-pause">⏸ Пауза</button>
+            </div>
+          </div>
+
+          <!-- Procedural Parameters Section -->
+          <div>
+            <div class="section-title">
+              <span>Параметры математики</span>
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>Скорость времени</span>
+                <span class="control-val" id="val-speed">1.0x</span>
+              </div>
+              <input type="range" id="slider-speed" min="0.1" max="2.5" step="0.1" value="1.0" />
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>Глубина дыхания (Idle)</span>
+                <span class="control-val" id="val-breath">1.0x</span>
+              </div>
+              <input type="range" id="slider-breath" min="0.0" max="2.5" step="0.1" value="1.0" />
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>Ширина шага / бега</span>
+                <span class="control-val" id="val-step">1.0x</span>
+              </div>
+              <input type="range" id="slider-step" min="0.2" max="2.0" step="0.1" value="1.0" />
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span>Жесткость пружины волос</span>
+                <span class="control-val" id="val-hair">28</span>
+              </div>
+              <input type="range" id="slider-hair" min="5" max="70" step="1" value="28" />
+            </div>
+          </div>
+
+          <!-- Magic Orb Selector -->
+          <div>
+            <div class="section-title">
+              <span>Магическая сфера (VFX Orb)</span>
+            </div>
+            <div class="orb-select-group">
+              <div class="orb-pill cyan active" data-orb="cyan">❄️ Frost (Cyan)</div>
+              <div class="orb-pill" data-orb="purple">🔮 Void (Purple)</div>
+              <div class="orb-pill" data-orb="both">✨ Оба</div>
+              <div class="orb-pill" data-orb="none">❌ Выкл</div>
+            </div>
+          </div>
+
+          <!-- Interactive Features -->
+          <div>
+            <div class="section-title">
+              <span>Интерактивные механики</span>
+            </div>
+
+            <label class="toggle-row" for="toggle-aim">
+              <div class="toggle-label">
+                <span>🎯 Следить рукой и головой за курсором (IK)</span>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="toggle-aim" />
+                <span class="slider-switch"></span>
+              </div>
+            </label>
+
+            <label class="toggle-row" for="toggle-debug">
+              <div class="toggle-label">
+                <span>🦴 Показать кости и суставы (Debug Rig)</span>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="toggle-debug" />
+                <span class="slider-switch"></span>
+              </div>
+            </label>
+
+            <!-- Exploded View -->
+            <div class="control-row" style="margin-top: 10px;">
+              <div class="control-label">
+                <span>Разборка на части (Exploded View)</span>
+                <span class="control-val" id="val-explode">0%</span>
+              </div>
+              <input type="range" id="slider-explode" min="0.0" max="1.0" step="0.01" value="0.0" />
+            </div>
+          </div>
+
+          <!-- Camera actions -->
+          <div>
+            <button class="btn-state" id="btn-reset-cam" style="width: 100%;">
+              🔄 Сбросить камеру и зум
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div><span class="badge-tag">Модульный пайплайн:</span> 18 частей тела собраны в единое дерево <span class="badge-tag">Three.Group</span> с точными шарнирными точками (Pivot Points).</div>
+        </div>
+      </aside>
+    </div>
+
+    <script type="module" src="./puppet-demo.ts"></script>
+  </body>
+</html>
