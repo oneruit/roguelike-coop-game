@@ -77,12 +77,12 @@ When compiling the generation prompt for the `generate_image` tool, use the foll
 
 All 5 elements displayed together on a single reference sheet canvas, cleanly separated with clear spacing between each element, no overlap:
 1. PORTRAIT: Close-up face/bust avatar showing sharp facial features and intense expression.
-2. FRONT VIEW: Full-body character facing forward toward camera in battle-ready combat stance.
-3. BACK VIEW: Full-body character facing directly away, showing detailed rear armor, cloak/cape, and back equipment.
-4. RIGHT PROFILE VIEW: Full-body character in strict right-facing profile view.
+2. FRONT VIEW: Full-body character facing forward toward camera in battle-ready combat stance holding weapon.
+3. BACK VIEW: Full-body character facing directly away, showing detailed rear armor, cloak/cape, back equipment, and rear weapon view.
+4. RIGHT PROFILE VIEW: Full-body character in strict right-facing profile view holding weapon.
 5. WEAPON PREVIEW: Isolated detailed preview of the character's [weapon/tool/focus] displayed separately.
 
-Chibi proportions with an intentionally oversized head (~30-35% height) and compact body, [body type], [limb description], [stance], consistent scale and grounded baseline across all full-body views, strong readable silhouette.
+Strictly identical scale, character height, and chibi proportions (2.5 to 3 heads tall, large head ~30-35% height, compact body) across FRONT, BACK, and RIGHT profile views, perfectly aligned to the same baseline for direct sprite extraction and turnaround animation reference. [Body type], [limb description], [stance], strong readable silhouette.
 
 [Face/head description], [eye description], [expression details], no smile, no cute or adorable expression.
 
@@ -90,15 +90,15 @@ Chibi proportions with an intentionally oversized head (~30-35% height) and comp
 
 [Clothing/armor/body description], [optional accessories], matching equipment, materials, and colors across front, back, and right profile views.
 
-[Held item: Holding a [weapon/tool/focus] with both hands, clearly visible beside the character / Holding no weapon, both hands raised in a ready combat stance], [optional offhand]. Weapon preview displays the standalone [weapon description] in high detail. No other weapons.
+Weapon continuity across all views: Character must hold the same [weapon/tool/focus] in all three full-body views (front, back, and right profile) with consistent grip, proportions, and position [or holding no weapon with combat hands raised directing magical focus]. Weapon preview displays the standalone [weapon description] in high detail. No other weapons.
 
 [Optional magical/energy effects].
 
-Pure solid magenta chromakey background rgb(255,0,255) #ff00ff, clean 16-bit pixel art game sprite sheet, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
+Pure solid magenta chromakey background rgb(255,0,255) #ff00ff directly underneath feet, clean 16-bit pixel art game sprite sheet, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
 
 Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite chibi proportions.
 
-No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic proportions, no photorealism, no smooth gradients, no multiple separate canvas files, no text, no view labels, no UI frames.
+No shadows under character feet, no drop shadows, no cast shadows, no floor, no ground line, no platform, no pedestal, no tile grid, no anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic proportions, no photorealism, no smooth gradients, no multiple separate canvas files, no text, no view labels, no UI frames.
 
 Additional character details to include: [list all extra details the user specifies].
 ```
@@ -132,7 +132,7 @@ Additional character details to include: [list all extra details the user specif
 1. **Телосложение?** (`athletic compact build`, `stocky heavy build`, `skeletal frame`, `bulky chassis`...)
 2. **Конечности?** (`sturdy limbs with chunky boots`, `powerful armored gauntlets`, `strapped leather sandals`...)
 3. **Поза?** Identical neutral combat-ready standing pose across FRONT, BACK, and RIGHT profile views.
-4. **Акцент на силуэте?** `strong readable silhouette with wide shoulder profile and grounded chunky boots, stable baseline`
+4. **Акцент на силуэте и пропорциях?** `Strictly identical scale, total height, grounded baseline, and chibi proportions (2.5–3 heads tall) across FRONT, BACK, and RIGHT profile views, perfectly suited for direct sprite extraction and turnaround animation.`
 
 #### III. Лицо и голова (Face & Head — Focus for Portrait & Front View)
 1. **Тип лица или головы?** (`weathered human face`, `bare skull`, `faceless iron helmet`, `feral wolf muzzle`...)
@@ -152,7 +152,7 @@ Additional character details to include: [list all extra details the user specif
 
 #### VI. Оружие или инструмент (Weapon & Weapon Preview)
 1. **Что персонаж держит в руках?** (`two-handed greatsword`, `runic oak staff`, `no weapon, floating energy orbs`...)
-2. **Как держит?** (`Holding weapon with both hands`, `Holding no weapon, both hands raised in ready combat stance`...)
+2. **Как держит?** `Holding weapon in all three views (front, back, right profile) with consistent grip, scale, and materials` (or raised hands directing magical focus).
 3. **Что во второй руке или на оффхенде?** (`spiked buckler`, `raised empty offhand`...)
 4. **Изолированное превью оружия?** (`Weapon preview displays the standalone [weapon description] in high detail`)
 5. **Отсутствие лишнего оружия?** `No other weapons, no floating secondary swords, no cluttered back sheath`
@@ -165,14 +165,14 @@ Additional character details to include: [list all extra details the user specif
 #### VIII. Стиль и палитра (Style, Palette & Chromakey Background)
 1. **Палитра?** `limited 16-bit color palette, strong shadow/highlight contrast, saturated accents, no soft pastel colors`
 2. **Стиль спрайта?** `clean 16-bit pixel art game sprite sheet, crisp hard pixel edges, chunky simplified forms`
-3. **Фон?** `Pure solid magenta chromakey background rgb(255,0,255) #ff00ff`
+3. **Фон?** `Pure solid magenta chromakey background rgb(255,0,255) #ff00ff directly under feet, no shadows, no ground lines`
 
 #### IX. Жанр и настроение (Genre & Mood)
 1. **Жанр?** `dark fantasy`, `heroic fantasy`, `sci-fi`
 2. **Общее настроение?** `Heroic RPG game character design, battle-ready, serious and dangerous despite chibi proportions`
 
 #### X. Негативные требования (Negative Constraints & Exclusions)
-1. **Общий обязательный блок**: `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no multiple separate canvas files, no text, no view labels, no UI frames.`
+1. **Общий обязательный блок**: `No cast shadows under feet, no drop shadows, no ground line, no floor, no platform, no pedestal, no tile grid, no anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no multiple separate canvas files, no text, no view labels, no UI frames.`
 2. **Специфические исключения**: `no modern swimwear, no angel wings, no puppy eyes...`
 
 #### XI. Дополнительные детали (Additional Details)
@@ -186,7 +186,7 @@ Additional character details to include: [list all extra details the user specif
 flowchart TD
     A["User Input: Mode A (Prompt) / Mode B (Brief) / Mode C (Full)"] --> B["Compile 5-in-1 Master Prompt with RGB(255,0,255)"]
     B --> C["Call generate_image (AspectRatio 16:9)"]
-    C --> D["Quality Gate (5 Elements, Chibi 2.5-3 heads, Magenta Uniformity)"]
+    C --> D["Quality Gate (5 Elements, Chibi 2.5-3 heads, No Shadows/Platforms, Weapon in All 3 Views)"]
     D --> E["Run remove_chromakey.py with --slice (if post-processing requested)"]
     E --> F["Output: 5 Transparent Sprites + Master Sheet"]
 ```
@@ -201,6 +201,15 @@ Call `generate_image` with:
 - `Prompt`: The compiled 5-in-1 prompt.
 - `ImageName`: `hero_<character_name>_sheet` (e.g. `hero_amazon_sheet`).
 - `AspectRatio`: `'16:9'`
+
+### Step 3: Quality Gate Checklist
+Verify the generated image before proceeding:
+1. **Completeness**: Contains all 5 elements: Portrait, Front, Back, Right Profile, and Weapon Preview.
+2. **No Shadows or Platforms**: Zero drop shadows beneath feet, zero ground lines, zero platforms, pure magenta directly touching feet.
+3. **Weapon Continuity**: Character holds the weapon in all three views (Front, Back, Right profile).
+4. **Identical Proportions**: Strict identical scale, height, and chibi ratio (2.5–3 heads tall) across all three full-body views for direct sprite extraction.
+5. **Expression**: Cold, serious, grim. Zero kawaii or cute smile.
+6. **Chromakey Uniformity**: Pure solid magenta `#FF00FF` background without color ramps or text labels.
 
 ### Step 3: Optional Automated Chroma Key Removal & Slicing
 If full asset export is requested:
