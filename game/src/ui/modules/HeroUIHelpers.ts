@@ -8,6 +8,7 @@ export function getHeroIcon(charType: CharacterType): string {
 export function getHeroName(charType: CharacterType): string {
   if (charType === 'invoker') return 'Инвокер «Маг стихий»';
   if (charType === 'necromancer') return 'Мортис «Некромант»';
+  if (charType === 'amazon') return 'Амазонка «Воительница»';
   return charType === 'ronin'
     ? 'Рен «Ронин»'
     : charType === 'valkyrie'
@@ -26,6 +27,7 @@ export function getHeroName(charType: CharacterType): string {
 export function getHeroAvatar(charType: CharacterType): string {
   if (charType === 'invoker') return TextureManager.getAssetUrl('/textures/heroes/hero_invoker_front.png');
   if (charType === 'necromancer') return TextureManager.getAssetUrl('/textures/heroes/hero_necromancer_front.png');
+  if (charType === 'amazon') return TextureManager.getAssetUrl('/textures/heroes/hero_amazon_front.png');
   const avatar = charType === 'ronin'
     ? '/textures/heroes/hero_ronin_front.png'
     : charType === 'valkyrie'

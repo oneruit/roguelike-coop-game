@@ -67,34 +67,44 @@ Columns 1 through 6 are consecutive temporal frames from left to right. No borde
 
 ---
 
+---
+
 ## 4. Frame Sequence Progression (6 Frames per Action)
+
+> [!IMPORTANT]
+> **Mandatory Closed-Eyes Rule on Frame 3**: Across ALL actions (IDLE, WALK, ATTACK) and ALL rows (FRONT, BACK, RIGHT, LEFT), **on the 3rd frame (Column 3), the character's eyes must be fully closed** (natural breath blink in IDLE, mid-stride blink in WALK, intense peak-concentration eye closure in ATTACK).
+
+For detailed prompt construction guides, refer directly to the dedicated markdown files:
+- **IDLE**: [prompts/01_IDLE.md](prompts/01_IDLE.md)
+- **WALK**: [prompts/02_WALK.md](prompts/02_WALK.md)
+- **ATTACK**: [prompts/03_ATTACK.md](prompts/03_ATTACK.md)
 
 ### 4.1 IDLE Animation (6-Frame Loop)
 A subtle breathing and combat readiness loop:
-1. **Frame 1**: Base grounded battle-ready stance, weapon firmly held.
-2. **Frame 2**: Inhale starts — chest and shoulders rise by 1–2 px, subtle weapon tilt.
-3. **Frame 3**: Peak breath apex — maximum subtle vertical expansion.
-4. **Frame 4**: Exhale begins — shoulders lower smoothly.
-5. **Frame 5**: Weight settles back down toward baseline.
-6. **Frame 6**: Transition frame seamlessly connecting back to Frame 1.
+1. **Frame 1**: Base grounded battle-ready stance, weapon firmly held, alert open eyes.
+2. **Frame 2**: Inhale starts — chest and shoulders rise by 1–2 px, subtle weapon tilt, open eyes.
+3. **Frame 3 (Apex Inhale & Blink)**: **EYES CLOSED**. Character's eyelids are completely closed in a calm, focused blink at peak breath.
+4. **Frame 4**: Exhale begins — shoulders lower smoothly, eyes snap open again.
+5. **Frame 5**: Weight settles back down toward baseline, open eyes.
+6. **Frame 6**: Transition frame seamlessly connecting back to Frame 1, open eyes.
 
 ### 4.2 WALK Animation (6-Frame Loop)
 A grounded rhythmic walk cycle with solid foot contact:
-1. **Frame 1 (Contact)**: Lead foot strikes the ground, trailing foot planted behind.
-2. **Frame 2 (Down)**: Weight transfers to lead foot, slight knee bend, trailing heel rises.
-3. **Frame 3 (Passing)**: Trailing leg swings forward passing the planted leg, torso rises.
-4. **Frame 4 (Opposite Contact)**: Opposite foot strikes the ground, original lead foot planted behind.
-5. **Frame 5 (Down)**: Weight transfers to new lead foot, opposite heel rises.
-6. **Frame 6 (Passing)**: Trailing leg swings past planted leg, looping back to Frame 1.
+1. **Frame 1 (Contact)**: Lead foot strikes the ground, trailing foot planted behind, alert open eyes.
+2. **Frame 2 (Down)**: Weight transfers to lead foot, slight knee bend, trailing heel rises, open eyes.
+3. **Frame 3 (Passing & Mid-Stride Blink)**: **EYES CLOSED**. Trailing leg swings forward passing the planted leg; character's eyes are fully closed in a stride blink.
+4. **Frame 4 (Opposite Contact)**: Opposite foot strikes the ground, original lead foot planted behind, eyes snap open again.
+5. **Frame 5 (Down)**: Weight transfers to new lead foot, opposite heel rises, open eyes.
+6. **Frame 6 (Passing)**: Trailing leg swings past planted leg, looping back to Frame 1, open eyes.
 
 ### 4.3 ATTACK Animation (6-Frame One-Shot Strike)
 A high-impact combat strike:
-1. **Frame 1 (Ready)**: Combat stance with weapon cocked and weight balanced.
-2. **Frame 2 (Anticipation / Pull-back)**: Weight shifts backward, weapon draws back into position.
-3. **Frame 3 (Full Wind-up)**: Torso coiled, maximum muscular tension, weapon at apex of backswing.
-4. **Frame 4 (Strike / Impact)**: Explosive forward strike, maximum weapon extension, dynamic silhouette.
-5. **Frame 5 (Follow-through)**: Body and weapon follow momentum past impact, deceleration.
-6. **Frame 6 (Recovery)**: Character absorbs recoil and returns toward ready combat stance.
+1. **Frame 1 (Ready)**: Combat stance with weapon cocked and weight balanced, alert open eyes.
+2. **Frame 2 (Anticipation / Pull-back)**: Weight shifts backward, weapon draws back into position, open eyes.
+3. **Frame 3 (Full Wind-up & Concentration)**: **EYES CLOSED**. Torso coiled, maximum muscular tension, weapon at apex of backswing; eyes are tightly closed in extreme combat concentration and breath hold.
+4. **Frame 4 (Strike / Impact)**: Explosive forward strike, maximum weapon extension, dynamic silhouette, eyes snap wide open with fierce glare.
+5. **Frame 5 (Follow-through)**: Body and weapon follow momentum past impact, deceleration, open eyes.
+6. **Frame 6 (Recovery)**: Character absorbs recoil and returns toward ready combat stance, open eyes.
 
 ---
 

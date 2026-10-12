@@ -30,6 +30,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   'hero-archer': '/textures/heroes/hero_archer_front.png',
   'hero-rocket': '/textures/heroes/hero_rocket_front.png',
   'hero-necromancer': '/textures/heroes/hero_necromancer_front.png',
+  'hero-amazon': '/textures/heroes/hero_amazon_front.png',
 
   // Monsters
   'monster-coyote': '/textures/monsters/monster_coyote_front.png',
