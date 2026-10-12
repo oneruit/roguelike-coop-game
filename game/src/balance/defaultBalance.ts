@@ -259,6 +259,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.35,
       startingWeapon: 'assault_rifle',
       role: 'Сверхбыстрый коммандос с автоматической винтовкой'
+    },
+    necromancer: {
+      id: 'necromancer',
+      name: 'Мортис (Некромант)',
+      maxHp: 110,
+      baseSpeed: 8.6,
+      damageMultiplier: 1.40,
+      startingWeapon: 'astral_staff',
+      role: 'Маг смерти: дальнобойные мистические снаряды и контроль поля боя'
     }
   },
   monsters: {

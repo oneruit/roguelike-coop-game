@@ -1742,6 +1742,7 @@ export class HUD {
 
   public getHeroName(charType: CharacterType): string {
     if (charType === 'invoker') return 'Инвокер «Маг стихий»';
+    if (charType === 'necromancer') return 'Мортис «Некромант»';
     return charType === 'ronin'
       ? 'Рен «Ронин»'
       : charType === 'valkyrie'
@@ -1759,6 +1760,7 @@ export class HUD {
 
   public getHeroAvatar(charType: CharacterType): string {
     if (charType === 'invoker') return TextureManager.getAssetUrl('/textures/heroes/hero_invoker_front.png');
+    if (charType === 'necromancer') return TextureManager.getAssetUrl('/textures/heroes/hero_necromancer_front.png');
     const avatar = charType === 'ronin'
       ? '/textures/heroes/hero_ronin_front.png'
       : charType === 'valkyrie'

@@ -133,6 +133,11 @@ export class SimPlayerInternal {
       this.hp = 105;
       this.baseSpeed = 9.1;
       this.baseDamageMultiplier = 1.35;
+    } else if (charType === 'necromancer') {
+      this.maxHp = 110;
+      this.hp = 110;
+      this.baseSpeed = 8.6;
+      this.baseDamageMultiplier = 1.40;
     } else {
       this.maxHp = 115;
       this.hp = 115;
