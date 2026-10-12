@@ -48,6 +48,7 @@ import type { MeleeAttackInfo } from '../shared/types';
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
 import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
+import { PlayerStatusManager } from './PlayerStatusManager';
 
 
 export class Player {
@@ -111,6 +112,34 @@ export class Player {
   public hasChronosReady: boolean = true;
   public singularityKillCounter: number = 0;
   public orbitalStrikeTimer: number = 12.0;
+  public golemCoreTimer: number = 6.0;
+  public moltenScaleTimer: number = 0.28;
+  public isMoving: boolean = false;
+  public statusManager: PlayerStatusManager = new PlayerStatusManager();
+
+  public applyBurn(duration?: number): void {
+    this.statusManager.applyBurn(duration);
+  }
+
+  public applyShock(duration?: number): void {
+    this.statusManager.applyShock(duration);
+  }
+
+  public applySlow(factor: number, duration: number): void {
+    this.statusManager.applySlow(factor, duration);
+  }
+
+  public get isBurning(): boolean {
+    return this.statusManager.isBurning;
+  }
+
+  public get isShocked(): boolean {
+    return this.statusManager.isShocked;
+  }
+
+  public get isSlowed(): boolean {
+    return this.statusManager.isSlowed;
+  }
 
   // Tactical Dash Ability
   public isDashing: boolean = false;
@@ -831,6 +860,8 @@ export class Player {
 
     // 3. Movement & 4-Directional Sprite Selection
     const isMoving = moveDir.lengthSq() > 0.01;
+    this.isMoving = isMoving;
+    this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, true), this.maxHp);
     const isAttacking = this.attackAnimTimer > 0;
 
     if (this.attackAnimTimer > 0) {
@@ -842,7 +873,7 @@ export class Player {
     this.isTerrainSlowed = terrainSlow < 0.99;
 
     if (isMoving) {
-      const effectiveSpeed = this.speed * terrainSlow;
+      const effectiveSpeed = this.speed * terrainSlow * this.statusManager.movementMultiplier;
       this.position.addScaledVector(moveDir, effectiveSpeed * dt);
       this.animTimer += dt * 12 * terrainSlow;
 
@@ -893,12 +924,20 @@ export class Player {
 
     this.mesh.position.copy(this.position);
 
-    // Hit flash handling
+    // Hit flash & status effect visual tints
     if (this.flashTimer > 0) {
       this.flashTimer -= dt;
       if (this.flashTimer <= 0) {
         this.spriteMaterial.color.setHex(0xffffff);
       }
+    } else if (this.isBurning) {
+      this.spriteMaterial.color.setHex(0xfb923c); // Blazing orange
+    } else if (this.isShocked) {
+      this.spriteMaterial.color.setHex(0x93c5fd); // Electrified light blue
+    } else if (this.isSlowed) {
+      this.spriteMaterial.color.setHex(0x67e8f9); // Chilled cyan
+    } else {
+      this.spriteMaterial.color.setHex(0xffffff);
     }
 
     this.spriteMaterial.opacity = this.activeBuffs.has('ghost') ? .4 : 1;
@@ -1028,11 +1067,14 @@ export class Player {
 
     this.shieldRegenDelay = 3.5;
 
-    // Apply Nanite Plating damage reduction (diminishing returns, max 60% at lvl 20)
+    // Apply shock vulnerability (+10% damage taken) and Nanite Plating damage reduction
+    const incomingAmount = this.isShocked
+      ? Math.round(amount * this.statusManager.incomingDamageMultiplier)
+      : amount;
     const naniteReduction = this.getNaniteDamageReduction();
     let finalAmount = ignoreInvuln
-      ? amount
-      : Math.max(1, (amount * (1 - naniteReduction)) * (1 - this.passiveDamageReduction));
+      ? incomingAmount
+      : Math.max(1, (incomingAmount * (1 - naniteReduction)) * (1 - this.passiveDamageReduction));
 
     // Absorb with shield first
     if (this.shield > 0) {
@@ -1234,6 +1276,10 @@ export class Player {
     this.passiveDamageReduction = 0;
     this.spriteMesh.rotation.z = 0;
     this.spriteMaterial.color.setHex(0xffffff);
+    this.statusManager.reset();
+    this.golemCoreTimer = 6.0;
+    this.moltenScaleTimer = 0.28;
+    this.isMoving = false;
     this.activeBuffs.clear();
     this.setDirection('front');
     this.applyCharacterPerks();

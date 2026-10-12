@@ -1,7 +1,7 @@
 import { InvokerSpellEffects } from './InvokerSpellEffects';
 import type { NetEvent } from '../shared/types';
 import type { InvokerSpellCast, SpellControl } from '../shared/InvokerSpells';
-import { Vector3, Frustum, RingGeometry, Mesh, MeshBasicMaterial, DoubleSide, AdditiveBlending } from 'three';
+import { Vector3, Frustum, RingGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, DoubleSide, AdditiveBlending } from 'three';
 import { Projectile } from './Projectile';
 import { Enemy } from '../entities/Enemy';
 import { Player } from '../entities/Player';
@@ -37,6 +37,17 @@ export class CombatDirector {
     age: number;
     maxAge: number;
     maxRadius: number;
+  }[] = [];
+  private flameTrailPatches: {
+    mesh: Mesh;
+    geometry: PlaneGeometry;
+    material: MeshBasicMaterial;
+    position: Vector3;
+    radius: number;
+    dps: number;
+    age: number;
+    maxAge: number;
+    tickTimer: number;
   }[] = [];
 
   constructor(
@@ -402,6 +413,35 @@ export class CombatDirector {
     });
   }
 
+  public spawnFlameTrailPatch(center: Vector3, dps: number): void {
+    const radius = 1.35;
+    const geometry = new PlaneGeometry(radius * 2, radius * 2);
+    const material = new MeshBasicMaterial({
+      color: 0xf97316,
+      transparent: true,
+      opacity: 0.85,
+      side: DoubleSide,
+      blending: AdditiveBlending,
+      depthWrite: false
+    });
+    const mesh = new Mesh(geometry, material);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(center.x, 0.06, center.z);
+    this.engine.scene.add(mesh);
+
+    this.flameTrailPatches.push({
+      mesh,
+      geometry,
+      material,
+      position: center.clone(),
+      radius,
+      dps,
+      age: 0,
+      maxAge: 2.8,
+      tickTimer: 0
+    });
+  }
+
   public updateProjectiles(dt: number): void {
     this.meleeEffects.update(dt);
     this.spellEffects.update(dt);
@@ -418,6 +458,62 @@ export class CombatDirector {
         sw.geometry.dispose();
         sw.material.dispose();
         this.chronosShockwaves.splice(i, 1);
+      }
+    }
+
+    const flameHitter = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+    for (let i = this.flameTrailPatches.length - 1; i >= 0; i--) {
+      const patch = this.flameTrailPatches[i];
+      patch.age += dt;
+      const progress = patch.age / patch.maxAge;
+      patch.material.opacity = Math.max(0, 0.85 * (1.0 - progress));
+      patch.tickTimer += dt;
+      if (patch.tickTimer >= 0.33) {
+        patch.tickTimer = 0;
+        const tickDmg = Math.max(1, Math.round(patch.dps * 0.33));
+        const nearby = this.enemyManager.getNearbyEnemies(
+          patch.position.x,
+          patch.position.z,
+          patch.radius + 1.2,
+          this.scratchNearbyEnemies
+        );
+        for (const target of nearby) {
+          if (target.isAlive && target.position.distanceTo(patch.position) <= patch.radius + (target.width + target.height) * 0.22) {
+            target.applyBurn(3.0, flameHitter, 'molten_scale');
+            if (this.net.role === 'client') {
+              const isDead = target.takeDamage(tickDmg, patch.position, flameHitter);
+              this.damageNumbers.spawnDamage(target.position, tickDmg, false, this.engine.camera);
+              this.player.totalDamageDealt += tickDmg;
+              this.player.recordWeaponDamage('molten_scale', tickDmg);
+              if (isDead) {
+                this.player.kills++;
+                this.recentlyDeadEnemyIds.add(target.id);
+                this.onLocalPlayerEnemyKill(target);
+                target.destroy(this.engine.scene);
+                const idx = this.enemyManager.enemies.indexOf(target);
+                if (idx !== -1) this.enemyManager.enemies.splice(idx, 1);
+              }
+              this.pendingClientHits.push({
+                enemyId: target.id,
+                damage: tickDmg,
+                sourceX: patch.position.x,
+                sourceZ: patch.position.z,
+                isFatal: isDead
+              });
+            } else {
+              this.player.totalDamageDealt += tickDmg;
+              this.player.recordWeaponDamage('molten_scale', tickDmg);
+              this.enemyManager.damageEnemy(target, tickDmg, patch.position, this.engine.camera, flameHitter);
+            }
+          }
+        }
+      }
+
+      if (patch.age >= patch.maxAge) {
+        this.engine.scene.remove(patch.mesh);
+        patch.geometry.dispose();
+        patch.material.dispose();
+        this.flameTrailPatches.splice(i, 1);
       }
     }
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
@@ -478,6 +574,18 @@ export class CombatDirector {
 
           if (proj.isIceSpike) {
             enemy.applySlow(0.60, 2.0);
+          }
+
+          if (proj.isFireball) {
+            enemy.applyBurn(3.0, myId, proj.sourceWeaponId);
+          }
+
+          if (proj.isLightning) {
+            enemy.applyShock(5.0);
+          }
+
+          if (proj.isKineticBeam) {
+            enemy.stun(1.8);
           }
 
           if (this.net.role === 'client') {
@@ -608,6 +716,62 @@ export class CombatDirector {
         }
       }
     }
+    // Item Proc: Molten Scale (Boss Item: drops flame trail behind the hero when moving)
+    const moltenStacks = this.player.getItemStacks('molten_scale');
+    if (moltenStacks > 0 && this.player.isAlive && !this.player.isDowned && this.player.isMoving) {
+      this.player.moltenScaleTimer -= dt;
+      if (this.player.moltenScaleTimer <= 0) {
+        this.player.moltenScaleTimer = 0.28;
+        const baseDmg = 25 * this.player.getDamageMultiplier();
+        const flameDps = Math.round(baseDmg * (1.2 + (moltenStacks - 1) * 0.48));
+        this.spawnFlameTrailPatch(this.player.position, flameDps);
+      }
+    }
+
+    // Item Proc: Titan Eye / Golem Core (Boss Item: periodic kinetic beam stunning enemies)
+    const golemStacks = this.player.getItemStacks('golem_core');
+    if (golemStacks > 0 && this.player.isAlive && !this.player.isDowned) {
+      this.player.golemCoreTimer -= dt;
+      if (this.player.golemCoreTimer <= 0) {
+        this.player.golemCoreTimer = 6.0;
+        let closestTarget: Enemy | null = null;
+        let minDistSq = 25 * 25;
+        for (const enemy of this.enemyManager.enemies) {
+          if (enemy.isAlive) {
+            const dSq = enemy.position.distanceToSquared(this.player.position);
+            if (dSq <= minDistSq) {
+              minDistSq = dSq;
+              closestTarget = enemy;
+            }
+          }
+        }
+
+        if (closestTarget) {
+          const baseDmg = 30 * this.player.getDamageMultiplier();
+          const beamDmg = Math.round(baseDmg * (4.0 + (golemStacks - 1) * 2.0));
+          const shootPos = this.player.position.clone().add(new Vector3(0, 0.5, 0));
+          const dir = new Vector3().subVectors(closestTarget.position, this.player.position);
+          dir.y = 0;
+          if (dir.lengthSq() < 0.001) dir.set(0, 0, 1);
+          dir.normalize();
+
+          const beamProj = new Projectile({
+            position: shootPos,
+            direction: dir,
+            speed: 36.0,
+            damage: beamDmg,
+            pierce: 999,
+            lifetime: 0.75,
+            radius: 1.6,
+            color: 0xf59e0b,
+            isMagic: true,
+            isKineticBeam: true
+          });
+          this.spawnProjectile(beamProj);
+          SoundManager.playShoot();
+        }
+      }
+    }
   }
 
   public clear(): void {
@@ -623,6 +787,12 @@ export class CombatDirector {
       sw.material.dispose();
     }
     this.chronosShockwaves = [];
+    for (const ftp of this.flameTrailPatches) {
+      this.engine.scene.remove(ftp.mesh);
+      ftp.geometry.dispose();
+      ftp.material.dispose();
+    }
+    this.flameTrailPatches = [];
     this.pendingClientHits = [];
     this.pendingSpellControls = [];
     this.pendingLocalShots = [];

@@ -698,9 +698,16 @@ class Game {
       this.enemyManager.update(
         dt,
         this.player.position,
-        (damage: number, isImmortalHit?: boolean) => {
+        (damage: number, isImmortalHit?: boolean, attacker?: Enemy) => {
           const isVictoryDeath = Boolean(isImmortalHit);
           const died = this.player.takeDamage(damage, isVictoryDeath);
+          if (attacker?.eliteAffix === 'blazing') {
+            this.player.applyBurn(3.0);
+          } else if (attacker?.eliteAffix === 'overloading') {
+            this.player.applyShock(5.0);
+          } else if (attacker?.eliteAffix === 'glacial') {
+            this.player.applySlow(0.65, 3.0);
+          }
           if (died) {
             this.sessionDirector.triggerGameOver(isVictoryDeath);
           }
@@ -743,6 +750,13 @@ class Game {
               this.lastClientLocalHitTime = now;
               const isVictoryDeath = Boolean(enemy.isImmortal);
               const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
+              if (enemy.eliteAffix === 'blazing') {
+                this.player.applyBurn(3.0);
+              } else if (enemy.eliteAffix === 'overloading') {
+                this.player.applyShock(5.0);
+              } else if (enemy.eliteAffix === 'glacial') {
+                this.player.applySlow(0.65, 3.0);
+              }
               SoundManager.playPlayerHurt();
               if (died) {
                 this.sessionDirector.triggerGameOver(isVictoryDeath);

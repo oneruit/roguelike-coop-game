@@ -324,6 +324,6 @@ test('End-game weapon damage statistics', async (t) => {
     );
 
     const html = arsenalEl.innerHTML;
-    assert.ok(html.includes('Грейд II'), 'Awakened weapon must display awakened grade tag');
+    assert.ok(html.includes('Тир 2'), 'Awakened weapon must display awakened tier tag');
   });
 });
