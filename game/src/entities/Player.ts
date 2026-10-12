@@ -74,6 +74,7 @@ export class Player {
   public charType: CharacterType = 'ronin';
   public hp: number = 115;
   public maxHp: number = 115;
+  public baseMaxHp: number = 115;
   public speed: number = 8.6;
   public baseSpeed: number = 8.6;
   public xp: number = 0;
@@ -390,6 +391,7 @@ export class Player {
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.maxHp = heroCfg.maxHp;
+    this.baseMaxHp = heroCfg.maxHp;
     this.hp = heroCfg.maxHp;
     this.baseSpeed = heroCfg.baseSpeed;
 
@@ -537,8 +539,12 @@ export class Player {
     const hollowStacks = this.getItemStacks('heavy_hollowpoint');
     this.critDamage = Math.min(10.0, 0.50 + hollowStacks * 0.20 + voidCatalystStacks * 0.40);
 
-    // Leather Vest % damage reduction: 1% per stack, cap at 70%
-    this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.01);
+    // Leather Vest % damage reduction: 2% at level 1, diminishing returns up to 70% at level 300, capped at 70%
+    if (this.vestCount <= 0) {
+      this.passiveDamageReduction = 0;
+    } else {
+      this.passiveDamageReduction = Math.min(0.70, 0.02 * Math.pow(this.vestCount, Math.log(35) / Math.log(300)));
+    }
 
     // Attack Cooldown Multiplier:
     // Pocket watch: -1% cooldown per stack, capped at 25% reduction (floor 0.75)
@@ -650,7 +656,7 @@ export class Player {
       return this.watchCount >= 25 || (1 - this.passiveCooldownMultiplier) >= 0.25;
     }
     if (itemId === 'stat_vest') {
-      return this.passiveDamageReduction >= 0.70 || this.vestCount >= 70;
+      return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
     }
     if (itemId === 'stat_spurs') {
       return this.passiveSpeedMultiplier >= 2.5;
@@ -680,7 +686,7 @@ export class Player {
         return `🧿 +1 HP/с Реген (+${this.passiveHpRegen.toFixed(1)}/с)`;
       case 'stat_vest':
         this.addDamageReduction(0.10);
-        return `🦺 -1% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
+        return `🦺 -${(this.passiveDamageReduction * 100).toFixed(1)}% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
       case 'stat_watch':
         this.addCooldownReduction(0.01);
         const cdrPct = Math.round(Math.min(0.25, this.watchCount * 0.01) * 100);

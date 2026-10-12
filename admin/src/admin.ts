@@ -9,6 +9,8 @@ import { renderWeapons } from './views/weaponsView';
 import { renderHeroes } from './views/heroesView';
 import { renderMonsters } from './views/monstersView';
 import { renderBosses } from './views/bossesView';
+import { renderPassives } from './views/passivesView';
+import { renderItems } from './views/itemsView';
 import { renderGlobal } from './views/globalView';
 import { DEFAULT_BALANCE } from '../../game/src/balance/defaultBalance';
 
@@ -79,6 +81,8 @@ export class AdminController {
         else if (table === 'heroes') this.renderHeroes();
         else if (table === 'monsters') this.renderMonsters();
         else if (table === 'bosses') this.renderBosses();
+        else if (table === 'passives') this.renderPassives();
+        else if (table === 'items') this.renderItems();
       });
     });
 
@@ -212,6 +216,24 @@ export class AdminController {
       }
     });
 
+    document.getElementById('btn-reset-passives-all')?.addEventListener('click', () => {
+      if (confirm('Сбросить все пассивки к defaults?')) {
+        this.state.draftBalance.passives = JSON.parse(JSON.stringify(DEFAULT_BALANCE.passives));
+        this.state.checkAllCategoryChanges('passives');
+        this.renderPassives();
+        updateOverviewStats(this.state);
+      }
+    });
+
+    document.getElementById('btn-reset-items-all')?.addEventListener('click', () => {
+      if (confirm('Сбросить все предметы к defaults?')) {
+        this.state.draftBalance.items = JSON.parse(JSON.stringify(DEFAULT_BALANCE.items));
+        this.state.checkAllCategoryChanges('items');
+        this.renderItems();
+        updateOverviewStats(this.state);
+      }
+    });
+
     document.getElementById('btn-reset-global-all')?.addEventListener('click', () => {
       if (confirm('Сбросить глобальные настройки к defaults?')) {
         this.state.draftBalance.global = JSON.parse(JSON.stringify(DEFAULT_BALANCE.global));
@@ -272,6 +294,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     else if (target === 'heroes') this.renderHeroes();
     else if (target === 'monsters') this.renderMonsters();
     else if (target === 'bosses') this.renderBosses();
+    else if (target === 'passives') this.renderPassives();
+    else if (target === 'items') this.renderItems();
     else if (target === 'global') this.renderGlobal();
   }
 
@@ -280,6 +304,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     else if (this.state.activeTab === 'heroes') this.renderHeroes();
     else if (this.state.activeTab === 'monsters') this.renderMonsters();
     else if (this.state.activeTab === 'bosses') this.renderBosses();
+    else if (this.state.activeTab === 'passives') this.renderPassives();
+    else if (this.state.activeTab === 'items') this.renderItems();
     else if (this.state.activeTab === 'dashboard') {
       // If user is searching on dashboard, jump to weapons to show results
       if (this.state.searchFilter) {
@@ -310,6 +336,12 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     } else if (tab === 'bosses') {
       Object.keys(this.state.draftBalance.bosses).forEach((k) => this.state.expandedRows.add(`bosses-${k}`));
       this.renderBosses();
+    } else if (tab === 'passives') {
+      Object.keys(this.state.draftBalance.passives || {}).forEach((k) => this.state.expandedRows.add(`passives-${k}`));
+      this.renderPassives();
+    } else if (tab === 'items') {
+      Object.keys(this.state.draftBalance.items || {}).forEach((k) => this.state.expandedRows.add(`items-${k}`));
+      this.renderItems();
     }
   }
 
@@ -327,6 +359,12 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     } else if (tab === 'bosses') {
       Object.keys(this.state.draftBalance.bosses).forEach((k) => this.state.expandedRows.delete(`bosses-${k}`));
       this.renderBosses();
+    } else if (tab === 'passives') {
+      Object.keys(this.state.draftBalance.passives || {}).forEach((k) => this.state.expandedRows.delete(`passives-${k}`));
+      this.renderPassives();
+    } else if (tab === 'items') {
+      Object.keys(this.state.draftBalance.items || {}).forEach((k) => this.state.expandedRows.delete(`items-${k}`));
+      this.renderItems();
     }
   }
 
@@ -454,6 +492,32 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     );
   }
 
+  public renderPassives(): void {
+    renderPassives(
+      this.state,
+      (cat, id) => {
+        this.state.resetSingleItem(cat, id);
+        this.renderPassives();
+        updateOverviewStats(this.state);
+      },
+      (path, val) => this.handleFieldChange(path, val),
+      () => this.clearSearch()
+    );
+  }
+
+  public renderItems(): void {
+    renderItems(
+      this.state,
+      (cat, id) => {
+        this.state.resetSingleItem(cat, id);
+        this.renderItems();
+        updateOverviewStats(this.state);
+      },
+      (path, val) => this.handleFieldChange(path, val),
+      () => this.clearSearch()
+    );
+  }
+
   public renderGlobal(): void {
     renderGlobal(this.state, (path, val) => this.handleFieldChange(path, val));
   }
@@ -464,6 +528,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.renderHeroes();
     this.renderMonsters();
     this.renderBosses();
+    this.renderPassives();
+    this.renderItems();
     this.renderGlobal();
     this.progression.render();
     this.simulation.render();

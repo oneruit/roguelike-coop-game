@@ -72,7 +72,7 @@
   }
 
   .hud-bottom-xp {
-    bottom: 6px !important;
+    bottom: 30px !important;
     width: calc(100vw - 160px) !important;
     left: calc(50% - 60px) !important;
   }

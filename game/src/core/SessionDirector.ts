@@ -388,6 +388,7 @@ export class SessionDirector {
     ProgressionManager.getInstance().isTrainingMode = false;
     this.hud.setTrainingModeActive(false);
     this.gameState = GameState.MAIN_MENU;
+    this.hud?.setInGameHUDVisible?.(false);
     this.updateUI.onRunEnded();
     this.hud.showMainMenu();
   }
@@ -514,6 +515,7 @@ export class SessionDirector {
       this.merchantManager.reset();
       this.gameTime = 0;
       this.gameState = GameState.PLAYING;
+      this.hud?.setInGameHUDVisible?.(true);
       this.updateUI.setCombatActive(true);
       this.lastTime = performance.now();
     } catch (err) {
