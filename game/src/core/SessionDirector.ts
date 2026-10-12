@@ -31,6 +31,7 @@ import type { RiftItemDef } from '../items/RiftItemSystem';
 import { getPassiveBuffId } from '../drops/PassiveBuffs';
 import { MerchantManager } from '../world/MerchantManager';
 import { FireRingWeapon } from '../combat/weapons/MagicWeapons';
+import { SulfurSmokeManager } from '../vfx/SulfurSmokeVfx';
 
 export enum GameState {
   MAIN_MENU,
@@ -560,18 +561,7 @@ export class SessionDirector {
     const teleInteraction = this.riftTeleporter.getInteraction(this.player.position);
     if (teleInteraction.canInteract && teleInteraction.action) {
       if (teleInteraction.action === 'activate') {
-        const activated = this.riftTeleporter.activate();
-        if (activated) {
-          SoundManager.playTeleporterActivate();
-          this.enemyManager.spawnTeleporterBoss(this.player.position, this.biomeManager.stageNumber);
-          this.hud.triggerBossWarning('ХРАНИТЕЛЬ РАЗЛОМА', this.biomeManager.stageNumber);
-          if (this.net.role === 'host') {
-            this.netCoordinator.pendingNetworkEvents.push({
-              type: 'teleporter_activated' as any,
-              stage: this.biomeManager.stageNumber
-            } as any);
-          }
-        }
+        this.activateRift();
         return;
       }
 
@@ -673,132 +663,215 @@ export class SessionDirector {
     }
   }
 
+  /**
+   * Activates the dimensional rift: summons the stage boss directly from the rift
+   * and opens the portal into its luminous radiant state.
+   */
+  public activateRift(): boolean {
+    if (this.riftTeleporter.state !== 'IDLE') return false;
+    const activated = this.riftTeleporter.activate();
+    if (activated) {
+      SoundManager.playTeleporterActivate();
+      // Boss emerges directly from the dimensional rift!
+      this.enemyManager.spawnTeleporterBoss(this.riftTeleporter.position, this.biomeManager.stageNumber);
+      this.hud.triggerBossWarning('ХРАНИТЕЛЬ РАЗЛОМА', this.biomeManager.stageNumber);
+      if (this.net.role === 'host') {
+        this.netCoordinator.pendingNetworkEvents.push({
+          type: 'teleporter_activated' as any,
+          stage: this.biomeManager.stageNumber
+        } as any);
+      }
+      return true;
+    }
+    return false;
+  }
+
   public warpToNextStage(): void {
+    if (this.isWarping) return;
     this.isWarping = true;
     this.merchantManager.reset();
 
-    // Collect all remaining experience and passives from gems on the map before warp
-    const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
-      ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
-      if (gem.type === 'gold') {
-        const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
-        const toast = this.player.applyPassiveBuff(buffId);
-        this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
-        this.hud.updatePassivesBar(this.player);
+    // 1. Sulfur Smoke Disappearance Animation at current player position
+    const originPos = this.player.position.clone();
+    SulfurSmokeManager.spawn(this.engine.scene, originPos, {
+      onVanish: () => {
+        this.player.mesh.visible = false;
       }
     });
-    if (sweptXp > 0) {
-      this.player.gainXp(sweptXp);
-    }
 
-    const nextBiome = this.biomeManager.advanceStage();
-    this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
-    this.enemyManager.currentStage = this.biomeManager.stageNumber;
-    this.enemyManager.resetStageTime();
-    this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
-
-    // Derive deterministic stage seed
-    const numBase = typeof this.currentSeed === 'number'
-      ? this.currentSeed
-      : SeededRNG.hashString(this.currentSeed.toString());
-    const stageSeed = numBase + this.biomeManager.stageNumber * 10007;
-
-    // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
-    AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${nextBiome.name.toUpperCase()}`);
-    this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber, nextBiome.id);
-    this.mapManager.setSeed(stageSeed);
-    this.mapManager.clear();
-
-    // Reposition host player to start on ground elevation
-    const spawnY = this.engine.chunkManager.getElevation(0, 0);
-    this.player.position.set(0, spawnY, 0);
-    this.player.mesh.position.set(0, spawnY, 0);
-
-    // Revive all downed squad members & reset Chronos Phylactery once-per-stage lethal protection
-    this.player.hasChronosReady = true;
-    if (this.player.isDowned) {
-      this.player.revive(0.5);
-    }
     for (const remote of this.remotePlayers.values()) {
-      if (remote.isDowned) {
-        remote.isDowned = false;
-        remote.hp = Math.round(remote.maxHp * 0.5);
-        remote.redrawOverhead();
-      }
-    }
-
-    SoundManager.playTeleporterComplete();
-    this.hud.triggerAltarNotification(`ЭТАП ${this.biomeManager.stageNumber}`, nextBiome.name, '🌀', '#38bdf8');
-
-    if (this.net.role === 'host') {
-      this.netCoordinator.pendingNetworkEvents.push({
-        type: 'stage_warp',
-        stage: this.biomeManager.stageNumber,
-        biomeName: nextBiome.name
+      SulfurSmokeManager.spawn(this.engine.scene, remote.position.clone(), {
+        onVanish: () => {
+          remote.mesh.visible = false;
+        }
       });
     }
 
+    // Delay stage transition slightly so brimstone smoke eruption & vanish is fully seen
     setTimeout(() => {
-      this.isWarping = false;
-      if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
-        this.triggerLevelUp();
+      // Collect all remaining experience and passives from gems on the map before warp
+      const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
+        ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
+        if (gem.type === 'gold') {
+          const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
+          const toast = this.player.applyPassiveBuff(buffId);
+          this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
+          this.hud.updatePassivesBar(this.player);
+        }
+      });
+      if (sweptXp > 0) {
+        this.player.gainXp(sweptXp);
       }
-    }, 600);
+
+      const nextBiome = this.biomeManager.advanceStage();
+      this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
+      this.enemyManager.currentStage = this.biomeManager.stageNumber;
+      this.enemyManager.resetStageTime();
+      this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
+
+      // Derive deterministic stage seed
+      const numBase = typeof this.currentSeed === 'number'
+        ? this.currentSeed
+        : SeededRNG.hashString(this.currentSeed.toString());
+      const stageSeed = numBase + this.biomeManager.stageNumber * 10007;
+
+      // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
+      AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${nextBiome.name.toUpperCase()}`);
+      this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber, nextBiome.id);
+      this.mapManager.setSeed(stageSeed);
+      this.mapManager.clear();
+
+      // Reposition host player to start on ground elevation
+      const spawnY = this.engine.chunkManager.getElevation(0, 0);
+      const spawnPos = new Vector3(0, spawnY, 0);
+      this.player.position.copy(spawnPos);
+      this.player.mesh.position.copy(spawnPos);
+
+      // Revive all downed squad members & reset Chronos Phylactery once-per-stage lethal protection
+      this.player.hasChronosReady = true;
+      if (this.player.isDowned) {
+        this.player.revive(0.5);
+      }
+      for (const remote of this.remotePlayers.values()) {
+        if (remote.isDowned) {
+          remote.isDowned = false;
+          remote.hp = Math.round(remote.maxHp * 0.5);
+          remote.redrawOverhead();
+        }
+      }
+
+      SoundManager.playTeleporterComplete();
+      this.hud.triggerAltarNotification(`ЭТАП ${this.biomeManager.stageNumber}`, nextBiome.name, '🌀', '#38bdf8');
+
+      if (this.net.role === 'host') {
+        this.netCoordinator.pendingNetworkEvents.push({
+          type: 'stage_warp',
+          stage: this.biomeManager.stageNumber,
+          biomeName: nextBiome.name
+        });
+      }
+
+      // 2. Sulfur Smoke Reappearance Animation at arrival position
+      SulfurSmokeManager.spawn(this.engine.scene, spawnPos, {
+        onVanish: () => {
+          this.player.mesh.visible = true;
+        }
+      });
+
+      for (const remote of this.remotePlayers.values()) {
+        SulfurSmokeManager.spawn(this.engine.scene, remote.position.clone(), {
+          onVanish: () => {
+            remote.mesh.visible = true;
+          }
+        });
+      }
+
+      setTimeout(() => {
+        this.player.mesh.visible = true;
+        for (const remote of this.remotePlayers.values()) {
+          remote.mesh.visible = true;
+        }
+        this.isWarping = false;
+        if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+          this.triggerLevelUp();
+        }
+      }, 500);
+    }, 280);
   }
 
   public applyStageTransition(stageNumber: number, biomeName?: string): void {
+    if (this.isWarping) return;
     this.isWarping = true;
     this.merchantManager.reset();
 
-    // Collect all remaining experience and passives from gems on the map before warp
-    const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
-      ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
-      if (gem.type === 'gold') {
-        const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
-        const toast = this.player.applyPassiveBuff(buffId);
-        this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
-        this.hud.updatePassivesBar(this.player);
+    // 1. Sulfur Smoke Disappearance Animation at client player position
+    const originPos = this.player.position.clone();
+    SulfurSmokeManager.spawn(this.engine.scene, originPos, {
+      onVanish: () => {
+        this.player.mesh.visible = false;
       }
     });
-    if (sweptXp > 0) {
-      this.player.gainXp(sweptXp);
-    }
-
-    const nextBiome = this.biomeManager.setStage(stageNumber);
-    this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
-    this.enemyManager.currentStage = stageNumber;
-    this.enemyManager.resetStageTime();
-    this.hud.updateStageText(stageNumber, biomeName || nextBiome.name);
-
-    const numBase = typeof this.currentSeed === 'number'
-      ? this.currentSeed
-      : SeededRNG.hashString(this.currentSeed.toString());
-    const stageSeed = numBase + stageNumber * 10007;
-    AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${(biomeName || nextBiome.name).toUpperCase()}`);
-    this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber, nextBiome.id);
-    this.mapManager.setSeed(stageSeed);
-    this.mapManager.clear();
-
-    // Reposition client player to start on ground elevation
-    const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
-    const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
-    this.player.position.set(myOffset[0], spawnY, myOffset[1]);
-    this.player.mesh.position.set(myOffset[0], spawnY, myOffset[1]);
-
-    this.player.hasChronosReady = true;
-    if (this.player.isDowned) {
-      this.player.revive(0.5);
-    }
-
-    SoundManager.playTeleporterComplete();
-    this.hud.triggerAltarNotification(`ЭТАП ${stageNumber}`, biomeName || nextBiome.name, '🌀', '#38bdf8');
 
     setTimeout(() => {
-      this.isWarping = false;
-      if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
-        this.triggerLevelUp();
+      // Collect all remaining experience and passives from gems on the map before warp
+      const sweptXp = this.dropManager.collectAllRemainingGems((xp, gem) => {
+        ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
+        if (gem.type === 'gold') {
+          const buffId = gem.passiveBuffId || getPassiveBuffId(gem.id);
+          const toast = this.player.applyPassiveBuff(buffId);
+          this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
+          this.hud.updatePassivesBar(this.player);
+        }
+      });
+      if (sweptXp > 0) {
+        this.player.gainXp(sweptXp);
       }
-    }, 600);
+
+      const nextBiome = this.biomeManager.setStage(stageNumber);
+      this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
+      this.enemyManager.currentStage = stageNumber;
+      this.enemyManager.resetStageTime();
+      this.hud.updateStageText(stageNumber, biomeName || nextBiome.name);
+
+      const numBase = typeof this.currentSeed === 'number'
+        ? this.currentSeed
+        : SeededRNG.hashString(this.currentSeed.toString());
+      const stageSeed = numBase + stageNumber * 10007;
+      AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${(biomeName || nextBiome.name).toUpperCase()}`);
+      this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber, nextBiome.id);
+      this.mapManager.setSeed(stageSeed);
+      this.mapManager.clear();
+
+      // Reposition client player to start on ground elevation
+      const myOffset = SPAWN_OFFSETS[this.net.mySlotId] || [2.5, 0.5];
+      const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
+      const spawnPos = new Vector3(myOffset[0], spawnY, myOffset[1]);
+      this.player.position.copy(spawnPos);
+      this.player.mesh.position.copy(spawnPos);
+
+      this.player.hasChronosReady = true;
+      if (this.player.isDowned) {
+        this.player.revive(0.5);
+      }
+
+      SoundManager.playTeleporterComplete();
+      this.hud.triggerAltarNotification(`ЭТАП ${stageNumber}`, biomeName || nextBiome.name, '🌀', '#38bdf8');
+
+      // 2. Sulfur Smoke Reappearance Animation at client arrival position
+      SulfurSmokeManager.spawn(this.engine.scene, spawnPos, {
+        onVanish: () => {
+          this.player.mesh.visible = true;
+        }
+      });
+
+      setTimeout(() => {
+        this.player.mesh.visible = true;
+        this.isWarping = false;
+        if (this.pendingLevelUps > 0 && !this.isLevelUpActive) {
+          this.triggerLevelUp();
+        }
+      }, 500);
+    }, 280);
   }
 
   public triggerGameOver(isVictory: boolean = false): void {

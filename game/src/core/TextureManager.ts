@@ -204,6 +204,9 @@ export class TextureManager {
     '/textures/vfx/vfx_ice_spike.png',
     '/textures/vfx/vfx_fireball.png',
     '/textures/vfx/vfx_scythe.png',
+    '/textures/vfx/vfx_rift_closed.png',
+    '/textures/vfx/vfx_rift_open.png',
+    '/textures/vfx/vfx_sulfur_smoke.png',
 
     // Heroes - 6 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
     '/textures/heroes/hero_ronin_front.png',
@@ -677,6 +680,27 @@ export class TextureManager {
 
   public static getFireRingTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx/vfx_fire_ring.png', renderer);
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getRiftClosedTexture(renderer?: WebGLRenderer): Texture {
+    const tex = this.load('/textures/vfx/vfx_rift_closed.png', renderer);
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getRiftOpenTexture(renderer?: WebGLRenderer): Texture {
+    const tex = this.load('/textures/vfx/vfx_rift_open.png', renderer);
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getSulfurSmokeTexture(renderer?: WebGLRenderer): Texture {
+    const tex = this.load('/textures/vfx/vfx_sulfur_smoke.png', renderer);
     tex.magFilter = LinearFilter;
     tex.minFilter = LinearMipmapLinearFilter;
     return tex;
