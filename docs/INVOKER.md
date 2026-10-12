@@ -1,70 +1,66 @@
 # Invoker
 
-Новый бесплатный герой: 100 HP, скорость 8.5, множитель урона 1.2.
-Стартовое оружие **Invoke** занимает один слот и при наличии живой цели в радиусе
-22 выбирает ровно одно из десяти заклинаний с одинаковой вероятностью.
-Начальная перезарядка — 1.4 секунды. Каст направлен к цели; при движении герой
-сохраняет направление лица на время анимации заклинания.
+Playable hero: 100 HP, 8.5 speed, 1.2 damage multiplier.
+Starting weapon **Invoke** occupies one weapon slot and, when a living enemy is within range
+22, casts exactly one of ten spells with equal probability.
+Initial cooldown is 1.4 seconds. Casts are directed toward the target; while moving, the hero
+maintains face direction for the duration of the spell cast animation.
 
-Все десять заклинаний доступны отдельными оружиями только после получения
-Invoke. Без Invoke они не появляются в выборе улучшений и не могут кастоваться.
-Другой герой сначала может взять Invoke, затем его заклинания. Действует
-существующий лимит пяти оружий. Урон, перезарядка, радиус и дальность
-настраиваются в админке.
+All ten spells become available as standalone weapons only after acquiring Invoke.
+Without Invoke, they do not appear in level-up card selections and cannot be cast.
+Another hero can first pick up Invoke, followed by its spells. The standard 5-weapon
+limit applies. Damage, cooldown, radius, and range are configurable in the admin panel.
 
-Для героя Инвокера новые заклинания имеют приоритет в карточках повышения уровня:
-обычно предлагаются два новых заклинания и одно улучшение уже взятого оружия.
-Если улучшений нет, предлагаются три новых заклинания. Когда новых заклинаний
-мало или все пять слотов заняты, оставшиеся карточки выбираются из обычного пула.
-Для других героев, даже с Invoke, порядок выбора остаётся обычным.
+For the Invoker hero, new spells receive priority in level-up selection cards:
+typically offering two new spells and one upgrade for an already equipped weapon.
+If no upgrades are available, three new spells are offered. When few unobtained spells
+remain or all 5 weapon slots are filled, remaining cards are drawn from the general pool.
+For other heroes, even with Invoke, standard card selection rules apply.
 
-Каждый уровень Invoke теперь даёт +25% **базового** урона заклинаний (раньше
-+16.7%) и −4% перезарядки (раньше −2.5%). Sun Strike до бонусов героя:
-90 → 112.5 → 135. Это усиление действует на случайные касты и отдельно взятые
-заклинания. Собственная прокачка отдельного оружия добавляется к усилению Invoke.
-Радиус растёт на 3.5% базового значения за уровень; время контроля — на 2.5%,
-замедления становятся сильнее. Ледяная стена, духи, метеор и Alacrity действуют
-на 2.5% дольше за уровень. Сила бонусов Ghost Walk и Alacrity растёт на
-2.5 процентного пункта за уровень. Эффекты ограничены масштабированием уровня 20;
-длительность защиты Ghost Walk остаётся 3 секунды.
+Each level of Invoke provides +25% **base** spell damage (previously +16.7%) and −4%
+cooldown (previously −2.5%). Sun Strike before hero modifiers: 90 → 112.5 → 135.
+This buff applies to both random Invoke casts and standalone spells. Individual weapon
+leveling stacks on top of the Invoke bonus. Radius increases by 3.5% base value per level;
+crowd control duration by 2.5%, and slows become stronger. Ice Wall, Forge Spirits,
+Chaos Meteor, and Alacrity last 2.5% longer per level. Bonus strength for Ghost Walk
+and Alacrity increases by 2.5 percentage points per level. Scaling is capped at level 20;
+Ghost Walk damage protection duration remains fixed at 3 seconds.
 
-| Заклинание | Поведение в этой игре |
+| Spell | In-Game Behavior |
 |---|---|
-| Cold Snap | Четыре импульса урона с коротким оглушением и замедлением |
-| Ghost Walk | Защита от обычных атак, ускорение и замедляющая аура |
-| Ice Wall | Ледяная стена поперёк направления к цели, урон и сильное замедление |
-| EMP | Заряд с видимым предупреждением, затем урон по площади и замедление |
-| Tornado | Летящий вихрь, урон и оглушение каждого задетого врага |
-| Alacrity | Временное усиление урона и скорости атак |
-| Sun Strike | Метка на земле и удар лучом после задержки |
-| Forge Spirit | Два огненных духа вокруг героя, атакующие ближайших врагов |
-| Chaos Meteor | Падение и прокатывание метеора с периодическим уроном |
-| Deafening Blast | Волна урона, отталкивание и запрет атак на короткое время |
+| Cold Snap | Four damage pulses with brief stun and slow |
+| Ghost Walk | Protection from standard damage, speed boost, and slowing aura |
+| Ice Wall | Ice wall perpendicular to target direction, damage and heavy slow |
+| EMP | Charge with visible telegraph warning, followed by AOE damage and slow |
+| Tornado | Flying cyclone, damage and stun to all enemies hit along trajectory |
+| Alacrity | Temporary attack damage and attack speed buff |
+| Sun Strike | Ground target decal and ray strike after delay |
+| Forge Spirit | Two fire spirits orbiting the hero, attacking nearby enemies |
+| Chaos Meteor | Falling and rolling meteor dealing damage over time |
+| Deafening Blast | Shockwave dealing damage, knockback, and disarming attacks briefly |
 
-Это адаптация для существующих правил игры: маны у врагов нет, поэтому EMP
-наносит урон и замедляет; Ghost Walk защищает от обычного урона, но не отключает
-поиск цели врагами; Tornado оглушает без вертикального подъёма модели.
-Боссы сопротивляются контролю, бессмертный босс к нему невосприимчив.
-Отдельное оружие Ghost Walk всегда оставляет минимум 1.5 секунды между окончанием
-защиты и следующим кастом, даже при максимальной прокачке. Защита не отменяет
-атаки бессмертного босса и принудительный урон финальной стадии.
+This is adapted for existing game rules: enemies lack mana pools, so EMP deals damage
+and applies a slow; Ghost Walk protects against standard damage without disabling enemy
+pathfinding; Tornado stuns without vertical mesh lifting. Bosses resist crowd control,
+and the immortal reaper boss is completely immune. Standalone Ghost Walk weapon always
+enforces a minimum 1.5-second cooldown gap between the end of protection and the next cast,
+even at maximum level. Protection does not prevent attacks from the immortal boss or
+forced final stage damage.
 
-## Анимации и происхождение ресурсов
+## Animations and Asset Provenance
 
-Применён [.agents character-animation-pipeline](../.agents/skills/character-animation-pipeline/SKILL.md).
-Создан новый прозрачный композит встроенным imagegen; точный запрос сохранён
-в [art/invoker-prompt.txt](art/invoker-prompt.txt), исходник —
+Applied [.agents character-animation-pipeline](../.agents/skills/character-animation-pipeline-updated/SKILL.md).
+Created transparent composite using builtin imagegen; exact prompt stored in
+[art/invoker-prompt.txt](art/invoker-prompt.txt), source in
 [art/invoker-composite.png](art/invoker-composite.png).
 
-В `public/textures/heroes/` находятся четыре листа с клетками 96×96:
-IDLE 960×384, WALK 576×384, ATTACK 768×384, WALK_ATTACK 576×384,
-а также портрет 64×64. Строки: анфас, влево, вправо, со спины.
-Всего 120 клеток; ноги около Y=74, соседние кадры не пересекаются.
+Under `public/textures/heroes/`, four sheets with 96×96 cells are located:
+IDLE 960×384, WALK 576×384, ATTACK 768×384, WALK_ATTACK 576×384, plus portrait 64×64.
+Rows: front, left, right, back. Total 120 cells; feet around Y=74, no adjacent frame bleed.
 
-Генератор выдал 11 кадров IDLE и 7 кадров ATTACK: лишний кадр покоя обрезан,
-последний кадр восстановления атаки повторён. Из-за свечения сфер для выделения
-кадров используется порог альфа 64; оригинальная прозрачность сохраняется.
-Экстрактор ограничивает запись границами каждой клетки.
+The generator produced 11 IDLE frames and 7 ATTACK frames: surplus idle frame cropped,
+last attack recovery frame repeated. Due to orb glow, alpha threshold 64 is used for frame
+isolation while preserving original transparency. The extractor clips output to cell boundaries.
 
 ```sh
 python .agents/skills/character-animation-pipeline/scripts/extract_character.py \
@@ -72,21 +68,21 @@ python .agents/skills/character-animation-pipeline/scripts/extract_character.py 
   --out-dir .invoker-extracted --cell-size 128 --feet-y 98 --segmentation-alpha 64
 ```
 
-После извлечения листы уменьшаются до клеток 96×96 через NEAREST, портрет
-создаётся из первой клетки IDLE через LANCZOS. Промежуточные файлы не входят в Git.
+After extraction, sheets are downscaled to 96×96 cells via NEAREST interpolation, portrait
+created from the first IDLE cell via LANCZOS. Intermediate files are excluded from Git.
 
-Список заклинаний проверен по [официальным данным Valve](https://www.dota2.com/datafeed/herodata?language=english&hero_id=74).
-Иконки заклинаний взяты с официального CDN Valve:
+Spell roster verified against [official Valve game data](https://www.dota2.com/datafeed/herodata?language=english&hero_id=74).
+Spell icons sourced from Valve's official CDN:
 `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/invoker_<spell>.png`.
-Invoker и исходные иконки принадлежат Valve; спрайты созданы для этой реализации.
+Invoker and source icons copyright Valve; sprites crafted for this implementation.
 
-## Исполнение и проверки
+## Execution and Verification
 
-Один общий `InvokerSpellRuntime` используется браузерной игрой и выделенной
-симуляцией; сервер выбирает заклинания воспроизводимо по seed.
-В кооперативе касты передаются существующими событиями снимка, контроль
-применяет хост. Повтор эффекта у другого игрока исключительно визуальный и
-не наносит повторного урона. Пулы VFX ограничены восемью эффектами каждого вида.
+A shared `InvokerSpellRuntime` is used across browser client and headless simulation;
+the server selects spells deterministically using seed PRNG. In multiplayer co-op, casts
+are broadcast through existing snapshot events, and crowd control is resolved authoritatively
+by the host. Client replays are purely cosmetic and do not duplicate damage.
+VFX pools are capped at eight instances per effect type.
 
 ```sh
 npm run test:invoker
@@ -96,8 +92,7 @@ npm run build
 npm run build:admin
 ```
 
-Автоматические проверки покрывают все десять заклинаний, задержки урона,
-случайный выбор одного каста, контроль, защиту, бинарные сетевые события,
-детерминированную симуляцию и границы текстур.
-В браузере проверяются все четыре состояния в четырёх направлениях и каждый
-каст. Живая кооперативная сессия на двух компьютерах не проверялась.
+Automated tests cover all ten spells, damage delays, random single-cast selection,
+crowd control, protection buffers, binary network events, deterministic simulation,
+and texture boundary constraints. Browser verification checks all four states across four
+directions and each spell cast.

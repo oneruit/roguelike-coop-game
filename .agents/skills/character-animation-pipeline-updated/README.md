@@ -1,51 +1,57 @@
 # Character Animation Pipeline — updated (Chibi Dark Fantasy)
 
-Обновлённый skill для генерации пиксельных персонажей в стиле **Chibi Dark Fantasy** под 2.5D игру с камерой под наклоном около 30°.
+Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** style for a 2.5D game with an angled ~30° camera.
 
-## Режимы ввода (User Input Modes)
+## User Input Modes
 
-1. **Прямой готовый промт или изображение (Direct Mode)**:
-   - Если пользователь передаёт уже готовый текстовый промт или референс-изображение персонажа, генерация запускается напрямую без лишних опросников.
-   - Агент лишь следит за сохранением ключевых технических требований: чисто маджентовый фон `RGB: 255, 0, 255` (`#ff00ff`), пропорции chibi 2.5–3 головы, отсутствие теней под ногами и блок негативных ограничений.
-2. **Краткое описание персонажа (Auto-Enrichment via Defaults)**:
-   - Если пользователь даёт короткое или неполное описание (например, *"девушка-амазонка в красном бикини без оружия с магическими шарами"*), агент не мучает длинным опросником, а **автоматически дополняет** недостающие параметры значениями по умолчанию из мастер-шаблона (`prompts/00_CHARACTER_LOCK.md`).
+1. **Direct Mode (Ready prompt or reference image)**:
+   - When the user provides a complete prompt or reference image, generation runs directly without questionnaires.
+   - The agent strictly enforces key technical requirements: pure magenta background `RGB: 255, 0, 255` (`#ff00ff`), chibi proportions 2.5–3 heads tall, strict side profile in right/left rows, no cast shadows under feet, and the negative constraints block.
+2. **Auto-Enrichment via Defaults (Brief character description)**:
+   - When the user provides a brief or incomplete description (e.g. *"amazon girl in red bikini without weapon with magic spheres"*), the agent automatically fills in missing parameters using defaults from the master template (`prompts/00_CHARACTER_LOCK.md`).
 
-## Художественный стиль и анатомия (Chibi Proportions Contract)
+## Art Style and Anatomy (Chibi Proportions Contract)
 
-- **Пропорции Chibi (2.5–3 головы в высоту)**: крупная, выразительная голова (~30–35% от общей высоты), компактный плотный торс, крепкие конечности, массивные устойчивые сапоги и читаемое, стилизованное оружие для идеальной читаемости в пиксельной графике (128×128 ячейка, высота героя ~80–96 px).
-- **Строгий запрет на реалистичные пропорции**: никаких 7–8 голов в высоту.
-- **Взрослый суровый характер (Anti-Anime / Anti-Kawaii)**: персонажи выглядят как опытные ветераны, грозные воители или опасная нежить. Резкие скулы, волевой подбородок, боевой прищур, шрамы, бороды, щетина, сомкнутые губы.
-- **Обязательное негативное правило (Mandatory Negative Constraints)**:
+- **Chibi Proportions (2.5–3 heads tall)**: Large expressive head (~30–35% of total height), compact solid torso, sturdy limbs, heavy boots, and readable stylized weapons for pixel-art clarity (128×128 cell, character height ~80–96 px).
+- **Strict Prohibition on Realistic Proportions**: No 7–8 heads tall proportions.
+- **Gritty Mature Demeanor (Anti-Anime / Anti-Kawaii)**: Characters appear as hardened veterans, menacing warriors, or deadly undead. Sharp cheekbones, strong jawline, battle squint, scars, beards, stubble, firm mouth.
+- **Mandatory Negative Constraints**:
   > **`No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`**
-  > Категорически запрещены: аниме-глаза с бликами, кавайный румянец, детские миловидные лица, пастельные конфетные тона, размытые градиенты и фотореализм.
-- **Цветовая палитра и пиксель-арт**: глубокие, насыщенные тона темного фэнтези (сталь, кожа, алый, изумрудный, обсидиан, руны), четкие ступенчатые тени (stepped clusters), жесткие темные пиксельные контуры.
-- **Хромакей фон**: строго сплошной маджента `RGB(255, 0, 255)` (`#ff00ff`) для автоматического чистого кеинга.
-- **Чистота под ногами**: **никаких теней от персонажа, кругов на земле, платформ, линий пола и постаментов**.
-- **Закрытые глаза на 3 кадре**: на каждом 3-м кадре (колонка 3) во всех строках персонаж изображён с закрытыми глазами (момент концентрации / естественное моргание на пике дыхания или шага).
+  > Categorically prohibited: anime glossy eyes, kawaii blush, juvenile cute faces, candy pastel tones, blurry gradients, and photorealism.
+- **Color Palette and Pixel Art**: Deep saturated dark fantasy tones (steel, leather, crimson, emerald, obsidian, runes), stepped cluster shading, crisp dark pixel outlines.
+- **Magenta Chromakey Background & Global Removal**: Pure magenta `RGB(255, 0, 255)` (`#ff00ff`). Magenta is removed **both outside and inside the character** (between limbs, weapons, etc.), as magenta is never used on characters.
+- **Defringing & Magenta Aura Elimination (1px Black Outline)**: Boundary pixels touching transparent background are cleaned and receive a crisp 1px black outline `[0, 0, 0, 255]`. Interior sprite textures remain 100% untouched.
+- **Clean Ground Beneath Feet**: **No ground shadows, circular decals, platforms, floor lines, or pedestals**.
+- **Row Order and Strict Profile**:
+  - Row 0: `FRONT`
+  - Row 1: `BACK`
+  - Row 2 (3rd row): `RIGHT` (body strictly sideways, face strictly in side profile, no 3/4 turn)
+  - Row 3 (4th row): `LEFT` (body strictly sideways, face strictly in side profile, no 3/4 turn)
+- **Closed Eyes on Frame 3**: On every 3rd frame (Column 3) across all rows, the character is depicted with closed eyes (moment of focus / natural blink at the peak of breath or stride).
 
-## Что внутри
+## Included Files
 
-- `SKILL.md` — основной регламент работы, стандарты кадров, анатомические пропорции, негативные ограничения, Three.js интеграция и чеклист.
-- `prompts/00_CHARACTER_LOCK.md` — мастер-шаблон и база идентичности с системой дефолтных значений.
-- `prompts/01_TURNAROUND.md` — фиксация ракурсов (4-view или 5-in-1 reference sheet) в chibi-пропорциях до анимации.
-- `prompts/02_IDLE.md` — 6 кадров покоя (с закрытыми глазами на 3-м кадре).
-- `prompts/03_WALK.md` — 6 кадров цикла ходьбы (с закрытыми глазами на 3-м кадре).
-- `prompts/04_ATTACK.md` — 6 кадров одной физической атаки оружием без VFX (с закрытыми глазами на 3-м кадре).
-- `prompts/05_OPTIONAL_PORTRAIT.md` — опциональный аватар 128×128.
-- `references/CHANGELOG.md` — история изменений пайплайна.
-- `scripts/process_character_sheets.py` — обработка исходников: удаление фона маджента `RGB(255, 0, 255)`, выравнивание, привязка ног (`y=118`).
-- `scripts/validate_sheets.py` — проверка размеров готовых файлов.
-- `scripts/requirements.txt` — зависимости процессора (Pillow и NumPy).
-- `tests/test_process_character_sheets.py` — модульные тесты очистки маджента-фона и сборки спрайтов.
+- `SKILL.md` — guidelines, frame standards, anatomical proportions, negative constraints, Three.js integration, and checklist.
+- `prompts/00_CHARACTER_LOCK.md` — master template and identity baseline with strict profile rule.
+- `prompts/01_TURNAROUND.md` — turnaround sheet (4-view or 5-in-1 reference sheet) in chibi proportions before animation.
+- `prompts/02_IDLE.md` — 6 idle frames (row 2 right, row 3 left, closed eyes on frame 3).
+- `prompts/03_WALK.md` — 6 walk cycle frames (row 2 right, row 3 left, closed eyes on frame 3).
+- `prompts/04_ATTACK.md` — 6 single physical weapon attack frames without VFX (row 2 right, row 3 left, closed eyes on frame 3).
+- `prompts/05_OPTIONAL_PORTRAIT.md` — optional 128×128 avatar.
+- `references/CHANGELOG.md` — pipeline revision history.
+- `scripts/process_character_sheets.py` — raw asset processor: global magenta removal, defringing, 1px black contour, feet alignment (`y=118`), row 2 and 3 direction verification.
+- `scripts/validate_sheets.py` — dimension validation (768×512) and direction checking (row 2 right, row 3 left, side profile).
+- `scripts/requirements.txt` — processor dependencies (Pillow and NumPy).
+- `tests/test_process_character_sheets.py` — unit tests for global magenta removal, 1px contour, and direction validation.
 
-## Быстрый порядок работы
+## Quick Workflow
 
-1. При получении задачи:
-   - Если есть готовый промт / референс — используй напрямую.
-   - Если описание краткое — дополни через мастер-шаблон `00_CHARACTER_LOCK.md` дефолтными значениями.
-2. Сгенерируй и утверди референс / turnaround из четырёх ракурсов на маджента-фоне `rgb(255,0,255)`.
-3. Для каждого состояния собери промт из `00_CHARACTER_LOCK.md` и соответствующего файла `02/03/04`, с обязательными закрытыми глазами на 3-м кадре и негативным правилом.
-4. Сохрани три исходных спрайтшита (768×512 или 1536×1024) отдельно от игровых текстур.
-5. Обработай исходники через `scripts/process_character_sheets.py --bg-mode magenta`.
-6. Проверь размеры через `scripts/validate_sheets.py`.
-7. Проверь отображение в Three.js с соответствующим маппингом строк (`CharacterAnimator.ts`).
+1. On task receipt:
+   - If a complete prompt / reference is given — use directly.
+   - If description is brief — enrich with default values via master template `00_CHARACTER_LOCK.md`.
+2. Generate and approve turnaround reference from 4 views on magenta background `rgb(255,0,255)`.
+3. For each state, compose prompt from `00_CHARACTER_LOCK.md` and the corresponding `02/03/04` file, enforcing closed eyes on frame 3, strict side profile in rows 2 and 3, and negative constraints.
+4. Save the three raw sprite sheets (768×512 or 1536×1024) separately from runtime textures.
+5. Process raw assets via `scripts/process_character_sheets.py --bg-mode magenta --row-order fbrl`.
+6. Verify dimensions and directions via `scripts/validate_sheets.py --row-order fbrl`.
+7. Verify Three.js rendering with appropriate row mapping (`CharacterAnimator.ts`).

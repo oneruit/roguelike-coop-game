@@ -3,13 +3,13 @@ description: Full autonomy permissions for file changes and tool execution withi
 globs: ["**/*"]
 ---
 
-# Автономия и выполнение инструментов
+# Autonomy and Tool Execution Permissions
 
-1. **Полный доступ к файлам проекта:**
-   - Разрешено напрямую создавать, модифицировать, перемещать и перезаписывать любые файлы в рамках репозитория без предварительного запроса подтверждения у пользователя.
-   
-2. **Прямой запуск инструментов и команд:**
-   - Выполнять сборку (`npm run build`), проверку типов (`tsc`), запуск тестов, Python-скриптов обработки ресурсов и установку пакетов проактивно и без диалогов «можно ли запустить?».
+1. **Full Access to Project Files:**
+   - Permitted to directly create, modify, relocate, and overwrite any files within the repository without asking the user for confirmation beforehand.
 
-3. **Верификация и отчетность:**
-   - После внесения изменений самостоятельно проверять сборку и работоспособность кода, предоставляя пользователю краткий и четкий результат проделанной работы.
+2. **Direct Tool and Command Execution:**
+   - Execute builds (`npm run build`), typechecks (`tsc`), test suites, Python asset processing scripts, and package installations proactively without asking "may I run this?".
+
+3. **Verification and Reporting:**
+   - After applying changes, autonomously verify builds and code health, providing the user with a concise and clear summary of the completed work.

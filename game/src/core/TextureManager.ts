@@ -256,12 +256,14 @@ export class TextureManager {
     '/textures/heroes/hero_rocket_walk_attack.png',
 
     '/textures/heroes/hero_necromancer_front.png',
+    '/textures/heroes/hero_necromancer_portrait.png',
     '/textures/heroes/hero_necromancer_idle.png',
     '/textures/heroes/hero_necromancer_walk.png',
     '/textures/heroes/hero_necromancer_attack.png',
     '/textures/heroes/hero_necromancer_walk_attack.png',
 
     '/textures/heroes/hero_amazon_front.png',
+    '/textures/heroes/hero_amazon_portrait.png',
     '/textures/heroes/hero_amazon_idle.png',
     '/textures/heroes/hero_amazon_walk.png',
     '/textures/heroes/hero_amazon_attack.png',

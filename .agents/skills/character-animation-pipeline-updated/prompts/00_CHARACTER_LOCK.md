@@ -9,7 +9,7 @@ Use the reference character image / prompt as the primary visual lock for the **
 ### Mode A: Ready Prompt or Image Reference
 If the user provides an existing text prompt or image reference:
 * Adopt the character's visual identity directly.
-* Ensure mandatory engine requirements are met: pure solid magenta background `rgb(255,0,255)`, chibi 2.5–3 heads tall proportions, zero ground shadows / platforms, and the mandatory negative constraint block.
+* Ensure mandatory engine requirements are met: pure solid magenta background `rgb(255,0,255)`, chibi 2.5–3 heads tall proportions, zero ground shadows / platforms, strict side profile for left/right rows, and the mandatory negative constraint block.
 * Proceed directly without redundant questionnaires.
 
 ### Mode B: Brief / Incomplete Character Description (Auto-Enrichment)
@@ -64,8 +64,22 @@ Every prompt MUST contain this exact negative constraint block:
 
 ---
 
-## 4. Grounding and Background Contract
+## 4. Directional Orientation & Strict Profile Contract
+
+In all multi-view sheets and directional spritesheets, the standard row mapping is:
+* **Row 0 (1st row)**: `FRONT` — Character faces directly toward the camera / screen bottom.
+* **Row 1 (2nd row)**: `BACK` — Character faces directly away toward the top of the screen.
+* **Row 2 (3rd row)**: `RIGHT` — Character faces to the RIGHT.
+  **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 3 (4th row)**: `LEFT` — Character faces to the LEFT.
+  **MANDATORY PROFILE RULE**: When drawn facing LEFT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+
+---
+
+## 5. Chromakey & Edge Cleanup Contract
 
 * **Pure Solid Magenta Background `rgb(255,0,255)` (`#ff00ff`)**: Strict chromakey background for automated transparent extraction.
+* **Global Removal**: Magenta is NEVER used as a character color. Magenta is removed completely and globally — **both outside the character and inside any enclosed gaps, holes, limbs, or weapon loops**.
+* **Zero Magenta Aura**: The pipeline cleans all boundary pixels touching transparency with a crisp 1px black outline `[0, 0, 0, 255]`, preventing any purple/magenta halo or fringe while leaving all interior character textures 100% untouched.
 * **Zero Floor Elements**: Absolutely NO shadows under feet, NO drop shadows, NO cast shadows, NO ground line, NO floor tiles, NO platform, NO pedestal.
 * **Cell Clearance**: Every cell is 128×128 px. All body parts, weapon tips, hair, and accessories must remain inside the cell with ~10 px bottom margin (`feet baseline y ≈ 118`).

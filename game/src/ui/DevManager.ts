@@ -22,6 +22,7 @@ export class DevManager {
   private elGodStatus: HTMLElement;
   private elSpeedStatus: HTMLElement;
   private elOnehitStatus: HTMLElement;
+  private elPauseStatus: HTMLElement | null = null;
   private elCoopBanner: HTMLElement | null = null;
 
   // External context
@@ -38,6 +39,8 @@ export class DevManager {
   public isCoop: () => boolean = () => false;
   public onBroadcastDevAction?: (action: string, value?: any) => void;
   public onApplySeed?: (seed: string | number) => void;
+  public onTogglePause?: () => boolean;
+  public onToggleDevPanel?: (isOpen: boolean) => void;
 
   // Seed controls
   private elSeedInput: HTMLInputElement | null = null;
@@ -71,6 +74,7 @@ export class DevManager {
     this.elGodStatus = document.getElementById('dev-god-status')!;
     this.elSpeedStatus = document.getElementById('dev-speed-status')!;
     this.elOnehitStatus = document.getElementById('dev-onehit-status')!;
+    this.elPauseStatus = document.getElementById('dev-pause-status');
     this.elSeedInput = document.getElementById('dev-seed-input') as HTMLInputElement | null;
 
     this.bindEvents();
@@ -243,6 +247,13 @@ export class DevManager {
       this.enemyManager.setGameTime(Math.max(0, this.enemyManager.gameTime - 60));
     });
 
+    document.getElementById('dev-btn-pause')?.addEventListener('click', () => {
+      if (this.onTogglePause) {
+        const isPaused = this.onTogglePause();
+        this.setPauseState(isPaused);
+      }
+    });
+
     // Speed 1x, 2x, 5x
     const speedBtns = [
       { id: 'dev-speed-1x', scale: 1.0 },
@@ -379,6 +390,12 @@ export class DevManager {
     });
   }
 
+  public setPauseState(isPaused: boolean) {
+    if (this.elPauseStatus) {
+      this.updateStatusBadge(this.elPauseStatus, isPaused);
+    }
+  }
+
   public toggle(): boolean {
     if (this.isCoop() && !this.isHost()) {
       return false;
@@ -394,6 +411,7 @@ export class DevManager {
     } else {
       this.modal.classList.add('hidden');
     }
+    this.onToggleDevPanel?.(this.isVisible);
     return this.isVisible;
   }
 
@@ -430,6 +448,7 @@ export class DevManager {
     this.updateStatusBadge(this.elGodStatus, false);
     this.updateStatusBadge(this.elSpeedStatus, false);
     this.updateStatusBadge(this.elOnehitStatus, false);
+    this.setPauseState(false);
 
     const speedBtns = ['dev-speed-1x', 'dev-speed-2x', 'dev-speed-5x'];
     speedBtns.forEach(id => document.getElementById(id)?.classList.remove('active'));

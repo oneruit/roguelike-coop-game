@@ -1,5 +1,5 @@
       <div id="dev-panel-modal" class="modal hidden">
-        <div class="modal-backdrop menu-scenic-backdrop" id="dev-backdrop"></div>
+        <div class="modal-backdrop" id="dev-backdrop"></div>
         <div class="modal-card dev-card modern-glass-modal">
           <div class="dev-header">
             <div class="dev-title-row">
@@ -109,6 +109,11 @@
             <div class="dev-section">
               <div class="section-title">ВРЕМЯ И СКОРОСТЬ</div>
               <div class="dev-btn-grid">
+                <button id="dev-btn-pause" class="dev-btn toggle-btn alert-dev-btn" style="background: rgba(239, 68, 68, 0.22) !important; border-color: #ef4444 !important; color: #fee2e2 !important;">
+                  <span class="btn-icon">⏸️</span>
+                  <span>Пауза (Остановить игру):</span>
+                  <strong id="dev-pause-status" class="status-on">ВКЛ</strong>
+                </button>
                 <button id="dev-btn-boss-30" class="dev-btn alert-dev-btn" style="background: rgba(168, 85, 247, 0.25) !important; border-color: #a855f7 !important; color: #f3e8ff !important;">
                   <span class="btn-icon">[!]</span>
                   <strong>Прыжок на 29:55 (30м Финал)</strong>

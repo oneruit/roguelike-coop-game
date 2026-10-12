@@ -20,7 +20,7 @@ import {
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../../combat/InvokerWeapons';
 import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../shared/InvokerSpells';
 import { canCharacterAcquireWeapon } from '../../shared/UniqueCharacters';
-import { selectWeaponUpgradeOptions, filterAndShuffleForReroll } from '../selectWeaponUpgradeOptions';
+import { selectWeaponUpgradeOptions, filterAndShuffleForReroll, canRerollWeaponOptions } from '../selectWeaponUpgradeOptions';
 import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../../combat/WeaponGrades';
 import { SoundManager } from '../../core/SoundManager';
 
@@ -43,8 +43,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     dual_revolvers: '/textures/weapons/weapon_kukri.png',
     orbiting_barrier: '/textures/weapons/weapon_reaper_scythe.png',
     reaper_scythe: '/textures/weapons/weapon_reaper_scythe.png',
-    holy_aura: '/textures/weapons/weapon_fire_ring.png',
-    fire_ring: '/textures/weapons/weapon_fire_ring.png',
+    holy_aura: '/textures/weapons/weapon_holy_aura.png',
+    fire_ring: '/textures/weapons/weapon_holy_aura.png',
     katana_slash: '/textures/weapons/weapon_katana_slash.png',
     whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
     greatsword: '/textures/weapons/weapon_greatsword.png',
@@ -246,7 +246,7 @@ export class LevelUpUI {
     onChosen: () => void,
     isRerolled: boolean = false
   ) {
-    const canReroll = this.rerollsRemaining > 0;
+    const canReroll = this.rerollsRemaining > 0 && canRerollWeaponOptions(options);
 
     if (this.el.levelUpStepIndicator) {
       this.el.levelUpStepIndicator.innerHTML = 'ПОВЫШЕНИЕ УРОВНЯ';
@@ -296,7 +296,7 @@ export class LevelUpUI {
     };
 
     const handleReroll = () => {
-      if (chosen || this.rerollsRemaining <= 0) return;
+      if (chosen || this.rerollsRemaining <= 0 || !canRerollWeaponOptions(options)) return;
       chosen = true;
       this.rerollsRemaining--;
       SoundManager.playReroll();

@@ -897,12 +897,42 @@ export class InGameOverlayUI {
     }
   }
 
+  public resetSessionHUD() {
+    this.resetBossUI();
+    this.clearTeammates();
+    this.lastRenderedItemsKey = '';
+
+    if (this.xpFill) this.xpFill.style.width = '0%';
+    if (this.playerLevel) this.playerLevel.innerText = '1';
+    if (this.timerText) this.timerText.innerText = '00:00';
+    if (this.killCountText) this.killCountText.innerText = '0';
+    if (this.myKillsCount) this.myKillsCount.innerText = '0';
+    if (this.partnerKillsCount) this.partnerKillsCount.innerText = '0';
+    if (this.coopKillsDetail) this.coopKillsDetail.classList.add('hidden');
+    if (this.plasmaCreditsText) this.plasmaCreditsText.innerText = '0';
+    if (this.stageText) this.stageText.innerText = '1: ПУСТЫНЯ';
+    if (this.diffTierLabel) this.diffTierLabel.innerText = 'ЛЕГКО';
+    if (this.diffBarFill) this.diffBarFill.style.width = '0%';
+    if (this.weaponsBar) this.weaponsBar.innerHTML = '';
+    if (this.passivesBar) this.passivesBar.innerHTML = '';
+    if (this.buffsTray) this.buffsTray.innerHTML = '';
+    if (this.itemInventoryTray) this.itemInventoryTray.innerHTML = '';
+    if (this.interactionPrompt) this.interactionPrompt.classList.add('hidden');
+    if (this.dashCooldownBadge) this.dashCooldownBadge.classList.remove('cooling-down');
+
+    const damageFlash = document.getElementById('damage-flash-layer');
+    if (damageFlash) damageFlash.style.opacity = '0';
+    const lowHp = document.getElementById('low-hp-vignette-layer');
+    if (lowHp) lowHp.style.opacity = '0';
+
+    this.setTrainingModeActive(false);
+  }
+
   public setTrainingModeActive(active: boolean) {
     this.isTrainingModeActive = active;
-    const isDev = typeof __APP_MODE__ !== 'undefined' ? __APP_MODE__ === 'development' : false;
     const mobileDevBtn = document.getElementById('btn-dev-mobile-trigger');
     const pauseDevBtn = document.getElementById('btn-pause-dev');
-    if (active || isDev) {
+    if (active) {
       mobileDevBtn?.classList.remove('hidden');
       pauseDevBtn?.classList.remove('hidden');
     } else {

@@ -287,3 +287,115 @@ test('dev credits button and coordinator grant 500 credits', () => {
   }
 });
 
+test('dev mode only opens when training mode is active and automatically pauses game', () => {
+  const elements = new Map<string, any>([
+    ['dev-panel-modal', { classList: { add() {}, remove() {} }, querySelectorAll: () => [] }],
+    ['dev-god-status', { innerText: '', className: '' }],
+    ['dev-speed-status', { innerText: '', className: '' }],
+    ['dev-onehit-status', { innerText: '', className: '' }],
+    ['dev-pause-status', { innerText: '', className: '' }],
+    ['dev-fps', { innerText: '' }],
+    ['dev-coords', { innerText: '' }],
+    ['dev-chunk', { innerText: '' }],
+    ['dev-enemies-count', { innerText: '' }],
+    ['dev-projectiles-count', { innerText: '' }],
+    ['dev-gems-count', { innerText: '' }],
+    ['dev-time-str', { innerText: '' }],
+    ['dev-btn-pause', new EventTarget()]
+  ]);
+  const originalDocument = globalThis.document;
+  (globalThis as any).document = {
+    getElementById: (id: string) => elements.get(id) ?? null,
+    querySelectorAll: () => []
+  };
+
+  try {
+    const f = fixture(false);
+    const devMgr = new DevManager(f.player, { enemies: [], gameTime: 0 } as any, { gems: [] } as any, {} as any, {} as any, () => {});
+    (f.session as any).devManager = devMgr;
+
+    // 1. In regular mode (isTrainingMode = false), toggleDevMode does nothing
+    f.session.isTrainingMode = false;
+    f.session.gameState = GameState.PLAYING;
+    f.session.toggleDevMode();
+    assert.equal(devMgr.getIsOpen(), false);
+    assert.equal(f.session.gameState, GameState.PLAYING);
+
+    // 2. In training mode, toggleDevMode opens dev panel and pauses game
+    f.session.isTrainingMode = true;
+    f.session.toggleDevMode();
+    assert.equal(devMgr.getIsOpen(), true);
+    assert.equal(f.session.gameState, GameState.PAUSED);
+    assert.equal(f.session.devPausedGame, true);
+
+    // 3. Dev pause button inside panel toggles between playing and paused
+    (f.session as any).devManager.onTogglePause = () => {
+      if (f.session.gameState === GameState.PAUSED) {
+        f.session.gameState = GameState.PLAYING;
+        f.session.devPausedGame = false;
+        return false;
+      } else {
+        f.session.gameState = GameState.PAUSED;
+        f.session.devPausedGame = true;
+        return true;
+      }
+    };
+
+    elements.get('dev-btn-pause')!.dispatchEvent(new Event('click'));
+    assert.equal(f.session.gameState, GameState.PLAYING);
+    assert.equal(f.session.devPausedGame, false);
+
+    elements.get('dev-btn-pause')!.dispatchEvent(new Event('click'));
+    assert.equal(f.session.gameState, GameState.PAUSED);
+    assert.equal(f.session.devPausedGame, true);
+
+    // 4. Closing dev panel resumes game if dev panel paused it
+    f.session.toggleDevMode();
+    assert.equal(devMgr.getIsOpen(), false);
+    assert.equal(f.session.gameState, GameState.PLAYING);
+    assert.equal(f.session.devPausedGame, false);
+  } finally {
+    (globalThis as any).document = originalDocument;
+  }
+});
+
+test('returnToMainMenu comprehensively resets session, training mode, and gameTime', () => {
+  const f = fixture(false);
+  f.session.gameState = GameState.PLAYING;
+  f.session.isTrainingMode = true;
+  f.session.gameTime = 540;
+  f.session.devPausedGame = true;
+
+  (f.session as any).combatDirector = { clear() {}, recentlyDeadEnemyIds: new Set() };
+  (f.session as any).enemyManager = { clear() {} };
+  (f.session as any).dropManager = { clear() {} };
+  (f.session as any).engine = { chunkManager: { clear() {} }, scene: {} };
+  (f.session as any).mapManager = { clear() {}, close() {} };
+  (f.session as any).devManager = { reset() {} };
+  (f.session as any).net = { reset() {} };
+  (f.session as any).netCoordinator = {
+    syncMapManagerPartners() {},
+    allPlayerStats: new Map(),
+    pendingDamageToClients: new Map()
+  };
+  (f.session as any).updateUI = { onRunEnded() {} };
+  (f.session as any).player = { reset() {}, recalculateStats() {} };
+  (f.session as any).hud = {
+    clearTeammates() {},
+    hidePartnerHp() {},
+    setCoopBadge() {},
+    resetBossUI() {},
+    resetSessionHUD() {},
+    setTrainingModeActive() {},
+    showMainMenu() {},
+    resetLevelUpState() {}
+  };
+
+  f.session.returnToMainMenu();
+
+  assert.equal(f.session.gameState, GameState.MAIN_MENU);
+  assert.equal(f.session.gameTime, 0);
+  assert.equal(f.session.isTrainingMode, false);
+  assert.equal(f.session.devPausedGame, false);
+});
+

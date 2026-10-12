@@ -10,15 +10,17 @@ Create a static multi-view reference sheet of the character before generating an
 Four full-body standing views arranged horizontally left-to-right on one canvas:
 1. `FRONT` — Frontal view facing the viewer / camera.
 2. `BACK` — Direct rear view facing away.
-3. `LEFT` — Strict left-facing profile view.
-4. `RIGHT` — Strict right-facing profile view.
+3. `RIGHT` — Strict right-facing profile view.
+   **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No 3/4 turn.
+4. `LEFT` — Strict left-facing profile view.
+   **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No 3/4 turn.
 
 ### Option B: 5-in-1 Character Reference Canvas
 A single reference canvas with 5 designated panels:
 1. `Portrait` (128×128 close-up crop of face and headgear).
 2. `Front Full-Body` (128×128 frontal chibi sprite).
 3. `Back Full-Body` (128×128 rear chibi sprite).
-4. `Right Profile Full-Body` (128×128 profile chibi sprite).
+4. `Right Profile Full-Body` (128×128 profile chibi sprite: body sideways, face in strict profile).
 5. `Weapon Preview` (isolated 128×128 preview of the held weapon/focus).
 
 ---
@@ -35,6 +37,7 @@ A single reference canvas with 5 designated panels:
 ## 3. Mandatory Constraints & Cleanliness
 
 * **Background**: **Pure solid magenta background `rgb(255,0,255)` (`#ff00ff`)**.
+* **Global Removal & Defringing**: Magenta is removed both outside and inside the character. No magenta aura remains along the edges (defringed with 1px black outline).
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no tile grid**.
 * **Negative Constraints**:
   > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
