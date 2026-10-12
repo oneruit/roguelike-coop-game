@@ -75,6 +75,7 @@ export class SessionDirector {
   public gameTime = 0;
   public currentSeed: number | string = 1337;
   public isTrainingMode = false;
+  public devPausedGame = false;
   public pendingLevelUps = 0;
   public isLevelUpActive = false;
   private isChestChoiceActive = false;
@@ -130,6 +131,20 @@ export class SessionDirector {
       }
     };
 
+    this.devManager.onTogglePause = () => {
+      if (this.gameState === GameState.PAUSED) {
+        this.gameState = GameState.PLAYING;
+        this.devPausedGame = false;
+        this.lastTime = performance.now();
+        return false;
+      } else if (this.gameState === GameState.PLAYING) {
+        this.gameState = GameState.PAUSED;
+        this.devPausedGame = true;
+        return true;
+      }
+      return false;
+    };
+
     this.wireCoordinatorCallbacks();
   }
 
@@ -156,14 +171,27 @@ export class SessionDirector {
   }
 
   public toggleDevMode(): void {
-    const isDev = typeof __APP_MODE__ !== 'undefined' ? __APP_MODE__ === 'development' : false;
-    if (!this.isTrainingMode && !isDev) {
+    if (!this.isTrainingMode) {
       return;
     }
     if (this.net.role === 'client') {
       return;
     }
-    this.devManager.toggle();
+    const isOpen = this.devManager.toggle();
+    if (isOpen) {
+      if (this.gameState === GameState.PLAYING) {
+        this.gameState = GameState.PAUSED;
+        this.devPausedGame = true;
+      }
+      this.devManager.setPauseState(true);
+    } else {
+      if (this.devPausedGame && this.gameState === GameState.PAUSED) {
+        this.gameState = GameState.PLAYING;
+        this.devPausedGame = false;
+        this.lastTime = performance.now();
+      }
+      this.devManager.setPauseState(false);
+    }
   }
 
   public startSinglePlayerWithHero(
@@ -340,9 +368,11 @@ export class SessionDirector {
     this.engine.chunkManager.clear();
     this.mapManager.clear();
     this.mapManager.close();
+    this.merchantManager.reset();
 
     this.player.reset();
     this.devManager.reset();
+    this.devPausedGame = false;
     this.player.isGodMode = false;
     this.player.isSpeedCheat = false;
     this.player.isOneHitKill = false;
@@ -352,6 +382,11 @@ export class SessionDirector {
     this.netCoordinator.pendingDamageToClients.clear();
     this.resetRewardChoices();
     this.hud.resetBossUI();
+    this.hud.resetSessionHUD();
+    this.gameTime = 0;
+    this.isTrainingMode = false;
+    ProgressionManager.getInstance().isTrainingMode = false;
+    this.hud.setTrainingModeActive(false);
     this.gameState = GameState.MAIN_MENU;
     this.updateUI.onRunEnded();
     this.hud.showMainMenu();

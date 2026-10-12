@@ -380,14 +380,11 @@ class Game {
       }
       if (escResult === 'handled') {
         if (this.sessionDirector.gameState === GameState.CHARACTER_SELECT && !this.hud.isAnyMenuOpen()) {
-          this.sessionDirector.gameState = GameState.MAIN_MENU;
+          this.sessionDirector.returnToMainMenu();
         } else if (this.sessionDirector.gameState === GameState.HOST_LOBBY && !this.hud.isAnyMenuOpen()) {
-          this.net.reset();
-          this.sessionDirector.gameState = GameState.MAIN_MENU;
+          this.sessionDirector.returnToMainMenu();
         } else if (this.sessionDirector.gameState === GameState.JOIN_LOBBY && !this.hud.isAnyMenuOpen()) {
-          this.lobbyCoordinator.stopRoomPolling();
-          this.net.reset();
-          this.sessionDirector.gameState = GameState.MAIN_MENU;
+          this.sessionDirector.returnToMainMenu();
         }
         return;
       }
