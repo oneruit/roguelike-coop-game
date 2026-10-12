@@ -93,6 +93,7 @@ export interface GlobalBalanceConfig {
   merchantPriceRare: number;
   merchantPriceLegendary: number;
   merchantPriceBoss: number;
+  merchantPriceWeaponUpgrade: number;
 }
 
 export interface GameBalanceState {

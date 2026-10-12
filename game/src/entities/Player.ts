@@ -83,11 +83,12 @@ export class Player {
   public level: number = 1;
   public onLevelGained?: (levelsGained: number) => void;
   public onChronosTrigger?: (position: Vector3) => void;
-  public pickupRadius: number = 4.2;
+  public pickupRadius: number = 10.0;
   public damageMultiplier: number = 1.35;
   public baseDamageMultiplier: number = 1.35;
   public passiveDamageMultiplier: number = 1.0;
   public passiveSpeedMultiplier: number = 1.0;
+  public speedElixirBonus: number = 0;
   public passiveCooldownMultiplier: number = 1.0;
   public passiveHpRegen: number = 0;
   public passiveDamageReduction: number = 0;
@@ -458,7 +459,8 @@ export class Player {
     this.vestCount = 0;
     this.watchCount = 0;
     this.mightElixirCount = 0;
-    this.pickupRadius = 4.2;
+    this.speedElixirBonus = 0;
+    this.pickupRadius = 10.0;
     this.recalculateStats();
   }
 
@@ -594,11 +596,11 @@ export class Player {
     }
 
     // Attack Cooldown Multiplier:
-    // Pocket watch: -1% cooldown per stack, capped at 25% reduction (floor 0.75)
+    // Pocket watch: -1% at level 1, diminishing returns up to 30% at level 300, capped at 30% reduction (floor 0.70)
     // Kinetic Injector: -15% cooldown per stack (0.85^stacks)
     // Overclock module: -10% cooldown per stack (0.90^stacks)
     // Combined floor 0.15
-    const watchReduction = Math.min(0.25, this.watchCount * 0.01);
+    const watchReduction = this.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)));
     const watchMult = 1 - watchReduction;
     const injectorMult = Math.pow(0.85, injectorStacks);
     const overclockMult = Math.pow(0.90, overclockStacks);
@@ -607,16 +609,24 @@ export class Player {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
 
-    // Magnet Lasso pickup radius
-    this.pickupRadius = Math.min(25, 4.2 * Math.pow(1.35, this.lassoCount));
+    // Magnet Lasso pickup radius: base 10m, +10% at level 1 (+1.0m), diminishing returns up to 50m at level 300, capped at 50m
+    if (this.lassoCount <= 0) {
+      this.pickupRadius = 10.0;
+    } else {
+      this.pickupRadius = Math.min(50.0, 10.0 + 1.0 * Math.pow(this.lassoCount, Math.log(40) / Math.log(300)));
+    }
+
+    // Cowboy Spurs: +3% speed at level 1, diminishing returns up to x3.0 at level 300, capped at x3.0
+    const spursBonus = this.spursCount <= 0 ? 0 : 0.03 * Math.pow(this.spursCount, Math.log(200 / 3) / Math.log(300));
+    this.passiveSpeedMultiplier = Math.min(3.0, 1.0 + spursBonus + this.speedElixirBonus);
 
     // Apply speed cheat or base speed * passive multiplier + speed buff
     const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
     this.speed = baseSpd * (1 + speedBonus);
 
     // Sheriff Star additive scaling: 100 stacks = +200%, 138 stacks = +276%
-    // Elixir of Might: +10% damage per stack (+0.10)
-    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02) + (this.mightElixirCount * 0.10);
+    // Elixir of Might: +5% damage per stack (+0.05)
+    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02) + (this.mightElixirCount * 0.05);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
     const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
@@ -661,8 +671,7 @@ export class Player {
     }
   }
 
-  public addSpeedBonus(multiplier: number = 1.03) {
-    this.passiveSpeedMultiplier = Math.min(2.5, this.passiveSpeedMultiplier * multiplier);
+  public addSpeedBonus(_multiplier: number = 1.03) {
     this.spursCount++;
     this.recalculateStats();
   }
@@ -678,7 +687,7 @@ export class Player {
   }
 
   public addCooldownReduction(_pct: number = 0.01) {
-    if (this.watchCount < 25) {
+    if (this.watchCount < 300) {
       this.watchCount++;
       this.recalculateStats();
     }
@@ -691,7 +700,7 @@ export class Player {
     this.redrawOverhead();
   }
 
-  public addLassoBonus(_multiplier: number = 1.35) {
+  public addLassoBonus(_multiplier: number = 1.10) {
     this.lassoCount++;
     this.recalculateStats();
   }
@@ -717,16 +726,16 @@ export class Player {
       return this.critDamage >= 10.0;
     }
     if (itemId === 'stat_watch') {
-      return this.watchCount >= 25 || (1 - this.passiveCooldownMultiplier) >= 0.25;
+      return this.watchCount >= 300 || (this.watchCount > 0 && 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)) >= 0.30);
     }
     if (itemId === 'stat_vest') {
       return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
     }
     if (itemId === 'stat_spurs') {
-      return this.passiveSpeedMultiplier >= 2.5;
+      return this.passiveSpeedMultiplier >= 3.0 || this.spursCount >= 300;
     }
     if (itemId === 'stat_lasso') {
-      return this.pickupRadius >= 25;
+      return this.pickupRadius >= 50.0 || this.lassoCount >= 300;
     }
     return false;
   }
@@ -738,13 +747,13 @@ export class Player {
         return `⭐ +2% Урон (+${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
       case 'stat_spurs':
         this.addSpeedBonus(1.03);
-        return `👢 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)})`;
+        return `👢 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)} / макс. x3.0)`;
       case 'stat_flask':
         this.addFlaskBonus(30);
         return `🍶 +30 Макс HP & Исцеление (${this.maxHp} HP)`;
       case 'stat_lasso':
-        this.addLassoBonus(1.35);
-        return `➰ +35% Радиус магнита (${this.pickupRadius.toFixed(1)}м)`;
+        this.addLassoBonus(1.10);
+        return `➰ +10% Радиус магнита (${this.pickupRadius.toFixed(1)}м / макс. 50м)`;
       case 'stat_amulet':
         this.addHpRegen(1.0);
         return `🧿 +1 HP/с Реген (+${this.passiveHpRegen.toFixed(1)}/с)`;
@@ -753,8 +762,8 @@ export class Player {
         return `🦺 -${(this.passiveDamageReduction * 100).toFixed(1)}% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
       case 'stat_watch':
         this.addCooldownReduction(0.01);
-        const cdrPct = Math.round(Math.min(0.25, this.watchCount * 0.01) * 100);
-        return `⏱️ -1% КД (-${cdrPct}% / макс. 25%)`;
+        const cdrPct = Math.round((this.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)))) * 100);
+        return `⏱️ -1% КД (-${cdrPct}% / макс. 30%)`;
     }
   }
 
@@ -1251,7 +1260,8 @@ export class Player {
     this.xp = 0;
     this.level = 1;
     this.xpToNextLevel = this.calculateXpToNextLevel(1);
-    this.pickupRadius = 4.2;
+    this.speedElixirBonus = 0;
+    this.pickupRadius = 10.0;
     this.isAlive = true;
     this.isDowned = false;
     this.reviveProgress = 0;
