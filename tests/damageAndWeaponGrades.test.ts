@@ -9,7 +9,9 @@ import {
   getGradeColor,
   type WeaponGrade
 } from '../game/src/combat/WeaponGrades';
-import { BowWeapon, KukriWeapon } from '../game/src/combat/Weapon';
+import { BowWeapon, KukriWeapon, AssaultRifleWeapon } from '../game/src/combat/Weapon';
+import { SimAssaultRifleWeapon } from '../game/src/sim/SimWeapons';
+import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../game/src/combat/InvokerWeapons';
 import { BalanceManager } from '../game/src/balance/BalanceManager';
 import {
@@ -300,4 +302,55 @@ test('Rare items correctly modify player stats and caps', () => {
   items.set('crit_lens', 50);
   const cappedChance = calculatePlayerStats(items);
   assert.equal(cappedChance.critChance, 1.0); // capped at 100%
+});
+
+test('Assault rifle balance scaling and projectile count limits', () => {
+  const rifleConfig = DEFAULT_BALANCE.weapons.assault_rifle;
+  assert.equal(rifleConfig.damage, 9, 'Default base damage should be 9');
+  assert.equal(rifleConfig.damagePerLevel, 2.5, 'Default damagePerLevel should be 2.5');
+
+  const rocketConfig = DEFAULT_BALANCE.heroes.rocket;
+  assert.equal(rocketConfig.baseSpeed, 8.9, 'Rocket base speed should be 8.9');
+
+  const rifle = new AssaultRifleWeapon();
+  assert.equal(rifle.damage, 9, 'Assault rifle initial damage should be 9');
+  assert.equal((rifle as any).projectileCount, 1, 'Initial projectile count should be 1');
+
+  // Upgrade through levels
+  // Levels 2..5: projectileCount remains 1
+  for (let lvl = 2; lvl <= 5; lvl++) {
+    rifle.upgrade();
+    assert.equal((rifle as any).projectileCount, 1, `L${lvl} should have 1 projectile`);
+  }
+
+  // Level 6: projectile count increases to 2
+  rifle.upgrade(); // to level 6
+  assert.equal(rifle.level, 6);
+  assert.equal((rifle as any).projectileCount, 2, 'L6 should have 2 projectiles');
+
+  // Levels 7..11: projectileCount remains 2
+  for (let lvl = 7; lvl <= 11; lvl++) {
+    rifle.upgrade();
+    assert.equal((rifle as any).projectileCount, 2, `L${lvl} should have 2 projectiles`);
+  }
+
+  // Level 12: projectile count increases to 3 (base + 2)
+  rifle.upgrade(); // to level 12
+  assert.equal(rifle.level, 12);
+  assert.equal((rifle as any).projectileCount, 3, 'L12 should have 3 projectiles (base + 2, total 3 instead of 5)');
+
+  // At L12, damage = Math.round(9 + 11 * 2.5) = 37
+  assert.equal(rifle.damage, 37, 'L12 assault rifle damage should be 37');
+
+  // Test SimAssaultRifleWeapon in simulator as well
+  const simRifle = new SimAssaultRifleWeapon();
+  assert.equal(simRifle.damage, 9, 'SimAssaultRifleWeapon base damage should be 9');
+  assert.equal((simRifle as any).projectileCount, 1, 'SimAssaultRifleWeapon initial projectile count should be 1');
+
+  for (let i = 2; i <= 12; i++) {
+    simRifle.upgrade();
+  }
+  assert.equal(simRifle.level, 12);
+  assert.equal((simRifle as any).projectileCount, 3, 'SimAssaultRifleWeapon L12 should have 3 projectiles');
+  assert.equal(simRifle.damage, 36.5, 'SimAssaultRifleWeapon L12 damage should be 36.5');
 });

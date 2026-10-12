@@ -1146,7 +1146,7 @@ export class SimAssaultRifleWeapon extends SimWeapon {
   private pierce: number = 1;
 
   constructor() {
-    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 15);
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 9);
   }
 
   public update(
@@ -1208,8 +1208,8 @@ export class SimAssaultRifleWeapon extends SimWeapon {
   public upgrade() {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 6;
-    if ([3, 6, 9, 12].includes(this.level)) this.projectileCount++;
+    this.damage += 2.5;
+    if ([6, 12].includes(this.level)) this.projectileCount++;
     if ([4, 8, 12].includes(this.level)) this.pierce++;
     if ([2, 5, 8, 11].includes(this.level)) {
       this.cooldown = Math.max(0.09, Number((this.cooldown * 0.95).toFixed(3)));
@@ -1219,8 +1219,8 @@ export class SimAssaultRifleWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+6 к урону'];
-    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
+    const perks: string[] = ['+2.5 к урону'];
+    if ([6, 12].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 5, 8, 11].includes(nextLvl)) perks.push('+5% скорострельности');
     return perks.join(', ');

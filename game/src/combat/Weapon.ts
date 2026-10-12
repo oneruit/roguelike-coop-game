@@ -1618,7 +1618,7 @@ export class AssaultRifleWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 15, 6);
+    super('assault_rifle', 'Штурмовая Винтовка', '🔫', 0.18, 9, 2.5);
     this.iconImage = '/textures/weapons/weapon_assault_rifle.png';
     this.onTriggerAttack = onTriggerAttack;
     this.recalculateStats();
@@ -1631,8 +1631,8 @@ export class AssaultRifleWeapon extends Weapon {
     const basePierce = cfg?.pierce ?? 1;
     this.projectileSpeed = cfg?.speed ?? 32;
     // Level scaling:
-    // Extra bullets: at levels 3, 6, 9, 12 (+1 projectile)
-    this.projectileCount = baseCount + [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
+    // Extra bullets: at levels 6, 12 (+1 projectile, total 3 at L12)
+    this.projectileCount = baseCount + [6, 12].filter(lvl => this.level >= lvl).length;
     // Extra pierce: at levels 4, 8, 12 (+1 pierce)
     this.pierce = basePierce + [4, 8, 12].filter(lvl => this.level >= lvl).length;
     // Fire rate speedup: at levels 2, 5, 8, 11 (-5% cooldown each)
@@ -1710,7 +1710,7 @@ export class AssaultRifleWeapon extends Weapon {
     const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
     const nextLvl = this.level + 1;
     const perks: string[] = [`+${dmg} к урону`];
-    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
+    if ([6, 12].includes(nextLvl)) perks.push(`+1 пуля (всего ${this.projectileCount + 1})`);
     if ([4, 8, 12].includes(nextLvl)) perks.push(`+1 пробивание (всего ${this.pierce + 1})`);
     if ([2, 5, 8, 11].includes(nextLvl)) perks.push(`+5% скорострельности`);
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);

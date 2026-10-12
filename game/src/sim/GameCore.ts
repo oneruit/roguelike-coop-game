@@ -131,7 +131,7 @@ export class SimPlayerInternal {
     } else if (charType === 'rocket') {
       this.maxHp = 105;
       this.hp = 105;
-      this.baseSpeed = 9.1;
+      this.baseSpeed = 8.9;
       this.baseDamageMultiplier = 1.35;
     } else if (charType === 'necromancer') {
       this.maxHp = 110;
