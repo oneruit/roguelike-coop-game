@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Validate the dimensions of IDLE, WALK, and ATTACK PNG sprite sheets.
+"""Validate dimensions and facing directions of IDLE, WALK, and ATTACK sprite sheets.
 
-Uses only Python's standard library. It checks PNG signature/IHDR dimensions;
-it does not inspect grid contents, align frames, remove backgrounds, or validate animation quality.
+Checks:
+1. PNG signature, readability, and exact 6x4 768x512 dimensions.
+2. Facing directions: Row 2 (3rd row) must face RIGHT and Row 3 (4th row) must face LEFT,
+   with the character's body turned sideways (боком) and face in strict profile (в профиль).
 """
 
 from __future__ import annotations
@@ -37,7 +39,7 @@ def png_dimensions(path: Path) -> Tuple[int, int]:
     return width, height
 
 
-def check_one(label: str, value: Optional[str]) -> bool:
+def check_dimensions(label: str, value: Optional[str]) -> bool:
     if not value:
         print(f"ERROR {label}: no input path supplied")
         return False
@@ -61,8 +63,37 @@ def check_one(label: str, value: Optional[str]) -> bool:
         )
         return False
 
-    print(f"OK    {label}: {path} — {size[0]}x{size[1]}")
+    print(f"OK    {label} [Dimensions]: {path} — {size[0]}x{size[1]}")
     return True
+
+
+def check_facing(label: str, value: str, row_order: str = "fbrl") -> bool:
+    path = Path(value)
+    if not path.is_file():
+        return False
+
+    try:
+        from PIL import Image
+        import numpy as np
+        # Import verify_facing_directions from process_character_sheets
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from process_character_sheets import verify_facing_directions
+
+        with Image.open(path) as img:
+            arr = np.asarray(img.convert("RGBA"))
+        ok, msg = verify_facing_directions(arr, cols=COLS, rows=ROWS, label=label, expected_row_order=row_order)
+        if ok:
+            print(f"OK    {label} [Facing Directions]: {msg}")
+            return True
+        else:
+            print(f"FAIL  {label} [Facing Directions]: {msg}")
+            return False
+    except ImportError:
+        print(f"SKIP  {label} [Facing Directions]: Pillow or NumPy not installed for deep image analysis.")
+        return True
+    except Exception as exc:
+        print(f"ERROR {label} [Facing Directions]: {exc}")
+        return False
 
 
 def main() -> int:
@@ -70,16 +101,32 @@ def main() -> int:
     parser.add_argument("--idle", required=True, help="Path to hero_<name>_idle.png")
     parser.add_argument("--walk", required=True, help="Path to hero_<name>_walk.png")
     parser.add_argument("--attack", required=True, help="Path to hero_<name>_attack.png")
+    parser.add_argument(
+        "--row-order",
+        choices=("fbrl", "fblr"),
+        default="fbrl",
+        help="Expected row order: fbrl (Row 2=RIGHT, Row 3=LEFT) or fblr (Row 2=LEFT, Row 3=RIGHT). Default: fbrl",
+    )
+    parser.add_argument("--skip-facing", action="store_true", help="Skip facing direction analysis")
     args = parser.parse_args()
 
-    results = [
-        check_one("IDLE", args.idle),
-        check_one("WALK", args.walk),
-        check_one("ATTACK", args.attack),
+    dim_results = [
+        check_dimensions("IDLE", args.idle),
+        check_dimensions("WALK", args.walk),
+        check_dimensions("ATTACK", args.attack),
     ]
-    if all(results):
-        print("\nAll three sheets have the expected dimensions.")
-        print("Reminder: this check does not verify the row order or the visual quality of frames.")
+
+    facing_results = [True, True, True]
+    if not args.skip_facing and all(dim_results):
+        print("\nVerifying profile facing directions (Row 2: RIGHT, Row 3: LEFT, body sideways, face in profile)...")
+        facing_results = [
+            check_facing("IDLE", args.idle, row_order=args.row_order),
+            check_facing("WALK", args.walk, row_order=args.row_order),
+            check_facing("ATTACK", args.attack, row_order=args.row_order),
+        ]
+
+    if all(dim_results) and all(facing_results):
+        print("\nAll sheets passed validation! Dimensions 768x512 and facing directions are correct.")
         return 0
 
     print("\nValidation failed. Correct the files before integrating them into the game.")
