@@ -87,6 +87,27 @@
               <span id="sidebar-bosses-count" class="tab-pill pill-danger">2</span>
             </button>
 
+            <button class="nav-tab" data-tab="passives">
+              <span class="tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </span>
+              <span class="tab-text">Пассивки</span>
+              <span id="sidebar-passives-count" class="tab-pill">7</span>
+            </button>
+
+            <button class="nav-tab" data-tab="items">
+              <span class="tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </span>
+              <span class="tab-text">Предметы</span>
+              <span id="sidebar-items-count" class="tab-pill" style="background:#22c55e; color:#fff;">21</span>
+            </button>
+
             <button class="nav-tab" data-tab="progression">
               <span class="tab-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -367,6 +388,26 @@
               <span class="quick-nav-action-text">Перейти в боссов →</span>
             </div>
 
+            <div class="quick-nav-card" data-jump-tab="passives">
+              <div class="quick-nav-header">
+                <div class="quick-nav-icon-wrap">⭐</div>
+                <span id="qnav-passives-count" class="quick-nav-count-badge">7 пассивок</span>
+              </div>
+              <div class="quick-nav-title">Пассивные баффы</div>
+              <div class="quick-nav-desc">Звезда шерифа, жилет (кап 70%), шпоры, часы и амулеты</div>
+              <span class="quick-nav-action-text">Перейти в пассивки →</span>
+            </div>
+
+            <div class="quick-nav-card" data-jump-tab="items">
+              <div class="quick-nav-header">
+                <div class="quick-nav-icon-wrap">📦</div>
+                <span id="qnav-items-count" class="quick-nav-count-badge">21 предмет</span>
+              </div>
+              <div class="quick-nav-title">Предметы Разлома</div>
+              <div class="quick-nav-desc">Био-пипетка (+2 HP), нано-броня, тесла-катушка и легендарные ядра</div>
+              <span class="quick-nav-action-text">Перейти в предметы →</span>
+            </div>
+
             <div class="quick-nav-card" data-jump-tab="progression">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">📈</div>
@@ -631,6 +672,98 @@
             <!-- Dynamically populated boss rows -->
           </div>
           <div id="bosses-grid" style="display:none;"></div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- TAB: PASSIVES (Sortable Accordion Row View)                       -->
+        <!-- ================================================================= -->
+        <section id="tab-passives" class="tab-pane">
+          <div class="section-toolbar">
+            <div class="toolbar-info">
+              <h2>Пассивные характеристики (7 видов)</h2>
+              <span class="toolbar-hint">Кликните на заголовок колонки для сортировки. Нажмите на строку для настройки формул и капов</span>
+            </div>
+            <div class="toolbar-actions">
+              <button id="btn-reset-passives-all" class="btn btn-sm btn-outline-danger">Сбросить пассивки к defaults</button>
+            </div>
+          </div>
+
+          <div class="accordion-table-header passives-table-cols" data-table="passives">
+            <span class="col-exp"></span>
+            <span class="col-name sortable-col is-sorted" data-table="passives" data-sort="name">
+              <span>Иконка / Пассивка / ID</span>
+              <span class="sort-icon">▲</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="passives" data-sort="base">
+              <span>Базовый эффект</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="passives" data-sort="stack">
+              <span>Прирост / стак</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="passives" data-sort="cap">
+              <span>Макс. лимит (кап)</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="passives" data-sort="scaling">
+              <span>Тип скейлинга</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-status sortable-col" data-table="passives" data-sort="status">
+              <span>Статус</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-actions">Действия</span>
+          </div>
+
+          <div id="passives-list" class="accordion-list">
+            <!-- Dynamically populated passive rows -->
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- TAB: ITEMS (Sortable Accordion Row View)                          -->
+        <!-- ================================================================= -->
+        <section id="tab-items" class="tab-pane">
+          <div class="section-toolbar">
+            <div class="toolbar-info">
+              <h2>Предметы Разлома (21 артефакт)</h2>
+              <span class="toolbar-hint">Кликните на заголовок колонки для сортировки. Нажмите на строку для настройки эффектов</span>
+            </div>
+            <div class="toolbar-actions">
+              <button id="btn-reset-items-all" class="btn btn-sm btn-outline-danger">Сбросить предметы к defaults</button>
+            </div>
+          </div>
+
+          <div class="accordion-table-header items-table-cols" data-table="items">
+            <span class="col-exp"></span>
+            <span class="col-name sortable-col is-sorted" data-table="items" data-sort="name">
+              <span>Иконка / Предмет / ID</span>
+              <span class="sort-icon">▲</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="items" data-sort="rarity">
+              <span>Редкость</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="items" data-sort="base">
+              <span>Базовое значение</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="items" data-sort="name">
+              <span>Скейлинг за стак</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-status sortable-col" data-table="items" data-sort="status">
+              <span>Статус</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-actions">Действия</span>
+          </div>
+
+          <div id="items-list" class="accordion-list">
+            <!-- Dynamically populated item rows -->
+          </div>
         </section>
 
         <!-- ================================================================= -->

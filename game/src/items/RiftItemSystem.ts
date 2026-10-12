@@ -131,8 +131,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🧬',
     color: '#22c55e',
-    description: 'Восстанавливает +5 HP при каждом уничтожении врага.',
-    stackText: '+5 HP за стак'
+    description: 'Восстанавливает +2 HP при каждом уничтожении врага.',
+    stackText: '+2 HP за стак'
   },
   overclock_module: {
     id: 'overclock_module',
@@ -198,8 +198,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'legendary',
     icon: '⏳',
     color: '#f59e0b',
-    description: 'Предотвращает смертельный урон, замораживая всех монстров и боссов на 5 сек, отталкивая их на 25м и восстанавливая 50% HP (раз за стадию).',
-    stackText: '+25% исцеления за стак'
+    description: 'Предотвращает смертельный урон, замораживая всех монстров и боссов на 5 сек, отталкивая их на 25м и восстанавливая 50% HP. Расходуется по 1 шт. при использовании.',
+    stackText: '+1 спасение от гибели за каждый кристалл'
   },
   titan_heart: {
     id: 'titan_heart',

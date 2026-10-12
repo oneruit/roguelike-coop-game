@@ -74,6 +74,7 @@ export class Player {
   public charType: CharacterType = 'ronin';
   public hp: number = 115;
   public maxHp: number = 115;
+  public baseMaxHp: number = 115;
   public speed: number = 8.6;
   public baseSpeed: number = 8.6;
   public xp: number = 0;
@@ -96,6 +97,7 @@ export class Player {
   public amuletCount: number = 0;
   public vestCount: number = 0;
   public watchCount: number = 0;
+  public mightElixirCount: number = 0;
 
   // The Rift: Item Inventory & Economy
   public riftItems: Map<RiftItemId, number> = new Map();
@@ -390,6 +392,7 @@ export class Player {
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.maxHp = heroCfg.maxHp;
+    this.baseMaxHp = heroCfg.maxHp;
     this.hp = heroCfg.maxHp;
     this.baseSpeed = heroCfg.baseSpeed;
 
@@ -425,6 +428,7 @@ export class Player {
     this.amuletCount = 0;
     this.vestCount = 0;
     this.watchCount = 0;
+    this.mightElixirCount = 0;
     this.pickupRadius = 4.2;
     this.recalculateStats();
   }
@@ -465,6 +469,22 @@ export class Player {
     if (itemDef.id === 'titan_heart') {
       this.maxHp += 150;
       this.hp = Math.min(this.maxHp, this.hp + 150);
+      this.redrawOverhead();
+    }
+    this.recalculateStats();
+  }
+
+  public removeRiftItem(id: RiftItemId, count: number = 1): void {
+    const cur = this.getItemStacks(id);
+    if (cur <= count) {
+      this.riftItems.delete(id);
+    } else {
+      this.riftItems.set(id, cur - count);
+    }
+    if (id === 'titan_heart') {
+      const reduction = 150 * Math.min(cur, count);
+      this.maxHp = Math.max(100, this.maxHp - reduction);
+      this.hp = Math.min(this.maxHp, this.hp);
       this.redrawOverhead();
     }
     this.recalculateStats();
@@ -537,8 +557,12 @@ export class Player {
     const hollowStacks = this.getItemStacks('heavy_hollowpoint');
     this.critDamage = Math.min(10.0, 0.50 + hollowStacks * 0.20 + voidCatalystStacks * 0.40);
 
-    // Leather Vest % damage reduction: 1% per stack, cap at 70%
-    this.passiveDamageReduction = Math.min(0.70, this.vestCount * 0.01);
+    // Leather Vest % damage reduction: 2% at level 1, diminishing returns up to 70% at level 300, capped at 70%
+    if (this.vestCount <= 0) {
+      this.passiveDamageReduction = 0;
+    } else {
+      this.passiveDamageReduction = Math.min(0.70, 0.02 * Math.pow(this.vestCount, Math.log(35) / Math.log(300)));
+    }
 
     // Attack Cooldown Multiplier:
     // Pocket watch: -1% cooldown per stack, capped at 25% reduction (floor 0.75)
@@ -562,7 +586,8 @@ export class Player {
     this.speed = baseSpd * (1 + speedBonus);
 
     // Sheriff Star additive scaling: 100 stacks = +200%, 138 stacks = +276%
-    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02);
+    // Elixir of Might: +10% damage per stack (+0.10)
+    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02) + (this.mightElixirCount * 0.10);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
     const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
@@ -589,6 +614,22 @@ export class Player {
   public addSheriffStarBonus(_multiplier?: number) {
     this.sheriffStarCount++;
     this.recalculateStats();
+  }
+
+  public addMightElixirBonus() {
+    this.mightElixirCount++;
+    this.recalculateStats();
+  }
+
+  public recordWeaponDamage(weaponId: string | undefined, damage: number): void {
+    if (!weaponId || damage <= 0) return;
+    let weapon = this.weapons.find(w => w.id === weaponId);
+    if (!weapon && weaponId.startsWith('invoker_')) {
+      weapon = this.weapons.find(w => w.id === 'invoker_invoke');
+    }
+    if (weapon) {
+      weapon.damageDealt += damage;
+    }
   }
 
   public addSpeedBonus(multiplier: number = 1.03) {
@@ -650,7 +691,7 @@ export class Player {
       return this.watchCount >= 25 || (1 - this.passiveCooldownMultiplier) >= 0.25;
     }
     if (itemId === 'stat_vest') {
-      return this.passiveDamageReduction >= 0.70 || this.vestCount >= 70;
+      return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
     }
     if (itemId === 'stat_spurs') {
       return this.passiveSpeedMultiplier >= 2.5;
@@ -680,7 +721,7 @@ export class Player {
         return `🧿 +1 HP/с Реген (+${this.passiveHpRegen.toFixed(1)}/с)`;
       case 'stat_vest':
         this.addDamageReduction(0.10);
-        return `🦺 -1% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
+        return `🦺 -${(this.passiveDamageReduction * 100).toFixed(1)}% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
       case 'stat_watch':
         this.addCooldownReduction(0.01);
         const cdrPct = Math.round(Math.min(0.25, this.watchCount * 0.01) * 100);
@@ -694,7 +735,7 @@ export class Player {
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
     obstacleManager?: ObstacleManager,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3, critChance?: number, critDamage?: number) => void,
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3, critChance?: number, critDamage?: number, weaponId?: string) => void,
     getElevation?: (x: number, z: number) => number
   ) {
     if (getElevation) {
@@ -872,7 +913,8 @@ export class Player {
               amount * this.getDamageMultiplier(weapon.id),
               sourcePos,
               Math.min(1.0, this.critChance + critChanceBonus),
-              Math.min(10.0, this.critDamage + critDamageBonus)
+              Math.min(10.0, this.critDamage + critDamageBonus),
+              weapon.id
             );
           }
         : undefined;
@@ -1013,9 +1055,10 @@ export class Player {
 
     // Check Chronos Phylactery (Legendary Item) lethal protection
     const chronosStacks = this.getItemStacks('chronos_phylactery');
-    if (this.hp <= 0 && this.hasChronosReady && chronosStacks > 0) {
-      this.hasChronosReady = false;
-      const healPercent = Math.min(1.0, 0.50 + (chronosStacks - 1) * 0.25);
+    if (this.hp <= 0 && chronosStacks > 0) {
+      // Consume 1 Time Crystal from inventory per use
+      this.removeRiftItem('chronos_phylactery', 1);
+      const healPercent = 0.50;
       this.hp = Math.round(this.maxHp * healPercent);
       this.addBuff({
         type: 'invulnerable',
@@ -1089,24 +1132,13 @@ export class Player {
 
   public static readonly MAX_WEAPONS = 4;
 
-  public getAwakenedCap(grade: number = 1): number {
-    const count = this.weapons.filter(w => (w.awakenedGrade ?? 0) >= grade).length;
-    switch (count) {
-      case 1: return 6;
-      case 2: return 8;
-      case 3: return 10;
-      case 4: return 12;
-      default: return 12;
-    }
+  public getAwakenedCap(_grade: number = 1): number {
+    return 12;
   }
 
   public areAllWeaponsMaxed(): boolean {
     if (this.weapons.length < Player.MAX_WEAPONS) return false;
-    return this.weapons.every(w => {
-      const g = w.awakenedGrade ?? 0;
-      const cap = g > 0 ? this.getAwakenedCap(g) : 12;
-      return w.level >= cap;
-    });
+    return this.weapons.every(w => w.level >= 12);
   }
 
   public giveAllWeapons(scene: Scene) {
@@ -1191,6 +1223,10 @@ export class Player {
     this.amuletCount = 0;
     this.vestCount = 0;
     this.watchCount = 0;
+    this.mightElixirCount = 0;
+    for (const w of this.weapons) {
+      w.damageDealt = 0;
+    }
     this.passiveDamageMultiplier = 1.0;
     this.passiveSpeedMultiplier = 1.0;
     this.passiveCooldownMultiplier = 1.0;

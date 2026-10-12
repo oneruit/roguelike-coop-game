@@ -27,6 +27,8 @@ export class Gem {
   private velocity = new Vector3();
   private baseHeight: number;
   private floatTime: number;
+  private outerMesh: Mesh;
+  private coreMesh: Mesh;
 
   // Static shared assets to avoid mid-game allocations and GC
   private static outerGeometries: Record<GemType, BufferGeometry> = {
@@ -103,12 +105,12 @@ export class Gem {
     this.mesh = new Group();
 
     // Outer crystal (no castShadow for performance)
-    const gemMesh = new Mesh(Gem.outerGeometries[type], Gem.materials[type]);
-    this.mesh.add(gemMesh);
+    this.outerMesh = new Mesh(Gem.outerGeometries[type], Gem.materials[type]);
+    this.mesh.add(this.outerMesh);
 
     // Inner glowing core
-    const coreMesh = new Mesh(Gem.innerGeometries[type], Gem.coreMaterial);
-    this.mesh.add(coreMesh);
+    this.coreMesh = new Mesh(Gem.innerGeometries[type], Gem.coreMaterial);
+    this.mesh.add(this.coreMesh);
 
     // Golden halo ring for passive crystals
     if (type === 'gold') {
@@ -118,6 +120,31 @@ export class Gem {
 
     this.mesh.position.copy(this.position);
     this.mesh.position.y = this.baseHeight;
+  }
+
+  public setType(newType: GemType): void {
+    if (this.type === newType) return;
+    this.type = newType;
+    if (this.outerMesh && Gem.outerGeometries[newType] && Gem.materials[newType]) {
+      this.outerMesh.geometry = Gem.outerGeometries[newType];
+      this.outerMesh.material = Gem.materials[newType];
+    }
+    if (this.coreMesh && Gem.innerGeometries[newType]) {
+      this.coreMesh.geometry = Gem.innerGeometries[newType];
+    }
+  }
+
+  public addXp(amount: number): void {
+    this.xpValue += amount;
+    if (this.type !== 'gold') {
+      if (this.xpValue >= 75) {
+        this.setType('red');
+      } else if (this.xpValue >= 25) {
+        this.setType('green');
+      }
+      const scaleMultiplier = Math.min(2.0, 1.0 + Math.max(0, this.xpValue - 40) * 0.005);
+      this.mesh.scale.set(scaleMultiplier, scaleMultiplier, scaleMultiplier);
+    }
   }
 
   public update(dt: number, playerPos: Vector3, pickupRadius: number): boolean {

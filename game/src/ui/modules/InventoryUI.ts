@@ -14,6 +14,7 @@ export class InventoryUI {
   private inventoryItemsList: HTMLElement | null;
 
   public cachedPlayer: Player | null = null;
+  public statDisplayMode: 'split' | 'total' = 'split';
   public onInventoryToggle?: (isOpen: boolean) => void;
   public onMenuPush?: (menu: string) => void;
   public onMenuRemove?: (menu: string) => void;
@@ -34,6 +35,21 @@ export class InventoryUI {
     this.btnOpenInventory?.addEventListener('click', () => {
       if (this.cachedPlayer) this.toggleInventory(this.cachedPlayer);
     });
+
+    document.getElementById('btn-inventory-toggle-stat-mode')?.addEventListener('click', () => {
+      this.toggleStatDisplayMode();
+    });
+  }
+
+  public toggleStatDisplayMode(): void {
+    this.statDisplayMode = this.statDisplayMode === 'split' ? 'total' : 'split';
+    const label = document.getElementById('inventory-stat-mode-label');
+    if (label) {
+      label.innerText = this.statDisplayMode === 'split' ? 'Режим: Базовый (+бонус)' : 'Режим: Общий';
+    }
+    if (this.cachedPlayer) {
+      this.renderInventory(this.cachedPlayer);
+    }
   }
 
   public isInventoryOpen(): boolean {
@@ -72,6 +88,11 @@ export class InventoryUI {
       this.inventoryHeroTitle.innerText = `${heroName.toUpperCase()} • УРОВЕНЬ ${player.level}`;
     }
 
+    const statModeLabel = document.getElementById('inventory-stat-mode-label');
+    if (statModeLabel) {
+      statModeLabel.innerText = this.statDisplayMode === 'split' ? 'Режим: Базовый (+бонус)' : 'Режим: Общий';
+    }
+
     // 1. Stats Table
     if (this.inventoryStatsList) {
       const startMult = player.getDamageMultiplier(player.startingWeaponId);
@@ -82,10 +103,33 @@ export class InventoryUI {
       const naniteReduction = player.getNaniteDamageReduction();
       const totalArmorPct = Math.round((1 - (1 - player.passiveDamageReduction) * (1 - naniteReduction)) * 100);
 
+      // HP display
+      const baseMaxHp = player.baseMaxHp || 100;
+      const hpBonus = Math.max(0, player.maxHp - baseMaxHp);
+      const hpValue = this.statDisplayMode === 'split' && hpBonus > 0
+        ? `<span style="color: #f1f5f9;">${Math.round(player.hp)} / ${baseMaxHp}</span> <span style="color: #22c55e;">(+${hpBonus})</span>`
+        : `<span style="color: #f1f5f9;">${Math.round(player.hp)} / ${player.maxHp}</span>`;
+
+      // Damage multiplier display
+      const startMultPct = Math.round((startMult - 1) * 100);
+      const genMultPct = Math.round((genMult - 1) * 100);
+      const startDmgValue = this.statDisplayMode === 'split' && startMultPct > 0
+        ? `<span style="color: #f1f5f9;">100%</span> <span style="color: #22c55e;">(+${startMultPct}%)</span>`
+        : `<span style="color: #f1f5f9;">+${startMultPct}%</span>`;
+      const genDmgValue = this.statDisplayMode === 'split' && genMultPct > 0
+        ? `<span style="color: #f1f5f9;">100%</span> <span style="color: #22c55e;">(+${genMultPct}%)</span>`
+        : `<span style="color: #f1f5f9;">+${genMultPct}%</span>`;
+
+      // Speed display
+      const spdBonus = Number((player.speed - player.baseSpeed).toFixed(1));
+      const spdValue = this.statDisplayMode === 'split' && spdBonus > 0
+        ? `<span style="color: #f1f5f9;">${player.baseSpeed.toFixed(1)}</span> <span style="color: #22c55e;">(+${spdBonus})</span> (x${player.passiveSpeedMultiplier.toFixed(2)})`
+        : `<span style="color: #f1f5f9;">${player.speed.toFixed(1)} (x${player.passiveSpeedMultiplier.toFixed(2)})</span>`;
+
       this.inventoryStatsList.innerHTML = `
         <div class="inv-stat-row">
           <span class="inv-stat-label">❤️ Здоровье</span>
-          <span class="inv-stat-value">${Math.round(player.hp)} / ${player.maxHp}</span>
+          <span class="inv-stat-value">${hpValue}</span>
         </div>
         <div class="inv-stat-row">
           <span class="inv-stat-label">🛡️ Энергощит</span>
@@ -97,7 +141,7 @@ export class InventoryUI {
         </div>
         <div class="inv-stat-row">
           <span class="inv-stat-label">👟 Скорость</span>
-          <span class="inv-stat-value">${player.speed.toFixed(1)} (x${player.passiveSpeedMultiplier.toFixed(2)})</span>
+          <span class="inv-stat-value">${spdValue}</span>
         </div>
         <div class="inv-stat-row">
           <span class="inv-stat-label">🦺 Снижение урона (Броня)</span>
@@ -105,12 +149,17 @@ export class InventoryUI {
         </div>
         <div class="inv-stat-row" title="Начальные бонусы героя применяются только к его стартовому оружию">
           <span class="inv-stat-label">🎯 Урон стартового оружия</span>
-          <span class="inv-stat-value text-accent">+${Math.round((startMult - 1) * 100)}%</span>
+          <span class="inv-stat-value text-accent">${startDmgValue}</span>
         </div>
         <div class="inv-stat-row" title="Общие бонусы урона (пассивки, предметы, алтари)">
           <span class="inv-stat-label">⚔️ Общий множитель урона</span>
-          <span class="inv-stat-value">+${Math.round((genMult - 1) * 100)}%</span>
+          <span class="inv-stat-value">${genDmgValue}</span>
         </div>
+        ${player.mightElixirCount > 0 ? `
+        <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+10% за каждый заряд)">
+          <span class="inv-stat-label">⚡ Эликсир Могущества</span>
+          <span class="inv-stat-value text-accent">+${player.mightElixirCount * 10}% <span style="color: #94a3b8; font-size: 11px;">(x${player.mightElixirCount})</span></span>
+        </div>` : ''}
         <div class="inv-stat-row" title="Шанс критического удара (максимум 100%)">
           <span class="inv-stat-label">🎯 Шанс крит. урона</span>
           <span class="inv-stat-value text-crit">${critPct}%</span>
@@ -120,8 +169,8 @@ export class InventoryUI {
           <span class="inv-stat-value text-crit-dmg">+${critDmgPct}%</span>
         </div>
         <div class="inv-stat-row">
-          <span class="inv-stat-label">⏱️ Снижение перезарядки</span>
-          <span class="inv-stat-value">-${cdrPct}%</span>
+          <span class="inv-stat-label">⏱️ Ускорение перезарядки</span>
+          <span class="inv-stat-value">+${cdrPct}%</span>
         </div>
         <div class="inv-stat-row">
           <span class="inv-stat-label">🧲 Радиус сбора</span>
@@ -181,14 +230,21 @@ export class InventoryUI {
           icon: '🦺',
           count: player.vestCount,
           title: 'Кожаный Жилет',
-          desc: `-${Math.round(player.passiveDamageReduction * 100)}% получаемого урона (макс. 70%)`
+          desc: `-${(player.passiveDamageReduction * 100).toFixed(1)}% получаемого урона (макс. 70%)`
         },
         {
           id: 'stat_watch',
           icon: '⏱️',
           count: player.watchCount,
           title: 'Карманные Часы',
-          desc: `-${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к перезарядке (макс. 25%)`
+          desc: `+${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к ускорению перезарядки (макс. 25%)`
+        },
+        {
+          id: 'stat_might_elixir',
+          icon: '⚡',
+          count: player.mightElixirCount,
+          title: 'Эликсир Могущества',
+          desc: `+${player.mightElixirCount * 10}% к общему урону героя (складывается)`
         }
       ];
 
@@ -337,16 +393,38 @@ export class InventoryUI {
   }
 
   public getWeaponDetailedInventoryStats(weapon: Weapon): { label: string; value: string }[] {
-    const dps = Math.round(weapon.damage / Math.max(0.08, weapon.effectiveCooldown));
-    const stats: { label: string; value: string }[] = [
-      { label: 'Урон', value: `${Math.round(weapon.damage)}` },
-      { label: 'КД', value: `${weapon.effectiveCooldown.toFixed(2)}с` },
-      { label: 'DPS', value: `${dps}` }
-    ];
+    const baseDmg = Math.round(weapon.baseDamage + (weapon.level - 1) * weapon.damagePerLevel * weapon.gradeStatMultiplier);
+    const bonusDmg = Math.round(weapon.bonusDamage);
+    const totalDmg = Math.round(weapon.damage);
 
-    if (weapon.bonusDamage > 0) {
-      stats.push({ label: 'Бонус урона', value: `+${Math.round(weapon.bonusDamage * 100)}%` });
+    let dmgDisplay = '';
+    if (this.statDisplayMode === 'split') {
+      if (bonusDmg > 0) {
+        dmgDisplay = `<span style="color: #f1f5f9;">${baseDmg}</span> <span style="color: #22c55e; font-weight: 800;">(+${bonusDmg})</span>`;
+      } else {
+        dmgDisplay = `<span style="color: #f1f5f9;">${baseDmg}</span>`;
+      }
+    } else {
+      dmgDisplay = `<span style="color: #f1f5f9;">${totalDmg}</span>`;
     }
+
+    const dps = Math.round(weapon.damage / Math.max(0.08, weapon.effectiveCooldown));
+    const baseDps = Math.round(baseDmg / Math.max(0.08, weapon.effectiveCooldown));
+    const bonusDps = Math.max(0, dps - baseDps);
+
+    let dpsDisplay = '';
+    if (this.statDisplayMode === 'split' && bonusDps > 0) {
+      dpsDisplay = `<span style="color: #f1f5f9;">${baseDps}</span> <span style="color: #22c55e; font-weight: 800;">(+${bonusDps})</span>`;
+    } else {
+      dpsDisplay = `<span style="color: #f1f5f9;">${dps}</span>`;
+    }
+
+    const stats: { label: string; value: string }[] = [
+      { label: 'Урон', value: dmgDisplay },
+      { label: 'КД', value: `${weapon.effectiveCooldown.toFixed(2)}с` },
+      { label: 'DPS', value: dpsDisplay },
+      { label: 'Нанесено урона', value: `${Math.round(weapon.damageDealt || 0).toLocaleString('ru-RU')}` }
+    ];
 
     const anyW = weapon as any;
     if (typeof anyW.radius === 'number') {

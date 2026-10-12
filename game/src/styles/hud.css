@@ -13,14 +13,14 @@
 /* Bottom Level & XP Progression Bar */
 .hud-bottom-xp {
   position: absolute;
-  bottom: 12px;
+  bottom: 60px;
   left: 50%;
   transform: translateX(-50%);
   width: min(640px, calc(100vw - 40px));
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   z-index: 30;
   pointer-events: none;
 }
@@ -44,7 +44,7 @@
 
 #xp-bar-container {
   width: 100%;
-  height: 9px;
+  height: 18px;
   background: rgba(4, 12, 24, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1021,7 +1021,29 @@
 }
 
 #minimap-container.center-mode ~ .minimap-stats-panel {
-  display: none !important;
+  position: fixed !important;
+  top: calc(50% - 250px - 44px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: auto !important;
+  z-index: 45 !important;
+  pointer-events: auto !important;
+}
+
+#minimap-container.center-mode ~ .minimap-stats-panel .stat-badge {
+  width: auto !important;
+  min-width: 110px !important;
+  padding: 6px 14px !important;
+  background: rgba(10, 20, 36, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1.5px solid rgba(0, 180, 255, 0.45) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6) !important;
 }
 
 #minimap-container:hover {

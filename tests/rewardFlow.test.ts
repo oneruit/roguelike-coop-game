@@ -30,7 +30,8 @@ function fixture(isCoop = false) {
     showChestChoice(_items: unknown, _player: Player, done: (item: any) => void) { chestChoices.push(done); },
     resetLevelUpState() {}, triggerAltarNotification() {},
     showMerchant(_merchant: any, _player: Player) { merchantOpens++; },
-    hideMerchant() {}
+    hideMerchant() {},
+    setInGameHUDVisible(_visible: boolean) {}
   };
   const item = { id: 'test_relic', name: 'Relic', description: '', icon: '', color: '' };
   let opens = 0;

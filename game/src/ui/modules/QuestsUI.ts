@@ -28,6 +28,7 @@ export interface QuestsUIContext {
   pushMenu: (menu: string) => void;
   removeMenu: (menu: string) => void;
   triggerAltarNotification: (name: string, subtitle: string, icon: string, color: string) => void;
+  showCharacterSelect?: () => void;
 }
 
 export class QuestsUI {
@@ -36,6 +37,7 @@ export class QuestsUI {
   public activeQuestChapter: number = 1;
   public activeQuestId: string = 'chakram';
   public isQuestsOpenInMenu: boolean = false;
+  public isFromCharSelect: boolean = false;
 
   constructor(ctx: QuestsUIContext) {
     this.ctx = ctx;
@@ -58,7 +60,7 @@ export class QuestsUI {
     this.renderQuestsModal(targetId, chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1) {
+  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1, fromCharSelect: boolean = false) {
     this.activeQuestChapter = chapter;
     this.activeQuestId = selectedQuestId;
     if (
@@ -71,7 +73,15 @@ export class QuestsUI {
       this.activeQuestHero = selectedQuestId as CharacterType;
     }
 
-    if (this.ctx.isPaused() || this.ctx.getMenuStack().includes('pause')) {
+    if (fromCharSelect) {
+      this.isFromCharSelect = true;
+      this.isQuestsOpenInMenu = false;
+      this.ctx.questsModal.classList.remove('in-main-menu');
+      const stack = this.ctx.getMenuStack();
+      if (stack[stack.length - 1] !== 'quests') {
+        this.ctx.pushMenu('quests');
+      }
+    } else if (this.ctx.isPaused() || this.ctx.getMenuStack().includes('pause')) {
       this.ctx.pauseModal.classList.add('hidden');
       const stack = this.ctx.getMenuStack();
       if (stack[stack.length - 1] !== 'quests') {
@@ -102,6 +112,12 @@ export class QuestsUI {
     document.getElementById('menu-btn-quests')?.classList.remove('active');
     this.isQuestsOpenInMenu = false;
     this.ctx.removeMenu('quests');
+    if (this.isFromCharSelect) {
+      this.isFromCharSelect = false;
+      this.ctx.showCharacterSelect?.();
+    } else if (this.ctx.isPaused() || this.ctx.getMenuStack().includes('pause')) {
+      this.ctx.pauseModal.classList.remove('hidden');
+    }
   }
 
   public getChapterQuests(chapter: number): ChapterQuestItem[] {

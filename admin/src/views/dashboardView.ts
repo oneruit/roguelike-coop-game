@@ -154,6 +154,8 @@ export function updateOverviewStats(state: BalanceState): void {
   const heroCount = Object.keys(state.draftBalance.heroes).length;
   const monsterCount = Object.keys(state.draftBalance.monsters).length;
   const bossCount = Object.keys(state.draftBalance.bosses).length;
+  const passiveCount = Object.keys(state.draftBalance.passives || {}).length;
+  const itemCount = Object.keys(state.draftBalance.items || {}).length;
   const opponentsCount = monsterCount + bossCount;
 
   const kpiCount = document.getElementById('kpi-weapons-count');
@@ -177,6 +179,10 @@ export function updateOverviewStats(state: BalanceState): void {
   if (sideM) sideM.innerText = `${monsterCount}`;
   const sideB = document.getElementById('sidebar-bosses-count');
   if (sideB) sideB.innerText = `${bossCount}`;
+  const sideP = document.getElementById('sidebar-passives-count');
+  if (sideP) sideP.innerText = `${passiveCount}`;
+  const sideI = document.getElementById('sidebar-items-count');
+  if (sideI) sideI.innerText = `${itemCount}`;
 
   // Quick navigation count badges
   const qnavW = document.getElementById('qnav-weapons-count');
@@ -187,11 +193,15 @@ export function updateOverviewStats(state: BalanceState): void {
   if (qnavM) qnavM.innerText = `${monsterCount} видов`;
   const qnavB = document.getElementById('qnav-bosses-count');
   if (qnavB) qnavB.innerText = `${bossCount} босса`;
+  const qnavP = document.getElementById('qnav-passives-count');
+  if (qnavP) qnavP.innerText = `${passiveCount} пассивок`;
+  const qnavI = document.getElementById('qnav-items-count');
+  if (qnavI) qnavI.innerText = `${itemCount} предметов`;
 
   // Hero banner description
   const heroDesc = document.getElementById('dashboard-hero-desc');
   if (heroDesc) {
-    heroDesc.innerText = `Централизованный пульт мониторинга и точечной настройки ${weaponCount} видов оружия, ${heroCount} ковбоев/героев, ${monsterCount} рядовых монстров и ${bossCount} эпических боссов арены. Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.`;
+    heroDesc.innerText = `Централизованный пульт мониторинга и точечной настройки ${weaponCount} видов оружия, ${heroCount} ковбоев/героев, ${monsterCount} рядовых монстров, ${bossCount} эпических боссов, ${passiveCount} пассивок и ${itemCount} предметов Разлома. Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.`;
   }
 
   const kpiAvgDps = document.getElementById('kpi-avg-dps');

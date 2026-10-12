@@ -16,7 +16,9 @@ export class BalanceState {
     weapons: { col: 'name', dir: 'asc' },
     heroes: { col: 'name', dir: 'asc' },
     monsters: { col: 'name', dir: 'asc' },
-    bosses: { col: 'name', dir: 'asc' }
+    bosses: { col: 'name', dir: 'asc' },
+    passives: { col: 'name', dir: 'asc' },
+    items: { col: 'name', dir: 'asc' }
   };
 
   constructor() {

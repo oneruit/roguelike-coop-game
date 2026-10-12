@@ -312,6 +312,34 @@ export class SupabaseService {
       });
     }
 
+    // 7 Passives
+    for (const [key, p] of Object.entries(DEFAULT_BALANCE.passives)) {
+      rows.push({
+        id: `passive:${key}`,
+        category: 'passive',
+        key,
+        name: p.name,
+        description: p.description,
+        data: p,
+        version: 1,
+        updated_at: new Date().toISOString()
+      });
+    }
+
+    // 21 Items
+    for (const [key, item] of Object.entries(DEFAULT_BALANCE.items)) {
+      rows.push({
+        id: `item:${key}`,
+        category: 'item',
+        key,
+        name: item.name,
+        description: item.description,
+        data: item,
+        version: 1,
+        updated_at: new Date().toISOString()
+      });
+    }
+
     // Global
     rows.push({
       id: 'global:combat',
@@ -412,6 +440,12 @@ export class SupabaseService {
           name = dataPayload.name || key;
         } else if (cat === 'bosses') {
           dataPayload = this.state.draftBalance.bosses[key];
+          name = dataPayload.name || key;
+        } else if (cat === 'passives') {
+          dataPayload = this.state.draftBalance.passives[key];
+          name = dataPayload.name || key;
+        } else if (cat === 'items') {
+          dataPayload = this.state.draftBalance.items[key];
           name = dataPayload.name || key;
         } else if (cat === 'global') {
           dataPayload = this.state.draftBalance.global;

@@ -152,90 +152,28 @@ export class LevelUpUI {
     }
   }
 
-  private selectAutoLevelUpOption(options: UpgradeOption[], player: Player): UpgradeOption {
-    const gradedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 1);
-    const numGraded = gradedWeapons.length;
-
-    if (numGraded >= 4) {
-      const weaponsUnder12 = gradedWeapons.filter(w => w.level < 12);
-      if (weaponsUnder12.length > 0) {
-        const eligibleOptions = options.filter(opt =>
-          opt.id.startsWith('upgrade_') &&
-          weaponsUnder12.some(w => opt.id === `upgrade_${w.id}`)
-        );
-        if (eligibleOptions.length > 0) {
-          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
-        }
-      }
-      const awaken3 = options.filter(opt => opt.id.startsWith('awaken3_'));
-      if (awaken3.length > 0) return awaken3[Math.floor(Math.random() * awaken3.length)];
-      const dmgOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
-      if (dmgOpt) return dmgOpt;
-      const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
-      if (hpOpt) return hpOpt;
-    }
-
-    if (numGraded === 3) {
-      const weaponsUnder10 = gradedWeapons.filter(w => w.level < 10);
-      if (weaponsUnder10.length > 0) {
-        const eligibleOptions = options.filter(opt =>
-          opt.id.startsWith('upgrade_') &&
-          weaponsUnder10.some(w => opt.id === `upgrade_${w.id}`)
-        );
-        if (eligibleOptions.length > 0) {
-          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
-        }
-      } else {
-        const awaken4 = options.find(opt => opt.id.startsWith('awaken_'));
-        if (awaken4) return awaken4;
-      }
-    }
-
-    if (numGraded === 2) {
-      const weaponsUnder8 = gradedWeapons.filter(w => w.level < 8);
-      if (weaponsUnder8.length > 0) {
-        const eligibleOptions = options.filter(opt =>
-          opt.id.startsWith('upgrade_') &&
-          weaponsUnder8.some(w => opt.id === `upgrade_${w.id}`)
-        );
-        if (eligibleOptions.length > 0) {
-          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
-        }
-      } else {
-        const awaken3 = options.find(opt => opt.id.startsWith('awaken_'));
-        if (awaken3) return awaken3;
-      }
-    }
-
-    if (numGraded < 2) {
-      const awaken = options.find(opt => opt.id.startsWith('awaken_'));
-      if (awaken) return awaken;
-
-      const normalUpgrades = options.filter(opt => {
-        if (!opt.id.startsWith('upgrade_')) return false;
-        const weaponId = opt.id.replace('upgrade_', '');
-        const weapon = player.weapons.find(w => w.id === weaponId);
-        return weapon ? weapon.level < 6 : false;
-      });
-      if (normalUpgrades.length > 0) {
-        return normalUpgrades[Math.floor(Math.random() * normalUpgrades.length)];
-      }
-    }
-
+  private selectAutoLevelUpOption(options: UpgradeOption[], _player: Player): UpgradeOption {
+    // 1. Prioritize awakening if offered
     const anyAwaken = options.find(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_'));
     if (anyAwaken) return anyAwaken;
 
+    // 2. Normal upgrades for weapons
     const anyUpgrade = options.filter(opt => opt.id.startsWith('upgrade_'));
     if (anyUpgrade.length > 0) return anyUpgrade[Math.floor(Math.random() * anyUpgrade.length)];
 
+    // 3. New weapon
     const anyNew = options.find(opt => opt.id.startsWith('new_'));
     if (anyNew) return anyNew;
 
-    const damageOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
-    if (damageOpt) return damageOpt;
+    // 4. Elixirs
+    const dmgOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
+    if (dmgOpt) return dmgOpt;
 
     const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
     if (hpOpt) return hpOpt;
+
+    const speedOpt = options.find(opt => opt.id === 'bonus_speed_elixir');
+    if (speedOpt) return speedOpt;
 
     return options[0];
   }
@@ -394,13 +332,10 @@ export class LevelUpUI {
 
   public generateWeaponOptions(player: Player, excludeIds?: ReadonlySet<string>): UpgradeOption[] {
     const allMaxed = player.areAllWeaponsMaxed();
-    const anyAwakened = player.weapons.some(w => (w.awakenedGrade ?? 0) > 0);
-    const inAwakeningPhase = anyAwakened || allMaxed;
 
     const upgradeOptions: UpgradeOption[] = [];
     for (const weapon of player.weapons) {
-      const g = weapon.awakenedGrade ?? 0;
-      const effectiveCap = g > 0 ? player.getAwakenedCap(g) : weapon.maxLevel;
+      const effectiveCap = 12;
       if (weapon.level < effectiveCap && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
         const grade = rollWeaponGrade(this.ctx.getCurrentStageNumber());
         const gradeLabel = getGradeLabel(grade);
@@ -421,51 +356,19 @@ export class LevelUpUI {
       }
     }
 
-    if (inAwakeningPhase) {
-      const hpOption: UpgradeOption = {
-        id: 'bonus_health_elixir',
-        title: 'Эликсир Жизни (+50 HP)',
-        icon: '❤️',
-        levelTag: 'БОНУС ЗДОРОВЬЯ',
-        description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
-        grade: 'rare',
-        apply: () => {
-          player.maxHp += 50;
-          player.hp = Math.min(player.maxHp, player.hp + 50);
-          player.recalculateStats();
-        }
-      };
+    const pool: UpgradeOption[] = [...upgradeOptions];
 
-      const damageOption: UpgradeOption = {
-        id: 'bonus_damage_elixir',
-        title: 'Эликсир Могущества (+10% урона)',
-        icon: '⚡',
-        levelTag: 'БОНУС УРОНА',
-        description: 'Увеличивает весь наносимый урон героя на +10%.',
-        grade: 'legendary',
-        apply: () => {
-          player.damageMultiplier += 0.10;
-          player.recalculateStats();
-        }
-      };
-
-      const awakeningOptions: UpgradeOption[] = [];
-
+    // Weapon grade awakening is offered ONLY when ALL weapons are at maximum (level 12)
+    if (allMaxed) {
       const unawakenedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 0);
-      const nextAwakenedCount = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 1).length + 1;
-      let targetCapAfterAwaken = 6;
-      if (nextAwakenedCount === 2) targetCapAfterAwaken = 8;
-      else if (nextAwakenedCount === 3) targetCapAfterAwaken = 10;
-      else if (nextAwakenedCount >= 4) targetCapAfterAwaken = 12;
-
       for (const weapon of unawakenedWeapons) {
-        awakeningOptions.push({
+        pool.push({
           id: `awaken_${weapon.id}`,
           title: `Пробуждение Грейда II: ${weapon.name}`,
           icon: '🌟',
           iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: `ГРЕЙД II • СБРОС (МАКС. ${targetCapAfterAwaken})`,
-          description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до ${targetCapAfterAwaken} ур.`,
+          levelTag: 'ГРЕЙД II • СБРОС (МАКС. 12)',
+          description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до 12 ур.`,
           grade: 'legendary',
           apply: () => {
             weapon.awakenGrade();
@@ -475,55 +378,25 @@ export class LevelUpUI {
       }
 
       const allGrade2OrHigher = player.weapons.every(w => (w.awakenedGrade ?? 0) >= 1);
-      const grade2Weapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 1 && (w.level >= 12 || allGrade2OrHigher));
-      const nextGrade3Count = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 2).length + 1;
-      let targetCapGrade3 = 6;
-      if (nextGrade3Count === 2) targetCapGrade3 = 8;
-      else if (nextGrade3Count === 3) targetCapGrade3 = 10;
-      else if (nextGrade3Count >= 4) targetCapGrade3 = 12;
-
-      for (const weapon of grade2Weapons) {
-        awakeningOptions.push({
-          id: `awaken3_${weapon.id}`,
-          title: `Пробуждение Грейда III: ${weapon.name}`,
-          icon: '🔥',
-          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: `ГРЕЙД III • СБРОС (МАКС. ${targetCapGrade3})`,
-          description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до ${targetCapGrade3} ур.`,
-          grade: 'legendary',
-          apply: () => {
-            weapon.awakenGrade();
-            player.recalculateStats();
-          }
-        });
-      }
-
-      const awakenedUpgrades = upgradeOptions.filter(opt => {
-        const weaponId = opt.id.replace('upgrade_', '');
-        const weapon = player.weapons.find(w => w.id === weaponId);
-        if (!weapon) return false;
-        const g = weapon.awakenedGrade ?? 0;
-        return g > 0 && weapon.level < player.getAwakenedCap(g);
-      });
-      const otherCandidates = [
-        ...upgradeOptions.filter(o => !awakenedUpgrades.includes(o)),
-        ...awakeningOptions
-      ];
-      const shuffledOthers = filterAndShuffleForReroll(otherCandidates, excludeIds);
-      const chosenOthers: UpgradeOption[] = [...awakenedUpgrades];
-      for (const opt of shuffledOthers) {
-        if (chosenOthers.length >= 2) break;
-        if (!chosenOthers.some(o => o.id === opt.id)) {
-          chosenOthers.push(opt);
+      if (allGrade2OrHigher) {
+        const grade2Weapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 1);
+        for (const weapon of grade2Weapons) {
+          pool.push({
+            id: `awaken3_${weapon.id}`,
+            title: `Пробуждение Грейда III: ${weapon.name}`,
+            icon: '🔥',
+            iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+            levelTag: 'ГРЕЙД III • СБРОС (МАКС. 12)',
+            description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до 12 ур.`,
+            grade: 'legendary',
+            apply: () => {
+              weapon.awakenGrade();
+              player.recalculateStats();
+            }
+          });
         }
       }
-      if (chosenOthers.length < 2 && !chosenOthers.some(o => o.id === damageOption.id)) {
-        chosenOthers.push(damageOption);
-      }
-      return [hpOption, ...chosenOthers];
     }
-
-    const pool: UpgradeOption[] = [...upgradeOptions];
 
     if (player.weapons.length < 4 && !allMaxed) {
       const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
@@ -649,6 +522,51 @@ export class LevelUpUI {
           addGenericOption('assault_rifle', 'Штурмовая Винтовка', '🔫', 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль', () => new AssaultRifleWeapon(() => player.triggerAttackAnim(0.20)));
         }
       }
+    }
+    // Add elixirs if all weapons are maxed or if pool has fewer than 3 options, ensuring always 3 choices
+    const hpOption: UpgradeOption = {
+      id: 'bonus_health_elixir',
+      title: 'Эликсир Жизни (+50 HP)',
+      icon: '❤️',
+      levelTag: 'БОНУС ЗДОРОВЬЯ',
+      description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
+      grade: 'rare',
+      apply: () => {
+        player.maxHp += 50;
+        player.hp = Math.min(player.maxHp, player.hp + 50);
+        player.recalculateStats();
+      }
+    };
+
+    const damageOption: UpgradeOption = {
+      id: 'bonus_damage_elixir',
+      title: 'Эликсир Могущества (+10% урона)',
+      icon: '⚡',
+      levelTag: 'БОНУС УРОНА',
+      description: 'Увеличивает весь наносимый урон героя на +10%.',
+      grade: 'legendary',
+      apply: () => {
+        player.addMightElixirBonus();
+      }
+    };
+
+    const speedOption: UpgradeOption = {
+      id: 'bonus_speed_elixir',
+      title: 'Эликсир Скорости (+8% скорости)',
+      icon: '👟',
+      levelTag: 'БОНУС СКОРОСТИ',
+      description: 'Увеличивает скорость передвижения героя на +8%.',
+      grade: 'rare',
+      apply: () => {
+        player.passiveSpeedMultiplier += 0.08;
+        player.recalculateStats();
+      }
+    };
+
+    if (allMaxed || pool.length < 3) {
+      if (!pool.some(o => o.id === hpOption.id)) pool.push(hpOption);
+      if (!pool.some(o => o.id === damageOption.id)) pool.push(damageOption);
+      if (!pool.some(o => o.id === speedOption.id)) pool.push(speedOption);
     }
 
     const shuffled = filterAndShuffleForReroll(pool, excludeIds);
