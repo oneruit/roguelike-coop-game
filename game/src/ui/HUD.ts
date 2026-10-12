@@ -70,6 +70,7 @@ export class HUD {
   public onRestartSameSeed?: () => void;
   public onReturnToMenu?: () => void;
   public onToggleDevMode?: () => void;
+  public isTrainingModeActive: boolean = false;
 
   public static readonly MENU_BACKGROUNDS: readonly string[] = [
     '/textures/ui/menu_background_1.jpg',
@@ -491,6 +492,7 @@ export class HUD {
     });
 
     document.getElementById('btn-pause-restart-same')?.addEventListener('click', () => {
+      if (!this.isTrainingModeActive) return;
       this.hidePause();
       if (this.onRestartSameSeed) {
         this.onRestartSameSeed();
@@ -518,8 +520,30 @@ export class HUD {
       this.showSettings('pause');
     });
 
+    const confirmChangeHeroModal = document.getElementById('change-hero-confirm-modal');
+    const btnConfirmChangeHero = document.getElementById('btn-confirm-change-hero');
+    const btnCancelChangeHero = document.getElementById('btn-cancel-change-hero');
+
     this.btnPauseRestart.addEventListener('click', () => {
       this.hidePause();
+      confirmChangeHeroModal?.classList.remove('hidden');
+      if (!this.menuStack.includes('change_hero_confirm')) {
+        this.menuStack.push('change_hero_confirm');
+      }
+    });
+
+    btnCancelChangeHero?.addEventListener('click', () => {
+      confirmChangeHeroModal?.classList.add('hidden');
+      this.menuStack = this.menuStack.filter((s) => s !== 'change_hero_confirm');
+      this.showPause();
+    });
+
+    btnConfirmChangeHero?.addEventListener('click', () => {
+      confirmChangeHeroModal?.classList.add('hidden');
+      this.menuStack = this.menuStack.filter((s) => s !== 'change_hero_confirm');
+      // Reset previous world and return to main menu state
+      this.onReturnToMenu?.();
+      // Show character select
       this.showCharacterSelect();
     });
 
@@ -620,6 +644,7 @@ export class HUD {
 
   public showMainMenu() {
     this.menuStack = [];
+    document.getElementById('change-hero-confirm-modal')?.classList.add('hidden');
     this.hideCoopMenu();
     this.hideSettings();
     this.hideExitModal();
@@ -711,6 +736,10 @@ export class HUD {
         textElem.textContent = `#${activeSeed}`;
       }
     }
+    const btnSame = document.getElementById('btn-pause-restart-same');
+    if (btnSame) {
+      btnSame.classList.toggle('hidden', !this.isTrainingModeActive);
+    }
     this.pauseModal.classList.remove('hidden');
   }
 
@@ -761,6 +790,15 @@ export class HUD {
     const current = this.menuStack.pop();
 
     switch (current) {
+      case 'change_hero_confirm': {
+        document.getElementById('change-hero-confirm-modal')?.classList.add('hidden');
+        this.pauseModal.classList.remove('hidden');
+        if (!this.menuStack.includes('pause')) {
+          this.menuStack.push('pause');
+        }
+        return 'handled';
+      }
+
       case 'guide': {
         this.guideModal.classList.add('hidden');
         const next = this.menuStack[this.menuStack.length - 1];
@@ -1210,7 +1248,12 @@ export class HUD {
   }
 
   public setTrainingModeActive(active: boolean) {
+    this.isTrainingModeActive = active;
     this.inGameOverlayUI.setTrainingModeActive(active);
+    const btnSame = document.getElementById('btn-pause-restart-same');
+    if (btnSame) {
+      btnSame.classList.toggle('hidden', !active);
+    }
   }
 
   // --- Hero Info Static / Instance Helpers ---

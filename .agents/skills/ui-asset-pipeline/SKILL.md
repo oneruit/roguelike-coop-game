@@ -114,9 +114,9 @@ Whenever generating UI textures, agents **MUST** strictly follow the project app
 1. Generate the UI mockup or sprite sheet asset (`generate_image`).
 2. Display the generated image in chat.
 3. Call `ask_question` with 3 options:
-   - `[1] (Recommended) Утвердить (продолжить работу / внедрить в игру)`
-   - `[2] Внести изменения (указать, что доработать или перегенерировать)`
-   - `[3] Не делать ничего / Отменить задачу (остановить генерацию)`
+   - `[1] (Recommended) Approve (continue work / integrate into game)`
+   - `[2] Request changes (specify what to refine or regenerate)`
+   - `[3] Do nothing / Cancel task (stop generation)`
 4. **NEVER edit CSS or import assets until the user confirms with Option 1.**
 
 ---

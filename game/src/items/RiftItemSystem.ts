@@ -57,8 +57,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'common',
     icon: '🛡️',
     color: '#94a3b8',
-    description: 'Снижает входящий урон на 4 ед. (не ниже 1).',
-    stackText: '+4 снижения урона за стак'
+    description: 'Снижает получаемый урон (5% на 1 ур., с угасающей эффективностью до 60% на 20 ур.).',
+    stackText: '+снижение урона (макс. 60%)'
   },
   adrenaline_dart: {
     id: 'adrenaline_dart',

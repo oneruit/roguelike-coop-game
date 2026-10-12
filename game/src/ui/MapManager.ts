@@ -43,6 +43,8 @@ export class MapManager {
   private minimapContainer: HTMLElement;
   private minimapCanvas: HTMLCanvasElement;
   private minimapCtx: CanvasRenderingContext2D;
+  private minimapPlayerCanvas: HTMLCanvasElement;
+  private minimapPlayerCtx: CanvasRenderingContext2D;
   private elMinimapCoords: HTMLElement;
   private elMinimapHint: HTMLElement | null;
 
@@ -88,6 +90,8 @@ export class MapManager {
     this.minimapContainer = document.getElementById('minimap-container')!;
     this.minimapCanvas = document.getElementById('minimap-canvas') as HTMLCanvasElement;
     this.minimapCtx = this.minimapCanvas.getContext('2d')!;
+    this.minimapPlayerCanvas = (document.getElementById('minimap-player-canvas') as HTMLCanvasElement) || this.minimapCanvas;
+    this.minimapPlayerCtx = this.minimapPlayerCanvas.getContext('2d') || this.minimapCtx;
     this.elMinimapCoords = document.getElementById('minimap-coords')!;
     this.elMinimapHint = this.minimapContainer?.querySelector('.minimap-hint') ?? null;
 
@@ -119,11 +123,19 @@ export class MapManager {
       this.minimapContainer.classList.add('center-mode');
       this.minimapCanvas.width = 500;
       this.minimapCanvas.height = 500;
+      if (this.minimapPlayerCanvas) {
+        this.minimapPlayerCanvas.width = 500;
+        this.minimapPlayerCanvas.height = 500;
+      }
       if (this.elMinimapHint) this.elMinimapHint.innerText = '[TAB] Свернуть карту';
     } else {
       this.minimapContainer.classList.remove('center-mode');
       this.minimapCanvas.width = 170;
       this.minimapCanvas.height = 170;
+      if (this.minimapPlayerCanvas) {
+        this.minimapPlayerCanvas.width = 170;
+        this.minimapPlayerCanvas.height = 170;
+      }
       if (this.elMinimapHint) this.elMinimapHint.innerText = '[TAB] Карта';
     }
   }
@@ -309,6 +321,7 @@ export class MapManager {
     const radius = cx - 6;
 
     ctx.clearRect(0, 0, w, h);
+    this.minimapPlayerCtx?.clearRect(0, 0, this.minimapPlayerCanvas.width, this.minimapPlayerCanvas.height);
 
     // Update coords label
     const px = Math.round(this.player.position.x);
@@ -674,6 +687,7 @@ export class MapManager {
     const h = this.minimapCanvas.height; // 500
 
     ctx.clearRect(0, 0, w, h);
+    this.minimapPlayerCtx?.clearRect(0, 0, w, h);
 
     // Update coords in footer
     const px = Math.round(this.player.position.x);
@@ -748,7 +762,7 @@ export class MapManager {
       }
     }
 
-    // 4. Chests (Unopened chests only, opened chests removed)
+    // 4. Chests (Unopened chests only, opened chests removed - 2x bigger)
     if (this.chestManager) {
       for (const chest of this.chestManager.chests) {
         if (chest.isOpened) continue; // Completely remove picked-up/opened chests
@@ -759,9 +773,9 @@ export class MapManager {
           const czPos = toScreenZ(chest.position.z);
           if (cxPos >= 0 && cxPos <= w && czPos >= 0 && czPos <= h) {
             ctx.shadowColor = '#fbbf24';
-            ctx.shadowBlur = 6;
+            ctx.shadowBlur = 10;
             ctx.fillStyle = '#fbbf24';
-            ctx.font = '10px sans-serif';
+            ctx.font = '20px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('📦', cxPos, czPos);
@@ -771,7 +785,7 @@ export class MapManager {
       }
     }
 
-    // 5. Discovered Altars (Remove once captured/spent)
+    // 5. Discovered Altars (Remove once captured/spent - 1.5x bigger)
     for (const altar of this.discoveredAltars.values()) {
       if (altar.isCaptured || (altar as any).isSpent) continue;
       const ax = toScreenX(altar.pos.x);
@@ -779,13 +793,13 @@ export class MapManager {
       if (ax >= 0 && ax <= w && az >= 0 && az <= h) {
         ctx.fillStyle = altar.color;
         ctx.beginPath();
-        ctx.arc(ax, az, 8, 0, Math.PI * 2);
+        ctx.arc(ax, az, 12, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2.25;
         ctx.stroke();
 
-        ctx.font = '9px sans-serif';
+        ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(altar.icon || '⛩️', ax, az);
@@ -894,83 +908,66 @@ export class MapManager {
       }
     }
 
-    // 9. Local Player Marker - Significantly Enhanced Display
+    // 9. Local Player Marker - Rendered on fully opaque minimapPlayerCtx (independent of map overlay opacity)
+    const pctx = this.minimapPlayerCtx || ctx;
     const pxPos = toScreenX(this.player.position.x);
     const pzPos = toScreenZ(this.player.position.z);
     if (pxPos >= 0 && pxPos <= w && pzPos >= 0 && pzPos <= h) {
       // 9a. Double expanding sonar pulse rings
       const r1 = (this.animTimer * 20) % 26;
       const a1 = Math.max(0, 1 - r1 / 26) * 0.8;
-      ctx.strokeStyle = `rgba(56, 189, 248, ${a1})`;
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.arc(pxPos, pzPos, r1, 0, Math.PI * 2);
-      ctx.stroke();
+      pctx.strokeStyle = `rgba(56, 189, 248, ${a1})`;
+      pctx.lineWidth = 1.8;
+      pctx.beginPath();
+      pctx.arc(pxPos, pzPos, r1, 0, Math.PI * 2);
+      pctx.stroke();
 
       const r2 = (this.animTimer * 20 + 13) % 26;
       const a2 = Math.max(0, 1 - r2 / 26) * 0.8;
-      ctx.strokeStyle = `rgba(251, 191, 36, ${a2})`;
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.arc(pxPos, pzPos, r2, 0, Math.PI * 2);
-      ctx.stroke();
+      pctx.strokeStyle = `rgba(251, 191, 36, ${a2})`;
+      pctx.lineWidth = 1.4;
+      pctx.beginPath();
+      pctx.arc(pxPos, pzPos, r2, 0, Math.PI * 2);
+      pctx.stroke();
 
       // 9b. Glowing beacon core
-      ctx.save();
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 12;
+      pctx.save();
+      pctx.shadowColor = '#38bdf8';
+      pctx.shadowBlur = 12;
 
       // Outer golden beacon ring
-      ctx.fillStyle = '#f59e0b';
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(pxPos, pzPos, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+      pctx.fillStyle = '#f59e0b';
+      pctx.strokeStyle = '#ffffff';
+      pctx.lineWidth = 2;
+      pctx.beginPath();
+      pctx.arc(pxPos, pzPos, 7, 0, Math.PI * 2);
+      pctx.fill();
+      pctx.stroke();
 
       // Bright center core
-      ctx.fillStyle = '#38bdf8';
-      ctx.beginPath();
-      ctx.arc(pxPos, pzPos, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      pctx.fillStyle = '#38bdf8';
+      pctx.beginPath();
+      pctx.arc(pxPos, pzPos, 3.5, 0, Math.PI * 2);
+      pctx.fill();
+      pctx.restore();
 
-      // 9c. Directional chevron pointer based on player orientation
-      ctx.save();
-      ctx.translate(pxPos, pzPos);
-      ctx.rotate(-this.player.mesh.rotation.y);
+      // 9c. Directional chevron pointer based on player orientation (Non-transparent crisp arrow)
+      pctx.save();
+      pctx.translate(pxPos, pzPos);
+      pctx.rotate(-this.player.mesh.rotation.y);
 
-      ctx.fillStyle = '#fef08a';
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(0, -13);
-      ctx.lineTo(8, 8);
-      ctx.lineTo(0, 4);
-      ctx.lineTo(-8, 8);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-
-      // 9d. High-visibility [ВЫ] badge above player
-      const badgeText = '[ВЫ]';
-      ctx.font = 'bold 9px Montserrat, sans-serif';
-      const textW = ctx.measureText(badgeText).width;
-      const badgeY = pzPos - 17;
-      ctx.fillStyle = 'rgba(8, 16, 32, 0.88)';
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(pxPos - textW / 2 - 4, badgeY - 7, textW + 8, 12, 3);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#38bdf8';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(badgeText, pxPos, badgeY - 1);
+      pctx.fillStyle = '#fef08a';
+      pctx.strokeStyle = '#0f172a';
+      pctx.lineWidth = 1.5;
+      pctx.beginPath();
+      pctx.moveTo(0, -13);
+      pctx.lineTo(8, 8);
+      pctx.lineTo(0, 4);
+      pctx.lineTo(-8, 8);
+      pctx.closePath();
+      pctx.fill();
+      pctx.stroke();
+      pctx.restore();
     }
 
     // 10. Top Bar (Header with title and exploration %)

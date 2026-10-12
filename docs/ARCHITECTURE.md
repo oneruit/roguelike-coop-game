@@ -1,34 +1,34 @@
-# Архитектура проекта (Game Architecture)
+# Project Architecture (Game Architecture)
 
-Данный документ описывает модульную архитектуру проекта, распределение ответственности между слоями (Shared, Sim, Client, Server) и правила добавления новых игровых механик без рассинхронизации.
+This document describes the modular architecture of the project, separation of concerns across layers (Shared, Sim, Client, Server), and guidelines for introducing new gameplay mechanics without state desynchronization.
 
 ---
 
-## 1. Обзор слоев архитектуры
+## 1. Architectural Layer Overview
 
-Архитектура проекта разделена на 5 изолированных слоев с однонаправленным потоком зависимостей:
+The project architecture is divided into 5 isolated layers with a unidirectional dependency flow:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   Shared Layer (src/shared/)                           │
-│  - Типы сущностей (CharacterType, EnemyType, GemType, BuffType)        │
-│  - Канонические реестры и порядок сериализации (ENEMIES, CHARACTERS)   │
-│  - Сетевые протоколы и структуры снапшотов (NetMessage, PlayerNetState)│
-│  * 0 зависимостей от Three.js, WebGL, DOM или серверной среды          │
+│  - Entity types (CharacterType, EnemyType, GemType, BuffType)          │
+│  - Canonical registries & serialization order (ENEMIES, CHARACTERS)    │
+│  - Network protocols & snapshot schemas (NetMessage, PlayerNetState)   │
+│  * 0 dependencies on Three.js, WebGL, DOM, or server runtime           │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
           ┌─────────────────────────┴─────────────────────────┐
           ▼                                                   ▼
 ┌──────────────────────────────────┐      ┌──────────────────────────────┐
 │   Simulation Core (src/sim/)     │      │   Dedicated Server (server/) │
-│  - Headless симуляция (GameCore) │      │  - headless Node.js/Bun      │
-│  - Детерминированный SimRNG      │      │  - Авторитетный серверный    │
-│  - Игровая физика и коллизии     │      │    цикл (30Hz tick)          │
-│  - Формулы урона, статы, волны   │      │  - CLI тесты и валидация     │
-│  * 0 зависимостей от Three.js/DOM│      │  * 0 зависимостей от WebGL   │
+│  - Headless simulation (GameCore)│      │  - Headless Node.js/Bun      │
+│  - Deterministic SimRNG          │      │  - Authoritative server tick │
+│  - Game physics & collisions     │      │    loop (30Hz tick)          │
+│  - Damage formulas, stats, waves │      │  - CLI tests and validation  │
+│  * 0 dependencies on Three.js/DOM│      │  * 0 dependencies on WebGL   │
 └─────────────────┬────────────────┘      └──────────────┬───────────────┘
                   │                                      │
-                  │              Сетевые снапшоты        │
+                  │              Network Snapshots       │
                   └──────────────────┬───────────────────┘
                                      ▼
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -48,96 +48,96 @@
 
 ---
 
-## 2. Разделение ответственности
+## 2. Separation of Concerns
 
 ### 2.1. Shared Layer (`src/shared/`)
-* **Назначение**: Единый источник правды (Single Source of Truth) для типов данных, используемых и клиентом, и сервером.
-* **Содержимое**:
-  * `entities.ts`: Базовые типы (`CharacterType`, `EnemyType`, `GemType`, `BuffType`, `HeroAnimState`, `SpriteDirection`, `PlayerStats`, `RiftItemId`).
-  * `registry.ts`: Канонические индексированные массивы (`ENEMIES`, `CHARACTERS`, `SLOTS`, `DIRECTIONS`, `ANIM_STATES`, `CHEST_TIERS`, `GEMS`, `BUFF_TYPES`), используемые сетевым кодеком `BinarySnapshot` для компактной бинарной упаковки (индексы вместо строк).
-  * `network.ts`: Форматы сетевых пакетов (`NetMessage`, `HostSnapshotMessage`, `ClientSyncMessage`, `PlayerNetState`, `EnemySnapshot`, константы слотов игроков и цветов).
-* **Правило**: Не имеет внешних зависимостей. Может импортироваться в любом модуле проекта.
+* **Purpose**: Single Source of Truth for data types shared across client and server.
+* **Contents**:
+  * `entities.ts`: Base types (`CharacterType`, `EnemyType`, `GemType`, `BuffType`, `HeroAnimState`, `SpriteDirection`, `PlayerStats`, `RiftItemId`).
+  * `registry.ts`: Canonical indexed arrays (`ENEMIES`, `CHARACTERS`, `SLOTS`, `DIRECTIONS`, `ANIM_STATES`, `CHEST_TIERS`, `GEMS`, `BUFF_TYPES`), used by the `BinarySnapshot` network codec for compact binary serialization (indices instead of string keys).
+  * `network.ts`: Network packet schemas (`NetMessage`, `HostSnapshotMessage`, `ClientSyncMessage`, `PlayerNetState`, `EnemySnapshot`, player slots and color constants).
+* **Rule**: Zero external dependencies. Can be safely imported anywhere in the project.
 
 ### 2.2. Headless Simulation Core (`src/sim/`)
-* **Назначение**: Полная авторитетная математика и игровая логика без графики и звуков.
-* **Содержимое**:
-  * `SimRNG.ts`: Детерминированный генератор случайных чисел.
-  * `GameCore.ts`: Главный цикл симуляции (`tick(dt)`), управление игроками, спавн врагов, волн, алтарей, дропов.
-  * `SimPlayer.ts`, `SimEnemy.ts`, `SimWeapons.ts`, `SimGems.ts`: Математические модели сущностей.
-* **Правило**: 0% зависимостей от Three.js, WebGL, `window`, `document`. Работает идентично в браузере и на выделенном сервере (Node.js/Bun).
+* **Purpose**: Fully authoritative game mathematics and simulation logic independent of graphics and sound.
+* **Contents**:
+  * `SimRNG.ts`: Deterministic pseudorandom number generator.
+  * `GameCore.ts`: Main simulation tick loop (`tick(dt)`), player lifecycle, enemy spawns, waves, altars, pickups.
+  * `SimPlayer.ts`, `SimEnemy.ts`, `SimWeapons.ts`, `SimGems.ts`: Mathematical entity models.
+* **Rule**: 0% dependencies on Three.js, WebGL, `window`, or `document`. Executes identically in the browser and in headless server runtimes (Node.js/Bun).
 
 ### 2.3. Client Presentation (`src/core/`, `src/entities/`, `src/combat/`, `src/world/`, `src/drops/`)
-* **Назначение**: Визуализация, анимации, звук, интерполяция и сглаживание движения.
-* **Содержимое**:
-  * `Engine.ts`: Инициализация Three.js WebGLRenderer, сцены, освещения, камеры.
+* **Purpose**: Rendering, animations, audio, interpolation, and movement smoothing.
+* **Contents**:
+  * `Engine.ts`: Initialization of Three.js WebGLRenderer, scene, lighting, camera.
   * `TextureManager.ts`, `SoundManager.ts`, `InputManager.ts`.
-  * `Player.ts`, `RemotePlayer.ts`, `Enemy.ts`, `EnemyManager.ts`, `Gem.ts`: 3D-меши, 2.5D билборды, спрайтовые анимации.
-  * `Projectile.ts`, `Weapon.ts`: Визуальные эффекты снарядов (молнии, файрболы, чакрамы).
+  * `Player.ts`, `RemotePlayer.ts`, `Enemy.ts`, `EnemyManager.ts`, `Gem.ts`: 3D meshes, 2.5D billboards, sprite sheet animations.
+  * `Projectile.ts`, `Weapon.ts`: Visual projectile effects (lightning, fireballs, chakrams).
 
 ### 2.4. User Interface (`src/ui/`)
-* **Назначение**: Двумерный пользовательский интерфейс поверх WebGL канваса.
-* **Содержимое**:
-  * `HUD.ts`: Полоски здоровья, XP, таймер, счетчик убийств, плашки прокачки.
-  * `MapManager.ts`: Миникарта (2D Canvas).
-  * `DevManager.ts`: Инструменты отладки и спавна.
-* **Правило**: Использует только `import type` для Three.js. Не содержит тяжелых графических зависимостей.
+* **Purpose**: 2D user interface layered over the WebGL canvas.
+* **Contents**:
+  * `HUD.ts`: Health bars, XP, timer, kill counter, level-up cards.
+  * `MapManager.ts`: Minimap (2D Canvas).
+  * `DevManager.ts`: Debugging tools and entity spawners.
+* **Rule**: Strictly uses `import type` for Three.js. No heavy graphics dependencies.
 
 ### 2.5. Networking (`src/net/`)
-* **Назначение**: Транспорт сетевых сообщений (P2P WebRTC через PeerJS) и упаковка данных.
-* **Содержимое**:
-  * `NetworkManager.ts`: Управление подключениями, комнатами, ролями хоста и клиентов.
-  * `BinarySnapshot.ts`: Ультра-быстрый бинарный сериализатор снапшотов.
-* **Правило**: Импортирует протоколы и типы только из `src/shared/types`. Не зависит от конкретных графических классов сущностей.
+* **Purpose**: Network packet transport (P2P WebRTC via PeerJS) and data packing.
+* **Contents**:
+  * `NetworkManager.ts`: Connection lifecycle, rooms, host and client roles.
+  * `BinarySnapshot.ts`: Ultra-fast binary snapshot serializer.
+* **Rule**: Imports protocols and types exclusively from `src/shared/types`. Independent of concrete graphical entity classes.
 
 ### 2.6. Dedicated Server (`server/`)
-* **Назначение**: Headless сервер для кооператива или соревнований.
-* **Содержимое**:
-  * `dedicatedServer.ts`: Точка входа для запуска на VPS/Node.js/Bun.
-* **Правило**: Запускается без WebGL/DOM.
+* **Purpose**: Headless server instance for co-op or competitive multiplayer.
+* **Contents**:
+  * `dedicatedServer.ts`: Entry point for running on VPS / Node.js / Bun.
+* **Rule**: Runs without WebGL or DOM dependencies.
 
 ---
 
-## 3. Руководство: Добавление новых игровых механик
+## 3. Guide: Adding New Gameplay Mechanics
 
-Благодаря единому `src/shared/types` добавление нового контента происходит предсказуемо и без рассинхронизации.
+Thanks to the unified `src/shared/types`, introducing new content is predictable and desync-free.
 
-### Добавление нового Врага (Enemy)
-1. **Зарегистрировать тип**:
-   В `src/shared/types/entities.ts` добавить ключ в union `EnemyType`:
+### Adding a New Enemy
+1. **Register the type**:
+   In `src/shared/types/entities.ts`, add the key to the `EnemyType` union:
    ```typescript
    export type EnemyType = 'coyote' | ... | 'new_enemy';
    ```
-2. **Добавить в канонический сетевой реестр**:
-   В `src/shared/types/registry.ts` добавить в массив `ENEMIES`:
+2. **Add to the canonical network registry**:
+   In `src/shared/types/registry.ts`, append to the `ENEMIES` array:
    ```typescript
    export const ENEMIES: readonly EnemyType[] = [..., 'new_enemy'];
    ```
-   *Все сетевые сериализаторы автоматически подхватят новый индекс без рассинхронизации!*
-3. **Задать балансные статы**:
-   В `src/sim/SimEnemies.ts` и `src/data/enemies.ts` указать HP, скорость, урон, опыт.
-4. **Настроить визуал**:
-   В `src/entities/Enemy.ts` подключить текстуры/анимации спрайтов.
+   *All network serializers automatically update indexing without desync!*
+3. **Configure balance attributes**:
+   In `src/sim/SimEnemies.ts` and `src/data/enemies.ts`, define HP, speed, damage, experience.
+4. **Configure visual presentation**:
+   In `src/entities/Enemy.ts`, connect textures and sprite animations.
 
-### Добавление нового Героя (Character)
-1. Добавить ключ в `CharacterType` (`src/shared/types/entities.ts`).
-2. Добавить имя в `CHARACTERS` (`src/shared/types/registry.ts`).
-3. Задать стартовые характеристики и оружие в `src/entities/Player.ts` / `src/data/characters.ts`.
+### Adding a New Character
+1. Add the key to `CharacterType` (`src/shared/types/entities.ts`).
+2. Add the name to `CHARACTERS` (`src/shared/types/registry.ts`).
+3. Set base attributes and starting weapon in `src/entities/Player.ts` / `src/data/characters.ts`.
 
-### Добавление нового Оружия / Снаряда
-1. В `src/sim/SimWeapons.ts` реализовать симуляционную логику выстрела, частоты атаки, пробивания и формулы урона.
-2. В `src/combat/Weapon.ts` и `src/combat/Projectile.ts` реализовать визуал (шейдер, меш, партиклы).
+### Adding a New Weapon / Projectile
+1. In `src/sim/SimWeapons.ts`, implement simulation logic: fire rate, pierce count, damage formula.
+2. In `src/combat/Weapon.ts` and `src/combat/Projectile.ts`, implement visual effects (mesh, shader, particles).
 
 ---
 
-## 4. Политика импортов Three.js (Tree-Shaking)
+## 4. Three.js Import Policy (Tree-Shaking)
 
-Для минимизации размера бандла и ускорения загрузки действует строгое правило:
-* ❌ **Запрещено**: `import * as THREE from 'three';`
-* ✅ **Разрешено**: Именованный импорт только требуемых классов:
-  ```typescript
-  import { Vector3, Mesh, MeshBasicMaterial, type Scene } from 'three';
-  ```
-* ✅ **В UI и менеджерах**: Использовать `import type` там, где классы нужны только для TypeScript типизации:
-  ```typescript
-  import type { Scene, Camera } from 'three';
-  ```
+To minimize bundle size and improve load times, strict tree-shaking rules apply:
+* ❌ **Forbidden**: `import * as THREE from 'three';`
+* ✅ **Allowed**: Named imports for required classes only:
+   ```typescript
+   import { Vector3, Mesh, MeshBasicMaterial, type Scene } from 'three';
+   ```
+* ✅ **In UI & Managers**: Use `import type` where classes are used solely for TypeScript type annotations:
+   ```typescript
+   import type { Scene, Camera } from 'three';
+   ```

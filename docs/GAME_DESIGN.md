@@ -1,312 +1,311 @@
-# Game Design Document: The Rift (Разлом)
+# Game Design Document: The Rift
 
-> **Жанр:** 2.5D Top-Down Action Roguelike / Sci-Fi Co-op Survival  
-> **Вдохновение:** *Risk of Rain 2*, *Vampire Survivors*, *Enter the Gungeon*  
-> **Камера:** Фиксированная изометрическая / Top-Down (сверху вниз)  
-> **Боевая система:** WASD перемещение + Умная автострельба (Auto-aim & Auto-fire) + Активные способности / Гаджеты  
-> **Мультиплеер:** Одиночная игра + Кооператив до 5 игроков (P2P WebRTC / Выделенный headless-сервер)
+> **Genre:** 2.5D Top-Down Action Roguelike / Sci-Fi Co-op Survival  
+> **Inspiration:** *Risk of Rain 2*, *Vampire Survivors*, *Enter the Gungeon*  
+> **Camera:** Fixed Isometric / Top-Down  
+> **Combat System:** WASD Movement + Smart Auto-aim & Auto-fire + Active Class Skills / Gadgets  
+> **Multiplayer:** Single-player + Co-op up to 5 players (P2P WebRTC / Dedicated headless server)
 
 ---
 
-## 1. Концепция и Видение Проекта
+## 1. Project Concept & Vision
 
-### 1.1. Главная Идея
-**«The Rift»** — это динамичный научно-фантастический кооперативный roguelike с видом сверху, в котором ключевой цикл вдохновлен **Risk of Rain 2**, но адаптирован под молниеносный темп аркадного изометрического экшена с умной автострельбой.
+### 1.1. Core Pitch
+**"The Rift"** is a fast-paced sci-fi cooperative top-down roguelike where the core gameplay loop is inspired by **Risk of Rain 2**, streamlined for lightning-fast arcade isometric action with smart auto-firing weapons.
 
-Игроки — выжившие члены экипажа научно-исследовательского судна, потерпевшего крушение на загадочной и враждебной планете **Этельгард (Nexus-IV)**. Мир пронизан гравитационными и пространственными разломами («Рифтами»), непрерывно порождающими волны мутировавших созданий и древних боевых автоматонов.
+Players take on the roles of surviving crew members of a research vessel that crash-landed on the hostile alien planet **Aethelgard (Nexus-IV)**. The world is fractured by spatial and gravitational rifts ("Rifts") that continuously spawn waves of mutated horrors and ancient battle automata.
 
-Главная цель забега — пробиться через несколько смертоносных биомов, накапливая предметы и взрывные синергии, победить Хранителей Телепортов и добраться до ядра Разлома, чтобы активировать эвакуационный челнок или запечатать разлом навсегда.
+The primary run objective is to fight through deadlier biomes, accumulating items and explosive synergies, defeat the Teleporter Guardians, and reach the Rift Core to activate an evacuation dropship or seal the anomaly permanently.
 
-### 1.2. Столпы Дизайна (Design Pillars)
+### 1.2. Design Pillars
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        СТОЛПЫ ДИЗАЙНА "THE RIFT"                       │
+│                        "THE RIFT" DESIGN PILLARS                       │
 ├──────────────────┬──────────────────┬──────────────────┬───────────────┤
-│ 1. ВРЕМЯ — ВРАГ  │ 2. СИНЕРГИИ И    │ 3. ВЫСОКАЯ       │ 4. КООП И     │
-│                  │    МАСШТАБ СИЛЫ  │    ДИНАМИКА      │    СИНХРОНИЯ  │
+│ 1. TIME IS ENEMY │ 2. SYNERGIES &   │ 3. HIGH TEMPO &  │ 4. CO-OP &    │
+│                  │    POWER SCALING │    MOVEMENT      │    SYNCHRONY  │
 ├──────────────────┼──────────────────┼──────────────────┼───────────────┤
-│ Чем дольше бежит │ Предметы стака-  │ Умная авто-      │ До 5 игроков, │
-│ таймер, тем сви- │ ются без ограни- │ стрельба снимает │ синергия ролей│
-│ репее враги.     │ чений: цепочки   │ рутину наводки,  │ командные     │
-│ Баланс между     │ проков превраща- │ фокус на пози-   │ алтари, общий │
-│ лутанием карты и │ ют игрока в бо-  │ ционировании и   │ хаос телепор- │
-│ темпом таймера.  │ евую машину.     │ уворотах.        │ тов.          │
+│ The longer the   │ Items stack      │ Smart auto-fire  │ Up to 5       │
+│ run, the fiercer │ infinitely; proc │ eliminates aim   │ players, role │
+│ the hordes.      │ chains turn      │ grind; focus on  │ synergies,    │
+│ Balance looting  │ players into     │ positioning and  │ team shrines, │
+│ against clock.   │ war machines.    │ dodging.         │ shared chaos. │
 └──────────────────┴──────────────────┴──────────────────┴───────────────┘
 ```
 
-1. **Время — твой главный враг (Time Scaling):**  
-   С каждой минутой ползунок сложности смещается вверх. Враги получают больше здоровья, скорости и урона, появляются грозные элитные монстры с аффиксами. Игрок постоянно решает дилемму: потратить лишние 2 минуты на открытие дальнего золотого сундука или сразу активировать Телепорт, пока сложность не улетела в космос.
-2. **Стек предметов и Цепочки Проков (Proc Chains):**  
-   Предметы пассивны и бесконечно стакаются. Удар накладывает горение → крит вызывает взрыв плазмы → взрыв порождает цепную молнию → молния активирует вампиризм. Билдостроение открывает колоссальное поле для экспериментов.
-3. **Умная автострельба и фокус на движении (Bullet-Hell & Positioning):**  
-   Игроку не нужно целиться мышью в трёхмерном пространстве. Оружие автоматически захватывает ближайшие опасные цели с приоритетом элиты и боссов, а игрок концентрируется на позиционировании, кайтинге сотен врагов, таймингах дэшей и активации классовых умений.
-4. **Кооператив на 1–5 игроков без просадок:**  
-   Синхронизация через модульное ядро `GameCore` (симуляция на клиенте-хосте или VPS-сервере), общие события Телепорта, оживление павших союзников на следующем уровне и совместные комбо.
+1. **Time is Your Chief Enemy (Time Scaling):**  
+   Every minute, the difficulty gauge advances. Enemies gain health, speed, and damage, and dangerous elite monsters with affixes emerge. Players face a constant trade-off: spend an extra 2 minutes looting a distant gold chest or charge the Teleporter before difficulty surges out of control.
+2. **Item Stacking & Proc Chains:**  
+   Items are passive and stack infinitely. A hit applies bleed $\to$ a crit triggers a plasma explosion $\to$ the explosion arcs chain lightning $\to$ lightning triggers lifesteal. Build crafting opens vast emergent synergy potential.
+3. **Smart Auto-Aim and Movement Mastery (Bullet-Hell & Positioning):**  
+   Players do not need to micro-aim with a crosshair in 3D space. Weapons automatically acquire the closest high-threat targets, prioritizing elites and bosses, freeing the player to master positioning, kiting large swarms, timing dashes, and deploying class skills.
+4. **Fluid 1–5 Player Cooperative Play:**  
+   Synchronization through the modular `GameCore` simulation core (on host client or dedicated server), shared Teleporter charging events, revives for fallen allies upon stage completion, and coordinated team combos.
 
 ---
 
-## 2. Сеттинг и Биомы
+## 2. Setting and Biomes
 
-Планета **Этельгард** разорвана на секторы древней инопланетной катастрофой. Каждый забег состоит из последовательного прохождения процедурно заполняемых биомов.
+The planet **Aethelgard** was fragmented into disparate sectors by an ancient cataclysm. Each run features procedural traversals through distinctive biomes.
 
 ```mermaid
 flowchart LR
-    A["Биом 1: Пепельные Пустыни<br/>(The Ashen Wastes)"] --> B["Биом 2: Комплекс 'Омега'<br/>(Derelict Sector 7)"]
-    B --> C["Биом 3: Ксено-Джунгли<br/>(Bioluminescent Fungi)"]
-    C --> D["Биом 4: Базальтовая Кальдера<br/>(Volcanic Forge)"]
-    D --> E["Биом 5: Древние Руины Предтеч<br/>(Primordial Monoliths)"]
-    E --> F{"Выбор:<br/>Ядро Разлома / Луп"}
-    F -- "Финал" --> G["Эвакуация / Финальный Босс"]
-    F -- "Луп забега" --> A
+    A["Biome 1: Ashen Wastes"] --> B["Biome 2: Derelict Sector 7"]
+    B --> C["Biome 3: Bioluminescent Wilds"]
+    C --> D["Biome 4: Volcanic Forge"]
+    D --> E["Biome 5: Primordial Monoliths"]
+    E --> F{"Choice:<br/>Rift Core / Loop"}
+    F -- "Final" --> G["Evacuation / Final Boss"]
+    F -- "Loop Run" --> A
 ```
 
-### 2.1. Описание Биомов
+### 2.1. Biome Breakdown
 
-| Биом | Визуальный стиль | Уникальные угрозы и интерактивности | Типы врагов и Элита |
+| Biome | Visual Aesthetic | Unique Hazards & Interactivity | Enemy Types & Elites |
 | :--- | :--- | :--- | :--- |
-| **1. Пепельные Пустыни (The Ashen Wastes)** | Ржавый песок, дюны, разбившиеся спасательные капсулы, скелеты гигантских тварей | Песчаные воронки, геотермальные гейзеры, дающие ускорение прыжка | Песчаные жуки-землерои, роящиеся дроны-падальщики, Грязевой Голем |
-| **2. Комплекс «Омега» (Derelict Sector 7)** | Полуразрушенные лаборатории, неоновые панели, пробитые коридоры, экраны терминалов | Лазерные барьеры, токсичные разливы энергохладагента, турели защиты | Дефектные боевые андроиды, парящие турели, Штурмовой Сервитор |
-| **3. Ксено-Джунгли (Bioluminescent Wilds)** | Темный фиолетово-зеленый инопланетный лес, светящиеся гигантские грибы, споровые туманы | Взрывающиеся споровые мешки, светящиеся лужи регенерации | Плюющиеся токсином споровики, многоногие сталкеры, Споровая Королева |
-| **4. Базальтовая Кальдера (Volcanic Forge)** | Черный обсидиан, лавовые реки, раскаленный металл, плазменные гейзеры | Лавовые потоки (периодический урон при наступании), выбросы пепла | Магматические виверны, огненные элементали, Магма-Червь |
-| **5. Руины Предтеч (Primordial Monoliths)** | Парящие золотые и призматические монолиты, антигравитационные плиты, древние письмена | Гравитационные колодцы, силовые платформы перемещения | Каменные Стражи-Титаны, летающие кинетические призмы, Хранитель Разлома |
-| **6. Ядро Разлома (The Rift Core — Финал)** | Пространственный шторм, искаженная гравитация, осколки миров, посадочная площадка корабля | Всплески антиматерии, разрушающиеся секции арены | Финальный Босс: **«Архитектор Разлома»** + таймер эвакуации челнока (2:00) |
+| **1. Ashen Wastes** | Rust sand, dunes, crashed drop pods, colossal creature skeletons | Sand vortices, geothermal vents providing jump boosts | Burrower beetles, scavenging drones, Mud Golem |
+| **2. Derelict Sector 7** | Ruined research labs, neon terminals, ruptured conduits | Laser grids, toxic coolant spills, defense turrets | Defective combat androids, hovering sentry turrets, Assault Servitor |
+| **3. Bioluminescent Wilds** | Deep purple-green alien forest, luminescent fungi, spore fog | Exploding spore pods, glowing rejuvenation pools | Spitting tox-fungi, multi-legged stalkers, Spore Matron |
+| **4. Volcanic Forge** | Black obsidian, lava flows, molten alloy, plasma vents | Molten magma channels (ticking damage upon contact), ash storms | Magma wyverns, flame elementals, Magma Colossus |
+| **5. Primordial Monoliths** | Floating golden monoliths, antigravity platforms, ancient glyphs | Gravity wells, repulsor launch pads | Titan Stoneguard, kinetic prisms, Rift Guardian |
+| **6. The Rift Core (Finale)** | Spatial anomaly storm, inverted physics, fractured debris, dropship pad | Antimatter bursts, collapsing arena rings | Final Boss: **"Rift Architect"** + 2:00 shuttle escape countdown |
 
 ---
 
-## 3. Базовый Игровой Цикл (Core Gameplay Loop)
+## 3. Core Gameplay Loop
 
-Игровой цикл следует формуле Risk of Rain 2, адаптированной под динамичный изометрический бой:
+The loop combines Risk of Rain 2 structure with arcade survival combat:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> ВысадкаНаБиом
-    ВысадкаНаБиом --> ИсследованиеИФарм: Убийство мобов, сбор Кредитов и XP
-    ИсследованиеИФарм --> ОткрытиеЛейтов: Сундуки, 3D-Принтеры, Дроны, Алтари
-    ИсследованиеИФарм --> ПоискТелепорта: Ориентир — частицы и звук в воздухе
-    ОткрытиеЛейтов --> ПоискТелепорта
-    ПоискТелепорта --> АктивацияТелепорта: Запуск Ивента
-    state АктивацияТелепорта {
-        [*] --> СпавнБосса
-        СпавнБосса --> ЗарядкаЗоны: Удержание круга (90 сек)
-        ЗарядкаЗоны --> ПобедаНадБоссом
-        ПобедаНадБоссом --> ЗонаЗаряжена100: Конвертация денег в XP
+    [*] --> BiomeDrop
+    BiomeDrop --> ExploreAndFarm: Slay mobs, gather Credits & XP
+    ExploreAndFarm --> OpenInteractables: Chests, 3D Printers, Drones, Shrines
+    ExploreAndFarm --> LocateTeleporter: Clue: ambient floating particles & audio
+    OpenInteractables --> LocateTeleporter
+    LocateTeleporter --> ActivateTeleporter: Trigger Event
+    state ActivateTeleporter {
+        [*] --> SpawnBoss
+        SpawnBoss --> ChargeZone: Hold capture radius (90s)
+        ChargeZone --> DefeatBoss
+        DefeatBoss --> ZoneCharged100: Convert remaining cash to XP
     }
-    АктивацияТелепорта --> ЛутаниеОстатков
-    ЛутаниеОстатков --> ПереходНаСледующийБиом: Вход в Телепорт
-    ПереходНаСледующийБиом --> ВысадкаНаБиом: Биом N + 1
+    ActivateTeleporter --> LootLeftovers
+    LootLeftovers --> AdvanceNextBiome: Enter Portal
+    AdvanceNextBiome --> BiomeDrop: Biome N + 1
 ```
 
-### 3.1. Этапы прохождения локации:
-1. **Высадка на биом:**  
-   Игроки появляются рядом с десантной капсулой. Таймер запускается с `00:00`.
-2. **Фарм и Экономика (Кредиты Разлома / Plasma Credits):**  
-   - За убийство мобов мгновенно начисляются **Кредиты** (деньги локации) и **XP** (уровень персонажа).  
-   - За Кредиты открываются сундуки различных размеров, восстанавливаются боевые дроны и активируются алтари.  
-   - *Важно:* Кредиты не переносятся между локациями! При завершении Телепорта все оставшиеся деньги автоматически конвертируются в опыт персонажа.
-3. **Поиск и Активация Телепорта:**  
-   - На карте спрятан древний Телепорт. Вокруг него в воздухе вьются едва заметные искрящиеся частицы разлома (как в RoR2), подсказывающие игрокам направление.  
-   - При нажатии активации запускается **«Ивент Телепорта»**:
-     - Вокруг телепорта формируется радиус зарядки (~35–40 метров).
-     - Появляется уникальный **Босс Биома** (или орда Элитных боссов на высоких сложностях).
-     - Начинается 90-секундный отсчет зарядки, который идет только тогда, когда хотя бы один живой игрок находится внутри круга.
-4. **Завершение События и Переход:**  
-   - Когда зарядка достигает 100% и Босс побежден, музыка стихает, мобы перестают спавниться.  
-   - Выпадает уникальный трофейный сундук босса.  
-   - Игроки получают пару минут на то, чтобы докупить оставшиеся сундуки на карте за конвертированные ресурсы, после чего активируют Телепорт и переносятся в следующий биом.
+### 3.1. Stage Phases
+1. **Drop In:**  
+   Players spawn by the drop capsule. The timer starts at `00:00`.
+2. **Farming & Economy (Plasma Credits):**  
+   - Defeating mobs yields **Credits** (stage currency) and **XP** (character level).  
+   - Credits purchase chests of various tiers, repair fallen drones, and activate shrines.  
+   - *Crucial rule:* Credits do not carry over across stages! Upon Teleporter completion, leftover funds convert directly into bonus character XP.
+3. **Locating & Activating the Teleporter:**  
+   - An ancient Teleporter is hidden within the biome. Sparkling rift sparks drift through the air around it to guide players.  
+   - Activating initiates the **Teleporter Event**:
+     - A charging radius (~35–40m) forms around the pedestal.
+     - A stage **Boss** spawns (or elite boss packs at higher difficulties).
+     - A 90-second countdown runs whenever at least one living player stands inside the ring.
+4. **Stage Clear & Transition:**  
+   - At 100% charge with the Boss defeated, the combat music subsides and ambient spawns cease.  
+   - The unique Boss Trophy Chest drops.  
+   - Players have a brief window to spend converted currency across remaining chests before stepping through the gate to the next sector.
 
 ---
 
-## 4. Система Управления и Камера
+## 4. Control Scheme and Camera
 
-### 4.1. Камера
-- **Перспектива:** Фиксированная 2.5D изометрическая камера с наклоном 50–60° к горизонту.
-- **Плавное следование (Smooth Lerp):** Камера следует за персонажем с легким упреждением по вектору движения (Lookahead). В кооперативе при удалении союзников поддерживается динамический зум или индивидуальный рендеринг экрана для каждого игрока.
+### 4.1. Camera
+- **Perspective:** Fixed 2.5D isometric view tilted 50–60° from the horizontal plane.
+- **Smooth Lerp:** Follows the character with gentle velocity lookahead. In multiplayer, camera supports dynamic zoom framing or per-player viewport rendering.
 
-### 4.2. Управление
-- **WASD / Левый стик геймпада:** Перемещение персонажа во всех направлениях.
-- **Автострельба (Auto-aim & Auto-fire):**  
-  Оружие ведет непрерывный огонь по целям в зоне поражения без необходимости кликать мышью.  
-  *Приоритет авто-прицеливания:*
-  1. Ближайшие угрозы на дистанции удара.
-  2. Элитные противники с опасными аффиксами.
-  3. Боссы биома.
-- **Пробел / Shift (Utility - Мобильность):**  
-  Рывок / Тактический перекат с кадрами неуязвимости (i-frames 0.25 сек) и преодолением лавовых трещин.
-- **Клавиша Q / E (Special - Классовые умения):**  
-  Уникальные активные способности (установка турели, бросок крио-гранаты, плазменный залп).
-- **Клавиша R (Equipment - Артефакт):**  
-  Активируемое снаряжение длительного отката (Орбитальный удар, Радар сундуков, Защитный щит).
-- **Клавиша E / F (Interact):**  
-  Взаимодействие: открыть сундук, запустить 3D-принтер, активировать телепорт.
+### 4.2. Controls
+- **WASD / Left Stick:** Character movement in all directions.
+- **Auto-Aim & Auto-Fire:**  
+   Weapons continuously engage targets within range without manual clicking.  
+   *Targeting Priority:*
+   1. Closest immediate threats within strike range.
+   2. Elite foes with deadly affixes.
+   3. Stage bosses.
+- **Space / Shift (Utility - Mobility):**  
+   Tactical Dash / Roll with invulnerability frames (0.22–0.25s) and gap traversal over hazard pools.
+- **Q / E Keys (Special - Class Abilities):**  
+   Unique active abilities (turret deployment, cryo grenade, plasma burst).
+- **R Key (Equipment - Relic):**  
+   Long-cooldown activatable artifact (Orbital Strike, Chest Radar, Kinetic Bubble).
+- **E / F Keys (Interact):**  
+   Open chests, engage 3D printers, activate teleporters.
 
 ---
 
-## 5. Динамическая Сложность: Система «Директор Времени»
+## 5. Dynamic Difficulty: The Time Director
 
-Сложность растет каждую секунду. Никаких пауз — каждая потраченная минута делает мир беспощаднее.
+Difficulty escalates every second. There are no pauses; every elapsed minute ramps up challenge.
 
 ```
-[0:00 - 3:00]   ЛЕГКО          (Простые мобы, малый спавн)
-[3:00 - 6:00]   НОРМАЛЬНО      (Повышение здоровья врагов, базовые стаи)
-[6:00 - 9:00]   СЛОЖНО         (Появление первых элитных мобов)
-[9:00 - 13:00]  БЕЗУМИЕ        (Массированные орды, агрессивные атаки)
-[13:00 - 18:00] НЕВОЗМОЖНО     (Множественные элиты, гигантский урон)
-[18:00 - 25:00] Я ВИЖУ ТЕБЯ    (Экстремальный хаос, спавн боссов в виде обычных мобов)
-[25:00+]        КОНЕЦ МИРА     (Предел выживания: выживут только богоподобные билды)
+[0:00 - 3:00]   EASY           (Basic enemies, modest spawn rate)
+[3:00 - 6:00]   MEDIUM         (Elevated enemy health, basic packs)
+[6:00 - 9:00]   HARD           (First elite spawns emerge)
+[9:00 - 13:00]  INSANE         (Massive swarms, aggressive behaviors)
+[13:00 - 18:00] IMPOSSIBLE     (Multiple elites, severe damage)
+[18:00 - 25:00] I SEE YOU      (Extreme chaos, bosses spawn as standard mobs)
+[25:00+]        APOCALYPSE     (Survival ceiling: only god-tier builds endure)
 ```
 
-### 5.1. Формула Директора (Director AI)
-Каждые $dt$ секунд спавн-директор начисляет себе очки спавна (Spawn Credits) по формуле:
+### 5.1. Director Scaling Formulas
+Every tick, the spawn director receives Spawn Credits based on:
 $$DifficultyCoefficient = (1 + 0.05 \cdot t_{min}) \cdot (1 + 0.3 \cdot (Players - 1)) \cdot 1.15^{Stage - 1}$$
-- Здоровье монстров: $HP = HP_{base} \cdot DifficultyCoefficient^{1.1}$
-- Урон монстров: $DMG = DMG_{base} \cdot (1 + 0.15 \cdot DifficultyCoefficient)$
-- Стоимость открытия сундуков также масштабируется со временем, стимулируя постоянный активный фарм.
+- Monster Health: $HP = HP_{base} \cdot DifficultyCoefficient^{1.1}$
+- Monster Damage: $DMG = DMG_{base} \cdot (1 + 0.15 \cdot DifficultyCoefficient)$
+- Chest opening costs also scale over time, maintaining economic momentum.
 
-### 5.2. Аффиксы Элитных Противников
-Элитные монстры окрашиваются в характерные светящиеся цвета и обладают опасными пассивными аурами:
-1. **Пылающие (Blazing — Красная аура):** Оставляют за собой след огня, наносящий урон, атаки поджигают игроков.
-2. **Перегруженные (Overloading — Синяя молния):** Имеют 50% щита от макс. HP, при атаках вызывают взрывные электрические сферы, прилипающие к игроку.
-3. **Ледяные (Glacial — Бело-голубые кристаллы):** Замедляют при ударе, после гибели взрываются ледяной сверхновой с задержкой в 1.5 секунды.
-4. **Малахитовые (Malachite — Темно-изумрудные шипы):** Стреляют самонаводящимися шипами, их аура полностью блокирует регенерацию и лечение игроков на 5 секунд.
-5. **Призрачные / Теневые (Void / Shadow):** Периодически совершают микро-телепортации сквозь снаряды игроков.
+### 5.2. Elite Affixes
+Elite enemies feature radiant visual auras and potent passive properties:
+1. **Blazing (Red Aura):** Leaves damaging fire trails; attacks ignite players.
+2. **Overloading (Electric Blue):** Possesses 50% max HP as energy shields; attacks lodge delayed lightning bomblets.
+3. **Glacial (Ice Cyan):** Chills on hit; detonates in a cryogenic nova 1.5 seconds after death.
+4. **Malachite (Dark Emerald Spikes):** Fires tracking thorn darts; aura nullifies all player healing and regeneration for 5 seconds.
+5. **Void / Shadow:** Periodically phase-shifts through incoming player projectiles.
 
 ---
 
-## 6. Предметы, Синергии и Экономика
+## 6. Items, Synergies, and Economy
 
-В «The Rift» сила персонажа определяется не только уровнем, но и накопленными пассивными артефактами. Предметы делятся на категории редкости и обладают неограниченным стаком (Stacking).
+In "The Rift", player power relies heavily on accumulated passive items. Items are organized into rarity tiers and support unlimited stacking.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    ТИРЫ ПРЕДМЕТОВ В РАЗЛОМЕ                 │
+│                    ITEM TIERS IN THE RIFT                   │
 ├─────────────────┬─────────────────┬─────────────────────────┤
-│ Редкость        │ Цвет            │ Роль в билде            │
+│ Rarity          │ Color           │ Build Role              │
 ├─────────────────┼─────────────────┼─────────────────────────┤
-│ Common (Белые)  │ Белый / Серый   │ Фундамент статов и шанс │
-│ Uncommon (Зелен)│ Неоново-зеленый │ Синергии и АОЕ эффекты  │
-│ Legendary (Крас)│ Багрово-красный │ Гейм-чейнджеры билда    │
-│ Boss (Желтые)   │ Золотой         │ Дропы с уникальных босс.│
-│ Corrupted (Фиол)│ Фиолетовый      │ Высокий риск / мутации  │
-│ Equipment (Оран)│ Оранжевый       │ Активные по кнопке 'R'  │
+│ Common (White)  │ White / Slate   │ Stat foundation & proc  │
+│ Uncommon (Green)│ Neon Green      │ Synergies & AOE bursts  │
+│ Legendary (Red) │ Crimson Red     │ Game-changing capstones │
+│ Boss (Yellow)   │ Radiant Gold    │ Unique boss drop relics │
+│ Corrupted (Purp)│ Violet          │ High risk / mutations   │
+│ Equipment (Oran)│ Amber Orange    │ Active abilities ('R')  │
 └─────────────────┴─────────────────┴─────────────────────────┘
 ```
 
-### 6.1. Примеры Предметов
+### 6.1. Item Highlights
 
-#### Обычные (Common / Белые) — Основа билда:
-- **Кинетический Ускоритель (Kinetic Injector):** +15% к скорострельности (+15% за стак).
-- **Титановая Нано-Броня (Nanite Plating):** Снижает входящий урон на 5 ед. (+5 за стак, не ниже 1).
-- **Стимулятор Сердца (Adrenaline Dart):** +12% к скорости бега при получении урона.
-- **Импульсный Патрон (Pulse Rounds):** 10% шанс вызвать кровотечение (наносит 240% урона за 3 сек).
-- **Био-Инжектор (Health Vial):** Регенерация +2 HP в секунду (+2 за стак).
+#### Common (White) — Build Foundation:
+- **Kinetic Injector:** +15% weapon attack speed (+15% per stack).
+- **Nanite Plating:** Diminishing returns damage reduction (5% at level 1 up to 60% cap at level 20).
+- **Adrenaline Dart:** +12% movement speed (+12% per stack).
+- **Pulse Rounds:** 15% chance to inflict bleed dealing 180% damage over 3 seconds.
+- **Bio-Injector (Health Vial):** +2.5 HP/s passive regeneration (+2.5 per stack).
 
-#### Необычные (Uncommon / Зеленые) — Синергии и масштабирование:
-- **Тесла-Катушка (Chain Lightning Coil):** 25% шанс при выстреле поразить молнией до 3 (+2 за стак) врагов на 160% урона.
-- **Плазменный Детонатор (Plasma Core):** Убийство врага вызывает взрыв радиусом 4м на 200% базового урона.
-- **Очки Снайпера (Crit Visor):** +10% к шансу критического удара (+10% за стак). Критический урон равен 200%.
-- **Автономный Дрон-Охранник (Uplink Node):** Призывает парящего боевого дрона, повторяющего 30% залпов игрока.
-- **Гипер-Щит Защиты (Aegis Battery):** При непрерывном беге в течение 4 сек генерирует щит на 25% от максимального HP.
+#### Uncommon (Green) — Synergies & Scaling:
+- **Chain Lightning Coil:** 25% chance to fire chain lightning across 3 targets (+2 per stack) for 160% damage.
+- **Plasma Core:** Defeating an enemy causes a 4m radius explosion for 200% base damage.
+- **Crit Visor:** +12% critical strike chance (+12% per stack). Critical hits deal 200% damage.
+- **Aegis Battery:** Generates an energy shield with +35 max HP capacity (+35 per stack), recharges out of combat.
+- **Bio-Leech:** Restores +5 HP per monster defeated.
 
-#### Легендарные (Legendary / Красные) — Богоподобная мощь:
-- **Ядро Сингулярности (Singularity Core):** Каждое 10-е убийство создает мини-черную дыру, стягивающую всех мобов в радиусе 12м и взрывающуюся на 800% урона.
-- **Протокол «Омни-Лазер» (Orbital Strike Protocol):** Каждые 15 секунд орбитальный спутник обрушивает луч дезинтеграции на самого живучего врага в радиусе видимости.
-- **Кристалл Бессмертия (Chronos Phylactery):** При получении смертельного урона замораживает всех монстров и боссов на 5 секунд, отталкивает их на 25 метров и восстанавливает 50% HP (перезарядка 1 раз за локацию).
-- **Катализатор Реакций (Resonance Amplifier):** Все эффекты периодического урона (огонь, яд, кровотечение) тикают в 2 раза быстрее и могут критовать.
+#### Legendary (Red) — Build Capstones:
+- **Singularity Core:** Every 10th kill spawns a gravitational vortex pulling enemies within 12m and detonating for 600% damage.
+- **Orbital Strike Protocol:** Every 12 seconds, an orbital cannon obliterates the highest-health target in range for 800% damage.
+- **Chronos Phylactery:** On lethal damage, freezes all entities for 5s, repels enemies 25m, and restores 50% HP (once per stage).
+- **Resonance Amplifier:** All damage-over-time effects tick twice as fast and can critically strike.
 
-#### Предметы Боссов (Boss / Желтые):
-- **Око Титана (Golem Core):** Периодически выстреливает каменный луч во врагов, оглушая их на 2 секунды.
-- **Огненная Чешуя Магма-Червя (Molten Scale):** Под ногами персонажа всегда горит земля, наносящая урон врагам пропорционально скорости бега.
+#### Boss Items (Yellow):
+- **Golem Core:** Periodically fires a kinetic beam stunning foes for 2 seconds.
+- **Molten Scale:** Leaves a trail of scorched ground burning pursuers proportional to movement speed.
 
-#### Искаженные Реликвии (Corrupted / Фиолетовые):
-- Мутируют существующие предметы. Например: трансформирует все «Очки Снайпера» в «Очки Разлома» — шанс крита равен 0, но все атаки имеют 1% шанс мгновенно аннигилировать любого не-босс противника.
+#### Corrupted Relics (Purple):
+- Mutate existing items. Example: transforms all "Crit Visors" into "Void Visors" — critical strike chance drops to 0, but all strikes gain a 1% chance to instantly disintegrate non-boss enemies.
 
-### 6.2. Механики Манипуляции Предметами на Карте
-1. **3D-Принтеры (Item Fabricators):** Позволяют отдать случайный предмет соответствующей редкости ради гарантированного получения указанного полезного предмета.
-2. **Утилизаторы (Scrappers):** Позволяют превратить ненужные предметы в чистый «Лом» (Scrap), который принтер будет расходовать в первую очередь!
-3. **Жертвенные Алтари (Shrines):**
-   - *Алтар Шанса:* Заплати деньги ради шанса выбить ценный артефакт (или проиграть).
-   - *Алтарь Битвы:* Немедленно спавнит двух опасных элитных мобов; награда — сундук.
-   - *Алтарь Крови:* Отдай 50% текущего HP ради солидной пачки кредитов.
+### 6.2. Interactive Map Stations
+1. **3D Printers (Item Fabricators):** Trade a random item of matching rarity to produce a copy of the displayed item.
+2. **Scrappers:** Convert unwanted items into neutral Scrap, which printers consume before taking active items!
+3. **Shrines:**
+   - *Shrine of Chance:* Pay credits for a chance to win items (or fail).
+   - *Shrine of the Combat:* Instantly summons 2 elite monsters; awards a chest upon victory.
+   - *Shrine of Blood:* Trade 50% current HP for an immediate payout of credits.
 
 ---
 
-## 7. Классы Выживших (Персонажи)
+## 7. Survivor Classes
 
-Каждый персонаж имеет уникальный стиль боя, базовое автоматическое оружие и набор активных способностей:
+Each hero features a distinct combat philosophy, primary weapon, and utility abilities:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        ВЫЖИВШИЕ ЭКИПАЖА РАЗЛОМА                        │
+│                        RIFT SURVIVOR ROSTER                            │
 ├──────────────────┬──────────────────┬──────────────────┬───────────────┤
-│ 1. СКАУТ         │ 2. ДЖАГГЕРНАУТ   │ 3. ИНЖЕНЕР       │ 4. МИСТИК     │
-│    (Commando)    │    (Juggernaut)  │    (Engineer)    │    (Techno)   │
+│ 1. SCOUT         │ 2. JUGGERNAUT    │ 3. ENGINEER      │ 4. MYSTIC     │
+│    (Commando)    │    (Enforcer)    │    (Engineer)    │    (Artificer)│
 ├──────────────────┼──────────────────┼──────────────────┼───────────────┤
-│ - Двойные бласт. │ - Дробовик плазмы│ - Автомат + 2    │ - Энерго-лучи │
-│ - Высокая скор.  │ - Силовой щит    │   турели со ста- │ - Телепортация│
-│ - Осколочная     │ - Землетрясение  │   ками предметов │ - Черная дыра │
-│   граната        │ - Огромное HP    │ - Мины-пауки     │ - Стихии      │
+│ - Dual blasters  │ - Plasma shotgun │ - Rifle + 2      │ - Tri-element │
+│ - High agility   │ - Kinetic shield │   turrets with   │ - Phase shift │
+│ - Cluster        │ - Ground slam    │   full item copy │ - Singularity │
+│   grenade        │ - Massive HP     │ - Spider mines   │ - Arc bursts  │
 └──────────────────┴──────────────────┴──────────────────┴───────────────┘
 ```
 
-1. **Скаут (The Scout / Commando):**  
-   - *Оружие:* Спаренные импульсные пистолеты (высокая скорострельность, идеален для прок-билдов).  
-   - *Utility (Shift):* Тактический кувырок (ускорение, уклонение).  
-   - *Special (Q):* Кластерная нано-граната, взрывающаяся на множество осколков.
-2. **Джаггернаут (The Juggernaut / Enforcer):**  
-   - *Оружие:* Тяжелый плазменный дробовик (конус мощного урона на близкой дистанции, отталкивание).  
-   - *Utility (Shift):* Рывок щитом вперед с опрокидыванием врагов.  
-   - *Special (Q):* Стационарный энерго-барьер, блокирующий все вражеские снаряды спереди.
-3. **Инженер (The Engineer):**  
-   - *Оружие:* Игольчатый карабин с самонаводящимися микро-дротиками.  
-   - *Utility (Shift):* Защитный купол, регенерирующий щиты союзников внутри.  
-   - *Special (Q):* Установка автономных турелей «Гаусс» (до 2 штук). **Главная фишка: турели наследуют 100% всех предметов инженера!**
-4. **Ксено-Мистик (The Mystic / Artificer):**  
-   - *Оружие:* Чередующиеся плазменные сгустки огня, холода и молнии.  
-   - *Utility (Shift):* Фазовый сдвиг (кратковременный полет в виде чистой энергии сквозь врагов).  
-   - *Special (Q):* Заряжаемая сингулярность, замораживающая и стягивающая врагов.
-5. **Снайпер-Следопыт (The Ranger):**  
-   - *Оружие:* Бронебойная рельсовая винтовка (высокий урон за выстрел, пробивает мобов насквозь).  
-   - *Utility (Shift):* Пространственный блинк (прыжок сквозь материю).  
-   - *Special (Q):* Дрон-разведчик, подсвечивающий уязвимые точки боссов (+100% к урону по ним).
+1. **The Scout (Commando):**  
+   - *Weapon:* Dual pulse blasters (high fire rate, optimal for proc chains).  
+   - *Utility (Shift):* Tactical roll with dodge frames.  
+   - *Special (Q):* Nano-fragmentation cluster grenade.
+2. **The Juggernaut (Enforcer):**  
+   - *Weapon:* Heavy plasma shotgun (close-range cone blast, heavy knockback).  
+   - *Utility (Shift):* Shield tackle knocking foes back.  
+   - *Special (Q):* Deployed energy barrier blocking frontal projectiles.
+3. **The Engineer:**  
+   - *Weapon:* Flechette carbine with micro-homing darts.  
+   - *Utility (Shift):* Shield bubble regenerating ally shields inside.  
+   - *Special (Q):* Deployable automated Gauss turrets (up to 2). **Core feature: turrets inherit 100% of the engineer's items!**
+4. **The Mystic (Artificer):**  
+   - *Weapon:* Cycling plasma bolts of fire, ice, and lightning.  
+   - *Utility (Shift):* Phase shift (temporary energy flight phasing through enemies).  
+   - *Special (Q):* Charged vortex freezing and pulling enemies inward.
+5. **The Ranger:**  
+   - *Weapon:* Piercing railgun (massive damage per shot, penetrates lines of enemies).  
+   - *Utility (Shift):* Spatial blink.  
+   - *Special (Q):* Spotter drone highlighting enemy weak spots (+100% damage to targets).
 
 ---
 
-## 8. Кооперативный Мультиплеер (До 5 Игроков)
+## 8. Cooperative Multiplayer (Up to 5 Players)
 
-Кооператив рассчитан на совместное прохождение в команде до 5 человек. Игра поддерживает как локальные сессии через WebRTC (P2P Mesh/Star с хостом), так и выделенный сервер на базе Node.js/Bun.
+Co-op supports shared progression for up to 5 players via WebRTC P2P or headless dedicated server.
 
-### 8.1. Динамическое Масштабирование Коопа
-- **Здоровье врагов:** $+35\%$ за каждого дополнительного игрока в лобби.
-- **Количество сундуков на карте:** Увеличивается пропорционально числу игроков, чтобы каждый мог собрать сильный билд.
-- **Радиус телепорта:** Зарядка ускоряется, если в круге находится больше живых игроков.
+### 8.1. Co-op Dynamic Scaling
+- **Enemy Health:** $+35\%$ per additional player in session.
+- **Chest Density:** Scaled proportionally so all teammates build robust loadouts.
+- **Teleporter Radius:** Charge progress accelerates with multiple allies standing within the boundary.
 
-### 8.2. Система Павших Бойцов (Revive & Spectate)
-- Если здоровье игрока падает до нуля, он переходит в состояние «Нокдауна» (Downed). Союзники могут подбежать и реанимировать его в течение 20 секунд.
-- Если таймер истек или вся команда не успела оживить бойца, он переходит в режим наблюдения (Spectator).
-- **Возрождение:** Все павшие союзники автоматически возрождаются с полным запасом сил при успешной активации и зарядке Телепорта текущего биома!
+### 8.2. Revive & Spectate Mechanics
+- When a player's health reaches 0, they enter a Downed state. Allies can revive them within 20 seconds.
+- If the countdown expires without revival, the player transitions to Spectator mode.
+- **Resurrection:** All fallen teammates automatically revive at full health upon successful charge and clearance of the current stage Teleporter!
 
 ---
 
-## 9. Техническая Интеграция в Архитектуру Проекта
+## 9. Technical Architecture Integration
 
-Проект уже обладает модульной архитектурой:
-- **Headless симуляция (`src/sim/GameCore.ts`):** Вся математика мобов, таймеров, коллизий и урона полностью независима от Three.js.
-- **Презентационный слой Three.js (`src/core/Renderer.ts`, `entities/`):** Визуализация 2.5D мира, эффектов частиц, шейдеров разлома.
-- **Сетевой стек (`src/net/PeerNetwork.ts`, `server/dedicatedServer.ts`):** Поддержка синхронизации снапшотов.
+The project employs a clean modular structure:
+- **Headless Simulation (`src/sim/GameCore.ts`):** All monster logic, timers, collisions, and damage calculations run independently of Three.js.
+- **Presentation Layer (`src/core/Engine.ts`, `entities/`):** 2.5D rendering, particle visual effects, shader materials.
+- **Networking Stack (`src/net/`, `server/dedicatedServer.ts`):** Snapshot serialization and connection management.
 
-### Дорожная Карта Перехода (Implementation Roadmap)
+### Implementation Roadmap
 
 ```mermaid
 flowchart TD
-    M1["Этап 1: Документация и Архитектура<br/>(GDD, Дизайн предметов, Биомов)"] --> M2["Этап 2: Расширение SimGameCore<br/>(Таймер сложности, Предметы со стаками, Проки)"]
-    M2 --> M3["Этап 3: Механика Телепорта<br/>(Зона удержания, Спавн босса, Переход биомов)"]
-    M3 --> M4["Этап 4: Генератор Биомов и Сундуков<br/>(ChunkManager -> StageManager, 3D-принтеры)"]
-    M4 --> M5["Этап 5: Новые Классы и Кооп Баланс<br/>(Турели Инженера, Снайпер, Ревайвы)"]
+    M1["Stage 1: Documentation & Architecture<br/>(GDD, Item & Biome design)"] --> M2["Stage 2: Core Simulation Extension<br/>(Difficulty clock, Item stacks, Proc triggers)"]
+    M2 --> M3["Stage 3: Teleporter Event Mechanics<br/>(Hold zone, Boss spawn, Stage transitions)"]
+    M3 --> M4["Stage 4: Biome & Chest Generators<br/>(ChunkManager -> StageManager, 3D printers)"]
+    M4 --> M5["Stage 5: Expanded Roster & Co-op Polish<br/>(Engineer turrets, Ranger, Revive system)"]
 ```
 
-1. **Этап 1 (Текущий):** Фиксация дизайн-документа концепции «The Rift», согласование механик.
-2. **Этап 2 (Ядро симуляции):** Добавление в `GameCore` глобального таймера сложности (Difficulty Scale), структуры предметов со стаками и диспетчера событий проков (Proc Trigger Engine).
-3. **Этап 3 (Событие Телепорта):** Создание сущности `Teleporter` с логикой радиуса зарядки (90 сек), спавном босса биома и конвертацией кредитов при завершении.
-4. **Этап 4 (Мир и Биомы):** Перевод генерации из бесконечного пустого чанка в ограниченные красивые карты биомов (Desert, Tech, Forest, Volcano, Ruins) с точками интереса.
-5. **Этап 5 (Полировка и Сеть):** Добавление визуальных эффектов разлома, звукового сопровождения, сетевой синхронизации телепорта и оживления игроков.
+1. **Stage 1 (Current):** Align design document specifications for "The Rift" and lock core mechanics.
+2. **Stage 2 (Simulation Core):** Integrate global difficulty scaling clock, stacked item data structures, and the proc dispatch engine into `GameCore`.
+3. **Stage 3 (Teleporter Mechanics):** Implement `Teleporter` entity with 90s capture logic, stage boss encounters, and end-of-stage currency conversion.
+4. **Stage 4 (World & Biomes):** Transition procedural generation from endless open chunks into delimited biome maps (Desert, Tech, Forest, Volcano, Ruins) with key landmarks.
+5. **Stage 5 (Polish & Networking):** Add rift particle shaders, audio cues, network snapshot sync for teleporter states, and ally revival flows.

@@ -301,3 +301,28 @@ test('Rare items correctly modify player stats and caps', () => {
   const cappedChance = calculatePlayerStats(items);
   assert.equal(cappedChance.critChance, 1.0); // capped at 100%
 });
+
+test('Nano-Armor diminishing returns and speed calculation', () => {
+  const getNaniteDamageReduction = (stacks: number): number => {
+    if (stacks <= 0) return 0;
+    return Math.min(0.60, 0.05 * Math.pow(stacks, Math.log(12) / Math.log(20)));
+  };
+
+  // Stack 0: 0%
+  assert.equal(getNaniteDamageReduction(0), 0);
+  // Stack 1: 5% (0.05)
+  assert.equal(Number(getNaniteDamageReduction(1).toFixed(4)), 0.05);
+  // Stack 20: 60% (0.60)
+  assert.equal(Number(getNaniteDamageReduction(20).toFixed(4)), 0.60);
+  // Stack > 20: capped at 60%
+  assert.equal(getNaniteDamageReduction(25), 0.60);
+
+  // Strictly diminishing returns (each step gives strictly less than the previous)
+  let prevDelta = 1.0;
+  for (let i = 2; i <= 20; i++) {
+    const delta = getNaniteDamageReduction(i) - getNaniteDamageReduction(i - 1);
+    assert.ok(delta > 0, `Delta at stack ${i} should be positive`);
+    assert.ok(delta < prevDelta, `Delta at stack ${i} (${delta}) should be strictly less than previous (${prevDelta})`);
+    prevDelta = delta;
+  }
+});

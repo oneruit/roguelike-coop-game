@@ -45,7 +45,10 @@
       <!-- Minimap Radar & In-Game Session Stats in top-right corner -->
       <div class="minimap-wrapper">
         <div id="minimap-container" title="Нажмите, чтобы открыть карту [TAB]">
-          <canvas id="minimap-canvas" width="170" height="170"></canvas>
+          <div class="minimap-canvas-wrapper">
+            <canvas id="minimap-canvas" width="170" height="170"></canvas>
+            <canvas id="minimap-player-canvas" width="170" height="170"></canvas>
+          </div>
           <div class="minimap-footer">
             <span id="minimap-coords" class="minimap-coords">0, 0</span>
             <span class="minimap-hint">[TAB] Карта</span>

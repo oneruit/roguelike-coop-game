@@ -79,7 +79,8 @@ export class InventoryUI {
       const critPct = (player.critChance * 100).toFixed(1);
       const critDmgPct = (player.critDamage * 100).toFixed(1);
       const cdrPct = Math.round((1 - player.passiveCooldownMultiplier) * 100);
-      const armorPct = Math.round(player.passiveDamageReduction * 100);
+      const naniteReduction = player.getNaniteDamageReduction();
+      const totalArmorPct = Math.round((1 - (1 - player.passiveDamageReduction) * (1 - naniteReduction)) * 100);
 
       this.inventoryStatsList.innerHTML = `
         <div class="inv-stat-row">
@@ -100,7 +101,7 @@ export class InventoryUI {
         </div>
         <div class="inv-stat-row">
           <span class="inv-stat-label">🦺 Снижение урона (Броня)</span>
-          <span class="inv-stat-value">-${armorPct}%</span>
+          <span class="inv-stat-value">-${totalArmorPct}%</span>
         </div>
         <div class="inv-stat-row" title="Начальные бонусы героя применяются только к его стартовому оружию">
           <span class="inv-stat-label">🎯 Урон стартового оружия</span>
@@ -314,6 +315,10 @@ export class InventoryUI {
             if (!def) return '';
             const rarityLabel = rarityLabels[def.rarity] || def.rarity;
 
+            const itemDesc = id === 'nanite_plating'
+              ? `Снижает входящий урон на ${(player.getNaniteDamageReduction() * 100).toFixed(1)}% (макс. 60% на 20 ур.).`
+              : def.description;
+
             return `
             <div class="inv-item-card grade-${def.rarity}">
               <div class="inv-item-card-top">
@@ -322,7 +327,7 @@ export class InventoryUI {
                 <span class="inv-item-count">x${count}</span>
               </div>
               <div class="inv-item-name" style="color: ${def.color}">${def.name}</div>
-              <div class="inv-item-desc">${def.description}</div>
+              <div class="inv-item-desc">${itemDesc}</div>
             </div>
           `;
           })
