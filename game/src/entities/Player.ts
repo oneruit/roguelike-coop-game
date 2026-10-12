@@ -209,9 +209,9 @@ export class Player {
     this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
 
-    // Hero Light Glow
-    const light = new PointLight(0xf59e0b, 1.4, 9);
-    light.position.set(0, 1.2, 0.4);
+    // Hero Light Glow - tactical arena visibility
+    const light = new PointLight(0xf59e0b, 1.6, 18, 1.4);
+    light.position.set(0, 1.4, 0.4);
     this.mesh.add(light);
 
     // Overhead 3D Canvas Billboard (Name, HP, Revive Bar)

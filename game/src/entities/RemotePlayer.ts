@@ -128,8 +128,8 @@ export class RemotePlayer {
     this.mesh.add(this.spriteMesh);
 
     // Distinct Partner Halo Light (using player's assigned color)
-    const partnerLight = new PointLight(this.colorHex, 1.2, 8);
-    partnerLight.position.set(0, 1.2, 0.3);
+    const partnerLight = new PointLight(this.colorHex, 1.4, 16, 1.4);
+    partnerLight.position.set(0, 1.4, 0.3);
     this.mesh.add(partnerLight);
 
     // Downed red warning beacon ring

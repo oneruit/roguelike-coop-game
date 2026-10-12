@@ -148,6 +148,31 @@ export class Enemy {
   private freezeAuraMaterial?: MeshBasicMaterial;
 
   private static geometryCache = new Map<EnemyType, PlaneGeometry>();
+  private static shadowGeometryCache = new Map<string, RingGeometry>();
+  private static sharedShadowMaterial?: MeshBasicMaterial;
+
+  private static getShadowGeometry(key: string, width: number): RingGeometry {
+    let geom = Enemy.shadowGeometryCache.get(key);
+    if (!geom) {
+      geom = new RingGeometry(0, width * 0.42, 16);
+      geom.rotateX(-Math.PI / 2);
+      Enemy.shadowGeometryCache.set(key, geom);
+    }
+    return geom;
+  }
+
+  private static getShadowMaterial(): MeshBasicMaterial {
+    if (!Enemy.sharedShadowMaterial) {
+      Enemy.sharedShadowMaterial = new MeshBasicMaterial({
+        color: 0x180b12,
+        side: DoubleSide,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false
+      });
+    }
+    return Enemy.sharedShadowMaterial;
+  }
 
   constructor(config: EnemyConfig, spawnPos: Vector3) {
     this.id = Math.random().toString(36).substring(2, 9);
@@ -252,7 +277,8 @@ export class Enemy {
       map: initialMap,
       transparent: true,
       alphaTest: 0.08,
-      side: DoubleSide
+      side: DoubleSide,
+      fog: false // Ensure enemy sprites are crisp and never dimmed by background fog
     });
 
     if (this.isImmortal) {
@@ -272,6 +298,14 @@ export class Enemy {
     this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
     this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
+
+    // Ground silhouette / contact shadow indicator for clear top-down readability on any terrain
+    const shadowKey = `${this.type}_${this.width.toFixed(1)}`;
+    const shadowGeom = Enemy.getShadowGeometry(shadowKey, this.width);
+    const shadowMat = Enemy.getShadowMaterial();
+    const contactShadow = new Mesh(shadowGeom, shadowMat);
+    contactShadow.position.y = 0.03;
+    this.mesh.add(contactShadow);
 
     // Visual freeze frost ring indicator (visible when isFrozen is true)
     const freezeGeom = new RingGeometry(this.width * 0.35, this.width * 0.58, 16);
