@@ -29,6 +29,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   'hero-chakram': '/textures/heroes/hero_chakram_front.png',
   'hero-archer': '/textures/heroes/hero_archer_front.png',
   'hero-rocket': '/textures/heroes/hero_rocket_front.png',
+  'hero-necromancer': '/textures/heroes/hero_necromancer_front.png',
 
   // Monsters
   'monster-coyote': '/textures/monsters/monster_coyote_front.png',

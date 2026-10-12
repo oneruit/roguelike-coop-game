@@ -170,7 +170,7 @@ export class Player {
       // 128x128 chibi standard: feet anchored at y=118 in 128px cell (10px bottom margin)
       // translation = (118 / 128 - 0.5) * 3.6 = 0.421875 * 3.6 = 1.51875
       // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
-      const is128Standard = charType === 'valkyrie';
+      const is128Standard = charType === 'valkyrie' || charType === 'necromancer';
       const translateY = is128Standard ? 1.51875 : 0.975;
       geom.translate(0, translateY, 0);
       Player.geometryCache.set(charType, geom);
@@ -319,6 +319,8 @@ export class Player {
         ? TextureManager.loadArcherTextures()
         : charType === 'rocket'
         ? TextureManager.loadRocketTextures()
+        : charType === 'necromancer'
+        ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();
 
     this.animatedTextures = {
@@ -920,13 +922,12 @@ export class Player {
     const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
 
     // Direction to row mapping:
-    // Row 0: front, Row 1: left, Row 2: right, Row 3: back
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = {
-      front: 0,
-      right: 2,
-      left: 1,
-      back: 3
-    };
+    // New 6x4 pipeline (necromancer): Row 0: front, Row 1: back, Row 2: left, Row 3: right
+    // Legacy 6x4 / 4x4 characters: Row 0: front, Row 1: left, Row 2: right, Row 3: back
+    const isNewStandard = this.charType === 'necromancer';
+    const DIR_ROW_MAP: Record<SpriteDirection, number> = isNewStandard
+      ? { front: 0, back: 1, left: 2, right: 3 }
+      : { front: 0, left: 1, right: 2, back: 3 };
     const row = DIR_ROW_MAP[this.currentDir];
 
     if (this.spriteMaterial.map !== tex) {
@@ -1235,6 +1236,8 @@ export class Player {
           ? 'Эльф'
           : this.charType === 'rocket'
           ? 'Ракета'
+          : this.charType === 'necromancer'
+          ? 'Мортис'
           : 'Рен';
       ctx.fillText(`${this.displayName} (${heroName}) [L${this.level}]`, w / 2, 24);
 

@@ -1327,6 +1327,7 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'flail':
       return new SimFlailWeapon();
     case 'sorceress':
+    case 'necromancer':
       return new SimAstralStaffWeapon();
     case 'chakram':
       return new SimChakramWeapon();
