@@ -286,9 +286,9 @@ export class InventoryUI {
         this.inventoryWeaponsList.innerHTML = player.weapons
           .map((weapon) => {
             const isStart = weapon.id === player.startingWeaponId;
-            const gradeLevel = (weapon.awakenedGrade ?? 0) + 1;
-            const gradeLabel = gradeLevel === 1 ? 'ГРЕЙД I' : gradeLevel === 2 ? 'ГРЕЙД II' : 'ГРЕЙД III';
-            const badgeClass = `badge-grade${Math.min(3, gradeLevel)}`;
+            const tier = (weapon.awakenedGrade ?? 0) >= 2 ? 1 : (weapon.awakenedGrade ?? 0) === 1 ? 2 : 3;
+            const gradeLabel = `ТИР ${tier}`;
+            const badgeClass = `badge-tier${tier}`;
 
             const historyHtml = (weapon.upgradeHistory || [])
               .map(
@@ -324,7 +324,7 @@ export class InventoryUI {
                 </div>
               </div>
               <div class="inv-weapon-history-row">
-                <span class="inv-history-label">Грейды улучшений:</span>
+                <span class="inv-history-label">Тиры улучшений:</span>
                 <div class="inv-history-chips">
                   ${historyHtml || '<span class="inv-history-none">Базовое состояние (без улучшений)</span>'}
                 </div>

@@ -267,12 +267,12 @@ export class EnemyManager {
   public update(
     dt: number,
     playerPos: Vector3,
-    onPlayerDamage: (damage: number, isImmortalHit?: boolean) => void,
+    onPlayerDamage: (damage: number, isImmortalHit?: boolean, attacker?: Enemy) => void,
     obstacleManager?: ObstacleManager,
     allTargets?: PlayerTargetInfo[],
-    onRemoteDamage?: (targetId: string, damage: number, isImmortalHit?: boolean) => void,
+    onRemoteDamage?: (targetId: string, damage: number, isImmortalHit?: boolean, attacker?: Enemy) => void,
     partnerPos?: Vector3,
-    onPartnerDamage?: (damage: number, isImmortalHit?: boolean) => void,
+    onPartnerDamage?: (damage: number, isImmortalHit?: boolean, attacker?: Enemy) => void,
     isPartnerAlive: boolean = true
   ) {
     this.gameTime += dt;
@@ -394,11 +394,11 @@ export class EnemyManager {
               const now = performance.now();
               this.lastTargetHitTimes.set(hitTargetId, now);
               if (hitTargetId === 'p1') {
-                onPlayerDamage(enemy.damage, enemy.isImmortal);
+                onPlayerDamage(enemy.damage, enemy.isImmortal, enemy);
               } else if (onRemoteDamage) {
-                onRemoteDamage(hitTargetId, enemy.damage, enemy.isImmortal);
+                onRemoteDamage(hitTargetId, enemy.damage, enemy.isImmortal, enemy);
               } else if (onPartnerDamage) {
-                onPartnerDamage(enemy.damage, enemy.isImmortal);
+                onPartnerDamage(enemy.damage, enemy.isImmortal, enemy);
               }
               SoundManager.playPlayerHurt();
             }
@@ -411,11 +411,11 @@ export class EnemyManager {
             const now = performance.now();
             this.lastTargetHitTimes.set(closestTargetId, now);
             if (closestTargetId === 'p1') {
-              onPlayerDamage(enemy.damage, enemy.isImmortal);
+              onPlayerDamage(enemy.damage, enemy.isImmortal, enemy);
             } else if (onRemoteDamage) {
-              onRemoteDamage(closestTargetId, enemy.damage, enemy.isImmortal);
+              onRemoteDamage(closestTargetId, enemy.damage, enemy.isImmortal, enemy);
             } else if (onPartnerDamage) {
-              onPartnerDamage(enemy.damage, enemy.isImmortal);
+              onPartnerDamage(enemy.damage, enemy.isImmortal, enemy);
             }
             SoundManager.playPlayerHurt();
           }

@@ -174,9 +174,19 @@ export abstract class Weapon {
     this.recalculateStats();
   }
 
+  public get tier(): number {
+    if (this.awakenedGrade >= 2) return 1;
+    if (this.awakenedGrade === 1) return 2;
+    return 3;
+  }
+
+  public get tierName(): string {
+    return `Тир ${this.tier}`;
+  }
+
   public getGradePrefix(): string {
-    if (this.awakenedGrade >= 2) return '[ГРЕЙД III • x3] ';
-    if (this.awakenedGrade === 1) return '[ГРЕЙД II • x2] ';
+    if (this.awakenedGrade >= 2) return '[ТИР 1 • x3] ';
+    if (this.awakenedGrade === 1) return '[ТИР 2 • x2] ';
     return '';
   }
 

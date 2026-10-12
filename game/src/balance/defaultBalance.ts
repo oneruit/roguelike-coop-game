@@ -659,25 +659,25 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     },
     golem_core: {
       id: 'golem_core',
-      name: 'Сердце Голема',
+      name: 'Око Титана',
       rarity: 'boss',
-      icon: '🗿',
+      icon: '👁️',
       color: '#eab308',
-      description: 'Увеличивает максимальное здоровье на 100 HP и даёт +10% сопротивления урону',
-      stackText: '+100 HP и +10% брони за стак',
-      baseValue: 100,
-      scaling: '+100 HP и +10% брони'
+      description: 'Периодически выстреливает разрушительный кинетический луч, оглушающий врагов.',
+      stackText: '+50% урона луча за стак',
+      baseValue: 50,
+      scaling: '+50% урона луча за стак'
     },
     molten_scale: {
       id: 'molten_scale',
-      name: 'Чешуя Саламандры',
+      name: 'Огненная Чешуя',
       rarity: 'boss',
-      icon: '🐉',
+      icon: '🔥',
       color: '#eab308',
-      description: 'Каждые 3 сек обжигает окружающих врагов в радиусе 5м на 120 DPS',
-      stackText: '+40 DPS за стак',
-      baseValue: 120,
-      scaling: '+40 DPS за стак'
+      description: 'Оставляет за персонажем пламенный след, наносящий урон всем преследователям.',
+      stackText: '+40% урона огня за стак',
+      baseValue: 40,
+      scaling: '+40% урона огня за стак'
     }
   },
   global: {
