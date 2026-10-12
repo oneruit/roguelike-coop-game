@@ -32,6 +32,7 @@ import { GameNetworkCoordinator } from './net/GameNetworkCoordinator';
 import { SessionDirector, GameState } from './core/SessionDirector';
 import { LobbyCoordinator } from './net/LobbyCoordinator';
 import { MerchantManager } from './world/MerchantManager';
+import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
 
 class Game {
   private engine: Engine;
@@ -652,7 +653,7 @@ class Game {
       }
     }
 
-    const { justCompleted } = this.riftTeleporter.update(dt, allPlayerPositions);
+    const { justCompleted, justTouched, justEnteredWarp } = this.riftTeleporter.update(dt, allPlayerPositions);
     if (justCompleted) {
       SoundManager.playTeleporterComplete();
       // Award stage completion bonus XP without deleting credits so player can spend them at the merchant!
@@ -660,6 +661,19 @@ class Game {
       this.player.gainXp(bonusXp);
       this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Босс повержен! Активируйте портал для перехода!', '🌀', '#10b981');
     }
+
+    // Touch trigger: walking into closed rift awakens it and summons the boss
+    if (justTouched && this.riftTeleporter.state === 'IDLE' && this.sessionDirector) {
+      this.sessionDirector.activateRift();
+    }
+
+    // Entering open warp portal teleports to next biome with sulfur smoke animation
+    if (justEnteredWarp && this.riftTeleporter.state === 'WARP_READY' && this.sessionDirector && !this.sessionDirector.isWarping) {
+      this.sessionDirector.warpToNextStage();
+    }
+
+    // 8b. Update Brimstone / Sulfur Smoke animations
+    SulfurSmokeManager.update(dt);
 
     this.chestManager.update(dt);
 
