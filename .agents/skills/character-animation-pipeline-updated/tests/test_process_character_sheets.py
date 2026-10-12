@@ -13,27 +13,27 @@ from process_character_sheets import align_and_pack_sheet, detect_and_clean_back
 
 
 class ProcessCharacterSheetsTests(unittest.TestCase):
-    def make_sheet(self, color=(40, 60, 90)) -> Image.Image:
-        sheet = Image.new("RGB", (768, 512), (255, 255, 255))
+    def make_sheet(self, color=(40, 60, 90), bg_color=(255, 0, 255)) -> Image.Image:
+        sheet = Image.new("RGB", (768, 512), bg_color)
         draw = ImageDraw.Draw(sheet)
         for row in range(4):
             for col in range(6):
                 x = col * 128
                 y = row * 128
-                # Closed outline encloses a white detail, verifying that the color key
-                # only clears background connected to the edge of the entire sheet.
+                # Closed outline encloses a detail (e.g. magenta gem), verifying that the color key
+                # only clears background connected to the outer border of the entire sheet.
                 draw.rectangle((x + 40, y + 20, x + 86, y + 116), fill=color, outline=(0, 0, 0), width=3)
-                draw.rectangle((x + 50, y + 28, x + 65, y + 38), fill=(255, 255, 255), outline=(0, 0, 0), width=2)
+                draw.rectangle((x + 50, y + 28, x + 65, y + 38), fill=(255, 0, 255), outline=(0, 0, 0), width=2)
         return sheet
 
-    def test_white_background_removed_but_enclosed_white_detail_kept(self) -> None:
-        rgba = detect_and_clean_background(np.asarray(self.make_sheet().convert("RGBA")), "white")
+    def test_magenta_background_removed_but_enclosed_magenta_detail_kept(self) -> None:
+        rgba = detect_and_clean_background(np.asarray(self.make_sheet().convert("RGBA")), "magenta")
         self.assertEqual(int(rgba[0, 0, 3]), 0)
         self.assertEqual(int(rgba[30, 55, 3]), 255)
-        self.assertEqual(tuple(rgba[30, 55, :3]), (255, 255, 255))
+        self.assertEqual(tuple(rgba[30, 55, :3]), (255, 0, 255))
 
     def test_pack_sheet_has_standard_dimensions_and_transparency(self) -> None:
-        rgba = detect_and_clean_background(np.asarray(self.make_sheet().convert("RGBA")), "white")
+        rgba = detect_and_clean_background(np.asarray(self.make_sheet().convert("RGBA")), "magenta")
         packed = align_and_pack_sheet(rgba, label="TEST")
         self.assertEqual(packed.size, (768, 512))
         result = np.asarray(packed)
@@ -60,7 +60,7 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
                 walk_path=str(source / "walk.png"),
                 attack_path=str(source / "attack.png"),
                 out_dir=str(output),
-                bg_mode="white",
+                bg_mode="magenta",
             )
 
             for state in ("idle", "walk", "attack"):
