@@ -85,6 +85,41 @@ function htmlPartialsPlugin(): Plugin {
   };
 }
 
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
+
+function webpConverterPlugin(outDir: string): Plugin {
+  return {
+    name: 'webp-converter-plugin',
+    apply: 'build',
+    async closeBundle() {
+      const targetDir = path.resolve(process.cwd(), outDir);
+      if (!fs.existsSync(targetDir)) return;
+
+      const sharpModule = await import('sharp');
+      const sharp = sharpModule.default || sharpModule;
+
+      const processDir = async (dir: string) => {
+        const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            await processDir(fullPath);
+          } else if (/\.(png|jpe?g)$/i.test(entry.name)) {
+            const webpPath = fullPath.replace(/\.(png|jpe?g)$/i, '.webp');
+            try {
+              await sharp(fullPath).webp({ quality: 80 }).toFile(webpPath);
+            } catch (err) {
+              console.warn(`[webp-converter] Failed to convert ${entry.name}:`, err);
+            }
+          }
+        }
+      };
+
+      await processDir(targetDir);
+    }
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   const isBuild = command === 'build';
@@ -105,7 +140,25 @@ export default defineConfig(({ command }) => {
         : isBuild
         ? './'
         : '/'),
-    plugins: [versionPlugin(isBuild, currentBuildTime, currentBuildId), htmlPartialsPlugin()],
+    plugins: [
+      versionPlugin(isBuild, currentBuildTime, currentBuildId),
+      htmlPartialsPlugin(),
+      ViteImageOptimizer({
+        test: /\.(jpe?g|png|gif|tiff|webp)$/i,
+        includePublic: true,
+        logStats: false,
+        png: {
+          quality: 80,
+        },
+        jpeg: {
+          quality: 80,
+        },
+        webp: {
+          quality: 80,
+        },
+      }),
+      webpConverterPlugin('dist'),
+    ],
     define: {
       __APP_VERSION__: JSON.stringify(appVersion),
       __APP_BUILD_TIME__: JSON.stringify(currentBuildTime),

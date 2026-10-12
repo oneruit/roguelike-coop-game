@@ -35,4 +35,5 @@ export interface ProgressionChartState {
   monsterMetric: 'hp' | 'damage' | 'speed';
   selectedMonsters: Set<string>;
   selectedBosses: Set<string>;
+  monsterTimeLimit?: number;
 }

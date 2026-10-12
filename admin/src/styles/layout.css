@@ -728,3 +728,104 @@
 .text-danger {
   color: var(--accent-danger);
 }
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT & MOBILE ADAPTATION
+   ========================================================================== */
+@media (max-width: 992px) {
+  .dashboard-shell {
+    flex-direction: column !important;
+  }
+
+  .dashboard-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: auto !important;
+    position: relative !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-subtle) !important;
+  }
+
+  .sidebar-header {
+    padding: 12px 18px !important;
+  }
+
+  .sidebar-content {
+    padding: 8px 12px !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 8px !important;
+  }
+
+  .sidebar-section {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .sidebar-nav {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .nav-tab {
+    white-space: nowrap !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+  }
+
+  .topbar,
+  .dashboard-topbar {
+    padding: 10px 16px !important;
+    height: auto !important;
+    min-height: 56px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .topbar-left {
+    max-width: 100% !important;
+    width: 100% !important;
+    order: 2 !important;
+  }
+
+  .topbar-right {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    order: 1 !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .main-content,
+  .dashboard-content {
+    padding: 16px 14px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar-right {
+    justify-content: space-between !important;
+  }
+
+  .btn-topbar-action,
+  .btn-publish,
+  .btn-save-draft {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+
+  .toast-container {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+  }
+
+  .toast {
+    width: 100% !important;
+    font-size: 12px !important;
+    padding: 10px 14px !important;
+  }
+}
