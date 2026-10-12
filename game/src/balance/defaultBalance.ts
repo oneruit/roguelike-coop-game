@@ -685,16 +685,17 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     dashDuration: 0.22,
     baseCritChance: 0.05,
     baseCritDamageMult: 2.0,
-    basePickupRadius: 3.5,
+    basePickupRadius: 10.0,
     maxArmorReduction: 0.75,
     goldGemChanceNormal: 0.01,
     goldGemChanceBoss: 0.40,
     merchantSpawnInterval: 180,
     merchantStayDuration: 120,
-    merchantPriceCommon: 40,
-    merchantPriceUncommon: 80,
-    merchantPriceRare: 150,
-    merchantPriceLegendary: 300,
-    merchantPriceBoss: 500
+    merchantPriceCommon: 400,
+    merchantPriceUncommon: 800,
+    merchantPriceRare: 1500,
+    merchantPriceLegendary: 3000,
+    merchantPriceBoss: 5000,
+    merchantPriceWeaponUpgrade: 500
   }
 };
