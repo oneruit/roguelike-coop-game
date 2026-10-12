@@ -17,6 +17,7 @@ import { ChestManager } from './ChestManager';
 import { RiftTeleporter } from './RiftTeleporter';
 import { TerrainElevation } from './TerrainElevation';
 import { RoughTerrainManager } from './RoughTerrainManager';
+import { TreeManager } from './TreeManager';
 
 export interface OccupiedArea {
   x: number;
@@ -247,6 +248,18 @@ export class ChunkManager {
         }
       },
       biomeId
+    );
+
+    // 7. Pseudo-3D Biome Trees with directional silhouette shadows
+    TreeManager.generateTreesForChunks(
+      biomeId || 'ashen_wastes',
+      rng,
+      this.activeChunks,
+      occupied,
+      this.obstacleManager,
+      ChunkManager.CHUNK_SIZE,
+      ChunkManager.MIN_CHUNK,
+      ChunkManager.MAX_CHUNK
     );
   }
 
