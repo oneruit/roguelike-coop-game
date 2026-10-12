@@ -12,18 +12,25 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 | Cell Dimensions | 128 × 128 px |
 | Total Resolution | 768 × 512 px (or 1536 × 1024 px for high-res source) |
 | Background | Pure solid magenta chromakey `rgb(255,0,255)` (`#ff00ff`) |
-| Direction Rows (Top to Bottom) | Row 0: `FRONT`<br>Row 1: `BACK`<br>Row 2: `LEFT` (or `RIGHT` depending on engine layout)<br>Row 3: `RIGHT` (or `LEFT`) |
+| Direction Rows (Top to Bottom) | Row 0: `FRONT` (лицо)<br>Row 1: `BACK` (спина)<br>Row 2 (3rd row): `RIGHT` (вправо — тело боком, лицо в профиль)<br>Row 3 (4th row): `LEFT` (влево — тело боком, лицо в профиль) |
 
 ---
 
-## 2. Frame-by-Frame Progression (Columns 1 to 6)
+## 2. Mandatory Directional Profile Rule
+
+* **Row 2 (3rd row — RIGHT)**: The character walks to the RIGHT. The **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 3 (4th row — LEFT)**: The character walks to the LEFT. The **body is ALWAYS turned sideways (боком)**, and the **face is strictly in profile (в профиль)**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+
+---
+
+## 3. Frame-by-Frame Progression (Columns 1 to 6)
 
 Every directional row depicts a measured, determined 6-frame combat walk cycle (not running, sliding, or dodging):
 
 * **Column 1 (Contact Pose 1)**:
   - First foot-strike pose: one chunky boot extends forward touching the baseline, opposite foot planted behind.
   - Arms and held weapon slightly swing in counter-balance to the stride.
-  - **Eyes are open and alert**, scanning ahead.
+  - **Eyes are open and alert**, scanning ahead in walking direction.
 * **Column 2 (Weight Shift / Push-off 1)**:
   - Weight transfers squarely onto the leading foot; trailing heel lifts off the ground.
   - Torso experiences slight vertical rise (+1 px).
@@ -31,7 +38,7 @@ Every directional row depicts a measured, determined 6-frame combat walk cycle (
 * **Column 3 (Passing Pose 1 & Mandatory Closed Eyes)**:
   - **MANDATORY CLOSED EYES**: On this 3rd frame across all rows where eyes are visible, the character's **eyes are fully closed** in a momentary blink of intense focus during the mid-stride leg pass.
   - Free leg swings through past the supporting leg.
-  - Closed eyelids clearly drawn on FRONT, LEFT, and RIGHT rows.
+  - Closed eyelids clearly drawn on FRONT, RIGHT, and LEFT rows.
 * **Column 4 (Contact Pose 2)**:
   - Opposite foot-strike pose: opposite boot extends forward, reversing the leg posture from Column 1.
   - **Eyes snap open again**, sharp and vigilant.
@@ -46,10 +53,11 @@ Every directional row depicts a measured, determined 6-frame combat walk cycle (
 
 ---
 
-## 3. Negative & Stylistic Constraints
+## 4. Negative & Stylistic Constraints
 
 * **Strict Proportions**: Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact body, sturdy boots).
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no dust clouds**.
+* **Global Magenta Keying & Defringing**: Magenta is removed globally inside and outside the character. Boundary edges are cleaned with a 1px black outline without any purple/magenta aura.
 * **Weapon Continuity**: Same weapon / focus held throughout all frames and rows.
 * **Mandatory Negative Constraint**:
   > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`

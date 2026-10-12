@@ -30,7 +30,10 @@ ALPHA_THRESHOLD = 20
 
 
 def _print(message: str) -> None:
-    print(message, flush=True)
+    try:
+        print(message, flush=True)
+    except UnicodeEncodeError:
+        print(message.encode("ascii", errors="replace").decode("ascii"), flush=True)
 
 
 def _connected_to_border(candidate: np.ndarray) -> np.ndarray:
@@ -132,19 +135,25 @@ def detect_and_clean_background(
     )
     inferred = np.median(corners, axis=0)
 
+    is_magenta = False
     if bg_mode == "magenta":
         bg_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
+        is_magenta = True
     elif bg_mode == "white":
         bg_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
     elif bg_mode == "black":
         bg_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
     elif bg_mode == "chroma":
         bg_color = inferred
+        dist_mag = float(np.linalg.norm(inferred - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
+        if dist_mag <= 45.0:
+            is_magenta = True
     elif bg_mode == "auto":
         dist_magenta = float(np.linalg.norm(inferred - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
         brightness = float(np.mean(inferred))
         if dist_magenta <= 45.0:
             bg_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
+            is_magenta = True
         elif brightness >= 225:
             bg_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
         elif brightness <= 30:
@@ -155,8 +164,21 @@ def detect_and_clean_background(
         raise ValueError(f"Unsupported background mode: {bg_mode}")
 
     distance = np.sqrt(np.sum((rgb - bg_color) ** 2, axis=2))
-    candidate = distance <= float(tolerance)
-    background = _connected_to_border(candidate)
+
+    if is_magenta:
+        # Magenta chromakey is removed globally: both outside the character and inside
+        # any enclosed holes/gaps within limbs and equipment.
+        is_magenta_hue = (
+            (rgb[:, :, 0] > 100.0)
+            & (rgb[:, :, 2] > 100.0)
+            & (rgb[:, :, 1] < 120.0)
+            & ((rgb[:, :, 0] - rgb[:, :, 1]) > 35.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 35.0)
+        )
+        background = (distance <= float(tolerance)) | (is_magenta_hue & (distance <= 140.0))
+    else:
+        candidate = distance <= float(tolerance)
+        background = _connected_to_border(candidate)
 
     rgba = np.zeros((h, w, 4), dtype=np.uint8)
     rgba[:, :, :3] = arr[:, :, :3]
@@ -166,6 +188,24 @@ def detect_and_clean_background(
         rgba[:, :, 3] = 255
     rgba[background, 3] = 0
     rgba[rgba[:, :, 3] < 12, 3] = 0
+
+    # Defringe / 1px black outline: eliminate any magenta aura along boundary pixels
+    # without touching or overwriting interior character textures.
+    if is_magenta:
+        mask = rgba[:, :, 3] > 0
+        pad = np.pad(mask, 1, mode="constant", constant_values=False)
+        neighbor_has_bg = (~pad[:-2, 1:-1]) | (~pad[2:, 1:-1]) | (~pad[1:-1, :-2]) | (~pad[1:-1, 2:])
+        is_boundary = mask & neighbor_has_bg
+
+        boundary_rgb = rgba[:, :, :3].astype(np.float32)
+        b_dist = np.sqrt(np.sum((boundary_rgb - np.array([255.0, 0.0, 255.0], dtype=np.float32)) ** 2, axis=2))
+        has_spill = is_boundary & (
+            ((boundary_rgb[:, :, 0] - boundary_rgb[:, :, 1] > 20.0) & (boundary_rgb[:, :, 2] - boundary_rgb[:, :, 1] > 20.0))
+            | (b_dist < 190.0)
+        )
+        rgba[has_spill, :3] = [0, 0, 0]
+        rgba[has_spill, 3] = 255
+
     return rgba
 
 
@@ -468,6 +508,97 @@ def process_portrait(
         _print(f"[OK] Created portrait from IDLE FRONT frame 1: {out_path} ({crop_cell.size})")
 
 
+def verify_facing_directions(
+    image_arr: np.ndarray,
+    cols: int = COLS,
+    rows: int = ROWS,
+    label: str = "sheet",
+    expected_row_order: str = "fbrl",
+) -> tuple[bool, str]:
+    """Verify that Row 2 (3rd row) faces RIGHT and Row 3 (4th row) faces LEFT in profile.
+
+    Checks:
+    1. Row 2 and Row 3 face in opposite directions (horizontal flip test: IoU(flip(Row2), Row3) > IoU(Row2, Row3)).
+    2. Body is turned sideways (боком) and face is in strict profile (в профиль).
+    3. Row 2 faces RIGHT (forward facial bias > 0 and > Row 3).
+    4. Row 3 faces LEFT (forward facial bias < 0 and < Row 2).
+    """
+    h, w = image_arr.shape[:2]
+    cell_h, cell_w = h // rows, w // cols
+
+    iou_flipped_list: list[float] = []
+    iou_direct_list: list[float] = []
+    r2_biases: list[float] = []
+    r3_biases: list[float] = []
+
+    for col in range(cols):
+        c2 = image_arr[cell_h * 2 : cell_h * 3, col * cell_w : (col + 1) * cell_w]
+        c3 = image_arr[cell_h * 3 : cell_h * 4, col * cell_w : (col + 1) * cell_w]
+
+        m2 = c2[:, :, 3] > ALPHA_THRESHOLD
+        m3 = c3[:, :, 3] > ALPHA_THRESHOLD
+        if not m2.any() or not m3.any():
+            continue
+
+        m2_flip = np.fliplr(m2)
+        iou_f = float(np.logical_and(m2_flip, m3).sum() / max(1, np.logical_or(m2_flip, m3).sum()))
+        iou_d = float(np.logical_and(m2, m3).sum() / max(1, np.logical_or(m2, m3).sum()))
+        iou_flipped_list.append(iou_f)
+        iou_direct_list.append(iou_d)
+
+        ys2, xs2 = np.where(m2)
+        top2 = ys2 < (ys2.min() + (ys2.max() - ys2.min()) * 0.5)
+        center2 = (xs2.min() + xs2.max()) / 2.0
+
+        ys3, xs3 = np.where(m3)
+        top3 = ys3 < (ys3.min() + (ys3.max() - ys3.min()) * 0.5)
+        center3 = (xs3.min() + xs3.max()) / 2.0
+
+        face2 = top2 & (c2[ys2, xs2, 0] > 130) & (c2[ys2, xs2, 1] > 70) & (c2[ys2, xs2, 0] >= c2[ys2, xs2, 2])
+        face3 = top3 & (c3[ys3, xs3, 0] > 130) & (c3[ys3, xs3, 1] > 70) & (c3[ys3, xs3, 0] >= c3[ys3, xs3, 2])
+
+        bias2 = float(xs2[face2].mean() - center2) if face2.any() else float(xs2[top2].mean() - center2)
+        bias3 = float(xs3[face3].mean() - center3) if face3.any() else float(xs3[top3].mean() - center3)
+        r2_biases.append(bias2)
+        r3_biases.append(bias3)
+
+    if not iou_flipped_list:
+        return False, f"{label}: Row 2 or Row 3 contains no visible sprite frames."
+
+    avg_iou_f = float(np.mean(iou_flipped_list))
+    avg_iou_d = float(np.mean(iou_direct_list))
+    avg_b2 = float(np.mean(r2_biases))
+    avg_b3 = float(np.mean(r3_biases))
+
+    if expected_row_order == "fbrl":
+        # Row 2 = RIGHT, Row 3 = LEFT
+        if avg_iou_f <= avg_iou_d:
+            return False, (
+                f"{label}: Row 2 (3rd row) and Row 3 (4th row) must face in opposite profile directions! "
+                f"Flipped IoU ({avg_iou_f:.3f}) <= Direct IoU ({avg_iou_d:.3f})."
+            )
+        if avg_b2 <= avg_b3:
+            return False, (
+                f"{label}: Row 2 (3rd row) must face RIGHT (bias={avg_b2:+.2f}) and Row 3 (4th row) must face LEFT (bias={avg_b3:+.2f})."
+            )
+    elif expected_row_order == "fblr":
+        # Row 2 = LEFT, Row 3 = RIGHT
+        if avg_iou_f <= avg_iou_d:
+            return False, (
+                f"{label}: Row 2 (3rd row) and Row 3 (4th row) must face in opposite profile directions! "
+                f"Flipped IoU ({avg_iou_f:.3f}) <= Direct IoU ({avg_iou_d:.3f})."
+            )
+        if avg_b3 <= avg_b2:
+            return False, (
+                f"{label}: Row 2 (3rd row) must face LEFT (bias={avg_b2:+.2f}) and Row 3 (4th row) must face RIGHT (bias={avg_b3:+.2f})."
+            )
+
+    return True, (
+        f"OK {label}: Row 2 and Row 3 verified in profile (opposite IoU {avg_iou_f:.3f} vs {avg_iou_d:.3f}, "
+        f"Row 2 bias={avg_b2:+.2f}, Row 3 bias={avg_b3:+.2f})."
+    )
+
+
 def process_character(
     name: str,
     idle_path: str,
@@ -484,9 +615,10 @@ def process_character(
     mirror_left: bool = False,
     mirror_right: bool = False,
     bg_mode: str = "magenta",
-    bg_tolerance: float = 36.0,
+    bg_tolerance: float = 65.0,
     legacy_front_portrait: bool = False,
-    row_order: str = "fblr",
+    row_order: str = "fbrl",
+    strict_facing: bool = False,
 ) -> None:
     output_dir = Path(out_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -563,6 +695,17 @@ def process_character(
         processed[state] = sheet
         _print(f"[OK] Processed {state.upper()}: {out_file} ({sheet.size})")
 
+        # Facing direction verification for Row 2 (3rd row) and Row 3 (4th row)
+        facing_ok, facing_msg = verify_facing_directions(
+            np.asarray(sheet), cols=cols, rows=rows, label=state.upper(), expected_row_order=row_order
+        )
+        if facing_ok:
+            _print(f"  -> [OK] Facing directions verified: {facing_msg}")
+        else:
+            if strict_facing:
+                raise ValueError(facing_msg)
+            _print(f"  -> [WARNING] Facing check: {facing_msg}")
+
     portrait_suffix = "front" if legacy_front_portrait else "portrait"
     portrait_out = output_dir / f"{clean_name}_{portrait_suffix}.png"
     process_portrait(
@@ -580,9 +723,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         description="Process three separate 6x4 IDLE/WALK/ATTACK sheets into 128x128 RGBA sprite cells."
     )
     parser.add_argument("--name", "-n", required=True, help="Character name (e.g. glaive_warrior or hero_glaive_warrior)")
-    parser.add_argument("--idle", required=True, help="Path to the 6x4 IDLE sheet; rows FRONT/BACK/LEFT/RIGHT (or FRONT/BACK/RIGHT/LEFT)")
-    parser.add_argument("--walk", required=True, help="Path to the 6x4 WALK sheet; rows FRONT/BACK/LEFT/RIGHT (or FRONT/BACK/RIGHT/LEFT)")
-    parser.add_argument("--attack", required=True, help="Path to the 6x4 ATTACK sheet; rows FRONT/BACK/LEFT/RIGHT (or FRONT/BACK/RIGHT/LEFT)")
+    parser.add_argument("--idle", required=True, help="Path to the 6x4 IDLE sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
+    parser.add_argument("--walk", required=True, help="Path to the 6x4 WALK sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
+    parser.add_argument("--attack", required=True, help="Path to the 6x4 ATTACK sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
     parser.add_argument("--portrait", help="Optional separate portrait; if omitted the first IDLE FRONT cell is used")
     parser.add_argument("--out-dir", "-o", default="public/textures/heroes", help="Output directory")
     parser.add_argument("--cell-size", type=int, default=CELL_SIZE, help="Output cell size (default: 128)")
@@ -592,11 +735,12 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--char-h", type=float, default=92.0, help="Target estimated body height in output pixels (default: 92)")
     parser.add_argument("--max-h", type=float, default=96.0, help="Maximum estimated body height in output pixels (default: 96)")
     parser.add_argument("--bg-mode", choices=("magenta", "auto", "white", "black", "chroma", "none"), default="magenta", help="Background to remove (default: magenta RGB(255,0,255)); auto detects from corners")
-    parser.add_argument("--bg-tolerance", type=float, default=36.0, help="Euclidean RGB background tolerance (default: 36)")
-    parser.add_argument("--row-order", choices=("fblr", "fbrl"), default="fblr", help="Row order: fblr (FRONT, BACK, LEFT, RIGHT) or fbrl (FRONT, BACK, RIGHT, LEFT)")
+    parser.add_argument("--bg-tolerance", type=float, default=65.0, help="Euclidean RGB background tolerance (default: 65.0)")
+    parser.add_argument("--row-order", choices=("fbrl", "fblr"), default="fbrl", help="Row order: fbrl (FRONT, BACK, RIGHT, LEFT) or fblr (FRONT, BACK, LEFT, RIGHT). Default: fbrl")
     parser.add_argument("--mirror-left", action="store_true", help="Mirror right row into left row; only after manual approval")
     parser.add_argument("--mirror-right", action="store_true", help="Mirror left row into right row; only after manual approval")
     parser.add_argument("--legacy-front-portrait", action="store_true", help="Save the portrait as *_front.png instead of the new default *_portrait.png")
+    parser.add_argument("--strict-facing", action="store_true", help="Fail with error if Row 2/3 facing directions do not match expected orientation")
     args = parser.parse_args(argv)
 
     if args.cell_size != 128 or args.cols != 6 or args.rows != 4:
@@ -628,6 +772,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             bg_tolerance=args.bg_tolerance,
             legacy_front_portrait=args.legacy_front_portrait,
             row_order=args.row_order,
+            strict_facing=args.strict_facing,
         )
     except (FileNotFoundError, ValueError, OSError) as exc:
         _print(f"ERROR: {exc}")
