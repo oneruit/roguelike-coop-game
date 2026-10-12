@@ -30,6 +30,7 @@ import { LobbyCoordinator } from '../net/LobbyCoordinator';
 import type { RiftItemDef } from '../items/RiftItemSystem';
 import { getPassiveBuffId } from '../drops/PassiveBuffs';
 import { MerchantManager } from '../world/MerchantManager';
+import { FireRingWeapon } from '../combat/weapons/MagicWeapons';
 
 export enum GameState {
   MAIN_MENU,
@@ -460,6 +461,7 @@ export class SessionDirector {
 
   public restartGame(pos?: Vector3, keepSeed: boolean = false): void {
     try {
+      FireRingWeapon.destroyAll(this.engine.scene);
       this.combatDirector.clear();
       this.enemyManager.clear();
       this.dropManager.clear();

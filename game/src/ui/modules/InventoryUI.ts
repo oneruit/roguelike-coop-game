@@ -191,18 +191,18 @@ export class InventoryUI {
     if (this.inventoryPassivesList) {
       const passivesList = [
         {
-          id: 'stat_sheriff_star',
+          id: 'stat_amplifier',
           icon: '⭐',
-          count: player.sheriffStarCount,
-          title: 'Звезда Шерифа',
-          desc: `+${player.sheriffStarCount * 2}% к урону всех оружий (складывается, x${player.passiveDamageMultiplier.toFixed(2)})`
+          count: player.amplifierCount,
+          title: 'Усилитель',
+          desc: `+${player.amplifierCount * 2}% к урону всех оружий (складывается, x${player.passiveDamageMultiplier.toFixed(2)})`
         },
         {
-          id: 'stat_spurs',
-          icon: '👢',
-          count: player.spursCount,
-          title: 'Шпоры Скорохода',
-          desc: `+${player.spursCount * 3}% к скорости бега (x${player.passiveSpeedMultiplier.toFixed(2)}, макс. 2.5x)`
+          id: 'stat_speed_boots',
+          icon: '🥾',
+          count: player.speedBootsCount,
+          title: 'Ботинки Скорости',
+          desc: `+${player.speedBootsCount * 3}% к скорости бега (x${player.passiveSpeedMultiplier.toFixed(2)}, макс. 3.0x)`
         },
         {
           id: 'stat_flask',
@@ -212,11 +212,11 @@ export class InventoryUI {
           desc: `+${player.flaskCount * 30} к макс HP (${player.maxHp} HP)`
         },
         {
-          id: 'stat_lasso',
-          icon: '➰',
-          count: player.lassoCount,
-          title: 'Магнитное Лассо',
-          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита (макс. 25м)`
+          id: 'stat_magnet',
+          icon: '🧲',
+          count: player.magnetCount,
+          title: 'Магнит',
+          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита (макс. 50м)`
         },
         {
           id: 'stat_amulet',

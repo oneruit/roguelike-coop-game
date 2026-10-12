@@ -1,11 +1,15 @@
 export type PassiveBuffId =
-  | 'stat_sheriff_star'
-  | 'stat_spurs'
+  | 'stat_amplifier'
+  | 'stat_speed_boots'
   | 'stat_flask'
-  | 'stat_lasso'
+  | 'stat_magnet'
   | 'stat_amulet'
   | 'stat_vest'
-  | 'stat_watch';
+  | 'stat_watch'
+  // Backwards compatibility aliases
+  | 'stat_sheriff_star'
+  | 'stat_spurs'
+  | 'stat_lasso';
 
 export interface PassiveBuffDef {
   id: PassiveBuffId;
@@ -15,16 +19,16 @@ export interface PassiveBuffDef {
 }
 
 export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
-  stat_sheriff_star: {
-    id: 'stat_sheriff_star',
-    title: 'Звезда Шерифа',
+  stat_amplifier: {
+    id: 'stat_amplifier',
+    title: 'Усилитель',
     icon: '⭐',
     description: '+2% к урону ВСЕХ оружий (складывается)'
   },
-  stat_spurs: {
-    id: 'stat_spurs',
-    title: 'Шпоры Скорохода',
-    icon: '👢',
+  stat_speed_boots: {
+    id: 'stat_speed_boots',
+    title: 'Ботинки Скорости',
+    icon: '🥾',
     description: '+3% к скорости бега (с угасающей эффективностью до x3 на 300 ур., макс. x3)'
   },
   stat_flask: {
@@ -33,11 +37,11 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     icon: '🍶',
     description: '+30 к максимальному HP и полное исцеление'
   },
-  stat_lasso: {
-    id: 'stat_lasso',
-    title: 'Магнитное Лассо',
-    icon: '➰',
-    description: '+10% к радиусу магнита (базовый 10м, с угасающей эффективностью до 50м на 300 ур., макс. 50м)'
+  stat_magnet: {
+    id: 'stat_magnet',
+    title: 'Магнит',
+    icon: '🧲',
+    description: '+10% к радиусу магнита (базовый 4м, с угасающей эффективностью до 50м на 300 ур., макс. 50м)'
   },
   stat_amulet: {
     id: 'stat_amulet',
@@ -56,14 +60,33 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     title: 'Карманные Часы',
     icon: '⏱️',
     description: '-1% к времени перезарядки оружий (с угасающей эффективностью до 30% на 300 ур., макс. 30%)'
+  },
+  // Backwards compatibility aliases
+  stat_sheriff_star: {
+    id: 'stat_sheriff_star',
+    title: 'Усилитель',
+    icon: '⭐',
+    description: '+2% к урону ВСЕХ оружий (складывается)'
+  },
+  stat_spurs: {
+    id: 'stat_spurs',
+    title: 'Ботинки Скорости',
+    icon: '🥾',
+    description: '+3% к скорости бега (с угасающей эффективностью до x3 на 300 ур., макс. x3)'
+  },
+  stat_lasso: {
+    id: 'stat_lasso',
+    title: 'Магнит',
+    icon: '🧲',
+    description: '+10% к радиусу магнита (базовый 4м, с угасающей эффективностью до 50м на 300 ур., макс. 50м)'
   }
 };
 
 export const PASSIVE_BUFF_IDS: PassiveBuffId[] = [
-  'stat_sheriff_star',
-  'stat_spurs',
+  'stat_amplifier',
+  'stat_speed_boots',
   'stat_flask',
-  'stat_lasso',
+  'stat_magnet',
   'stat_amulet',
   'stat_vest',
   'stat_watch'

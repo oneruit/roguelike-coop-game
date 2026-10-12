@@ -505,6 +505,20 @@
   letter-spacing: 0.5px;
 }
 
+.dmg-number.dmg-bleed {
+  color: #f87171 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 8px #991b1b, 0 1px 3px #000 !important;
+}
+
+.dmg-number.dmg-burn {
+  color: #facc15 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 8px #ca8a04, 0 1px 3px #000 !important;
+}
+
 @keyframes floatUpAndFade {
   0% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
   100% { opacity: 0; transform: translate(-50%, -100%) scale(0.9); }

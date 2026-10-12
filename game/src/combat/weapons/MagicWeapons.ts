@@ -135,6 +135,13 @@ export class FireRingWeapon extends Weapon {
     }
   }
 
+  public static destroyAll(scene: Scene): void {
+    for (const inst of Array.from(FireRingWeapon.instances)) {
+      inst.destroy(scene);
+    }
+    FireRingWeapon.instances.clear();
+  }
+
   private radius: number = 3.5;
   private auraMesh: Mesh | null = null;
   private auraMat: MeshBasicMaterial | null = null;

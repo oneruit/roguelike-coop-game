@@ -189,7 +189,7 @@ def detect_and_clean_background(
     rgba[background, 3] = 0
     rgba[rgba[:, :, 3] < 12, 3] = 0
 
-    # Defringe / 1px black outline: eliminate any magenta aura along boundary pixels
+    # Defringe / color despill: eliminate any magenta aura along boundary pixels
     # without touching or overwriting interior character textures.
     if is_magenta:
         mask = rgba[:, :, 3] > 0
@@ -197,14 +197,19 @@ def detect_and_clean_background(
         neighbor_has_bg = (~pad[:-2, 1:-1]) | (~pad[2:, 1:-1]) | (~pad[1:-1, :-2]) | (~pad[1:-1, 2:])
         is_boundary = mask & neighbor_has_bg
 
+        pad2 = np.pad(mask & ~is_boundary, 1, mode="constant", constant_values=False)
+        is_boundary_2 = (mask & ~is_boundary) & ((~pad2[:-2, 1:-1]) | (~pad2[2:, 1:-1]) | (~pad2[1:-1, :-2]) | (~pad2[1:-1, 2:]))
+        edge_mask = is_boundary | is_boundary_2
+
         boundary_rgb = rgba[:, :, :3].astype(np.float32)
-        b_dist = np.sqrt(np.sum((boundary_rgb - np.array([255.0, 0.0, 255.0], dtype=np.float32)) ** 2, axis=2))
-        has_spill = is_boundary & (
-            ((boundary_rgb[:, :, 0] - boundary_rgb[:, :, 1] > 20.0) & (boundary_rgb[:, :, 2] - boundary_rgb[:, :, 1] > 20.0))
-            | (b_dist < 190.0)
-        )
-        rgba[has_spill, :3] = [0, 0, 0]
-        rgba[has_spill, 3] = 255
+        r_edge = boundary_rgb[:, :, 0]
+        g_edge = boundary_rgb[:, :, 1]
+        b_edge = boundary_rgb[:, :, 2]
+        excess = np.maximum(0.0, np.minimum(r_edge - g_edge, b_edge - g_edge))
+
+        has_spill = edge_mask & (excess > 18.0)
+        rgba[has_spill, 0] = np.clip(r_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+        rgba[has_spill, 2] = np.clip(b_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
 
     return rgba
 

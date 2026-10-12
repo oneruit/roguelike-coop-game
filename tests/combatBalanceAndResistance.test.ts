@@ -396,18 +396,18 @@ test('Diminishing returns on spurs, lasso, and pocket watch', () => {
   player.recalculateStats();
   assert.ok(Math.abs(player.passiveSpeedMultiplier - 3.0) < 1e-3, 'Spurs at lvl 300 gives x3 total speed mult');
 
-  // Lasso (stat_lasso): Base 10m. Level 1 -> 11m (+10%). Level 300 -> 50m.
-  player.lassoCount = 0;
+  // Magnet (stat_magnet / stat_lasso): Base 4m. Level 1 -> 4.4m (+10%). Level 300 -> 50m.
+  player.magnetCount = 0;
   player.recalculateStats();
-  assert.equal(player.pickupRadius, 10.0, 'Base pickup radius is 10m');
+  assert.equal(player.pickupRadius, 4.0, 'Base pickup radius is 4m');
 
-  player.lassoCount = 1;
+  player.magnetCount = 1;
   player.recalculateStats();
-  assert.ok(Math.abs(player.pickupRadius - 11.0) < 1e-4, 'Lasso at lvl 1 gives 11m (base 10m + 10%)');
+  assert.ok(Math.abs(player.pickupRadius - 4.4) < 1e-4, 'Magnet at lvl 1 gives 4.4m (base 4m + 10%)');
 
-  player.lassoCount = 300;
+  player.magnetCount = 300;
   player.recalculateStats();
-  assert.ok(Math.abs(player.pickupRadius - 50.0) < 1e-3, 'Lasso at lvl 300 reaches 50m cap');
+  assert.ok(Math.abs(player.pickupRadius - 50.0) < 1e-3, 'Magnet at lvl 300 reaches 50m cap');
 
   // Watch (stat_watch): Base 1.0 (0% reduction). Level 1 -> 0.99 (1% CDR). Level 300 -> 0.70 (30% CDR cap).
   player.watchCount = 0;
