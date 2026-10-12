@@ -359,7 +359,11 @@ export class Enemy {
       color: 0x38bdf8,
       side: DoubleSide,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.8,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2
     });
     this.freezeAuraMesh = new Mesh(freezeGeom, this.freezeAuraMaterial);
     this.freezeAuraMesh.position.y = 0.05;

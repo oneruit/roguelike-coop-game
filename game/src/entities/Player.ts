@@ -128,14 +128,17 @@ export class Player {
   public statusManager: PlayerStatusManager = new PlayerStatusManager();
 
   public applyBurn(duration?: number): void {
+    if (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost')) return;
     this.statusManager.applyBurn(duration);
   }
 
   public applyShock(duration?: number): void {
+    if (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost')) return;
     this.statusManager.applyShock(duration);
   }
 
   public applySlow(factor: number, duration: number): void {
+    if (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost')) return;
     this.statusManager.applySlow(factor, duration);
   }
 
@@ -879,7 +882,11 @@ export class Player {
     // 3. Movement & 4-Directional Sprite Selection
     const isMoving = moveDir.lengthSq() > 0.01;
     this.isMoving = isMoving;
-    this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, true), this.maxHp);
+    if (this.isGodMode) {
+      this.statusManager.reset();
+    } else {
+      this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, false), this.maxHp);
+    }
     const isAttacking = this.attackAnimTimer > 0;
 
     if (this.attackAnimTimer > 0) {
@@ -1079,7 +1086,8 @@ export class Player {
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {
-    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost'))) || this.isDowned) {
+    if (this.isGodMode) return false;
+    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost'))) || this.isDowned) {
       return false;
     }
 
@@ -1175,6 +1183,10 @@ export class Player {
 
   public toggleGodMode(): boolean {
     this.isGodMode = !this.isGodMode;
+    if (this.isGodMode) {
+      this.statusManager.reset();
+      this.hp = this.maxHp;
+    }
     return this.isGodMode;
   }
 

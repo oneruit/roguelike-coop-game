@@ -653,7 +653,7 @@ class Game {
       }
     }
 
-    const { justCompleted, justTouched, justEnteredWarp } = this.riftTeleporter.update(dt, allPlayerPositions);
+    const { justCompleted, justTouched } = this.riftTeleporter.update(dt, allPlayerPositions);
     if (justCompleted) {
       SoundManager.playTeleporterComplete();
       // Award stage completion bonus XP without deleting credits so player can spend them at the merchant!
@@ -665,11 +665,6 @@ class Game {
     // Touch trigger: walking into closed rift awakens it and summons the boss
     if (justTouched && this.riftTeleporter.state === 'IDLE' && this.sessionDirector) {
       this.sessionDirector.activateRift();
-    }
-
-    // Entering open warp portal teleports to next biome with sulfur smoke animation
-    if (justEnteredWarp && this.riftTeleporter.state === 'WARP_READY' && this.sessionDirector && !this.sessionDirector.isWarping) {
-      this.sessionDirector.warpToNextStage();
     }
 
     // 8b. Update Brimstone / Sulfur Smoke animations
@@ -734,12 +729,14 @@ class Game {
         (damage: number, isImmortalHit?: boolean, attacker?: Enemy) => {
           const isVictoryDeath = Boolean(isImmortalHit);
           const died = this.player.takeDamage(damage, isVictoryDeath);
-          if (attacker?.eliteAffix === 'blazing') {
-            this.player.applyBurn(3.0);
-          } else if (attacker?.eliteAffix === 'overloading') {
-            this.player.applyShock(5.0);
-          } else if (attacker?.eliteAffix === 'glacial') {
-            this.player.applySlow(0.65, 3.0);
+          if (!this.player.isGodMode) {
+            if (attacker?.eliteAffix === 'blazing') {
+              this.player.applyBurn(3.0);
+            } else if (attacker?.eliteAffix === 'overloading') {
+              this.player.applyShock(5.0);
+            } else if (attacker?.eliteAffix === 'glacial') {
+              this.player.applySlow(0.65, 3.0);
+            }
           }
           if (died) {
             this.sessionDirector.triggerGameOver(isVictoryDeath);
@@ -783,12 +780,14 @@ class Game {
               this.lastClientLocalHitTime = now;
               const isVictoryDeath = Boolean(enemy.isImmortal);
               const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
-              if (enemy.eliteAffix === 'blazing') {
-                this.player.applyBurn(3.0);
-              } else if (enemy.eliteAffix === 'overloading') {
-                this.player.applyShock(5.0);
-              } else if (enemy.eliteAffix === 'glacial') {
-                this.player.applySlow(0.65, 3.0);
+              if (!this.player.isGodMode) {
+                if (enemy.eliteAffix === 'blazing') {
+                  this.player.applyBurn(3.0);
+                } else if (enemy.eliteAffix === 'overloading') {
+                  this.player.applyShock(5.0);
+                } else if (enemy.eliteAffix === 'glacial') {
+                  this.player.applySlow(0.65, 3.0);
+                }
               }
               SoundManager.playPlayerHurt();
               if (died) {
