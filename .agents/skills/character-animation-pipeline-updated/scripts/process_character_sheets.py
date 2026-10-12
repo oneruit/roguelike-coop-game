@@ -132,15 +132,20 @@ def detect_and_clean_background(
     )
     inferred = np.median(corners, axis=0)
 
-    if bg_mode == "white":
+    if bg_mode == "magenta":
+        bg_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
+    elif bg_mode == "white":
         bg_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
     elif bg_mode == "black":
         bg_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
     elif bg_mode == "chroma":
         bg_color = inferred
     elif bg_mode == "auto":
+        dist_magenta = float(np.linalg.norm(inferred - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
         brightness = float(np.mean(inferred))
-        if brightness >= 225:
+        if dist_magenta <= 45.0:
+            bg_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
+        elif brightness >= 225:
             bg_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
         elif brightness <= 30:
             bg_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
@@ -330,6 +335,7 @@ def align_and_pack_sheet(
     label: str = "sheet",
     scale_override: Optional[float] = None,
     analysis: Optional[dict[str, object]] = None,
+    row_order: str = "fblr",
 ) -> Image.Image:
     """Resize one sheet with a constant scale, cell-centered origins and foot anchoring.
 
@@ -365,13 +371,22 @@ def align_and_pack_sheet(
     for row in range(rows):
         src_row = row
         flip_horizontal = False
-        # New row order: FRONT=0, BACK=1, LEFT=2, RIGHT=3.
-        if row == 2 and mirror_left:
-            src_row = 3
-            flip_horizontal = True
-        elif row == 3 and mirror_right:
-            src_row = 2
-            flip_horizontal = True
+        if row_order == "fbrl":
+            # FRONT=0, BACK=1, RIGHT=2, LEFT=3
+            if row == 2 and mirror_right:
+                src_row = 3
+                flip_horizontal = True
+            elif row == 3 and mirror_left:
+                src_row = 2
+                flip_horizontal = True
+        else:
+            # FRONT=0, BACK=1, LEFT=2, RIGHT=3
+            if row == 2 and mirror_left:
+                src_row = 3
+                flip_horizontal = True
+            elif row == 3 and mirror_right:
+                src_row = 2
+                flip_horizontal = True
 
         baseline = float(row_baselines[src_row])
         for col in range(cols):
@@ -468,9 +483,10 @@ def process_character(
     max_char_h: float = 96.0,
     mirror_left: bool = False,
     mirror_right: bool = False,
-    bg_mode: str = "auto",
+    bg_mode: str = "magenta",
     bg_tolerance: float = 36.0,
     legacy_front_portrait: bool = False,
+    row_order: str = "fblr",
 ) -> None:
     output_dir = Path(out_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -538,6 +554,7 @@ def process_character(
             label=state.upper(),
             scale_override=shared_scale,
             analysis=analyses[state],
+            row_order=row_order,
         )
         out_file = output_dir / f"{clean_name}_{state}.png"
         temp_file = out_file.with_suffix(out_file.suffix + ".tmp")
@@ -563,9 +580,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         description="Process three separate 6x4 IDLE/WALK/ATTACK sheets into 128x128 RGBA sprite cells."
     )
     parser.add_argument("--name", "-n", required=True, help="Character name (e.g. glaive_warrior or hero_glaive_warrior)")
-    parser.add_argument("--idle", required=True, help="Path to the 6x4 IDLE sheet; rows FRONT/BACK/LEFT/RIGHT")
-    parser.add_argument("--walk", required=True, help="Path to the 6x4 WALK sheet; rows FRONT/BACK/LEFT/RIGHT")
-    parser.add_argument("--attack", required=True, help="Path to the 6x4 ATTACK sheet; rows FRONT/BACK/LEFT/RIGHT")
+    parser.add_argument("--idle", required=True, help="Path to the 6x4 IDLE sheet; rows FRONT/BACK/LEFT/RIGHT (or FRONT/BACK/RIGHT/LEFT)")
+    parser.add_argument("--walk", required=True, help="Path to the 6x4 WALK sheet; rows FRONT/BACK/LEFT/RIGHT (or FRONT/BACK/RIGHT/LEFT)")
+    parser.add_argument("--attack", required=True, help="Path to the 6x4 ATTACK sheet; rows FRONT/BACK/LEFT/RIGHT (or FRONT/BACK/RIGHT/LEFT)")
     parser.add_argument("--portrait", help="Optional separate portrait; if omitted the first IDLE FRONT cell is used")
     parser.add_argument("--out-dir", "-o", default="public/textures/heroes", help="Output directory")
     parser.add_argument("--cell-size", type=int, default=CELL_SIZE, help="Output cell size (default: 128)")
@@ -574,10 +591,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--feet-y", type=int, default=118, help="Target foot baseline (default: 118; 10px bottom buffer)")
     parser.add_argument("--char-h", type=float, default=92.0, help="Target estimated body height in output pixels (default: 92)")
     parser.add_argument("--max-h", type=float, default=96.0, help="Maximum estimated body height in output pixels (default: 96)")
-    parser.add_argument("--bg-mode", choices=("auto", "white", "black", "chroma", "none"), default="auto", help="Background to remove; auto detects from corners")
+    parser.add_argument("--bg-mode", choices=("magenta", "auto", "white", "black", "chroma", "none"), default="magenta", help="Background to remove (default: magenta RGB(255,0,255)); auto detects from corners")
     parser.add_argument("--bg-tolerance", type=float, default=36.0, help="Euclidean RGB background tolerance (default: 36)")
-    parser.add_argument("--mirror-left", action="store_true", help="Mirror RIGHT row (row 3) into LEFT row (row 2); only after manual approval")
-    parser.add_argument("--mirror-right", action="store_true", help="Mirror LEFT row (row 2) into RIGHT row (row 3); only after manual approval")
+    parser.add_argument("--row-order", choices=("fblr", "fbrl"), default="fblr", help="Row order: fblr (FRONT, BACK, LEFT, RIGHT) or fbrl (FRONT, BACK, RIGHT, LEFT)")
+    parser.add_argument("--mirror-left", action="store_true", help="Mirror right row into left row; only after manual approval")
+    parser.add_argument("--mirror-right", action="store_true", help="Mirror left row into right row; only after manual approval")
     parser.add_argument("--legacy-front-portrait", action="store_true", help="Save the portrait as *_front.png instead of the new default *_portrait.png")
     args = parser.parse_args(argv)
 
@@ -609,6 +627,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             bg_mode=args.bg_mode,
             bg_tolerance=args.bg_tolerance,
             legacy_front_portrait=args.legacy_front_portrait,
+            row_order=args.row_order,
         )
     except (FileNotFoundError, ValueError, OSError) as exc:
         _print(f"ERROR: {exc}")

@@ -1,6 +1,6 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, reviewing, validating, and integrating three 6x4 animation sprite sheets (IDLE, WALK, ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling). Each cell is 128x128 px. Rows from top to bottom are FRONT, BACK, LEFT, RIGHT. Preserve character identity and weapon continuity; no visual attack effects by default.
+description: Standardized pipeline for creating, reviewing, validating, and integrating three 6x4 animation sprite sheets (IDLE, WALK, ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure magenta RGB(255,0,255) chromakey background with closed eyes on frame 3. Each cell is 128x128 px. Rows top to bottom are FRONT, BACK, LEFT, RIGHT (or FRONT, BACK, RIGHT, LEFT). Preserve character identity and weapon continuity; no visual attack effects by default.
 ---
 
 # Character Animation Pipeline Skill
@@ -9,296 +9,228 @@ description: Standardized pipeline for creating, reviewing, validating, and inte
 
 Produce **three separate animation sheets** for each playable character: `IDLE`, `WALK`, and `ATTACK`. Every sheet is a strict **6 columns × 4 rows** grid: 24 frames at **128 × 128 px per cell**, total **768 × 512 px**. The game uses 2D pixel-art sprites in a 2.5D world with a camera tilted approximately 30°.
 
-### Art Direction & Proportions Contract
-- **Anatomy**: **Chibi proportions (2.5 to 3 heads tall)** — large readable head (~30–35% of total height), compact torso, sturdy limbs, chunky boots, and stylized readable weapons.
+---
+
+## 1. User Input Handling & Generation Modes
+
+The pipeline accepts two primary modes of user input:
+
+### Mode A: Direct Ready Prompt or Reference Image (`Direct Mode`)
+* If the user supplies an already prepared text prompt or an image reference (e.g. concept art, character sheet):
+  - Do **NOT** prompt the user with long multi-part questionnaires.
+  - Adopt the character description or reference image directly.
+  - Ensure the prompt incorporates the mandatory engine rules: pure magenta chromakey background `rgb(255,0,255)`, chibi 2.5–3 heads tall anatomy, zero floor shadows/platforms, and mandatory negative constraints.
+  - Proceed directly to turnaround generation or animation generation.
+
+### Mode B: Brief / Incomplete Character Description (`Auto-Enrichment via Defaults`)
+* If the user provides a brief or high-level description (e.g. *"female amazon in red bikini with magic orbs"* or *"undead knight with greatsword"*):
+  - Do **NOT** interrupt the workflow with an 11-step questionnaire unless the user explicitly asks for an interactive interview.
+  - **Automatically complete and enrich** all missing parameters using the archetype defaults below, following the Master Prompt Template:
+
+| Dimension | Default Fallback Value |
+|---|---|
+| **Archetype / Class** | Inferred from prompt (warrior, mage, rogue, amazon, etc.) |
+| **Proportions** | Heroic Chibi (2.5 to 3 heads tall): large head (~30-35% height), compact torso, sturdy limbs, chunky boots, strong readable silhouette |
+| **Face & Head** | Serious focused battle-ready expression, angular jawline, sharp chin, no smile, no cute or adorable expression |
+| **Eyes** | Sharp focused eyes with intense iris color and dark contour, vigilant battle glare |
+| **Hair / Headgear** | Practical battle-ready hair / braids / hood / circlet matching character archetype |
+| **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), crisp pixel-art clusters |
+| **Held Item / Weapon** | Held with both hands or combat-ready stance, clearly visible beside character. If unarmed, hands raised in ready combat stance. No extra weapons |
+| **Magical Effects** | Faint localized magical motes / energy orbs only if specified by archetype; no oversized clutter |
+| **Background** | Pure solid magenta background rgb(255,0,255), no shadows under feet, no ground line, no floor, no platform |
+| **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.` |
+
+---
+
+## 2. Master Prompt Template
+
+```text
+128x128 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
+
+Chibi proportions with an intentionally oversized head and compact body, [body type], [limb description], [stance], strong readable silhouette.
+
+[Face/head description], [eye description], [expression details], no smile, no cute or adorable expression.
+
+[Hair/head details], [optional mane/markings/ornaments].
+
+[Clothing/armor/body description], [optional accessories].
+
+[Held item: Holding a [weapon/tool/focus] with both hands, clearly visible beside the character / Holding no weapon, both hands raised in a ready combat stance], [optional offhand]. No other weapons.
+
+[Optional magical/energy effects].
+
+Pure solid magenta background rgb(255,0,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
+
+Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite chibi proportions.
+
+No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic proportions, no photorealism, no smooth gradients.
+
+Additional character details to include: [list all extra details the user specifies].
+```
+
+---
+
+## 3. Art Direction & Proportions Contract
+
+- **Anatomy**: **Chibi proportions (2.5 to 3 heads tall)** — large readable head (~30–35% of total height), compact torso, sturdy limbs, chunky boots, and stylized readable weapons. Realistic 7–8 head human proportions are strictly forbidden.
 - **Tone**: Serious, battle-hardened, mature dark fantasy roguelike RPG aesthetic.
+- **Facial Features**: Sharp jawline, defined chin, small-to-medium sharp eyes, stern closed mouth or fierce grimace. No anime sparkling eyes, no kawaii blushing cheeks, no baby faces.
 - **Mandatory Negative Constraint Block**:
-  > **"No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients."**
-- **Visual Style Benchmark**: See [`references/chibi_style_reference.png`](references/chibi_style_reference.png) for approved archetypes and proportion guidelines.
+  > **`No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`**
+- **Pure Solid Magenta Chromakey**: Every source generation MUST use pure solid magenta background `RGB: 255, 0, 255` (`#ff00ff`).
+- **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no ground line, no platform, no pedestal, no floor tiles**.
+- **Proportion Equality**: Proportions, scale, and weapon presence must be identical across all views.
 
-Do not generate `WALK_ATTACK` as a standard state. Do not pack all three actions into one image. A portrait is optional and is not an animation sheet.
+---
 
-## 1. Deliverables and naming
+## 4. Deliverables and Naming
 
 Runtime assets go into `public/textures/heroes/`:
 
-| File | Purpose | Layout | Expected size |
+| File | Purpose | Layout | Expected Size |
 |---|---|---|---|
 | `hero_<name>_idle.png` | Breathing / subtle idle loop | 6×4 | 768×512 px |
 | `hero_<name>_walk.png` | Walking loop | 6×4 | 768×512 px |
 | `hero_<name>_attack.png` | One-shot weapon attack | 6×4 | 768×512 px |
 | `hero_<name>_portrait.png` | Optional UI avatar, not animated | 1 frame | 128×128 px |
 
-The approved turnaround/reference sheet is a production reference, not a runtime spritesheet. Keep it outside the runtime texture directory unless the game explicitly uses it.
+Do not generate `WALK_ATTACK` as a standard state. Do not pack all three actions into one image.
 
-## 2. Sheet layout — authoritative row order
+---
 
-**Rows from top to bottom are exactly:**
+## 5. Sheet Layout — Authoritative Row Mapping
 
-1. `FRONT` — character faces toward the bottom of the game screen / toward the camera-facing side of the world.
-2. `BACK` — character faces away from the viewer, toward the top of the game screen.
-3. `LEFT` — strict left-facing profile.
-4. `RIGHT` — strict right-facing profile.
+The primary layout is:
 
-**Columns 1–6** are consecutive temporal frames from left to right. Do not add labels, empty gutters, borders, panel backgrounds, or extra frames. No frame may overlap a neighboring cell.
+1. `FRONT` — Character faces toward the camera / screen bottom.
+2. `BACK` — Character faces away toward the screen top.
+3. `LEFT` — Strict left-facing profile.
+4. `RIGHT` — Strict right-facing profile.
 
-| Property | Required value |
-|---|---|
-| Columns / rows | 6 / 4 |
-| Cell size | 128×128 px |
-| Whole sheet | 768×512 px |
-| Direction row order | FRONT, BACK, LEFT, RIGHT |
-| Background during generation | Pure white `#FFFFFF` |
-| Runtime background | Transparent alpha after approved processing, if required by the renderer |
+*(Note: The game engine's `CharacterAnimator.ts` also supports `ANIM_LAYOUT_V2` with `FRONT / BACK / RIGHT / LEFT`. The processing script supports both via `--row-order fblr` or `--row-order fbrl`.)*
 
-ASCII layout:
+### Columns 1–6 (Temporal Progression)
+Columns 1–6 are consecutive temporal frames from left to right.
+* **Mandatory Frame 3 Rule**: On **Column 3 across all rows** where eyes are visible, the character's **eyes are closed** (natural blink at peak inhale in IDLE, focus blink mid-stride in WALK, concentrated focus tension during backswing in ATTACK).
 
 ```text
-Row 0 FRONT: [F1][F2][F3][F4][F5][F6]
-Row 1 BACK:  [B1][B2][B3][B4][B5][B6]
-Row 2 LEFT:  [L1][L2][L3][L4][L5][L6]
-Row 3 RIGHT: [R1][R2][R3][R4][R5][R6]
+Row 0 FRONT: [F1][F2][F3 (closed eyes)][F4][F5][F6]
+Row 1 BACK:  [B1][B2][B3 (closed eyes)][B4][B5][B6]
+Row 2 LEFT:  [L1][L2][L3 (closed eyes)][L4][L5][L6]
+Row 3 RIGHT: [R1][R2][R3 (closed eyes)][R4][R5][R6]
 ```
 
-This row order intentionally replaces the old `FRONT / LEFT / RIGHT / BACK` mapping. Update the direction-to-row mapping in the game; do not just replace the PNG while keeping the old row indices.
+---
 
-## 3. Camera and 2.5D projection
+## 6. Animation State Requirements
 
-The game camera looks down at the playfield at approximately **30°**. The asset must still read as a directional 2D sprite, not a rendered 3D model:
+### 6.1 IDLE — Six-Frame Seamless Loop (`prompts/02_IDLE.md`)
+- A stationary combat-ready stance. Feet stay firmly planted on the baseline (`y ≈ 118`).
+- Subtle breathing: torso rises 1–2 px on inhale, settles on exhale.
+- **Column 3 Closed Eyes**: At the peak of inhale (frame 3), the eyes close in a calm, focused blink.
+- Frame 4: Eyes snap open; frame 6 transitions smoothly back to frame 1.
+- Weapon stays in hands with consistent grip and length.
 
-- Keep an orthographic, game-sprite presentation and consistent scale in every cell.
-- Show only subtle, consistent top-facing planes on the hood, shoulders, weapon and boots as appropriate for the game's elevated camera.
-- All directions represent cardinal orientation in the game world. `LEFT` and `RIGHT` are strict profile views, not three-quarter views.
-- Do not rotate the whole character image 30° in its own plane. The requested angle describes the world camera / projection, not a 30° character lean.
-- Keep ground contact and proportions stable across views. Do not change the character's size merely because the view changes.
-- Avoid strong perspective distortion, extreme top-down views, free camera rotation, or a different drawing style per direction.
+### 6.2 WALK — Six-Frame Seamless Loop (`prompts/03_WALK.md`)
+- This is a measured **walk**, not a run, sprint, dodge, or slide.
+- Clear foot placement and alternating chunky boots on the baseline in all directions.
+- **Column 3 Closed Eyes**: Mid-stride passing pose (frame 3) features a momentary focus blink.
+- Torso bobs subtly (+1 px); root remains centered.
+- Frame 6 transitions smoothly to frame 1.
 
-If the current game has established projection rules that differ from these instructions, inspect the runtime renderer first and update this section intentionally rather than guessing.
-
-## 4. Character scale, alignment, and cell safety
-
-- Each cell is 128×128 px. Keep the full character and all required equipment inside the cell.
-- **Chibi proportions contract**: Target character height is approximately **80–96 px** (excluding long weapon protrusions). The anatomy is **chibi / heroic miniature (2.5 to 3 heads tall)**:
-  - **Head**: Large and expressive (~28–34 px, ~30–35% of overall height), giving space for detailed helmets, hair, scars, and sharp mature facial expressions.
-  - **Torso**: Compact, sturdy, and armored (~20–24 px).
-  - **Legs & Boots**: Sturdy, chunky boots (~25–30 px) with solid ground contact.
-  - **Hands & Weapons**: Stylized, slightly oversized hands and weapons for pixel clarity and immediate recognition at small scale.
-  - **No realistic proportions**: Do not draw realistic 7–8 head human anatomy. The stylized miniature silhouette is mandatory.
-- Preserve the existing ground-anchor convention when compatible with the game: lowest grounded foot pixel at approximately `y = 118` (10 px from the bottom). Use a stable root / foot baseline through the animation. A lifted foot may rise during WALK, but the contacting foot should remain grounded.
-- Weapon blade, tip, shaft, hands, headgear and feet must not be cropped. For long weapons, simplify the pose or angle the weapon diagonally; do not let it cross the cell boundary.
-- Avoid automatic per-frame scaling or bounding-box centering: it causes jitter during playback. If a correction is necessary, apply one consistent scale and anchoring policy across the entire sheet.
-- The 10 px bottom margin is a grounding convention, not a requirement to add combat effects. `ATTACK` contains no effects unless a later game requirement explicitly adds them.
-
-For a `3.6 × 3.6` Three.js plane and a verified texture/UV setup where the foot anchor maps from `y=118`, the legacy vertical geometry translation is `1.51875` units. Keep this only if it matches the current geometry and texture orientation. Verify in-game; `flipY`, geometry orientation, and UV conventions can change the effective mapping.
-
-## 5. Character identity, chibi anatomy, and visual style contract
-
-Before generating animation, create a short design bible from the user-provided reference:
-
-- face, skin tone, eye color and expression;
-- hair and headgear;
-- costume, armor, trim, materials and silhouette;
-- body proportions (chibi 2.5–3 heads tall);
-- exact weapon shape, length, colors, and grip;
-- distinctive asymmetrical elements, emblems, scars, accessories;
-- approved pixel outline and shading style.
-
-### 5.1 Visual Style Benchmark
-Reference file: [`references/chibi_style_reference.png`](references/chibi_style_reference.png).
-This reference sheet establishes the target aesthetic across 15 fantasy archetypes (warrior, rogue, dire wolf beast, druid, pyromancer, necromancer, skeleton warrior, witcher-slayer, armored golem, dwarf warrior, plate knight, greatsword berserker, elf archer, sorceress). All characters share:
-- 2.5–3 heads tall chibi proportions.
-- Heavy, battle-worn equipment, distinct silhouettes, and grounded poses.
-- Crisp 16-bit / 32-bit pixel art with dark pixel contours and stepped shading clusters.
-
-### 5.2 Facial Features & Serious Aesthetic (Anti-Anime / Anti-Kawaii)
-Although the proportions are chibi, the characters must look like **battle-hardened, serious adults or menacing creatures**:
-- **Face shape**: Defined jawline, sharp chin, pronounced cheekbones, and angular contours.
-- **Eyes**: Small-to-medium sharp eyes with dark lash/eyelid contours, intense colored irises, and a focused battle glare or grim furrowed brow.
-- **Mouth & expression**: Stern, grim, fierce, or determined expression; tight closed mouth or snarl.
-- **Gritty details**: Stubble, beards, scars, war paint, dark eye circles, weathered skin.
-- **Strictly forbidden**:
-  - **NO anime style**: No huge stylized manga eyes, no floating spiky hair tropes.
-  - **NO kawaii style**: No blushing cheeks, no smiling baby faces, no oversized sparkling eye reflections.
-  - **NO cute expressions / childish appearance**: Characters must not look like children, toddlers, or cute mascots.
-
-### 5.3 Color Palette & Shading
-- **Palette**: Saturated, rich yet grounded dark fantasy palette (deep steel, weathered leather, blood crimson, forest green, obsidian, bone, glowing runes/embers).
-- **No soft pastel colors**: No washed-out candy colors or soft pastel pinks/baby blues.
-- **Shading**: Strict pixel art shading with crisp stepped pixel clusters and dithering.
-- **No smooth gradients**: No airbrush blending, no vector anti-aliasing, no radial color fades.
-- **Outlines**: Solid dark pixel outlines separating the sprite cleanly from the background.
-
-### 5.4 Mandatory Negative Constraint String
-Every prompt MUST include this exact negative constraint sentence:
-> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
-
-Use `prompts/00_CHARACTER_LOCK.md` as the shared identity block. Attach both the original reference image and the approved turnaround when the image tool supports multiple references. References define identity; the action prompt defines only movement.
-
-**Generate and get approval for a four-view turnaround before generating the three animation sheets.** This prevents the model from inventing unrelated back and side views. The turnaround should show the same costume and equipment in FRONT, BACK, LEFT, RIGHT directions.
-
-Never hardcode Valkyrie features into the general skill. Character-specific descriptions belong in the per-character design bible.
-
-## 6. Animation state requirements
-
-### 6.1 IDLE — six-frame seamless loop
-
-- A stationary combat-ready stance. Feet stay planted; the root position does not drift.
-- Use subtle breathing, tiny shoulder/head movement, small hair/cloak/equipment motion, and an occasional blink only in views where the eyes are visible.
-- The weapon stays in the character's hands; grip, silhouette and weapon length remain consistent.
-- Frame 6 must transition smoothly to frame 1. Avoid a visibly different final pose.
-- Do not duplicate all six cells, but keep changes deliberately small.
-
-### 6.2 WALK — six-frame seamless loop
-
-- This is a **walk**, not a run, sprint, dodge, attack, or slide.
-- Show a readable alternating gait and clear foot placement in all four directions.
-- Keep the root centered and scale constant. The body may bob slightly; the contacting foot must not float.
-- Add controlled secondary motion to hair, cloak, armor straps and weapon. Hands maintain a plausible grip.
-- Frame 6 must transition smoothly to frame 1.
-- FRONT walks toward the front-facing direction; BACK walks away; LEFT/RIGHT move in their respective screen directions. Do not turn the body toward the camera in profile rows.
-
-### 6.3 ATTACK — six-frame one-shot action
-
-The default is **one physical weapon strike**, not a loop and not an attack while walking:
-
-1. Ready stance.
+### 6.3 ATTACK — Six-Frame One-Shot Action (`prompts/04_ATTACK.md`)
+1. Ready stance (eyes open).
 2. Preparation / weight shift.
-3. Wind-up.
-4. Main strike / strongest pose.
+3. Wind-up backswing (**eyes closed in grim battle concentration**).
+4. Main strike / peak weapon extension (eyes snap open wide).
 5. Follow-through.
-6. Recovery to a stable stance suitable for returning to IDLE.
+6. Recovery / reset to ready stance.
+- **Strictly No Attack VFX**: No slash arcs, no magic blades, no sparks, no particles, no speed lines. Physical weapon attack only.
+- Entire weapon and character stay inside each 128×128 cell.
 
-- Use the actual equipped weapon and plausible two-hand / one-hand grip.
-- Show a coherent physical trajectory. The weapon must not teleport, morph, disappear, or change size.
-- Adapt the same attack to the same action timing in all four views.
-- **No visual effects:** no slash arcs, glow, sparks, particles, impact flashes, motion trails, speed lines, or magic effects. The attack is communicated solely by the body and weapon pose.
-- Keep blade, tip, limbs and hands inside the cell. A later game-specific attack may override this only by explicitly revising the skill.
+---
 
-## 7. Do not mirror directions by default
+## 7. Turnaround / Reference Sheet Stage (`prompts/01_TURNAROUND.md`)
 
-Do **not** automatically mirror `LEFT` from `RIGHT` (or vice versa). Mirroring can reverse dominant-hand grip, emblems, belts, scars, asymmetrical armor, and weapon orientation. Generate both views explicitly from the approved turnaround.
+Before generating animation sheets, generate and approve either:
+* **Option A: 4-View Turnaround**: FRONT, BACK, LEFT, RIGHT in a clean single row.
+* **Option B: 5-in-1 Reference Sheet**: Portrait, Front full-body, Back full-body, Right profile full-body, isolated weapon preview.
 
-Mirroring is allowed only as a deliberate optimization after a human verifies that the character design, equipment, handedness, and motion remain correct when flipped. It is not a substitute for a correct directional row.
+Requirements:
+- Pure solid magenta background `rgb(255,0,255)`.
+- No shadows under feet, no ground line, no platforms.
+- Same weapon in all views.
+- 100% equal proportions and scale across all views.
 
-## 8. Prompt assembly
+---
 
-For each generation:
+## 8. Post-Processing & Automated Background Removal
 
-1. Attach the reference images:
-   - Visual style benchmark: `.agents/skills/character-animation-pipeline-updated/references/chibi_style_reference.png`.
-   - Character reference image and approved turnaround (when generating animation states).
-2. Paste the common identity block from `prompts/00_CHARACTER_LOCK.md` (which includes the chibi proportions contract and mandatory negative constraints).
-3. Append exactly one state prompt: `02_IDLE.md`, `03_WALK.md`, or `04_ATTACK.md`.
-4. Ensure the mandatory negative constraint string is present:
-   `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
-5. Use the same row order, cell size, background, pixel style and camera paragraph in all three requests.
-6. Ask for one state per image. Do not request all states together.
-7. If the generated sheet has the wrong grid or violates chibi proportions / negative constraints, first correct the generation; do not proceed to processing / runtime integration.
+The package includes `scripts/process_character_sheets.py`, which:
+- Targets pure magenta chromakey `RGB(255, 0, 255)` (`#ff00ff`) by default (`--bg-mode magenta`).
+- Uses edge-connected flood fill to remove outer background while preserving enclosed magenta/white details.
+- Scales pixel art with nearest-neighbor interpolation.
+- Aligns character baselines to `target_feet_y = 118` with consistent shared scale across IDLE/WALK/ATTACK.
+- Supports `--row-order fblr` (default) or `--row-order fbrl`.
 
-The prompts are deliberately written as reusable templates. Replace bracketed fields with the character's approved design details. Never leave generic placeholders in a production prompt.
-
-## 9. Naming and processing
-
-Save source generations separately from processed runtime assets. Never overwrite original generations during cleanup. Before processing, inspect each sheet at native resolution and verify the grid, row order, weapon visibility, and uniform background. Automatic processing cannot correct a wrong animation, wrong row order, cell borders, merged cells, or a weapon already cropped by the image generator.
-
-### Process source sheets
-
-The package includes `scripts/process_character_sheets.py`, adapted to this pipeline. It processes **only IDLE, WALK, and ATTACK**, outputs 128×128 RGBA cells on 768×512 sheets, removes edge-connected background pixels, uses nearest-neighbor scaling for pixel art, applies one shared scale across IDLE/WALK/ATTACK (IDLE is the scale reference), and anchors frames relative to each row's foot baseline. Its alpha cleanup preserves enclosed near-white details (important for white hoods, cloaks, armor, and highlights) better than a global white color key. Always inspect the result: if a white detail touches the white canvas through a gap in the outline, no automatic color-keying method can reliably know that it belongs to the character.
-
-Install dependencies once:
-
-```bash
-python -m pip install -r .agents/skills/character-animation-pipeline-updated/scripts/requirements.txt
-```
-
-Run from the repository root (adjust paths to your actual source-generation directory):
+### Execution Command:
 
 ```bash
 python .agents/skills/character-animation-pipeline-updated/scripts/process_character_sheets.py \
-  --name glaive_warrior \
-  --idle path/to/hero_glaive_warrior_idle_source.png \
-  --walk path/to/hero_glaive_warrior_walk_source.png \
-  --attack path/to/hero_glaive_warrior_attack_source.png \
-  --out-dir public/textures/heroes
+  --name <character_name> \
+  --idle path/to/hero_<name>_idle_source.png \
+  --walk path/to/hero_<name>_walk_source.png \
+  --attack path/to/hero_<name>_attack_source.png \
+  --out-dir public/textures/heroes \
+  --bg-mode magenta
 ```
 
-The source images must be 6×4 grids whose rows are ordered `FRONT / BACK / LEFT / RIGHT`. For 128×128 source cells, the full image is 768×512; higher-resolution grids such as 1536×1024 are also accepted and converted to 128×128 output cells. All three source sheets must use the same canvas dimensions so the processor can preserve character scale across actions. If the source cells are not square or the three sheets have different canvas sizes, the processor stops with an error rather than silently stretching directions.
-
-If `--portrait` is supplied, the script processes that separate image; otherwise it creates `hero_<name>_portrait.png` from the first cell of the processed IDLE sheet (FRONT, frame 1). To preserve the old portrait filename used by legacy code, add `--legacy-front-portrait` (writes `hero_<name>_front.png`). Direction mirroring is off by default; `--mirror-left` or `--mirror-right` is allowed only after verifying that flipping will not reverse handedness or asymmetric gear.
-
-Background modes are `auto`, `white`, `black`, `chroma`, and `none`. Use `--bg-mode white` if the source background is pure white and auto-detection chooses incorrectly; `--bg-tolerance` controls the RGB distance threshold. Keep raw source PNGs separate from processed output.
-
-### Validate processed assets
-
-The package also includes `scripts/validate_sheets.py`, which checks PNG readability and dimensions only. It does not judge animation quality or verify that the sheet actually contains the correct frame order.
+### Validation Command:
 
 ```bash
 python .agents/skills/character-animation-pipeline-updated/scripts/validate_sheets.py \
-  --idle public/textures/heroes/hero_glaive_warrior_idle.png \
-  --walk public/textures/heroes/hero_glaive_warrior_walk.png \
-  --attack public/textures/heroes/hero_glaive_warrior_attack.png
+  --idle public/textures/heroes/hero_<name>_idle.png \
+  --walk public/textures/heroes/hero_<name>_walk.png \
+  --attack public/textures/heroes/hero_<name>_attack.png
 ```
 
-The processor requires Pillow and NumPy; the dimension validator uses only Python's standard library. The package includes a small test suite: `python -m unittest discover -s .agents/skills/character-animation-pipeline-updated/tests -v`.
+---
 
-## 10. Three.js row mapping and UVs
+## 9. Three.js Integration & Animation Controller
 
-Recommended row map (row indices are counted from the **top of the image**):
+In `game/src/entities/CharacterAnimator.ts`:
 
 ```ts
-const ROW_FROM_TOP = {
-  front: 0,
-  back: 1,
-  left: 2,
-  right: 3,
-} as const;
+// Standard V2 / Amazon Layout:
+export const ANIM_LAYOUT_V2: CharacterAnimLayout = {
+  cols: 6,
+  rows: 4,
+  rowMap: { front: 0, back: 1, right: 2, left: 3 }
+};
 
-const COLS = 6;
-const ROWS = 4;
-
-texture.repeat.set(1 / COLS, 1 / ROWS);
-texture.offset.set(frameCol / COLS, (ROWS - 1 - ROW_FROM_TOP[direction]) / ROWS);
+// Necromancer / Default Pipeline Layout:
+export const ANIM_LAYOUT_NECROMANCER: CharacterAnimLayout = {
+  cols: 6,
+  rows: 4,
+  rowMap: { front: 0, back: 1, left: 2, right: 3 }
+};
 ```
 
-Use `frameCol` in the range `0..5`. Confirm the result with a labelled test texture or by checking all four directions in-game; texture vertical flipping and the current animation controller may affect how row indices are interpreted. Update any enums, comments, tests, and atlas metadata that still assume `front=0, left=1, right=2, back=3`.
+Ensure the layout passed to `CharacterAnimator` matches the row order of the processed textures.
 
-The image dimensions imply **6 columns**, not a dynamically guessed column count. Avoid inferring the layout from aspect ratio when the art contract already defines 6×4.
+---
 
-## 11. Acceptance checklist
+## 10. Acceptance Checklist
 
-### File/layout
-- [ ] Exactly three animation sheets exist: IDLE, WALK, ATTACK.
-- [ ] Every sheet is 768×512 px and has a 6×4 grid of 128×128 cells.
-- [ ] Rows from top to bottom are FRONT, BACK, LEFT, RIGHT.
-- [ ] Background is uniform white in generation sources; runtime alpha is processed intentionally if needed.
-- [ ] No grid borders, labels, UI, terrain, shadows, or extra panels.
-
-### Chibi Anatomy & Art Style
-- [ ] Chibi proportions (2.5–3 heads tall) maintained consistently across all frames and directions.
-- [ ] Strictly satisfies negative style constraints: **No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.**
-- [ ] Mature, battle-hardened facial expression (defined jaw, sharp small-to-medium eyes, battle glare, scars/beards; no huge sparkling anime eyes, no blush, no cute baby face).
-- [ ] Crisp 16-bit / 32-bit pixel art with dark pixel outlines, stepped shading clusters, and saturated dark fantasy colors (no pastels, no airbrush gradients).
-- [ ] Stylized, readable weapons and hands scaled appropriately for clear gameplay read without clipping outside 128×128 cells.
-
-### Character consistency
-- [ ] Same face, hair, hood/helmet, armor, colors, chibi body proportions and equipment in all three sheets.
-- [ ] FRONT/BACK/LEFT/RIGHT designs are recognizably the same character.
-- [ ] Both profile directions face strictly outward, not toward camera.
-- [ ] Weapon geometry and hand grip persist through every frame.
-- [ ] No cropped body parts or weapon parts.
-- [ ] No automatic left-right mirroring without explicit approval.
-
-### Animation quality
-- [ ] IDLE is subtle and loops cleanly.
-- [ ] WALK shows alternating feet, grounded contact and a clean loop.
-- [ ] ATTACK progresses through preparation, wind-up, strike, follow-through and recovery.
-- [ ] ATTACK has no visual effects.
-- [ ] Scale and root position do not jitter across frames.
-
-### Integration
-- [ ] Direction row mapping in Three.js matches FRONT/BACK/LEFT/RIGHT.
-- [ ] Texture UV orientation and `flipY` are verified in-game.
-- [ ] The feet contact the intended ground level and shadow plane.
-- [ ] `npm run typecheck` passes.
-- [ ] `npm run build` passes.
-- [ ] Check the animation at native sprite size in the actual game; do not approve solely from a zoomed-up preview.
+- [ ] Dual input respected: direct prompt/image executed directly, brief descriptions auto-enriched via defaults.
+- [ ] Exactly three animation sheets exist: IDLE, WALK, ATTACK (6×4 grid, 128×128 cells, 768×512 px).
+- [ ] Background is pure solid magenta `rgb(255,0,255)` (`#ff00ff`) in generation sources.
+- [ ] No ground shadows, drop shadows, platforms, floor lines, or pedestals.
+- [ ] Heroic Chibi proportions (2.5–3 heads tall) maintained consistently across all frames.
+- [ ] Negative constraints verified: No anime, kawaii, pastel colors, or photorealism.
+- [ ] **Frame 3 closed eyes verified**: In IDLE, WALK, and ATTACK, column 3 has closed eyes across all rows.
+- [ ] Weapon continuity maintained across all frames and rows.
+- [ ] ATTACK has no visual effects (no slash arcs, sparks, magic trails).
+- [ ] Sheets processed cleanly via `scripts/process_character_sheets.py --bg-mode magenta`.
+- [ ] `scripts/validate_sheets.py` passes with exit code 0.
+- [ ] `npm run typecheck`, `npm run build`, and `npm run build:admin` succeed.

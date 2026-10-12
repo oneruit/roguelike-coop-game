@@ -1,31 +1,56 @@
-# WALK — 6-frame looping walk cycle per direction
+# WALK Animation Prompt Guide (6-Frame Looping Cycle)
 
-[Append the completed `00_CHARACTER_LOCK.md` common block and attach the original image plus approved turnaround.]
+This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_walk.png`**.
 
-## Mandatory Negative Constraints
-No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.
+---
 
-Create a smooth, continuous **six-frame walking cycle** with **chibi proportions (2.5 to 3 heads tall)** and a determined combat-ready gait — not running, sprinting, dodging, attacking, or sliding. The character walks in the direction they face in each row.
+## 1. Grid & Sheet Specifications
 
-## Frame sequence, left to right
+| Property | Value |
+|---|---|
+| Grid Dimensions | 6 columns × 4 rows (24 cells) |
+| Cell Dimensions | 128 × 128 px |
+| Total Resolution | 768 × 512 px (or 1536 × 1024 px for high-res source) |
+| Background | Pure solid magenta chromakey `rgb(255,0,255)` (`#ff00ff`) |
+| Direction Rows (Top to Bottom) | Row 0: `FRONT`<br>Row 1: `BACK`<br>Row 2: `LEFT` (or `RIGHT` depending on engine layout)<br>Row 3: `RIGHT` (or `LEFT`) |
 
-1. First foot-contact pose: one chunky boot forward, the other behind.
-2. Weight transfers onto the leading foot; the trailing heel begins to lift.
-3. Passing pose: the legs pass one another with a restrained body bob.
-4. Opposite foot-contact pose, reversing the leg positions from frame 1.
-5. Weight transfers to the opposite foot; the trailing leg moves forward.
-6. Opposite passing pose that transitions smoothly back to frame 1.
+---
 
-The alternation must be obvious, including in FRONT and BACK views. Keep steps moderate, grounded, and readable at 128×128. At least one chunky boot should read as grounded in contact poses; do not allow the character to float or slide. Keep the root centered and chibi scale (2.5–3 heads tall) constant throughout every frame. Minor vertical movement is acceptable, but no frame-to-frame drift.
+## 2. Frame-by-Frame Progression (Columns 1 to 6)
 
-The torso, shoulders, hair, cloth and accessories react subtly to each step. The weapon stays in the same hands throughout the cycle with consistent length and geometry. Preserve a plausible grip; do not let it vanish, become a different weapon, or swing as an attack.
+Every directional row depicts a measured, determined 6-frame combat walk cycle (not running, sliding, or dodging):
 
-Apply the same gait timing in all four rows:
-- FRONT walks toward the front-facing direction.
-- BACK walks away from the viewer.
-- LEFT is strict side-profile walking to the left.
-- RIGHT is strict side-profile walking to the right.
+* **Column 1 (Contact Pose 1)**:
+  - First foot-strike pose: one chunky boot extends forward touching the baseline, opposite foot planted behind.
+  - Arms and held weapon slightly swing in counter-balance to the stride.
+  - **Eyes are open and alert**, scanning ahead.
+* **Column 2 (Weight Shift / Push-off 1)**:
+  - Weight transfers squarely onto the leading foot; trailing heel lifts off the ground.
+  - Torso experiences slight vertical rise (+1 px).
+  - **Eyes are open and focused**.
+* **Column 3 (Passing Pose 1 & Mandatory Closed Eyes)**:
+  - **MANDATORY CLOSED EYES**: On this 3rd frame across all rows where eyes are visible, the character's **eyes are fully closed** in a momentary blink of intense focus during the mid-stride leg pass.
+  - Free leg swings through past the supporting leg.
+  - Closed eyelids clearly drawn on FRONT, LEFT, and RIGHT rows.
+* **Column 4 (Contact Pose 2)**:
+  - Opposite foot-strike pose: opposite boot extends forward, reversing the leg posture from Column 1.
+  - **Eyes snap open again**, sharp and vigilant.
+  - Torso settles onto the forward foot.
+* **Column 5 (Weight Shift / Push-off 2)**:
+  - Weight transfers onto the newly grounded foot; opposite heel lifts.
+  - Torso rises (+1 px) in steady rhythm.
+  - **Eyes remain open and watchful**.
+* **Column 6 (Passing Pose 2 / Loop Return)**:
+  - Opposite leg passes through, returning smoothly into Column 1.
+  - **Eyes remain open**, weapons and clothing align cleanly for seamless playback loop.
 
-No turning toward camera in the side rows. No jumping, running, attack poses, motion trails, dust, glow or special effects.
+---
 
-Output exactly 6 columns × 4 rows, 128×128 px per cell, 768×512 px total, pure white background. No labels, grid lines, extra frames, scenery, shadows or effects. The character and the complete weapon must stay inside every cell.
+## 3. Negative & Stylistic Constraints
+
+* **Strict Proportions**: Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact body, sturdy boots).
+* **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no dust clouds**.
+* **Weapon Continuity**: Same weapon / focus held throughout all frames and rows.
+* **Mandatory Negative Constraint**:
+  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
+* **Pixel Art Quality**: Crisp hard pixel edges, limited color palette, strong contrast, 16-bit game sprite aesthetic.

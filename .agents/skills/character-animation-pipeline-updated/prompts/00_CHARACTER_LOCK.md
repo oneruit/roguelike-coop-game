@@ -1,49 +1,71 @@
-# Common Character Lock — paste into every generation prompt
+# Common Character Lock — Base Identity & Master Prompt Template
 
-Use the attached original image as the primary visual reference for the **exact same character**. Use the approved four-view turnaround as the secondary reference for views that are not visible in the original image. Style benchmark: `references/chibi_style_reference.png`. Do not redesign, beautify, simplify into a different costume, or invent a new character.
+Use the reference character image / prompt as the primary visual lock for the **exact same character**. Do not redesign, beautify into anime style, simplify into an unrelated costume, or alter established character features.
 
-## Approved design (fill in before use)
+---
 
-- Character / archetype: [NAME AND ROLE]
-- Face / skin / eyes / expression: [APPROVED DETAILS - mature, battle-hardened, stern/fierce, sharp small-to-medium eyes]
-- Hair / hood / helmet: [APPROVED DETAILS]
-- Armor / clothing / materials / colors: [APPROVED DETAILS - saturated dark fantasy palette]
-- Distinctive emblems / accessories / asymmetry: [APPROVED DETAILS]
-- Body build and chibi proportions: [Chibi 2.5-3 heads tall, compact sturdy torso, chunky boots, grounded stance]
-- Weapon and grip: [EXACT WEAPON DESCRIPTION - chunky, readable, stylized for pixel art]
-- Off-hand equipment: [DETAILS OR NONE]
+## 1. Input Processing Modes
 
-## Mandatory Negative Constraints (Strict Art Direction)
+### Mode A: Ready Prompt or Image Reference
+If the user provides an existing text prompt or image reference:
+* Adopt the character's visual identity directly.
+* Ensure mandatory engine requirements are met: pure solid magenta background `rgb(255,0,255)`, chibi 2.5–3 heads tall proportions, zero ground shadows / platforms, and the mandatory negative constraint block.
+* Proceed directly without redundant questionnaires.
 
-No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.
+### Mode B: Brief / Incomplete Character Description (Auto-Enrichment)
+If the user provides a brief description (e.g. *"female amazon in red bikini with magic orbs"* or *"dwarf warrior with warhammer"*), automatically complete all missing fields using the sensible archetype defaults below instead of prompting with a long survey:
 
-## Identity & Chibi Anatomy Lock
+| Dimension | Default Fallback Value |
+|---|---|
+| **Proportions** | Heroic Chibi (2.5 to 3 heads tall): large head (~30-35% height), compact torso, sturdy limbs, chunky boots, strong readable silhouette |
+| **Face & Head** | Serious focused battle-ready expression, angular jawline, sharp chin, no smile, no cute or adorable expression |
+| **Eyes** | Sharp focused eyes with intense iris color and dark contour, vigilant battle glare |
+| **Hair / Headgear** | Practical battle-ready hair / braids / hood / circlet matching character archetype |
+| **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), crisp pixel-art clusters |
+| **Held Item / Weapon** | Held with both hands or combat-ready stance, clearly visible beside character. If unarmed, hands raised in ready combat stance. No extra weapons |
+| **Effects** | Faint localized magical motes / energy orbs only if specified by archetype; no oversized clutter |
+| **Background** | Pure solid magenta background rgb(255,0,255), no shadows under feet, no ground line, no floor, no platform |
+| **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.` |
 
-- **Proportions**: Heroic Chibi proportions (2.5 to 3 heads tall). Head is large and readable (approx. 30–35% of total height), torso is compact and stout, limbs are sturdy with chunky boots and grounded stance. Weapons and hands are prominent, well-defined, and stylized for low-res pixel clarity. Do NOT use realistic 7–8 head human proportions.
-- **Maturity & Expression**: The character is an adult, battle-hardened, experienced, grim, and dangerous. Sharp angular facial structure, defined jawline, sharp chin, and furrowed brows. Small-to-medium sharp eyes with dark contour, piercing irises, and an intense battle glare. Gritty details encouraged: scars, stubble, beards, warpaint, stern closed mouth or fierce grimace. Absolutely NO giant anime eyes, NO kawaii sparkling reflections, NO blushing cheeks, NO round baby cheeks, NO cute or childish expressions.
-- **Visual Consistency**: Preserve the exact same face, skin tone, eye color, hairstyle, headgear, costume construction, armor pieces, materials, color palette, body proportions, outline thickness, pixel density, and silhouette in every cell and every action state. Distinctive asymmetrical details must remain on the same anatomical side.
-- **Equipment & Weapon**: The character uses the same equipment in every frame. The weapon must retain its exact geometry, length, blade/head shape, materials, and colors. Hands must grip it plausibly. No extra weapons, duplicate equipment, disappearing items, or weapon morphing.
+---
 
-## Sheet and cell contract
+## 2. Master Prompt Template
 
-Create **one animated 2D pixel-art game sprite sheet for one action state only**. Exactly 6 columns × 4 rows, exactly 24 cells, exactly 128×128 px per cell, target full canvas 768×512 px. Columns 1–6 show consecutive frames. Rows from top to bottom are exactly:
+```text
+128x128 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
 
-1. FRONT — front-facing / moving toward the bottom of the game screen.
-2. BACK — facing away / moving toward the top of the game screen.
-3. LEFT — strict left-facing profile.
-4. RIGHT — strict right-facing profile.
+Chibi proportions with an intentionally oversized head and compact body, [body type], [limb description], [stance], strong readable silhouette.
 
-Do not add labels, titles, cell borders, separators, gutters, extra panels, or extra frames. Every cell contains one complete character and its required equipment. Keep all content inside its cell and prevent overlap with adjacent cells.
+[Face/head description], [eye description], [expression details], no smile, no cute or adorable expression.
 
-## 2.5D camera and rendering
+[Hair/head details], [optional mane/markings/ornaments].
 
-The sprite must be compatible with a 2.5D action RPG viewed by a stable orthographic camera tilted approximately 30° downward toward the playfield. Keep the same projection, scale, and anatomy in every direction. Show subtle top-facing surfaces where appropriate, but do not render a 3D model, do not use an extreme overhead view, and do not draw a 30° character lean. FRONT/BACK/LEFT/RIGHT are world directions; LEFT and RIGHT must stay strict profiles.
+[Clothing/armor/body description], [optional accessories].
 
-## Pixel art, palette, and background
+[Held item: Holding a [weapon/tool/focus] with both hands, clearly visible beside the character / Holding no weapon, both hands raised in a ready combat stance], [optional offhand]. No other weapons.
 
-- Clean, deliberate 16-bit-style pixel art with crisp hard pixel edges, readable pixel clusters, strong dark outlines, and stepped shading clusters.
-- Saturated, grounded dark fantasy palette (deep steels, leathers, blood crimson, forest greens, obsidian, bone, glowing runes/embers).
-- Strict restrictions: No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no vector art, no motion blur.
-- Pure solid white background RGB(255,255,255). No scenery, floor, cast shadow, ground circle, text, UI, grids or decorative panels.
-- All character pixels and equipment must remain within each 128×128 cell. Keep the grounded foot baseline around y=118 where applicable, maintaining the existing engine's scale and alignment.
-- No weapon cropping. No cropped hands, feet, headgear or body parts. No visual effects unless a state-specific prompt explicitly and deliberately changes this rule; the default ATTACK prompt forbids effects.
+[Optional magical/energy effects].
+
+Pure solid magenta background rgb(255,0,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
+
+Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite chibi proportions.
+
+No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic proportions, no photorealism, no smooth gradients.
+
+Additional character details to include: [list all extra details the user specifies].
+```
+
+---
+
+## 3. Strict Negative Constraint String
+
+Every prompt MUST contain this exact negative constraint block:
+> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
+
+---
+
+## 4. Grounding and Background Contract
+
+* **Pure Solid Magenta Background `rgb(255,0,255)` (`#ff00ff`)**: Strict chromakey background for automated transparent extraction.
+* **Zero Floor Elements**: Absolutely NO shadows under feet, NO drop shadows, NO cast shadows, NO ground line, NO floor tiles, NO platform, NO pedestal.
+* **Cell Clearance**: Every cell is 128×128 px. All body parts, weapon tips, hair, and accessories must remain inside the cell with ~10 px bottom margin (`feet baseline y ≈ 118`).
