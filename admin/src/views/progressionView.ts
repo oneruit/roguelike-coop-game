@@ -78,6 +78,30 @@ export class ProgressionView {
       this.renderWeaponsProgression();
     });
 
+    document.getElementById('btn-prog-monsters-select-all')?.addEventListener('click', () => {
+      const isBosses = this.chartState.monsterCategory === 'bosses';
+      if (isBosses) {
+        Object.keys(this.state.draftBalance.bosses).forEach((id) => this.chartState.selectedBosses.add(id));
+      } else {
+        Object.keys(this.state.draftBalance.monsters).forEach((id) => this.chartState.selectedMonsters.add(id));
+      }
+      this.renderMonstersProgression();
+    });
+
+    document.getElementById('btn-prog-monsters-clear-all')?.addEventListener('click', () => {
+      const isBosses = this.chartState.monsterCategory === 'bosses';
+      if (isBosses) {
+        this.chartState.selectedBosses.clear();
+        const firstId = Object.keys(this.state.draftBalance.bosses)[0] || 'boss';
+        this.chartState.selectedBosses.add(firstId);
+      } else {
+        this.chartState.selectedMonsters.clear();
+        const firstId = Object.keys(this.state.draftBalance.monsters)[0] || 'coyote';
+        this.chartState.selectedMonsters.add(firstId);
+      }
+      this.renderMonstersProgression();
+    });
+
     const monsterCatButtons = document.querySelectorAll('#prog-monster-category-toggle .segmented-btn');
     monsterCatButtons.forEach((btn) => {
       btn.addEventListener('click', (e) => {
@@ -197,7 +221,8 @@ export class ProgressionView {
     const chartContainer = document.getElementById('chart-monsters-progression');
     if (!chartContainer) return;
 
-    const minutes = [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30];
+    // 0 to 60 minutes with 5 minutes interval
+    const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60];
     const xLabels = minutes.map((m) => `${m} мин`);
 
     const isBosses = this.chartState.monsterCategory === 'bosses';
@@ -207,14 +232,44 @@ export class ProgressionView {
     const selectedSet = isBosses ? this.chartState.selectedBosses : this.chartState.selectedMonsters;
     const metric = this.chartState.monsterMetric;
 
+    // Dynamically update category button labels with active counts
+    const monsterCount = Object.keys(this.state.draftBalance.monsters).length;
+    const bossCount = Object.keys(this.state.draftBalance.bosses).length;
+    const btnMonsters = document.querySelector('#prog-monster-category-toggle [data-cat="monsters"]');
+    const btnBosses = document.querySelector('#prog-monster-category-toggle [data-cat="bosses"]');
+    if (btnMonsters) btnMonsters.textContent = `Рядовые монстры (${monsterCount})`;
+    if (btnBosses) btnBosses.textContent = `Эпические боссы (${bossCount})`;
+
+    // Dynamically update card title and subtitle
+    const title = document.getElementById('prog-monsters-chart-title');
+    if (title) {
+      const catLabel = isBosses ? 'боссов' : 'монстров';
+      const metricLabel = metric === 'hp' ? 'здоровья (HP)' : metric === 'damage' ? 'контактного урона' : 'скорости бега';
+      title.textContent = `Масштабирование ${metricLabel} ${catLabel} во времени (0-60 минут, интервал 5 мин)`;
+    }
+
+    const subtitle = document.querySelector('#prog-view-monsters .chart-card-subtitle');
+    if (subtitle) {
+      subtitle.textContent =
+        'Формула движка: базовый рост + пост-15м экспоненциальный штурм (интервал 5 мин, до 60 мин выживания)';
+    }
+
     const seriesList: ChartSeries[] = [];
     for (const ent of entities) {
       if (!selectedSet.has(ent.id)) continue;
 
       const values = minutes.map((m) => {
-        const hpMult = 1 + (m * 0.28 + Math.pow(m / 4.5, 1.7) * 0.4) * 1.5;
-        const dmgMult = 1 + (m * 0.12 + Math.pow(m / 8, 1.4) * 0.25) * 1.5;
-        const spdMult = Math.min(1.45, 1 + m * 0.012 * 1.5);
+        // Continuous progressive scaling from EnemyManager & DifficultyDirector
+        const hpBase = 1 + (m * 0.35 + Math.pow(m / 4.0, 1.8) * 0.45) * 1.5;
+        const mPost = Math.max(0, m - 15);
+        const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
+        const hpMult = hpBase + hpPostSurge;
+
+        const dmgBase = 1 + (m * 0.15 + Math.pow(m / 6.0, 1.5) * 0.30) * 1.5;
+        const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
+        const dmgMult = dmgBase + dmgPostSurge;
+
+        const spdMult = Math.min(1.65, 1 + m * 0.012 * 1.5 + mPost * 0.01);
 
         if (metric === 'hp') {
           return Math.round(ent.hp * hpMult);

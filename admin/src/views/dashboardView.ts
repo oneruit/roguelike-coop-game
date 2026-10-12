@@ -130,11 +130,18 @@ export function renderDashboard(state: BalanceState): void {
             <td>${calcSpdMult(30)}x</td>
           </tr>
           <tr>
-            <td><strong>40 мин</strong></td>
-            <td><span style="color:#7c3aed; font-weight:700;">🏆 Финал (Кап)</span></td>
-            <td><strong style="color:#7c3aed;">${calcHpMult(40)}x</strong></td>
-            <td>${calcDmgMult(40)}x</td>
-            <td>${calcSpdMult(40)}x</td>
+            <td><strong>45 мин</strong></td>
+            <td><span style="color:#9333ea; font-weight:700;">☠️ Экстремальный натиск</span></td>
+            <td><strong style="color:#9333ea;">${calcHpMult(45)}x</strong></td>
+            <td>${calcDmgMult(45)}x</td>
+            <td>${calcSpdMult(45)}x</td>
+          </tr>
+          <tr>
+            <td><strong>60 мин</strong></td>
+            <td><span style="color:#dc2626; font-weight:700;">🏆 Глубокий лейт-гейм (60 мин)</span></td>
+            <td><strong style="color:#dc2626;">${calcHpMult(60)}x</strong></td>
+            <td>${calcDmgMult(60)}x</td>
+            <td>${calcSpdMult(60)}x</td>
           </tr>
         </tbody>
       </table>
