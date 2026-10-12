@@ -16,16 +16,18 @@ import type { PassiveBuffId } from '../drops/PassiveBuffs';
 import { Player } from '../entities/Player';
 import { BiomeManager } from './BiomeManager';
 import { BalanceManager } from '../balance/BalanceManager';
+import { getWeaponEffectiveCap } from '../combat/WeaponBase';
 
 export interface MerchantItemStock {
   id: string;
-  type: 'rift_item' | 'passive';
+  type: 'rift_item' | 'passive' | 'weapon_upgrade';
   name: string;
   rarity: ItemRarity;
   icon: string;
   color: string;
   description: string;
   price: number;
+  basePrice: number;
 }
 
 export class MerchantManager {
@@ -36,6 +38,8 @@ export class MerchantManager {
   public timer: number = 0; // seconds remaining in current state
   public stock: MerchantItemStock[] = [];
   public boughtItemIds: Set<string> = new Set();
+  public weaponUpgradePurchases: number = 0;
+  public purchaseCount: number = 0;
 
   public mesh: Group;
   private coreMesh!: Mesh;
@@ -177,6 +181,8 @@ export class MerchantManager {
     this.mesh.visible = true;
     this.isActive = true;
     this.boughtItemIds.clear();
+    this.weaponUpgradePurchases = 0;
+    this.purchaseCount = 0;
 
     // Roll new stock
     this.stock = this.generateStock();
@@ -190,6 +196,8 @@ export class MerchantManager {
     this.isActive = false;
     this.mesh.visible = false;
     this.boughtItemIds.clear();
+    this.weaponUpgradePurchases = 0;
+    this.purchaseCount = 0;
 
     if (this.onMerchantDespawn) {
       this.onMerchantDespawn();
@@ -199,14 +207,30 @@ export class MerchantManager {
   public generateStock(): MerchantItemStock[] {
     const cfg = BalanceManager.getGlobalConfig();
     const prices: Record<ItemRarity, number> = {
-      common: cfg.merchantPriceCommon ?? 40,
-      uncommon: cfg.merchantPriceUncommon ?? 80,
-      rare: cfg.merchantPriceRare ?? 150,
-      legendary: cfg.merchantPriceLegendary ?? 300,
-      boss: cfg.merchantPriceBoss ?? 500
+      common: cfg.merchantPriceCommon ?? 400,
+      uncommon: cfg.merchantPriceUncommon ?? 800,
+      rare: cfg.merchantPriceRare ?? 1500,
+      legendary: cfg.merchantPriceLegendary ?? 3000,
+      boss: cfg.merchantPriceBoss ?? 5000
     };
+    const weaponUpgradeBasePrice = cfg.merchantPriceWeaponUpgrade ?? 500;
 
     const items: MerchantItemStock[] = [];
+
+    const calcPrice = (base: number) => Math.round(base * Math.pow(1.4, this.purchaseCount));
+
+    // Special item: Upgrade Weapon (can purchase up to 5 times per visit)
+    items.push({
+      id: 'merchant_upgrade_weapon',
+      type: 'weapon_upgrade',
+      name: 'Улучшить оружие',
+      rarity: 'rare',
+      icon: '⚔️',
+      color: '#38bdf8',
+      description: `Повышает уровень случайного оружия на +1 (куплено ${this.weaponUpgradePurchases}/5).`,
+      price: calcPrice(weaponUpgradeBasePrice),
+      basePrice: weaponUpgradeBasePrice
+    });
 
     // Helper to get random item from list
     const pickRandomDef = (candidates: RiftItemId[]): RiftItemDef => {
@@ -226,7 +250,8 @@ export class MerchantManager {
       icon: c1.icon,
       color: c1.color,
       description: c1.description,
-      price: prices[c1.rarity]
+      price: calcPrice(prices[c1.rarity]),
+      basePrice: prices[c1.rarity]
     });
     items.push({
       id: c2.id,
@@ -236,7 +261,8 @@ export class MerchantManager {
       icon: c2.icon,
       color: c2.color,
       description: c2.description,
-      price: prices[c2.rarity]
+      price: calcPrice(prices[c2.rarity]),
+      basePrice: prices[c2.rarity]
     });
 
     // 2. Two Uncommon items
@@ -251,7 +277,8 @@ export class MerchantManager {
       icon: u1.icon,
       color: u1.color,
       description: u1.description,
-      price: prices[u1.rarity]
+      price: calcPrice(prices[u1.rarity]),
+      basePrice: prices[u1.rarity]
     });
     items.push({
       id: u2.id,
@@ -261,7 +288,8 @@ export class MerchantManager {
       icon: u2.icon,
       color: u2.color,
       description: u2.description,
-      price: prices[u2.rarity]
+      price: calcPrice(prices[u2.rarity]),
+      basePrice: prices[u2.rarity]
     });
 
     // 3. One Rare item
@@ -275,7 +303,8 @@ export class MerchantManager {
       icon: r1.icon,
       color: r1.color,
       description: r1.description,
-      price: prices[r1.rarity]
+      price: calcPrice(prices[r1.rarity]),
+      basePrice: prices[r1.rarity]
     });
 
     // 4. One Legendary or Boss item
@@ -289,7 +318,8 @@ export class MerchantManager {
       icon: h1.icon,
       color: h1.color,
       description: h1.description,
-      price: prices[h1.rarity]
+      price: calcPrice(prices[h1.rarity]),
+      basePrice: prices[h1.rarity]
     });
 
     return items;
@@ -313,6 +343,12 @@ export class MerchantManager {
   }
 
   public isSold(item: MerchantItemStock, player: Player): boolean {
+    if (item.id === 'merchant_upgrade_weapon') {
+      if (this.weaponUpgradePurchases >= 5) return true;
+      const upgradeable = player.weapons.filter(w => w.level < getWeaponEffectiveCap(w, player.weapons));
+      if (upgradeable.length === 0) return true;
+      return false;
+    }
     if (this.boughtItemIds.has(item.id)) return true;
     if (player.isStatMaxedForItem(item.id)) return true;
     return false;
@@ -322,11 +358,21 @@ export class MerchantManager {
     if (!this.isActive) {
       return { success: false, error: 'Торговец уже покинул сектор' };
     }
-    if (this.boughtItemIds.has(item.id)) {
-      return { success: false, error: 'Этот предмет уже куплен в текущий визит' };
-    }
-    if (player.isStatMaxedForItem(item.id)) {
-      return { success: false, error: 'Характеристика для этого предмета уже максимальна' };
+    if (item.id === 'merchant_upgrade_weapon') {
+      if (this.weaponUpgradePurchases >= 5) {
+        return { success: false, error: 'Лимит улучшений оружия у торговца исчерпан (макс. 5 за приход)' };
+      }
+      const upgradeable = player.weapons.filter(w => w.level < getWeaponEffectiveCap(w, player.weapons));
+      if (upgradeable.length === 0) {
+        return { success: false, error: 'Все оружия уже улучшены до текущего предела' };
+      }
+    } else {
+      if (this.boughtItemIds.has(item.id)) {
+        return { success: false, error: 'Этот предмет уже куплен в текущий визит' };
+      }
+      if (player.isStatMaxedForItem(item.id)) {
+        return { success: false, error: 'Характеристика для этого предмета уже максимальна' };
+      }
     }
     if (player.credits < item.price) {
       return { success: false, error: `Недостаточно кредитов (нужно ${item.price} ⬡, у вас ${player.credits} ⬡)` };
@@ -334,16 +380,36 @@ export class MerchantManager {
 
     // Deduct credits
     player.credits -= item.price;
-    this.boughtItemIds.add(item.id);
 
-    // Apply item / passive
-    if (item.type === 'rift_item') {
-      const def = RIFT_ITEMS[item.id as RiftItemId];
-      if (def) {
-        player.addRiftItem(def);
+    if (item.id === 'merchant_upgrade_weapon') {
+      this.weaponUpgradePurchases++;
+      const upgradeable = player.weapons.filter(w => w.level < getWeaponEffectiveCap(w, player.weapons));
+      if (upgradeable.length > 0) {
+        const target = upgradeable[Math.floor(Math.random() * upgradeable.length)];
+        target.upgrade('common');
+      }
+      if (this.weaponUpgradePurchases >= 5) {
+        this.boughtItemIds.add(item.id);
       }
     } else {
-      player.applyPassiveBuff(item.id as PassiveBuffId);
+      this.boughtItemIds.add(item.id);
+      if (item.type === 'rift_item') {
+        const def = RIFT_ITEMS[item.id as RiftItemId];
+        if (def) {
+          player.addRiftItem(def);
+        }
+      } else {
+        player.applyPassiveBuff(item.id as PassiveBuffId);
+      }
+    }
+
+    // Every purchase makes subsequent purchases 40% more expensive
+    this.purchaseCount++;
+    for (const stockItem of this.stock) {
+      stockItem.price = Math.round(stockItem.basePrice * Math.pow(1.4, this.purchaseCount));
+      if (stockItem.id === 'merchant_upgrade_weapon') {
+        stockItem.description = `Повышает уровень случайного оружия на +1 (куплено ${this.weaponUpgradePurchases}/5).`;
+      }
     }
 
     player.recalculateStats();
@@ -352,6 +418,8 @@ export class MerchantManager {
 
   public reset() {
     this.despawn();
+    this.weaponUpgradePurchases = 0;
+    this.purchaseCount = 0;
     const cfg = BalanceManager.getGlobalConfig();
     this.timer = cfg.merchantSpawnInterval ?? 180;
   }

@@ -7,6 +7,17 @@ import { EnemyManager } from '../game/src/entities/EnemyManager';
 import { DropManager } from '../game/src/drops/DropManager';
 import { DamageNumberManager } from '../game/src/combat/DamageNumberManager';
 import { KatanaSlashWeapon } from '../game/src/combat/weapons/MeleeWeapons';
+import {
+  BowWeapon,
+  KukriWeapon,
+  ReaperScytheWeapon,
+  GreatswordWeapon,
+  getWeaponEffectiveCap
+} from '../game/src/combat/Weapon';
+import { Player } from '../game/src/entities/Player';
+import { MerchantManager } from '../game/src/world/MerchantManager';
+import { BiomeManager } from '../game/src/world/BiomeManager';
+import { LevelUpUI, type LevelUpUIContext } from '../game/src/ui/modules/LevelUpUI';
 import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { PlayerStatusManager } from '../game/src/entities/PlayerStatusManager';
 
@@ -313,4 +324,243 @@ test('Boss relics golem_core and molten_scale balance definitions', () => {
   assert.ok(moltenScale, 'molten_scale exists in balance');
   assert.equal(moltenScale.name, 'Огненная Чешуя');
 });
+
+test('Weapon tier effective caps (Tier 3 = 12, Tier 2 = 6/8/10/12, Tier 1 = 6/8/10/12)', () => {
+  const w1 = new BowWeapon();
+  const w2 = new KukriWeapon();
+  const w3 = new ReaperScytheWeapon();
+  const w4 = new GreatswordWeapon();
+  const all = [w1, w2, w3, w4];
+
+  // Tier 3 always has cap 12
+  assert.equal(getWeaponEffectiveCap(w1, all), 12);
+  assert.equal(getWeaponEffectiveCap(w2, all), 12);
+
+  // 1 Tier 2 awakened
+  w1.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 6, '1 Tier 2 weapon -> cap 6');
+  assert.equal(getWeaponEffectiveCap(w2, all), 12, 'Tier 3 weapon still cap 12');
+
+  // 2 Tier 2 awakened
+  w2.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 8, '2 Tier 2 weapons -> cap 8');
+  assert.equal(getWeaponEffectiveCap(w2, all), 8);
+
+  // 3 Tier 2 awakened
+  w3.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 10, '3 Tier 2 weapons -> cap 10');
+
+  // 4 Tier 2 awakened
+  w4.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 12, '4 Tier 2 weapons -> cap 12');
+  assert.equal(getWeaponEffectiveCap(w4, all), 12);
+
+  // 1 Tier 1 awakened (from Tier 2)
+  w1.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 6, '1 Tier 1 weapon -> cap 6');
+  assert.equal(getWeaponEffectiveCap(w2, all), 12, 'Tier 2 weapon with 4 Tier-2-or-higher weapons has cap 12');
+
+  // 2 Tier 1 awakened
+  w2.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 8, '2 Tier 1 weapons -> cap 8');
+
+  // 3 Tier 1 awakened
+  w3.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 10, '3 Tier 1 weapons -> cap 10');
+
+  // 4 Tier 1 awakened
+  w4.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 12, '4 Tier 1 weapons -> cap 12');
+});
+
+test('Diminishing returns on spurs, lasso, and pocket watch', () => {
+  const scene = new Scene();
+  const player = new Player(scene, 'cowboy');
+
+  // Spurs (stat_spurs): Base 1.0x. Level 1 -> +3% (0.03, total 1.03x). Level 300 -> +200% (2.00, mult x3.0).
+  player.spursCount = 0;
+  player.recalculateStats();
+  assert.equal(player.passiveSpeedMultiplier, 1.0);
+
+  player.spursCount = 1;
+  player.recalculateStats();
+  assert.ok(Math.abs(player.passiveSpeedMultiplier - 1.03) < 1e-4, 'Spurs at lvl 1 gives 1.03x');
+
+  player.spursCount = 100;
+  player.recalculateStats();
+  const spurs100 = player.passiveSpeedMultiplier;
+  assert.ok(spurs100 > 1.03 && spurs100 < 3.0, 'Spurs scales with level');
+  assert.ok(spurs100 > 1.5, 'Spurs curve is concave');
+
+  player.spursCount = 300;
+  player.recalculateStats();
+  assert.ok(Math.abs(player.passiveSpeedMultiplier - 3.0) < 1e-3, 'Spurs at lvl 300 gives x3 total speed mult');
+
+  // Lasso (stat_lasso): Base 10m. Level 1 -> 11m (+10%). Level 300 -> 50m.
+  player.lassoCount = 0;
+  player.recalculateStats();
+  assert.equal(player.pickupRadius, 10.0, 'Base pickup radius is 10m');
+
+  player.lassoCount = 1;
+  player.recalculateStats();
+  assert.ok(Math.abs(player.pickupRadius - 11.0) < 1e-4, 'Lasso at lvl 1 gives 11m (base 10m + 10%)');
+
+  player.lassoCount = 300;
+  player.recalculateStats();
+  assert.ok(Math.abs(player.pickupRadius - 50.0) < 1e-3, 'Lasso at lvl 300 reaches 50m cap');
+
+  // Watch (stat_watch): Base 1.0 (0% reduction). Level 1 -> 0.99 (1% CDR). Level 300 -> 0.70 (30% CDR cap).
+  player.watchCount = 0;
+  player.recalculateStats();
+  assert.equal(player.passiveCooldownMultiplier, 1.0);
+
+  player.watchCount = 1;
+  player.recalculateStats();
+  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.99) < 1e-4, 'Watch at lvl 1 gives 1% CDR');
+
+  player.watchCount = 300;
+  player.recalculateStats();
+  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.70) < 1e-3, 'Watch at lvl 300 reaches 30% CDR cap (mult 0.70)');
+});
+
+test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upgrade limit', () => {
+  const scene = new Scene();
+  const biomeManager = new BiomeManager();
+  const merchant = new MerchantManager(scene, biomeManager);
+
+  // Check 10x base price definitions in balance
+  const cfg = DEFAULT_BALANCE.global;
+  assert.equal(cfg.merchantPriceCommon, 400);
+  assert.equal(cfg.merchantPriceUncommon, 800);
+  assert.equal(cfg.merchantPriceRare, 1500);
+  assert.equal(cfg.merchantPriceLegendary, 3000);
+  assert.equal(cfg.merchantPriceBoss, 5000);
+  assert.equal(cfg.merchantPriceWeaponUpgrade, 500);
+
+  // Spawn merchant stock
+  merchant.spawn(() => 0);
+  assert.equal(merchant.isActive, true);
+  assert.ok(merchant.stock.length > 0);
+
+  const upgradeStock = merchant.stock.find(s => s.id === 'merchant_upgrade_weapon');
+  assert.ok(upgradeStock, 'Weapon upgrade is offered in merchant stock');
+  assert.equal(upgradeStock.price, 500, 'Initial weapon upgrade base price is 500');
+
+  const player = new Player(scene, 'cowboy');
+  player.credits = 100000;
+  player.weapons = [new BowWeapon(), new KukriWeapon(), new ReaperScytheWeapon(), new GreatswordWeapon()];
+  for (const w of player.weapons) {
+    w.level = 1;
+  }
+
+  // 1st purchase: price = 500
+  const p1 = merchant.buyItem(upgradeStock, player);
+  assert.equal(p1.success, true);
+  assert.equal(merchant.purchaseCount, 1);
+  assert.equal(merchant.weaponUpgradePurchases, 1);
+  // Next price for upgradeStock: 500 * 1.4^1 = 700
+  assert.equal(upgradeStock.price, 700);
+
+  // 2nd purchase
+  merchant.buyItem(upgradeStock, player);
+  assert.equal(merchant.purchaseCount, 2);
+  // Next price: 500 * 1.4^2 = 980
+  assert.equal(upgradeStock.price, 980);
+
+  // 3rd, 4th, 5th purchases
+  merchant.buyItem(upgradeStock, player);
+  merchant.buyItem(upgradeStock, player);
+  const p5 = merchant.buyItem(upgradeStock, player);
+  assert.equal(p5.success, true);
+  assert.equal(merchant.weaponUpgradePurchases, 5);
+
+  // 6th purchase must fail because limit is 5 per visit
+  const p6 = merchant.buyItem(upgradeStock, player);
+  assert.equal(p6.success, false);
+  assert.equal(merchant.weaponUpgradePurchases, 5);
+
+  // Player weapons were upgraded exactly 5 times across the 4 weapons
+  const totalLevels = player.weapons.reduce((acc, w) => acc + w.level, 0);
+  assert.equal(totalLevels, 4 + 5, '5 weapon upgrade purchases increased total weapon levels by 5');
+});
+
+test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
+  const scene = new Scene();
+  const player = new Player(scene, 'cowboy');
+  player.weapons = [
+    new BowWeapon(),
+    new KukriWeapon(),
+    new ReaperScytheWeapon(),
+    new GreatswordWeapon()
+  ];
+  const dummyEl = {
+    levelUpModal: { classList: { add: () => {}, remove: () => {}, contains: () => false } },
+    levelUpStepIndicator: { innerHTML: '', style: {} },
+    levelUpTitle: { innerText: '' },
+    levelUpRerollContainer: { classList: { add: () => {}, remove: () => {} } },
+    btnLevelUpReroll: { innerHTML: '', onclick: null },
+    upgradeCardsContainer: { innerHTML: '', appendChild: () => {} }
+  } as any;
+
+  const ctx: LevelUpUIContext = {
+    elements: dummyEl,
+    getScene: () => scene,
+    getCurrentStageNumber: () => 1,
+    getIsAutoLevelUp: () => false,
+    updateWeaponsBar: () => {},
+    updatePassivesBar: () => {}
+  };
+  const levelUpUI = new LevelUpUI(ctx);
+
+  // Milestone 1: All 4 Tier 3 weapons reach level 12
+  for (const w of player.weapons) {
+    w.level = 12;
+    w.awakenedGrade = 0;
+  }
+  const milestone1Options = levelUpUI.generateWeaponOptions(player);
+  assert.equal(milestone1Options.length, 3, 'Must offer 3 cards');
+  assert.equal(milestone1Options[0].id, 'bonus_health_elixir', 'First card is HP elixir');
+  const awakenT2Count = milestone1Options.filter(o => o.id.startsWith('awaken_')).length;
+  assert.equal(awakenT2Count, 2, 'Offers exactly 2 Tier 2 awakenings on first milestone');
+
+  // Apply 1 Tier 2 awaken, set to level 1
+  player.weapons[0].awakenGrade();
+  player.weapons[0].level = 1;
+  // Weapons 1, 2, 3 are still Tier 3 level 12
+  // While leveling up, at most 1 awakening card can appear
+  for (let i = 0; i < 20; i++) {
+    const opts = levelUpUI.generateWeaponOptions(player);
+    assert.equal(opts.length, 3);
+    const awakenOpts = opts.filter(o => o.id.startsWith('awaken_') || o.id.startsWith('awaken3_'));
+    assert.ok(awakenOpts.length <= 1, 'While leveling up, at most 1 tier awakening can appear');
+  }
+
+  // All 4 weapons reach Tier 2 level 12 -> Milestone 2
+  for (const w of player.weapons) {
+    w.awakenedGrade = 1;
+    w.level = 12;
+  }
+  const milestone2Options = levelUpUI.generateWeaponOptions(player);
+  assert.equal(milestone2Options.length, 3);
+  assert.equal(milestone2Options[0].id, 'bonus_health_elixir');
+  const awakenT1Count = milestone2Options.filter(o => o.id.startsWith('awaken3_')).length;
+  assert.equal(awakenT1Count, 2, 'Offers exactly 2 Tier 1 awakenings on second milestone');
+
+  // All 4 weapons reach Tier 1 level 12 -> Milestone 3
+  for (const w of player.weapons) {
+    w.awakenedGrade = 2;
+    w.level = 12;
+  }
+  const milestone3Options = levelUpUI.generateWeaponOptions(player);
+  assert.equal(milestone3Options.length, 3);
+  assert.ok(milestone3Options.some(o => o.id === 'bonus_health_elixir'));
+  assert.ok(milestone3Options.some(o => o.id === 'bonus_damage_elixir'));
+  assert.ok(milestone3Options.some(o => o.id === 'bonus_speed_elixir'));
+
+  // Elixir of Might bonus check: +5% per stack
+  const initialMult = player.passiveDamageMultiplier;
+  player.addMightElixirBonus();
+  assert.ok(Math.abs(player.passiveDamageMultiplier - (initialMult + 0.05)) < 1e-4, 'Might elixir gives +5%');
+});
+
 

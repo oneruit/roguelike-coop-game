@@ -2,6 +2,7 @@ import type { Scene } from 'three';
 import { Player } from '../../entities/Player';
 import {
   Weapon,
+  getWeaponEffectiveCap,
   BowWeapon,
   KukriWeapon,
   ReaperScytheWeapon,
@@ -333,12 +334,113 @@ export class LevelUpUI {
   }
 
   public generateWeaponOptions(player: Player, excludeIds?: ReadonlySet<string>): UpgradeOption[] {
-    const allMaxed = player.areAllWeaponsMaxed();
+    const weapons = player.weapons;
+    const tier3Weapons = weapons.filter(w => (w.awakenedGrade ?? 0) === 0);
+    const tier2Weapons = weapons.filter(w => (w.awakenedGrade ?? 0) === 1);
+    const tier1Weapons = weapons.filter(w => (w.awakenedGrade ?? 0) >= 2);
+
+    const hpOption: UpgradeOption = {
+      id: 'bonus_health_elixir',
+      title: 'Эликсир Жизни (+50 HP)',
+      icon: '❤️',
+      levelTag: 'БОНУС ЗДОРОВЬЯ',
+      description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
+      grade: 'rare',
+      apply: () => {
+        player.maxHp += 50;
+        player.hp = Math.min(player.maxHp, player.hp + 50);
+        player.recalculateStats();
+      }
+    };
+
+    const damageOption: UpgradeOption = {
+      id: 'bonus_damage_elixir',
+      title: 'Эликсир Могущества (+5% урона)',
+      icon: '⚡',
+      levelTag: 'БОНУС УРОНА',
+      description: 'Увеличивает весь наносимый урон героя на +5%.',
+      grade: 'legendary',
+      apply: () => {
+        player.addMightElixirBonus();
+      }
+    };
+
+    const speedOption: UpgradeOption = {
+      id: 'bonus_speed_elixir',
+      title: 'Эликсир Скорости (+8% скорости)',
+      icon: '👟',
+      levelTag: 'БОНУС СКОРОСТИ',
+      description: 'Увеличивает скорость передвижения героя на +8%.',
+      grade: 'rare',
+      apply: () => {
+        player.speedElixirBonus = (player.speedElixirBonus ?? 0) + 0.08;
+        player.recalculateStats();
+      }
+    };
+
+    const createTier2AwakenOption = (weapon: Weapon): UpgradeOption => ({
+      id: `awaken_${weapon.id}`,
+      title: `Пробуждение Тира 2: ${weapon.name}`,
+      icon: '🌟',
+      iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+      levelTag: 'ТИР 2 • СБРОС (МАКС. 12)',
+      description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до 12 ур.`,
+      grade: 'legendary',
+      apply: () => {
+        weapon.awakenGrade();
+        player.recalculateStats();
+      }
+    });
+
+    const createTier1AwakenOption = (weapon: Weapon): UpgradeOption => ({
+      id: `awaken3_${weapon.id}`,
+      title: `Пробуждение Тира 1: ${weapon.name}`,
+      icon: '🔥',
+      iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+      levelTag: 'ТИР 1 • СБРОС (МАКС. 12)',
+      description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до 12 ур.`,
+      grade: 'legendary',
+      apply: () => {
+        weapon.awakenGrade();
+        player.recalculateStats();
+      }
+    });
+
+    // Milestone 1: First time all 4 Tier 3 weapons reach level 12
+    // "(при повышении уровня получаем 3 карточки: повышение HP и два улучшения Тира оружия)"
+    const isFirstTimeTier2Unlock = weapons.length === 4 &&
+      tier3Weapons.length === 4 &&
+      weapons.every(w => w.level >= 12);
+    if (isFirstTimeTier2Unlock) {
+      const awakenCards = tier3Weapons.map(createTier2AwakenOption).sort(() => 0.5 - Math.random());
+      const selectedAwaken = awakenCards.slice(0, 2);
+      return [hpOption, ...selectedAwaken];
+    }
+
+    // Milestone 2: First time all 4 Tier 2 weapons reach level 12
+    // "И тоже самое до Тир 1."
+    const isFirstTimeTier1Unlock = weapons.length === 4 &&
+      tier2Weapons.length === 4 &&
+      weapons.every(w => w.level >= 12);
+    if (isFirstTimeTier1Unlock) {
+      const awakenCards = tier2Weapons.map(createTier1AwakenOption).sort(() => 0.5 - Math.random());
+      const selectedAwaken = awakenCards.slice(0, 2);
+      return [hpOption, ...selectedAwaken];
+    }
+
+    // Milestone 3: All 4 weapons are Tier 1 and all are level 12
+    // '"Эликсир могущества" доступен только после того как игрок улучшил все Тир 1 оружия до 12 уровня.'
+    const allTier1Maxed = weapons.length === 4 &&
+      tier1Weapons.length === 4 &&
+      weapons.every(w => w.level >= 12);
+    if (allTier1Maxed) {
+      return [hpOption, damageOption, speedOption];
+    }
 
     const upgradeOptions: UpgradeOption[] = [];
-    for (const weapon of player.weapons) {
-      const effectiveCap = 12;
-      if (weapon.level < effectiveCap && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
+    for (const weapon of weapons) {
+      const effectiveCap = getWeaponEffectiveCap(weapon, weapons);
+      if (weapon.level < effectiveCap && canCharacterAcquireWeapon(player.charType, weapon.id, weapons)) {
         const grade = rollWeaponGrade(this.ctx.getCurrentStageNumber());
         const gradeLabel = getGradeLabel(grade);
         const prefix = weapon.getGradePrefix();
@@ -358,49 +460,35 @@ export class LevelUpUI {
       }
     }
 
-    const pool: UpgradeOption[] = [...upgradeOptions];
+    const pool: UpgradeOption[] = [];
 
-    // Weapon grade awakening is offered ONLY when ALL weapons are at maximum (level 12)
-    if (allMaxed) {
-      const unawakenedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 0);
-      for (const weapon of unawakenedWeapons) {
-        pool.push({
-          id: `awaken_${weapon.id}`,
-          title: `Пробуждение Тира 2: ${weapon.name}`,
-          icon: '🌟',
-          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-          levelTag: 'ТИР 2 • СБРОС (МАКС. 12)',
-          description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до 12 ур.`,
-          grade: 'legendary',
-          apply: () => {
-            weapon.awakenGrade();
-            player.recalculateStats();
-          }
-        });
-      }
+    // Awakening options (if unlocked)
+    const tier2Unlocked = weapons.length === 4 && weapons.every(w => (w.awakenedGrade ?? 0) >= 1 || w.level >= 12);
+    const tier1Unlocked = weapons.length === 4 && weapons.every(w => (w.awakenedGrade ?? 0) >= 2 || (w.awakenedGrade === 1 && w.level >= 12));
 
-      const allGrade2OrHigher = player.weapons.every(w => (w.awakenedGrade ?? 0) >= 1);
-      if (allGrade2OrHigher) {
-        const grade2Weapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 1);
-        for (const weapon of grade2Weapons) {
-          pool.push({
-            id: `awaken3_${weapon.id}`,
-            title: `Пробуждение Тира 1: ${weapon.name}`,
-            icon: '🔥',
-            iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
-            levelTag: 'ТИР 1 • СБРОС (МАКС. 12)',
-            description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до 12 ур.`,
-            grade: 'legendary',
-            apply: () => {
-              weapon.awakenGrade();
-              player.recalculateStats();
-            }
-          });
-        }
+    const tier2Awakenings = tier2Unlocked
+      ? tier3Weapons.filter(w => w.level >= 12).map(createTier2AwakenOption)
+      : [];
+
+    const tier1Awakenings = tier1Unlocked
+      ? tier2Weapons.filter(w => w.level >= 12).map(createTier1AwakenOption)
+      : [];
+
+    const availableAwakenings = [...tier2Awakenings, ...tier1Awakenings];
+
+    if (upgradeOptions.length > 0) {
+      // While weapons are actively leveling up, AT MOST ONE tier upgrade card can appear
+      pool.push(...upgradeOptions);
+      if (availableAwakenings.length > 0) {
+        const randomAwaken = availableAwakenings[Math.floor(Math.random() * availableAwakenings.length)];
+        pool.push(randomAwaken);
       }
+    } else {
+      // All upgradeable weapons are at their current cap (e.g. 6/8/10), waiting to awaken
+      pool.push(...availableAwakenings);
     }
 
-    if (player.weapons.length < 4 && !allMaxed) {
+    if (player.weapons.length < 4) {
       const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
       for (const spell of invokerWeapons) {
         const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
@@ -525,52 +613,9 @@ export class LevelUpUI {
         }
       }
     }
-    // Add elixirs if all weapons are maxed or if pool has fewer than 3 options, ensuring always 3 choices
-    const hpOption: UpgradeOption = {
-      id: 'bonus_health_elixir',
-      title: 'Эликсир Жизни (+50 HP)',
-      icon: '❤️',
-      levelTag: 'БОНУС ЗДОРОВЬЯ',
-      description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
-      grade: 'rare',
-      apply: () => {
-        player.maxHp += 50;
-        player.hp = Math.min(player.maxHp, player.hp + 50);
-        player.recalculateStats();
-      }
-    };
-
-    const damageOption: UpgradeOption = {
-      id: 'bonus_damage_elixir',
-      title: 'Эликсир Могущества (+10% урона)',
-      icon: '⚡',
-      levelTag: 'БОНУС УРОНА',
-      description: 'Увеличивает весь наносимый урон героя на +10%.',
-      grade: 'legendary',
-      apply: () => {
-        player.addMightElixirBonus();
-      }
-    };
-
-    const speedOption: UpgradeOption = {
-      id: 'bonus_speed_elixir',
-      title: 'Эликсир Скорости (+8% скорости)',
-      icon: '👟',
-      levelTag: 'БОНУС СКОРОСТИ',
-      description: 'Увеличивает скорость передвижения героя на +8%.',
-      grade: 'rare',
-      apply: () => {
-        player.passiveSpeedMultiplier += 0.08;
-        player.recalculateStats();
-      }
-    };
-
-    if (allMaxed) {
-      if (!pool.some(o => o.id === hpOption.id)) pool.push(hpOption);
-      if (!pool.some(o => o.id === damageOption.id)) pool.push(damageOption);
-      if (!pool.some(o => o.id === speedOption.id)) pool.push(speedOption);
-    } else if (pool.length < 3) {
-      const elixirs = [hpOption, damageOption, speedOption];
+    // Add elixirs if pool has fewer than 3 options, ensuring always 3 choices
+    if (pool.length < 3) {
+      const elixirs = [hpOption, speedOption];
       for (const elixir of elixirs) {
         if (pool.length >= 3) break;
         if (!pool.some(o => o.id === elixir.id)) pool.push(elixir);
@@ -578,16 +623,6 @@ export class LevelUpUI {
     }
 
     const shuffled = filterAndShuffleForReroll(pool, excludeIds);
-    const selected = selectWeaponUpgradeOptions(shuffled, player.charType);
-    if (allMaxed) {
-      const hasAwaken = selected.some(o => o.id.startsWith('awaken_') || o.id.startsWith('awaken3_'));
-      if (!hasAwaken) {
-        const awakenOpt = shuffled.find(o => o.id.startsWith('awaken_') || o.id.startsWith('awaken3_'));
-        if (awakenOpt && selected.length > 0) {
-          selected[0] = awakenOpt;
-        }
-      }
-    }
-    return selected;
+    return selectWeaponUpgradeOptions(shuffled, player.charType);
   }
 }

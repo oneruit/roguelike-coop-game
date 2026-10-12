@@ -221,7 +221,7 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
     assert.equal(hasAwaken, true, 'Weapon grade awakening should be offered when all weapons are level 12');
   });
 
-  await t.test('after first weapon grade, choices remain exactly 3 and subsequent grades are NOT offered until all are level 12', () => {
+  await t.test('after first weapon grade, choices remain exactly 3 and at most 1 tier upgrade is offered while leveling up', () => {
     const scene = new Scene();
     const player = new Player(scene, 'cowboy');
     player.weapons = [
@@ -230,10 +230,10 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
       new OrbitingBarrierWeapon(),
       new GreatswordWeapon()
     ];
-    // 1 weapon awakened to Grade II, reset to level 1
+    // 1 weapon awakened to Tier 2 (Grade II), reset to level 1
     player.weapons[0].awakenGrade();
     player.weapons[0].level = 1;
-    // other weapons remain level 12 Grade I
+    // other weapons remain level 12 Tier 3
     player.weapons[1].level = 12;
     player.weapons[2].level = 12;
     player.weapons[3].level = 12;
@@ -244,11 +244,11 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
     const options = levelUpUI.generateWeaponOptions(player);
 
     assert.equal(options.length, 3, 'Must offer exactly 3 choices always (not 4 or 5!)');
-    const hasAwaken = options.some(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_'));
-    assert.equal(hasAwaken, false, 'Cannot offer grade to other weapons while Grade II weapon is level 1');
+    const awakenCount = options.filter(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_')).length;
+    assert.ok(awakenCount <= 1, 'At most 1 weapon tier upgrade can be offered while leveling up');
 
-    // Upgrades for the Grade II weapon should be available
+    // Upgrades for the Tier 2 weapon should be available
     const hasUpgrade = options.some(opt => opt.id === `upgrade_${player.weapons[0].id}`);
-    assert.equal(hasUpgrade, true, 'Grade II weapon upgrade should be available in the options');
+    assert.equal(hasUpgrade, true, 'Tier 2 weapon upgrade should be available in the options');
   });
 });

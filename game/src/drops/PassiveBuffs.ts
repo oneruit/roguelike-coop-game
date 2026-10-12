@@ -25,7 +25,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_spurs',
     title: 'Шпоры Скорохода',
     icon: '👢',
-    description: '+3% к скорости бега'
+    description: '+3% к скорости бега (с угасающей эффективностью до x3 на 300 ур., макс. x3)'
   },
   stat_flask: {
     id: 'stat_flask',
@@ -37,7 +37,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_lasso',
     title: 'Магнитное Лассо',
     icon: '➰',
-    description: '+35% к радиусу притяжения кристаллов'
+    description: '+10% к радиусу магнита (базовый 10м, с угасающей эффективностью до 50м на 300 ур., макс. 50м)'
   },
   stat_amulet: {
     id: 'stat_amulet',
@@ -55,7 +55,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_watch',
     title: 'Карманные Часы',
     icon: '⏱️',
-    description: '-1% к времени перезарядки оружий (макс. 25%)'
+    description: '-1% к времени перезарядки оружий (с угасающей эффективностью до 30% на 300 ур., макс. 30%)'
   }
 };
 
