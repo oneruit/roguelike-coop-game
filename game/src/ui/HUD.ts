@@ -100,6 +100,8 @@ export class HUD {
 
     // Modals
     this.mainMenuModal = document.getElementById('main-menu-modal')!;
+    document.body.classList.add('is-main-menu');
+    document.body.classList.remove('is-in-game');
     HUD.applyRandomMenuBackground();
     this.coopModal = document.getElementById('coop-modal')!;
     this.settingsModal = document.getElementById('settings-modal')!;
@@ -599,6 +601,8 @@ export class HUD {
         const timeOfDay = (timeOfDaySelect?.value as 'random' | 'day' | 'night') || 'random';
 
         this.hideCharacterSelect();
+        document.body.classList.remove('is-main-menu');
+        document.body.classList.add('is-in-game');
         onSelectHero(hero, undefined, isTraining, timeOfDay);
       });
     });
@@ -652,6 +656,8 @@ export class HUD {
 
   public showMainMenu() {
     this.menuStack = [];
+    document.body.classList.remove('is-in-game');
+    document.body.classList.add('is-main-menu');
     document.getElementById('change-hero-confirm-modal')?.classList.add('hidden');
     this.hideCoopMenu();
     this.hideSettings();

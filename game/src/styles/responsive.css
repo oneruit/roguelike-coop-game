@@ -354,3 +354,142 @@
   }
 }
 
+/* ==========================================================================
+   COMPREHENSIVE ADAPTIVE IN-GAME MODALS & HUD (<= 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  #hud-bottom {
+    padding: 8px 12px !important;
+  }
+
+  #player-hp-bar {
+    width: 130px !important;
+    height: 10px !important;
+  }
+
+  #player-hp-container {
+    padding: 4px 10px !important;
+    gap: 8px !important;
+  }
+
+  #player-hp-text {
+    font-size: 10px !important;
+    min-width: 50px !important;
+  }
+
+  /* Pause Modal */
+  .pause-card {
+    max-width: 92vw !important;
+    padding: 20px 14px !important;
+  }
+
+  .pause-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .pause-actions .action-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Full Desert Map Modal */
+  .fullmap-card {
+    max-width: 95vw !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 14px 10px !important;
+  }
+
+  .fullmap-stats-bar {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    font-size: 10px !important;
+  }
+
+  .fullmap-canvas-container {
+    border-radius: 10px !important;
+    max-height: 50vh !important;
+    width: 100% !important;
+  }
+
+  #fullmap-canvas {
+    max-height: 48vh !important;
+  }
+
+  /* Inventory Modal */
+  .inventory-modal-card {
+    max-width: 95vw !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 16px 10px !important;
+  }
+
+  .inventory-modal-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .inventory-header-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .inventory-modal-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  /* Merchant Modal */
+  .merchant-modal-card {
+    max-width: 95vw !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 16px 12px !important;
+  }
+
+  .merchant-modal-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .merchant-credits-bar {
+    align-self: flex-start !important;
+  }
+
+  .merchant-items-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Chest Modal */
+  .chest-choice-card {
+    max-width: 95vw !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 18px 12px !important;
+  }
+
+  .chest-items-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Level-Up Modal */
+  .level-up-card {
+    max-width: 95vw !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 18px 10px !important;
+  }
+
+  .upgrade-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
