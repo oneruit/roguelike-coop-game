@@ -1,0 +1,657 @@
+import type { Scene } from 'three';
+import { Player } from '../../entities/Player';
+import {
+  Weapon,
+  BowWeapon,
+  KukriWeapon,
+  OrbitingBarrierWeapon,
+  HolyAuraWeapon,
+  KatanaSlashWeapon,
+  WhirlwindSlashWeapon,
+  GreatswordWeapon,
+  FlailWeapon,
+  AstralStaffWeapon,
+  ChakramWeapon,
+  LightningStrikeWeapon,
+  IceSpikeWeapon,
+  FireballWeapon,
+  AssaultRifleWeapon
+} from '../../combat/Weapon';
+import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../../combat/InvokerWeapons';
+import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../shared/InvokerSpells';
+import { canCharacterAcquireWeapon } from '../../shared/UniqueCharacters';
+import { selectWeaponUpgradeOptions, filterAndShuffleForReroll } from '../selectWeaponUpgradeOptions';
+import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../../combat/WeaponGrades';
+import { SoundManager } from '../../core/SoundManager';
+
+export interface UpgradeOption {
+  id: string;
+  title: string;
+  icon: string;
+  iconImage?: string;
+  levelTag: string;
+  description: string;
+  grade?: WeaponGrade;
+  apply: () => void;
+}
+
+export function getWeaponIconUrl(weaponId: string): string {
+  const map: Record<string, string> = {
+    bow: '/textures/weapons/weapon_bow.png',
+    heavy_colt: '/textures/weapons/weapon_bow.png',
+    kukri: '/textures/weapons/weapon_kukri.png',
+    dual_revolvers: '/textures/weapons/weapon_kukri.png',
+    orbiting_barrier: '/textures/weapons/weapon_reaper_scythe.png',
+    reaper_scythe: '/textures/weapons/weapon_reaper_scythe.png',
+    holy_aura: '/textures/weapons/weapon_fire_ring.png',
+    fire_ring: '/textures/weapons/weapon_fire_ring.png',
+    katana_slash: '/textures/weapons/weapon_katana_slash.png',
+    whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
+    greatsword: '/textures/weapons/weapon_greatsword.png',
+    flail: '/textures/weapons/weapon_flail.png',
+    astral_staff: '/textures/weapons/weapon_astral_staff.png',
+    chakram: '/textures/weapons/weapon_chakram.png',
+    lightning_strike: '/textures/weapons/weapon_lightning_strike.png',
+    ice_spike: '/textures/weapons/weapon_ice_spike.png',
+    fireball: '/textures/weapons/weapon_fireball.png',
+    assault_rifle: '/textures/weapons/weapon_assault_rifle.png',
+    invoker_invoke: '/textures/weapons/weapon_invoker_invoke.png'
+  };
+  return map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
+}
+
+export interface LevelUpUIElements {
+  levelUpModal: HTMLElement;
+  levelUpStepIndicator: HTMLElement;
+  levelUpTitle: HTMLElement;
+  levelUpRerollContainer: HTMLElement | null;
+  btnLevelUpReroll: HTMLButtonElement | null;
+  upgradeCardsContainer: HTMLElement;
+}
+
+export interface LevelUpUIContext {
+  elements: LevelUpUIElements;
+  getScene: () => Scene;
+  getCurrentStageNumber: () => number;
+  getIsAutoLevelUp: () => boolean;
+  updateWeaponsBar: (weapons: Weapon[]) => void;
+  updatePassivesBar: (player: Player) => void;
+  onLevelUpComplete?: () => void;
+}
+
+export class LevelUpUI {
+  private ctx: LevelUpUIContext;
+  private levelUpKeyHandler: ((e: KeyboardEvent) => void) | null = null;
+  public rerollsRemaining: number = 2;
+  public nextLevelUpExcludedIds: Set<string> | null = null;
+
+  constructor(ctx: LevelUpUIContext) {
+    this.ctx = ctx;
+  }
+
+  private get el(): LevelUpUIElements {
+    return this.ctx.elements;
+  }
+
+  public resetLevelUpState(): void {
+    this.hideLevelUp();
+    this.rerollsRemaining = 2;
+    this.nextLevelUpExcludedIds = null;
+  }
+
+  public showLevelUp(player: Player, onSelect: () => void) {
+    const excludedIds = this.nextLevelUpExcludedIds ?? undefined;
+    this.nextLevelUpExcludedIds = null;
+
+    if (this.ctx.getIsAutoLevelUp()) {
+      const weaponOptions = this.generateWeaponOptions(player, excludedIds);
+      if (weaponOptions.length > 0) {
+        const chosen = this.selectAutoLevelUpOption(weaponOptions, player);
+        chosen.apply();
+      } else {
+        player.maxHp += 50;
+        player.heal(player.maxHp);
+        player.redrawOverhead();
+      }
+      this.ctx.updateWeaponsBar(player.weapons);
+      this.ctx.updatePassivesBar(player);
+      SoundManager.playLevelUp();
+      this.hideLevelUp();
+      setTimeout(() => onSelect(), 30);
+      return;
+    }
+
+    SoundManager.playLevelUp();
+    this.el.levelUpModal.classList.remove('hidden');
+
+    const weaponOptions = this.generateWeaponOptions(player, excludedIds);
+
+    if (weaponOptions.length > 0) {
+      this.renderWeaponStep(player, weaponOptions, () => {
+        this.hideLevelUp();
+        onSelect();
+      });
+    } else {
+      const fallbackOption: UpgradeOption = {
+        id: 'max_arsenal_reward',
+        title: 'Эликсир Героя',
+        icon: '💖',
+        levelTag: 'АРСЕНАЛ МАКСИМАЛЕН • ЛЕГЕНДАРНЫЙ',
+        description: 'Все оружия прокачаны на максимум! Восстанавливает здоровье и дарует +50 к максимальному HP.',
+        grade: 'legendary',
+        apply: () => {
+          player.maxHp += 50;
+          player.heal(player.maxHp);
+          player.redrawOverhead();
+        }
+      };
+      this.renderWeaponStep(player, [fallbackOption], () => {
+        this.hideLevelUp();
+        onSelect();
+      });
+    }
+  }
+
+  private selectAutoLevelUpOption(options: UpgradeOption[], player: Player): UpgradeOption {
+    const gradedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 1);
+    const numGraded = gradedWeapons.length;
+
+    if (numGraded >= 4) {
+      const weaponsUnder12 = gradedWeapons.filter(w => w.level < 12);
+      if (weaponsUnder12.length > 0) {
+        const eligibleOptions = options.filter(opt =>
+          opt.id.startsWith('upgrade_') &&
+          weaponsUnder12.some(w => opt.id === `upgrade_${w.id}`)
+        );
+        if (eligibleOptions.length > 0) {
+          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
+        }
+      }
+      const awaken3 = options.filter(opt => opt.id.startsWith('awaken3_'));
+      if (awaken3.length > 0) return awaken3[Math.floor(Math.random() * awaken3.length)];
+      const dmgOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
+      if (dmgOpt) return dmgOpt;
+      const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
+      if (hpOpt) return hpOpt;
+    }
+
+    if (numGraded === 3) {
+      const weaponsUnder10 = gradedWeapons.filter(w => w.level < 10);
+      if (weaponsUnder10.length > 0) {
+        const eligibleOptions = options.filter(opt =>
+          opt.id.startsWith('upgrade_') &&
+          weaponsUnder10.some(w => opt.id === `upgrade_${w.id}`)
+        );
+        if (eligibleOptions.length > 0) {
+          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
+        }
+      } else {
+        const awaken4 = options.find(opt => opt.id.startsWith('awaken_'));
+        if (awaken4) return awaken4;
+      }
+    }
+
+    if (numGraded === 2) {
+      const weaponsUnder8 = gradedWeapons.filter(w => w.level < 8);
+      if (weaponsUnder8.length > 0) {
+        const eligibleOptions = options.filter(opt =>
+          opt.id.startsWith('upgrade_') &&
+          weaponsUnder8.some(w => opt.id === `upgrade_${w.id}`)
+        );
+        if (eligibleOptions.length > 0) {
+          return eligibleOptions[Math.floor(Math.random() * eligibleOptions.length)];
+        }
+      } else {
+        const awaken3 = options.find(opt => opt.id.startsWith('awaken_'));
+        if (awaken3) return awaken3;
+      }
+    }
+
+    if (numGraded < 2) {
+      const awaken = options.find(opt => opt.id.startsWith('awaken_'));
+      if (awaken) return awaken;
+
+      const normalUpgrades = options.filter(opt => {
+        if (!opt.id.startsWith('upgrade_')) return false;
+        const weaponId = opt.id.replace('upgrade_', '');
+        const weapon = player.weapons.find(w => w.id === weaponId);
+        return weapon ? weapon.level < 6 : false;
+      });
+      if (normalUpgrades.length > 0) {
+        return normalUpgrades[Math.floor(Math.random() * normalUpgrades.length)];
+      }
+    }
+
+    const anyAwaken = options.find(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_'));
+    if (anyAwaken) return anyAwaken;
+
+    const anyUpgrade = options.filter(opt => opt.id.startsWith('upgrade_'));
+    if (anyUpgrade.length > 0) return anyUpgrade[Math.floor(Math.random() * anyUpgrade.length)];
+
+    const anyNew = options.find(opt => opt.id.startsWith('new_'));
+    if (anyNew) return anyNew;
+
+    const damageOpt = options.find(opt => opt.id === 'bonus_damage_elixir');
+    if (damageOpt) return damageOpt;
+
+    const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
+    if (hpOpt) return hpOpt;
+
+    return options[0];
+  }
+
+  private renderWeaponStep(
+    player: Player,
+    options: UpgradeOption[],
+    onChosen: () => void,
+    isRerolled: boolean = false
+  ) {
+    const canReroll = this.rerollsRemaining > 0;
+
+    if (this.el.levelUpStepIndicator) {
+      this.el.levelUpStepIndicator.innerHTML = 'ПОВЫШЕНИЕ УРОВНЯ';
+      this.el.levelUpStepIndicator.style.color = '#fbbf24';
+    }
+    if (this.el.levelUpTitle) {
+      this.el.levelUpTitle.innerText = canReroll
+        ? 'ВЫБЕРИТЕ ОРУЖИЕ [1 - 3] ИЛИ РЕРОЛ [R]'
+        : 'ВЫБЕРИТЕ ОРУЖИЕ [1 - 3]';
+    }
+
+    if (this.el.levelUpRerollContainer) {
+      if (canReroll) {
+        this.el.levelUpRerollContainer.classList.remove('hidden');
+        if (this.el.btnLevelUpReroll) {
+          this.el.btnLevelUpReroll.innerHTML = `🎲 <span class="btn-hotkey">[R]</span> Пропустить уровень (Рерол ${this.rerollsRemaining}/2)`;
+        }
+      } else {
+        this.el.levelUpRerollContainer.classList.add('hidden');
+      }
+    }
+
+    this.el.upgradeCardsContainer.innerHTML = '';
+    let chosen = false;
+
+    if (this.levelUpKeyHandler) {
+      window.removeEventListener('keydown', this.levelUpKeyHandler);
+      this.levelUpKeyHandler = null;
+    }
+
+    const selectOptionByIndex = (index: number) => {
+      if (chosen || index < 0 || index >= options.length) return;
+      chosen = true;
+      if (this.levelUpKeyHandler) {
+        window.removeEventListener('keydown', this.levelUpKeyHandler);
+        this.levelUpKeyHandler = null;
+      }
+      if (this.el.btnLevelUpReroll) {
+        this.el.btnLevelUpReroll.onclick = null;
+      }
+      options[index].apply();
+      player.recalculateStats();
+      this.ctx.updateWeaponsBar(player.weapons);
+      this.ctx.updatePassivesBar(player);
+      SoundManager.playShoot();
+      onChosen();
+    };
+
+    const handleReroll = () => {
+      if (chosen || this.rerollsRemaining <= 0) return;
+      chosen = true;
+      this.rerollsRemaining--;
+      SoundManager.playReroll();
+
+      const excluded = new Set<string>();
+      for (const opt of options) {
+        excluded.add(opt.id);
+        const wId = opt.id.replace(/^(upgrade_|new_|awaken_|awaken3_)/, '');
+        excluded.add('upgrade_' + wId);
+        excluded.add('new_' + wId);
+        excluded.add('awaken_' + wId);
+        excluded.add('awaken3_' + wId);
+      }
+      this.nextLevelUpExcludedIds = excluded;
+
+      if (this.levelUpKeyHandler) {
+        window.removeEventListener('keydown', this.levelUpKeyHandler);
+        this.levelUpKeyHandler = null;
+      }
+      if (this.el.btnLevelUpReroll) {
+        this.el.btnLevelUpReroll.onclick = null;
+      }
+      this.hideLevelUp();
+      onChosen();
+    };
+
+    if (this.el.btnLevelUpReroll) {
+      this.el.btnLevelUpReroll.onclick = canReroll ? () => handleReroll() : null;
+    }
+
+    options.forEach((opt, idx) => {
+      const card = document.createElement('div');
+      const gradeClass = opt.grade ? ` grade-${opt.grade}` : '';
+      card.className = `character-card upgrade-card card-weapon-step${gradeClass}${isRerolled ? ' rerolled' : ''}`;
+      const iconHtml = opt.iconImage
+        ? `<div class="char-portrait-wrapper upgrade-icon-wrapper"><img src="${opt.iconImage}" class="char-portrait card-icon-img" alt="${opt.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><div class="card-icon" style="display:none">${opt.icon}</div></div>`
+        : `<div class="char-portrait-wrapper upgrade-icon-wrapper"><div class="card-icon">${opt.icon}</div></div>`;
+      const gradeBadgeHtml = opt.grade
+        ? `<div class="card-grade-badge grade-${opt.grade}">${getGradeLabel(opt.grade).toUpperCase()}</div>`
+        : '';
+      card.innerHTML = `
+        <div class="card-hotkey-badge">[${idx + 1}]</div>
+        ${gradeBadgeHtml}
+        ${iconHtml}
+        <div class="char-name card-title">${opt.title}</div>
+        <div class="char-type card-level-tag">${opt.levelTag}</div>
+        <div class="char-perks card-perks-box">
+          <div class="perk-tag card-description">${opt.description}</div>
+        </div>
+        <button class="action-btn select-btn upgrade-select-btn"><span class="btn-hotkey">[${idx + 1}]</span> ВЫБРАТЬ</button>
+      `;
+
+      card.addEventListener('click', () => {
+        selectOptionByIndex(idx);
+      });
+
+      this.el.upgradeCardsContainer.appendChild(card);
+    });
+
+    this.levelUpKeyHandler = (e: KeyboardEvent) => {
+      if (chosen || e.repeat || e.defaultPrevented) return;
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+      if (this.el.levelUpModal.classList.contains('hidden')) return;
+
+      if (e.code === 'Digit1' || e.code === 'Numpad1' || e.key === '1') {
+        e.preventDefault();
+        selectOptionByIndex(0);
+      } else if (e.code === 'Digit2' || e.code === 'Numpad2' || e.key === '2') {
+        e.preventDefault();
+        selectOptionByIndex(1);
+      } else if (e.code === 'Digit3' || e.code === 'Numpad3' || e.key === '3') {
+        e.preventDefault();
+        selectOptionByIndex(2);
+      } else if (canReroll && (e.code === 'KeyR' || e.key === 'r' || e.key === 'R' || e.key === 'к' || e.key === 'К')) {
+        e.preventDefault();
+        handleReroll();
+      }
+    };
+
+    window.addEventListener('keydown', this.levelUpKeyHandler);
+  }
+
+  public hideLevelUp() {
+    if (this.levelUpKeyHandler) {
+      window.removeEventListener('keydown', this.levelUpKeyHandler);
+      this.levelUpKeyHandler = null;
+    }
+    if (this.el.btnLevelUpReroll) {
+      this.el.btnLevelUpReroll.onclick = null;
+    }
+    this.el.levelUpRerollContainer?.classList.add('hidden');
+    this.el.levelUpModal.classList.add('hidden');
+  }
+
+  public generateWeaponOptions(player: Player, excludeIds?: ReadonlySet<string>): UpgradeOption[] {
+    const allMaxed = player.areAllWeaponsMaxed();
+    const anyAwakened = player.weapons.some(w => (w.awakenedGrade ?? 0) > 0);
+    const inAwakeningPhase = anyAwakened || allMaxed;
+
+    const upgradeOptions: UpgradeOption[] = [];
+    for (const weapon of player.weapons) {
+      const g = weapon.awakenedGrade ?? 0;
+      const effectiveCap = g > 0 ? player.getAwakenedCap(g) : weapon.maxLevel;
+      if (weapon.level < effectiveCap && canCharacterAcquireWeapon(player.charType, weapon.id, player.weapons)) {
+        const grade = rollWeaponGrade(this.ctx.getCurrentStageNumber());
+        const gradeLabel = getGradeLabel(grade);
+        const prefix = weapon.getGradePrefix();
+        upgradeOptions.push({
+          id: `upgrade_${weapon.id}`,
+          title: `${prefix}Улучшение: ${weapon.name}`,
+          icon: weapon.icon,
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+          levelTag: `УРОВЕНЬ ${weapon.level + 1}/${effectiveCap} • ${gradeLabel.toUpperCase()}`,
+          description: weapon.getNextUpgradeDescription(grade),
+          grade,
+          apply: () => {
+            weapon.upgrade(grade);
+            player.recalculateStats();
+          }
+        });
+      }
+    }
+
+    if (inAwakeningPhase) {
+      const hpOption: UpgradeOption = {
+        id: 'bonus_health_elixir',
+        title: 'Эликсир Жизни (+50 HP)',
+        icon: '❤️',
+        levelTag: 'БОНУС ЗДОРОВЬЯ',
+        description: 'Увеличивает максимальное здоровье героя на +50 HP и мгновенно восстанавливает 50 HP.',
+        grade: 'rare',
+        apply: () => {
+          player.maxHp += 50;
+          player.hp = Math.min(player.maxHp, player.hp + 50);
+          player.recalculateStats();
+        }
+      };
+
+      const damageOption: UpgradeOption = {
+        id: 'bonus_damage_elixir',
+        title: 'Эликсир Могущества (+10% урона)',
+        icon: '⚡',
+        levelTag: 'БОНУС УРОНА',
+        description: 'Увеличивает весь наносимый урон героя на +10%.',
+        grade: 'legendary',
+        apply: () => {
+          player.damageMultiplier += 0.10;
+          player.recalculateStats();
+        }
+      };
+
+      const awakeningOptions: UpgradeOption[] = [];
+
+      const unawakenedWeapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 0);
+      const nextAwakenedCount = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 1).length + 1;
+      let targetCapAfterAwaken = 6;
+      if (nextAwakenedCount === 2) targetCapAfterAwaken = 8;
+      else if (nextAwakenedCount === 3) targetCapAfterAwaken = 10;
+      else if (nextAwakenedCount >= 4) targetCapAfterAwaken = 12;
+
+      for (const weapon of unawakenedWeapons) {
+        awakeningOptions.push({
+          id: `awaken_${weapon.id}`,
+          title: `Пробуждение Грейда II: ${weapon.name}`,
+          icon: '🌟',
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+          levelTag: `ГРЕЙД II • СБРОС (МАКС. ${targetCapAfterAwaken})`,
+          description: `Сбрасывает ${weapon.name} до 1 уровня, удваивая все прибавки характеристик (x2)! Доступна прокачка до ${targetCapAfterAwaken} ур.`,
+          grade: 'legendary',
+          apply: () => {
+            weapon.awakenGrade();
+            player.recalculateStats();
+          }
+        });
+      }
+
+      const allGrade2OrHigher = player.weapons.every(w => (w.awakenedGrade ?? 0) >= 1);
+      const grade2Weapons = player.weapons.filter(w => (w.awakenedGrade ?? 0) === 1 && (w.level >= 12 || allGrade2OrHigher));
+      const nextGrade3Count = player.weapons.filter(w => (w.awakenedGrade ?? 0) >= 2).length + 1;
+      let targetCapGrade3 = 6;
+      if (nextGrade3Count === 2) targetCapGrade3 = 8;
+      else if (nextGrade3Count === 3) targetCapGrade3 = 10;
+      else if (nextGrade3Count >= 4) targetCapGrade3 = 12;
+
+      for (const weapon of grade2Weapons) {
+        awakeningOptions.push({
+          id: `awaken3_${weapon.id}`,
+          title: `Пробуждение Грейда III: ${weapon.name}`,
+          icon: '🔥',
+          iconImage: weapon.iconImage || getWeaponIconUrl(weapon.id),
+          levelTag: `ГРЕЙД III • СБРОС (МАКС. ${targetCapGrade3})`,
+          description: `Сбрасывает ${weapon.name} до 1 уровня, утраивая все прибавки характеристик (x3)! Доступна прокачка до ${targetCapGrade3} ур.`,
+          grade: 'legendary',
+          apply: () => {
+            weapon.awakenGrade();
+            player.recalculateStats();
+          }
+        });
+      }
+
+      const awakenedUpgrades = upgradeOptions.filter(opt => {
+        const weaponId = opt.id.replace('upgrade_', '');
+        const weapon = player.weapons.find(w => w.id === weaponId);
+        if (!weapon) return false;
+        const g = weapon.awakenedGrade ?? 0;
+        return g > 0 && weapon.level < player.getAwakenedCap(g);
+      });
+      const otherCandidates = [
+        ...upgradeOptions.filter(o => !awakenedUpgrades.includes(o)),
+        ...awakeningOptions
+      ];
+      const shuffledOthers = filterAndShuffleForReroll(otherCandidates, excludeIds);
+      const chosenOthers: UpgradeOption[] = [...awakenedUpgrades];
+      for (const opt of shuffledOthers) {
+        if (chosenOthers.length >= 2) break;
+        if (!chosenOthers.some(o => o.id === opt.id)) {
+          chosenOthers.push(opt);
+        }
+      }
+      if (chosenOthers.length < 2 && !chosenOthers.some(o => o.id === damageOption.id)) {
+        chosenOthers.push(damageOption);
+      }
+      return [hpOption, ...chosenOthers];
+    }
+
+    const pool: UpgradeOption[] = [...upgradeOptions];
+
+    if (player.weapons.length < 4 && !allMaxed) {
+      const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
+      for (const spell of invokerWeapons) {
+        const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
+        if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) continue;
+        if (player.weapons.some(weapon => weapon.id === id)) continue;
+        const def = spell ? INVOKER_SPELLS[spell] : null;
+        pool.push({
+          id: 'new_' + id,
+          title: 'Новое: ' + (def?.name ?? 'Invoke'),
+          icon: def?.icon ?? '🔮',
+          iconImage: getWeaponIconUrl(id),
+          levelTag: 'НОВОЕ ОРУЖИЕ',
+          description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
+          apply: () => {
+            if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
+            const triggerAttack = () => player.triggerAttackAnim(0.5);
+            const w = spell
+              ? new InvokerSpellWeapon(spell, triggerAttack)
+              : new InvokerInvokeWeapon(triggerAttack);
+            player.weapons.push(w);
+            player.recalculateStats();
+          }
+        });
+      }
+
+      const canUseGenericWeapons = canCharacterAcquireWeapon(player.charType, 'bow', player.weapons);
+      if (canUseGenericWeapons) {
+        const addGenericOption = (
+          id: string,
+          title: string,
+          icon: string,
+          description: string,
+          factory: () => Weapon
+        ) => {
+          pool.push({
+            id: 'new_' + id,
+            title: 'Новое: ' + title,
+            icon,
+            iconImage: getWeaponIconUrl(id),
+            levelTag: 'НОВОЕ ОРУЖИЕ',
+            description,
+            apply: () => {
+              const w = factory();
+              player.weapons.push(w);
+              player.recalculateStats();
+            }
+          });
+        };
+
+        const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
+        if (!hasBow) {
+          addGenericOption('bow', 'Охотничий Лук', '🏹', 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов', () => new BowWeapon(() => player.triggerAttackAnim(0.40)));
+        }
+
+        const hasKukri = player.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
+        if (!hasKukri) {
+          addGenericOption('kukri', 'Нож Кукри', '🔪', 'Стремительные броски изогнутых клинков кукри в ближайших врагов', () => new KukriWeapon());
+        }
+
+        const hasOrbs = player.weapons.some(w => w.id === 'orbiting_barrier');
+        if (!hasOrbs) {
+          addGenericOption('orbiting_barrier', 'Коса Жнеца', '🌙', 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение', () => new OrbitingBarrierWeapon());
+        }
+
+        const hasAura = player.weapons.some(w => w.id === 'holy_aura');
+        if (!hasAura) {
+          addGenericOption('holy_aura', 'Огненное Кольцо', '🔥', 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров', () => {
+            const aura = new HolyAuraWeapon();
+            aura.initVisual(this.ctx.getScene(), player.position);
+            return aura;
+          });
+        }
+
+        const hasKatana = player.weapons.some(w => w.id === 'katana_slash');
+        if (!hasKatana) {
+          addGenericOption('katana_slash', 'Рассекающий Клинок', '🗡️', 'Рассекает окружающих врагов смертоносным круговым ударом', () => new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)));
+        }
+
+        const hasWhirlwind = player.weapons.some(w => w.id === 'whirlwind_slash');
+        if (!hasWhirlwind) {
+          addGenericOption('whirlwind_slash', 'Багровый Вихрь', '🌪️', 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью', () => new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)));
+        }
+
+        const hasGreatsword = player.weapons.some(w => w.id === 'greatsword');
+        if (!hasGreatsword) {
+          addGenericOption('greatsword', 'Двуручный Меч', '⚔️', 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом', () => new GreatswordWeapon(() => player.triggerAttackAnim(0.5)));
+        }
+
+        const hasFlail = player.weapons.some(w => w.id === 'flail');
+        if (!hasFlail) {
+          addGenericOption('flail', 'Боевой Цеп', '⛓️', 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров', () => new FlailWeapon(() => player.triggerAttackAnim(0.45)));
+        }
+
+        const hasStaff = player.weapons.some(w => w.id === 'astral_staff');
+        if (!hasStaff) {
+          addGenericOption('astral_staff', 'Звёздный Посох', '🔮', 'Магический посох, запускающий скоростные пробивающие звёздные снаряды', () => new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)));
+        }
+
+        const hasChakram = player.weapons.some(w => w.id === 'chakram');
+        if (!hasChakram) {
+          addGenericOption('chakram', 'Танцующий Чакрам', '🪃', 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением', () => new ChakramWeapon(() => player.triggerAttackAnim(0.42)));
+        }
+
+        const hasLightning = player.weapons.some(w => w.id === 'lightning_strike');
+        if (!hasLightning) {
+          addGenericOption('lightning_strike', 'Удар Молнии', '⚡', 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху', () => new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)));
+        }
+
+        const hasIceSpike = player.weapons.some(w => w.id === 'ice_spike');
+        if (!hasIceSpike) {
+          addGenericOption('ice_spike', 'Ледяной Шип', '🧊', 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском', () => new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)));
+        }
+
+        const hasFireball = player.weapons.some(w => w.id === 'fireball');
+        if (!hasFireball) {
+          addGenericOption('fireball', 'Огненный Шар', '☄️', 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области', () => new FireballWeapon(() => player.triggerAttackAnim(0.42)));
+        }
+
+        const hasRifle = player.weapons.some(w => w.id === 'assault_rifle');
+        if (!hasRifle) {
+          addGenericOption('assault_rifle', 'Штурмовая Винтовка', '🔫', 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль', () => new AssaultRifleWeapon(() => player.triggerAttackAnim(0.20)));
+        }
+      }
+    }
+
+    const shuffled = filterAndShuffleForReroll(pool, excludeIds);
+    return selectWeaponUpgradeOptions(shuffled, player.charType);
+  }
+}

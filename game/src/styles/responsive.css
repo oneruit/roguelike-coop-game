@@ -1,0 +1,288 @@
+/* ==========================================================================
+   GLOBAL MOBILE RESPONSIVE ADAPTATIONS (<= 768px and <= 480px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Modals Base */
+  .modal-card {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 20px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .modern-menu-title {
+    font-size: 21px !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* HUD Top Header */
+  #hud-top {
+    padding: 6px 8px 4px !important;
+    gap: 6px !important;
+  }
+
+  #xp-bar-container {
+    width: 95% !important;
+    height: 16px !important;
+  }
+
+  #xp-text {
+    font-size: 9.5px !important;
+  }
+
+  #stats-panel {
+    gap: 5px !important;
+  }
+
+  .stat-badge {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+    gap: 4px !important;
+  }
+
+  .stat-label {
+    font-size: 9px !important;
+    letter-spacing: 0.8px !important;
+  }
+
+  /* Minimap relocated on mobile so it does not collide with Top HUD */
+  #minimap-container {
+    top: auto !important;
+    bottom: 12px !important;
+    right: 12px !important;
+    padding: 4px !important;
+    border-radius: 8px !important;
+  }
+
+  #minimap-canvas {
+    width: 105px !important;
+    height: 105px !important;
+    border-radius: 4px !important;
+  }
+
+  .minimap-footer {
+    font-size: 9px !important;
+  }
+
+  /* Top-Left Weapons & Buffs tray */
+  #top-left-hud {
+    top: 54px !important;
+    left: 8px !important;
+    gap: 4px !important;
+  }
+
+  .passive-slot, .weapon-slot {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+  }
+
+  .weapon-icon-img, .passive-icon-img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  /* Quests Modal Responsive Spread */
+  .quest-modal-container {
+    width: 96vw !important;
+    max-height: 94vh !important;
+  }
+
+  .quest-book-top-plaque {
+    min-width: 190px !important;
+    height: 38px !important;
+    top: -16px !important;
+    padding: 0 16px !important;
+  }
+
+  .plaque-title-text {
+    font-size: 15px !important;
+  }
+
+  .quest-top-controls {
+    top: -40px !important;
+  }
+
+  .quest-account-badge {
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+    gap: 6px !important;
+  }
+
+  .quest-book-tabs-sidebar {
+    display: none !important;
+  }
+
+  .quest-book-card {
+    height: auto !important;
+    max-height: 84vh !important;
+    padding: 8px !important;
+    flex-direction: column !important;
+  }
+
+  .pixel-book-corner {
+    display: none !important;
+  }
+
+  .quest-book-spread {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    max-height: 80vh !important;
+  }
+
+  .quest-book-spine {
+    display: none !important;
+  }
+
+  .quest-book-page {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 240px !important;
+    padding: 12px 10px !important;
+  }
+
+  .quest-heroes-list {
+    gap: 7px !important;
+  }
+
+  .quest-hero-item {
+    padding: 5px 8px !important;
+  }
+
+  /* Settings Modal */
+  .settings-card {
+    padding: 20px 14px !important;
+  }
+
+  .settings-nav-tabs {
+    gap: 4px !important;
+    padding: 4px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .settings-tab-btn {
+    padding: 8px 6px !important;
+    font-size: 11.5px !important;
+  }
+
+  .settings-section {
+    padding: 12px 14px !important;
+    gap: 10px !important;
+  }
+
+  /* Dev Panel Modal */
+  .dev-card {
+    padding: 16px 12px !important;
+  }
+
+  .dev-title {
+    font-size: 18px !important;
+  }
+
+  .dev-telemetry-bar {
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+    gap: 6px !important;
+  }
+
+  .dev-btn-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  /* Full Desert Map Modal */
+  .fullmap-card {
+    padding: 16px 12px !important;
+  }
+
+  .map-title {
+    font-size: 18px !important;
+  }
+
+  .map-controls-hint {
+    display: none !important;
+  }
+
+  .map-legend {
+    gap: 6px !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+  }
+
+  .legend-item {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra narrow screens (iPhone 14 / Galaxy A51 412-430px) */
+  .modal-card {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    padding: 16px 10px !important;
+  }
+
+  .settings-nav-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .settings-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .settings-control-row {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .dev-btn-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dev-btn-row {
+    flex-direction: column !important;
+  }
+
+  .spawn-monsters-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .upgrade-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .upgrade-card {
+    min-height: auto !important;
+    padding: 14px 10px !important;
+  }
+
+  .lobby-roster-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .lobby-hero-picker {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .game-over-stats {
+    gap: 6px !important;
+  }
+
+  .stat-row {
+    font-size: 12px !important;
+  }
+
+  .death-title {
+    font-size: 26px !important;
+  }
+}
+

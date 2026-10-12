@@ -1,0 +1,93 @@
+/* ==========================================================================
+   DARK FANTASY MINIMALIST FLAT THEME
+   Palette: Deep Obsidian (#0b080e), Dark Plum (#1d1124 / #3a1f3e),
+            Muted Coral-Pink (#d97083 / #ea889b), Muted Silver (#bbaec0)
+   Strictly flat: No shadows, no 3D bevels, no shine, minimal rounding (0-2px)
+   ========================================================================== */
+
+:root {
+  --bg-obsidian: #0b080e;
+  --bg-card: #130d1a;
+  --bg-card-hover: #1c1325;
+  --bg-panel: #181022;
+  --bg-input: #100b17;
+
+  --border-dim: #2a162e;
+  --border-plum: #3d1f42;
+  --border-plum-bright: #682e73;
+  --border-coral: #d97083;
+  --border-coral-hover: #ea889b;
+
+  --coral-primary: #d97083;
+  --coral-light: #ea889b;
+  --coral-dim: #99485b;
+  --coral-btn: #4a1e35;
+  --coral-btn-hover: #632646;
+
+  --purple-deep: #1a1022;
+  --purple-mid: #25142f;
+  --purple-accent: #54275f;
+
+  --menu-background-url: url('/textures/ui/menu_background_1.jpg');
+
+  --text-primary: #f5edf4;
+  --text-secondary: #bbaec0;
+  --text-muted: #796780;
+  --text-coral: #ea889b;
+
+  --hp-bar: #b83a54;
+  --hp-bg: #22101e;
+  --xp-bar: #8d3e64;
+  --xp-bg: #150e1b;
+  --boss-hp-bar: #b83350;
+  --boss-hp-bg: #22101e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-obsidian);
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-primary);
+}
+
+#game-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* UI Overlay Layer */
+#ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: hidden;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* Generic Hidden Utility */
+.hidden:not(.modal) {
+  display: none !important;
+}
+
