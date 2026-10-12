@@ -472,10 +472,13 @@ class Game {
       }
     };
 
-    this.enemyManager.onBleedDamage = (enemy, dmg, isDead, hitter) => {
+    this.enemyManager.onBleedDamage = (enemy, dmg, isDead, hitter, sourceWeaponId) => {
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
       if (hitter === myId) {
         this.player.totalDamageDealt += dmg;
+        if (sourceWeaponId) {
+          this.player.recordWeaponDamage(sourceWeaponId, dmg);
+        }
       }
       if (this.net.role === 'client') {
         this.combatDirector.pendingClientHits.push({
@@ -532,7 +535,7 @@ class Game {
       this.enemyManager.enemies,
       this.combatDirector.spawnProjectile,
       this.engine.obstacleManager,
-      (enemy, amount, sourcePos, critChance, critDamage) => {
+      (enemy, amount, sourcePos, critChance, critDamage, weaponId) => {
         const { finalDamage, isCrit, critTier } = this.combatDirector.applyCombatProcOnEnemyHit(
           enemy,
           amount,
@@ -546,6 +549,7 @@ class Game {
           this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit, this.engine.camera, false, critTier);
           SoundManager.playHit();
           this.player.totalDamageDealt += finalDamage;
+          this.player.recordWeaponDamage(weaponId, finalDamage);
 
           if (isDead) {
             this.player.kills++;
@@ -567,6 +571,7 @@ class Game {
           });
         } else {
           this.player.totalDamageDealt += finalDamage;
+          this.player.recordWeaponDamage(weaponId, finalDamage);
           this.enemyManager.damageEnemy(
             enemy,
             finalDamage,

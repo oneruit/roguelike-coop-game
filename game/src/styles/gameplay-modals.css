@@ -343,6 +343,129 @@
   font-size: 10px;
 }
 
+.weapon-damage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weapon-damage-item {
+  background: rgba(10, 20, 36, 0.9);
+  border: 1.5px solid rgba(0, 132, 255, 0.25);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.weapon-damage-item.top-damage {
+  border-color: rgba(251, 191, 36, 0.5);
+  background: rgba(24, 28, 44, 0.95);
+}
+
+.weapon-damage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.weapon-damage-identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.weapon-damage-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weapon-damage-item .tag-grade {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.15);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.weapon-stat-top-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 4px;
+  padding: 1px 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.weapon-damage-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.weapon-damage-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+.top-damage .weapon-damage-val {
+  color: #fbbf24;
+}
+
+.weapon-damage-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  min-width: 44px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.weapon-damage-bar-wrap {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.weapon-damage-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.top-damage .weapon-damage-bar-fill {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+.weapon-damage-empty {
+  color: #94a3b8;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  padding: 6px 0;
+}
+
 /* ==========================================================================
    CHEST 2-ITEM CHOICE MODAL
    ========================================================================== */

@@ -546,8 +546,7 @@ export class LevelUpUI {
       description: 'Увеличивает весь наносимый урон героя на +10%.',
       grade: 'legendary',
       apply: () => {
-        player.damageMultiplier += 0.10;
-        player.recalculateStats();
+        player.addMightElixirBonus();
       }
     };
 

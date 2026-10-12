@@ -155,6 +155,11 @@ export class InventoryUI {
           <span class="inv-stat-label">⚔️ Общий множитель урона</span>
           <span class="inv-stat-value">${genDmgValue}</span>
         </div>
+        ${player.mightElixirCount > 0 ? `
+        <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+10% за каждый заряд)">
+          <span class="inv-stat-label">⚡ Эликсир Могущества</span>
+          <span class="inv-stat-value text-accent">+${player.mightElixirCount * 10}% <span style="color: #94a3b8; font-size: 11px;">(x${player.mightElixirCount})</span></span>
+        </div>` : ''}
         <div class="inv-stat-row" title="Шанс критического удара (максимум 100%)">
           <span class="inv-stat-label">🎯 Шанс крит. урона</span>
           <span class="inv-stat-value text-crit">${critPct}%</span>
@@ -233,6 +238,13 @@ export class InventoryUI {
           count: player.watchCount,
           title: 'Карманные Часы',
           desc: `+${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к ускорению перезарядки (макс. 25%)`
+        },
+        {
+          id: 'stat_might_elixir',
+          icon: '⚡',
+          count: player.mightElixirCount,
+          title: 'Эликсир Могущества',
+          desc: `+${player.mightElixirCount * 10}% к общему урону героя (складывается)`
         }
       ];
 
@@ -410,7 +422,8 @@ export class InventoryUI {
     const stats: { label: string; value: string }[] = [
       { label: 'Урон', value: dmgDisplay },
       { label: 'КД', value: `${weapon.effectiveCooldown.toFixed(2)}с` },
-      { label: 'DPS', value: dpsDisplay }
+      { label: 'DPS', value: dpsDisplay },
+      { label: 'Нанесено урона', value: `${Math.round(weapon.damageDealt || 0).toLocaleString('ru-RU')}` }
     ];
 
     const anyW = weapon as any;

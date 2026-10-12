@@ -143,17 +143,42 @@ export class GameOverUI {
     }
 
     if (weapons && weapons.length > 0 && this.arsenalItemsList) {
-      this.arsenalItemsList.innerHTML = weapons
-        .map((w) => {
+      const sortedWeapons = [...weapons].sort((a, b) => (b.damageDealt || 0) - (a.damageDealt || 0));
+      const totalWeaponDamage = sortedWeapons.reduce((sum, w) => sum + (w.damageDealt || 0), 0);
+
+      this.arsenalItemsList.innerHTML = sortedWeapons
+        .map((w, idx) => {
           const iconUrl = getWeaponIconUrl(w.id);
-          return `<div class="arsenal-tag">
-            <img src="${iconUrl}" class="arsenal-icon-img" alt="${w.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
-            <span class="tag-icon" style="display:none">${w.icon}</span>
-            <span class="tag-name">${w.name}</span>
-            <span class="tag-lvl">L${w.level}</span>
+          const dmg = Math.round(w.damageDealt || 0);
+          const pctNum = totalWeaponDamage > 0 ? (dmg / totalWeaponDamage) * 100 : 0;
+          const pct = pctNum.toFixed(1);
+          const isTop = idx === 0 && dmg > 0;
+          const gradeLevel = (w.awakenedGrade ?? 0) + 1;
+          const gradeBadge = gradeLevel > 1 ? `<span class="tag-grade">Грейд ${gradeLevel === 2 ? 'II' : 'III'}</span>` : '';
+
+          return `<div class="weapon-damage-item ${isTop ? 'top-damage' : ''}">
+            <div class="weapon-damage-header">
+              <div class="weapon-damage-identity">
+                <img src="${iconUrl}" class="arsenal-icon-img" alt="${w.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" />
+                <span class="tag-icon" style="display:none">${w.icon}</span>
+                <span class="weapon-damage-name">${w.name}</span>
+                <span class="tag-lvl">Ур. ${w.level}</span>
+                ${gradeBadge}
+                ${isTop ? '<span class="weapon-stat-top-badge">ТОП УРОН</span>' : ''}
+              </div>
+              <div class="weapon-damage-numbers">
+                <span class="weapon-damage-val">${dmg.toLocaleString('ru-RU')}</span>
+                <span class="weapon-damage-pct">${pct}%</span>
+              </div>
+            </div>
+            <div class="weapon-damage-bar-wrap">
+              <div class="weapon-damage-bar-fill" style="width: ${pctNum}%;"></div>
+            </div>
           </div>`;
         })
         .join('');
+    } else if (this.arsenalItemsList) {
+      this.arsenalItemsList.innerHTML = '<div class="weapon-damage-empty">Нет данных по оружию</div>';
     }
 
     if (isCoop && ((allPlayersResults && allPlayersResults.length > 0) || partnerStats)) {
