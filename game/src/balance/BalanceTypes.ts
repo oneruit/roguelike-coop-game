@@ -1,4 +1,4 @@
-export type BalanceCategory = 'weapon' | 'hero' | 'monster' | 'boss' | 'global';
+export type BalanceCategory = 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item';
 
 export interface WeaponBalanceConfig {
   id: string;
@@ -52,6 +52,31 @@ export interface BossBalanceConfig {
   description?: string;
 }
 
+export interface PassiveBalanceConfig {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  baseValue: number;
+  perStackValue: number;
+  maxValue?: number;
+  scalingType: 'additive' | 'diminishing' | 'multiplicative';
+  notes?: string;
+}
+
+export interface ItemBalanceConfig {
+  id: string;
+  name: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'legendary' | 'boss';
+  icon: string;
+  color: string;
+  description: string;
+  stackText: string;
+  baseValue?: number;
+  scaling?: string;
+  notes?: string;
+}
+
 export interface GlobalBalanceConfig {
   dashCooldown: number;
   dashDuration: number;
@@ -75,6 +100,8 @@ export interface GameBalanceState {
   heroes: Record<string, HeroBalanceConfig>;
   monsters: Record<string, MonsterBalanceConfig>;
   bosses: Record<string, BossBalanceConfig>;
+  passives: Record<string, PassiveBalanceConfig>;
+  items: Record<string, ItemBalanceConfig>;
   global: GlobalBalanceConfig;
 }
 

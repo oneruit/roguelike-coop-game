@@ -44,6 +44,16 @@
   gap: 12px;
 }
 
+.passives-table-cols {
+  grid-template-columns: 28px 240px 120px 130px 100px 140px 110px 1fr;
+  gap: 12px;
+}
+
+.items-table-cols {
+  grid-template-columns: 28px 240px 110px 110px 180px 110px 1fr;
+  gap: 12px;
+}
+
 .accordion-list {
   display: flex;
   flex-direction: column;

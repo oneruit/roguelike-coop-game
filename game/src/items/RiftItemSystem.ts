@@ -131,8 +131,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🧬',
     color: '#22c55e',
-    description: 'Восстанавливает +5 HP при каждом уничтожении врага.',
-    stackText: '+5 HP за стак'
+    description: 'Восстанавливает +2 HP при каждом уничтожении врага.',
+    stackText: '+2 HP за стак'
   },
   overclock_module: {
     id: 'overclock_module',

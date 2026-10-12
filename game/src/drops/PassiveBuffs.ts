@@ -49,7 +49,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_vest',
     title: 'Кожаный Жилет',
     icon: '🦺',
-    description: '-1% к получаемому урону от мобов (макс. 70%)'
+    description: '-2% к получаемому урону от мобов (с угасающей эффективностью до 70% на 300 ур., макс. 70%)'
   },
   stat_watch: {
     id: 'stat_watch',

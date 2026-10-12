@@ -153,7 +153,8 @@ export class HUD {
       },
       triggerAltarNotification: (name, subtitle, icon, color) => {
         this.inGameOverlayUI.triggerAltarNotification(name, subtitle, icon, color);
-      }
+      },
+      showCharacterSelect: () => this.showCharacterSelect()
     });
 
     this.battlePassUI = new BattlePassUI({
@@ -307,6 +308,13 @@ export class HUD {
     // Initial populate of main menu daily quests, weekly quests and Battle Pass
     this.updateMainMenuQuests();
     this.updateMainMenuBattlePass();
+
+    // In-game HUD starts hidden while in main menu
+    this.setInGameHUDVisible(false);
+
+    document.getElementById('quests-btn-close')?.addEventListener('click', () => {
+      this.hideQuestsModal();
+    });
   }
 
   // --- Getters / Setters Forwarding ---
@@ -582,7 +590,7 @@ export class HUD {
         const hero = (target.getAttribute('data-hero') || 'ronin') as CharacterType;
         if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
           this.hideCharacterSelect();
-          this.showQuestsModal(hero);
+          this.showQuestsModal(hero, 1, true);
           return;
         }
         const trainingCheckbox = document.getElementById('training-mode-toggle') as HTMLInputElement | null;
@@ -928,8 +936,19 @@ export class HUD {
     this.questsUI.selectQuestChapter(chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1) {
-    this.questsUI.showQuestsModal(selectedQuestId, chapter);
+  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1, fromCharSelect: boolean = false) {
+    this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect);
+  }
+
+  public setInGameHUDVisible(visible: boolean) {
+    const hud = document.getElementById('in-game-hud');
+    if (hud) {
+      if (visible) {
+        hud.classList.remove('hidden');
+      } else {
+        hud.classList.add('hidden');
+      }
+    }
   }
 
   public hideQuestsModal() {

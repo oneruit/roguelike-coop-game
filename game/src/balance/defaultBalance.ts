@@ -371,6 +371,315 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       description: 'Древняя трехглавая гидра 2 тира'
     }
   },
+  passives: {
+    stat_sheriff_star: {
+      id: 'stat_sheriff_star',
+      name: 'Звезда Шерифа',
+      icon: '⭐',
+      description: '+2% к урону всех оружий',
+      baseValue: 2,
+      perStackValue: 2,
+      scalingType: 'additive',
+      notes: 'Аддитивное масштабирование: 100 стаков = +200%, без ограничения'
+    },
+    stat_spurs: {
+      id: 'stat_spurs',
+      name: 'Ковбойские Шпоры',
+      icon: '👢',
+      description: '+3% к скорости передвижения (макс. 2.5x)',
+      baseValue: 3,
+      perStackValue: 3,
+      maxValue: 250,
+      scalingType: 'multiplicative',
+      notes: 'Мультипликативный множитель скорости: x1.03 за стак, потолок x2.5'
+    },
+    stat_flask: {
+      id: 'stat_flask',
+      name: 'Походная Фляга',
+      icon: '🍶',
+      description: '+30 к максимальному здоровью и мгновенное исцеление',
+      baseValue: 30,
+      perStackValue: 30,
+      scalingType: 'additive',
+      notes: 'Увеличивает макс. HP и сразу восполняет текущее здоровье'
+    },
+    stat_lasso: {
+      id: 'stat_lasso',
+      name: 'Магнитное Лассо',
+      icon: '➰',
+      description: '+35% к радиусу притяжения кристаллов',
+      baseValue: 35,
+      perStackValue: 35,
+      maxValue: 25,
+      scalingType: 'multiplicative',
+      notes: '4.2м * 1.35^n, максимальный радиус ограничен 25 метрами'
+    },
+    stat_amulet: {
+      id: 'stat_amulet',
+      name: 'Охотничий Амулет',
+      icon: '🧿',
+      description: '+1 HP/сек пассивной регенерации',
+      baseValue: 1,
+      perStackValue: 1,
+      scalingType: 'additive',
+      notes: '+1 HP/сек за каждый полученный амулет без лимита'
+    },
+    stat_vest: {
+      id: 'stat_vest',
+      name: 'Кожаный Жилет',
+      icon: '🦺',
+      description: '-2% к получаемому урону (угасающая эффективность до 70% на 300 ур.)',
+      baseValue: 2,
+      perStackValue: 2,
+      maxValue: 70,
+      scalingType: 'diminishing',
+      notes: '1 уровень = 2%, на 300 уровне = 70% (максимальный лимит 70%)'
+    },
+    stat_watch: {
+      id: 'stat_watch',
+      name: 'Карманные Часы',
+      icon: '⏱️',
+      description: '+1% к ускорению перезарядки оружий (макс. 25%)',
+      baseValue: 1,
+      perStackValue: 1,
+      maxValue: 25,
+      scalingType: 'additive',
+      notes: 'Снижает КД на 1% за стак до жесткого капа 25%'
+    }
+  },
+  items: {
+    kinetic_injector: {
+      id: 'kinetic_injector',
+      name: 'Кинетический Ускоритель',
+      rarity: 'common',
+      icon: '⚡',
+      color: '#94a3b8',
+      description: '+15% к скорострельности оружий',
+      stackText: '+15% за стак',
+      baseValue: 15,
+      scaling: '0.85^n множитель перезарядки'
+    },
+    nanite_plating: {
+      id: 'nanite_plating',
+      name: 'Нано-Броня',
+      rarity: 'common',
+      icon: '🛡️',
+      color: '#94a3b8',
+      description: 'Снижает входящий урон (5% на 1 ур., до 60% на 20 ур.)',
+      stackText: '+снижение урона (макс. 60%)',
+      baseValue: 5,
+      scaling: 'Угасающая эффективность до 60% на 20 ур.'
+    },
+    adrenaline_dart: {
+      id: 'adrenaline_dart',
+      name: 'Стимулятор Сердца',
+      rarity: 'common',
+      icon: '💉',
+      color: '#94a3b8',
+      description: '+12% к скорости перемещения',
+      stackText: '+12% к скорости за стак',
+      baseValue: 12,
+      scaling: '+12% за стак'
+    },
+    pulse_rounds: {
+      id: 'pulse_rounds',
+      name: 'Импульсный Патрон',
+      rarity: 'common',
+      icon: '🩸',
+      color: '#94a3b8',
+      description: '15% шанс наложить кровотечение (180% урона за 3 сек)',
+      stackText: '+15% шанс за стак',
+      baseValue: 15,
+      scaling: '+15% шанс кровотечения за стак'
+    },
+    health_vial: {
+      id: 'health_vial',
+      name: 'Био-Инжектор',
+      rarity: 'common',
+      icon: '🧪',
+      color: '#94a3b8',
+      description: '+2.5 HP/сек пассивной регенерации',
+      stackText: '+2.5 HP/сек за стак',
+      baseValue: 2.5,
+      scaling: '+2.5 HP/сек за стак'
+    },
+    chain_lightning: {
+      id: 'chain_lightning',
+      name: 'Тесла-Катушка',
+      rarity: 'uncommon',
+      icon: '🌩️',
+      color: '#22c55e',
+      description: '25% шанс выпустить цепную молнию по 3 врагам на 160% урона',
+      stackText: '+2 цели и +30% урона за стак',
+      baseValue: 25,
+      scaling: '+2 цели и +30% урона'
+    },
+    plasma_detonator: {
+      id: 'plasma_detonator',
+      name: 'Плазменный Детонатор',
+      rarity: 'uncommon',
+      icon: '💥',
+      color: '#22c55e',
+      description: 'Уничтожение врага вызывает детонацию радиусом 4м на 200% базового урона',
+      stackText: '+1м радиус и +50% урона за стак',
+      baseValue: 200,
+      scaling: '+1м радиус и +50% урона'
+    },
+    crit_visor: {
+      id: 'crit_visor',
+      name: 'Очки Снайпера',
+      rarity: 'uncommon',
+      icon: '🎯',
+      color: '#22c55e',
+      description: '+2.4% к шансу нанести критический удар',
+      stackText: '+2.4% шанс за стак',
+      baseValue: 2.4,
+      scaling: '+2.4% шанс крита за стак'
+    },
+    aegis_battery: {
+      id: 'aegis_battery',
+      name: 'Гипер-Щит Защиты',
+      rarity: 'uncommon',
+      icon: '💠',
+      color: '#22c55e',
+      description: 'Постоянно генерирует энергощит до +35 HP, восстанавливающийся вне боя',
+      stackText: '+35 макс. емкости щита за стак',
+      baseValue: 35,
+      scaling: '+35 к емкости щита'
+    },
+    bio_leech: {
+      id: 'bio_leech',
+      name: 'Био-Пипетка',
+      rarity: 'uncommon',
+      icon: '🧬',
+      color: '#22c55e',
+      description: 'Восстанавливает +2 HP при каждом уничтожении врага',
+      stackText: '+2 HP за стак',
+      baseValue: 2,
+      scaling: '+2 HP за уничтожение'
+    },
+    overclock_module: {
+      id: 'overclock_module',
+      name: 'Модуль Разгона',
+      rarity: 'uncommon',
+      icon: '⚙️',
+      color: '#22c55e',
+      description: '+10% к скорости атаки всех оружий героя',
+      stackText: '+10% к скорости за стак',
+      baseValue: 10,
+      scaling: '0.90^n множитель перезарядки'
+    },
+    crit_lens: {
+      id: 'crit_lens',
+      name: 'Линза Критовика',
+      rarity: 'rare',
+      icon: '🔍',
+      color: '#3b82f6',
+      description: '+3.0% к шансу нанести критический удар (макс. 100%)',
+      stackText: '+3.0% шанс за стак',
+      baseValue: 3.0,
+      scaling: '+3% шанс крита за стак'
+    },
+    heavy_hollowpoint: {
+      id: 'heavy_hollowpoint',
+      name: 'Экспансивные Пули',
+      rarity: 'rare',
+      icon: '🪓',
+      color: '#3b82f6',
+      description: '+20% к множителю критического урона (макс. 1000%)',
+      stackText: '+20% множитель за стак',
+      baseValue: 20,
+      scaling: '+20% крит. множитель за стак'
+    },
+    energy_amplifier: {
+      id: 'energy_amplifier',
+      name: 'Усилитель Энергии',
+      rarity: 'rare',
+      icon: '🔋',
+      color: '#3b82f6',
+      description: '+18% ко всему наносимому урону героя',
+      stackText: '+18% урона за стак',
+      baseValue: 18,
+      scaling: '+18% урон за стак'
+    },
+    singularity_core: {
+      id: 'singularity_core',
+      name: 'Ядро Сингулярности',
+      rarity: 'legendary',
+      icon: '🌀',
+      color: '#f97316',
+      description: 'Каждые 10 убийств (-2/стак, мин 3) стягивает врагов и наносит 600% (+200%/стак) урона',
+      stackText: '-2 к требуемым убийствам и +200% урона',
+      baseValue: 600,
+      scaling: '-2 убийства, +200% урона'
+    },
+    orbital_strike: {
+      id: 'orbital_strike',
+      name: 'Орбитальный Удар',
+      rarity: 'legendary',
+      icon: '🛰️',
+      color: '#f97316',
+      description: 'Каждые 12 сек (-1.5с/стак, мин 4с) бьёт ионный луч радиусом 4.5м на 850% (+250%/стак) урона',
+      stackText: '-1.5с к КД и +250% урона',
+      baseValue: 850,
+      scaling: '-1.5с КД, +250% урона'
+    },
+    chronos_phylactery: {
+      id: 'chronos_phylactery',
+      name: 'Хронос-Филактерия',
+      rarity: 'legendary',
+      icon: '⏳',
+      color: '#f97316',
+      description: 'При получении смертельного урона замораживает время на 3.5с и восстанавливает 50% HP',
+      stackText: '+1с заморозки и +20% HP за стак',
+      baseValue: 50,
+      scaling: 'Спасение от гибели 1 раз за уровень'
+    },
+    titan_heart: {
+      id: 'titan_heart',
+      name: 'Сердце Титана',
+      rarity: 'legendary',
+      icon: '🫀',
+      color: '#f97316',
+      description: '+15 HP/сек регенерации здоровья и +150 макс. HP',
+      stackText: '+15 HP/сек и +150 HP за стак',
+      baseValue: 15,
+      scaling: '+15 HP/сек реген, +150 макс. HP'
+    },
+    void_catalyst: {
+      id: 'void_catalyst',
+      name: 'Катализатор Бездны',
+      rarity: 'legendary',
+      icon: '🌌',
+      color: '#f97316',
+      description: '+40% к критическому урону и +15% к шансу крита',
+      stackText: '+40% крит. урона и +15% шанс за стак',
+      baseValue: 40,
+      scaling: '+40% крит. урон, +15% шанс крита'
+    },
+    golem_core: {
+      id: 'golem_core',
+      name: 'Сердце Голема',
+      rarity: 'boss',
+      icon: '🗿',
+      color: '#eab308',
+      description: 'Увеличивает максимальное здоровье на 100 HP и даёт +10% сопротивления урону',
+      stackText: '+100 HP и +10% брони за стак',
+      baseValue: 100,
+      scaling: '+100 HP и +10% брони'
+    },
+    molten_scale: {
+      id: 'molten_scale',
+      name: 'Чешуя Саламандры',
+      rarity: 'boss',
+      icon: '🐉',
+      color: '#eab308',
+      description: 'Каждые 3 сек обжигает окружающих врагов в радиусе 5м на 120 DPS',
+      stackText: '+40 DPS за стак',
+      baseValue: 120,
+      scaling: '+40 DPS за стак'
+    }
+  },
   global: {
     dashCooldown: 2.5,
     dashDuration: 0.22,

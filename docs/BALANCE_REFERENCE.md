@@ -217,7 +217,7 @@ Chests spawn deterministically (16 per stage). Opening a chest requires gold dro
 | **Plasma Detonator** | `plasma_detonator` | Uncommon | 💥 | On kill, enemy explodes (4m radius, **200%** damage) | +1m radius and +50% damage per stack |
 | **Sniper Visor** | `crit_visor` | Uncommon | 🎯 | **+12%** critical strike chance (base x2.0 damage) | +12% crit chance per stack |
 | **Aegis Battery** | `aegis_battery` | Uncommon | 💠 | Grants an energy shield with **+35 HP**, recharges out of combat | +35 max shield capacity per stack |
-| **Bio-Leech** | `bio_leech` | Uncommon | 🧬 | Restores **+5 HP** per monster kill | +5 HP per stack |
+| **Bio-Leech** | `bio_leech` | Uncommon | 🧬 | Restores **+2 HP** per monster kill | +2 HP per stack |
 | **Singularity Core** | `singularity_core` | Legendary | 🕳️ | Every **10th kill** spawns a black hole detonating for **600%** damage | -2 kills required, +200% damage per stack |
 | **Orbital Strike** | `orbital_strike` | Legendary | 🛰️ | Every **12 s**, an orbital beam incinerates the strongest enemy for **800%** | -2 s CD per stack |
 | **Chronos Phylactery**| `chronos_phylactery`| Legendary | ⏳ | Cheat-death: freezes monsters & bosses for **5 s**, knocks back **25m**, heals **50% HP** (once per stage) | +25% healing per stack |
