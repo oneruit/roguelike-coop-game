@@ -255,6 +255,18 @@ export class TextureManager {
     '/textures/heroes/hero_rocket_attack.png',
     '/textures/heroes/hero_rocket_walk_attack.png',
 
+    '/textures/heroes/hero_necromancer_front.png',
+    '/textures/heroes/hero_necromancer_idle.png',
+    '/textures/heroes/hero_necromancer_walk.png',
+    '/textures/heroes/hero_necromancer_attack.png',
+    '/textures/heroes/hero_necromancer_walk_attack.png',
+
+    '/textures/heroes/hero_amazon_front.png',
+    '/textures/heroes/hero_amazon_idle.png',
+    '/textures/heroes/hero_amazon_walk.png',
+    '/textures/heroes/hero_amazon_attack.png',
+    '/textures/heroes/hero_amazon_walk_attack.png',
+
     // Legacy Hero Avatars
     '/textures/heroes/hero_male_front.png',
     '/textures/heroes/hero_male_back.png',
@@ -532,6 +544,14 @@ export class TextureManager {
 
   public static loadRocketTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_rocket', renderer);
+  }
+
+  public static loadNecromancerTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_necromancer', renderer);
+  }
+
+  public static loadAmazonTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_amazon', renderer);
   }
 
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {

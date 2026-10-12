@@ -65,11 +65,22 @@ export function renderDashboard(state: BalanceState): void {
   // 2. System Status / Scaling Container
   const sysContainer = document.getElementById('dashboard-system-status-container');
   if (sysContainer) {
-    const calcHpMult = (m: number) =>
-      (1 + (m * 0.28 + Math.pow(m / 4.5, 1.7) * 0.4) * 1.5).toFixed(1);
-    const calcDmgMult = (m: number) =>
-      (1 + (m * 0.12 + Math.pow(m / 8, 1.4) * 0.25) * 1.5).toFixed(1);
-    const calcSpdMult = (m: number) => Math.min(1.45, 1 + m * 0.012 * 1.5).toFixed(2);
+    const calcHpMult = (m: number) => {
+      const base = 1 + (m * 0.35 + Math.pow(m / 4.0, 1.8) * 0.45) * 1.5;
+      const mPost = Math.max(0, m - 15);
+      const post = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
+      return (base + post).toFixed(1);
+    };
+    const calcDmgMult = (m: number) => {
+      const base = 1 + (m * 0.15 + Math.pow(m / 6.0, 1.5) * 0.30) * 1.5;
+      const mPost = Math.max(0, m - 15);
+      const post = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
+      return (base + post).toFixed(1);
+    };
+    const calcSpdMult = (m: number) => {
+      const mPost = Math.max(0, m - 15);
+      return Math.min(1.65, 1 + m * 0.012 * 1.5 + mPost * 0.01).toFixed(2);
+    };
 
     sysContainer.innerHTML = `
       <table class="mini-ranking-table">
@@ -92,31 +103,45 @@ export function renderDashboard(state: BalanceState): void {
           </tr>
           <tr>
             <td><strong>5 мин</strong></td>
-            <td><span style="color:var(--accent-warning); font-weight:600;">👹 Босс 1 (Демон)</span></td>
+            <td><span style="color:var(--accent-warning); font-weight:600;">👹 Ранняя фаза</span></td>
             <td><strong>${calcHpMult(5)}x</strong></td>
             <td>${calcDmgMult(5)}x</td>
             <td>${calcSpdMult(5)}x</td>
           </tr>
           <tr>
             <td><strong>15 мин</strong></td>
-            <td><span style="color:var(--accent-primary); font-weight:600;">⚡ Середина боя</span></td>
-            <td><strong style="color:var(--accent-danger);">${calcHpMult(15)}x</strong></td>
+            <td><span style="color:var(--accent-warning); font-weight:700;">🔥 Точка перелома (старт скейлинга)</span></td>
+            <td><strong style="color:var(--accent-warning);">${calcHpMult(15)}x</strong></td>
             <td>${calcDmgMult(15)}x</td>
             <td>${calcSpdMult(15)}x</td>
           </tr>
           <tr>
-            <td><strong>25 мин</strong></td>
-            <td><span style="color:var(--accent-danger); font-weight:600;">🐉 Босс 2 (Гидра)</span></td>
-            <td><strong style="color:var(--accent-danger);">${calcHpMult(25)}x</strong></td>
-            <td>${calcDmgMult(25)}x</td>
-            <td>${calcSpdMult(25)}x</td>
+            <td><strong>20 мин</strong></td>
+            <td><span style="color:var(--accent-primary); font-weight:700;">⚡ Нарастание штурма</span></td>
+            <td><strong style="color:var(--accent-primary);">${calcHpMult(20)}x</strong></td>
+            <td>${calcDmgMult(20)}x</td>
+            <td>${calcSpdMult(20)}x</td>
           </tr>
           <tr>
             <td><strong>30 мин</strong></td>
-            <td><span style="color:#7c3aed; font-weight:700;">🏆 Финал (Кап)</span></td>
-            <td><strong style="color:#7c3aed;">${calcHpMult(30)}x</strong></td>
+            <td><span style="color:var(--accent-danger); font-weight:700;">💀 Тяжелый штурм</span></td>
+            <td><strong style="color:var(--accent-danger);">${calcHpMult(30)}x</strong></td>
             <td>${calcDmgMult(30)}x</td>
             <td>${calcSpdMult(30)}x</td>
+          </tr>
+          <tr>
+            <td><strong>45 мин</strong></td>
+            <td><span style="color:#9333ea; font-weight:700;">☠️ Экстремальный натиск</span></td>
+            <td><strong style="color:#9333ea;">${calcHpMult(45)}x</strong></td>
+            <td>${calcDmgMult(45)}x</td>
+            <td>${calcSpdMult(45)}x</td>
+          </tr>
+          <tr>
+            <td><strong>60 мин</strong></td>
+            <td><span style="color:#dc2626; font-weight:700;">🏆 Глубокий лейт-гейм (60 мин)</span></td>
+            <td><strong style="color:#dc2626;">${calcHpMult(60)}x</strong></td>
+            <td>${calcDmgMult(60)}x</td>
+            <td>${calcSpdMult(60)}x</td>
           </tr>
         </tbody>
       </table>

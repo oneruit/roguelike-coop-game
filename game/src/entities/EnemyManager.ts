@@ -218,21 +218,26 @@ export class EnemyManager {
    */
   public getHpMultiplier(): number {
     const minute = this.gameTime / 60;
-    const baseMult = 1 + (minute * 0.28 + Math.pow(minute / 4.5, 1.7) * 0.4) * 1.5;
+    const baseMult = 1 + (minute * 0.35 + Math.pow(minute / 4.0, 1.8) * 0.45) * 1.5;
+    const mPost = Math.max(0, minute - 15);
+    const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
-    return baseMult * overstay.hpMult;
+    return (baseMult + hpPostSurge) * overstay.hpMult;
   }
 
   public getDamageMultiplier(): number {
     const minute = this.gameTime / 60;
-    const baseMult = 1 + (minute * 0.12 + Math.pow(minute / 8, 1.4) * 0.25) * 1.5;
+    const baseMult = 1 + (minute * 0.15 + Math.pow(minute / 6.0, 1.5) * 0.30) * 1.5;
+    const mPost = Math.max(0, minute - 15);
+    const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
-    return baseMult * overstay.dmgMult;
+    return (baseMult + dmgPostSurge) * overstay.dmgMult;
   }
 
   public getSpeedMultiplier(): number {
     const minute = this.gameTime / 60;
-    return Math.min(1.5, 1 + (minute * 0.012) * 1.5);
+    const mPost = Math.max(0, minute - 15);
+    return Math.min(1.65, 1 + (minute * 0.012) * 1.5 + mPost * 0.01);
   }
 
   public resetStageTime(): void {
@@ -254,10 +259,10 @@ export class EnemyManager {
     this.stageTime += dt;
     this.spawnTimer += dt;
 
-    // 1. Spawning Boss every 5 minutes only starting from minute 20 (minute 20, 25, 30, 35, 40...)
+    // 1. Spawning Boss every 5 minutes only starting from minute 15 (minute 15, 20, 25, 30, 35, 40...)
     const currentMinute = Math.floor(this.gameTime / 60);
     if (
-      currentMinute >= 20 &&
+      currentMinute >= 15 &&
       currentMinute % 5 === 0 &&
       currentMinute > this.lastBossMinute
     ) {
@@ -266,8 +271,8 @@ export class EnemyManager {
       this.spawnTieredBoss(playerPos, tier);
     }
 
-    // Dynamic spawn interval (gets faster over time, down to 0.18s per wave)
-    const currentInterval = Math.max(0.18, this.spawnInterval - (this.gameTime / 240) * 0.75);
+    // Dynamic spawn interval (gets faster over time, down to 0.14s per wave)
+    const currentInterval = Math.max(0.14, this.spawnInterval - (this.gameTime / 240) * 0.75);
 
     if (this.spawnTimer >= currentInterval) {
       this.spawnTimer = 0;
@@ -481,9 +486,15 @@ export class EnemyManager {
         speed: 2.3
       };
     } else {
-      const tierHp = Math.round(baseHp * (1 + ((tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0) * 1.5));
-      const tierDmg = Math.round(baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5));
-      const tierSpd = Number((baseSpd + (tier - 1) * 0.18 * 1.5).toFixed(2));
+      const baseTierHp = baseHp * (1 + ((tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0) * 1.5);
+      const baseTierDmg = baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
+      const tierPost = Math.max(0, tier - 3);
+      const postHpMult = 1 + Math.pow(tierPost / 1.5, 2.0) * 0.8;
+      const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
+
+      const tierHp = Math.round(baseTierHp * postHpMult);
+      const tierDmg = Math.round(baseTierDmg * postDmgMult);
+      const tierSpd = Number((Math.min(3.8, baseSpd + (tier - 1) * 0.18 * 1.5 + tierPost * 0.1)).toFixed(2));
 
       bossConfig = {
         ...this.configs.boss,
@@ -654,22 +665,42 @@ export class EnemyManager {
       if (r < 0.55) types = ['bison', 'brute'];
       else if (r < 0.85) types = ['ghost', 'scorpion'];
       else types = ['crawler', 'skeleton'];
-    } else {
-      // 25 - 30 min: Desert Apocalypse! Non-stop stampedes of Bisons & Brutes
+    } else if (time < 1800) {
+      // 25 - 30 min: Void Breach — continuous stampedes of Bisons and Brutes with fast infiltrators
       const r = Math.random();
-      if (r < 0.6) types = ['bison', 'brute'];
-      else if (r < 0.85) types = ['ghost', 'scorpion'];
-      else types = ['skeleton', 'coyote', 'crawler'];
+      if (r < 0.65) types = ['bison', 'brute'];
+      else if (r < 0.88) types = ['ghost', 'scorpion'];
+      else types = ['skeleton', 'crawler'];
+    } else if (time < 2100) {
+      // 30 - 35 min: Endless Rift Cataclysm — heavy elite stampedes
+      const r = Math.random();
+      if (r < 0.72) types = ['bison', 'brute'];
+      else if (r < 0.92) types = ['ghost', 'scorpion'];
+      else types = ['cactus', 'crawler'];
+    } else if (time < 2400) {
+      // 35 - 40 min: Apocalypse — massive heavy horde assault
+      const r = Math.random();
+      if (r < 0.80) types = ['bison', 'brute'];
+      else if (r < 0.95) types = ['ghost'];
+      else types = ['scorpion'];
+    } else {
+      // 40+ min: Void Singularity / Climax — endless supreme apocalypse
+      const r = Math.random();
+      if (r < 0.85) types = ['bison', 'brute'];
+      else types = ['ghost', 'scorpion'];
     }
 
     // Cap maximum active enemies to prevent frame drops in long runs (scales with player count)
-    const baseCap = 95 + Math.floor(time / 60) * 2;
-    const maxEnemies = Math.min(190, baseCap + (this.activePlayerCount - 1) * 22);
+    const baseCap = 95 + Math.floor(time / 60) * 2.5;
+    const maxEnemies = Math.min(220, baseCap + (this.activePlayerCount - 1) * 22);
     if (this.enemies.length >= maxEnemies) return;
 
     // Number of monsters spawned per wave scales with time and player count
     let count = 1;
-    if (time > 1200) count = 5;      // 20+ min
+    if (time > 2100) count = 8;      // 35+ min
+    else if (time > 1800) count = 7; // 30-35 min
+    else if (time > 1500) count = 6; // 25-30 min
+    else if (time > 1200) count = 5; // 20-25 min
     else if (time > 900) count = 4;  // 15-20 min
     else if (time > 600) count = 3;  // 10-15 min
     else if (time > 240) count = 2;  // 4-10 min
@@ -807,15 +838,15 @@ export class EnemyManager {
   public setGameTime(seconds: number) {
     this.gameTime = Math.max(0, seconds);
     const minute = Math.floor(this.gameTime / 60);
-    if (minute < 20) {
+    if (minute < 15) {
       this.lastBossMinute = 0;
     } else {
       this.lastBossMinute = Math.floor(minute / 5) * 5;
       if (minute % 5 === 0 && seconds % 60 < 2) {
-        this.lastBossMinute = Math.max(15, this.lastBossMinute - 5);
+        this.lastBossMinute = Math.max(10, this.lastBossMinute - 5);
       }
     }
-    if (this.gameTime < 1800) {
+    if (this.gameTime < 2400) {
       this.immortalBossSpawned = false;
     }
   }

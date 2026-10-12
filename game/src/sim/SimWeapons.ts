@@ -1327,6 +1327,7 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'flail':
       return new SimFlailWeapon();
     case 'sorceress':
+    case 'necromancer':
       return new SimAstralStaffWeapon();
     case 'chakram':
       return new SimChakramWeapon();
@@ -1334,6 +1335,8 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
       return new SimBowWeapon();
     case 'rocket':
       return new SimAssaultRifleWeapon();
+    case 'amazon':
+      return new SimOrbitingBarrierWeapon();
     case 'ronin':
     default:
       return new SimWhirlwindSlashWeapon();

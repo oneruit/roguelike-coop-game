@@ -3,6 +3,7 @@
 declare const __APP_VERSION__: string;
 declare const __APP_BUILD_TIME__: number;
 declare const __APP_BUILD_ID__: string;
+declare const __APP_MODE__: string;
 
 interface ImportMetaEnv {
   readonly VITE_PEERJS_HOST?: string;

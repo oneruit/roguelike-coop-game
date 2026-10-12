@@ -1,0 +1,1152 @@
+/* ==========================================================================
+   GAME OVER BATTLE PASS XP BANNER
+   ========================================================================== */
+.game-over-bp-box {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(11, 17, 32, 0.96) 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.game-over-bp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-over-bp-badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+}
+
+.game-over-bp-gain {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14.5px;
+  font-weight: 900;
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.7);
+}
+
+.game-over-bp-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.game-over-bp-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.game-over-bp-lvl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f8fafc;
+  background: #1e293b;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.game-over-bp-bar-wrap {
+  flex: 1;
+  height: 9px;
+  background: #0b1118;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+  position: relative;
+}
+
+.game-over-bp-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.game-over-bp-xp {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.game-over-bp-levelup {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.85);
+  text-align: center;
+  letter-spacing: 0.8px;
+  animation: bpLevelUpPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes bpLevelUpPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+/* ==========================================================================
+   FULL BATTLE PASS MODAL
+   ========================================================================== */
+.battle-pass-modal-card {
+  max-width: 860px !important;
+  width: min(860px, 94vw) !important;
+  max-height: 88vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 20px 24px !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #0e1724 0%, #090e17 100%) !important;
+  border: 2px solid #283a4e !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(56, 189, 248, 0.2) !important;
+}
+
+.bp-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.bp-modal-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.bp-modal-header .sub-title.menu-badge-blue {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #38bdf8;
+  background: rgba(2, 132, 199, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 3px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  display: inline-block;
+}
+
+.bp-modal-main-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+}
+
+#btn-close-bp-modal.modern-back-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #cbd5e1;
+  background: #141d28;
+  border: 1.5px solid #2b3a4a;
+  border-radius: 6px;
+  padding: 7px 18px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+#btn-close-bp-modal.modern-back-btn:hover {
+  background: #1e2a3a;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+/* Rules Bar (legacy safe hidden) */
+.bp-modal-rules-bar {
+  display: none !important;
+}
+
+/* Summary Card */
+.bp-modal-summary-card {
+  background: linear-gradient(180deg, #121c2a 0%, #0c1420 100%);
+  border: 1.5px solid #233346;
+  border-radius: 8px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.bp-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.bp-summary-level-box {
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  border: 1.5px solid #38bdf8;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+.bp-summary-lvl-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.bp-summary-lvl-lbl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #e0f2fe;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.bp-summary-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bp-summary-points-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.bp-total-xp-tag {
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.bp-modal-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: #080d14;
+  border: 1px solid #1e293b;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bp-modal-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+  transition: width 0.4s ease;
+  border-radius: 3px;
+}
+
+.bp-claim-all-btn {
+  padding: 8px 18px !important;
+  font-size: 11.5px !important;
+  font-weight: 900 !important;
+}
+
+/* Plaque: СПИСОК НАГРАД */
+.bp-modal-plaque {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin: 4px auto 2px auto;
+  padding: 5px 26px;
+  background: linear-gradient(180deg, #3d2f24 0%, #291e17 100%);
+  border: 1.5px solid #5a4536;
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+}
+
+.bp-plaque-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #f1dfcc;
+  text-shadow: 0 1px 2px #000, 0 0 4px rgba(0, 0, 0, 0.8);
+  text-transform: uppercase;
+}
+
+.bp-plaque-bracket {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 5px;
+  background: #6e5340;
+  border: 1px solid #2d1f16;
+  border-radius: 2px;
+}
+
+.bp-plaque-bracket.left {
+  left: 3px;
+}
+
+.bp-plaque-bracket.right {
+  right: 3px;
+}
+
+/* Tiers Scrollable Container */
+.bp-modal-tiers-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-right: 6px;
+  max-height: 52vh;
+}
+
+.bp-modal-tiers-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bp-modal-tiers-container::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+.bp-tier-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #182230 0%, #121a24 100%);
+  border: 1.5px solid #283749;
+  border-radius: 6px;
+  padding: 7px 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 -1px 0 rgba(0, 0, 0, 0.5), 0 3px 8px rgba(0, 0, 0, 0.4);
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.bp-tier-card:hover {
+  background: linear-gradient(180deg, #1e2b3d 0%, #16202c 100%);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.bp-tier-card.claimable {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, #2a2012 0%, #1b140b 100%);
+  box-shadow: inset 0 1px 0 rgba(251, 191, 36, 0.2), 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.bp-tier-card.claimed {
+  border-color: rgba(56, 75, 100, 0.4);
+  background: linear-gradient(180deg, #141c26 0%, #0f151e 100%);
+}
+
+.bp-tier-lvl-badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #94a3b8;
+  background: #0f1722;
+  border: 1px solid #1e2a38;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 82px;
+  text-align: center;
+}
+
+.bp-tier-card.claimable .bp-tier-lvl-badge {
+  color: #fbbf24;
+  border-color: #f59e0b;
+}
+
+.bp-tier-icon-wrap {
+  width: 44px;
+  height: 44px;
+  background: #0f1724;
+  border: 1.5px solid #3d2f25;
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px #1e293b, inset 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.bp-tier-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.bp-tier-rewards-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 95px;
+  flex-shrink: 0;
+}
+
+.bp-tier-reward-coin {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+.bp-tier-reward-gem {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+.bp-tier-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.bp-tier-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000;
+  line-height: 1.2;
+}
+
+.bp-tier-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bp-tier-action {
+  flex-shrink: 0;
+  min-width: 120px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bp-tier-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.bp-tier-btn.claim-now {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #0b0f19;
+  border-color: #fbbf24;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.bp-tier-btn.claim-now:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.85);
+}
+
+.bp-tier-btn.claimed {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border-color: #10b981;
+  font-weight: 800;
+  cursor: default;
+}
+
+.bp-tier-btn.locked {
+  background: #141d28;
+  color: #94a3b8;
+  border-color: #283749;
+  cursor: default;
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+  .battle-pass-widget {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 440px;
+    margin-bottom: 12px;
+  }
+}
+
+.main-menu-card {
+  position: relative;
+  z-index: 10;
+  max-width: 400px;
+  width: 100%;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.main-menu-hud-corner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  margin-left: 6px;
+  pointer-events: none;
+}
+
+.hud-corner-bracket {
+  width: 60px;
+  height: 14px;
+  border-top: 2.5px solid #00a8ff;
+  border-left: 2.5px solid #00a8ff;
+  border-top-left-radius: 4px;
+  filter: drop-shadow(0 0 8px #00a8ff);
+}
+
+.hud-corner-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.hud-corner-dots span {
+  width: 4px;
+  height: 4px;
+  background: #00a8ff;
+  border-radius: 50%;
+  opacity: 0.85;
+  box-shadow: 0 0 6px #00a8ff;
+}
+
+.main-menu-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Hexagonal futuristic menu buttons (Main Screen) */
+.main-menu-hex-btn {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  min-height: 60px;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  box-sizing: border-box;
+  display: block;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              filter 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.main-menu-hex-btn:hover {
+  transform: translateX(10px) scale(1.02);
+}
+
+.main-menu-hex-btn:active {
+  transform: translateX(4px) scale(0.985);
+}
+
+.main-menu-hex-btn .btn-hex-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.main-menu-hex-btn .btn-hex-poly {
+  transition: fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.main-menu-hex-btn .btn-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 32px 0 28px;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.main-menu-hex-btn .menu-icon-wrap {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.main-menu-hex-btn:hover .menu-icon-wrap {
+  transform: scale(1.15);
+}
+
+.main-menu-hex-btn .menu-icon-svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.main-menu-hex-btn .menu-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.main-menu-hex-btn .menu-btn-title {
+  font-family: 'Montserrat', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #ffffff;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  transition: letter-spacing 0.2s ease;
+}
+
+.main-menu-hex-btn:hover .menu-btn-title {
+  letter-spacing: 2.5px;
+}
+
+/* 1. New Game (Neon Cyan / Sky Blue) */
+.main-menu-hex-btn.btn-single {
+  filter: drop-shadow(0 0 12px rgba(0, 128, 255, 0.65)) drop-shadow(0 0 2px #0080ff);
+}
+.main-menu-hex-btn.btn-single:hover {
+  filter: drop-shadow(0 0 24px rgba(0, 180, 255, 0.95)) drop-shadow(0 0 5px #38bdf8);
+}
+.main-menu-hex-btn.btn-single .btn-hex-poly {
+  fill: rgba(6, 24, 54, 0.88);
+  stroke: #0088ff;
+  stroke-width: 2.2;
+}
+.main-menu-hex-btn.btn-single:hover .btn-hex-poly {
+  fill: rgba(10, 36, 78, 0.95);
+  stroke: #38bdf8;
+  stroke-width: 2.5;
+}
+.main-menu-hex-btn.btn-single .menu-icon-svg {
+  color: #00d4ff;
+  filter: drop-shadow(0 0 6px #00a8ff);
+}
+
+/* 2. Co-op 5 Players (Neon Emerald Green) */
+.main-menu-hex-btn.btn-coop {
+  filter: drop-shadow(0 0 12px rgba(0, 200, 83, 0.65)) drop-shadow(0 0 2px #00c853);
+}
+.main-menu-hex-btn.btn-coop:hover {
+  filter: drop-shadow(0 0 24px rgba(34, 197, 94, 0.95)) drop-shadow(0 0 5px #4ade80);
+}
+.main-menu-hex-btn.btn-coop .btn-hex-poly {
+  fill: rgba(4, 38, 24, 0.88);
+  stroke: #00c853;
+  stroke-width: 2.2;
+}
+.main-menu-hex-btn.btn-coop:hover .btn-hex-poly {
+  fill: rgba(8, 54, 34, 0.95);
+  stroke: #34d399;
+  stroke-width: 2.5;
+}
+.main-menu-hex-btn.btn-coop .menu-icon-svg {
+  color: #00e676;
+  filter: drop-shadow(0 0 6px #00c853);
+}
+
+/* 3. Quests (Neon Violet / Purple) */
+.main-menu-hex-btn.btn-quests {
+  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.65)) drop-shadow(0 0 2px #a855f7);
+}
+.main-menu-hex-btn.btn-quests:hover {
+  filter: drop-shadow(0 0 24px rgba(192, 132, 252, 0.95)) drop-shadow(0 0 5px #c084fc);
+}
+.main-menu-hex-btn.btn-quests .btn-hex-poly {
+  fill: rgba(36, 12, 54, 0.88);
+  stroke: #a855f7;
+  stroke-width: 2.2;
+}
+.main-menu-hex-btn.btn-quests:hover .btn-hex-poly {
+  fill: rgba(54, 16, 80, 0.95);
+  stroke: #c084fc;
+  stroke-width: 2.5;
+}
+.main-menu-hex-btn.btn-quests .menu-icon-svg {
+  color: #c084fc;
+  filter: drop-shadow(0 0 6px #a855f7);
+}
+
+.main-menu-hex-btn.btn-quests.active {
+  filter: drop-shadow(0 0 28px rgba(192, 132, 252, 1)) drop-shadow(0 0 6px #c084fc) !important;
+  transform: translateX(12px) scale(1.02);
+}
+.main-menu-hex-btn.btn-quests.active .btn-hex-poly {
+  fill: rgba(65, 18, 95, 0.96) !important;
+  stroke: #e879f9 !important;
+  stroke-width: 2.8 !important;
+}
+.main-menu-hex-btn.btn-quests.active .menu-btn-title {
+  color: #fdf4ff !important;
+  text-shadow: 0 0 10px #e879f9, 0 2px 4px #000000 !important;
+  letter-spacing: 2.5px !important;
+}
+.main-menu-hex-btn.btn-quests.active .menu-icon-svg {
+  color: #f5d0fe !important;
+  filter: drop-shadow(0 0 8px #e879f9) !important;
+}
+
+/* 4. Settings (Warm Amber / Gold) */
+.main-menu-hex-btn.btn-settings {
+  filter: drop-shadow(0 0 12px rgba(255, 145, 0, 0.65)) drop-shadow(0 0 2px #ff9100);
+}
+.main-menu-hex-btn.btn-settings:hover {
+  filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 5px #fbbf24);
+}
+.main-menu-hex-btn.btn-settings .btn-hex-poly {
+  fill: rgba(42, 24, 6, 0.88);
+  stroke: #ff9100;
+  stroke-width: 2.2;
+}
+.main-menu-hex-btn.btn-settings:hover .btn-hex-poly {
+  fill: rgba(60, 34, 10, 0.95);
+  stroke: #fbbf24;
+  stroke-width: 2.5;
+}
+.main-menu-hex-btn.btn-settings .menu-icon-svg {
+  color: #ffab00;
+  filter: drop-shadow(0 0 6px #ff9100);
+}
+
+/* 4. Exit (Neon Crimson Red) */
+.main-menu-hex-btn.btn-exit {
+  filter: drop-shadow(0 0 12px rgba(255, 23, 68, 0.65)) drop-shadow(0 0 2px #ff1744);
+}
+.main-menu-hex-btn.btn-exit:hover {
+  filter: drop-shadow(0 0 24px rgba(239, 68, 68, 0.95)) drop-shadow(0 0 5px #f87171);
+}
+.main-menu-hex-btn.btn-exit .btn-hex-poly {
+  fill: rgba(42, 8, 16, 0.88);
+  stroke: #ff1744;
+  stroke-width: 2.2;
+}
+.main-menu-hex-btn.btn-exit:hover .btn-hex-poly {
+  fill: rgba(62, 12, 22, 0.95);
+  stroke: #f87171;
+  stroke-width: 2.5;
+}
+.main-menu-hex-btn.btn-exit .menu-icon-svg {
+  color: #ff5252;
+  filter: drop-shadow(0 0 6px #ff1744);
+}
+
+@media (max-width: 950px) {
+  .main-menu-quests-sidebar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-menu-modal {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+  .main-menu-card {
+    max-width: min(340px, 92vw) !important;
+    width: 100% !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+  .main-menu-buttons {
+    width: 100% !important;
+    gap: 11px !important;
+  }
+  .main-menu-hex-btn {
+    height: 52px !important;
+    min-height: 52px !important;
+    width: 100% !important;
+  }
+  .main-menu-hex-btn:hover {
+    transform: none !important;
+  }
+  .main-menu-hex-btn:active {
+    transform: scale(0.985) !important;
+  }
+  .main-menu-hex-btn .btn-content {
+    padding: 0 18px 0 16px !important;
+    gap: 14px !important;
+  }
+  .main-menu-hex-btn .menu-btn-title {
+    font-size: 14px !important;
+    letter-spacing: 1.2px !important;
+  }
+  .main-menu-hud-corner {
+    margin-left: 0 !important;
+    margin-bottom: 8px !important;
+  }
+  .main-menu-game-title {
+    top: clamp(10px, 2vh, 20px) !important;
+  }
+  .main-menu-logo-img {
+    width: min(340px, 85vw) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-menu-modal {
+    padding: 12px 10px !important;
+  }
+  .main-menu-card {
+    max-width: min(310px, 92vw) !important;
+  }
+  .main-menu-buttons {
+    gap: 9px !important;
+  }
+  .main-menu-hex-btn {
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+  .main-menu-hex-btn .btn-content {
+    padding: 0 14px 0 12px !important;
+    gap: 10px !important;
+  }
+  .main-menu-hex-btn .menu-icon-wrap {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  .main-menu-hex-btn .menu-icon-svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+  .main-menu-hex-btn .menu-btn-title {
+    font-size: 12.5px !important;
+    letter-spacing: 0.8px !important;
+  }
+  .main-menu-logo-img {
+    width: min(270px, 78vw) !important;
+  }
+}
+
+@media (max-height: 620px) {
+  .main-menu-game-title {
+    top: 8px;
+  }
+  .main-menu-logo-img {
+    width: 280px;
+  }
+  .main-menu-quests-sidebar {
+    top: 8px;
+    gap: 8px;
+  }
+  .quest-sidebar-card {
+    width: clamp(210px, 18vw, 240px);
+  }
+}
+
+/* Modern Glowing Pill/Card Menu Buttons */
+.main-menu-nav-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+  min-height: 70px;
+  padding: 12px 28px;
+  border-radius: 16px;
+  border-width: 2px;
+  border-style: solid;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.2s ease,
+              background 0.2s ease,
+              border-color 0.2s ease;
+  user-select: none;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.main-menu-nav-btn:hover {
+  transform: translateY(-2px) scale(1.018);
+}
+
+.main-menu-nav-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.main-menu-nav-btn .menu-icon-wrap {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.main-menu-nav-btn .menu-icon-svg {
+  width: 34px;
+  height: 34px;
+  display: block;
+  filter: drop-shadow(0 0 6px currentColor);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.main-menu-nav-btn:hover .menu-icon-svg {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.main-menu-nav-btn .menu-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.main-menu-nav-btn .menu-btn-title {
+  font-family: 'Montserrat', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  color: #ffffff;
+  line-height: 1.15;
+  text-transform: uppercase;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.main-menu-nav-btn .menu-btn-sub {
+  font-family: 'Montserrat', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  line-height: 1.2;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+/* 1. New Game (Cyan / Sky Blue) */
+.main-menu-nav-btn.btn-single {
+  background: rgba(6, 22, 44, 0.76);
+  border-color: #0077ff;
+  color: #00a8ff;
+  box-shadow: 0 0 18px rgba(0, 119, 255, 0.25), inset 0 0 14px rgba(0, 119, 255, 0.08);
+}
+
+.main-menu-nav-btn.btn-single:hover {
+  background: rgba(10, 36, 72, 0.88);
+  border-color: #38bdf8;
+  box-shadow: 0 0 30px rgba(0, 168, 255, 0.55), inset 0 0 20px rgba(0, 168, 255, 0.16);
+}
+
+.main-menu-nav-btn.btn-single .menu-btn-sub {
+  color: #38bdf8;
+  opacity: 0.9;
+}
+
+/* 2. Co-op 5 Players (Emerald Green) */
+.main-menu-nav-btn.btn-coop {
+  background: rgba(6, 28, 20, 0.76);
+  border-color: #10b981;
+  color: #10b981;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.25), inset 0 0 14px rgba(16, 185, 129, 0.08);
+}
+
+.main-menu-nav-btn.btn-coop:hover {
+  background: rgba(10, 44, 32, 0.88);
+  border-color: #34d399;
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.55), inset 0 0 20px rgba(34, 197, 94, 0.16);
+}
+
+/* 3. Quests (Neon Violet / Purple) */
+.main-menu-nav-btn.btn-quests {
+  background: rgba(28, 12, 42, 0.76);
+  border-color: #a855f7;
+  color: #c084fc;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.25), inset 0 0 14px rgba(168, 85, 247, 0.08);
+}
+
+.main-menu-nav-btn.btn-quests:hover {
+  background: rgba(44, 18, 66, 0.88);
+  border-color: #c084fc;
+  box-shadow: 0 0 30px rgba(192, 132, 252, 0.55), inset 0 0 20px rgba(192, 132, 252, 0.16);
+}
+
+/* 4. Settings (Amber / Warm Gold) */
+.main-menu-nav-btn.btn-settings {
+  background: rgba(30, 22, 8, 0.76);
+  border-color: #f59e0b;
+  color: #f59e0b;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.25), inset 0 0 14px rgba(245, 158, 11, 0.08);
+}
+
+.main-menu-nav-btn.btn-settings:hover {
+  background: rgba(48, 34, 12, 0.88);
+  border-color: #fbbf24;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.55), inset 0 0 20px rgba(245, 158, 11, 0.16);
+}
+
+/* 4. Exit (Coral Red) */
+.main-menu-nav-btn.btn-exit {
+  background: rgba(32, 12, 16, 0.76);
+  border-color: #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.25), inset 0 0 14px rgba(239, 68, 68, 0.08);
+}
+
+.main-menu-nav-btn.btn-exit:hover {
+  background: rgba(52, 18, 24, 0.88);
+  border-color: #fca5a5;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.55), inset 0 0 20px rgba(239, 68, 68, 0.16);
+}
+
+/* Legacy & Sub-modal Action Buttons */
+.main-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 18px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-plum);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: left;
+}
+
+.main-menu-btn:hover {
+  border-color: var(--border-coral);
+  background: var(--bg-card-hover);
+}
+
+.main-menu-btn .btn-icon {
+  font-size: 14px;
+  font-family: monospace;
+  font-weight: 900;
+  color: var(--coral-light);
+  flex-shrink: 0;
+}
+
+.main-menu-btn .btn-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.main-menu-btn .btn-title {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+}
+
+.main-menu-btn .btn-desc {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.coop-create-btn, .coop-join-btn, .settings-menu-btn, .exit-menu-btn, .guide-btn {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-plum);
+}
+
+.menu-footer {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
