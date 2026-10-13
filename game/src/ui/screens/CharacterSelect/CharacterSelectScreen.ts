@@ -192,13 +192,20 @@ export class CharacterSelectScreen extends Screen {
       passiveName.textContent = details.passiveTrait.name;
     }
 
-    // Active Abilities Grid (4 abilities)
+    // Active Abilities Grid (4 abilities with dedicated dark ARPG icons)
+    const abilityIcons = [
+      '/textures/ui/ability_void_strike.png',
+      '/textures/ui/ability_abyssal_charge.png',
+      '/textures/ui/ability_rift_nova.png',
+      '/textures/ui/ability_devouring_slash.png'
+    ];
+
     const abilitiesGrid = SafeDOM.query(this.container, '#inspect-abilities-grid');
     if (abilitiesGrid) {
       abilitiesGrid.innerHTML = details.activeAbilities.map((ab, idx) => `
         <div class="inspect-ability-card" title="${ab.name}">
           <div class="inspect-ability-socket">
-            <span class="inspect-ability-icon-symbol">${this.getAbilityGlyph(idx)}</span>
+            <img src="${abilityIcons[idx] || abilityIcons[0]}" class="inspect-ability-icon-img" alt="${ab.name}" />
           </div>
           <span class="inspect-ability-name">${ab.name}</span>
         </div>
@@ -234,11 +241,6 @@ export class CharacterSelectScreen extends Screen {
         playBtn.innerHTML = '<span class="btn-primary-text">🔒 РАЗБЛОКИРОВАТЬ В КВЕСТАХ</span>';
       }
     }
-  }
-
-  private getAbilityGlyph(idx: number): string {
-    const glyphs = ['▼', '🐾', '✦', '🗡️'];
-    return glyphs[idx] || '⚔️';
   }
 
   private getStatCeilings(): { maxHp: number; maxSpeed: number; maxDamage: number } {

@@ -241,7 +241,7 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-/* Section: Passive Trait */
+/* Section: Passive Trait (Master Socket Asset) */
 .inspect-passive-content {
   display: flex;
   flex-direction: column;
@@ -252,35 +252,24 @@
 }
 
 .inspect-passive-diamond-socket {
-  width: 44px;
-  height: 44px;
-  transform: rotate(45deg);
-  background: radial-gradient(circle, #581c87 15%, #180d2a 80%);
-  border: 2px solid #ca8a04;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.75), inset 0 0 8px rgba(0, 0, 0, 0.9);
+  width: 48px;
+  height: 48px;
+  background: url('/textures/ui/trait_socket_passive.png') center center / contain no-repeat;
+  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.8));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 6px auto;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin: 4px auto;
+  transition: transform 0.25s ease, filter 0.25s ease;
 }
 
 .inspect-passive-diamond-socket:hover {
-  transform: rotate(45deg) scale(1.08);
-  box-shadow: 0 0 22px rgba(192, 132, 252, 0.95);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 20px rgba(192, 132, 252, 1));
 }
 
 .passive-diamond-inner {
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.passive-rune-glyph {
-  font-size: 20px;
-  color: #e9d5ff;
-  text-shadow: 0 0 10px rgba(192, 132, 252, 0.9);
+  display: none;
 }
 
 .inspect-passive-title {
@@ -293,7 +282,7 @@
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
-/* Section: Active Ability (4 Square Icons) */
+/* Section: Active Ability (Master 64x64 Square Assets) */
 .inspect-abilities-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -309,30 +298,28 @@
 }
 
 .inspect-ability-socket {
-  width: 52px;
-  height: 52px;
-  background: radial-gradient(circle, #3b0764 10%, #11091e 85%);
-  border: 1.5px solid rgba(168, 85, 247, 0.55);
-  border-radius: 4px;
-  box-shadow: 0 0 12px rgba(147, 51, 234, 0.4), inset 0 0 10px rgba(0, 0, 0, 0.9);
+  width: 54px;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
 }
 
 .inspect-ability-socket:hover {
-  transform: translateY(-2px) scale(1.06);
-  border-color: #c084fc;
-  box-shadow: 0 0 18px rgba(192, 132, 252, 0.8), inset 0 0 8px rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px) scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(192, 132, 252, 0.9));
 }
 
-.inspect-ability-icon-symbol {
-  font-size: 22px;
-  color: #d8b4fe;
-  text-shadow: 0 0 8px rgba(192, 132, 252, 0.85);
-  user-select: none;
+.inspect-ability-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .inspect-ability-name {
@@ -433,36 +420,37 @@
   margin: 8px 0;
 }
 
-.carousel-nav-arrow {
-  width: 42px;
-  height: 64px;
-  background: rgba(14, 10, 22, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 4px;
-  color: #d4af37;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.carousel-nav-arrow.arrow-left {
+  width: 38px;
+  height: 60px;
+  background: url('/textures/ui/btn_chevron_left.png') center center / contain no-repeat;
+  border: none;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s, color 0.2s;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
 }
 
-.carousel-nav-arrow .arrow-chevron {
-  font-size: 24px;
-  line-height: 1;
+.carousel-nav-arrow.arrow-right {
+  width: 38px;
+  height: 60px;
+  background: url('/textures/ui/btn_chevron_right.png') center center / contain no-repeat;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s;
+  flex-shrink: 0;
 }
 
 .carousel-nav-arrow:hover {
-  transform: scale(1.12);
-  color: #fef08a;
-  border-color: #facc15;
-  box-shadow: 0 0 18px rgba(234, 179, 8, 0.7);
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.85));
 }
 
 .carousel-nav-arrow:active {
   transform: scale(0.94);
+}
+
+.carousel-nav-arrow .arrow-chevron {
+  display: none;
 }
 
 .char-roster-viewport {
@@ -485,13 +473,13 @@
   width: max-content;
 }
 
-/* Vertical Portrait Cards (3:4 ratio) */
+/* Vertical Portrait Cards (3:4 ratio with 9-Slice Overlays) */
 .char-roster-card {
   position: relative;
   width: clamp(118px, 10.5vw, 142px);
   height: clamp(168px, 15vh, 202px);
   cursor: pointer;
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s, filter 0.22s;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.22s;
   user-select: none;
   flex-shrink: 0;
   outline: none;
@@ -507,7 +495,6 @@
   width: 100%;
   height: 100%;
   background: #090610;
-  border: 1.5px solid rgba(75, 65, 85, 0.65);
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.85);
@@ -525,11 +512,17 @@
   transform: scale(1.06);
 }
 
+/* 9-Slice Normal Card Overlay */
 .char-card-frame-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.95);
+  border-style: solid;
+  border-width: 14px;
+  border-image-source: url('/textures/ui/frame_card_normal_9slice.png');
+  border-image-slice: 48 fill;
+  border-image-repeat: stretch;
+  box-sizing: border-box;
 }
 
 /* Card Name Plaque at bottom of card */
@@ -555,15 +548,19 @@
   text-overflow: ellipsis;
 }
 
-/* Selected Hero Card (Radiant Gold Filigree) */
+/* Selected Hero Card (9-Slice Radiant Gold Filigree) */
 .char-roster-card.card-selected {
   transform: translateY(-8px) scale(1.06);
 }
 
-.char-roster-card.card-selected .char-card-frame-container {
-  border: 2px solid #facc15 !important;
-  box-shadow: 0 0 28px rgba(250, 204, 21, 0.85),
-              inset 0 0 14px rgba(250, 204, 21, 0.45) !important;
+.char-roster-card.card-selected .char-card-frame-overlay {
+  border-style: solid;
+  border-width: 16px;
+  border-image-source: url('/textures/ui/frame_card_selected_9slice.png');
+  border-image-slice: 48 fill;
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.9));
+  box-sizing: border-box;
 }
 
 .char-roster-card.card-selected .char-roster-card-name {
@@ -591,7 +588,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Footer Action Bar
+   Footer Action Bar (Master Blank Raster Button Assets)
    -------------------------------------------------------------------------- */
 .char-select-bottom-actions {
   display: flex;
@@ -605,11 +602,9 @@
 /* Left Button ("BACK") */
 .char-action-btn-back {
   width: clamp(140px, 14vw, 180px);
-  height: 48px;
-  background: linear-gradient(180deg, #1f1b26 0%, #110e17 100%);
-  border: 1px solid rgba(160, 140, 120, 0.45);
-  border-radius: 3px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+  height: clamp(48px, 5.2vh, 56px);
+  background: url('/textures/ui/btn_gothic_back_blank.png') center center / 100% 100% no-repeat;
+  border: none;
   color: #cbd5e1;
   font-family: 'Cinzel', Georgia, serif;
   font-size: 13px;
@@ -619,14 +614,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.18s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: transform 0.18s, filter 0.18s;
   user-select: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
 }
 
 .char-action-btn-back:hover {
-  border-color: rgba(212, 175, 55, 0.75);
+  filter: brightness(1.25) drop-shadow(0 0 14px rgba(212, 175, 55, 0.5));
   color: #fff;
-  box-shadow: 0 0 18px rgba(212, 175, 55, 0.45);
   transform: scale(1.02);
 }
 
@@ -634,16 +629,12 @@
   transform: scale(0.97);
 }
 
-/* Right Button ("ENTER RIFT") - Burning Fiery Lava Button */
+/* Right Button ("ENTER RIFT") - Burning Fiery Lava Button Asset */
 .char-action-btn-play {
   width: clamp(230px, 22vw, 290px);
-  height: 56px;
-  background: linear-gradient(180deg, #b91c1c 0%, #ea580c 38%, #c2410c 70%, #7c2d12 100%);
-  border: 2px solid #fdba74;
-  border-radius: 4px;
-  box-shadow: 0 0 32px rgba(249, 115, 22, 0.85),
-              inset 0 0 18px rgba(254, 240, 138, 0.75),
-              inset 0 2px 4px #fff;
+  height: clamp(62px, 6.8vh, 74px);
+  background: url('/textures/ui/btn_enter_rift_blank.png') center center / 100% 100% no-repeat;
+  border: none;
   color: #fff7ed;
   font-family: 'Cinzel', Georgia, serif;
   font-size: clamp(15px, 1.5vw, 18px);
@@ -656,23 +647,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: filter 0.2s, transform 0.18s, box-shadow 0.2s;
+  transition: filter 0.2s, transform 0.18s;
   user-select: none;
-  animation: pulseFieryRift 3s infinite ease-in-out;
-}
-
-@keyframes pulseFieryRift {
-  0%, 100% {
-    box-shadow: 0 0 28px rgba(249, 115, 22, 0.75), inset 0 0 16px rgba(254, 240, 138, 0.65);
-  }
-  50% {
-    box-shadow: 0 0 46px rgba(249, 115, 22, 1), inset 0 0 24px rgba(254, 240, 138, 0.9);
-  }
+  filter: drop-shadow(0 0 16px rgba(249, 115, 22, 0.7));
 }
 
 .char-action-btn-play:hover {
-  filter: brightness(1.15);
-  box-shadow: 0 0 50px rgba(249, 115, 22, 1), inset 0 0 24px rgba(254, 240, 138, 0.9);
+  filter: brightness(1.2) drop-shadow(0 0 24px rgba(249, 115, 22, 1));
   transform: scale(1.03);
 }
 
@@ -681,12 +662,9 @@
 }
 
 .char-action-btn-play.btn-locked {
-  background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
-  border-color: #64748b;
+  filter: grayscale(0.8) brightness(0.6);
   color: #94a3b8;
   text-shadow: none;
-  box-shadow: none;
-  animation: none;
   font-size: 11.5px;
   letter-spacing: 1.5px;
 }
