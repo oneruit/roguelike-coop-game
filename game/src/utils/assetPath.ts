@@ -33,5 +33,12 @@ export function getAssetUrl(path: string): string {
     return cleanBase.startsWith('/') ? `/${cleanPath}` : `./${cleanPath}`;
   }
 
+  // If base is relative and we are inside /game/ subpath
+  if (cleanBase === './') {
+    if (typeof window !== 'undefined' && window.location.pathname.includes('/game/')) {
+      return `../${cleanPath}`;
+    }
+  }
+
   return `${cleanBase}${cleanPath}`;
 }

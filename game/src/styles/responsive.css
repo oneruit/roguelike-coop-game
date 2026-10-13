@@ -108,13 +108,14 @@
   /* Quests Modal Responsive Spread */
   .quest-modal-container {
     width: 96vw !important;
-    max-height: 94vh !important;
+    max-height: 96vh !important;
+    padding-top: 24px !important;
   }
 
   .quest-book-top-plaque {
     min-width: 190px !important;
-    height: 38px !important;
-    top: -16px !important;
+    height: 36px !important;
+    top: 2px !important;
     padding: 0 16px !important;
   }
 
@@ -123,7 +124,7 @@
   }
 
   .quest-top-controls {
-    top: -40px !important;
+    top: -10px !important;
   }
 
   .quest-account-badge {
