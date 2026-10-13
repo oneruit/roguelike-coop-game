@@ -55,7 +55,13 @@ export class TextureManager {
     const rel = url.substring('/textures/'.length);
     if (rel.includes('/')) return url;
 
-    if (rel.startsWith('hero_')) return `/textures/heroes/${rel}`;
+    if (rel.startsWith('hero_')) {
+      const match = rel.match(/^hero_([a-z0-9_]+)_(idle|walk|attack|front|portrait|walk_attack)\.png$/);
+      if (match) {
+        return `/textures/heroes/${match[1]}/${match[2]}.png`;
+      }
+      return `/textures/heroes/${rel}`;
+    }
     if (rel.startsWith('monster_')) return `/textures/monsters/${rel}`;
     if (rel.startsWith('boss_')) return `/textures/bosses/${rel}`;
     if (rel.startsWith('weapon_')) return `/textures/weapons/${rel}`;
@@ -504,11 +510,12 @@ export class TextureManager {
       return tex;
     };
 
+    const cleanId = baseName.replace(/^hero_/, '');
     return {
-      idle: loadPixel(`/textures/heroes/${baseName}_idle.png`),
-      walk: loadPixel(`/textures/heroes/${baseName}_walk.png`),
-      attack: loadPixel(`/textures/heroes/${baseName}_attack.png`),
-      walk_attack: loadPixel(`/textures/heroes/${baseName}_walk_attack.png`)
+      idle: loadPixel(`/textures/heroes/${cleanId}/idle.png`),
+      walk: loadPixel(`/textures/heroes/${cleanId}/walk.png`),
+      attack: loadPixel(`/textures/heroes/${cleanId}/attack.png`),
+      walk_attack: loadPixel(`/textures/heroes/${cleanId}/walk_attack.png`)
     };
   }
 

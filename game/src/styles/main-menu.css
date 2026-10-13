@@ -1,7 +1,14 @@
 /* ==========================================================================
    MAIN MENU & SCENIC NIGHT LANDSCAPE
    ========================================================================== */
-.main-menu-modal {
+.main-menu-modal.hidden,
+#main-menu-modal.hidden {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.main-menu-modal:not(.hidden) {
   display: flex !important;
   align-items: flex-end !important;
   justify-content: flex-start !important;

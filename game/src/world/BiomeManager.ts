@@ -13,7 +13,7 @@ import {
   HemisphereLight
 } from 'three';
 import { TerrainMaterials } from './TerrainProps';
-import { getAssetUrl } from '../utils/assetPath';
+import { AssetResolver } from '../utils/AssetResolver';
 
 export interface BiomeLightingConfig {
   fogColor: number;
@@ -257,7 +257,7 @@ export class BiomeManager {
   public static getBiomeTexture(biomeId: string): Texture {
     let tex = this.biomeTextures.get(biomeId);
     if (!tex) {
-      tex = this.textureLoader.load(getAssetUrl(`/textures/biomes/biome_${biomeId}.jpg`));
+      tex = this.textureLoader.load(AssetResolver.getBiomeTexture(biomeId, 'surface'));
       tex.wrapS = RepeatWrapping;
       tex.wrapT = RepeatWrapping;
       tex.colorSpace = SRGBColorSpace;

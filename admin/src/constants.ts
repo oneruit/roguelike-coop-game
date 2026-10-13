@@ -2,7 +2,6 @@ import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../game/s
 import { GameBalanceState } from '../../game/src/balance/BalanceTypes';
 
 export const TEXTURE_MAP: Record<string, string> = {
-  'hero-invoker':'/textures/heroes/hero_invoker_front.png',
   'weapon-invoker_invoke':'/textures/weapons/weapon_invoker_invoke.png',
   ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => ['weapon-'+invokerWeaponId(spell),'/textures/weapons/weapon_'+invokerWeaponId(spell)+'.png'])),
   // Weapons
@@ -22,15 +21,16 @@ export const TEXTURE_MAP: Record<string, string> = {
   'weapon-assault_rifle': '/textures/weapons/weapon_assault_rifle.png',
 
   // Heroes
-  'hero-ronin': '/textures/heroes/hero_ronin_front.png',
-  'hero-valkyrie': '/textures/heroes/hero_valkyrie_front.png',
-  'hero-flail': '/textures/heroes/hero_flail_front.png',
-  'hero-sorceress': '/textures/heroes/hero_sorceress_front.png',
-  'hero-chakram': '/textures/heroes/hero_chakram_front.png',
-  'hero-archer': '/textures/heroes/hero_archer_front.png',
-  'hero-rocket': '/textures/heroes/hero_rocket_front.png',
-  'hero-necromancer': '/textures/heroes/hero_necromancer_front.png',
-  'hero-amazon': '/textures/heroes/hero_amazon_front.png',
+  'hero-ronin': '/textures/heroes/ronin/front.png',
+  'hero-valkyrie': '/textures/heroes/valkyrie/front.png',
+  'hero-flail': '/textures/heroes/flail/front.png',
+  'hero-sorceress': '/textures/heroes/sorceress/front.png',
+  'hero-chakram': '/textures/heroes/chakram/front.png',
+  'hero-archer': '/textures/heroes/archer/front.png',
+  'hero-rocket': '/textures/heroes/rocket/front.png',
+  'hero-necromancer': '/textures/heroes/necromancer/front.png',
+  'hero-amazon': '/textures/heroes/amazon/front.png',
+  'hero-invoker': '/textures/heroes/invoker/front.png',
 
   // Monsters
   'monster-coyote': '/textures/monsters/monster_coyote_front.png',
@@ -162,7 +162,7 @@ export function getEntityTexture(category: string, id: string): string {
   if (!rawPath) {
     switch (singular) {
       case 'hero':
-        rawPath = `/textures/heroes/hero_${cleanId}_front.png`;
+        rawPath = `/textures/heroes/${cleanId}/front.png`;
         break;
       case 'weapon':
         rawPath = `/textures/weapons/weapon_${cleanId}.png`;

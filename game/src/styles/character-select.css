@@ -2,7 +2,14 @@
    CHARACTER SELECT (Dark Fantasy ARPG / Diablo & Rift Style)
    ========================================================================== */
 
-.character-select-modal {
+.character-select-modal.hidden,
+#character-select-modal.hidden {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.character-select-modal:not(.hidden) {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

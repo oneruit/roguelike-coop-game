@@ -2,6 +2,8 @@ import { CharacterType } from '../../entities/Player';
 import { ProgressionManager } from '../../core/ProgressionManager';
 import { DEFAULT_BALANCE } from '../../balance/defaultBalance';
 import { getHeroName, getWeaponIconUrl } from './HeroUIHelpers';
+import { AssetResolver } from '../../utils/AssetResolver';
+import { SafeDOM } from '../core/SafeDOM';
 
 export interface CharacterSelectUIOptions {
   modal: HTMLElement;
@@ -40,7 +42,7 @@ export class CharacterSelectUI {
   }
 
   private init() {
-    this.canvas = document.getElementById('char-hero-preview-canvas') as HTMLCanvasElement | null;
+    this.canvas = SafeDOM.getElementById<HTMLCanvasElement>('char-hero-preview-canvas');
     if (this.canvas) {
       this.ctx = this.canvas.getContext('2d');
     }
@@ -57,16 +59,16 @@ export class CharacterSelectUI {
     ];
     heroIds.forEach((id) => {
       const img = new Image();
-      img.src = `/textures/heroes/hero_${id}_idle.png`;
+      img.src = AssetResolver.getHeroTexture(id, 'idle');
       this.imageCache.set(id, img);
     });
   }
 
   private bindEvents() {
     // Carousel navigation buttons
-    const prevBtn = document.getElementById('char-carousel-prev');
-    const nextBtn = document.getElementById('char-carousel-next');
-    const track = document.getElementById('char-carousel-track');
+    const prevBtn = SafeDOM.getElementById('char-carousel-prev');
+    const nextBtn = SafeDOM.getElementById('char-carousel-next');
+    const track = SafeDOM.getElementById('char-carousel-track');
 
     prevBtn?.addEventListener('click', () => {
       if (track) {
@@ -104,13 +106,13 @@ export class CharacterSelectUI {
     });
 
     // Back button
-    const backBtn = document.getElementById('btn-char-select-back');
+    const backBtn = SafeDOM.getElementById('btn-char-select-back');
     backBtn?.addEventListener('click', () => {
       this.onBack();
     });
 
     // Enter Rift / Play button
-    const playBtn = document.getElementById('btn-char-select-play');
+    const playBtn = SafeDOM.getElementById('btn-char-select-play');
     playBtn?.addEventListener('click', () => {
       this.attemptLaunch();
     });
@@ -197,7 +199,7 @@ export class CharacterSelectUI {
     let img = this.imageCache.get(hero);
     if (!img) {
       img = new Image();
-      img.src = `/textures/heroes/hero_${hero}_idle.png`;
+      img.src = AssetResolver.getHeroTexture(hero, 'idle');
       this.imageCache.set(hero, img);
     }
     this.currentIdleImage = img;
