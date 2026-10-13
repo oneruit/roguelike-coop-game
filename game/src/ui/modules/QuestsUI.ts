@@ -133,7 +133,7 @@ export class QuestsUI {
           id: 'valkyrie',
           chapter: 1,
           heroType: 'valkyrie',
-          title: `Глава 1: Пробуждение (${pVal.label})`,
+          title: 'Глава I: Пробуждение',
           icon: '/textures/quests/quest_icon_chapter1.png',
           barColor: 'purple',
           progressVal: pVal,
@@ -149,12 +149,12 @@ export class QuestsUI {
           id: 'flail',
           chapter: 1,
           heroType: 'flail',
-          title: 'Сбор Ресурсов (5/10)',
+          title: 'Заготовка древесины',
           icon: '/textures/quests/quest_icon_resources_wood.png',
           barColor: 'cyan',
           progressVal: { current: 5, max: 10, label: '5/10', isComplete: false },
           targetAvatar: '/textures/heroes/hero_flail_front.png',
-          desc: 'Бригитта собирает редкую древесину и ветви в чаще для укрепления лагеря и ковки цепей своего оружия.',
+          desc: 'Бригитта укрепляет оборонительный лагерь и куёт цепи своего оружия. Отыщите прочную древнюю древесину в лесных массивах Разлома.',
           steps: [
             'Исследуйте лесные чащи и рощи Разлома.',
             'Соберите 10 единиц древней древесины (собрано: 5/10).'
@@ -165,7 +165,7 @@ export class QuestsUI {
           id: 'sorceress',
           chapter: 1,
           heroType: 'sorceress',
-          title: `Глава на Лешена (${pSorc.label})`,
+          title: 'Охота на Стража Разлома',
           icon: '/textures/quests/quest_icon_chapter_leshen.png',
           barColor: 'purple',
           progressVal: pSorc,
@@ -181,13 +181,13 @@ export class QuestsUI {
           id: 'chakram',
           chapter: 1,
           heroType: 'chakram',
-          title: `Охота на Лешего (${pChak.label})`,
+          title: 'Охота на Лешего',
           icon: '/textures/quests/quest_icon_leshy.png',
           iconBoxClass: 'icon-box-leshy',
           barColor: 'purple',
           progressVal: pChak,
           targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Найти следы в чаще.\nСобрать 3 корня аконита.\nПобедить Лешего.',
+          desc: 'Древний дух чащи пробудился под тёмным влиянием Разлома. Выследите Лешего по лесным тропам, соберите редкие корни аконита и очистите чащу, чтобы освободить Киру.',
           steps: [
             'Найти следы в чаще.',
             'Собрать 3 корня аконита.',
@@ -199,10 +199,10 @@ export class QuestsUI {
           id: 'archer',
           chapter: 1,
           heroType: 'archer',
-          title: 'Сбор Ресурсов (5/1)',
+          title: 'Добыча руды',
           icon: '/textures/quests/quest_icon_resources_ore.png',
           barColor: 'orange',
-          progressVal: { current: 55, max: 100, label: '55/10', isComplete: false },
+          progressVal: { current: 55, max: 100, label: '55/100', isComplete: false },
           targetAvatar: '/textures/heroes/hero_archer_front.png',
           desc: 'Добыть кристаллическую руду и редкие минералы в шахтах Разлома для наконечников эльфийских стрел.',
           steps: [
@@ -219,13 +219,13 @@ export class QuestsUI {
           id: 'chakram',
           chapter: 2,
           heroType: 'chakram',
-          title: `Охота на Лешего (${pChak.label})`,
+          title: 'Охота на Лешего',
           icon: '/textures/quests/quest_icon_leshy.png',
           iconBoxClass: 'icon-box-leshy',
           barColor: 'purple',
           progressVal: pChak,
           targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Найти следы в чаще.\nСобрать 3 корня аконита.\nПобедить Лешего.',
+          desc: 'Древний дух чащи пробудился под тёмным влиянием Разлома. Выследите Лешего по лесным тропам, соберите редкие корни аконита и очистите чащу, чтобы освободить Киру.',
           steps: [
             'Найти следы в чаще.',
             'Собрать 3 корня аконита.',
@@ -236,7 +236,7 @@ export class QuestsUI {
         {
           id: 'leshen_tracks',
           chapter: 2,
-          title: 'Следы в темной чаще (1/3)',
+          title: 'Следы в тёмной чаще',
           icon: '/textures/quests/quest_icon_chapter_leshen.png',
           barColor: 'purple',
           progressVal: {
@@ -257,7 +257,7 @@ export class QuestsUI {
         {
           id: 'aconite_herbs',
           chapter: 2,
-          title: 'Сбор корня аконита (3/3)',
+          title: 'Сбор корня аконита',
           icon: '/textures/quests/quest_icon_resources_wood.png',
           barColor: 'cyan',
           progressVal: {
@@ -278,7 +278,7 @@ export class QuestsUI {
         {
           id: 'purge_woods',
           chapter: 2,
-          title: 'Очищение рощи (0/1)',
+          title: 'Очищение рощи',
           icon: '/textures/quests/quest_icon_chapter1.png',
           barColor: 'purple',
           progressVal: {
@@ -307,7 +307,7 @@ export class QuestsUI {
           id: 'sorceress',
           chapter: 3,
           heroType: 'sorceress',
-          title: `Охота на Стража (${pSorc.label})`,
+          title: 'Охота на Стража Разлома',
           icon: '/textures/quests/quest_icon_chapter_leshen.png',
           barColor: 'purple',
           progressVal: pSorc,
@@ -323,7 +323,7 @@ export class QuestsUI {
           id: 'flail',
           chapter: 3,
           heroType: 'flail',
-          title: `Золотая лихорадка (${pFlail.label})`,
+          title: 'Золотая лихорадка',
           icon: '/textures/quests/quest_icon_resources_ore.png',
           barColor: 'orange',
           progressVal: pFlail,
@@ -339,7 +339,7 @@ export class QuestsUI {
           id: 'valkyrie',
           chapter: 3,
           heroType: 'valkyrie',
-          title: `Испытание ветерана (${pVal.label})`,
+          title: 'Испытание ветерана',
           icon: '/textures/quests/quest_icon_chapter1.png',
           barColor: 'purple',
           progressVal: pVal,
@@ -362,7 +362,7 @@ export class QuestsUI {
           id: 'archer',
           chapter: 4,
           heroType: 'archer',
-          title: `Контракт Следопыта (${pArch.label})`,
+          title: 'Контракт Следопыта',
           icon: '/textures/quests/quest_icon_resources_ore.png',
           barColor: 'orange',
           progressVal: pArch,
@@ -377,7 +377,7 @@ export class QuestsUI {
         {
           id: 'monster_slayer',
           chapter: 4,
-          title: `Истребитель чудовищ (${kills}/100)`,
+          title: 'Истребитель чудовищ',
           icon: '/textures/quests/quest_icon_leshy.png',
           barColor: 'purple',
           progressVal: { current: kills, max: 100, label: `${kills}/100`, isComplete: kills >= 100 },
@@ -392,7 +392,7 @@ export class QuestsUI {
         {
           id: 'treasury',
           chapter: 4,
-          title: `Казна следопытов (${coins}/500)`,
+          title: 'Казна следопытов',
           icon: '/textures/quests/quest_icon_resources_wood.png',
           barColor: 'cyan',
           progressVal: { current: coins, max: 500, label: `${coins}/500`, isComplete: coins >= 500 },
@@ -456,16 +456,20 @@ export class QuestsUI {
         if (q.progressVal.isComplete) barClass += ' complete';
 
         const iconBoxClass = q.iconBoxClass ? `quest-item-icon-box ${q.iconBoxClass}` : 'quest-item-icon-box';
+        const isComplete = q.progressVal.isComplete;
+        const badgeText = isComplete ? '✓ Готово' : q.progressVal.label;
 
         itemEl.innerHTML = `
           <div class="${iconBoxClass}">
             <img src="${getAssetUrl(q.icon)}" class="quest-item-avatar" alt="${q.title}" />
           </div>
           <div class="quest-item-info">
-            <div class="quest-item-title">${q.title}</div>
+            <div class="quest-item-row-top">
+              <div class="quest-item-title" title="${q.title}">${q.title}</div>
+              <span class="quest-item-badge${isComplete ? ' complete' : ''}">${badgeText}</span>
+            </div>
             <div class="quest-item-bar-wrap">
               <div class="quest-item-bar-fill${barClass}" style="width: ${pct}%;"></div>
-              <span class="quest-item-bar-val">${q.progressVal.label}</span>
             </div>
           </div>
         `;
@@ -492,7 +496,7 @@ export class QuestsUI {
 
     const titleEl = document.getElementById('quest-right-title');
     if (titleEl) {
-      titleEl.innerText = activeQuest.title.replace(/\s*\(\d+\/\d+\)$/, '').replace(/\s*\(.*\)$/, '');
+      titleEl.innerText = activeQuest.title;
     }
 
     const descEl = document.getElementById('quest-right-desc');
@@ -524,7 +528,7 @@ export class QuestsUI {
         if (isDone) stepRow.classList.add('done');
 
         stepRow.innerHTML = `
-          <span class="step-num">${idx + 1}.</span>
+          <span class="step-num">${isDone ? '✓' : (idx + 1) + '.'}</span>
           <span class="step-text">${stepText}</span>
           <span class="step-check">${isDone ? '✓' : '○'}</span>
         `;
@@ -539,6 +543,19 @@ export class QuestsUI {
     const chestEl = document.getElementById('reward-val-chest');
     if (chestEl) chestEl.innerText = String(activeQuest.rewards.chest);
 
+    const heroSlotEl = document.getElementById('reward-slot-hero');
+    const heroAvatarEl = document.getElementById('reward-hero-avatar') as HTMLImageElement | null;
+    if (heroSlotEl) {
+      if (activeQuest.heroType) {
+        heroSlotEl.classList.remove('hidden');
+        const hDef = prog.getHeroQuestDefinition(activeQuest.heroType);
+        heroSlotEl.setAttribute('title', `Награда: Разблокировка героя ${hDef.heroName}`);
+        if (heroAvatarEl) heroAvatarEl.src = getAssetUrl(hDef.avatarIcon);
+      } else {
+        heroSlotEl.classList.add('hidden');
+      }
+    }
+
     const statusEl = document.getElementById('quest-action-status-text');
     const actionsEl = document.getElementById('quest-action-buttons');
     if (statusEl && actionsEl) {
@@ -550,14 +567,14 @@ export class QuestsUI {
         const hDef = prog.getHeroQuestDefinition(hero);
 
         if (isUnlocked) {
-          statusEl.innerText = `Герой ${hDef.heroName} ${hDef.heroSubtitle} успешно разблокирован(а) и доступен(на) в игре!`;
+          statusEl.innerHTML = `<span class="quest-status-success">✓ Задание выполнено! Герой <strong>${hDef.heroName}</strong> ${hDef.heroSubtitle} доступен(на) в игре.</span>`;
           actionsEl.innerHTML = `<div class="quest-btn-unlocked-badge">✓ РАЗБЛОКИРОВАНО</div>`;
         } else {
           if (hero === 'archer') {
             const canAfford = prog.data.walletCoins >= 100;
             const canAchieve = prog.canUnlockElfByAchievement();
 
-            statusEl.innerText = `Условия: 100 🪙 в кошельке (баланс: ${prog.data.walletCoins} 🪙) ИЛИ 100 убийств монстров (убито: ${prog.data.enemiesKilled}/100)`;
+            statusEl.innerHTML = `Условия: <strong>100 🪙</strong> в кошельке (баланс: ${prog.data.walletCoins} 🪙) ИЛИ <strong>100 побед</strong> (${prog.data.enemiesKilled}/100)`;
 
             const buyBtn = document.createElement('button');
             buyBtn.className = 'quest-btn-buy';
@@ -591,7 +608,7 @@ export class QuestsUI {
           } else if (hero === 'chakram') {
             const stepsDone = prog.data.questLeshySteps.filter(Boolean).length;
             if (prog.data.questLeshyCompleted || stepsDone === 3) {
-              statusEl.innerText = 'Задание «Охота на Лешего» выполнено! Заберите награду.';
+              statusEl.innerHTML = '<span class="quest-status-ready">🎉 Все этапы выполнены! Заберите награду и разблокируйте героя.</span>';
               const claimBtn = document.createElement('button');
               claimBtn.className = 'quest-btn-claim';
               claimBtn.type = 'button';
@@ -604,7 +621,7 @@ export class QuestsUI {
               });
               actionsEl.appendChild(claimBtn);
             } else {
-              statusEl.innerText = `Выполнено шагов: ${stepsDone} / 3. Завершите этапы в игре или подтвердите выполнение ниже.`;
+              statusEl.innerText = `Выполнено шагов: ${stepsDone} из 3. Завершите этапы в Разломе или подтвердите шаг:`;
               const nextStepIdx = prog.data.questLeshySteps.findIndex((s) => !s);
               if (nextStepIdx >= 0 && nextStepIdx <= 2) {
                 const validStepIdx = nextStepIdx as 0 | 1 | 2;
@@ -623,7 +640,7 @@ export class QuestsUI {
           } else {
             const p = prog.getHeroProgress(hero);
             if (p.isComplete) {
-              statusEl.innerText = 'Условие выполнено! Заберите награду и разблокируйте героя.';
+              statusEl.innerHTML = '<span class="quest-status-ready">🎉 Условие выполнено! Заберите награду и разблокируйте героя.</span>';
               const claimBtn = document.createElement('button');
               claimBtn.className = 'quest-btn-claim';
               claimBtn.type = 'button';
@@ -642,7 +659,7 @@ export class QuestsUI {
         }
       } else {
         if (activeQuest.progressVal.isComplete) {
-          statusEl.innerText = 'Задание главы выполнено! Награда получена.';
+          statusEl.innerHTML = '<span class="quest-status-success">✓ Задание главы выполнено! Награда получена.</span>';
           actionsEl.innerHTML = `<div class="quest-btn-unlocked-badge">✓ ВЫПОЛНЕНО</div>`;
         } else {
           statusEl.innerText = `Прогресс задания: ${activeQuest.progressVal.label}. Завершите условия в Разломе.`;
