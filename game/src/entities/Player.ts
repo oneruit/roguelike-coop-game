@@ -17,7 +17,6 @@ import {
   type Scene,
   Sprite,
   SpriteMaterial,
-  type Texture,
   TorusGeometry,
   Vector3
 } from 'three';
@@ -50,10 +49,16 @@ export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
 import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
 import { PlayerStatusManager } from './PlayerStatusManager';
 import { renderPlayerOverhead } from './PlayerOverheadRenderer';
+import { PlayerMotor } from '../mechanics/player/PlayerMotor';
+import { PlayerStats } from '../mechanics/player/PlayerStats';
+import { PlayerAnimation } from '../mechanics/player/PlayerAnimation';
+import { GameEventBus } from '../mechanics/events/GameEventBus';
 
 export class Player {
   public mesh: Group;
   public position: Vector3;
+  public motor: PlayerMotor = new PlayerMotor();
+  public animation!: PlayerAnimation;
   private spriteMesh: Mesh;
   private spriteMaterial: MeshBasicMaterial;
   private customDepthMaterial!: MeshDepthMaterial;
@@ -248,6 +253,8 @@ export class Player {
     this.spriteMesh.customDepthMaterial = this.customDepthMaterial;
     this.spriteMesh.castShadow = true;
     this.mesh.add(this.spriteMesh);
+    this.animation = new PlayerAnimation({ spriteMesh: this.spriteMesh, spriteMaterial: this.spriteMaterial });
+    this.animation.loadCharacterTextures(this.charType);
 
     // Hero Light Glow
     const light = new PointLight(0xf59e0b, 1.4, 9);
@@ -541,112 +548,55 @@ export class Player {
       return false;
     }
 
-    this.isDashing = true;
-    this.dashTimer = this.dashDuration;
-    this.dashCooldown = this.maxDashCooldown;
+    const success = this.motor.triggerDash(moveDir, this.currentDir);
+    if (!success) return false;
 
-    if (moveDir.lengthSq() > 0.01) {
-      this.dashDirection.copy(moveDir).normalize();
-    } else {
-      const DIR_VEC_MAP: Record<SpriteDirection, Vector3> = {
-        front: new Vector3(0, 0, 1),
-        back: new Vector3(0, 0, -1),
-        left: new Vector3(-1, 0, 0),
-        right: new Vector3(1, 0, 0)
-      };
-      this.dashDirection.copy(DIR_VEC_MAP[this.currentDir]);
-    }
+    this.isDashing = this.motor.isDashing;
+    this.dashTimer = this.motor.dashTimer;
+    this.dashCooldown = this.motor.dashCooldown;
+    this.dashDirection.copy(this.motor.dashDirection);
 
     SoundManager.playDash();
+    GameEventBus.emit('player:dash', { cooldown: this.dashCooldown, maxCooldown: this.maxDashCooldown });
     return true;
   }
 
   public recalculateStats() {
-    let speedBonus = 0;
-    let dmgBonus = 0;
+    const stats = PlayerStats.recalculate(
+      this.baseMaxHp,
+      this.baseSpeed,
+      this.baseDamageMultiplier,
+      this.activeBuffs,
+      (id) => this.getItemStacks(id),
+      {
+        amplifierCount: this.amplifierCount,
+        mightElixirCount: this.mightElixirCount,
+        speedBootsCount: this.speedBootsCount,
+        flaskCount: this.flaskCount,
+        magnetCount: this.magnetCount,
+        amuletCount: this.amuletCount,
+        vestCount: this.vestCount,
+        watchCount: this.watchCount
+      },
+      {
+        isSpeedCheat: this.isSpeedCheat,
+        isOneHitKill: this.isOneHitKill
+      },
+      this.weapons
+    );
 
-    const ghostBuff = this.activeBuffs.get('ghost');
-    if (ghostBuff) speedBonus += ghostBuff.value;
-    const alacrityBuff = this.activeBuffs.get('alacrity');
-    if (alacrityBuff) dmgBonus += alacrityBuff.value;
-    const speedBuff = this.activeBuffs.get('speed');
-    if (speedBuff) speedBonus += speedBuff.value;
-
-    const dmgBuff = this.activeBuffs.get('damage');
-    if (dmgBuff) dmgBonus += dmgBuff.value;
-
-    // Apply Rift items passives
-    const adrenalineStacks = this.getItemStacks('adrenaline_dart');
-    const injectorStacks = this.getItemStacks('kinetic_injector');
-    const vialStacks = this.getItemStacks('health_vial');
-    const aegisStacks = this.getItemStacks('aegis_battery');
-    const critStacks = this.getItemStacks('crit_visor');
-    const titanHeartStacks = this.getItemStacks('titan_heart');
-    const overclockStacks = this.getItemStacks('overclock_module');
-    const voidCatalystStacks = this.getItemStacks('void_catalyst');
-
-    // Speed: +12% per Adrenaline Dart stack
-    speedBonus += adrenalineStacks * 0.12;
-
-    // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, NO LIMIT
-    this.passiveHpRegen = (this.amuletCount * 1.0) + (vialStacks * 2.5) + (titanHeartStacks * 15);
-
-    // Max Shield: +50 shield per Aegis Battery stack
-    this.maxShield = aegisStacks * 50;
+    this.passiveHpRegen = stats.hpRegen;
+    this.maxShield = stats.maxShield;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
-
-    // Crit Chance: 5% base + 6% per Crit Lens + 3% per Crit Visor, cap at 1.0 (100%)
-    const critLensStacks = this.getItemStacks('crit_lens');
-    this.critChance = Math.min(1.0, 0.05 + critLensStacks * 0.06 + critStacks * 0.03);
-
-    // Crit Damage: 50% base + 20% per Heavy Hollowpoint + 40% per Void Catalyst, cap at 10.0 (1000%)
-    const hollowStacks = this.getItemStacks('heavy_hollowpoint');
-    this.critDamage = Math.min(10.0, 0.50 + hollowStacks * 0.20 + voidCatalystStacks * 0.40);
-
-    // Leather Vest % damage reduction: 2% at level 1, diminishing returns up to 70% at level 300, capped at 70%
-    if (this.vestCount <= 0) {
-      this.passiveDamageReduction = 0;
-    } else {
-      this.passiveDamageReduction = Math.min(0.70, 0.02 * Math.pow(this.vestCount, Math.log(35) / Math.log(300)));
-    }
-
-    // Attack Cooldown Multiplier:
-    // Pocket watch: -1% at level 1, diminishing returns up to 30% at level 300, capped at 30% reduction (floor 0.70)
-    // Kinetic Injector (Common): -10% cooldown per stack (0.90^stacks)
-    // Overclock module (Uncommon): -18% cooldown per stack (0.82^stacks)
-    // Combined floor 0.15
-    const watchReduction = this.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)));
-    const watchMult = 1 - watchReduction;
-    const injectorMult = Math.pow(0.90, injectorStacks);
-    const overclockMult = Math.pow(0.82, overclockStacks);
-    this.passiveCooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);
-    for (const weapon of this.weapons) {
-      weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
-    }
-
-    // Magnet (formerly Magnet Lasso) pickup radius: base 4m, +10% at level 1 (+0.4m), diminishing returns up to 50m at level 300, capped at 50m
-    if (this.magnetCount <= 0) {
-      this.pickupRadius = 4.0;
-    } else {
-      this.pickupRadius = Math.min(50.0, 4.0 + 0.4 * Math.pow(this.magnetCount, Math.log((50.0 - 4.0) / 0.4) / Math.log(300)));
-    }
-
-    // Speed Boots (formerly Cowboy Spurs): +3% speed at level 1, diminishing returns up to x3.0 at level 300, capped at x3.0
-    const bootsBonus = this.speedBootsCount <= 0 ? 0 : 0.03 * Math.pow(this.speedBootsCount, Math.log(200 / 3) / Math.log(300));
-    this.passiveSpeedMultiplier = Math.min(3.0, 1.0 + bootsBonus);
-
-    // Apply speed cheat or base speed * passive multiplier + speed buff
-    const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
-    this.speed = baseSpd * (1 + speedBonus);
-
-    // Amplifier (formerly Sheriff Star) additive scaling: 100 stacks = +200%, 138 stacks = +276%
-    // Elixir of Might: +5% damage per stack (+0.05)
-    this.passiveDamageMultiplier = 1.0 + (this.amplifierCount * 0.02) + (this.mightElixirCount * 0.05);
-
-    // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
-    const ampMult = (1 + this.getItemStacks('energy_amplifier') * 0.18) * (1 + this.getItemStacks('void_catalyst') * 0.15);
-    const baseDmg = this.isOneHitKill ? 50.0 : (this.baseDamageMultiplier * this.passiveDamageMultiplier * ampMult);
-    this.damageMultiplier = baseDmg * (1 + dmgBonus);
+    this.critChance = stats.critChance;
+    this.critDamage = stats.critDamage;
+    this.passiveDamageReduction = stats.damageReduction;
+    this.passiveCooldownMultiplier = stats.cooldownMultiplier;
+    this.pickupRadius = stats.pickupRadius;
+    this.passiveSpeedMultiplier = stats.passiveSpeedMultiplier;
+    this.speed = stats.speed;
+    this.passiveDamageMultiplier = stats.passiveDamageMultiplier;
+    this.damageMultiplier = stats.damageMultiplier;
   }
 
   /**
@@ -655,14 +605,16 @@ export class Player {
    * Other weapons receive 1.0 * general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst).
    */
   public getDamageMultiplier(weaponId?: string): number {
-    const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
-    const ampMult = (1 + this.getItemStacks('energy_amplifier') * 0.18) * (1 + this.getItemStacks('void_catalyst') * 0.15);
-    const generalBonus = (this.isOneHitKill ? 50.0 : this.passiveDamageMultiplier * ampMult) * (1 + dmgBonus);
-    const isStarting = !weaponId ||
-      weaponId === this.startingWeaponId ||
-      (this.charType === 'invoker' && (weaponId === 'invoker_invoke' || weaponId.startsWith('invoker_')));
-    const heroMultiplier = isStarting ? this.baseDamageMultiplier : 1.0;
-    return heroMultiplier * generalBonus;
+    return PlayerStats.getDamageMultiplier(
+      weaponId,
+      this.startingWeaponId,
+      this.isOneHitKill,
+      this.passiveDamageMultiplier,
+      (id) => this.getItemStacks(id),
+      this.activeBuffs,
+      this.baseDamageMultiplier,
+      this.charType
+    );
   }
 
   public addAmplifierBonus(_multiplier?: number) { this.amplifierCount++; this.recalculateStats(); }
@@ -781,20 +733,14 @@ export class Player {
     if (!this.isAlive) return;
 
     // Tactical Dash Cooldown & Movement
-    if (this.dashCooldown > 0) {
-      this.dashCooldown = Math.max(0, this.dashCooldown - dt);
-    }
-    if (this.isDashing) {
-      this.dashTimer -= dt;
-      this.position.addScaledVector(this.dashDirection, this.speed * 2.5 * dt);
-      if (obstacleManager) {
-        obstacleManager.resolveEntityCollision(this.position, 0.45);
-      }
+    const dashResult = this.motor.updateDash(dt, this.position, this.speed, obstacleManager);
+    this.isDashing = this.motor.isDashing;
+    this.dashTimer = this.motor.dashTimer;
+    this.dashCooldown = this.motor.dashCooldown;
+    if (dashResult.isDashing) {
       this.spriteMaterial.color.setHex(0x60a5fa);
-      if (this.dashTimer <= 0) {
-        this.isDashing = false;
-        this.spriteMaterial.color.setHex(0xffffff);
-      }
+    } else if (dashResult.justEnded) {
+      this.spriteMaterial.color.setHex(0xffffff);
     }
 
     // Shield Regeneration (Aegis Battery)
@@ -1009,67 +955,18 @@ export class Player {
   private updateAnimatedCharacterAnimation(dt: number, isMoving: boolean = false) {
     if (!this.animatedTextures) return;
 
+    this.animation.currentDir = this.currentDir;
+    this.animation.animState = this.animState;
+    this.animation.animFrameTimer = this.animFrameTimer;
+    this.animation.animatedTextures = this.animatedTextures;
+    this.animation.animator = this.animator;
+
+    this.animation.update(dt, isMoving, this.charType, this.spriteMaterial, this.customDepthMaterial);
+
+    this.animFrameTimer = this.animation.animFrameTimer;
     if (this.animator) {
-      this.animator.update(dt, isMoving, this.spriteMaterial, this.customDepthMaterial);
       this.animState = this.animator.animState;
-      return;
     }
-
-    // Config for each of the 4 states: texture, column frame count, and playback FPS
-    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: {
-        texture: this.animatedTextures.idle,
-        cols: 6,
-        fps: 8 // Smooth breathing/idle
-      },
-      WALK: {
-        texture: this.animatedTextures.walk,
-        cols: 6,
-        fps: 12 // Responsive run footsteps
-      },
-      ATTACK: {
-        texture: this.animatedTextures.attack,
-        cols: 6,
-        fps: 16 // Fast, punchy slash
-      },
-      WALK_ATTACK: {
-        texture: this.animatedTextures.walk_attack,
-        cols: 6,
-        fps: 14 // Dash cleave
-      }
-    };
-
-    const cfg = STATE_CONFIG[this.animState];
-    const tex = cfg.texture;
-
-    const img = (tex as any).image as { width?: number; height?: number } | undefined;
-    const dynamicCols = (img && img.width && img.height && img.height > 0)
-      ? Math.round((img.width / img.height) * 4)
-      : cfg.cols;
-
-    this.animFrameTimer += dt * cfg.fps;
-    const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
-
-    // Direction to row mapping:
-    // New 6x4 pipeline (necromancer): Row 0: front, Row 1: back, Row 2: left, Row 3: right
-    // Legacy 6x4 / 4x4 characters: Row 0: front, Row 1: left, Row 2: right, Row 3: back
-    const isNewStandard = this.charType === 'necromancer';
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = isNewStandard
-      ? { front: 0, back: 1, left: 2, right: 3 }
-      : { front: 0, left: 1, right: 2, back: 3 };
-    const row = DIR_ROW_MAP[this.currentDir];
-
-    if (this.spriteMaterial.map !== tex) {
-      this.spriteMaterial.map = tex;
-      if (this.customDepthMaterial) {
-        this.customDepthMaterial.map = tex;
-        this.customDepthMaterial.needsUpdate = true;
-      }
-    }
-
-    // Three.js UV repeat and offset mapping
-    tex.repeat.set(1 / dynamicCols, 1 / 4);
-    tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {
@@ -1106,6 +1003,7 @@ export class Player {
       this.spriteMaterial.color.setHex(0xff2222);
       SoundManager.playPlayerHurt();
       this.onDamageTaken?.(finalAmount, this.hp, this.maxHp);
+      GameEventBus.emit('player:damaged', { currentHp: this.hp, maxHp: this.maxHp, damage: finalAmount, isLocal: !this.isCoop });
     }
 
     // Check Chronos Phylactery (Legendary Item) lethal protection
@@ -1137,6 +1035,7 @@ export class Player {
         return false;
       }
       this.isAlive = false;
+      GameEventBus.emit('player:died', { isLocal: !this.isCoop, deathCount: 1 });
       return true;
     }
     return false;
@@ -1158,10 +1057,12 @@ export class Player {
       value: 1
     });
     SoundManager.playAltarCaptured();
+    GameEventBus.emit('player:revived', { isLocal: !this.isCoop });
   }
 
   public heal(amount: number) {
     this.hp = Math.min(this.maxHp, this.hp + amount);
+    GameEventBus.emit('player:healed', { currentHp: this.hp, maxHp: this.maxHp, amount, isLocal: !this.isCoop });
   }
 
   public fullHeal() {
@@ -1231,15 +1132,13 @@ export class Player {
   }
 
   public calculateXpToNextLevel(level: number): number {
-    const baseXp = 10;
-    const growth = 1.08;
-
-    return Math.floor(baseXp * Math.pow(level, 1.5) * growth);
+    return PlayerStats.calculateXpToNextLevel(level);
   }
 
   public addLevel(): boolean {
     this.level++;
     this.xpToNextLevel = this.calculateXpToNextLevel(this.level);
+    GameEventBus.emit('player:level_up', { newLevel: this.level, levelsGained: 1, isLocal: !this.isCoop });
     return true;
   }
 
@@ -1255,7 +1154,9 @@ export class Player {
     }
     if (levelsGained > 0 && this.onLevelGained) {
       this.onLevelGained(levelsGained);
+      GameEventBus.emit('player:level_up', { newLevel: this.level, levelsGained, isLocal: !this.isCoop });
     }
+    GameEventBus.emit('player:xp_gained', { xp: this.xp, xpToNextLevel: this.xpToNextLevel, level: this.level });
     return levelsGained;
   }
 

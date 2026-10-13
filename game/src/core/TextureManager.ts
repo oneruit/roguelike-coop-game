@@ -567,6 +567,14 @@ export class TextureManager {
     return this.loadAnimatedTextures('hero_amazon', renderer);
   }
 
+  public static hasCharacterAnimations(_charType?: string): boolean {
+    return true;
+  }
+
+  public static getCharacterAnimatedTextures(charType: string, renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures(charType, renderer);
+  }
+
   public static getBulletTexture(renderer?: WebGLRenderer): Texture {
     const tex = this.load('/textures/vfx/vfx_bullet.png', renderer);
     tex.magFilter = NearestFilter;
