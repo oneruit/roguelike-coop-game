@@ -3,7 +3,7 @@ import { SafeDOM } from '../../core/SafeDOM';
 import { CharacterType } from '../../../entities/Player';
 import { ProgressionManager } from '../../../core/ProgressionManager';
 import { DEFAULT_BALANCE } from '../../../balance/defaultBalance';
-import { getHeroName, getWeaponIconUrl } from '../../modules/HeroUIHelpers';
+import { getHeroDetails } from '../../modules/HeroUIHelpers';
 import { CharacterPreviewRenderer } from './CharacterPreviewRenderer';
 
 export interface CharacterSelectScreenOptions {
@@ -178,43 +178,49 @@ export class CharacterSelectScreen extends Screen {
     const heroData = DEFAULT_BALANCE.heroes[hero];
     if (!heroData) return;
 
+    const details = getHeroDetails(hero);
+
     const nameEl = SafeDOM.query(this.container, '#inspect-hero-name');
     const roleEl = SafeDOM.query(this.container, '#inspect-hero-role');
-    const weaponIcon = SafeDOM.query<HTMLImageElement>(this.container, '#inspect-weapon-icon');
-    const weaponName = SafeDOM.query(this.container, '#inspect-weapon-name');
-    const weaponStats = SafeDOM.query(this.container, '#inspect-weapon-stats');
 
-    if (nameEl) nameEl.textContent = getHeroName(hero);
-    if (roleEl) roleEl.textContent = heroData.role || 'Боец';
+    if (nameEl) nameEl.textContent = details.title;
+    if (roleEl) roleEl.textContent = details.role;
 
-    const weaponData = DEFAULT_BALANCE.weapons[heroData.startingWeapon];
-    if (weaponIcon) {
-      weaponIcon.src = getWeaponIconUrl(heroData.startingWeapon);
+    // Passive Trait
+    const passiveName = SafeDOM.query(this.container, '#inspect-passive-name');
+    if (passiveName) {
+      passiveName.textContent = details.passiveTrait.name;
     }
-    if (weaponName) {
-      weaponName.textContent = weaponData?.name || heroData.startingWeapon;
-    }
-    if (weaponStats && weaponData) {
-      weaponStats.textContent = `Базовый урон: ${weaponData.damage} • Кулдаун: ${weaponData.cooldown}с`;
+
+    // Active Abilities Grid (4 abilities)
+    const abilitiesGrid = SafeDOM.query(this.container, '#inspect-abilities-grid');
+    if (abilitiesGrid) {
+      abilitiesGrid.innerHTML = details.activeAbilities.map((ab, idx) => `
+        <div class="inspect-ability-card" title="${ab.name}">
+          <div class="inspect-ability-socket">
+            <span class="inspect-ability-icon-symbol">${this.getAbilityGlyph(idx)}</span>
+          </div>
+          <span class="inspect-ability-name">${ab.name}</span>
+        </div>
+      `).join('');
     }
 
     // Dynamic stat normalization
     const { maxHp, maxSpeed, maxDamage } = this.getStatCeilings();
 
     const hpBar = SafeDOM.query(this.container, '#inspect-stat-hp-bar');
-    const hpVal = SafeDOM.query(this.container, '#inspect-stat-hp-val');
     if (hpBar) hpBar.style.width = `${Math.min(100, Math.round((heroData.maxHp / maxHp) * 100))}%`;
-    if (hpVal) hpVal.textContent = `${heroData.maxHp} HP`;
-
-    const spdBar = SafeDOM.query(this.container, '#inspect-stat-spd-bar');
-    const spdVal = SafeDOM.query(this.container, '#inspect-stat-spd-val');
-    if (spdBar) spdBar.style.width = `${Math.min(100, Math.round((heroData.baseSpeed / maxSpeed) * 100))}%`;
-    if (spdVal) spdVal.textContent = `${heroData.baseSpeed}`;
 
     const dmgBar = SafeDOM.query(this.container, '#inspect-stat-dmg-bar');
-    const dmgVal = SafeDOM.query(this.container, '#inspect-stat-dmg-val');
     if (dmgBar) dmgBar.style.width = `${Math.min(100, Math.round((heroData.damageMultiplier / maxDamage) * 100))}%`;
-    if (dmgVal) dmgVal.textContent = `x${heroData.damageMultiplier.toFixed(2)}`;
+
+    const spdBar = SafeDOM.query(this.container, '#inspect-stat-spd-bar');
+    if (spdBar) spdBar.style.width = `${Math.min(100, Math.round((heroData.baseSpeed / maxSpeed) * 100))}%`;
+
+    const diffBar = SafeDOM.query(this.container, '#inspect-stat-diff-bar');
+    const diffVal = SafeDOM.query(this.container, '#inspect-stat-diff-val');
+    if (diffBar) diffBar.style.width = `${details.difficultyPercent}%`;
+    if (diffVal) diffVal.textContent = details.difficulty;
 
     // Update Play Button state (locked or ready)
     const isUnlocked = ProgressionManager.getInstance().isHeroUnlocked(hero);
@@ -222,12 +228,17 @@ export class CharacterSelectScreen extends Screen {
     if (playBtn) {
       if (isUnlocked) {
         playBtn.classList.remove('btn-locked');
-        playBtn.innerHTML = '<span class="btn-primary-text">В БОЙ</span>';
+        playBtn.innerHTML = '<span class="btn-primary-text">ENTER RIFT</span>';
       } else {
         playBtn.classList.add('btn-locked');
         playBtn.innerHTML = '<span class="btn-primary-text">🔒 РАЗБЛОКИРОВАТЬ В КВЕСТАХ</span>';
       }
     }
+  }
+
+  private getAbilityGlyph(idx: number): string {
+    const glyphs = ['▼', '🐾', '✦', '🗡️'];
+    return glyphs[idx] || '⚔️';
   }
 
   private getStatCeilings(): { maxHp: number; maxSpeed: number; maxDamage: number } {

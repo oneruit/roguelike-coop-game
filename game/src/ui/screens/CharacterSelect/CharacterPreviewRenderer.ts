@@ -95,18 +95,19 @@ export class CharacterPreviewRenderer {
     const srcX = this.currentFrameIndex * frameW;
     const srcY = 0; // Front row
 
-    // Draw hero centered and grounded on dais
-    const drawScale = 2.4;
+    // Draw hero centered and grounded on stone dais with normalized height
+    const targetH = 210;
+    const drawScale = targetH / frameH;
     const drawW = frameW * drawScale;
-    const drawH = frameH * drawScale;
+    const drawH = targetH;
     const drawX = (w - drawW) / 2;
-    const drawY = h - drawH - 12;
+    const drawY = h - drawH - 16;
 
-    // Soft drop shadow at feet
+    // Contact drop shadow at feet
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(w / 2, h - 18, drawW * 0.28, 12, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+    ctx.ellipse(w / 2, h - 20, Math.min(drawW * 0.32, 54), 10, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
     ctx.fill();
     ctx.restore();
 

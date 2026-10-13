@@ -2,98 +2,101 @@
         <div class="modal-backdrop char-select-backdrop"></div>
         <div class="char-select-container">
           
-          <!-- Top Header -->
-          <header class="char-select-top-header">
-            <div class="char-select-mode-badge">ОДИНОЧНЫЙ РЕЖИМ</div>
-            <h1 class="char-select-main-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
-          </header>
+          <!-- Top Discreet Options Bar (Training mode & Time of day) -->
+          <div class="char-select-options-bar">
+            <div class="training-mode-control" title="В тренировочном режиме статистика и прохождение заданий не учитываются, но доступен Dev-режим">
+              <label class="toggle-switch">
+                <input type="checkbox" id="training-mode-toggle" />
+                <span class="slider round"></span>
+              </label>
+              <span class="training-mode-title">DEV РЕЖИМ</span>
+            </div>
+
+            <div class="time-of-day-control">
+              <label for="select-time-of-day" class="time-of-day-label">ОСВЕЩЕНИЕ:</label>
+              <select id="select-time-of-day" class="time-of-day-select">
+                <option value="random" selected>🎲 Случайно</option>
+                <option value="day">☀️ День</option>
+                <option value="night">🌙 Ночь</option>
+              </select>
+            </div>
+          </div>
 
           <!-- Middle Stage & Inspector Layout -->
           <div class="char-select-center-layout">
             
             <!-- Hero Stage with Pedestal & Animated Sprite Canvas -->
             <div class="char-stage-viewport" id="char-stage-viewport">
-              <div class="char-stage-rune-circle"></div>
-              <canvas id="char-hero-preview-canvas" width="280" height="280" class="char-hero-canvas"></canvas>
+              <canvas id="char-hero-preview-canvas" width="340" height="340" class="char-hero-canvas"></canvas>
             </div>
 
-            <!-- Right Inspector Panel (9-slice dark iron frame) -->
+            <!-- Right Inspector Panel (Ornate Dark ARPG Frame) -->
             <aside class="char-inspect-panel" id="char-inspect-panel">
+              <div class="char-inspect-crest-ornament"></div>
               <div class="char-inspect-inner">
                 <header class="inspect-header-block">
-                  <h2 id="inspect-hero-name" class="inspect-hero-name">Рен «Ронин»</h2>
-                  <div id="inspect-hero-role" class="inspect-hero-role">Сбалансированный боец ближнего боя</div>
+                  <h2 id="inspect-hero-name" class="inspect-hero-name">РЕН — КЛИНОК ПУСТОТЫ</h2>
+                  <div id="inspect-hero-role" class="inspect-hero-role">Класс: Воин / Маг</div>
                 </header>
 
-                <div class="inspect-panel-divider"></div>
-
-                <!-- Starting Weapon -->
-                <section class="inspect-section inspect-weapon-box">
-                  <div class="inspect-section-caption">СТАРТОВОЕ ОРУЖИЕ</div>
-                  <div class="inspect-weapon-row">
-                    <div class="inspect-weapon-icon-frame">
-                      <img id="inspect-weapon-icon" class="inspect-weapon-icon-img" src="/textures/weapons/weapon_whirlwind_slash.png" alt="Оружие" />
+                <!-- Passive Trait -->
+                <section class="inspect-section inspect-passive-box">
+                  <div class="inspect-section-caption">
+                    <span class="caption-line"></span>
+                    <span class="caption-text">PASSIVE TRAIT</span>
+                    <span class="caption-line"></span>
+                  </div>
+                  <div class="inspect-passive-content">
+                    <div class="inspect-passive-diamond-socket">
+                      <div class="passive-diamond-inner">
+                        <span id="inspect-passive-icon" class="passive-rune-glyph">✦</span>
+                      </div>
                     </div>
-                    <div class="inspect-weapon-info">
-                      <div id="inspect-weapon-name" class="inspect-weapon-title">Вихревой клинок</div>
-                      <div id="inspect-weapon-stats" class="inspect-weapon-subtitle">Урон: 15 • Перезарядка: 0.42с</div>
-                    </div>
+                    <div id="inspect-passive-name" class="inspect-passive-title">Слияние с Бездной</div>
                   </div>
                 </section>
 
-                <div class="inspect-panel-divider"></div>
+                <!-- Active Ability (4 Square Icons in a row) -->
+                <section class="inspect-section inspect-abilities-box">
+                  <div class="inspect-section-caption">
+                    <span class="caption-line"></span>
+                    <span class="caption-text">ACTIVE ABILITY</span>
+                    <span class="caption-line"></span>
+                  </div>
+                  <div class="inspect-abilities-grid" id="inspect-abilities-grid">
+                    <!-- Populated dynamically via CharacterSelectScreen.ts -->
+                  </div>
+                </section>
 
-                <!-- Stats & Attributes -->
+                <!-- Attributes / Stats -->
                 <section class="inspect-section inspect-stats-box">
-                  <div class="inspect-section-caption">ХАРАКТЕРИСТИКИ</div>
-
                   <div class="inspect-stat-entry">
-                    <span class="stat-caption">ЗДОРОВЬЕ</span>
+                    <span class="stat-caption">Health</span>
                     <div class="stat-progress-track">
                       <div id="inspect-stat-hp-bar" class="stat-progress-fill bar-hp" style="width: 77%;"></div>
                     </div>
-                    <span id="inspect-stat-hp-val" class="stat-number">115 HP</span>
                   </div>
 
                   <div class="inspect-stat-entry">
-                    <span class="stat-caption">СКОРОСТЬ</span>
+                    <span class="stat-caption">Damage</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-dmg-bar" class="stat-progress-fill bar-dmg" style="width: 70%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">Mobility</span>
                     <div class="stat-progress-track">
                       <div id="inspect-stat-spd-bar" class="stat-progress-fill bar-spd" style="width: 86%;"></div>
                     </div>
-                    <span id="inspect-stat-spd-val" class="stat-number">8.6</span>
                   </div>
 
-                  <div class="inspect-stat-entry">
-                    <span class="stat-caption">УРОН</span>
+                  <div class="inspect-stat-entry stat-entry-difficulty">
+                    <span class="stat-caption">Difficulty</span>
                     <div class="stat-progress-track">
-                      <div id="inspect-stat-dmg-bar" class="stat-progress-fill bar-dmg" style="width: 68%;"></div>
+                      <div id="inspect-stat-diff-bar" class="stat-progress-fill bar-diff" style="width: 85%;"></div>
                     </div>
-                    <span id="inspect-stat-dmg-val" class="stat-number">x1.35</span>
-                  </div>
-                </section>
-
-                <div class="inspect-panel-divider"></div>
-
-                <!-- Run Options: Training mode & Time of day -->
-                <section class="inspect-section inspect-options-box">
-                  <div class="training-mode-control" title="В тренировочном режиме статистика и прохождение заданий не учитываются, но доступен Dev-режим">
-                    <label class="toggle-switch">
-                      <input type="checkbox" id="training-mode-toggle" />
-                      <span class="slider round"></span>
-                    </label>
-                    <div class="training-mode-info">
-                      <span class="training-mode-title">ТРЕНИРОВОЧНЫЙ РЕЖИМ</span>
-                      <span class="training-mode-sub">Dev Panel активен</span>
-                    </div>
-                  </div>
-
-                  <div class="time-of-day-control">
-                    <label for="select-time-of-day" class="time-of-day-label">ОСВЕЩЕНИЕ:</label>
-                    <select id="select-time-of-day" class="time-of-day-select">
-                      <option value="random" selected>🎲 Случайно</option>
-                      <option value="day">☀️ День</option>
-                      <option value="night">🌙 Ночь</option>
-                    </select>
+                    <span id="inspect-stat-diff-val" class="stat-difficulty-tag">High</span>
                   </div>
                 </section>
               </div>
@@ -103,7 +106,7 @@
           <!-- Bottom Scrollable Roster Carousel -->
           <div class="char-roster-carousel-zone">
             <button id="char-carousel-prev" class="carousel-nav-arrow arrow-left" type="button" aria-label="Предыдущий герой">
-              <img src="/textures/ui/btn_carousel_arrow_left.png" alt="<" />
+              <span class="arrow-chevron">&#x276E;</span>
             </button>
 
             <div class="char-roster-viewport" id="char-roster-viewport">
@@ -112,108 +115,108 @@
                 <!-- 1. Ronin -->
                 <div class="character-card char-roster-card" data-hero="ronin" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/ronin/front.png" class="char-card-portrait-img" alt="Рен" />
+                    <img src="/textures/heroes/ronin/portrait.png" class="char-card-portrait-img" alt="Рен" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">РЕН</div>
                   </div>
-                  <div class="char-roster-card-name">Рен</div>
                 </div>
 
                 <!-- 2. Valkyrie -->
                 <div class="character-card char-roster-card" data-hero="valkyrie" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/valkyrie/front.png" class="char-card-portrait-img" alt="Валькирия" />
+                    <img src="/textures/heroes/valkyrie/portrait.png" class="char-card-portrait-img" alt="Валькирия" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ВАЛЬКИРИЯ</div>
                   </div>
-                  <div class="char-roster-card-name">Каэла</div>
                 </div>
 
                 <!-- 3. Sorceress -->
                 <div class="character-card char-roster-card" data-hero="sorceress" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/sorceress/front.png" class="char-card-portrait-img" alt="Чародейка" />
+                    <img src="/textures/heroes/sorceress/portrait.png" class="char-card-portrait-img" alt="Чародейка" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ЧАРОДЕЙКА</div>
                   </div>
-                  <div class="char-roster-card-name">Ария</div>
                 </div>
 
                 <!-- 4. Archer -->
                 <div class="character-card char-roster-card" data-hero="archer" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/archer/front.png" class="char-card-portrait-img" alt="Лучник" />
+                    <img src="/textures/heroes/archer/portrait.png" class="char-card-portrait-img" alt="Лучник" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ЛУЧНИК</div>
                   </div>
-                  <div class="char-roster-card-name">Лучник</div>
                 </div>
 
                 <!-- 5. Necromancer -->
                 <div class="character-card char-roster-card" data-hero="necromancer" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/necromancer/front.png" class="char-card-portrait-img" alt="Некромант" />
+                    <img src="/textures/heroes/necromancer/portrait.png" class="char-card-portrait-img" alt="Некромант" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">НЕКРОМАНТ</div>
                   </div>
-                  <div class="char-roster-card-name">Мортис</div>
                 </div>
 
                 <!-- 6. Invoker -->
                 <div class="character-card char-roster-card" data-hero="invoker" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/invoker/front.png" class="char-card-portrait-img" alt="Инвокер" />
+                    <img src="/textures/heroes/invoker/portrait.png" class="char-card-portrait-img" alt="Инвокер" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ИНВОКЕР</div>
                   </div>
-                  <div class="char-roster-card-name">Инвокер</div>
                 </div>
 
                 <!-- 7. Flail -->
                 <div class="character-card char-roster-card" data-hero="flail" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/flail/front.png" class="char-card-portrait-img" alt="Бригитта" />
+                    <img src="/textures/heroes/flail/portrait.png" class="char-card-portrait-img" alt="Бригитта" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">БРИГИТТА</div>
                   </div>
-                  <div class="char-roster-card-name">Бригитта</div>
                 </div>
 
                 <!-- 8. Chakram -->
                 <div class="character-card char-roster-card" data-hero="chakram" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/chakram/front.png" class="char-card-portrait-img" alt="Кира" />
+                    <img src="/textures/heroes/chakram/portrait.png" class="char-card-portrait-img" alt="Кира" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">КИРА</div>
                   </div>
-                  <div class="char-roster-card-name">Кира</div>
                 </div>
 
                 <!-- 9. Rocket -->
                 <div class="character-card char-roster-card" data-hero="rocket" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/rocket/front.png" class="char-card-portrait-img" alt="Ракета" />
+                    <img src="/textures/heroes/rocket/portrait.png" class="char-card-portrait-img" alt="Ракета" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">РАКЕТА</div>
                   </div>
-                  <div class="char-roster-card-name">Ракета</div>
                 </div>
 
                 <!-- 10. Amazon -->
                 <div class="character-card char-roster-card" data-hero="amazon" tabindex="0">
                   <div class="char-card-frame-container">
-                    <img src="/textures/heroes/amazon/front.png" class="char-card-portrait-img" alt="Амазонка" />
+                    <img src="/textures/heroes/amazon/portrait.png" class="char-card-portrait-img" alt="Амазонка" />
                     <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">АМАЗОНКА</div>
                   </div>
-                  <div class="char-roster-card-name">Амазонка</div>
                 </div>
 
               </div>
             </div>
 
             <button id="char-carousel-next" class="carousel-nav-arrow arrow-right" type="button" aria-label="Следующий герой">
-              <img src="/textures/ui/btn_carousel_arrow_right.png" alt=">" />
+              <span class="arrow-chevron">&#x276F;</span>
             </button>
           </div>
 
           <!-- Footer Action Bar -->
           <footer class="char-select-bottom-actions">
             <button id="btn-char-select-back" class="char-action-btn-back" type="button">
-              <span>НАЗАД</span>
+              <span>BACK</span>
             </button>
             <button id="btn-char-select-play" class="char-action-btn-play" type="button">
-              <span class="btn-primary-text">В БОЙ</span>
+              <span class="btn-primary-text">ENTER RIFT</span>
             </button>
           </footer>
 
