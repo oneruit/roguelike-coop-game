@@ -245,13 +245,10 @@ export const COMMON_ITEMS: RiftItemId[] = [
   'kinetic_injector',
   'nanite_plating',
   'adrenaline_dart',
-  'pulse_rounds',
   'health_vial'
 ];
 
 export const UNCOMMON_ITEMS: RiftItemId[] = [
-  'chain_lightning',
-  'plasma_detonator',
   'crit_visor',
   'aegis_battery',
   'bio_leech',
@@ -265,8 +262,6 @@ export const RARE_ITEMS: RiftItemId[] = [
 ];
 
 export const LEGENDARY_ITEMS: RiftItemId[] = [
-  'singularity_core',
-  'orbital_strike',
   'chronos_phylactery',
   'titan_heart',
   'void_catalyst'
