@@ -27,6 +27,7 @@ import { InventoryUI } from './modules/InventoryUI';
 import { MerchantAndChestUI } from './modules/MerchantAndChestUI';
 import { GameOverUI, type DetailedPlayerResult, BattlePassGameOverResult } from './modules/GameOverUI';
 import { InGameOverlayUI } from './modules/InGameOverlayUI';
+import { CharacterSelectUI } from './modules/CharacterSelectUI';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -49,7 +50,6 @@ export class HUD {
   private btnResume: HTMLElement;
   private btnPauseRestart: HTMLElement;
   private btnPauseMenu: HTMLElement;
-  private btnCharSelectBack: HTMLElement;
 
   // Modular UI Controllers
   private questsUI: QuestsUI;
@@ -61,6 +61,7 @@ export class HUD {
   private merchantAndChestUI: MerchantAndChestUI;
   private gameOverUI: GameOverUI;
   private inGameOverlayUI: InGameOverlayUI;
+  private characterSelectUI?: CharacterSelectUI;
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
@@ -112,7 +113,6 @@ export class HUD {
     this.btnResume = document.getElementById('btn-resume')!;
     this.btnPauseRestart = document.getElementById('btn-pause-restart')!;
     this.btnPauseMenu = document.getElementById('btn-pause-menu')!;
-    this.btnCharSelectBack = document.getElementById('btn-char-select-back')!;
 
     // Initialize Sub-controllers
     this.inGameOverlayUI = new InGameOverlayUI();
@@ -573,30 +573,21 @@ export class HUD {
       timeOfDay?: 'random' | 'day' | 'night'
     ) => void
   ) {
-    this.btnCharSelectBack?.addEventListener('click', () => {
-      this.handleEscape();
-    });
-
-    const charCards = document.querySelectorAll('.character-card');
-    charCards.forEach((card) => {
-      card.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const hero = (target.getAttribute('data-hero') || 'ronin') as CharacterType;
-        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
-          this.hideCharacterSelect();
-          this.showQuestsModal(hero, 1, true);
-          return;
-        }
-        const trainingCheckbox = document.getElementById('training-mode-toggle') as HTMLInputElement | null;
-        const isTraining = Boolean(trainingCheckbox?.checked);
-        const timeOfDaySelect = document.getElementById('select-time-of-day') as HTMLSelectElement | null;
-        const timeOfDay = (timeOfDaySelect?.value as 'random' | 'day' | 'night') || 'random';
-
+    this.characterSelectUI = new CharacterSelectUI({
+      modal: this.charSelectModal,
+      onSelectHero: (hero, seedInput, isTraining, timeOfDay) => {
         this.hideCharacterSelect();
         document.body.classList.remove('is-main-menu');
         document.body.classList.add('is-in-game');
-        onSelectHero(hero, undefined, isTraining, timeOfDay);
-      });
+        onSelectHero(hero, seedInput, isTraining, timeOfDay);
+      },
+      onBack: () => {
+        this.handleEscape();
+      },
+      onShowUnlockQuests: (hero) => {
+        this.hideCharacterSelect();
+        this.showQuestsModal(hero, 1, true);
+      }
     });
   }
 
@@ -752,11 +743,13 @@ export class HUD {
       this.menuStack = ['char_select'];
     }
     this.charSelectModal.classList.remove('hidden');
+    this.characterSelectUI?.startAnimation();
   }
 
   public hideCharacterSelect() {
     this.charSelectModal.classList.add('hidden');
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
+    this.characterSelectUI?.stopAnimation();
   }
 
   public isAnyMenuOpen(): boolean {

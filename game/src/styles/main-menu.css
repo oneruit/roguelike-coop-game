@@ -1035,3 +1035,77 @@
   flex: 1;
 }
 
+/* ==========================================================================
+   Dark Fantasy ARPG Raster Menu Buttons
+   ========================================================================== */
+.main-menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.main-menu-action-btn {
+  width: clamp(260px, 24vw, 340px);
+  height: clamp(56px, 6.6vh, 70px);
+  background: url('/textures/ui/btn_action_strip.png') 0 0 / 100% 400% no-repeat;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fef08a;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: 3px;
+  font-size: 15px;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.75), 0 2px 4px rgba(0, 0, 0, 0.85);
+  transition: filter 0.2s, transform 0.15s;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.main-menu-action-btn:hover {
+  background-position: 0 33.33%;
+  filter: drop-shadow(0 0 18px rgba(249, 115, 22, 0.95));
+  transform: scale(1.03);
+}
+
+.main-menu-action-btn:active {
+  background-position: 0 66.66%;
+  transform: scale(0.97);
+}
+
+.main-menu-gothic-btn {
+  width: clamp(240px, 22vw, 320px);
+  height: clamp(48px, 5.5vh, 60px);
+  background: url('/textures/ui/btn_gothic_menu_strip.png') 0 0 / 100% 400% no-repeat;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+  font-size: 13px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  transition: filter 0.2s, transform 0.15s;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.main-menu-gothic-btn:hover {
+  background-position: 0 33.33%;
+  color: #ffffff;
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.85));
+  transform: scale(1.02);
+}
+
+.main-menu-gothic-btn:active {
+  background-position: 0 66.66%;
+  transform: scale(0.97);
+}
+
+
