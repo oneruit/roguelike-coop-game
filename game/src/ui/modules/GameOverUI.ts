@@ -127,7 +127,7 @@ export class GameOverUI {
       this.gameOverTitle.innerText = 'ВЫ ПОБЕДИЛИ!';
       this.gameOverTitle.className = 'death-title modern-menu-title victory-title';
       this.gameOverSubtitle.innerText =
-        'Вы выдержали легендарные 30 минут в беспощадном Разломе! Бессмертный Жнец забрал вашу душу, но легенда о вас будет жить вечно!';
+        'Вы покорили неизведанные глубины аномального Разлома! Легенда о вашей экспедиции будет жить вечно!';
       this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern victory-subtitle';
       this.btnRestart.innerText = 'Начать новую экспедицию';
     } else {

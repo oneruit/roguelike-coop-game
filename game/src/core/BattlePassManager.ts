@@ -34,7 +34,7 @@ export function calculateBattlePassPoints(gameTimeSeconds: number): number {
   if (minutes < 10) return 50;
   if (minutes < 15) return 100;
   if (minutes < 20) return 150;
-  return 200; // 20 to 30 mins and 30+ min victory
+  return 200; // 20+ mins survival
 }
 
 export const BATTLE_PASS_REWARDS: BattlePassReward[] = [

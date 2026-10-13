@@ -223,7 +223,7 @@ class Game {
         }
       }
     };
-    const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
+    const savedShadowQuality = parseInt(localStorage.getItem('rift_shadow_quality') || localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
     this.engine.setShadowQuality(savedShadowQuality);
 
     // Network Coordinator

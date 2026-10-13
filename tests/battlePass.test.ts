@@ -44,11 +44,11 @@ describe('Battle Pass Survival XP System', () => {
     assert.equal(calculateBattlePassPoints(1050), 150, '17m 30s should give 150 points');
     assert.equal(calculateBattlePassPoints(1199), 150, '19m 59s should give 150 points');
 
-    // 5. If died between 20 and 30 minutes, or survived 30 minutes (>= 1200s): 200 points
+    // 5. If survived >= 20 minutes (>= 1200s): 200 points
     assert.equal(calculateBattlePassPoints(1200), 200, '20m 00s should give 200 points');
     assert.equal(calculateBattlePassPoints(1500), 200, '25m 00s should give 200 points');
     assert.equal(calculateBattlePassPoints(1799), 200, '29m 59s should give 200 points');
-    assert.equal(calculateBattlePassPoints(1800), 200, '30m 00s (victory) should give 200 points');
+    assert.equal(calculateBattlePassPoints(1800), 200, 'Endless survival (>= 1200s) should give 200 points');
     assert.equal(calculateBattlePassPoints(2400), 200, '40m should give 200 points');
   });
 

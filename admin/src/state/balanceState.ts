@@ -7,7 +7,7 @@ export class BalanceState {
   public originalBalance: GameBalanceState;
   public draftBalance: GameBalanceState;
   public modifiedPaths: Set<string> = new Set();
-  public expandedRows: Set<string> = new Set(['weapons-fireball']); // Fireball open by default
+  public expandedRows: Set<string> = new Set();
 
   public searchFilter: string = '';
   public activeTab: string = 'dashboard';

@@ -206,7 +206,7 @@
             <h1 class="page-title">Главная панель</h1>
             <p class="page-subtitle">Обзор ключевых показателей игры, быстрый переход к разделам и статус синхронизации</p>
           </div>
-          <div class="header-quick-tools">
+          <div class="header-quick-tools" id="header-quick-tools" style="display: none;">
             <button id="btn-expand-all" class="btn btn-sm btn-outline">Развернуть всё</button>
             <button id="btn-collapse-all" class="btn btn-sm btn-outline">Свернуть всё</button>
           </div>
@@ -227,22 +227,6 @@
         <!-- TAB 0: DASHBOARD / HOME (Главная страница)                         -->
         <!-- ================================================================= -->
         <section id="tab-dashboard" class="tab-pane active">
-          <!-- Hero Banner -->
-          <div class="dashboard-hero-banner">
-            <div>
-              <h2 class="hero-banner-title">Wild West Roguelike — Панель управления балансом</h2>
-              <p id="dashboard-hero-desc" class="hero-banner-desc">
-                Централизованный пульт мониторинга и точечной настройки 25 видов оружия, 8 ковбоев/героев, 8 рядовых монстров и 2 эпических боссов арены.
-                Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.
-              </p>
-              <div class="hero-banner-badges">
-                <span class="hero-badge-tag">🎮 Live Realtime Sync</span>
-                <span class="hero-badge-tag">📊 Интерактивные графики скейлинга</span>
-                <span class="hero-badge-tag">⚔️ Симулятор DPS билда (1-5 оружия)</span>
-                <span class="hero-badge-tag">🛡️ Защита RLS</span>
-              </div>
-            </div>
-          </div>
 
           <!-- Top Metric KPI Cards -->
           <div class="metrics-grid">
@@ -449,13 +433,13 @@
             </div>
           </div>
 
-          <!-- Highlights: Top Weapons by L20 DPS & System Status -->
+          <!-- Highlights: Top Weapons by L12 DPS & System Status -->
           <div class="dashboard-sections-split">
             <div class="card-surface">
               <div class="chart-card-header">
                 <div>
-                  <h3 class="chart-card-title">Топ-5 оружия по DPS на L20</h3>
-                  <span class="chart-card-subtitle">Рейтинг максимальной боевой эффективности оружия при прокачке</span>
+                  <h3 class="chart-card-title">Топ-5 оружия по DPS на L12</h3>
+                  <span class="chart-card-subtitle">Рейтинг максимальной боевой эффективности оружия при прокачке до 12 уровня</span>
                 </div>
                 <button class="btn btn-xs btn-outline" data-jump-tab="weapons">Все 13 видов →</button>
               </div>
@@ -468,7 +452,7 @@
               <div class="chart-card-header">
                 <div>
                   <h3 class="chart-card-title">Статус системы &amp; Скейлинг волн</h3>
-                  <span class="chart-card-subtitle">Ключевые множители сложности на интервале 0-60 минут выживания</span>
+                  <span class="chart-card-subtitle">Ключевые множители сложности на интервале 0-120 минут выживания</span>
                 </div>
               </div>
               <div id="dashboard-system-status-container">

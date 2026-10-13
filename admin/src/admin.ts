@@ -287,6 +287,66 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       p.classList.toggle('active', p.id === `tab-${target}`);
     });
 
+    const accordionTabs = ['weapons', 'heroes', 'monsters', 'bosses', 'passives', 'items'];
+    const quickTools = document.getElementById('header-quick-tools');
+    if (quickTools) {
+      quickTools.style.display = accordionTabs.includes(target) ? 'flex' : 'none';
+    }
+
+    const titles: Record<string, { title: string; subtitle: string }> = {
+      dashboard: {
+        title: 'Главная панель',
+        subtitle: 'Обзор ключевых показателей игры, быстрый переход к разделам и статус синхронизации'
+      },
+      weapons: {
+        title: 'Арсенал оружия',
+        subtitle: 'Настройка урона, кулдаунов и параметров прогрессии оружия'
+      },
+      heroes: {
+        title: 'Герои и выжившие',
+        subtitle: 'Базовые характеристики, стартовое оружие и множители персонажей'
+      },
+      monsters: {
+        title: 'Монстры и противники',
+        subtitle: 'Характеристики мобов, множители здоровья и параметры атак'
+      },
+      bosses: {
+        title: 'Боссы арены',
+        subtitle: 'Параметры ключевых боссов стадий и их фазы'
+      },
+      passives: {
+        title: 'Пассивные улучшения',
+        subtitle: 'Перки и пассивные усиления из золотых самоцветов'
+      },
+      items: {
+        title: 'Предметы Разлома',
+        subtitle: 'Реликты и артефакты из сундуков Разлома'
+      },
+      progression: {
+        title: 'Прогрессия и графики',
+        subtitle: 'Визуализация кривых сложности, опыта и скейлинга во времени'
+      },
+      simulation: {
+        title: 'Симулятор билдов',
+        subtitle: 'Тестирование комбинаций оружия и расчет суммарного DPS'
+      },
+      global: {
+        title: 'Глобальные параметры',
+        subtitle: 'Системные настройки, кулдауны рывка и множители'
+      },
+      connection: {
+        title: 'Подключение к базе',
+        subtitle: 'Настройка подключения к Supabase и RLS'
+      }
+    };
+    const titleInfo = titles[target];
+    if (titleInfo) {
+      const pageTitleEl = document.querySelector('.page-title');
+      const pageSubEl = document.querySelector('.page-subtitle');
+      if (pageTitleEl) pageTitleEl.textContent = titleInfo.title;
+      if (pageSubEl) pageSubEl.textContent = titleInfo.subtitle;
+    }
+
     if (target === 'dashboard') renderDashboard(this.state);
     else if (target === 'progression') this.progression.render();
     else if (target === 'simulation') this.simulation.render();

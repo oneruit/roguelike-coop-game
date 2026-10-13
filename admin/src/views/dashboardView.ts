@@ -2,20 +2,20 @@ import { BalanceState } from '../state/balanceState';
 import { getEntityTexture } from '../constants';
 
 export function renderDashboard(state: BalanceState): void {
-  // 1. Top 5 Weapons by L20 DPS
+  // 1. Top 5 Weapons by L12 DPS
   const topContainer = document.getElementById('dashboard-top-weapons-container');
   if (topContainer) {
     const weapons = Object.values(state.draftBalance.weapons);
     weapons.sort((a, b) => {
-      const l20A =
+      const l12A =
         a.cooldown > 0
-          ? (a.damage + 19 * a.damagePerLevel) / a.cooldown
-          : (a.damage + 19 * a.damagePerLevel) * 60;
-      const l20B =
+          ? (a.damage + 11 * a.damagePerLevel) / a.cooldown
+          : (a.damage + 11 * a.damagePerLevel) * 60;
+      const l12B =
         b.cooldown > 0
-          ? (b.damage + 19 * b.damagePerLevel) / b.cooldown
-          : (b.damage + 19 * b.damagePerLevel) * 60;
-      return l20B - l20A;
+          ? (b.damage + 11 * b.damagePerLevel) / b.cooldown
+          : (b.damage + 11 * b.damagePerLevel) * 60;
+      return l12B - l12A;
     });
 
     const top5 = weapons.slice(0, 5);
@@ -28,7 +28,7 @@ export function renderDashboard(state: BalanceState): void {
             <th>Базовый урон</th>
             <th>Кулдаун</th>
             <th>DPS (L1)</th>
-            <th>DPS (L20)</th>
+            <th>DPS (L12)</th>
           </tr>
         </thead>
         <tbody>
@@ -36,8 +36,8 @@ export function renderDashboard(state: BalanceState): void {
 
     top5.forEach((w, idx) => {
       const baseDps = w.cooldown > 0 ? (w.damage / w.cooldown).toFixed(1) : (w.damage * 60).toFixed(1);
-      const l20Dmg = w.damage + 19 * w.damagePerLevel;
-      const l20Dps = w.cooldown > 0 ? (l20Dmg / w.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+      const l12Dmg = w.damage + 11 * w.damagePerLevel;
+      const l12Dps = w.cooldown > 0 ? (l12Dmg / w.cooldown).toFixed(1) : (l12Dmg * 60).toFixed(1);
       const texture = getEntityTexture('weapons', w.id);
       const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
 
@@ -53,7 +53,7 @@ export function renderDashboard(state: BalanceState): void {
           <td>${w.damage}</td>
           <td>${w.cooldown}с</td>
           <td><span class="stat-highlight">${baseDps}</span></td>
-          <td><span class="stat-highlight-gold" style="font-weight:700;">${l20Dps}</span></td>
+          <td><span class="stat-highlight-gold" style="font-weight:700;">${l12Dps}</span></td>
         </tr>
       `;
     });
@@ -143,6 +143,34 @@ export function renderDashboard(state: BalanceState): void {
             <td>${calcDmgMult(60)}x</td>
             <td>${calcSpdMult(60)}x</td>
           </tr>
+          <tr>
+            <td><strong>75 мин</strong></td>
+            <td><span style="color:#f59e0b; font-weight:700;">🌌 Аномальное искажение (75 мин)</span></td>
+            <td><strong style="color:#f59e0b;">${calcHpMult(75)}x</strong></td>
+            <td>${calcDmgMult(75)}x</td>
+            <td>${calcSpdMult(75)}x</td>
+          </tr>
+          <tr>
+            <td><strong>90 мин</strong></td>
+            <td><span style="color:#ec4899; font-weight:700;">💥 Сингулярность Бездны (90 мин)</span></td>
+            <td><strong style="color:#ec4899;">${calcHpMult(90)}x</strong></td>
+            <td>${calcDmgMult(90)}x</td>
+            <td>${calcSpdMult(90)}x</td>
+          </tr>
+          <tr>
+            <td><strong>105 мин</strong></td>
+            <td><span style="color:#ef4444; font-weight:700;">⚡ Апокалипсис Разлома (105 мин)</span></td>
+            <td><strong style="color:#ef4444;">${calcHpMult(105)}x</strong></td>
+            <td>${calcDmgMult(105)}x</td>
+            <td>${calcSpdMult(105)}x</td>
+          </tr>
+          <tr>
+            <td><strong>120 мин</strong></td>
+            <td><span style="color:#b91c1c; font-weight:800;">👑 Апогей выживания (120 мин)</span></td>
+            <td><strong style="color:#b91c1c;">${calcHpMult(120)}x</strong></td>
+            <td>${calcDmgMult(120)}x</td>
+            <td>${calcSpdMult(120)}x</td>
+          </tr>
         </tbody>
       </table>
     `;
@@ -198,11 +226,6 @@ export function updateOverviewStats(state: BalanceState): void {
   const qnavI = document.getElementById('qnav-items-count');
   if (qnavI) qnavI.innerText = `${itemCount} предметов`;
 
-  // Hero banner description
-  const heroDesc = document.getElementById('dashboard-hero-desc');
-  if (heroDesc) {
-    heroDesc.innerText = `Централизованный пульт мониторинга и точечной настройки ${weaponCount} видов оружия, ${heroCount} ковбоев/героев, ${monsterCount} рядовых монстров, ${bossCount} эпических боссов, ${passiveCount} пассивок и ${itemCount} предметов Разлома. Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.`;
-  }
 
   const kpiAvgDps = document.getElementById('kpi-avg-dps');
   if (kpiAvgDps) {

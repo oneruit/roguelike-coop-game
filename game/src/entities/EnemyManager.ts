@@ -607,7 +607,7 @@ export class EnemyManager {
   }
 
   /**
-   * Spawns the inevitable 30-minute Immortal Boss (Death / Grim Reaper)
+   * Spawns ancient guardian boss
    */
   public spawnImmortalBoss(playerPos: Vector3) {
     const angle = Math.random() * Math.PI * 2;
@@ -620,7 +620,7 @@ export class EnemyManager {
 
     const reaperConfig: EnemyConfig = {
       type: 'boss',
-      name: 'Бессмертный Жнец Прерии',
+      name: 'Древний Страж Прерии',
       texturePrefix: '/textures/bosses/boss_sheriff',
       hp: 99999999,
       speed: 7.6,
@@ -644,7 +644,7 @@ export class EnemyManager {
   }
 
   private spawnWave(playerPos: Vector3) {
-    // 30-Minute comprehensive wave progression:
+    // Comprehensive wave progression:
     let types: EnemyType[] = ['coyote'];
     const time = this.gameTime;
 
@@ -913,7 +913,7 @@ export class EnemyManager {
           isImmortal: s.isImmortal
         };
         if (s.isImmortal) {
-          config.name = 'Бессмертный Жнец Прерии';
+          config.name = 'Древний Страж Прерии';
           config.width = 5.6;
           config.height = 5.2;
           config.damage = 99999;

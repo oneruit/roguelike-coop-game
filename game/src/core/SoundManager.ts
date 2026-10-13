@@ -499,7 +499,7 @@ export class SoundManager {
   }
 
   /**
-   * Ominous death drone when Immortal Reaper spawns at 30 minutes
+   * Ominous death drone when ancient boss spawns
    */
   public static playReaperSpawn() {
     this.init();
