@@ -29,7 +29,6 @@ if (typeof (globalThis as any).document === 'undefined') {
       addEventListener: () => {},
       removeEventListener: () => {},
       src: '',
-      set src(_val: string) {},
       style: {}
     }),
     createElement: () => ({
@@ -115,7 +114,7 @@ test('Melee weapons can hit large bosses within visual contact reach', () => {
 test('Boss attack reach is calibrated to prevent absurd distant hitting', () => {
   const scene = new Scene();
   const dropManager = new DropManager(scene);
-  const dmgNumbers = new DamageNumberManager(scene);
+  const dmgNumbers = new DamageNumberManager();
   const enemyManager = new EnemyManager(scene, dropManager, dmgNumbers);
 
   const hydra = new Enemy(
@@ -152,7 +151,7 @@ test('Boss attack reach is calibrated to prevent absurd distant hitting', () => 
 test('Late game CC and Damage resistance scale with time and reduce damage/duration', () => {
   const scene = new Scene();
   const dropManager = new DropManager(scene);
-  const dmgNumbers = new DamageNumberManager(scene);
+  const dmgNumbers = new DamageNumberManager();
   const enemyManager = new EnemyManager(scene, dropManager, dmgNumbers);
 
   // Early game: 5 min
@@ -375,26 +374,26 @@ test('Weapon tier effective caps (Tier 3 = 12, Tier 2 = 6/8/10/12, Tier 1 = 6/8/
 
 test('Diminishing returns on spurs, lasso, and pocket watch', () => {
   const scene = new Scene();
-  const player = new Player(scene, 'cowboy');
+  const player = new Player(scene, 'ronin');
 
-  // Spurs (stat_spurs): Base 1.0x. Level 1 -> +3% (0.03, total 1.03x). Level 300 -> +200% (2.00, mult x3.0).
-  player.spursCount = 0;
+  // Speed Boots (stat_speed_boots): Base 1.0x. Level 1 -> +3% (0.03, total 1.03x). Level 300 -> +200% (2.00, mult x3.0).
+  player.speedBootsCount = 0;
   player.recalculateStats();
   assert.equal(player.passiveSpeedMultiplier, 1.0);
 
-  player.spursCount = 1;
+  player.speedBootsCount = 1;
   player.recalculateStats();
-  assert.ok(Math.abs(player.passiveSpeedMultiplier - 1.03) < 1e-4, 'Spurs at lvl 1 gives 1.03x');
+  assert.ok(Math.abs(player.passiveSpeedMultiplier - 1.03) < 1e-4, 'Speed Boots at lvl 1 gives 1.03x');
 
-  player.spursCount = 100;
+  player.speedBootsCount = 100;
   player.recalculateStats();
   const spurs100 = player.passiveSpeedMultiplier;
-  assert.ok(spurs100 > 1.03 && spurs100 < 3.0, 'Spurs scales with level');
-  assert.ok(spurs100 > 1.5, 'Spurs curve is concave');
+  assert.ok(spurs100 > 1.03 && spurs100 < 3.0, 'Speed Boots scales with level');
+  assert.ok(spurs100 > 1.5, 'Speed Boots curve is concave');
 
-  player.spursCount = 300;
+  player.speedBootsCount = 300;
   player.recalculateStats();
-  assert.ok(Math.abs(player.passiveSpeedMultiplier - 3.0) < 1e-3, 'Spurs at lvl 300 gives x3 total speed mult');
+  assert.ok(Math.abs(player.passiveSpeedMultiplier - 3.0) < 1e-3, 'Speed Boots at lvl 300 gives x3 total speed mult');
 
   // Magnet (stat_magnet / stat_lasso): Base 4m. Level 1 -> 4.4m (+10%). Level 300 -> 50m.
   player.magnetCount = 0;
@@ -446,7 +445,7 @@ test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upg
   assert.ok(upgradeStock, 'Weapon upgrade is offered in merchant stock');
   assert.equal(upgradeStock.price, 500, 'Initial weapon upgrade base price is 500');
 
-  const player = new Player(scene, 'cowboy');
+  const player = new Player(scene, 'ronin');
   player.credits = 100000;
   player.weapons = [new BowWeapon(), new KukriWeapon(), new ReaperScytheWeapon(), new GreatswordWeapon()];
   for (const w of player.weapons) {
@@ -486,7 +485,7 @@ test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upg
 
 test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
   const scene = new Scene();
-  const player = new Player(scene, 'cowboy');
+  const player = new Player(scene, 'ronin');
   player.weapons = [
     new BowWeapon(),
     new KukriWeapon(),
@@ -552,9 +551,10 @@ test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
     w.level = 12;
   }
   const milestone3Options = levelUpUI.generateWeaponOptions(player);
-  assert.equal(milestone3Options.length, 2);
+  assert.equal(milestone3Options.length, 3);
   assert.ok(milestone3Options.some(o => o.id === 'bonus_health_elixir'));
   assert.ok(milestone3Options.some(o => o.id === 'bonus_damage_elixir'));
+  assert.ok(milestone3Options.some(o => o.id === 'bonus_credits_cache'));
   assert.ok(!milestone3Options.some(o => o.id === 'bonus_speed_elixir'));
 
   // Elixir of Might bonus check: +5% per stack

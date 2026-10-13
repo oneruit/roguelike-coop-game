@@ -42,7 +42,7 @@ export interface PlayerStats {
   revives: number;
 }
 
-export type ItemRarity = 'common' | 'uncommon' | 'legendary' | 'boss';
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'legendary' | 'boss';
 
 export type RiftItemId =
   // Common
@@ -57,10 +57,17 @@ export type RiftItemId =
   | 'crit_visor'
   | 'aegis_battery'
   | 'bio_leech'
+  | 'overclock_module'
+  // Rare
+  | 'crit_lens'
+  | 'heavy_hollowpoint'
+  | 'energy_amplifier'
   // Legendary
   | 'singularity_core'
   | 'orbital_strike'
   | 'chronos_phylactery'
+  | 'titan_heart'
+  | 'void_catalyst'
   // Boss
   | 'golem_core'
   | 'molten_scale';

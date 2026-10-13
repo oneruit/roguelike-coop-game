@@ -747,8 +747,7 @@ export class SessionDirector {
       this.player.position.copy(spawnPos);
       this.player.mesh.position.copy(spawnPos);
 
-      // Revive all downed squad members & reset Chronos Phylactery once-per-stage lethal protection
-      this.player.hasChronosReady = true;
+      // Revive all downed squad members
       if (this.player.isDowned) {
         this.player.revive(0.5);
       }
@@ -849,7 +848,6 @@ export class SessionDirector {
       this.player.position.copy(spawnPos);
       this.player.mesh.position.copy(spawnPos);
 
-      this.player.hasChronosReady = true;
       if (this.player.isDowned) {
         this.player.revive(0.5);
       }

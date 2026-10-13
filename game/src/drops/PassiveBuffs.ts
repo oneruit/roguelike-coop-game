@@ -33,7 +33,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
   },
   stat_flask: {
     id: 'stat_flask',
-    title: 'Фляга с Виски',
+    title: 'Походная Фляга',
     icon: '🍶',
     description: '+30 к максимальному HP и полное исцеление'
   },

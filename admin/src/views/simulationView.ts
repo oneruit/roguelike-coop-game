@@ -16,6 +16,8 @@ export class SimulationView {
       { enabled: false, weaponId: 'fire_ring', level: 5 }
     ],
     hero: 'valkyrie',
+    amplifierStacks: 0,
+    mightElixirStacks: 0,
     sheriffStacks: 0,
     watchStacks: 0,
     injectorStacks: 0,
@@ -69,9 +71,23 @@ export class SimulationView {
       });
     };
 
-    bindSyncInput('sim-slider-sheriff', 'sim-num-sheriff', (val) => {
+    bindSyncInput('sim-slider-amplifier', 'sim-num-amplifier', (val) => {
+      this.sim.amplifierStacks = val;
       this.sim.sheriffStacks = val;
-      const badge = document.getElementById('sim-val-sheriff');
+      const badge = document.getElementById('sim-val-amplifier') || document.getElementById('sim-val-sheriff');
+      if (badge) badge.innerText = `${val} стаков (+${val * 2}%)`;
+    });
+
+    bindSyncInput('sim-slider-mightelixir', 'sim-num-mightelixir', (val) => {
+      this.sim.mightElixirStacks = val;
+      const badge = document.getElementById('sim-val-mightelixir');
+      if (badge) badge.innerText = `${val} стаков (+${val * 5}%)`;
+    });
+
+    bindSyncInput('sim-slider-sheriff', 'sim-num-sheriff', (val) => {
+      this.sim.amplifierStacks = val;
+      this.sim.sheriffStacks = val;
+      const badge = document.getElementById('sim-val-sheriff') || document.getElementById('sim-val-amplifier');
       if (badge) badge.innerText = `${val} стаков (+${val * 2}%)`;
     });
 
@@ -158,7 +174,9 @@ export class SimulationView {
         { enabled: false, weaponId: 'astral_staff', level: 8 },
         { enabled: false, weaponId: 'fireball', level: 10 }
       ];
+      this.sim.amplifierStacks = 15;
       this.sim.sheriffStacks = 15;
+      this.sim.mightElixirStacks = 2;
       this.sim.watchStacks = 5;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 4;
@@ -174,7 +192,9 @@ export class SimulationView {
         { enabled: true, weaponId: 'reaper_scythe', level: 10 },
         { enabled: false, weaponId: 'flail', level: 8 }
       ];
+      this.sim.amplifierStacks = 20;
       this.sim.sheriffStacks = 20;
+      this.sim.mightElixirStacks = 3;
       this.sim.watchStacks = 6;
       this.sim.injectorStacks = 1;
       this.sim.critVisorStacks = 2;
@@ -190,7 +210,9 @@ export class SimulationView {
         { enabled: true, weaponId: 'ice_spike', level: 12 },
         { enabled: false, weaponId: 'astral_staff', level: 10 }
       ];
+      this.sim.amplifierStacks = 25;
       this.sim.sheriffStacks = 25;
+      this.sim.mightElixirStacks = 4;
       this.sim.watchStacks = 8;
       this.sim.injectorStacks = 3;
       this.sim.critVisorStacks = 1;
@@ -206,7 +228,9 @@ export class SimulationView {
         { enabled: true, weaponId: 'kukri', level: 12 },
         { enabled: false, weaponId: 'fireball', level: 10 }
       ];
+      this.sim.amplifierStacks = 15;
       this.sim.sheriffStacks = 15;
+      this.sim.mightElixirStacks = 2;
       this.sim.watchStacks = 5;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 8;
@@ -222,7 +246,9 @@ export class SimulationView {
         { enabled: true, weaponId: 'lightning_strike', level: 10 },
         { enabled: true, weaponId: 'fireball', level: 8 }
       ];
+      this.sim.amplifierStacks = 20;
       this.sim.sheriffStacks = 20;
+      this.sim.mightElixirStacks = 3;
       this.sim.watchStacks = 6;
       this.sim.injectorStacks = 2;
       this.sim.critVisorStacks = 4;
@@ -238,7 +264,9 @@ export class SimulationView {
         { enabled: true, weaponId: 'invoker_emp', level: 12 },
         { enabled: true, weaponId: 'invoker_ice_wall', level: 10 }
       ];
+      this.sim.amplifierStacks = 25;
       this.sim.sheriffStacks = 25;
+      this.sim.mightElixirStacks = 5;
       this.sim.watchStacks = 8;
       this.sim.injectorStacks = 2;
       this.sim.critVisorStacks = 3;
@@ -254,7 +282,9 @@ export class SimulationView {
         { enabled: false, weaponId: 'flail', level: 1 },
         { enabled: false, weaponId: 'fire_ring', level: 1 }
       ];
+      this.sim.amplifierStacks = 0;
       this.sim.sheriffStacks = 0;
+      this.sim.mightElixirStacks = 0;
       this.sim.watchStacks = 0;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 0;
@@ -270,7 +300,9 @@ export class SimulationView {
         { enabled: false, weaponId: 'flail', level: 1 },
         { enabled: false, weaponId: 'fire_ring', level: 1 }
       ];
+      this.sim.amplifierStacks = 0;
       this.sim.sheriffStacks = 0;
+      this.sim.mightElixirStacks = 0;
       this.sim.watchStacks = 0;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 0;
@@ -319,12 +351,27 @@ export class SimulationView {
       if (bg) bg.innerText = badgeText;
     };
 
+    const ampVal = this.sim.amplifierStacks ?? this.sim.sheriffStacks ?? 0;
+    setInputPair(
+      'sim-slider-amplifier',
+      'sim-num-amplifier',
+      'sim-val-amplifier',
+      ampVal,
+      `${ampVal} стаков (+${ampVal * 2}%)`
+    );
     setInputPair(
       'sim-slider-sheriff',
       'sim-num-sheriff',
       'sim-val-sheriff',
-      this.sim.sheriffStacks,
-      `${this.sim.sheriffStacks} стаков (+${this.sim.sheriffStacks * 2}%)`
+      ampVal,
+      `${ampVal} стаков (+${ampVal * 2}%)`
+    );
+    setInputPair(
+      'sim-slider-mightelixir',
+      'sim-num-mightelixir',
+      'sim-val-mightelixir',
+      this.sim.mightElixirStacks ?? 0,
+      `${this.sim.mightElixirStacks ?? 0} стаков (+${(this.sim.mightElixirStacks ?? 0) * 5}%)`
     );
     setInputPair(
       'sim-slider-watch',
@@ -377,15 +424,17 @@ export class SimulationView {
       DEFAULT_BALANCE.heroes[this.sim.hero] || { damageMultiplier: 1.0, startingWeapon: '' };
     const isStarting = slot.weaponId === heroCfg.startingWeapon || (heroCfg.id === 'invoker' && slot.weaponId.startsWith('invoker_'));
     const heroMult = isStarting ? (heroCfg.damageMultiplier || 1.0) : 1.0;
-    const sheriffMult = 1 + this.sim.sheriffStacks * 0.02;
+    const ampStacks = this.sim.amplifierStacks ?? this.sim.sheriffStacks ?? 0;
+    const elixirStacks = this.sim.mightElixirStacks ?? 0;
+    const damagePassiveMult = 1 + ampStacks * 0.02 + elixirStacks * 0.05;
     const runeMult = this.sim.damageRuneActive ? 1.3 : 1.0;
 
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(10.0, baseCritChance + this.sim.critVisorStacks * 0.12);
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.12);
     const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
 
-    const globalDmgMult = heroMult * sheriffMult * runeMult * expectedCritMult;
+    const globalDmgMult = heroMult * damagePassiveMult * runeMult * expectedCritMult;
     const baseLvlDmg = w.damage + (slot.level - 1) * w.damagePerLevel;
     const hitDamage = baseLvlDmg * globalDmgMult;
 

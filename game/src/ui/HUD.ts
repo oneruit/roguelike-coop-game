@@ -43,7 +43,6 @@ export class HUD {
   private coopModal: HTMLElement;
   private settingsModal: HTMLElement;
   private exitModal: HTMLElement;
-  private guideModal: HTMLElement;
   private charSelectModal: HTMLElement;
   private pauseModal: HTMLElement;
 
@@ -106,7 +105,6 @@ export class HUD {
     this.coopModal = document.getElementById('coop-modal')!;
     this.settingsModal = document.getElementById('settings-modal')!;
     this.exitModal = document.getElementById('exit-modal')!;
-    this.guideModal = document.getElementById('guide-modal')!;
     this.charSelectModal = document.getElementById('character-select-modal')!;
     this.pauseModal = document.getElementById('pause-modal')!;
 
@@ -126,7 +124,6 @@ export class HUD {
       hideMainMenu: () => this.hideMainMenu(),
       showMainMenu: () => this.showMainMenu(),
       showPause: () => this.showPause(),
-      showGuide: () => this.showGuide(),
       isPaused: () => this.isPaused,
       getMenuStack: () => this.menuStack,
       setMenuStack: (stack) => {
@@ -212,7 +209,6 @@ export class HUD {
         pwdPromptInput: document.getElementById('pwd-prompt-input') as HTMLInputElement | null,
         pwdPromptError: document.getElementById('pwd-prompt-error'),
 
-        guideModal: this.guideModal,
         settingsModal: this.settingsModal,
         pauseModal: this.pauseModal,
         coopBadge: document.getElementById('coop-badge')!,
@@ -489,10 +485,6 @@ export class HUD {
     document.getElementById('coop-btn-back')?.addEventListener('click', () => {
       this.handleEscape();
     });
-
-    document.getElementById('btn-close-guide')?.addEventListener('click', () => {
-      this.handleEscape();
-    });
   }
 
   private bindPauseListeners(onResume: () => void, onRestart: () => void) {
@@ -667,7 +659,6 @@ export class HUD {
     this.hidePause();
     this.hideGameOver();
     this.hideLevelUp();
-    this.hideGuide();
     this.hideCharacterSelect();
     this.hideQuestsModal();
     this.hideBattlePassModal();
@@ -716,29 +707,6 @@ export class HUD {
   public hideExitModal() {
     this.exitModal.classList.add('hidden');
     this.menuStack = this.menuStack.filter((s) => s !== 'exit');
-  }
-
-  public showGuide() {
-    if (!this.settingsModal.classList.contains('hidden')) {
-      this.settingsModal.classList.add('hidden');
-      if (this.menuStack[this.menuStack.length - 1] !== 'guide') {
-        this.menuStack.push('guide');
-      }
-    } else if (!this.pauseModal.classList.contains('hidden')) {
-      this.pauseModal.classList.add('hidden');
-      if (this.menuStack[this.menuStack.length - 1] !== 'guide') {
-        this.menuStack.push('guide');
-      }
-    } else {
-      this.hideMainMenu();
-      this.menuStack = ['guide'];
-    }
-    this.guideModal.classList.remove('hidden');
-  }
-
-  public hideGuide() {
-    this.guideModal.classList.add('hidden');
-    this.menuStack = this.menuStack.filter((s) => s !== 'guide');
   }
 
   public showPause(activeSeed?: number | string) {
@@ -809,19 +777,6 @@ export class HUD {
         this.pauseModal.classList.remove('hidden');
         if (!this.menuStack.includes('pause')) {
           this.menuStack.push('pause');
-        }
-        return 'handled';
-      }
-
-      case 'guide': {
-        this.guideModal.classList.add('hidden');
-        const next = this.menuStack[this.menuStack.length - 1];
-        if (next === 'settings') {
-          this.settingsModal.classList.remove('hidden');
-        } else if (next === 'pause') {
-          this.pauseModal.classList.remove('hidden');
-        } else {
-          this.showMainMenu();
         }
         return 'handled';
       }

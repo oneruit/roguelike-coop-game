@@ -15,7 +15,6 @@ if (typeof (globalThis as any).document === 'undefined') {
       addEventListener: () => {},
       removeEventListener: () => {},
       src: '',
-      set src(_val: string) {},
       style: {}
     }),
     createElement: () => ({
@@ -177,7 +176,7 @@ test('Knockback Mechanic - Smooth impulse over 0.25s delivers exactly 25 meters 
 test('EnemyManager - freezeAndKnockbackAll affects all monsters and bosses', () => {
   const scene = new Scene();
   const dropManager = new DropManager(scene);
-  const damageNumbers = new DamageNumberManager(scene);
+  const damageNumbers = new DamageNumberManager();
   const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
 
   const playerPos = new Vector3(0, 0, 0);
@@ -220,7 +219,7 @@ test('EnemyManager - freezeAndKnockbackAll affects all monsters and bosses', () 
 test('Time Crystal (Chronos Phylactery) - Triggers 5s freeze and 25m knockback on lethal damage', () => {
   const scene = new Scene();
   const dropManager = new DropManager(scene);
-  const damageNumbers = new DamageNumberManager(scene);
+  const damageNumbers = new DamageNumberManager();
   const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
 
   const player = new Player(scene, 'ronin');
@@ -229,7 +228,6 @@ test('Time Crystal (Chronos Phylactery) - Triggers 5s freeze and 25m knockback o
   // Add Time Crystal (chronos_phylactery)
   player.addRiftItem(RIFT_ITEMS.chronos_phylactery);
   assert.equal(player.getItemStacks('chronos_phylactery'), 1);
-  assert.equal(player.hasChronosReady, true);
 
   const monster = createTestMonster(new Vector3(3, 0, 0));
   const boss = createTestBoss(new Vector3(0, 0, 4));
@@ -247,7 +245,7 @@ test('Time Crystal (Chronos Phylactery) - Triggers 5s freeze and 25m knockback o
 
   // Player survived due to Time Crystal
   assert.equal(died, false, 'Player must survive lethal damage with Chronos Phylactery');
-  assert.equal(player.hasChronosReady, false, 'Chronos is spent for the stage');
+  assert.equal(player.getItemStacks('chronos_phylactery'), 0, 'Chronos is consumed from inventory');
   assert.ok(player.hp > 0, 'Player HP was restored');
   assert.equal(player.activeBuffs.has('invulnerable'), true, 'Player has invulnerability buff');
   assert.equal(player.activeBuffs.get('invulnerable')?.duration, 5.0, 'Invulnerability lasts 5.0 seconds');
