@@ -1,809 +1,221 @@
-      <div id="character-select-modal" class="modal hidden">
-        <div class="modal-backdrop menu-scenic-backdrop"></div>
-        <div class="modal-card select-character-card modern-glass-modal">
-          <div class="modal-header">
-            <div class="sub-title menu-badge-blue">ОДИНОЧНЫЙ РЕЖИМ</div>
-            <h1 class="wild-west-title modern-menu-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
+      <div id="character-select-modal" class="modal character-select-modal hidden">
+        <div class="modal-backdrop char-select-backdrop"></div>
+        <div class="char-select-container">
+          
+          <!-- Top Header -->
+          <header class="char-select-top-header">
+            <div class="char-select-mode-badge">ОДИНОЧНЫЙ РЕЖИМ</div>
+            <h1 class="char-select-main-title">ВЫБЕРИТЕ ГЕРОЯ</h1>
+          </header>
+
+          <!-- Middle Stage & Inspector Layout -->
+          <div class="char-select-center-layout">
+            
+            <!-- Hero Stage with Pedestal & Animated Sprite Canvas -->
+            <div class="char-stage-viewport" id="char-stage-viewport">
+              <div class="char-stage-rune-circle"></div>
+              <canvas id="char-hero-preview-canvas" width="280" height="280" class="char-hero-canvas"></canvas>
+            </div>
+
+            <!-- Right Inspector Panel (9-slice dark iron frame) -->
+            <aside class="char-inspect-panel" id="char-inspect-panel">
+              <div class="char-inspect-inner">
+                <header class="inspect-header-block">
+                  <h2 id="inspect-hero-name" class="inspect-hero-name">Рен «Ронин»</h2>
+                  <div id="inspect-hero-role" class="inspect-hero-role">Сбалансированный боец ближнего боя</div>
+                </header>
+
+                <div class="inspect-panel-divider"></div>
+
+                <!-- Starting Weapon -->
+                <section class="inspect-section inspect-weapon-box">
+                  <div class="inspect-section-caption">СТАРТОВОЕ ОРУЖИЕ</div>
+                  <div class="inspect-weapon-row">
+                    <div class="inspect-weapon-icon-frame">
+                      <img id="inspect-weapon-icon" class="inspect-weapon-icon-img" src="/textures/weapons/weapon_whirlwind_slash.png" alt="Оружие" />
+                    </div>
+                    <div class="inspect-weapon-info">
+                      <div id="inspect-weapon-name" class="inspect-weapon-title">Вихревой клинок</div>
+                      <div id="inspect-weapon-stats" class="inspect-weapon-subtitle">Урон: 15 • Перезарядка: 0.42с</div>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="inspect-panel-divider"></div>
+
+                <!-- Stats & Attributes -->
+                <section class="inspect-section inspect-stats-box">
+                  <div class="inspect-section-caption">ХАРАКТЕРИСТИКИ</div>
+
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">ЗДОРОВЬЕ</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-hp-bar" class="stat-progress-fill bar-hp" style="width: 77%;"></div>
+                    </div>
+                    <span id="inspect-stat-hp-val" class="stat-number">115 HP</span>
+                  </div>
+
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">СКОРОСТЬ</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-spd-bar" class="stat-progress-fill bar-spd" style="width: 86%;"></div>
+                    </div>
+                    <span id="inspect-stat-spd-val" class="stat-number">8.6</span>
+                  </div>
+
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">УРОН</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-dmg-bar" class="stat-progress-fill bar-dmg" style="width: 68%;"></div>
+                    </div>
+                    <span id="inspect-stat-dmg-val" class="stat-number">x1.35</span>
+                  </div>
+                </section>
+
+                <div class="inspect-panel-divider"></div>
+
+                <!-- Run Options: Training mode & Time of day -->
+                <section class="inspect-section inspect-options-box">
+                  <div class="training-mode-control" title="В тренировочном режиме статистика и прохождение заданий не учитываются, но доступен Dev-режим">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="training-mode-toggle" />
+                      <span class="slider round"></span>
+                    </label>
+                    <div class="training-mode-info">
+                      <span class="training-mode-title">ТРЕНИРОВОЧНЫЙ РЕЖИМ</span>
+                      <span class="training-mode-sub">Dev Panel активен</span>
+                    </div>
+                  </div>
+
+                  <div class="time-of-day-control">
+                    <label for="select-time-of-day" class="time-of-day-label">ОСВЕЩЕНИЕ:</label>
+                    <select id="select-time-of-day" class="time-of-day-select">
+                      <option value="random" selected>🎲 Случайно</option>
+                      <option value="day">☀️ День</option>
+                      <option value="night">🌙 Ночь</option>
+                    </select>
+                  </div>
+                </section>
+              </div>
+            </aside>
           </div>
 
-          <!-- Run Options Bar: Training Mode & Time of Day -->
-          <div class="char-select-options-bar">
-            <!-- Training Mode Toggle -->
-            <div class="training-mode-control" title="В тренировочном режиме статистика и прохождение заданий не учитываются, но доступен Dev-режим">
-              <label class="toggle-switch">
-                <input type="checkbox" id="training-mode-toggle" />
-                <span class="slider round"></span>
-              </label>
-              <div class="training-mode-info">
-                <span class="training-mode-title">ТРЕНИРОВОЧНЫЙ РЕЖИМ</span>
-                <span class="training-mode-sub">Статистика не сохраняется • Доступен Dev Panel</span>
+          <!-- Bottom Scrollable Roster Carousel -->
+          <div class="char-roster-carousel-zone">
+            <button id="char-carousel-prev" class="carousel-nav-arrow arrow-left" type="button" aria-label="Предыдущий герой">
+              <img src="/textures/ui/btn_carousel_arrow_left.png" alt="<" />
+            </button>
+
+            <div class="char-roster-viewport" id="char-roster-viewport">
+              <div class="character-grid char-roster-track" id="char-carousel-track">
+                
+                <!-- 1. Ronin -->
+                <div class="character-card char-roster-card" data-hero="ronin" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/ronin/front.png" class="char-card-portrait-img" alt="Рен" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Рен</div>
+                </div>
+
+                <!-- 2. Valkyrie -->
+                <div class="character-card char-roster-card" data-hero="valkyrie" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/valkyrie/front.png" class="char-card-portrait-img" alt="Валькирия" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Каэла</div>
+                </div>
+
+                <!-- 3. Sorceress -->
+                <div class="character-card char-roster-card" data-hero="sorceress" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/sorceress/front.png" class="char-card-portrait-img" alt="Чародейка" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Ария</div>
+                </div>
+
+                <!-- 4. Archer -->
+                <div class="character-card char-roster-card" data-hero="archer" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/archer/front.png" class="char-card-portrait-img" alt="Лучник" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Лучник</div>
+                </div>
+
+                <!-- 5. Necromancer -->
+                <div class="character-card char-roster-card" data-hero="necromancer" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/necromancer/front.png" class="char-card-portrait-img" alt="Некромант" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Мортис</div>
+                </div>
+
+                <!-- 6. Invoker -->
+                <div class="character-card char-roster-card" data-hero="invoker" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/invoker/front.png" class="char-card-portrait-img" alt="Инвокер" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Инвокер</div>
+                </div>
+
+                <!-- 7. Flail -->
+                <div class="character-card char-roster-card" data-hero="flail" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/flail/front.png" class="char-card-portrait-img" alt="Бригитта" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Бригитта</div>
+                </div>
+
+                <!-- 8. Chakram -->
+                <div class="character-card char-roster-card" data-hero="chakram" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/chakram/front.png" class="char-card-portrait-img" alt="Кира" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Кира</div>
+                </div>
+
+                <!-- 9. Rocket -->
+                <div class="character-card char-roster-card" data-hero="rocket" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/rocket/front.png" class="char-card-portrait-img" alt="Ракета" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Ракета</div>
+                </div>
+
+                <!-- 10. Amazon -->
+                <div class="character-card char-roster-card" data-hero="amazon" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/amazon/front.png" class="char-card-portrait-img" alt="Амазонка" />
+                    <div class="char-card-frame-overlay"></div>
+                  </div>
+                  <div class="char-roster-card-name">Амазонка</div>
+                </div>
+
               </div>
             </div>
 
-            <!-- Time of Day Select -->
-            <div class="time-of-day-control">
-              <label for="select-time-of-day" class="time-of-day-label">ОСВЕЩЕНИЕ:</label>
-              <select id="select-time-of-day" class="time-of-day-select">
-                <option value="random" selected>🎲 Случайно (По умолчанию)</option>
-                <option value="day">☀️ День (Солнечный свет)</option>
-                <option value="night">🌙 Ночь (Лунный свет)</option>
-              </select>
-            </div>
+            <button id="char-carousel-next" class="carousel-nav-arrow arrow-right" type="button" aria-label="Следующий герой">
+              <img src="/textures/ui/btn_carousel_arrow_right.png" alt=">" />
+            </button>
           </div>
-          <!-- SVG Definitions for Cave Dungeon Character Cards -->
-          <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
-            <defs>
-              <linearGradient id="cave-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#051229"/>
-                <stop offset="50%" stop-color="#09224f"/>
-                <stop offset="100%" stop-color="#030b1a"/>
-              </linearGradient>
-              <radialGradient id="torch-glow-l" cx="16%" cy="40%" r="35%">
-                <stop offset="0%" stop-color="rgba(255, 170, 0, 0.45)"/>
-                <stop offset="50%" stop-color="rgba(255, 75, 0, 0.15)"/>
-                <stop offset="100%" stop-color="rgba(0, 0, 0, 0)"/>
-              </radialGradient>
-              <radialGradient id="torch-glow-r" cx="84%" cy="40%" r="35%">
-                <stop offset="0%" stop-color="rgba(255, 170, 0, 0.45)"/>
-                <stop offset="50%" stop-color="rgba(255, 75, 0, 0.15)"/>
-                <stop offset="100%" stop-color="rgba(0, 0, 0, 0)"/>
-              </radialGradient>
-              <radialGradient id="cavern-beam" cx="50%" cy="30%" r="65%">
-                <stop offset="0%" stop-color="rgba(0, 160, 255, 0.3)"/>
-                <stop offset="60%" stop-color="rgba(0, 90, 210, 0.08)"/>
-                <stop offset="100%" stop-color="rgba(0, 0, 0, 0)"/>
-              </radialGradient>
-              <filter id="rune-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-          </svg>
 
-          <div class="character-grid">
-            <!-- Hero 1: Ren (Ronin) -->
-            <div class="character-card hero-select-card" data-hero="ronin">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_ronin_front.png" alt="Багровый ронин" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Рен «Багровый вихрь»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Багровый Вихрь</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Круговой вихрь</span>
-                    <span class="feature-value">срез на 360°</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">+35% к урону</span>
-                    <span class="feature-value">высокая скорость (8.6)</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
+          <!-- Footer Action Bar -->
+          <footer class="char-select-bottom-actions">
+            <button id="btn-char-select-back" class="char-action-btn-back" type="button">
+              <span>НАЗАД</span>
+            </button>
+            <button id="btn-char-select-play" class="char-action-btn-play" type="button">
+              <span class="btn-primary-text">В БОЙ</span>
+            </button>
+          </footer>
 
-            <!-- Invoker: ten elemental spells -->
-            <div class="character-card hero-select-card" data-hero="invoker">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_invoker_front.png" alt="Инвокер" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Инвокер «Маг стихий»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Уникальный герой:</span>
-                    <span class="feature-value">Invoke — 10 эксклюзивных заклинаний</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Особая механика:</span>
-                    <span class="feature-value">Собственный пул магии, чужое оружие недоступно</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">100 HP • +200% урона</span>
-                    <span class="feature-value">скорость 8.5</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 2: Valkyrie (Каэла) -->
-            <div class="character-card hero-select-card" data-hero="valkyrie">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_valkyrie_front.png" alt="Каэла Стальной вихрь" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Каэла «Стальной вихрь»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Двуручный Меч</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Круговой размах</span>
-                    <span class="feature-value">радиус дуги 4.2м</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">+45% к урону</span>
-                    <span class="feature-value">135 HP и стойкость</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 3: Brigitta (Бригитта) -->
-            <div class="character-card hero-select-card" data-hero="flail">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_flail_front.png" alt="Бригитта Громовой Цеп" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Бригитта «Громовой Цеп»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Боевой Цеп</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Сокрушающий отброс</span>
-                    <span class="feature-value">тяжёлый разгон</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">+40% к урону</span>
-                    <span class="feature-value">125 HP и вихрь</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 4: Sorceress (Ария) -->
-            <div class="character-card hero-select-card" data-hero="sorceress">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_sorceress_front.png" alt="Ария Звёздный Посох" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Ария «Звёздный Посох»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Звёздный Посох</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Звёздная магия</span>
-                    <span class="feature-value">пробивающий залп</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Дальний бой</span>
-                    <span class="feature-value">высокая скорость (8.8)</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 5: Kira (Кира) -->
-            <div class="character-card hero-select-card" data-hero="chakram">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_chakram_front.png" alt="Кира Воительница с чакрамом" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Кира «Танцующий Чакрам»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Танцующий Чакрам</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Бросок бумеранга</span>
-                    <span class="feature-value">по дуге</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Двойное рассечение</span>
-                    <span class="feature-value">туда и назад</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 6: Elf Archer (Эльф лучник) -->
-            <div class="character-card hero-select-card" data-hero="archer">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_archer_front.png" alt="Эльф Охотничий Лук" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Эльф «Охотничий Лук»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Охотничий Лук</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Пронзающие стрелы</span>
-                    <span class="feature-value">сквозь ряды врагов</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Сверхдальний бой</span>
-                    <span class="feature-value">макс. скорость (8.9)</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 7: Rocket Raccoon (Енот Ракета) -->
-            <div class="character-card hero-select-card" data-hero="rocket">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_rocket_front.png" alt="Енот Ракета" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Ракета «Страж Галактики»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Штурмовая Винтовка</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Очередь пуль</span>
-                    <span class="feature-value">быстрый темп (0.18 сек)</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M4.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L15.2 12 6.6 3.4 4.5 5.5z M11.5 5.5l6.5 6.5-6.5 6.5 2.1 2.1L22.2 12 13.6 3.4 11.5 5.5z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Стрелок-коммандос</span>
-                    <span class="feature-value">высшая скорость (9.1)</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 8: Mortis Necromancer (Мортис Некромант) -->
-            <div class="character-card hero-select-card" data-hero="necromancer">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#0099ff" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(0, 180, 255, 0.08)" stroke="#00e5ff" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(0, 210, 255, 0.14)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#00e5ff" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_necromancer_front.png" alt="Мортис Некромант" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Мортис «Некромант»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M20.7 3.3a1 1 0 0 0-1.4 0l-7.3 7.3-2.1-2.1a1 1 0 0 0-1.4 1.4l2.1 2.1-6.8 6.8a1 1 0 0 0 1.4 1.4l6.8-6.8 2.1 2.1a1 1 0 0 0 1.4-1.4l-2.1-2.1 7.3-7.3a1 1 0 0 0 0-1.4z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Астральный Посох</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Магия смерти</span>
-                    <span class="feature-value">высокий урон (+40%)</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Тёмная стойкость</span>
-                    <span class="feature-value">110 HP, 8.6 скор.</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-
-            <!-- Hero 9: Amazon (Амазонка) -->
-            <div class="character-card hero-select-card" data-hero="amazon">
-              <div class="char-portrait-frame">
-                <svg class="char-cave-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <rect width="240" height="180" fill="url(#cave-grad)"/>
-                  <path d="M0,0 L240,0 L240,24 L212,12 L192,26 L168,14 L142,24 L120,10 L98,22 L72,12 L50,26 L24,12 L0,24 Z" fill="#030814" opacity="0.9"/>
-                  <path d="M0,0 L42,0 L26,45 L44,88 L22,135 L40,180 L0,180 Z" fill="#040e22" opacity="0.85"/>
-                  <path d="M240,0 L198,0 L214,45 L196,88 L218,135 L200,180 L240,180 Z" fill="#040e22" opacity="0.85"/>
-                  <ellipse cx="120" cy="80" rx="90" ry="70" fill="url(#cavern-beam)"/>
-                  <!-- Torches -->
-                  <circle cx="34" cy="68" r="26" fill="url(#torch-glow-l)"/>
-                  <rect x="32" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M34 62 C31 66, 31 70, 34 72 C37 70, 37 66, 34 62 Z" fill="#ff9900"/>
-                  <circle cx="34" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <circle cx="206" cy="68" r="26" fill="url(#torch-glow-r)"/>
-                  <rect x="204" y="72" width="4" height="10" fill="#3d2716" rx="1"/>
-                  <path d="M206 62 C203 66, 203 70, 206 72 C209 70, 209 66, 206 62 Z" fill="#ff9900"/>
-                  <circle cx="206" cy="69" r="1.5" fill="#fff" opacity="0.8"/>
-                  <!-- Magic Circle at feet -->
-                  <ellipse cx="120" cy="154" rx="72" ry="18" fill="none" stroke="#ef4444" stroke-width="1.2" opacity="0.5"/>
-                  <ellipse cx="120" cy="154" rx="60" ry="15" fill="rgba(239, 68, 68, 0.08)" stroke="#f59e0b" stroke-width="2.2" filter="url(#rune-glow)" opacity="0.95"/>
-                  <ellipse cx="120" cy="154" rx="44" ry="11" fill="rgba(245, 158, 11, 0.14)" stroke="#f97316" stroke-width="1.5" stroke-dasharray="8 4"/>
-                  <ellipse cx="120" cy="154" rx="26" ry="6" fill="#ef4444" opacity="0.45" filter="url(#rune-glow)"/>
-                </svg>
-                <svg class="char-frame-svg" viewBox="0 0 240 180" preserveAspectRatio="none">
-                  <polygon points="18,2 222,2 238,18 238,166 226,178 14,178 2,166 2,18" class="char-frame-poly"/>
-                </svg>
-                <img src="/textures/heroes/hero_amazon_front.png" alt="Амазонка" class="char-portrait" />
-              </div>
-              <div class="char-card-name">Амазонка «Воительница»</div>
-              <div class="char-features-list">
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Оружие:</span>
-                    <span class="feature-value">Сферы Защиты</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 2l2 6.5 6.5 2-6.5 2L12 19l-2-6.5-6.5-2 6.5-2z"/>
-                      <path d="M12 5.5l1.2 3.8 3.8 1.2-3.8 1.2L12 15.5l-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#ffffff"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Магический бой</span>
-                    <span class="feature-value">урон (+35%)</span>
-                  </div>
-                </div>
-                <div class="char-feature-box">
-                  <div class="char-feature-icon">
-                    <svg viewBox="0 0 24 24" class="feature-svg" fill="currentColor">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                  <div class="char-feature-text">
-                    <span class="feature-label">Выносливость</span>
-                    <span class="feature-value">120 HP, 9.0 скор.</span>
-                  </div>
-                </div>
-              </div>
-              <button class="char-select-btn" type="button">
-                <svg class="char-btn-svg" viewBox="0 0 200 42" preserveAspectRatio="none">
-                  <polygon points="10,2 190,2 198,10 198,32 190,40 10,40 2,32 2,10" class="char-btn-poly"/>
-                </svg>
-                <span class="char-btn-label">ВЫБРАТЬ</span>
-              </button>
-            </div>
-          </div>
-          <div style="margin-top: 24px;">
-            <button id="btn-char-select-back" class="modern-back-btn">← Назад в главное меню</button>
-          </div>
         </div>
       </div>
-
-      <!-- Pause Modal (ESC) -->

@@ -1,11 +1,17 @@
 import { CharacterType } from '../../entities/Player';
 import { TextureManager } from '../../core/TextureManager';
+import { AssetResolver } from '../../utils/AssetResolver';
+import { DEFAULT_BALANCE } from '../../balance/defaultBalance';
 
 export function getHeroIcon(charType: CharacterType): string {
   return charType.toUpperCase();
 }
 
 export function getHeroName(charType: CharacterType): string {
+  const balanceHero = DEFAULT_BALANCE.heroes[charType];
+  if (balanceHero?.name) {
+    return balanceHero.name;
+  }
   if (charType === 'invoker') return 'Инвокер «Маг стихий»';
   if (charType === 'necromancer') return 'Мортис «Некромант»';
   if (charType === 'amazon') return 'Амазонка «Воительница»';
@@ -25,23 +31,7 @@ export function getHeroName(charType: CharacterType): string {
 }
 
 export function getHeroAvatar(charType: CharacterType): string {
-  if (charType === 'invoker') return TextureManager.getAssetUrl('/textures/heroes/hero_invoker_front.png');
-  if (charType === 'necromancer') return TextureManager.getAssetUrl('/textures/heroes/hero_necromancer_front.png');
-  if (charType === 'amazon') return TextureManager.getAssetUrl('/textures/heroes/hero_amazon_front.png');
-  const avatar = charType === 'ronin'
-    ? '/textures/heroes/hero_ronin_front.png'
-    : charType === 'valkyrie'
-    ? '/textures/heroes/hero_valkyrie_front.png'
-    : charType === 'flail'
-    ? '/textures/heroes/hero_flail_front.png'
-    : charType === 'sorceress'
-    ? '/textures/heroes/hero_sorceress_front.png'
-    : charType === 'chakram'
-    ? '/textures/heroes/hero_chakram_front.png'
-    : charType === 'archer'
-    ? '/textures/heroes/hero_archer_front.png'
-    : '/textures/heroes/hero_rocket_front.png';
-  return TextureManager.getAssetUrl(avatar);
+  return AssetResolver.getHeroTexture(charType, 'front');
 }
 
 export function getWeaponIconUrl(weaponId: string): string {

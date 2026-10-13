@@ -8,7 +8,6 @@ import { PublicRoomInfo } from '../net/RoomDirectory';
 import { RiftItemId, type RiftItemDef } from '../items/RiftItemSystem';
 import { ProgressionManager } from '../core/ProgressionManager';
 import { BattlePassManager } from '../core/BattlePassManager';
-import { SoundManager } from '../core/SoundManager';
 import { getAssetUrl } from '../utils/assetPath';
 import { MerchantManager } from '../world/MerchantManager';
 
@@ -27,6 +26,11 @@ import { InventoryUI } from './modules/InventoryUI';
 import { MerchantAndChestUI } from './modules/MerchantAndChestUI';
 import { GameOverUI, type DetailedPlayerResult, BattlePassGameOverResult } from './modules/GameOverUI';
 import { InGameOverlayUI } from './modules/InGameOverlayUI';
+import { CharacterSelectUI } from './modules/CharacterSelectUI';
+import { ScreenManager } from './core/ScreenManager';
+import { SafeDOM } from './core/SafeDOM';
+import { MainMenuScreen } from './screens/MainMenu/MainMenuScreen';
+import { CharacterSelectScreen } from './screens/CharacterSelect/CharacterSelectScreen';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -49,7 +53,6 @@ export class HUD {
   private btnResume: HTMLElement;
   private btnPauseRestart: HTMLElement;
   private btnPauseMenu: HTMLElement;
-  private btnCharSelectBack: HTMLElement;
 
   // Modular UI Controllers
   private questsUI: QuestsUI;
@@ -61,6 +64,9 @@ export class HUD {
   private merchantAndChestUI: MerchantAndChestUI;
   private gameOverUI: GameOverUI;
   private inGameOverlayUI: InGameOverlayUI;
+  private characterSelectUI?: CharacterSelectUI;
+  private mainMenuScreen?: MainMenuScreen;
+  private characterSelectScreen?: CharacterSelectScreen;
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
@@ -72,6 +78,7 @@ export class HUD {
   public isTrainingModeActive: boolean = false;
 
   public static readonly MENU_BACKGROUNDS: readonly string[] = [
+    '/textures/ui/menu_rift_bg.webp',
     '/textures/ui/menu_background_1.jpg',
     '/textures/ui/menu_background_2.jpg'
   ];
@@ -98,24 +105,25 @@ export class HUD {
     this.scene = scene;
 
     // Modals
-    this.mainMenuModal = document.getElementById('main-menu-modal')!;
+    const getEl = (id: string) => SafeDOM.getElementById(id) || document.createElement('div');
+    this.mainMenuModal = getEl('main-menu-modal');
     document.body.classList.add('is-main-menu');
     document.body.classList.remove('is-in-game');
     HUD.applyRandomMenuBackground();
-    this.coopModal = document.getElementById('coop-modal')!;
-    this.settingsModal = document.getElementById('settings-modal')!;
-    this.exitModal = document.getElementById('exit-modal')!;
-    this.charSelectModal = document.getElementById('character-select-modal')!;
-    this.pauseModal = document.getElementById('pause-modal')!;
+    this.coopModal = getEl('coop-modal');
+    this.settingsModal = getEl('settings-modal');
+    this.exitModal = getEl('exit-modal');
+    this.charSelectModal = getEl('character-select-modal');
+    this.pauseModal = getEl('pause-modal');
 
     // Action Buttons
-    this.btnResume = document.getElementById('btn-resume')!;
-    this.btnPauseRestart = document.getElementById('btn-pause-restart')!;
-    this.btnPauseMenu = document.getElementById('btn-pause-menu')!;
-    this.btnCharSelectBack = document.getElementById('btn-char-select-back')!;
+    this.btnResume = getEl('btn-resume');
+    this.btnPauseRestart = getEl('btn-pause-restart');
+    this.btnPauseMenu = getEl('btn-pause-menu');
 
     // Initialize Sub-controllers
     this.inGameOverlayUI = new InGameOverlayUI();
+    ScreenManager.getInstance().register(this.inGameOverlayUI);
 
     this.settingsUI = new SettingsUI({
       settingsModal: this.settingsModal,
@@ -136,12 +144,13 @@ export class HUD {
         this.menuStack = this.menuStack.filter((m) => m !== menu);
       }
     });
+    ScreenManager.getInstance().register(this.settingsUI);
 
     this.questsUI = new QuestsUI({
-      questsModal: document.getElementById('quests-modal')!,
+      questsModal: SafeDOM.getElementById('quests-modal'),
       mainMenuModal: this.mainMenuModal,
       pauseModal: this.pauseModal,
-      getMainMenuBattlePass: () => document.getElementById('main-menu-battle-pass'),
+      getMainMenuBattlePass: () => SafeDOM.getElementById('main-menu-battle-pass'),
       isPaused: () => this.isPaused,
       getMenuStack: () => this.menuStack,
       pushMenu: (menu) => {
@@ -155,17 +164,18 @@ export class HUD {
       },
       showCharacterSelect: () => this.showCharacterSelect()
     });
+    ScreenManager.getInstance().register(this.questsUI);
 
     this.battlePassUI = new BattlePassUI({
-      getBpBarFill: () => document.getElementById('bp-bar-fill'),
-      getBpRewardsRow: () => document.getElementById('bp-rewards-row'),
-      getBattlePassModal: () => document.getElementById('battle-pass-modal'),
-      getBpModalCurLvl: () => document.getElementById('bp-modal-cur-lvl'),
-      getBpModalCurXp: () => document.getElementById('bp-modal-cur-xp'),
-      getBpModalTotalXp: () => document.getElementById('bp-modal-total-xp'),
-      getBpModalBarFill: () => document.getElementById('bp-modal-bar-fill'),
-      getBtnBpClaimAll: () => document.getElementById('btn-bp-claim-all'),
-      getBpModalTiersContainer: () => document.getElementById('bp-modal-tiers-container'),
+      getBpBarFill: () => SafeDOM.getElementById('bp-bar-fill'),
+      getBpRewardsRow: () => SafeDOM.getElementById('bp-rewards-row'),
+      getBattlePassModal: () => SafeDOM.getElementById('battle-pass-modal'),
+      getBpModalCurLvl: () => SafeDOM.getElementById('bp-modal-cur-lvl'),
+      getBpModalCurXp: () => SafeDOM.getElementById('bp-modal-cur-xp'),
+      getBpModalTotalXp: () => SafeDOM.getElementById('bp-modal-total-xp'),
+      getBpModalBarFill: () => SafeDOM.getElementById('bp-modal-bar-fill'),
+      getBtnBpClaimAll: () => SafeDOM.getElementById('btn-bp-claim-all'),
+      getBpModalTiersContainer: () => SafeDOM.getElementById('bp-modal-tiers-container'),
       getMenuStack: () => this.menuStack,
       pushMenu: (menu) => {
         if (!this.menuStack.includes(menu)) this.menuStack.push(menu);
@@ -178,41 +188,41 @@ export class HUD {
 
     this.lobbyUI = new LobbyUI({
       elements: {
-        hostLobbyModal: document.getElementById('host-lobby-modal')!,
-        hostRoomCodeText: document.getElementById('host-room-code')!,
-        hostPasswordInput: document.getElementById('host-password-input') as HTMLInputElement | null,
-        hostPasswordBadge: document.getElementById('host-password-badge'),
-        hostPlayersRoster: document.getElementById('host-players-roster')!,
-        hostPlayerCount: document.getElementById('host-player-count'),
-        hostPartnerBox: document.getElementById('host-partner-box')!,
-        hostPartnerTitle: document.getElementById('host-partner-title')!,
-        hostPartnerDesc: document.getElementById('host-partner-desc')!,
-        btnHostStart: document.getElementById('btn-host-start') as HTMLButtonElement,
+        hostLobbyModal: SafeDOM.getElementById('host-lobby-modal'),
+        hostRoomCodeText: SafeDOM.getElementById('host-room-code'),
+        hostPasswordInput: SafeDOM.getElementById<HTMLInputElement>('host-password-input'),
+        hostPasswordBadge: SafeDOM.getElementById('host-password-badge'),
+        hostPlayersRoster: SafeDOM.getElementById('host-players-roster'),
+        hostPlayerCount: SafeDOM.getElementById('host-player-count'),
+        hostPartnerBox: SafeDOM.getElementById('host-partner-box'),
+        hostPartnerTitle: SafeDOM.getElementById('host-partner-title'),
+        hostPartnerDesc: SafeDOM.getElementById('host-partner-desc'),
+        btnHostStart: SafeDOM.getElementById<HTMLButtonElement>('btn-host-start'),
 
-        joinLobbyModal: document.getElementById('join-lobby-modal')!,
-        joinRoomInput: document.getElementById('join-room-input') as HTMLInputElement,
-        joinPasswordInput: document.getElementById('join-password-input') as HTMLInputElement | null,
-        joinStatusText: document.getElementById('join-status-text')!,
-        btnJoinConnect: document.getElementById('btn-join-connect') as HTMLButtonElement | null,
-        btnGuestReady: document.getElementById('btn-guest-ready'),
-        tabBtnBrowser: document.getElementById('tab-btn-browser'),
-        tabBtnDirect: document.getElementById('tab-btn-direct'),
-        tabContentBrowser: document.getElementById('tab-content-browser'),
-        tabContentDirect: document.getElementById('tab-content-direct'),
-        availableRoomsList: document.getElementById('available-rooms-list'),
-        joinRosterSection: document.getElementById('join-roster-section'),
-        joinPlayersRoster: document.getElementById('join-players-roster')!,
-        joinPlayerCount: document.getElementById('join-player-count'),
+        joinLobbyModal: SafeDOM.getElementById('join-lobby-modal'),
+        joinRoomInput: SafeDOM.getElementById<HTMLInputElement>('join-room-input'),
+        joinPasswordInput: SafeDOM.getElementById<HTMLInputElement>('join-password-input'),
+        joinStatusText: SafeDOM.getElementById('join-status-text'),
+        btnJoinConnect: SafeDOM.getElementById<HTMLButtonElement>('btn-join-connect'),
+        btnGuestReady: SafeDOM.getElementById('btn-guest-ready'),
+        tabBtnBrowser: SafeDOM.getElementById('tab-btn-browser'),
+        tabBtnDirect: SafeDOM.getElementById('tab-btn-direct'),
+        tabContentBrowser: SafeDOM.getElementById('tab-content-browser'),
+        tabContentDirect: SafeDOM.getElementById('tab-content-direct'),
+        availableRoomsList: SafeDOM.getElementById('available-rooms-list'),
+        joinRosterSection: SafeDOM.getElementById('join-roster-section'),
+        joinPlayersRoster: SafeDOM.getElementById('join-players-roster'),
+        joinPlayerCount: SafeDOM.getElementById('join-player-count'),
 
-        passwordPromptModal: document.getElementById('password-prompt-modal'),
-        pwdPromptRoomTitle: document.getElementById('pwd-prompt-room-title'),
-        pwdPromptInput: document.getElementById('pwd-prompt-input') as HTMLInputElement | null,
-        pwdPromptError: document.getElementById('pwd-prompt-error'),
+        passwordPromptModal: SafeDOM.getElementById('password-prompt-modal'),
+        pwdPromptRoomTitle: SafeDOM.getElementById('pwd-prompt-room-title'),
+        pwdPromptInput: SafeDOM.getElementById<HTMLInputElement>('pwd-prompt-input'),
+        pwdPromptError: SafeDOM.getElementById('pwd-prompt-error'),
 
         settingsModal: this.settingsModal,
         pauseModal: this.pauseModal,
-        coopBadge: document.getElementById('coop-badge')!,
-        coopRoomName: document.getElementById('coop-room-name')!
+        coopBadge: SafeDOM.getElementById('coop-badge'),
+        coopRoomName: SafeDOM.getElementById('coop-room-name')
       },
       hideCoopMenu: () => this.hideCoopMenu(),
       hideMainMenu: () => this.hideMainMenu(),
@@ -227,15 +237,16 @@ export class HUD {
         this.menuStack = this.menuStack.filter((m) => m !== menu);
       }
     });
+    ScreenManager.getInstance().register(this.lobbyUI);
 
     this.levelUpUI = new LevelUpUI({
       elements: {
-        levelUpModal: document.getElementById('level-up-modal')!,
-        levelUpStepIndicator: document.getElementById('level-up-step-indicator')!,
-        levelUpTitle: document.getElementById('level-up-title')!,
-        levelUpRerollContainer: document.getElementById('level-up-reroll-container'),
-        btnLevelUpReroll: document.getElementById('btn-level-up-reroll') as HTMLButtonElement | null,
-        upgradeCardsContainer: document.getElementById('upgrade-cards')!
+        levelUpModal: SafeDOM.getElementById('level-up-modal'),
+        levelUpStepIndicator: SafeDOM.getElementById('level-up-step-indicator'),
+        levelUpTitle: SafeDOM.getElementById('level-up-title'),
+        levelUpRerollContainer: SafeDOM.getElementById('level-up-reroll-container'),
+        btnLevelUpReroll: SafeDOM.getElementById<HTMLButtonElement>('btn-level-up-reroll'),
+        upgradeCardsContainer: SafeDOM.getElementById('upgrade-cards')
       },
       getScene: () => this.scene,
       getCurrentStageNumber: () => this.currentStageNumber,
@@ -243,6 +254,7 @@ export class HUD {
       updateWeaponsBar: (weapons) => this.inGameOverlayUI.updateWeaponsBar(weapons),
       updatePassivesBar: (player) => this.inGameOverlayUI.updatePassivesBar(player)
     });
+    ScreenManager.getInstance().register(this.levelUpUI);
 
     this.inventoryUI = new InventoryUI();
     this.inventoryUI.onMenuPush = (menu) => {
@@ -251,6 +263,7 @@ export class HUD {
     this.inventoryUI.onMenuRemove = (menu) => {
       this.menuStack = this.menuStack.filter((m) => m !== menu);
     };
+    ScreenManager.getInstance().register(this.inventoryUI);
 
     this.merchantAndChestUI = new MerchantAndChestUI();
     this.merchantAndChestUI.onMenuPush = (menu) => {
@@ -269,6 +282,7 @@ export class HUD {
     };
 
     this.gameOverUI = new GameOverUI();
+    ScreenManager.getInstance().register(this.gameOverUI);
     this.gameOverUI.onRestartClicked = () => {
       this.hideGameOver();
       onRestart();
@@ -439,38 +453,33 @@ export class HUD {
   // --- Main Menu & Navigation Listeners ---
 
   private bindMainMenuListeners() {
-    document.getElementById('menu-btn-single')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.hideMainMenu();
-      this.showCharacterSelect();
-      this.onSinglePlayerSelected?.();
+    this.mainMenuScreen = new MainMenuScreen({
+      container: this.mainMenuModal,
+      onSinglePlayer: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.showCharacterSelect();
+        this.onSinglePlayerSelected?.();
+      },
+      onCoop: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.showCoopMenu();
+      },
+      onQuests: () => {
+        this.toggleQuestsInMainMenu();
+      },
+      onSettings: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.showSettings('main');
+      },
+      onExit: () => {
+        this.hideQuestsModal();
+        this.showExitModal();
+      }
     });
-
-    document.getElementById('menu-btn-coop')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.hideMainMenu();
-      this.showCoopMenu();
-    });
-
-    document.getElementById('menu-btn-quests')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.toggleQuestsInMainMenu();
-    });
-
-    document.getElementById('menu-btn-settings')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.hideMainMenu();
-      this.showSettings('main');
-    });
-
-    document.getElementById('menu-btn-exit')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.showExitModal();
-    });
+    ScreenManager.getInstance().register(this.mainMenuScreen);
 
     document.getElementById('coop-btn-host')?.addEventListener('click', () => {
       this.hideCoopMenu();
@@ -573,31 +582,24 @@ export class HUD {
       timeOfDay?: 'random' | 'day' | 'night'
     ) => void
   ) {
-    this.btnCharSelectBack?.addEventListener('click', () => {
-      this.handleEscape();
-    });
-
-    const charCards = document.querySelectorAll('.character-card');
-    charCards.forEach((card) => {
-      card.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const hero = (target.getAttribute('data-hero') || 'ronin') as CharacterType;
-        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
-          this.hideCharacterSelect();
-          this.showQuestsModal(hero, 1, true);
-          return;
-        }
-        const trainingCheckbox = document.getElementById('training-mode-toggle') as HTMLInputElement | null;
-        const isTraining = Boolean(trainingCheckbox?.checked);
-        const timeOfDaySelect = document.getElementById('select-time-of-day') as HTMLSelectElement | null;
-        const timeOfDay = (timeOfDaySelect?.value as 'random' | 'day' | 'night') || 'random';
-
+    this.characterSelectScreen = new CharacterSelectScreen({
+      container: this.charSelectModal,
+      onSelectHero: (hero, seedInput, isTraining, timeOfDay) => {
         this.hideCharacterSelect();
         document.body.classList.remove('is-main-menu');
         document.body.classList.add('is-in-game');
-        onSelectHero(hero, undefined, isTraining, timeOfDay);
-      });
+        onSelectHero(hero, seedInput, isTraining, timeOfDay);
+      },
+      onBack: () => {
+        this.handleEscape();
+      },
+      onShowUnlockQuests: (hero) => {
+        this.hideCharacterSelect();
+        this.showQuestsModal(hero, 1, true);
+      }
     });
+    ScreenManager.getInstance().register(this.characterSelectScreen);
+    this.characterSelectUI = this.characterSelectScreen;
   }
 
   private setupExitListeners() {
@@ -665,11 +667,19 @@ export class HUD {
     this.updateMainMenuQuests();
     this.updateMainMenuBattlePass();
     HUD.applyRandomMenuBackground();
-    this.mainMenuModal.classList.remove('hidden');
+    if (this.mainMenuScreen) {
+      this.mainMenuScreen.show();
+    } else {
+      this.mainMenuModal.classList.remove('hidden');
+    }
   }
 
   public hideMainMenu() {
-    this.mainMenuModal.classList.add('hidden');
+    if (this.mainMenuScreen) {
+      this.mainMenuScreen.hide();
+    } else {
+      this.mainMenuModal.classList.add('hidden');
+    }
   }
 
   public showCoopMenu() {
@@ -717,6 +727,10 @@ export class HUD {
         textElem.textContent = `#${activeSeed}`;
       }
     }
+    const btnDev = document.getElementById('btn-pause-dev');
+    if (btnDev) {
+      btnDev.classList.toggle('hidden', !this.isTrainingModeActive);
+    }
     const btnSame = document.getElementById('btn-pause-restart-same');
     if (btnSame) {
       btnSame.classList.toggle('hidden', !this.isTrainingModeActive);
@@ -751,11 +765,21 @@ export class HUD {
       this.hideMainMenu();
       this.menuStack = ['char_select'];
     }
-    this.charSelectModal.classList.remove('hidden');
+    if (this.characterSelectScreen) {
+      this.characterSelectScreen.show();
+    } else {
+      this.charSelectModal.classList.remove('hidden');
+      this.characterSelectUI?.startAnimation();
+    }
   }
 
   public hideCharacterSelect() {
-    this.charSelectModal.classList.add('hidden');
+    if (this.characterSelectScreen) {
+      this.characterSelectScreen.hide();
+    } else {
+      this.charSelectModal.classList.add('hidden');
+      this.characterSelectUI?.stopAnimation();
+    }
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
@@ -901,14 +925,7 @@ export class HUD {
   }
 
   public setInGameHUDVisible(visible: boolean) {
-    const hud = document.getElementById('in-game-hud');
-    if (hud) {
-      if (visible) {
-        hud.classList.remove('hidden');
-      } else {
-        hud.classList.add('hidden');
-      }
-    }
+    this.inGameOverlayUI.setInGameHUDVisible(visible);
   }
 
   public hideQuestsModal() {
@@ -1229,6 +1246,10 @@ export class HUD {
   public setTrainingModeActive(active: boolean) {
     this.isTrainingModeActive = active;
     this.inGameOverlayUI.setTrainingModeActive(active);
+    const btnDev = document.getElementById('btn-pause-dev');
+    if (btnDev) {
+      btnDev.classList.toggle('hidden', !active);
+    }
     const btnSame = document.getElementById('btn-pause-restart-same');
     if (btnSame) {
       btnSame.classList.toggle('hidden', !active);

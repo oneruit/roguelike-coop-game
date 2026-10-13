@@ -26,6 +26,7 @@ This document defines the mandatory Git workflow for AI agents contributing to t
 9. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
 10. **File size limit**: Files must not exceed 1500 lines of code. If a file approaches or exceeds 1500 lines, it must be split and modularized into smaller units. See [`.agents/rules/file-size-limit.md`](.agents/rules/file-size-limit.md).
 11. **Bug fixing and reporting**: In case a bug or unexpected error is found during development or testing, fix it immediately and report it clearly in the summary to the developer. See [`.agents/rules/bug-handling.md`](.agents/rules/bug-handling.md).
+12. **Modular and structured architecture**: All UI screens, game mechanics, and assets must follow strict modularity, scoping, and directory hierarchy. See [`.agents/rules/modular-architecture.md`](.agents/rules/modular-architecture.md).
 
 ## Workflow
 
