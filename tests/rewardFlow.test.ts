@@ -12,7 +12,9 @@ import { SoundManager } from '../game/src/core/SoundManager';
 // dev reward handlers, and the selection lifecycle use the production methods.
 SoundManager.playChestOpen = () => {};
 SoundManager.playHit = () => {};
-ProgressionManager.getInstance = () => ({ recordResourceGather() {} }) as any;
+ProgressionManager.getInstance = () => new Proxy({ recordResourceGather() {} }, {
+  get: (target: any, prop: string) => (prop in target ? target[prop] : () => {})
+}) as any;
 
 function fixture(isCoop = false) {
   const player = Object.assign(Object.create(Player.prototype), {

@@ -523,6 +523,7 @@ export class SessionDirector {
       this.hud.resetBossUI();
       this.merchantManager.reset();
       this.gameTime = 0;
+      ProgressionManager.getInstance()?.resetRunSessionProgress?.();
       this.gameState = GameState.PLAYING;
       this.hud?.setInGameHUDVisible?.(true);
       this.updateUI.setCombatActive(true);
@@ -593,6 +594,12 @@ export class SessionDirector {
         SoundManager.playChestOpen();
         this.damageNumbers.spawnDamage(chestData.chest.position, 0, true, this.engine.camera);
 
+        const isForest = this.biomeManager?.currentBiome?.id === 'bioluminescent_wilds';
+        const isGoldChest = chestData.chest?.tier === 'large' || chestData.chest?.tier === 'legendary';
+        if (isForest && isGoldChest) {
+          ProgressionManager.getInstance()?.recordForestGoldenChestOpened?.();
+        }
+
         // Global magnet pull for all XP gems & passive crystals on map
         this.dropManager.attractAllGemsTo(this.player.position);
 
@@ -626,6 +633,7 @@ export class SessionDirector {
           completed = true;
           ProgressionManager.getInstance().recordResourceGather(1);
           this.player.addRiftItem(chosenItem);
+          ProgressionManager.getInstance()?.recordSimultaneousPassives?.(this.player?.riftItems?.size ?? 0);
           this.hud.triggerAltarNotification(chosenItem.name, chosenItem.description, chosenItem.icon, chosenItem.color);
 
           if (this.net.role === 'client') {

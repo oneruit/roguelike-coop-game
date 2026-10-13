@@ -802,9 +802,10 @@ export class EnemyManager {
     showDamageNumber: boolean = true,
     isCrit: boolean = false,
     critTier: number = 1,
-    critMultiplier: number = 1.5
+    critMultiplier: number = 1.5,
+    weaponId?: string
   ) {
-    const isDead = enemy.takeDamage(amount, sourcePos, hitter);
+    const isDead = enemy.takeDamage(amount, sourcePos, hitter, weaponId);
     const displayedDamage = enemy.lastDamageTaken > 0 ? enemy.lastDamageTaken : amount;
     if (showDamageNumber && camera) {
       this.damageNumbers.spawnDamage(enemy.position, displayedDamage, isCrit, camera, false, critTier, critMultiplier);

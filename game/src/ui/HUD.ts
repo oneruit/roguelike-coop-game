@@ -896,7 +896,7 @@ export class HUD {
     this.questsUI.selectQuestChapter(chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1, fromCharSelect: boolean = false) {
+  public showQuestsModal(selectedQuestId: string = 'ch1_deadly_debut', chapter: number = 1, fromCharSelect: boolean = false) {
     this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect);
   }
 
