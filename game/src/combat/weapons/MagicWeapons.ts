@@ -135,6 +135,13 @@ export class FireRingWeapon extends Weapon {
     }
   }
 
+  public static destroyAll(scene: Scene): void {
+    for (const inst of Array.from(FireRingWeapon.instances)) {
+      inst.destroy(scene);
+    }
+    FireRingWeapon.instances.clear();
+  }
+
   private radius: number = 3.5;
   private auraMesh: Mesh | null = null;
   private auraMat: MeshBasicMaterial | null = null;
@@ -533,7 +540,7 @@ export class IceSpikeWeapon extends Weapon {
       strikeTargets.forEach((pos, idx) => {
         setTimeout(() => {
           const proj = new Projectile({
-            position: new Vector3(pos.x, -2.9, pos.z),
+            position: new Vector3(pos.x, 0, pos.z),
             direction: new Vector3(0, 1, 0),
             speed: 0,
             damage: this.damage,

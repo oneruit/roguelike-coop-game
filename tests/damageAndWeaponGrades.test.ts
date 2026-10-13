@@ -258,7 +258,7 @@ test('Chest drops roll 2 items, do not allow duplicates, and depend on biome sta
 test('Rare items correctly modify player stats and caps', () => {
   const calculatePlayerStats = (items: Map<RiftItemId, number>, baseDamageMult: number = 1.0) => {
     const lensStacks = items.get('crit_lens') || 0;
-    const critChance = Math.min(1.0, Math.max(0, 0.05 + (lensStacks * 0.03)));
+    const critChance = Math.min(1.0, Math.max(0, 0.05 + (lensStacks * 0.06)));
 
     const hollowStacks = items.get('heavy_hollowpoint') || 0;
     const critDamage = Math.min(10.0, Math.max(0, 0.50 + (hollowStacks * 0.20)));
@@ -276,10 +276,10 @@ test('Rare items correctly modify player stats and caps', () => {
   assert.equal(base.critDamage, 0.50);
   assert.equal(base.damageMult, 1.0);
 
-  // 1 stack of crit_lens (+3% crit chance)
+  // 1 stack of crit_lens (+6% crit chance)
   items.set('crit_lens', 1);
   const withLens = calculatePlayerStats(items);
-  assert.equal(Math.round(withLens.critChance * 100) / 100, 0.08);
+  assert.equal(Math.round(withLens.critChance * 100) / 100, 0.11);
 
   // 1 stack of heavy_hollowpoint (+20% crit damage)
   items.set('heavy_hollowpoint', 1);

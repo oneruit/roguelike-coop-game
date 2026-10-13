@@ -230,6 +230,8 @@ export abstract class Weapon {
   public abstract upgrade(grade?: WeaponGrade): void;
   public abstract getNextUpgradeDescription(grade?: WeaponGrade): string;
 
+  public destroy?(scene?: any): void;
+
   public getInfo(): WeaponInfo {
     return {
       id: this.id,

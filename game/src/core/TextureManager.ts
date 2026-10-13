@@ -149,6 +149,14 @@ export class TextureManager {
       return this.cache.get(resolvedUrl)!;
     }
 
+    if (typeof document === 'undefined') {
+      const tex = new Texture();
+      this.cache.set(url, tex);
+      this.cache.set(normalizedUrl, tex);
+      this.cache.set(resolvedUrl, tex);
+      return tex;
+    }
+
     const tex = this.loader.load(resolvedUrl, (loadedTex) => {
       if (renderer) {
         renderer.initTexture(loadedTex);
@@ -204,6 +212,9 @@ export class TextureManager {
     '/textures/vfx/vfx_ice_spike.png',
     '/textures/vfx/vfx_fireball.png',
     '/textures/vfx/vfx_scythe.png',
+    '/textures/vfx/vfx_rift_closed.png',
+    '/textures/vfx/vfx_rift_open.png',
+    '/textures/vfx/vfx_sulfur_smoke.png',
 
     // Heroes - 6 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
     '/textures/heroes/hero_ronin_front.png',
@@ -682,10 +693,34 @@ export class TextureManager {
     return tex;
   }
 
+  public static getRiftClosedTexture(renderer?: WebGLRenderer): Texture {
+    const tex = this.load('/textures/vfx/vfx_rift_closed.png', renderer);
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getRiftOpenTexture(renderer?: WebGLRenderer): Texture {
+    const tex = this.load('/textures/vfx/vfx_rift_open.png', renderer);
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
+    return tex;
+  }
+
+  public static getSulfurSmokeTexture(renderer?: WebGLRenderer): Texture {
+    const tex = this.load('/textures/vfx/vfx_sulfur_smoke.png', renderer);
+    tex.magFilter = LinearFilter;
+    tex.minFilter = LinearMipmapLinearFilter;
+    return tex;
+  }
+
   /**
    * High-performance contact shadow mesh sharing a single texture and material.
    */
   public static createShadowMesh(radius: number): Mesh {
+    if (typeof document === 'undefined') {
+      return new Mesh();
+    }
     if (!this.sharedShadowTexture) {
       const canvas = document.createElement('canvas');
       canvas.width = 128;

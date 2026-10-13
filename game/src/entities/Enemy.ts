@@ -195,6 +195,7 @@ export class Enemy {
   public bleedStacks: BleedStack[] = [];
   private bleedTickTimer = 0;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
+  public onBurnDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
 
   // 4-Directional Sprites
   private textures: DirectionalTextures;
@@ -358,7 +359,11 @@ export class Enemy {
       color: 0x38bdf8,
       side: DoubleSide,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.8,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2
     });
     this.freezeAuraMesh = new Mesh(freezeGeom, this.freezeAuraMaterial);
     this.freezeAuraMesh.position.y = 0.05;
@@ -536,7 +541,9 @@ export class Enemy {
           if (isDead) {
             this.isAlive = false;
           }
-          if (this.onBleedDamage) {
+          if (this.onBurnDamage) {
+            this.onBurnDamage(this, tickAmount, isDead, this.burnHitter, this.burnSourceWeaponId);
+          } else if (this.onBleedDamage) {
             this.onBleedDamage(this, tickAmount, isDead, this.burnHitter, this.burnSourceWeaponId);
           }
         }

@@ -48,8 +48,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'common',
     icon: '⚡',
     color: '#94a3b8',
-    description: '+15% к скорострельности оружий.',
-    stackText: '+15% за стак'
+    description: '+10% к скорострельности оружий.',
+    stackText: '+10% за стак'
   },
   nanite_plating: {
     id: 'nanite_plating',
@@ -113,8 +113,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🎯',
     color: '#22c55e',
-    description: '+2.4% к шансу нанести критический удар.',
-    stackText: '+2.4% шанс за стак'
+    description: '+3.0% к шансу нанести критический удар.',
+    stackText: '+3.0% шанс за стак'
   },
   aegis_battery: {
     id: 'aegis_battery',
@@ -122,8 +122,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '💠',
     color: '#22c55e',
-    description: 'Постоянно генерирует энергощит до +35 HP, восстанавливающийся вне боя.',
-    stackText: '+35 макс. емкости щита за стак'
+    description: 'Постоянно генерирует энергощит до +50 HP, восстанавливающийся вне боя.',
+    stackText: '+50 макс. емкости щита за стак'
   },
   bio_leech: {
     id: 'bio_leech',
@@ -131,8 +131,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🧬',
     color: '#22c55e',
-    description: 'Восстанавливает +2 HP при каждом уничтожении врага.',
-    stackText: '+2 HP за стак'
+    description: 'Восстанавливает +2 HP и 0.6% от макс. HP при каждом уничтожении врага.',
+    stackText: '+2 HP и +0.6% за стак'
   },
   overclock_module: {
     id: 'overclock_module',
@@ -140,8 +140,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '⚙️',
     color: '#22c55e',
-    description: '+10% к скорости атаки всех оружий героя.',
-    stackText: '+10% к скорости за стак'
+    description: '+18% к скорости атаки всех оружий героя.',
+    stackText: '+18% к скорости за стак'
   },
 
   // --- Rare (Редкие) ---
@@ -151,8 +151,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'rare',
     icon: '🎯',
     color: '#38bdf8',
-    description: '+3% к шансу критического удара (суммируется вплоть до 100%).',
-    stackText: '+3% крит. шанс за стак'
+    description: '+6.0% к шансу критического удара (суммируется вплоть до 100%).',
+    stackText: '+6.0% крит. шанс за стак'
   },
   heavy_hollowpoint: {
     id: 'heavy_hollowpoint',
@@ -250,7 +250,10 @@ export const COMMON_ITEMS: RiftItemId[] = [
 ];
 
 export const UNCOMMON_ITEMS: RiftItemId[] = [
+  'chain_lightning',
+  'plasma_detonator',
   'crit_visor',
+  'aegis_battery',
   'bio_leech',
   'overclock_module'
 ];
@@ -262,6 +265,8 @@ export const RARE_ITEMS: RiftItemId[] = [
 ];
 
 export const LEGENDARY_ITEMS: RiftItemId[] = [
+  'singularity_core',
+  'orbital_strike',
   'chronos_phylactery',
   'titan_heart',
   'void_catalyst'

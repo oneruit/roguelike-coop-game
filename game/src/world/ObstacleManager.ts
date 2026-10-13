@@ -28,10 +28,12 @@ export class ObstacleManager {
   }
 
   /**
-   * Registers an obstacle under a chunk key.
+   * Registers an obstacle under a chunk key (spatially hashed by obstacle world position).
    */
-  public addObstacle(chunkKey: string, obstacle: Obstacle) {
-    const hash = ObstacleManager.parseKey(chunkKey);
+  public addObstacle(_chunkKey: string, obstacle: Obstacle) {
+    const cx = Math.round(obstacle.x / 50);
+    const cz = Math.round(obstacle.z / 50);
+    const hash = ObstacleManager.toHash(cx, cz);
     let list = this.chunkObstacles.get(hash);
     if (!list) {
       list = [];
@@ -64,7 +66,7 @@ export class ObstacleManager {
   }
 
   /**
-   * High performance zero-allocation collision resolution.
+   * High performance zero-allocation collision resolution across 3x3 neighboring chunks.
    */
   public resolveEntityCollision(
     position: SimPoint2D,
@@ -72,21 +74,13 @@ export class ObstacleManager {
     iterations = 1
   ): boolean {
     let hadCollision = false;
-    const cx = Math.floor(position.x / 50);
-    const cz = Math.floor(position.z / 50);
+    const cx = Math.round(position.x / 50);
+    const cz = Math.round(position.z / 50);
 
     for (let iter = 0; iter < iterations; iter++) {
-      const relX = position.x - cx * 50;
-      const relZ = position.z - cz * 50;
-      const margin = entityRadius + 6.0; // covers up to 5.5m radius obstacles (e.g. oasis)
-      const minDx = relX < margin ? -1 : 0;
-      const maxDx = relX > 50 - margin ? 1 : 0;
-      const minDz = relZ < margin ? -1 : 0;
-      const maxDz = relZ > 50 - margin ? 1 : 0;
-
-      for (let dx = minDx; dx <= maxDx; dx++) {
+      for (let dx = -1; dx <= 1; dx++) {
         const curX = cx + dx;
-        for (let dz = minDz; dz <= maxDz; dz++) {
+        for (let dz = -1; dz <= 1; dz++) {
           const curZ = cz + dz;
           const hash = ObstacleManager.toHash(curX, curZ);
           const obstacles = this.chunkObstacles.get(hash);

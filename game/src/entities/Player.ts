@@ -50,7 +50,6 @@ export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
 import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
 import { PlayerStatusManager } from './PlayerStatusManager';
 
-
 export class Player {
   public mesh: Group;
   public position: Vector3;
@@ -83,23 +82,32 @@ export class Player {
   public level: number = 1;
   public onLevelGained?: (levelsGained: number) => void;
   public onChronosTrigger?: (position: Vector3) => void;
-  public pickupRadius: number = 10.0;
+  public pickupRadius: number = 4.0;
   public damageMultiplier: number = 1.35;
   public baseDamageMultiplier: number = 1.35;
   public passiveDamageMultiplier: number = 1.0;
   public passiveSpeedMultiplier: number = 1.0;
-  public speedElixirBonus: number = 0;
   public passiveCooldownMultiplier: number = 1.0;
   public passiveHpRegen: number = 0;
   public passiveDamageReduction: number = 0;
-  public sheriffStarCount: number = 0;
-  public spursCount: number = 0;
+  public amplifierCount: number = 0;
+  public speedBootsCount: number = 0;
   public flaskCount: number = 0;
-  public lassoCount: number = 0;
+  public magnetCount: number = 0;
+
+  // Backwards compatibility aliases
+  public get sheriffStarCount(): number { return this.amplifierCount; }
+  public set sheriffStarCount(v: number) { this.amplifierCount = v; }
+  public get spursCount(): number { return this.speedBootsCount; }
+  public set spursCount(v: number) { this.speedBootsCount = v; }
+  public get lassoCount(): number { return this.magnetCount; }
+  public set lassoCount(v: number) { this.magnetCount = v; }
+
   public amuletCount: number = 0;
   public vestCount: number = 0;
   public watchCount: number = 0;
   public mightElixirCount: number = 0;
+  private scene: Scene;
 
   // The Rift: Item Inventory & Economy
   public riftItems: Map<RiftItemId, number> = new Map();
@@ -119,14 +127,17 @@ export class Player {
   public statusManager: PlayerStatusManager = new PlayerStatusManager();
 
   public applyBurn(duration?: number): void {
+    if (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost')) return;
     this.statusManager.applyBurn(duration);
   }
 
   public applyShock(duration?: number): void {
+    if (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost')) return;
     this.statusManager.applyShock(duration);
   }
 
   public applySlow(factor: number, duration: number): void {
+    if (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost')) return;
     this.statusManager.applySlow(factor, duration);
   }
 
@@ -213,6 +224,7 @@ export class Player {
   }
 
   constructor(scene: Scene, charType: CharacterType = 'ronin') {
+    this.scene = scene;
     this.charType = charType;
     this.position = new Vector3(0, 0, 0);
     this.mesh = new Group();
@@ -265,7 +277,7 @@ export class Player {
       depthTest: false
     });
     this.overheadSprite = new Sprite(spriteMat);
-    this.overheadSprite.position.set(0, 3.0, 0);
+    this.overheadSprite.position.set(0, 3.85, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
     this.mesh.add(this.overheadSprite);
@@ -417,8 +429,21 @@ export class Player {
     }
   }
 
-  private applyCharacterPerks() {
+  public clearWeapons(): void {
+    for (const w of this.weapons) {
+      if (typeof w.destroy === 'function') {
+        try {
+          w.destroy(this.scene);
+        } catch (e) {
+          console.warn('[Player] Error destroying weapon:', e);
+        }
+      }
+    }
     this.weapons = [];
+  }
+
+  private applyCharacterPerks() {
+    this.clearWeapons();
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.maxHp = heroCfg.maxHp;
@@ -451,15 +476,14 @@ export class Player {
     this.passiveCooldownMultiplier = 1.0;
     this.passiveHpRegen = 0;
     this.passiveDamageReduction = 0;
-    this.sheriffStarCount = 0;
-    this.spursCount = 0;
+    this.amplifierCount = 0;
+    this.speedBootsCount = 0;
     this.flaskCount = 0;
-    this.lassoCount = 0;
+    this.magnetCount = 0;
     this.amuletCount = 0;
     this.vestCount = 0;
     this.watchCount = 0;
     this.mightElixirCount = 0;
-    this.speedElixirBonus = 0;
     this.pickupRadius = 10.0;
     this.recalculateStats();
   }
@@ -576,13 +600,13 @@ export class Player {
     // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, NO LIMIT
     this.passiveHpRegen = (this.amuletCount * 1.0) + (vialStacks * 2.5) + (titanHeartStacks * 15);
 
-    // Max Shield: +35 shield per Aegis Battery stack
-    this.maxShield = aegisStacks * 35;
+    // Max Shield: +50 shield per Aegis Battery stack
+    this.maxShield = aegisStacks * 50;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
 
-    // Crit Chance: 5% base + 3% per Crit Lens + 2.4% per Crit Visor, cap at 1.0 (100%)
+    // Crit Chance: 5% base + 6% per Crit Lens + 3% per Crit Visor, cap at 1.0 (100%)
     const critLensStacks = this.getItemStacks('crit_lens');
-    this.critChance = Math.min(1.0, 0.05 + critLensStacks * 0.03 + critStacks * 0.024);
+    this.critChance = Math.min(1.0, 0.05 + critLensStacks * 0.06 + critStacks * 0.03);
 
     // Crit Damage: 50% base + 20% per Heavy Hollowpoint + 40% per Void Catalyst, cap at 10.0 (1000%)
     const hollowStacks = this.getItemStacks('heavy_hollowpoint');
@@ -597,36 +621,36 @@ export class Player {
 
     // Attack Cooldown Multiplier:
     // Pocket watch: -1% at level 1, diminishing returns up to 30% at level 300, capped at 30% reduction (floor 0.70)
-    // Kinetic Injector: -15% cooldown per stack (0.85^stacks)
-    // Overclock module: -10% cooldown per stack (0.90^stacks)
+    // Kinetic Injector (Common): -10% cooldown per stack (0.90^stacks)
+    // Overclock module (Uncommon): -18% cooldown per stack (0.82^stacks)
     // Combined floor 0.15
     const watchReduction = this.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)));
     const watchMult = 1 - watchReduction;
-    const injectorMult = Math.pow(0.85, injectorStacks);
-    const overclockMult = Math.pow(0.90, overclockStacks);
+    const injectorMult = Math.pow(0.90, injectorStacks);
+    const overclockMult = Math.pow(0.82, overclockStacks);
     this.passiveCooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);
     for (const weapon of this.weapons) {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
 
-    // Magnet Lasso pickup radius: base 10m, +10% at level 1 (+1.0m), diminishing returns up to 50m at level 300, capped at 50m
-    if (this.lassoCount <= 0) {
-      this.pickupRadius = 10.0;
+    // Magnet (formerly Magnet Lasso) pickup radius: base 4m, +10% at level 1 (+0.4m), diminishing returns up to 50m at level 300, capped at 50m
+    if (this.magnetCount <= 0) {
+      this.pickupRadius = 4.0;
     } else {
-      this.pickupRadius = Math.min(50.0, 10.0 + 1.0 * Math.pow(this.lassoCount, Math.log(40) / Math.log(300)));
+      this.pickupRadius = Math.min(50.0, 4.0 + 0.4 * Math.pow(this.magnetCount, Math.log((50.0 - 4.0) / 0.4) / Math.log(300)));
     }
 
-    // Cowboy Spurs: +3% speed at level 1, diminishing returns up to x3.0 at level 300, capped at x3.0
-    const spursBonus = this.spursCount <= 0 ? 0 : 0.03 * Math.pow(this.spursCount, Math.log(200 / 3) / Math.log(300));
-    this.passiveSpeedMultiplier = Math.min(3.0, 1.0 + spursBonus + this.speedElixirBonus);
+    // Speed Boots (formerly Cowboy Spurs): +3% speed at level 1, diminishing returns up to x3.0 at level 300, capped at x3.0
+    const bootsBonus = this.speedBootsCount <= 0 ? 0 : 0.03 * Math.pow(this.speedBootsCount, Math.log(200 / 3) / Math.log(300));
+    this.passiveSpeedMultiplier = Math.min(3.0, 1.0 + bootsBonus);
 
     // Apply speed cheat or base speed * passive multiplier + speed buff
     const baseSpd = this.isSpeedCheat ? this.baseSpeed * 2.2 : (this.baseSpeed * this.passiveSpeedMultiplier);
     this.speed = baseSpd * (1 + speedBonus);
 
-    // Sheriff Star additive scaling: 100 stacks = +200%, 138 stacks = +276%
+    // Amplifier (formerly Sheriff Star) additive scaling: 100 stacks = +200%, 138 stacks = +276%
     // Elixir of Might: +5% damage per stack (+0.05)
-    this.passiveDamageMultiplier = 1.0 + (this.sheriffStarCount * 0.02) + (this.mightElixirCount * 0.05);
+    this.passiveDamageMultiplier = 1.0 + (this.amplifierCount * 0.02) + (this.mightElixirCount * 0.05);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
     const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
@@ -650,15 +674,9 @@ export class Player {
     return heroMultiplier * generalBonus;
   }
 
-  public addSheriffStarBonus(_multiplier?: number) {
-    this.sheriffStarCount++;
-    this.recalculateStats();
-  }
-
-  public addMightElixirBonus() {
-    this.mightElixirCount++;
-    this.recalculateStats();
-  }
+  public addAmplifierBonus(_multiplier?: number) { this.amplifierCount++; this.recalculateStats(); }
+  public addSheriffStarBonus(multiplier?: number) { this.addAmplifierBonus(multiplier); }
+  public addMightElixirBonus() { this.mightElixirCount++; this.recalculateStats(); }
 
   public recordWeaponDamage(weaponId: string | undefined, damage: number): void {
     if (!weaponId || damage <= 0) return;
@@ -671,20 +689,10 @@ export class Player {
     }
   }
 
-  public addSpeedBonus(_multiplier: number = 1.03) {
-    this.spursCount++;
-    this.recalculateStats();
-  }
-
-  public addHpRegen(_amount: number = 1.0) {
-    this.amuletCount++;
-    this.recalculateStats();
-  }
-
-  public addDamageReduction(_pct: number = 0.10) {
-    this.vestCount++;
-    this.recalculateStats();
-  }
+  public addSpeedBootsBonus(_multiplier: number = 1.03) { this.speedBootsCount++; this.recalculateStats(); }
+  public addSpeedBonus(multiplier: number = 1.03) { this.addSpeedBootsBonus(multiplier); }
+  public addHpRegen(_amount: number = 1.0) { this.amuletCount++; this.recalculateStats(); }
+  public addDamageReduction(_pct: number = 0.10) { this.vestCount++; this.recalculateStats(); }
 
   public addCooldownReduction(_pct: number = 0.01) {
     if (this.watchCount < 300) {
@@ -700,10 +708,9 @@ export class Player {
     this.redrawOverhead();
   }
 
-  public addLassoBonus(_multiplier: number = 1.10) {
-    this.lassoCount++;
-    this.recalculateStats();
-  }
+  public addMagnetBonus(_multiplier: number = 1.10) { this.magnetCount++; this.recalculateStats(); }
+  public addLassoBonus(multiplier: number = 1.10) { this.addMagnetBonus(multiplier); }
+
 
   /**
    * Calculates damage reduction provided by Nanite Plating (Нано-Броня).
@@ -731,29 +738,32 @@ export class Player {
     if (itemId === 'stat_vest') {
       return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
     }
-    if (itemId === 'stat_spurs') {
-      return this.passiveSpeedMultiplier >= 3.0 || this.spursCount >= 300;
+    if (itemId === 'stat_speed_boots' || itemId === 'stat_spurs') {
+      return this.passiveSpeedMultiplier >= 3.0 || this.speedBootsCount >= 300;
     }
-    if (itemId === 'stat_lasso') {
-      return this.pickupRadius >= 50.0 || this.lassoCount >= 300;
+    if (itemId === 'stat_magnet' || itemId === 'stat_lasso') {
+      return this.pickupRadius >= 50.0 || this.magnetCount >= 300;
     }
     return false;
   }
 
   public applyPassiveBuff(id: PassiveBuffId): string {
     switch (id) {
+      case 'stat_amplifier':
       case 'stat_sheriff_star':
-        this.addSheriffStarBonus();
+        this.addAmplifierBonus();
         return `⭐ +2% Урон (+${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
+      case 'stat_speed_boots':
       case 'stat_spurs':
-        this.addSpeedBonus(1.03);
-        return `👢 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)} / макс. x3.0)`;
+        this.addSpeedBootsBonus(1.03);
+        return `🥾 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)} / макс. x3.0)`;
       case 'stat_flask':
         this.addFlaskBonus(30);
         return `🍶 +30 Макс HP & Исцеление (${this.maxHp} HP)`;
+      case 'stat_magnet':
       case 'stat_lasso':
-        this.addLassoBonus(1.10);
-        return `➰ +10% Радиус магнита (${this.pickupRadius.toFixed(1)}м / макс. 50м)`;
+        this.addMagnetBonus(1.10);
+        return `🧲 +10% Радиус магнита (${this.pickupRadius.toFixed(1)}м / макс. 50м)`;
       case 'stat_amulet':
         this.addHpRegen(1.0);
         return `🧿 +1 HP/с Реген (+${this.passiveHpRegen.toFixed(1)}/с)`;
@@ -870,7 +880,11 @@ export class Player {
     // 3. Movement & 4-Directional Sprite Selection
     const isMoving = moveDir.lengthSq() > 0.01;
     this.isMoving = isMoving;
-    this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, true), this.maxHp);
+    if (this.isGodMode) {
+      this.statusManager.reset();
+    } else {
+      this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, false), this.maxHp);
+    }
     const isAttacking = this.attackAnimTimer > 0;
 
     if (this.attackAnimTimer > 0) {
@@ -1070,7 +1084,8 @@ export class Player {
   }
 
   public takeDamage(amount: number, ignoreInvuln = false): boolean {
-    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.isGodMode || this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost'))) || this.isDowned) {
+    if (this.isGodMode) return false;
+    if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost'))) || this.isDowned) {
       return false;
     }
 
@@ -1166,6 +1181,10 @@ export class Player {
 
   public toggleGodMode(): boolean {
     this.isGodMode = !this.isGodMode;
+    if (this.isGodMode) {
+      this.statusManager.reset();
+      this.hp = this.maxHp;
+    }
     return this.isGodMode;
   }
 
@@ -1260,18 +1279,17 @@ export class Player {
     this.xp = 0;
     this.level = 1;
     this.xpToNextLevel = this.calculateXpToNextLevel(1);
-    this.speedElixirBonus = 0;
-    this.pickupRadius = 10.0;
+    this.pickupRadius = 4.0;
     this.isAlive = true;
     this.isDowned = false;
     this.reviveProgress = 0;
     this.kills = 0;
     this.totalDamageDealt = 0;
     this.revivesCount = 0;
-    this.sheriffStarCount = 0;
-    this.spursCount = 0;
+    this.amplifierCount = 0;
+    this.speedBootsCount = 0;
     this.flaskCount = 0;
-    this.lassoCount = 0;
+    this.magnetCount = 0;
     this.amuletCount = 0;
     this.vestCount = 0;
     this.watchCount = 0;
@@ -1372,36 +1390,57 @@ export class Player {
           : 'Рен';
       ctx.fillText(`${this.displayName} (${heroName}) [L${this.level}]`, w / 2, 24);
 
-      // Health Bar
-      const barX = 26;
+      // Health Bar (XP-bar capsule style, red palette, lighter as HP drops)
+      const barX = 22;
       const barY = 48;
-      const barW = w - 52;
-      const barH = 16;
+      const barW = w - 44;
+      const barH = 17;
+      const radius = barH / 2;
 
-      // Track
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.lineWidth = 1;
+      // Track Container (matching XP-bar glass capsule)
+      ctx.fillStyle = 'rgba(6, 12, 22, 0.94)';
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(barX, barY, barW, barH, 6);
+      ctx.roundRect(barX, barY, barW, barH, radius);
       ctx.fill();
       ctx.stroke();
 
-      // Fill
+      // Fill with dynamic lightness (less HP = lighter red)
       const hpPct = Math.max(0, Math.min(1, this.hp / (this.maxHp || 100)));
-      ctx.fillStyle = hpPct > 0.5 ? '#10b981' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
-      if (hpPct > 0) {
+      const fillW = (barW - 4) * hpPct;
+      if (hpPct > 0 && fillW > 0) {
+        const lightnessFactor = 1 - hpPct; // 0 at full HP -> 1 at empty HP
+        const l1 = Math.round(38 + lightnessFactor * 32); // 38% -> 70%
+        const l2 = Math.round(50 + lightnessFactor * 30); // 50% -> 80%
+        if (ctx.createLinearGradient) {
+          const grad = ctx.createLinearGradient(barX + 2, barY, barX + 2 + fillW, barY);
+          grad.addColorStop(0, `hsl(0, 90%, ${l1}%)`);
+          grad.addColorStop(1, `hsl(0, 95%, ${l2}%)`);
+          ctx.fillStyle = grad;
+        } else {
+          ctx.fillStyle = `hsl(0, 90%, ${l1}%)`;
+        }
         ctx.beginPath();
-        ctx.roundRect(barX + 2, barY + 2, (barW - 4) * hpPct, barH - 4, 4);
+        ctx.roundRect(barX + 2, barY + 2, fillW, barH - 4, (barH - 4) / 2);
+        ctx.fill();
+
+        // Subtle XP-style glass gloss highlight on upper half
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.beginPath();
+        ctx.roundRect(barX + 4, barY + 2.5, Math.max(0, fillW - 4), (barH - 4) * 0.38, (barH - 4) * 0.19);
         ctx.fill();
       }
 
       // Numeric HP Text
       ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 4;
       ctx.font = 'bold 11px "Cinzel", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
+      ctx.shadowBlur = 0;
     }
 
     this.overheadTexture.needsUpdate = true;

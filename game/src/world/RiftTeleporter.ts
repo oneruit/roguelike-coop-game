@@ -4,16 +4,34 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
-  CylinderGeometry,
-  MeshStandardMaterial,
-  TorusGeometry,
+  PlaneGeometry,
   DoubleSide,
-  RingGeometry
+  RingGeometry,
+  PointLight,
+  MeshDepthMaterial,
+  RGBADepthPacking,
+  type Texture
 } from 'three';
+import { TextureManager } from '../core/TextureManager';
 
 export type TeleporterState = 'IDLE' | 'CHARGING' | 'COMPLETED' | 'WARP_READY';
 
+export interface RiftUpdateResult {
+  justCompleted: boolean;
+  justTouched?: boolean;
+}
+
+/**
+ * 2.5D Dimensional Rift (Разлом) for biome transitions.
+ * - Closed state: Dark ominous cosmic tear in reality, pulsating with dark eldritch veins.
+ * - On touch or interaction [E]: The boss emerges from the rift and the portal opens.
+ * - Open state: Radiant glowing interdimensional gateway with swirling celestial vortex.
+ * - Sized 8.0 units with contact shadow and directional shadow casting.
+ * - Warp transition to next biome triggers ONLY via interaction prompt [E].
+ */
 export class RiftTeleporter {
+  public static readonly RIFT_SIZE = 8.0; // 8.0 units
+
   private scene: Scene;
   public position: Vector3;
   public state: TeleporterState = 'IDLE';
@@ -25,11 +43,17 @@ export class RiftTeleporter {
   public isDiscovered: boolean = false;
 
   public mesh: Group;
-  private ringMesh1!: Mesh;
-  private ringMesh2!: Mesh;
-  private beaconBeam!: Mesh;
-  private zoneDome!: Mesh;
-  private zoneDomeMat!: MeshBasicMaterial;
+  private riftSprite!: Mesh;
+  private riftSpriteMat!: MeshBasicMaterial;
+  private customDepthMaterial!: MeshDepthMaterial;
+  private shadowMesh!: Mesh;
+  private groundAura!: Mesh;
+  private groundAuraMat!: MeshBasicMaterial;
+  private riftLight!: PointLight;
+
+  private riftClosedTex!: Texture;
+  private riftOpenTex!: Texture;
+  private animTimer: number = 0;
 
   constructor(scene: Scene, position: Vector3 = new Vector3(75, 0, 75)) {
     this.scene = scene;
@@ -42,61 +66,59 @@ export class RiftTeleporter {
   }
 
   private createTeleporterVisuals() {
-    // 1. Central Obelisk
-    const obeliskGeom = new CylinderGeometry(0.8, 1.8, 6.5, 6);
-    const obeliskMat = new MeshStandardMaterial({
-      color: 0x1e1b4b,
-      metalness: 0.9,
-      roughness: 0.2,
-      emissive: 0x4338ca,
-      emissiveIntensity: 0.4
-    });
-    const obelisk = new Mesh(obeliskGeom, obeliskMat);
-    obelisk.position.y = 3.25;
-    obelisk.castShadow = true;
-    this.mesh.add(obelisk);
+    this.riftClosedTex = TextureManager.getRiftClosedTexture();
+    this.riftOpenTex = TextureManager.getRiftOpenTexture();
 
-    // 2. Floating Rotating Energy Rings
-    const ringGeom = new TorusGeometry(2.4, 0.15, 12, 32);
-    const ringMat = new MeshBasicMaterial({
-      color: 0x818cf8,
-      wireframe: true
-    });
-    this.ringMesh1 = new Mesh(ringGeom, ringMat);
-    this.ringMesh1.position.y = 3.8;
-    this.ringMesh1.rotation.x = Math.PI / 4;
-    this.mesh.add(this.ringMesh1);
+    // 1. Central 2.5D Rift Sprite (8.0 x 8.0)
+    const riftGeom = new PlaneGeometry(RiftTeleporter.RIFT_SIZE, RiftTeleporter.RIFT_SIZE);
+    // Anchor pivot near bottom so the dimensional tear hovers just slightly above terrain
+    riftGeom.translate(0, RiftTeleporter.RIFT_SIZE * 0.45, 0);
 
-    this.ringMesh2 = new Mesh(ringGeom, ringMat);
-    this.ringMesh2.position.y = 3.8;
-    this.ringMesh2.rotation.y = Math.PI / 3;
-    this.mesh.add(this.ringMesh2);
-
-    // 3. Skyward Beacon Beam (visible from anywhere)
-    const beamGeom = new CylinderGeometry(0.6, 1.4, 180, 16);
-    beamGeom.translate(0, 90, 0);
-    const beamMat = new MeshBasicMaterial({
-      color: 0x6366f1,
+    this.riftSpriteMat = new MeshBasicMaterial({
+      map: this.riftClosedTex,
       transparent: true,
-      opacity: 0.45,
-      side: DoubleSide
+      alphaTest: 0.08,
+      side: DoubleSide,
+      depthWrite: true
     });
-    this.beaconBeam = new Mesh(beamGeom, beamMat);
-    this.mesh.add(this.beaconBeam);
 
-    // 4. Ground Charge Circle / Dome
-    const zoneGeom = new RingGeometry(this.chargeRadius - 0.4, this.chargeRadius + 0.4, 64);
-    zoneGeom.rotateX(-Math.PI / 2);
-    this.zoneDomeMat = new MeshBasicMaterial({
-      color: 0x6366f1,
+    this.customDepthMaterial = new MeshDepthMaterial({
+      depthPacking: RGBADepthPacking,
+      map: this.riftClosedTex,
+      alphaTest: 0.15
+    });
+
+    this.riftSprite = new Mesh(riftGeom, this.riftSpriteMat);
+    // Standard 2.5D isometric tilt matching players, bosses, and trees
+    this.riftSprite.rotation.x = -Math.PI / 4.8;
+    this.riftSprite.customDepthMaterial = this.customDepthMaterial;
+    this.riftSprite.castShadow = true;
+    this.riftSprite.renderOrder = 1;
+    this.mesh.add(this.riftSprite);
+
+    // 2. High-performance contact ground shadow
+    this.shadowMesh = TextureManager.createShadowMesh(2.6);
+    this.shadowMesh.position.y = 0.03;
+    this.mesh.add(this.shadowMesh);
+
+    // 3. Ground Energy Aura Ring (scaled for 8.0m rift)
+    const auraGeom = new RingGeometry(1.4, 4.0, 48);
+    auraGeom.rotateX(-Math.PI / 2);
+    this.groundAuraMat = new MeshBasicMaterial({
+      color: 0x7c3aed, // Faint dark violet when closed
       transparent: true,
       opacity: 0.35,
-      side: DoubleSide
+      side: DoubleSide,
+      depthWrite: false
     });
-    this.zoneDome = new Mesh(zoneGeom, this.zoneDomeMat);
-    this.zoneDome.position.y = 0.1;
-    this.zoneDome.visible = false;
-    this.mesh.add(this.zoneDome);
+    this.groundAura = new Mesh(auraGeom, this.groundAuraMat);
+    this.groundAura.position.y = 0.08;
+    this.mesh.add(this.groundAura);
+
+    // 4. Radiant Point Light
+    this.riftLight = new PointLight(0x7c3aed, 1.2, 14);
+    this.riftLight.position.set(0, 2.8, 0);
+    this.mesh.add(this.riftLight);
   }
 
   public activate(): boolean {
@@ -105,17 +127,25 @@ export class RiftTeleporter {
     this.state = 'CHARGING';
     this.chargeProgress = 0;
     this.isBossDefeated = false;
-    this.zoneDome.visible = true;
-    this.zoneDomeMat.color.setHex(0xf43f5e); // Pulsing red while charging
+
+    // Awaken and open the rift: switch to radiant glowing open vortex!
+    this.riftSpriteMat.map = this.riftOpenTex;
+    this.riftSpriteMat.needsUpdate = true;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.riftOpenTex;
+      this.customDepthMaterial.needsUpdate = true;
+    }
+    this.groundAuraMat.color.setHex(0x38bdf8); // Bright radiant cyan
+    this.groundAuraMat.opacity = 0.65;
+    this.riftLight.color.setHex(0x38bdf8);
+    this.riftLight.intensity = 3.5;
+    this.riftLight.distance = 26;
+
     return true;
   }
 
-  public update(dt: number, playerPositions: Vector3[]): { justCompleted: boolean } {
-    // Animate beacon and rings
-    this.ringMesh1.rotation.y += dt * 1.5;
-    this.ringMesh1.rotation.z += dt * 0.8;
-    this.ringMesh2.rotation.x += dt * 1.2;
-    this.ringMesh2.rotation.y -= dt * 1.0;
+  public update(dt: number, playerPositions: Vector3[]): RiftUpdateResult {
+    this.animTimer += dt;
 
     // Check discovery radius if not yet discovered
     if (!this.isDiscovered) {
@@ -132,22 +162,48 @@ export class RiftTeleporter {
     }
 
     let justCompleted = false;
+    let justTouched = false;
 
-    if (this.state === 'CHARGING') {
-      // Zone capture is no longer required; player must defeat the stage boss to unlock the portal
+    if (this.state === 'IDLE') {
+      // Pulsating dormant rift: breathing scale & subtle ground aura flicker
+      const pulse = 1.0 + Math.sin(this.animTimer * 2.6) * 0.04;
+      this.riftSprite.scale.set(pulse, pulse, pulse);
+      this.groundAuraMat.opacity = 0.28 + Math.sin(this.animTimer * 2.6) * 0.12;
+      this.groundAura.rotation.y += dt * 0.25;
+
+      // Check contact touch: when player physically approaches the rift to awaken it
+      for (const pos of playerPositions) {
+        if (pos.distanceToSquared(this.position) <= 3.8 * 3.8) {
+          justTouched = true;
+          break;
+        }
+      }
+    } else if (this.state === 'CHARGING') {
+      // Violent energized pulse while boss fight is ongoing
+      const pulse = 1.0 + Math.sin(this.animTimer * 4.2) * 0.06;
+      this.riftSprite.scale.set(pulse, pulse, pulse);
+      this.groundAura.rotation.y += dt * 0.8;
+      this.groundAuraMat.opacity = 0.45 + Math.sin(this.animTimer * 4.0) * 0.2;
+
       if (this.isBossDefeated) {
         this.state = 'WARP_READY';
         this.chargeProgress = 1.0;
-        this.zoneDome.visible = true;
-        this.zoneDomeMat.color.setHex(0x10b981); // Emerald green for stable rift!
-        this.zoneDomeMat.opacity = 0.6;
+        this.groundAuraMat.color.setHex(0x10b981); // Emerald green for stabilized rift
+        this.groundAuraMat.opacity = 0.75;
+        this.riftLight.color.setHex(0x34d399);
+        this.riftLight.intensity = 4.0;
         justCompleted = true;
-      } else {
-        this.zoneDomeMat.opacity = 0.35 + Math.sin(Date.now() * 0.005) * 0.15;
       }
+    } else if (this.state === 'WARP_READY') {
+      // Radiant stabilized portal humming with interdimensional power
+      // Warp to next biome triggers strictly on [E] interaction, not on automatic walk-in
+      const pulse = 1.02 + Math.sin(this.animTimer * 3.2) * 0.04;
+      this.riftSprite.scale.set(pulse, pulse, pulse);
+      this.groundAura.rotation.y += dt * 0.5;
+      this.groundAuraMat.opacity = 0.60 + Math.sin(this.animTimer * 3.0) * 0.15;
     }
 
-    return { justCompleted };
+    return { justCompleted, justTouched };
   }
 
   /**
@@ -156,13 +212,25 @@ export class RiftTeleporter {
   public resetForStage(newPos: Vector3) {
     this.position.copy(newPos);
     this.mesh.position.copy(newPos);
+    this.mesh.visible = true;
     this.state = 'IDLE';
     this.isDiscovered = false;
     this.chargeProgress = 0;
     this.isBossDefeated = false;
     this.isPlayerInsideZone = false;
-    this.zoneDome.visible = false;
-    this.zoneDomeMat.color.setHex(0x6366f1);
+
+    // Reset visuals to closed dormant rift
+    this.riftSpriteMat.map = this.riftClosedTex;
+    this.riftSpriteMat.needsUpdate = true;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.riftClosedTex;
+      this.customDepthMaterial.needsUpdate = true;
+    }
+    this.groundAuraMat.color.setHex(0x7c3aed);
+    this.groundAuraMat.opacity = 0.35;
+    this.riftLight.color.setHex(0x7c3aed);
+    this.riftLight.intensity = 1.2;
+    this.riftLight.distance = 14;
   }
 
   /**
@@ -187,9 +255,17 @@ export class RiftTeleporter {
     this.isDiscovered = true;
     this.isBossDefeated = true;
     this.chargeProgress = 1.0;
-    this.zoneDome.visible = true;
-    this.zoneDomeMat.color.setHex(0x10b981);
-    this.zoneDomeMat.opacity = 0.6;
+
+    this.riftSpriteMat.map = this.riftOpenTex;
+    this.riftSpriteMat.needsUpdate = true;
+    if (this.customDepthMaterial) {
+      this.customDepthMaterial.map = this.riftOpenTex;
+      this.customDepthMaterial.needsUpdate = true;
+    }
+    this.groundAuraMat.color.setHex(0x10b981);
+    this.groundAuraMat.opacity = 0.75;
+    this.riftLight.color.setHex(0x34d399);
+    this.riftLight.intensity = 4.0;
     return true;
   }
 
@@ -199,6 +275,7 @@ export class RiftTeleporter {
     }
 
     const distSq = playerPos.distanceToSquared(this.position);
+    // 8m portal footprint: interaction range 5.5 meters
     if (distSq > 5.5 * 5.5) {
       return { canInteract: false, prompt: '', action: null };
     }
@@ -206,7 +283,7 @@ export class RiftTeleporter {
     if (this.state === 'IDLE') {
       return {
         canInteract: true,
-        prompt: '[E] Активировать Телепорт Разлома (Призыв Босса)',
+        prompt: '[E] Прикоснуться к Разлому (Призыв Босса)',
         action: 'activate'
       };
     }
@@ -214,7 +291,7 @@ export class RiftTeleporter {
     if (this.state === 'WARP_READY') {
       return {
         canInteract: true,
-        prompt: '[E] Переместиться на следующий биом',
+        prompt: '[E] Войти в Разлом (Переход на следующий биом)',
         action: 'warp'
       };
     }
@@ -224,6 +301,10 @@ export class RiftTeleporter {
 
   public destroy() {
     this.scene.remove(this.mesh);
+    this.riftSpriteMat.dispose();
+    this.customDepthMaterial?.dispose();
+    this.groundAuraMat.dispose();
+    this.riftLight.dispose();
   }
 
   public getSnapshot() {
@@ -251,9 +332,16 @@ export class RiftTeleporter {
     if (snap.isCompleted) {
       this.state = 'WARP_READY';
       this.isBossDefeated = true;
-      this.zoneDome.visible = true;
-      this.zoneDomeMat.color.setHex(0x10b981);
-      this.zoneDomeMat.opacity = 0.6;
+      this.riftSpriteMat.map = this.riftOpenTex;
+      this.riftSpriteMat.needsUpdate = true;
+      if (this.customDepthMaterial) {
+        this.customDepthMaterial.map = this.riftOpenTex;
+        this.customDepthMaterial.needsUpdate = true;
+      }
+      this.groundAuraMat.color.setHex(0x10b981);
+      this.groundAuraMat.opacity = 0.75;
+      this.riftLight.color.setHex(0x34d399);
+      this.riftLight.intensity = 4.0;
     }
   }
 }

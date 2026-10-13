@@ -32,6 +32,7 @@ import { GameNetworkCoordinator } from './net/GameNetworkCoordinator';
 import { SessionDirector, GameState } from './core/SessionDirector';
 import { LobbyCoordinator } from './net/LobbyCoordinator';
 import { MerchantManager } from './world/MerchantManager';
+import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
 
 class Game {
   private engine: Engine;
@@ -491,6 +492,25 @@ class Game {
       }
     };
 
+    this.enemyManager.onBurnDamage = (enemy, dmg, isDead, hitter, sourceWeaponId) => {
+      const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
+      if (hitter === myId) {
+        this.player.totalDamageDealt += dmg;
+        if (sourceWeaponId) {
+          this.player.recordWeaponDamage(sourceWeaponId, dmg);
+        }
+      }
+      if (this.net.role === 'client') {
+        this.combatDirector.pendingClientHits.push({
+          enemyId: enemy.id,
+          damage: dmg,
+          sourceX: enemy.position.x,
+          sourceZ: enemy.position.z,
+          isFatal: isDead
+        });
+      }
+    };
+
     // Altar captured
     this.engine.altarManager.onAltarCaptured = (altar) => {
       ProgressionManager.getInstance().recordResourceGather(1);
@@ -633,7 +653,7 @@ class Game {
       }
     }
 
-    const { justCompleted } = this.riftTeleporter.update(dt, allPlayerPositions);
+    const { justCompleted, justTouched } = this.riftTeleporter.update(dt, allPlayerPositions);
     if (justCompleted) {
       SoundManager.playTeleporterComplete();
       // Award stage completion bonus XP without deleting credits so player can spend them at the merchant!
@@ -641,6 +661,14 @@ class Game {
       this.player.gainXp(bonusXp);
       this.hud.triggerAltarNotification('РАЗЛОМ СТАБИЛИЗИРОВАН', 'Босс повержен! Активируйте портал для перехода!', '🌀', '#10b981');
     }
+
+    // Touch trigger: walking into closed rift awakens it and summons the boss
+    if (justTouched && this.riftTeleporter.state === 'IDLE' && this.sessionDirector) {
+      this.sessionDirector.activateRift();
+    }
+
+    // 8b. Update Brimstone / Sulfur Smoke animations
+    SulfurSmokeManager.update(dt);
 
     this.chestManager.update(dt);
 
@@ -701,12 +729,14 @@ class Game {
         (damage: number, isImmortalHit?: boolean, attacker?: Enemy) => {
           const isVictoryDeath = Boolean(isImmortalHit);
           const died = this.player.takeDamage(damage, isVictoryDeath);
-          if (attacker?.eliteAffix === 'blazing') {
-            this.player.applyBurn(3.0);
-          } else if (attacker?.eliteAffix === 'overloading') {
-            this.player.applyShock(5.0);
-          } else if (attacker?.eliteAffix === 'glacial') {
-            this.player.applySlow(0.65, 3.0);
+          if (!this.player.isGodMode) {
+            if (attacker?.eliteAffix === 'blazing') {
+              this.player.applyBurn(3.0);
+            } else if (attacker?.eliteAffix === 'overloading') {
+              this.player.applyShock(5.0);
+            } else if (attacker?.eliteAffix === 'glacial') {
+              this.player.applySlow(0.65, 3.0);
+            }
           }
           if (died) {
             this.sessionDirector.triggerGameOver(isVictoryDeath);
@@ -750,12 +780,14 @@ class Game {
               this.lastClientLocalHitTime = now;
               const isVictoryDeath = Boolean(enemy.isImmortal);
               const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
-              if (enemy.eliteAffix === 'blazing') {
-                this.player.applyBurn(3.0);
-              } else if (enemy.eliteAffix === 'overloading') {
-                this.player.applyShock(5.0);
-              } else if (enemy.eliteAffix === 'glacial') {
-                this.player.applySlow(0.65, 3.0);
+              if (!this.player.isGodMode) {
+                if (enemy.eliteAffix === 'blazing') {
+                  this.player.applyBurn(3.0);
+                } else if (enemy.eliteAffix === 'overloading') {
+                  this.player.applyShock(5.0);
+                } else if (enemy.eliteAffix === 'glacial') {
+                  this.player.applySlow(0.65, 3.0);
+                }
               }
               SoundManager.playPlayerHurt();
               if (died) {

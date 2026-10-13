@@ -78,12 +78,12 @@ export class Engine {
   }
 
   private setupLighting() {
-    // Ambient Light
-    this.ambientLight = new AmbientLight(0x8a5530, 0.95);
+    // Ambient Light (brightened for map clarity)
+    this.ambientLight = new AmbientLight(0x8a5530, 1.25);
     this.scene.add(this.ambientLight);
 
     // Directional Sun / Moon Key Light with Shadows (1024x1024 default resolution)
-    this.dirLight = new DirectionalLight(0xffedd5, 1.45);
+    this.dirLight = new DirectionalLight(0xffedd5, 1.65);
     this.dirLight.position.set(18, 28, 14);
     this.dirLight.castShadow = true;
     this.dirLight.shadow.mapSize.width = 1024;
@@ -100,7 +100,7 @@ export class Engine {
     this.scene.add(this.dirLight.target);
 
     // Hemisphere light
-    this.hemiLight = new HemisphereLight(0xfb923c, 0x241209, 0.70);
+    this.hemiLight = new HemisphereLight(0xfb923c, 0x241209, 0.85);
     this.scene.add(this.hemiLight);
   }
 
@@ -116,12 +116,12 @@ export class Engine {
     if (mode === 'day') {
       this.currentLightOffset.copy(this.sunOffset);
       this.dirLight.color.setHex(0xffedd5);
-      this.dirLight.intensity = 1.45;
+      this.dirLight.intensity = 1.65;
       this.ambientLight.color.setHex(0x8a5530);
-      this.ambientLight.intensity = 0.95;
+      this.ambientLight.intensity = 1.25;
       this.hemiLight.color.setHex(0xfb923c);
       this.hemiLight.groundColor.setHex(0x241209);
-      this.hemiLight.intensity = 0.70;
+      this.hemiLight.intensity = 0.85;
       this.scene.background = new Color(0x23140e);
       if (this.scene.fog instanceof FogExp2) {
         this.scene.fog.color.setHex(0x23140e);
@@ -131,13 +131,13 @@ export class Engine {
       this.currentLightOffset.copy(this.moonOffset);
       // Soft silvery-cyan moonlight
       this.dirLight.color.setHex(0xa5cbf5);
-      this.dirLight.intensity = 1.20;
+      this.dirLight.intensity = 1.40;
       // Bright cool moonlight ambient for clear readability
       this.ambientLight.color.setHex(0x2b3d63);
-      this.ambientLight.intensity = 0.95;
+      this.ambientLight.intensity = 1.15;
       this.hemiLight.color.setHex(0x38bdf8);
       this.hemiLight.groundColor.setHex(0x111827);
-      this.hemiLight.intensity = 0.65;
+      this.hemiLight.intensity = 0.75;
       // Deep midnight indigo sky
       this.scene.background = new Color(0x0c1322);
       if (this.scene.fog instanceof FogExp2) {
