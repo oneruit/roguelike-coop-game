@@ -8,10 +8,12 @@ import { RiftItemId, RIFT_ITEMS } from '../../items/RiftItemSystem';
 import { LobbyPlayerInfo, PLAYER_COLORS, getPlayerSlotNumber } from '../../net/NetworkManager';
 import { TextureManager } from '../../core/TextureManager';
 import { getHeroAvatar, getHeroName, getWeaponIconUrl } from './HeroUIHelpers';
+import { InGameHUDScreen } from '../screens/InGameHUD/InGameHUDScreen';
+import { SafeDOM } from '../core/SafeDOM';
 
 declare const __APP_MODE__: string | undefined;
 
-export class InGameOverlayUI {
+export class InGameOverlayUI extends InGameHUDScreen {
   // Base HUD
   private xpFill: HTMLElement;
   private playerLevel: HTMLElement;
@@ -78,57 +80,77 @@ export class InGameOverlayUI {
   public isTrainingModeActive = false;
 
   constructor() {
-    this.xpFill = document.getElementById('xp-bar-fill')!;
-    this.playerLevel = document.getElementById('player-level')!;
-    this.timerText = document.getElementById('game-timer')!;
-    this.killCountText = document.getElementById('kill-count')!;
-    this.coopKillsDetail = document.getElementById('coop-kills-detail')!;
-    this.myKillsCount = document.getElementById('my-kills-count')!;
-    this.partnerKillsCount = document.getElementById('partner-kills-count')!;
-    this.hpFill = document.getElementById('player-hp-fill');
-    this.hpText = document.getElementById('player-hp-text');
-    this.weaponsBar = document.getElementById('active-weapons-bar')!;
-    this.poePartyList = document.getElementById('poe-party-list') || document.createElement('div');
+    super();
 
-    this.bossHpContainer = document.getElementById('boss-hp-container')!;
-    this.bossHpFill = document.getElementById('boss-hp-fill')!;
-    this.bossHpText = document.getElementById('boss-hp-text')!;
-    this.bossNameText = document.getElementById('boss-name-text');
-    this.bossWarningBanner = document.getElementById('boss-warning-banner')!;
-    this.bossWarningText = document.getElementById('boss-warning-text');
+    const getEl = (id: string) => SafeDOM.getElementById(id) || document.createElement('div');
+    this.xpFill = getEl('xp-bar-fill');
+    this.playerLevel = getEl('player-level');
+    this.timerText = getEl('game-timer');
+    this.killCountText = getEl('kill-count');
+    this.coopKillsDetail = getEl('coop-kills-detail');
+    this.myKillsCount = getEl('my-kills-count');
+    this.partnerKillsCount = getEl('partner-kills-count');
+    this.hpFill = SafeDOM.getElementById('player-hp-fill');
+    this.hpText = SafeDOM.getElementById('player-hp-text');
+    this.weaponsBar = getEl('active-weapons-bar');
+    this.poePartyList = SafeDOM.getElementById('poe-party-list') || document.createElement('div');
 
-    this.altarBanner = document.getElementById('altar-notification-banner')!;
-    this.altarBannerText = document.getElementById('altar-notification-text')!;
-    this.buffsTray = document.getElementById('active-buffs-tray')!;
-    this.passivesBar = document.getElementById('active-passives-bar');
+    this.bossHpContainer = getEl('boss-hp-container');
+    this.bossHpFill = getEl('boss-hp-fill');
+    this.bossHpText = getEl('boss-hp-text');
+    this.bossNameText = SafeDOM.getElementById('boss-name-text');
+    this.bossWarningBanner = getEl('boss-warning-banner');
+    this.bossWarningText = SafeDOM.getElementById('boss-warning-text');
+
+    this.altarBanner = getEl('altar-notification-banner');
+    this.altarBannerText = getEl('altar-notification-text');
+    this.buffsTray = getEl('active-buffs-tray');
+    this.passivesBar = SafeDOM.getElementById('active-passives-bar');
 
     // The Rift Elements
-    this.stageText = document.getElementById('stage-text');
-    this.plasmaCreditsText = document.getElementById('plasma-credits');
-    this.diffTierLabel = document.getElementById('diff-tier-label');
-    this.diffBarFill = document.getElementById('diff-bar-fill');
-    this.interactionPrompt = document.getElementById('interaction-prompt');
-    this.interactionPromptText = document.getElementById('interaction-prompt-text');
-    this.itemInventoryTray = document.getElementById('item-inventory-tray');
-    this.dashCooldownBadge = document.getElementById('dash-cooldown-badge');
-    this.dashCooldownText = document.getElementById('dash-cooldown-text');
+    this.stageText = SafeDOM.getElementById('stage-text');
+    this.plasmaCreditsText = SafeDOM.getElementById('plasma-credits');
+    this.diffTierLabel = SafeDOM.getElementById('diff-tier-label');
+    this.diffBarFill = SafeDOM.getElementById('diff-bar-fill');
+    this.interactionPrompt = SafeDOM.getElementById('interaction-prompt');
+    this.interactionPromptText = SafeDOM.getElementById('interaction-prompt-text');
+    this.itemInventoryTray = SafeDOM.getElementById('item-inventory-tray');
+    this.dashCooldownBadge = SafeDOM.getElementById('dash-cooldown-badge');
+    this.dashCooldownText = SafeDOM.getElementById('dash-cooldown-text');
 
     // Screen Damage & Low HP Vignette
-    this.damageFlashLayer = document.getElementById('damage-flash-layer');
-    this.lowHpVignetteLayer = document.getElementById('low-hp-vignette-layer');
+    this.damageFlashLayer = SafeDOM.getElementById('damage-flash-layer');
+    this.lowHpVignetteLayer = SafeDOM.getElementById('low-hp-vignette-layer');
 
     // Co-op HUD Elements
-    this.coopBadge = document.getElementById('coop-badge')!;
-    this.coopRoomName = document.getElementById('coop-room-name')!;
-    this.partnerHpContainer = document.getElementById('partner-hp-container');
-    this.partnerHpFill = document.getElementById('partner-hp-fill');
-    this.partnerHpText = document.getElementById('partner-hp-text');
-    this.teammatesHpTray = document.getElementById('teammates-hp-tray');
+    this.coopBadge = getEl('coop-badge');
+    this.coopRoomName = getEl('coop-room-name');
+    this.partnerHpContainer = SafeDOM.getElementById('partner-hp-container');
+    this.partnerHpFill = SafeDOM.getElementById('partner-hp-fill');
+    this.partnerHpText = SafeDOM.getElementById('partner-hp-text');
+    this.teammatesHpTray = SafeDOM.getElementById('teammates-hp-tray');
 
     // Performance Overlay
-    this.perfOverlay = document.getElementById('perf-overlay');
-    this.perfFps = document.getElementById('perf-fps');
-    this.perfPing = document.getElementById('perf-ping');
+    this.perfOverlay = SafeDOM.getElementById('perf-overlay');
+    this.perfFps = SafeDOM.getElementById('perf-fps');
+    this.perfPing = SafeDOM.getElementById('perf-ping');
+  }
+
+  public override show(): void {
+    super.show();
+    const hud = SafeDOM.getElementById('in-game-hud');
+    if (hud) hud.classList.remove('hidden');
+  }
+
+  public override hide(): void {
+    super.hide();
+    const hud = SafeDOM.getElementById('in-game-hud');
+    if (hud) hud.classList.add('hidden');
+  }
+
+  public setInGameHUDVisible(visible: boolean): void {
+    if (visible) this.show();
+    else this.hide();
   }
 
   public setCoopBadge(roomCode: string | null) {

@@ -21,7 +21,18 @@ export class SafeDOM {
     required: boolean = false
   ): T | null {
     if (!parent) return null;
-    const el = parent.querySelector(selector) as T | null;
+    let el: T | null = null;
+    if (typeof parent.querySelector === 'function') {
+      try {
+        el = parent.querySelector(selector) as T | null;
+      } catch {
+        // Ignore invalid selector syntax if any
+      }
+    }
+    // Fallback: if not found within container, check document.getElementById for ID selectors
+    if (!el && selector.startsWith('#') && typeof document !== 'undefined' && typeof document.getElementById === 'function') {
+      el = document.getElementById(selector.slice(1)) as T | null;
+    }
     if (!el && required) {
       console.warn(`[SafeDOM] Required element with selector "${selector}" not found.`);
     }
@@ -32,8 +43,12 @@ export class SafeDOM {
     parent: ParentNode | null | undefined,
     selector: string
   ): T[] {
-    if (!parent) return [];
-    return Array.from(parent.querySelectorAll(selector)) as T[];
+    if (!parent || typeof parent.querySelectorAll !== 'function') return [];
+    try {
+      return Array.from(parent.querySelectorAll(selector)) as T[];
+    } catch {
+      return [];
+    }
   }
 
   public static on<K extends keyof HTMLElementEventMap>(

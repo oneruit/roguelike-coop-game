@@ -1,0 +1,112 @@
+<div id="game-over-modal" class="modal hidden">
+  <div class="modal-backdrop in-game-modal-backdrop"></div>
+  <div class="modal-card game-over-card modern-glass-modal" id="game-over-card">
+    <div id="victory-badge" class="victory-badge-pill menu-badge-yellow hidden">ПОКОРИТЕЛЬ РАЗЛОМА</div>
+    <h1 id="game-over-title" class="death-title modern-menu-title">ВЫ ПОГИБЛИ</h1>
+    <p id="game-over-subtitle" class="death-subtitle menu-tagline-modern">Разлом не прощает ошибок...</p>
+
+    <!-- Victory Announcement & Stats Suggestion -->
+    <div id="victory-stats-prompt" class="victory-stats-prompt hidden">
+      <div class="victory-prompt-icon">[!]</div>
+      <div class="victory-prompt-text">
+        <strong class="victory-prompt-headline">ВЫ ПОКОРИЛИ РАЗЛОМ!</strong>
+        <span>Вы успешно завершили экспедицию и покорили аномальный разлом! Предлагаем изучить итоговую статистику вашего похода:</span>
+      </div>
+    </div>
+
+    <div id="solo-game-over-stats" class="game-over-stats">
+      <div class="stat-row">
+        <span>Время выживания:</span>
+        <strong id="final-time">00:00</strong>
+      </div>
+      <div class="stat-row">
+        <span>Уничтожено врагов:</span>
+        <strong id="final-kills">0</strong>
+      </div>
+      <div class="stat-row">
+        <span>Нанесённый урон:</span>
+        <strong id="final-damage">0</strong>
+      </div>
+      <div class="stat-row">
+        <span>Достигнутый уровень:</span>
+        <strong id="final-level">1</strong>
+      </div>
+    </div>
+
+    <!-- Co-op Comparative Statistics Table (Supports up to 5 players) -->
+    <div id="coop-game-over-stats" class="game-over-coop-container hidden">
+      <div class="coop-time-banner">
+        Время выживания: <strong id="coop-final-time">00:00</strong>
+      </div>
+      <div id="coop-stats-table-wrapper" class="coop-stats-table-wrapper">
+        <table id="coop-stats-table" class="coop-stats-table">
+          <thead id="coop-stats-thead">
+            <tr>
+              <th>Параметр</th>
+              <th class="p1-col">Игрок 1</th>
+              <th class="p2-col">Игрок 2</th>
+            </tr>
+          </thead>
+          <tbody id="coop-stats-tbody">
+            <tr>
+              <td>Убийств</td>
+              <td id="coop-p1-kills">0</td>
+              <td id="coop-p2-kills">0</td>
+            </tr>
+            <tr>
+              <td>Урон</td>
+              <td id="coop-p1-damage">0</td>
+              <td id="coop-p2-damage">0</td>
+            </tr>
+            <tr>
+              <td>Уровень</td>
+              <td id="coop-p1-level">1</td>
+              <td id="coop-p2-level">1</td>
+            </tr>
+            <tr>
+              <td>Спасений</td>
+              <td id="coop-p1-revives">0</td>
+              <td id="coop-p2-revives">0</td>
+            </tr>
+            <tr class="total-row">
+              <td>Врагов команды</td>
+              <td colspan="2" id="coop-total-kills">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Arsenal & Weapons Acquired in Run -->
+    <div id="game-over-arsenal" class="game-over-arsenal-box">
+      <div class="arsenal-title">СТАТИСТИКА УРОНА ОРУЖИЯ:</div>
+      <div id="arsenal-items-list" class="arsenal-items-list weapon-damage-list"></div>
+    </div>
+
+    <!-- Battle Pass XP Reward Summary Box -->
+    <div id="game-over-battle-pass" class="game-over-bp-box">
+      <div class="game-over-bp-header">
+        <span class="game-over-bp-badge">БОЕВОЙ ПРОПУСК • СЕЗОН 1</span>
+        <span id="game-over-bp-points-gained" class="game-over-bp-gain">+0 ОП</span>
+      </div>
+      <div class="game-over-bp-body">
+        <div class="game-over-bp-desc" id="game-over-bp-reason">Выживание 00:00</div>
+        <div class="game-over-bp-progress-row">
+          <span id="game-over-bp-level-badge" class="game-over-bp-lvl">Ур. 1</span>
+          <div class="game-over-bp-bar-wrap">
+            <div id="game-over-bp-bar-fill" class="game-over-bp-bar-fill" style="width: 0%;"></div>
+          </div>
+          <span id="game-over-bp-xp-text" class="game-over-bp-xp">0 / 200 ОП</span>
+        </div>
+        <div id="game-over-bp-levelup" class="game-over-bp-levelup hidden">
+          ✨ НОВЫЙ УРОВЕНЬ БОЕВОГО ПРОПУСКА!
+        </div>
+      </div>
+    </div>
+
+    <div class="pause-actions" style="margin-top: 20px;">
+      <button id="btn-restart" class="action-btn select-btn">Возродиться</button>
+      <button id="btn-gameover-menu" class="action-btn modern-back-btn">В главное меню</button>
+    </div>
+  </div>
+</div>
