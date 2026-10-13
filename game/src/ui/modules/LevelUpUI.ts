@@ -175,6 +175,9 @@ export class LevelUpUI {
     const hpOpt = options.find(opt => opt.id === 'bonus_health_elixir');
     if (hpOpt) return hpOpt;
 
+    const credOpt = options.find(opt => opt.id === 'bonus_credits_cache');
+    if (credOpt) return credOpt;
+
     return options[0];
   }
 
@@ -362,6 +365,19 @@ export class LevelUpUI {
       }
     };
 
+    const creditsOption: UpgradeOption = {
+      id: 'bonus_credits_cache',
+      title: 'Тайник с Плазмой (+150 кредитов)',
+      icon: '💰',
+      levelTag: 'РЕСУРСЫ',
+      description: 'Мгновенно даёт 150 Плазменных кредитов для торговли.',
+      grade: 'rare',
+      apply: () => {
+        player.credits += 150;
+        SoundManager.playItemPickup();
+      }
+    };
+
     const createTier2AwakenOption = (weapon: Weapon): UpgradeOption => ({
       id: `awaken_${weapon.id}`,
       title: `Пробуждение Тира 2: ${weapon.name}`,
@@ -418,7 +434,7 @@ export class LevelUpUI {
       tier1Weapons.length === 4 &&
       weapons.every(w => w.level >= 12);
     if (allTier1Maxed) {
-      return [hpOption, damageOption];
+      return [hpOption, damageOption, creditsOption];
     }
 
     const upgradeOptions: UpgradeOption[] = [];
@@ -597,12 +613,12 @@ export class LevelUpUI {
         }
       }
     }
-    // Add elixirs if pool has fewer than 3 options
+    // Add elixirs and rewards if pool has fewer than 3 options, ensuring always 3 choices
     if (pool.length < 3) {
-      const elixirs = [hpOption];
-      for (const elixir of elixirs) {
+      const fallbackOptions = [hpOption, damageOption, creditsOption];
+      for (const opt of fallbackOptions) {
         if (pool.length >= 3) break;
-        if (!pool.some(o => o.id === elixir.id)) pool.push(elixir);
+        if (!pool.some(o => o.id === opt.id)) pool.push(opt);
       }
     }
 

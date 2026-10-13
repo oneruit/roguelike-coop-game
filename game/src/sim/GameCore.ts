@@ -186,7 +186,7 @@ export class SimPlayerInternal {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
     this.speed = this.baseSpeed * this.passiveSpeedMultiplier * (1 + speedBonus);
-    this.damageMultiplier = this.baseDamageMultiplier * (this.passiveDamageMultiplier + this.mightElixirCount * 0.10) * (1 + dmgBonus);
+    this.damageMultiplier = this.baseDamageMultiplier * (this.passiveDamageMultiplier + this.mightElixirCount * 0.05) * (1 + dmgBonus);
   }
 }
 

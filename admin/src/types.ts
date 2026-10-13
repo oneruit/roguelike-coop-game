@@ -19,7 +19,9 @@ export interface SimulationSlot {
 export interface SimulationState {
   slots: SimulationSlot[];
   hero: string;
-  sheriffStacks: number;
+  amplifierStacks: number;
+  mightElixirStacks: number;
+  sheriffStacks?: number;
   watchStacks: number;
   injectorStacks: number;
   critVisorStacks: number;

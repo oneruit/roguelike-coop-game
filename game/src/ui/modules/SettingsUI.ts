@@ -10,7 +10,6 @@ export interface SettingsUIContext {
   hideMainMenu: () => void;
   showMainMenu: () => void;
   showPause: () => void;
-  showGuide: () => void;
   isPaused: () => boolean;
   getMenuStack: () => string[];
   setMenuStack: (stack: string[]) => void;
@@ -44,7 +43,6 @@ export class SettingsUI {
     const vfxOpacitySlider = document.getElementById('settings-vfx-opacity') as HTMLInputElement | null;
     const vfxOpacityVal = document.getElementById('settings-vfx-opacity-val');
     const fullscreenBtn = document.getElementById('settings-btn-fullscreen');
-    const openGuideBtn = document.getElementById('settings-btn-open-guide');
     const settingsBackBtn = document.getElementById('settings-btn-back');
 
     if (volumeSlider) {
@@ -218,10 +216,6 @@ export class SettingsUI {
         }
       });
     }
-
-    openGuideBtn?.addEventListener('click', () => {
-      this.ctx.showGuide();
-    });
 
     settingsBackBtn?.addEventListener('click', () => {
       this.hideSettings();

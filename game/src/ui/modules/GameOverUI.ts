@@ -127,7 +127,7 @@ export class GameOverUI {
       this.gameOverTitle.innerText = 'ВЫ ПОБЕДИЛИ!';
       this.gameOverTitle.className = 'death-title modern-menu-title victory-title';
       this.gameOverSubtitle.innerText =
-        'Вы выдержали легендарные 30 минут в беспощадной пустыне! Бессмертный Жнец забрал вашу душу, но легенда о вас будет жить вечно!';
+        'Вы выдержали легендарные 30 минут в беспощадном Разломе! Бессмертный Жнец забрал вашу душу, но легенда о вас будет жить вечно!';
       this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern victory-subtitle';
       this.btnRestart.innerText = 'Начать новую экспедицию';
     } else {
@@ -137,7 +137,7 @@ export class GameOverUI {
       this.victoryStatsPrompt.classList.add('hidden');
       this.gameOverTitle.innerText = 'ВЫ ПОГИБЛИ';
       this.gameOverTitle.className = 'death-title modern-menu-title';
-      this.gameOverSubtitle.innerText = 'Пустыня не прощает ошибок...';
+      this.gameOverSubtitle.innerText = 'Разлом не прощает ошибок...';
       this.gameOverSubtitle.className = 'death-subtitle menu-tagline-modern';
       this.btnRestart.innerText = 'Возродиться';
     }
