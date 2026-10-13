@@ -1,12 +1,17 @@
 import { CharacterType } from '../../entities/Player';
 import { TextureManager } from '../../core/TextureManager';
 import { AssetResolver } from '../../utils/AssetResolver';
+import { DEFAULT_BALANCE } from '../../balance/defaultBalance';
 
 export function getHeroIcon(charType: CharacterType): string {
   return charType.toUpperCase();
 }
 
 export function getHeroName(charType: CharacterType): string {
+  const balanceHero = DEFAULT_BALANCE.heroes[charType];
+  if (balanceHero?.name) {
+    return balanceHero.name;
+  }
   if (charType === 'invoker') return 'Инвокер «Маг стихий»';
   if (charType === 'necromancer') return 'Мортис «Некромант»';
   if (charType === 'amazon') return 'Амазонка «Воительница»';

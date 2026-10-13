@@ -1254,3 +1254,107 @@ body.is-in-game .menu-scenic-backdrop::after {
   display: flex;
   justify-content: flex-end;
 }
+
+/* ==========================================================================
+   PAUSE MODAL & GAMEPLAY ACTION BUTTONS
+   ========================================================================== */
+.pause-seed-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 6px 0 16px 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.copy-seed-small-btn {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  color: #f59e0b !important;
+  border-radius: 6px !important;
+  padding: 3px 10px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  font-family: 'Montserrat', sans-serif !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.copy-seed-small-btn:hover {
+  background: rgba(245, 158, 11, 0.3) !important;
+  color: #ffffff !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4) !important;
+}
+
+.select-btn,
+.action-btn.select-btn {
+  width: 100% !important;
+  padding: 10px 16px !important;
+  background: rgba(0, 119, 255, 0.85) !important;
+  border: 1.5px solid #38bdf8 !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.5px !important;
+  box-shadow: 0 0 16px rgba(0, 132, 255, 0.35) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+
+.select-btn:hover,
+.action-btn.select-btn:hover {
+  background: #0084ff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 26px rgba(0, 168, 255, 0.75) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+.select-btn:active,
+.action-btn.select-btn:active {
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+.modern-back-btn,
+.action-btn.modern-back-btn {
+  width: 100% !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #94a3b8 !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  padding: 10px 18px !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+
+.modern-back-btn:hover,
+.action-btn.modern-back-btn:hover {
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+  background: rgba(14, 165, 233, 0.15) !important;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.modern-back-btn:active,
+.action-btn.modern-back-btn:active {
+  transform: translateY(1px) !important;
+}
+

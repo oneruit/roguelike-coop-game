@@ -49,14 +49,35 @@ export class CharacterSelectUI {
 
     this.bindEvents();
     this.preloadHeroIdleImages();
+    this.updateLockStates();
     this.selectHero('ronin');
   }
 
+  public updateLockStates() {
+    const prog = ProgressionManager.getInstance();
+    const cards = this.modal.querySelectorAll<HTMLElement>('.character-card[data-hero]');
+    cards.forEach((card) => {
+      const hero = (card.getAttribute('data-hero') || 'ronin') as CharacterType;
+      const isUnlocked = prog.isHeroUnlocked(hero);
+      let badge = card.querySelector<HTMLElement>('.card-lock-badge');
+
+      if (isUnlocked) {
+        card.classList.remove('card-locked');
+        if (badge) badge.remove();
+      } else {
+        card.classList.add('card-locked');
+        if (!badge) {
+          badge = document.createElement('div');
+          badge.className = 'card-lock-badge';
+          badge.innerHTML = '🔒';
+          card.appendChild(badge);
+        }
+      }
+    });
+  }
+
   private preloadHeroIdleImages() {
-    const heroIds: CharacterType[] = [
-      'ronin', 'valkyrie', 'sorceress', 'archer', 'necromancer',
-      'invoker', 'flail', 'chakram', 'rocket', 'amazon'
-    ];
+    const heroIds = Object.keys(DEFAULT_BALANCE.heroes) as CharacterType[];
     heroIds.forEach((id) => {
       const img = new Image();
       img.src = AssetResolver.getHeroTexture(id, 'idle');
@@ -120,6 +141,7 @@ export class CharacterSelectUI {
 
   public selectHero(hero: CharacterType) {
     this.selectedHero = hero;
+    this.updateLockStates();
 
     // Update active state in carousel
     const cards = this.modal.querySelectorAll<HTMLElement>('.character-card[data-hero]');
@@ -166,19 +188,21 @@ export class CharacterSelectUI {
     }
 
     // Update stat bars
+    const { maxHp, maxSpeed, maxDamage } = this.getStatCeilings();
+
     const hpBar = document.getElementById('inspect-stat-hp-bar');
     const hpVal = document.getElementById('inspect-stat-hp-val');
-    if (hpBar) hpBar.style.width = `${Math.min(100, Math.round((heroData.maxHp / 150) * 100))}%`;
+    if (hpBar) hpBar.style.width = `${Math.min(100, Math.round((heroData.maxHp / maxHp) * 100))}%`;
     if (hpVal) hpVal.textContent = `${heroData.maxHp} HP`;
 
     const spdBar = document.getElementById('inspect-stat-spd-bar');
     const spdVal = document.getElementById('inspect-stat-spd-val');
-    if (spdBar) spdBar.style.width = `${Math.min(100, Math.round((heroData.baseSpeed / 10) * 100))}%`;
+    if (spdBar) spdBar.style.width = `${Math.min(100, Math.round((heroData.baseSpeed / maxSpeed) * 100))}%`;
     if (spdVal) spdVal.textContent = `${heroData.baseSpeed}`;
 
     const dmgBar = document.getElementById('inspect-stat-dmg-bar');
     const dmgVal = document.getElementById('inspect-stat-dmg-val');
-    if (dmgBar) dmgBar.style.width = `${Math.min(100, Math.round((heroData.damageMultiplier / 2) * 100))}%`;
+    if (dmgBar) dmgBar.style.width = `${Math.min(100, Math.round((heroData.damageMultiplier / maxDamage) * 100))}%`;
     if (dmgVal) dmgVal.textContent = `x${heroData.damageMultiplier.toFixed(2)}`;
 
     // Update Play Button state (locked or ready)
@@ -193,6 +217,14 @@ export class CharacterSelectUI {
         playBtn.innerHTML = '<span class="btn-primary-text">🔒 РАЗБЛОКИРОВАТЬ В КВЕСТАХ</span>';
       }
     }
+  }
+
+  private getStatCeilings(): { maxHp: number; maxSpeed: number; maxDamage: number } {
+    const heroes = Object.values(DEFAULT_BALANCE.heroes);
+    const maxHp = Math.max(...heroes.map((h) => h.maxHp), 100);
+    const maxSpeed = Math.max(...heroes.map((h) => h.baseSpeed), 10);
+    const maxDamage = Math.max(...heroes.map((h) => h.damageMultiplier), 1.5);
+    return { maxHp, maxSpeed, maxDamage };
   }
 
   private loadHeroAnimation(hero: CharacterType) {
