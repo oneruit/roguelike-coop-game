@@ -149,6 +149,14 @@ export class TextureManager {
       return this.cache.get(resolvedUrl)!;
     }
 
+    if (typeof document === 'undefined') {
+      const tex = new Texture();
+      this.cache.set(url, tex);
+      this.cache.set(normalizedUrl, tex);
+      this.cache.set(resolvedUrl, tex);
+      return tex;
+    }
+
     const tex = this.loader.load(resolvedUrl, (loadedTex) => {
       if (renderer) {
         renderer.initTexture(loadedTex);
@@ -710,6 +718,9 @@ export class TextureManager {
    * High-performance contact shadow mesh sharing a single texture and material.
    */
   public static createShadowMesh(radius: number): Mesh {
+    if (typeof document === 'undefined') {
+      return new Mesh();
+    }
     if (!this.sharedShadowTexture) {
       const canvas = document.createElement('canvas');
       canvas.width = 128;

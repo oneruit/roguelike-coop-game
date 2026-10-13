@@ -95,8 +95,6 @@ export class InventoryUI {
 
     // 1. Stats Table
     if (this.inventoryStatsList) {
-      const startMult = player.getDamageMultiplier(player.startingWeaponId);
-      const genMult = player.getDamageMultiplier();
       const critPct = (player.critChance * 100).toFixed(1);
       const critDmgPct = (player.critDamage * 100).toFixed(1);
       const cdrPct = Math.round((1 - player.passiveCooldownMultiplier) * 100);
@@ -110,15 +108,40 @@ export class InventoryUI {
         ? `<span style="color: #f1f5f9;">${Math.round(player.hp)} / ${baseMaxHp}</span> <span style="color: #22c55e;">(+${hpBonus})</span>`
         : `<span style="color: #f1f5f9;">${Math.round(player.hp)} / ${player.maxHp}</span>`;
 
-      // Damage multiplier display
-      const startMultPct = Math.round((startMult - 1) * 100);
-      const genMultPct = Math.round((genMult - 1) * 100);
-      const startDmgValue = this.statDisplayMode === 'split' && startMultPct > 0
-        ? `<span style="color: #f1f5f9;">100%</span> <span style="color: #22c55e;">(+${startMultPct}%)</span>`
-        : `<span style="color: #f1f5f9;">+${startMultPct}%</span>`;
-      const genDmgValue = this.statDisplayMode === 'split' && genMultPct > 0
-        ? `<span style="color: #f1f5f9;">100%</span> <span style="color: #22c55e;">(+${genMultPct}%)</span>`
-        : `<span style="color: #f1f5f9;">+${genMultPct}%</span>`;
+      // Weapon damage calculations across all currently equipped weapons
+      const activeWeapons = player.weapons.length > 0 ? player.weapons : [];
+      let totalBaseDamage = 0;
+      let totalEffectiveDamage = 0;
+      let totalDps = 0;
+
+      if (activeWeapons.length > 0) {
+        for (const w of activeWeapons) {
+          const mult = player.getDamageMultiplier(w.id);
+          const effDmg = w.damage * mult;
+          totalBaseDamage += w.baseDamage;
+          totalEffectiveDamage += effDmg;
+          const cd = w.effectiveCooldown || 1.0;
+          totalDps += effDmg / cd;
+        }
+      } else {
+        const mult = player.getDamageMultiplier(player.startingWeaponId);
+        totalBaseDamage = 15;
+        totalEffectiveDamage = 15 * mult;
+        totalDps = totalEffectiveDamage;
+      }
+
+      const totalBonusDmg = Math.max(0, Math.round(totalEffectiveDamage - totalBaseDamage));
+      const avgDmg = Math.round(totalEffectiveDamage / Math.max(1, activeWeapons.length));
+      const avgBaseDmg = Math.round(totalBaseDamage / Math.max(1, activeWeapons.length));
+      const avgBonusDmg = Math.max(0, avgDmg - avgBaseDmg);
+
+      const weaponsDmgValue = this.statDisplayMode === 'split' && totalBonusDmg > 0
+        ? `<span style="color: #f1f5f9;">${Math.round(totalBaseDamage)}</span> <span style="color: #22c55e;">(+${totalBonusDmg})</span>`
+        : `<span style="color: #f1f5f9;">${Math.round(totalEffectiveDamage)}</span>`;
+
+      const avgDmgValue = this.statDisplayMode === 'split' && avgBonusDmg > 0
+        ? `<span style="color: #f1f5f9;">${avgBaseDmg}</span> <span style="color: #22c55e;">(+${avgBonusDmg})</span> <span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalDps)} DPS)</span>`
+        : `<span style="color: #f1f5f9;">${avgDmg}</span> <span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalDps)} DPS)</span>`;
 
       // Speed display
       const spdBonus = Number((player.speed - player.baseSpeed).toFixed(1));
@@ -147,13 +170,13 @@ export class InventoryUI {
           <span class="inv-stat-label">🦺 Снижение урона (Броня)</span>
           <span class="inv-stat-value">-${totalArmorPct}%</span>
         </div>
-        <div class="inv-stat-row" title="Начальные бонусы героя применяются только к его стартовому оружию">
-          <span class="inv-stat-label">🎯 Урон стартового оружия</span>
-          <span class="inv-stat-value text-accent">${startDmgValue}</span>
+        <div class="inv-stat-row" title="Базовый урон всех оружий или базовый (+бонус) урон всех оружий">
+          <span class="inv-stat-label">🎯 Урон оружий</span>
+          <span class="inv-stat-value text-accent">${weaponsDmgValue}</span>
         </div>
-        <div class="inv-stat-row" title="Общие бонусы урона (пассивки, предметы, алтари)">
-          <span class="inv-stat-label">⚔️ Общий множитель урона</span>
-          <span class="inv-stat-value">${genDmgValue}</span>
+        <div class="inv-stat-row" title="Средний урон за удар и общий DPS всех экипированных оружий">
+          <span class="inv-stat-label">⚔️ Средний урон оружий</span>
+          <span class="inv-stat-value">${avgDmgValue}</span>
         </div>
         ${player.mightElixirCount > 0 ? `
         <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+5% за каждый заряд)">
@@ -310,7 +333,10 @@ export class InventoryUI {
             return `
             <div class="inv-weapon-card">
               <div class="inv-weapon-top">
-                <span class="inv-weapon-icon">${weapon.icon}</span>
+                <div class="inv-weapon-icon">
+                  <img src="${weapon.iconImage || `/textures/weapons/weapon_${weapon.id}.png`}" class="inv-weapon-img" alt="${weapon.name}" onerror="this.style.display='none'; if(this.nextElementSibling) (this.nextElementSibling as HTMLElement).style.display='inline';" />
+                  <span class="inv-weapon-fallback-icon" style="display: none;">${weapon.icon}</span>
+                </div>
                 <div class="inv-weapon-title-box">
                   <div class="inv-weapon-name-row">
                     <span class="inv-weapon-name">${weapon.name}</span>

@@ -552,10 +552,10 @@ test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
     w.level = 12;
   }
   const milestone3Options = levelUpUI.generateWeaponOptions(player);
-  assert.equal(milestone3Options.length, 3);
+  assert.equal(milestone3Options.length, 2);
   assert.ok(milestone3Options.some(o => o.id === 'bonus_health_elixir'));
   assert.ok(milestone3Options.some(o => o.id === 'bonus_damage_elixir'));
-  assert.ok(milestone3Options.some(o => o.id === 'bonus_speed_elixir'));
+  assert.ok(!milestone3Options.some(o => o.id === 'bonus_speed_elixir'));
 
   // Elixir of Might bonus check: +5% per stack
   const initialMult = player.passiveDamageMultiplier;
