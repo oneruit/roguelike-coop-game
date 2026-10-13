@@ -5,6 +5,22 @@
    Strictly flat: No shadows, no 3D bevels, no shine, minimal rounding (0-2px)
    ========================================================================== */
 
+@font-face {
+  font-family: 'Fontin SmallCaps';
+  src: url('/fonts/Fontin SmallCaps Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Friz Quadrata';
+  src: url('/fonts/FrizQuadrataC.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg-obsidian: #0b080e;
   --bg-card: #130d1a;

@@ -3,8 +3,21 @@ import { SafeDOM } from '../../core/SafeDOM';
 import { CharacterType } from '../../../entities/Player';
 import { ProgressionManager } from '../../../core/ProgressionManager';
 import { DEFAULT_BALANCE } from '../../../balance/defaultBalance';
-import { getHeroDetails } from '../../modules/HeroUIHelpers';
+import { getHeroDetails, getWeaponIconUrl } from '../../modules/HeroUIHelpers';
 import { CharacterPreviewRenderer } from './CharacterPreviewRenderer';
+
+export const HERO_ORDER: CharacterType[] = [
+  'ronin',
+  'valkyrie',
+  'sorceress',
+  'archer',
+  'necromancer',
+  'invoker',
+  'flail',
+  'chakram',
+  'rocket',
+  'amazon'
+];
 
 export interface CharacterSelectScreenOptions {
   container?: HTMLElement | null;
@@ -56,44 +69,51 @@ export class CharacterSelectScreen extends Screen {
   }
 
   protected bindEvents(): void {
-    // Carousel navigation buttons
+    // Carousel navigation buttons - select previous / next hero
     const prevBtn = SafeDOM.query(this.container, '#char-carousel-prev');
     const nextBtn = SafeDOM.query(this.container, '#char-carousel-next');
     const track = SafeDOM.query(this.container, '#char-carousel-track');
+    const carouselZone = SafeDOM.query(this.container, '.char-roster-carousel-zone') ||
+                         SafeDOM.query(this.container, '#char-roster-viewport') ||
+                         track;
 
     prevBtn?.addEventListener('click', () => {
-      if (track) {
-        track.scrollBy({ left: -220, behavior: 'smooth' });
-      }
+      this.selectPreviousHero();
     });
 
     nextBtn?.addEventListener('click', () => {
-      if (track) {
-        track.scrollBy({ left: 220, behavior: 'smooth' });
-      }
+      this.selectNextHero();
     });
 
-    // Horizontal wheel scrolling on track
-    track?.addEventListener('wheel', (e) => {
+    // Horizontal wheel scrolling on entire portraits carousel area
+    carouselZone?.addEventListener('wheel', (e) => {
       const wheelEv = e as WheelEvent;
-      if (Math.abs(wheelEv.deltaY) > 0) {
+      if (Math.abs(wheelEv.deltaY) > 0 || Math.abs(wheelEv.deltaX) > 0) {
         wheelEv.preventDefault();
-        track.scrollBy({ left: wheelEv.deltaY, behavior: 'smooth' });
+        const delta = Math.abs(wheelEv.deltaX) > Math.abs(wheelEv.deltaY) ? wheelEv.deltaX : wheelEv.deltaY;
+        track?.scrollBy({ left: delta, behavior: 'auto' });
       }
     }, { passive: false });
 
-    // Character cards interaction
+    // Keyboard arrow navigation
+    window.addEventListener('keydown', (e) => {
+      if (!this.isVisible()) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        this.selectPreviousHero();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        this.selectNextHero();
+      }
+    });
+
+    // Character cards interaction (single-click selection, no double-click auto launch)
     const cards = SafeDOM.queryAll(this.container, '.character-card[data-hero]');
     cards.forEach((card) => {
       const hero = (card.getAttribute('data-hero') || 'ronin') as CharacterType;
 
       card.addEventListener('click', () => {
         this.selectHero(hero);
-      });
-
-      card.addEventListener('dblclick', () => {
-        this.selectHero(hero);
-        this.attemptLaunch();
       });
     });
 
@@ -108,6 +128,18 @@ export class CharacterSelectScreen extends Screen {
     playBtn?.addEventListener('click', () => {
       this.attemptLaunch();
     });
+  }
+
+  public selectPreviousHero(): void {
+    const currIdx = HERO_ORDER.indexOf(this.selectedHero);
+    const prevIdx = currIdx <= 0 ? HERO_ORDER.length - 1 : currIdx - 1;
+    this.selectHero(HERO_ORDER[prevIdx]);
+  }
+
+  public selectNextHero(): void {
+    const currIdx = HERO_ORDER.indexOf(this.selectedHero);
+    const nextIdx = (currIdx + 1) % HERO_ORDER.length;
+    this.selectHero(HERO_ORDER[nextIdx]);
   }
 
   protected onShow(): void {
@@ -186,30 +218,18 @@ export class CharacterSelectScreen extends Screen {
     if (nameEl) nameEl.textContent = details.title;
     if (roleEl) roleEl.textContent = details.role;
 
-    // Passive Trait
-    const passiveName = SafeDOM.query(this.container, '#inspect-passive-name');
-    if (passiveName) {
-      passiveName.textContent = details.passiveTrait.name;
+    // Weapon (Оружие вместо PASSIVE TRAIT)
+    const weaponId = heroData.startingWeapon;
+    const weaponDef = DEFAULT_BALANCE.weapons[weaponId];
+    const weaponNameEl = SafeDOM.query(this.container, '#inspect-weapon-name');
+    if (weaponNameEl) {
+      weaponNameEl.textContent = weaponDef?.name || 'Основное Оружие';
     }
 
-    // Active Abilities Grid (4 abilities with dedicated dark ARPG icons)
-    const abilityIcons = [
-      '/textures/ui/ability_void_strike.png',
-      '/textures/ui/ability_abyssal_charge.png',
-      '/textures/ui/ability_rift_nova.png',
-      '/textures/ui/ability_devouring_slash.png'
-    ];
-
-    const abilitiesGrid = SafeDOM.query(this.container, '#inspect-abilities-grid');
-    if (abilitiesGrid) {
-      abilitiesGrid.innerHTML = details.activeAbilities.map((ab, idx) => `
-        <div class="inspect-ability-card" title="${ab.name}">
-          <div class="inspect-ability-socket">
-            <img src="${abilityIcons[idx] || abilityIcons[0]}" class="inspect-ability-icon-img" alt="${ab.name}" />
-          </div>
-          <span class="inspect-ability-name">${ab.name}</span>
-        </div>
-      `).join('');
+    const weaponIconEl = SafeDOM.query<HTMLImageElement>(this.container, '#inspect-weapon-icon');
+    if (weaponIconEl) {
+      weaponIconEl.src = getWeaponIconUrl(weaponId);
+      weaponIconEl.alt = weaponDef?.name || 'Оружие';
     }
 
     // Dynamic stat normalization
