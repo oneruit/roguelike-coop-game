@@ -5,7 +5,7 @@
 export class SoundManager {
   private static ctx: AudioContext | null = null;
   private static masterGain: GainNode | null = null;
-  private static volume = 0; // 0.8
+  private static volume = 0.8;
   public static isMuted = false;
 
   private static init() {

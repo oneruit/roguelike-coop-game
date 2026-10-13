@@ -40,12 +40,8 @@ export interface UpgradeOption {
 export function getWeaponIconUrl(weaponId: string): string {
   const map: Record<string, string> = {
     bow: '/textures/weapons/weapon_bow.png',
-    heavy_colt: '/textures/weapons/weapon_bow.png',
     kukri: '/textures/weapons/weapon_kukri.png',
-    dual_revolvers: '/textures/weapons/weapon_kukri.png',
-    orbiting_barrier: '/textures/weapons/weapon_reaper_scythe.png',
     reaper_scythe: '/textures/weapons/weapon_reaper_scythe.png',
-    holy_aura: '/textures/weapons/weapon_fire_ring.png',
     fire_ring: '/textures/weapons/weapon_fire_ring.png',
     katana_slash: '/textures/weapons/weapon_katana_slash.png',
     whirlwind_slash: '/textures/weapons/weapon_whirlwind_slash.png',
@@ -538,22 +534,22 @@ export class LevelUpUI {
           });
         };
 
-        const hasBow = player.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
+        const hasBow = player.weapons.some(w => w.id === 'bow');
         if (!hasBow) {
           addGenericOption('bow', 'Охотничий Лук', '🏹', 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов', () => new BowWeapon(() => player.triggerAttackAnim(0.40)));
         }
 
-        const hasKukri = player.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
+        const hasKukri = player.weapons.some(w => w.id === 'kukri');
         if (!hasKukri) {
           addGenericOption('kukri', 'Нож Кукри', '🔪', 'Стремительные броски изогнутых клинков кукри в ближайших врагов', () => new KukriWeapon());
         }
 
-        const hasOrbs = player.weapons.some(w => w.id === 'reaper_scythe' || w.id === 'orbiting_barrier');
+        const hasOrbs = player.weapons.some(w => w.id === 'reaper_scythe');
         if (!hasOrbs) {
           addGenericOption('reaper_scythe', 'Коса Жнеца', '🌙', 'Призывает смертоносные косы, вращающиеся вокруг героя, наносящие прямой урон и накладывающие стакающееся кровотечение', () => new ReaperScytheWeapon());
         }
 
-        const hasAura = player.weapons.some(w => w.id === 'fire_ring' || w.id === 'holy_aura');
+        const hasAura = player.weapons.some(w => w.id === 'fire_ring');
         if (!hasAura) {
           addGenericOption('fire_ring', 'Огненное Кольцо', '🔥', 'Окружает героя анимированным кольцом дикого огня, сжигающего монстров', () => {
             const aura = new FireRingWeapon();

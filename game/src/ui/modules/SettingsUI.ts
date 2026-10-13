@@ -1,6 +1,6 @@
 import { SoundManager } from '../../core/SoundManager';
 import { Projectile } from '../../combat/Projectile';
-import { HolyAuraWeapon } from '../../combat/Weapon';
+import { FireRingWeapon } from '../../combat/Weapon';
 import { DamageNumberManager } from '../../combat/DamageNumberManager';
 
 export interface SettingsUIContext {
@@ -46,16 +46,29 @@ export class SettingsUI {
     const settingsBackBtn = document.getElementById('settings-btn-back');
 
     if (volumeSlider) {
+      const savedVolume = localStorage.getItem('rift_volume');
+      const initialVol = savedVolume !== null ? parseInt(savedVolume, 10) : 80;
+      volumeSlider.value = String(initialVol);
+      if (volumeVal) volumeVal.innerText = `${initialVol}%`;
+      SoundManager.setVolume(initialVol / 100);
+
       volumeSlider.addEventListener('input', () => {
         const val = parseInt(volumeSlider.value, 10);
         if (volumeVal) volumeVal.innerText = `${val}%`;
         SoundManager.setVolume(val / 100);
+        localStorage.setItem('rift_volume', String(val));
       });
     }
 
     if (muteCheckbox) {
+      const savedMute = localStorage.getItem('rift_muted');
+      const initialMute = savedMute === 'true';
+      muteCheckbox.checked = initialMute;
+      SoundManager.setMuted(initialMute);
+
       muteCheckbox.addEventListener('change', () => {
         SoundManager.setMuted(muteCheckbox.checked);
+        localStorage.setItem('rift_muted', muteCheckbox.checked ? 'true' : 'false');
       });
     }
 
@@ -71,14 +84,14 @@ export class SettingsUI {
       if (vfxOpacityVal) vfxOpacityVal.innerText = `${initialVfx}%`;
       const normVal = initialVfx / 100;
       Projectile.setVfxOpacity(normVal);
-      HolyAuraWeapon.setVfxOpacity(normVal);
+      FireRingWeapon.setVfxOpacity(normVal);
 
       vfxOpacitySlider.addEventListener('input', () => {
         const val = parseInt(vfxOpacitySlider.value, 10);
         if (vfxOpacityVal) vfxOpacityVal.innerText = `${val}%`;
         const nVal = val / 100;
         Projectile.setVfxOpacity(nVal);
-        HolyAuraWeapon.setVfxOpacity(nVal);
+        FireRingWeapon.setVfxOpacity(nVal);
         localStorage.setItem('rift_vfx_opacity', String(val));
       });
     }
