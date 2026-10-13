@@ -612,11 +612,11 @@ export class HUD {
       }
       if (exitMsg) {
         exitMsg.innerHTML =
-          '<strong>Сессия игры завершена.</strong><br>Вы можете безопасно закрыть эту вкладку браузера.<br><span style="font-size:12px;color:#a89f91;">Game session finished. You can now close this tab.</span>';
+          '<strong>Сессия игры завершена.</strong><br>Вы можете безопасно закрыть эту вкладку браузера.';
       }
       if (exitActions) {
         exitActions.innerHTML =
-          '<button id="btn-exit-return" class="action-btn">Назад в меню / Return</button>';
+          '<button id="btn-exit-return" class="action-btn modern-back-btn" style="min-width: 160px;">Назад в меню</button>';
         document.getElementById('btn-exit-return')?.addEventListener('click', () => {
           this.handleEscape();
           this.resetExitModal();
@@ -634,12 +634,11 @@ export class HUD {
     const exitMsg = document.getElementById('exit-message');
     const exitActions = document.getElementById('exit-actions-row');
     if (exitMsg) {
-      exitMsg.innerHTML =
-        'Вы уверены, что хотите выйти из игры?<br><span style="font-size: 13px; color: #a89f91;">Are you sure you want to exit the game?</span>';
+      exitMsg.innerHTML = 'Вы уверены, что хотите выйти из игры?';
     }
     if (exitActions) {
       exitActions.innerHTML =
-        '<button id="btn-confirm-exit" class="action-btn exit-btn-danger">Выйти / Exit</button><button id="btn-cancel-exit" class="action-btn secondary-btn">Отмена / Cancel</button>';
+        '<button id="btn-confirm-exit" class="action-btn select-btn" style="min-width: 120px; background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fca5a5;">Выйти</button><button id="btn-cancel-exit" class="action-btn modern-back-btn" style="min-width: 120px;">Отмена</button>';
       this.setupExitListeners();
     }
   }
@@ -897,7 +896,7 @@ export class HUD {
     this.questsUI.selectQuestChapter(chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1, fromCharSelect: boolean = false) {
+  public showQuestsModal(selectedQuestId: string = 'ch1_deadly_debut', chapter: number = 1, fromCharSelect: boolean = false) {
     this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect);
   }
 

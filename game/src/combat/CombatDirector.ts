@@ -11,6 +11,7 @@ import { DamageNumberManager } from './DamageNumberManager';
 import { NetworkManager, NetShotInfo, DamageDealtEvent } from '../net/NetworkManager';
 import { RemotePlayer } from '../entities/RemotePlayer';
 import { SoundManager } from '../core/SoundManager';
+import { ProgressionManager } from '../core/ProgressionManager';
 import { MeleeAttackEffects } from './MeleeAttackEffects';
 import type { MeleeAttackInfo } from '../shared/types';
 
@@ -245,6 +246,7 @@ export class CombatDirector {
       critTier = 1;
       critMultiplier = 1.0 + effectiveCritDamage;
       finalDamage = Math.round(finalDamage * critMultiplier);
+      ProgressionManager.getInstance().recordRunCrit(1);
       SoundManager.playCrit();
     }
 
@@ -590,7 +592,7 @@ export class CombatDirector {
           }
 
           if (this.net.role === 'client') {
-            const isDead = enemy.takeDamage(finalDamage, proj.position, myId);
+            const isDead = enemy.takeDamage(finalDamage, proj.position, myId, proj.sourceWeaponId);
             const displayedDamage = enemy.lastDamageTaken > 0 ? enemy.lastDamageTaken : finalDamage;
             this.damageNumbers.spawnDamage(enemy.position, displayedDamage, isCrit, this.engine.camera, false, critTier, critMultiplier);
             SoundManager.playHit();
@@ -618,7 +620,7 @@ export class CombatDirector {
           } else {
             this.player.totalDamageDealt += finalDamage;
             this.player.recordWeaponDamage(proj.sourceWeaponId, finalDamage);
-            this.enemyManager.damageEnemy(enemy, finalDamage, proj.position, this.engine.camera, myId, true, isCrit, critTier, critMultiplier);
+            this.enemyManager.damageEnemy(enemy, finalDamage, proj.position, this.engine.camera, myId, true, isCrit, critTier, critMultiplier, proj.sourceWeaponId);
           }
 
           const destroyed = proj.onHit();

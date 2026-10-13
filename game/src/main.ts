@@ -223,7 +223,7 @@ class Game {
         }
       }
     };
-    const savedShadowQuality = parseInt(localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
+    const savedShadowQuality = parseInt(localStorage.getItem('rift_shadow_quality') || localStorage.getItem('wildwest_shadow_quality') || '1024', 10);
     this.engine.setShadowQuality(savedShadowQuality);
 
     // Network Coordinator
@@ -418,6 +418,19 @@ class Game {
         this.player.credits += creditsVal;
         ProgressionManager.getInstance().addCoins(creditsVal);
         ProgressionManager.getInstance().recordEnemyKilled();
+
+        if (enemy.type === 'crawler' || enemy.type === 'coyote') {
+          ProgressionManager.getInstance().recordCrawlerOrCoyoteKilled();
+        }
+
+        const wId = enemy.lastSourceWeaponId;
+        const isRanged = wId === 'bow' || wId === 'assault_rifle' || wId === 'heavy_colt' ||
+          (!wId && (this.player.charType === 'archer' || this.player.charType === 'rocket'));
+        if (isRanged) {
+          ProgressionManager.getInstance().recordRangedKill();
+        } else {
+          ProgressionManager.getInstance().recordMeleeOrSpellKill();
+        }
       } else {
         const remote = this.remotePlayers.get(hitterId);
         if (remote) remote.credits += creditsVal;
@@ -444,6 +457,7 @@ class Game {
     };
 
     this.enemyManager.onBossSpawn = (boss, tier) => {
+      ProgressionManager.getInstance().recordBossSpawn(this.sessionDirector.gameTime);
       this.hud.triggerBossWarning(boss.name, tier);
       if (this.net.role === 'host') {
         this.netCoordinator.pendingNetworkEvents.push({
@@ -468,6 +482,9 @@ class Game {
     this.enemyManager.onBossDefeat = () => {
       this.hud.resetBossUI();
       ProgressionManager.getInstance().recordBossKilled();
+      ProgressionManager.getInstance().recordTeleporterBossKilled();
+      ProgressionManager.getInstance().recordLeshyDefeated();
+      ProgressionManager.getInstance().recordBossDefeat(this.sessionDirector.gameTime);
       if (this.net.role === 'host') {
         this.netCoordinator.pendingNetworkEvents.push({ type: 'boss_defeat' });
       }
@@ -514,6 +531,7 @@ class Game {
     // Altar captured
     this.engine.altarManager.onAltarCaptured = (altar) => {
       ProgressionManager.getInstance().recordResourceGather(1);
+      ProgressionManager.getInstance().recordAltarCaptured();
       this.hud.triggerAltarNotification(
         altar.config.name,
         altar.config.subtitle,
@@ -542,6 +560,10 @@ class Game {
     }
     this.netCoordinator.gameTime = this.sessionDirector.gameTime;
 
+    if (this.biomeManager?.currentBiome?.id === 'bioluminescent_wilds') {
+      ProgressionManager.getInstance().recordForestSurvivalTime(this.sessionDirector.gameTime);
+    }
+
     // 1. Process Input
     this.input.update(this.engine.camera);
     if (this.player.isDowned || !this.player.isAlive) {
@@ -565,7 +587,7 @@ class Game {
         );
 
         if (this.net.role === 'client') {
-          const isDead = enemy.takeDamage(finalDamage, sourcePos, this.net.mySlotId);
+          const isDead = enemy.takeDamage(finalDamage, sourcePos, this.net.mySlotId, weaponId);
           this.damageNumbers.spawnDamage(enemy.position, finalDamage, isCrit, this.engine.camera, false, critTier);
           SoundManager.playHit();
           this.player.totalDamageDealt += finalDamage;
@@ -575,6 +597,17 @@ class Game {
             this.player.kills++;
             this.combatDirector.recentlyDeadEnemyIds.add(enemy.id);
             this.combatDirector.onLocalPlayerEnemyKill(enemy);
+            ProgressionManager.getInstance().recordEnemyKilled();
+            if (enemy.type === 'crawler' || enemy.type === 'coyote') {
+              ProgressionManager.getInstance().recordCrawlerOrCoyoteKilled();
+            }
+            const isRanged = weaponId === 'bow' || weaponId === 'assault_rifle' || weaponId === 'heavy_colt' ||
+              (!weaponId && (this.player.charType === 'archer' || this.player.charType === 'rocket'));
+            if (isRanged) {
+              ProgressionManager.getInstance().recordRangedKill();
+            } else {
+              ProgressionManager.getInstance().recordMeleeOrSpellKill();
+            }
             enemy.destroy(this.engine.scene);
             const idx = this.enemyManager.enemies.indexOf(enemy);
             if (idx !== -1) {
@@ -600,7 +633,9 @@ class Game {
             this.net.mySlotId || 'p1',
             true,
             isCrit,
-            critTier
+            critTier,
+            1.5,
+            weaponId
           );
         }
       }
@@ -814,6 +849,9 @@ class Game {
         onCollect: (xp: number, gem: Gem) => {
           const levelsGained = this.player.gainXp(xp);
           ProgressionManager.getInstance().addAccountXp(Math.max(1, Math.round(xp * 0.25)));
+          if (gem.type === 'blue' || gem.type === 'green') {
+            ProgressionManager.getInstance().recordXpGemCollected(1);
+          }
           this.damageNumbers.spawnXp(this.player.position, xp, this.engine.camera);
 
           if (gem.type === 'gold') {

@@ -367,7 +367,6 @@ $$\text{SpeedMult}(m) = \min\left(1.65, \; 1 + (0.012 \cdot m) \cdot 1.5 + m_{\t
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **Blood Demon** | `boss` | **7,600** | **45** | 2.4 m/s | 7.8 x 7.8 m | 5-15 Red Gems, 40% Gold Gem, 100+ Gold |
 | **Three-Headed Hydra** | `hydra` | **28,000** | **65** | 2.3 m/s | 10.0 x 10.0 m | 9 Red Gems, 40% Gold Gem, 100+ Gold |
-| **Immortal Reaper** | `boss` (reaper) | **99,999,999** | **99,999** | **7.6 m/s** | 5.6 x 5.2 m | Invulnerable (ends run at minute 40) |
 
 ---
 
@@ -385,7 +384,6 @@ $$\text{TierSpd}(T) = 2.4 + (T - 1) \cdot 0.18 \cdot 1.5$$
 | **15:00** | **Tier 3** | Blood Demon (Lvl 3) | **87,874** | **134** | 2.94 m/s | 11 Red Gems (440 XP) + 40% Passive |
 | **20:00** | **Tier 4** | Blood Demon (Lvl 4) | **184,150** | **238** | 3.21 m/s | 13 Red Gems (520 XP) + 40% Passive |
 | **25:00** | **Tier 5** | Blood Demon (Lvl 5) | **307,266** | **357** | 3.48 m/s | 15 Red Gems (600 XP) + 40% Passive |
-| **40:00** | **Final** | Prairie Immortal Reaper | **99,999,999** | **99,999** | **7.60 m/s** | Character death (run victory outro) |
 
 ---
 

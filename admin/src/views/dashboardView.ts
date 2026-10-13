@@ -5,18 +5,19 @@ export function renderDashboard(state: BalanceState): void {
   // 1. Top 5 Weapons by L20 DPS
   const topContainer = document.getElementById('dashboard-top-weapons-container');
   if (topContainer) {
-    const weapons = Object.values(state.draftBalance.weapons);
-    weapons.sort((a, b) => {
-      const l20A =
-        a.cooldown > 0
-          ? (a.damage + 19 * a.damagePerLevel) / a.cooldown
-          : (a.damage + 19 * a.damagePerLevel) * 60;
-      const l20B =
-        b.cooldown > 0
-          ? (b.damage + 19 * b.damagePerLevel) / b.cooldown
-          : (b.damage + 19 * b.damagePerLevel) * 60;
-      return l20B - l20A;
-    });
+    // Only standalone selectable weapons (exclude internal invoker sub-spells)
+    const weapons = Object.values(state.draftBalance.weapons).filter(
+      (w) => !w.id.startsWith('invoker_') || w.id === 'invoker_invoke'
+    );
+
+    const getWeaponDps = (w: typeof weapons[0], level: number) => {
+      const dmg = w.damage + (level - 1) * w.damagePerLevel;
+      const cd = w.cooldown > 0 ? w.cooldown : 0.4;
+      const count = w.count || 1;
+      return (dmg * count) / cd;
+    };
+
+    weapons.sort((a, b) => getWeaponDps(b, 20) - getWeaponDps(a, 20));
 
     const top5 = weapons.slice(0, 5);
     let html = `
@@ -35,9 +36,9 @@ export function renderDashboard(state: BalanceState): void {
     `;
 
     top5.forEach((w, idx) => {
-      const baseDps = w.cooldown > 0 ? (w.damage / w.cooldown).toFixed(1) : (w.damage * 60).toFixed(1);
-      const l20Dmg = w.damage + 19 * w.damagePerLevel;
-      const l20Dps = w.cooldown > 0 ? (l20Dmg / w.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+      const baseDps = getWeaponDps(w, 1).toFixed(1);
+      const l20Dps = getWeaponDps(w, 20).toFixed(1);
+      const cdStr = w.cooldown > 0 ? `${w.cooldown}с` : '0.4с';
       const texture = getEntityTexture('weapons', w.id);
       const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
 
@@ -50,8 +51,8 @@ export function renderDashboard(state: BalanceState): void {
               <strong>${w.name}</strong>
             </div>
           </td>
-          <td>${w.damage}</td>
-          <td>${w.cooldown}с</td>
+          <td>${w.damage}${w.count && w.count > 1 ? ` (x${w.count})` : ''}</td>
+          <td>${cdStr}</td>
           <td><span class="stat-highlight">${baseDps}</span></td>
           <td><span class="stat-highlight-gold" style="font-weight:700;">${l20Dps}</span></td>
         </tr>
@@ -62,7 +63,7 @@ export function renderDashboard(state: BalanceState): void {
     topContainer.innerHTML = html;
   }
 
-  // 2. System Status / Scaling Container
+  // 2. System Status / Scaling Container (0 - 120 minutes)
   const sysContainer = document.getElementById('dashboard-system-status-container');
   if (sysContainer) {
     const calcHpMult = (m: number) => {
@@ -116,32 +117,39 @@ export function renderDashboard(state: BalanceState): void {
             <td>${calcSpdMult(15)}x</td>
           </tr>
           <tr>
-            <td><strong>20 мин</strong></td>
-            <td><span style="color:var(--accent-primary); font-weight:700;">⚡ Нарастание штурма</span></td>
-            <td><strong style="color:var(--accent-primary);">${calcHpMult(20)}x</strong></td>
-            <td>${calcDmgMult(20)}x</td>
-            <td>${calcSpdMult(20)}x</td>
-          </tr>
-          <tr>
             <td><strong>30 мин</strong></td>
-            <td><span style="color:var(--accent-danger); font-weight:700;">💀 Тяжелый штурм</span></td>
-            <td><strong style="color:var(--accent-danger);">${calcHpMult(30)}x</strong></td>
+            <td><span style="color:var(--accent-primary); font-weight:700;">⚡ Нарастание штурма</span></td>
+            <td><strong style="color:var(--accent-primary);">${calcHpMult(30)}x</strong></td>
             <td>${calcDmgMult(30)}x</td>
             <td>${calcSpdMult(30)}x</td>
           </tr>
           <tr>
             <td><strong>45 мин</strong></td>
-            <td><span style="color:#9333ea; font-weight:700;">☠️ Экстремальный натиск</span></td>
-            <td><strong style="color:#9333ea;">${calcHpMult(45)}x</strong></td>
+            <td><span style="color:var(--accent-danger); font-weight:700;">💀 Тяжелый штурм</span></td>
+            <td><strong style="color:var(--accent-danger);">${calcHpMult(45)}x</strong></td>
             <td>${calcDmgMult(45)}x</td>
             <td>${calcSpdMult(45)}x</td>
           </tr>
           <tr>
             <td><strong>60 мин</strong></td>
-            <td><span style="color:#dc2626; font-weight:700;">🏆 Глубокий лейт-гейм (60 мин)</span></td>
-            <td><strong style="color:#dc2626;">${calcHpMult(60)}x</strong></td>
+            <td><span style="color:#9333ea; font-weight:700;">☠️ Экстремальный натиск</span></td>
+            <td><strong style="color:#9333ea;">${calcHpMult(60)}x</strong></td>
             <td>${calcDmgMult(60)}x</td>
             <td>${calcSpdMult(60)}x</td>
+          </tr>
+          <tr>
+            <td><strong>90 мин</strong></td>
+            <td><span style="color:#c026d3; font-weight:700;">🌌 Апокалиптический натиск</span></td>
+            <td><strong style="color:#c026d3;">${calcHpMult(90)}x</strong></td>
+            <td>${calcDmgMult(90)}x</td>
+            <td>${calcSpdMult(90)}x</td>
+          </tr>
+          <tr>
+            <td><strong>120 мин</strong></td>
+            <td><span style="color:#dc2626; font-weight:700;">🏆 Глубокий лейт-гейм (120 мин)</span></td>
+            <td><strong style="color:#dc2626;">${calcHpMult(120)}x</strong></td>
+            <td>${calcDmgMult(120)}x</td>
+            <td>${calcSpdMult(120)}x</td>
           </tr>
         </tbody>
       </table>
@@ -198,18 +206,16 @@ export function updateOverviewStats(state: BalanceState): void {
   const qnavI = document.getElementById('qnav-items-count');
   if (qnavI) qnavI.innerText = `${itemCount} предметов`;
 
-  // Hero banner description
-  const heroDesc = document.getElementById('dashboard-hero-desc');
-  if (heroDesc) {
-    heroDesc.innerText = `Централизованный пульт мониторинга и точечной настройки ${weaponCount} видов оружия, ${heroCount} ковбоев/героев, ${monsterCount} рядовых монстров, ${bossCount} эпических боссов, ${passiveCount} пассивок и ${itemCount} предметов Разлома. Все изменения мгновенно синхронизируются через Supabase Realtime без перезапуска серверов.`;
-  }
-
   const kpiAvgDps = document.getElementById('kpi-avg-dps');
   if (kpiAvgDps) {
-    const weapons = Object.values(state.draftBalance.weapons);
+    const weapons = Object.values(state.draftBalance.weapons).filter(
+      (w) => !w.id.startsWith('invoker_') || w.id === 'invoker_invoke'
+    );
     let totalDps = 0;
     for (const w of weapons) {
-      totalDps += w.cooldown > 0 ? w.damage / w.cooldown : w.damage * 60;
+      const cd = w.cooldown > 0 ? w.cooldown : 0.4;
+      const count = w.count || 1;
+      totalDps += (w.damage * count) / cd;
     }
     const avg = weapons.length > 0 ? (totalDps / weapons.length).toFixed(1) : '0';
     kpiAvgDps.innerText = avg;

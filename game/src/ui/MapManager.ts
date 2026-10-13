@@ -8,6 +8,7 @@ import { RemotePlayer } from '../entities/RemotePlayer';
 import { ChestManager } from '../world/ChestManager';
 import { RiftTeleporter } from '../world/RiftTeleporter';
 import { MerchantManager } from '../world/MerchantManager';
+import { renderCenterSquareMap as drawCenterSquareMap } from './MapCenterSquareRenderer';
 
 export interface DiscoveredAltar {
   type: BuffType;
@@ -682,304 +683,23 @@ export class MapManager {
    * Displays all discovered altars, teleporter, chests, bosses, teammates, and player.
    */
   private renderCenterSquareMap() {
-    const ctx = this.minimapCtx;
-    const w = this.minimapCanvas.width; // 500
-    const h = this.minimapCanvas.height; // 500
-
-    ctx.clearRect(0, 0, w, h);
-    this.minimapPlayerCtx?.clearRect(0, 0, w, h);
-
-    // Update coords in footer
-    const px = Math.round(this.player.position.x);
-    const pz = Math.round(this.player.position.z);
-    if (this.elMinimapCoords) {
-      this.elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${this.exploredChunks.size}/81 зон`;
-    }
-
-    // 1. Semi-transparent dark tactical backdrop
-    ctx.fillStyle = 'rgba(6, 12, 22, 0.40)';
-    ctx.fillRect(0, 0, w, h);
-
-    // 2. World Coordinate Transform for 9x9 chunks (450x450m bounds, -225 to +225)
-    const halfWorld = 225;
-    const worldSize = 450;
-    const toScreenX = (worldX: number) => ((worldX + halfWorld) / worldSize) * w;
-    const toScreenZ = (worldZ: number) => ((worldZ + halfWorld) / worldSize) * h;
-    const chunkScreenW = (50 / worldSize) * w;
-    const chunkScreenH = (50 / worldSize) * h;
-
-    // Chunks & Fog of War (9x9 chunks, 50m each from cx = -4..4, cz = -4..4)
-    for (let cx = -4; cx <= 4; cx++) {
-      for (let cz = -4; cz <= 4; cz++) {
-        const chunkX = toScreenX(cx * 50 - 25);
-        const chunkZ = toScreenZ(cz * 50 - 25);
-        const key = `${cx},${cz}`;
-        const isExplored = this.exploredChunks.has(key);
-
-        if (!isExplored) {
-          // Fog of War (Туман войны)
-          ctx.fillStyle = 'rgba(8, 14, 24, 0.88)';
-          ctx.fillRect(chunkX, chunkZ, chunkScreenW + 0.5, chunkScreenH + 0.5);
-
-          ctx.strokeStyle = 'rgba(30, 48, 77, 0.40)';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(chunkX, chunkZ, chunkScreenW, chunkScreenH);
-
-          // Subtle diagonal fog hatch lines
-          ctx.beginPath();
-          ctx.moveTo(chunkX, chunkZ + chunkScreenH * 0.5);
-          ctx.lineTo(chunkX + chunkScreenW * 0.5, chunkZ);
-          ctx.moveTo(chunkX, chunkZ + chunkScreenH);
-          ctx.lineTo(chunkX + chunkScreenW, chunkZ);
-          ctx.moveTo(chunkX + chunkScreenW * 0.5, chunkZ + chunkScreenH);
-          ctx.lineTo(chunkX + chunkScreenW, chunkZ + chunkScreenH * 0.5);
-          ctx.stroke();
-        } else {
-          // Explored zone
-          ctx.fillStyle = 'rgba(20, 38, 64, 0.35)';
-          ctx.fillRect(chunkX, chunkZ, chunkScreenW + 0.5, chunkScreenH + 0.5);
-
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.20)';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(chunkX, chunkZ, chunkScreenW, chunkScreenH);
-        }
-      }
-    }
-
-    // 3. XP Gems & Passive drops on ground (in explored chunks)
-    for (const gem of this.dropManager.gems) {
-      const gcx = Math.round(gem.position.x / 50);
-      const gcz = Math.round(gem.position.z / 50);
-      if (this.exploredChunks.has(`${gcx},${gcz}`)) {
-        const gx = toScreenX(gem.position.x);
-        const gz = toScreenZ(gem.position.z);
-        if (gx >= 0 && gx <= w && gz >= 0 && gz <= h) {
-          ctx.fillStyle = gem.type === 'gold' ? '#f59e0b' : '#38bdf8';
-          ctx.beginPath();
-          ctx.arc(gx, gz, gem.type === 'gold' ? 2.5 : 1.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
-
-    // 4. Chests (Unopened chests only, opened chests removed - 2x bigger)
-    if (this.chestManager) {
-      for (const chest of this.chestManager.chests) {
-        if (chest.isOpened) continue; // Completely remove picked-up/opened chests
-        const ccx = Math.round(chest.position.x / 50);
-        const ccz = Math.round(chest.position.z / 50);
-        if (this.exploredChunks.has(`${ccx},${ccz}`)) {
-          const cxPos = toScreenX(chest.position.x);
-          const czPos = toScreenZ(chest.position.z);
-          if (cxPos >= 0 && cxPos <= w && czPos >= 0 && czPos <= h) {
-            ctx.shadowColor = '#fbbf24';
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = '#fbbf24';
-            ctx.font = '20px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('📦', cxPos, czPos);
-            ctx.shadowBlur = 0;
-          }
-        }
-      }
-    }
-
-    // 5. Discovered Altars (Remove once captured/spent - 1.5x bigger)
-    for (const altar of this.discoveredAltars.values()) {
-      if (altar.isCaptured || (altar as any).isSpent) continue;
-      const ax = toScreenX(altar.pos.x);
-      const az = toScreenZ(altar.pos.z);
-      if (ax >= 0 && ax <= w && az >= 0 && az <= h) {
-        ctx.fillStyle = altar.color;
-        ctx.beginPath();
-        ctx.arc(ax, az, 12, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2.25;
-        ctx.stroke();
-
-        ctx.font = '14px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(altar.icon || '⛩️', ax, az);
-      }
-    }
-
-    // 6. Discovered Rift Teleporter
-    if (this.riftTeleporter && this.riftTeleporter.isDiscovered) {
-      const tx = toScreenX(this.riftTeleporter.position.x);
-      const tz = toScreenZ(this.riftTeleporter.position.z);
-      if (tx >= 0 && tx <= w && tz >= 0 && tz <= h) {
-        const isReady = this.riftTeleporter.state === 'WARP_READY';
-        const pulse = Math.sin(this.animTimer * 4) * 2;
-        const color = isReady ? '#10b981' : '#f59e0b';
-
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(tx, tz, 10 + pulse, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🌀', tx, tz);
-
-        ctx.font = 'bold 8px Montserrat, sans-serif';
-        ctx.fillStyle = color;
-        ctx.fillText(isReady ? 'РАЗЛОМ' : 'БОСС НУЖЕН', tx, tz + 14);
-      }
-    }
-
-    // 6b. Rift Merchant on Full Map
-    if (this.merchantManager && this.merchantManager.isActive) {
-      const mx = toScreenX(this.merchantManager.position.x);
-      const mz = toScreenZ(this.merchantManager.position.z);
-      if (mx >= 0 && mx <= w && mz >= 0 && mz <= h) {
-        const pulse = Math.sin(this.animTimer * 5) * 2;
-        ctx.shadowColor = '#f59e0b';
-        ctx.shadowBlur = 8;
-        ctx.fillStyle = '#f59e0b';
-        ctx.beginPath();
-        ctx.arc(mx, mz, 10 + pulse, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#fef08a';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.shadowBlur = 0;
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('💰', mx, mz);
-
-        ctx.font = 'bold 9px Montserrat, sans-serif';
-        ctx.fillStyle = '#fef08a';
-        ctx.fillText('ТОРГОВЕЦ', mx, mz + 15);
-      }
-    }
-
-    // 7. Active Boss
-    if (this.enemyManager.activeBoss && this.enemyManager.activeBoss.isAlive) {
-      const boss = this.enemyManager.activeBoss;
-      const bx = toScreenX(boss.position.x);
-      const bz = toScreenZ(boss.position.z);
-      if (bx >= 0 && bx <= w && bz >= 0 && bz <= h) {
-        const bPulse = Math.sin(this.animTimer * 6) * 3;
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(bx, bz, 11 + bPulse, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('💀', bx, bz);
-
-        const hpPct = Math.max(0, boss.hp / boss.maxHp);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(bx - 12, bz + 12, 24, 3);
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(bx - 12, bz + 12, 24 * hpPct, 3);
-      }
-    }
-
-    // 8. Teammates / Partners (Co-op)
-    const partnerList = this.partners.length > 0 ? this.partners : this.partner ? [this.partner] : [];
-    for (const rp of partnerList) {
-      const rx = toScreenX(rp.position.x);
-      const rz = toScreenZ(rp.position.z);
-      if (rx >= 0 && rx <= w && rz >= 0 && rz <= h) {
-        ctx.fillStyle = rp.colorCss || '#06b6d4';
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(rx, rz, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.font = 'bold 8px sans-serif';
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(rp.id.startsWith('p') ? `P${rp.id.slice(1)}` : 'P2', rx, rz);
-      }
-    }
-
-    // 9. Local Player Marker - Rendered on fully opaque minimapPlayerCtx (independent of map overlay opacity)
-    const pctx = this.minimapPlayerCtx || ctx;
-    const pxPos = toScreenX(this.player.position.x);
-    const pzPos = toScreenZ(this.player.position.z);
-    if (pxPos >= 0 && pxPos <= w && pzPos >= 0 && pzPos <= h) {
-      // 9a. Double expanding sonar pulse rings
-      const r1 = (this.animTimer * 20) % 26;
-      const a1 = Math.max(0, 1 - r1 / 26) * 0.8;
-      pctx.strokeStyle = `rgba(56, 189, 248, ${a1})`;
-      pctx.lineWidth = 1.8;
-      pctx.beginPath();
-      pctx.arc(pxPos, pzPos, r1, 0, Math.PI * 2);
-      pctx.stroke();
-
-      const r2 = (this.animTimer * 20 + 13) % 26;
-      const a2 = Math.max(0, 1 - r2 / 26) * 0.8;
-      pctx.strokeStyle = `rgba(251, 191, 36, ${a2})`;
-      pctx.lineWidth = 1.4;
-      pctx.beginPath();
-      pctx.arc(pxPos, pzPos, r2, 0, Math.PI * 2);
-      pctx.stroke();
-
-      // 9b. Glowing beacon core
-      pctx.save();
-      pctx.shadowColor = '#38bdf8';
-      pctx.shadowBlur = 12;
-
-      // Outer golden beacon ring
-      pctx.fillStyle = '#f59e0b';
-      pctx.strokeStyle = '#ffffff';
-      pctx.lineWidth = 2;
-      pctx.beginPath();
-      pctx.arc(pxPos, pzPos, 7, 0, Math.PI * 2);
-      pctx.fill();
-      pctx.stroke();
-
-      // Bright center core
-      pctx.fillStyle = '#38bdf8';
-      pctx.beginPath();
-      pctx.arc(pxPos, pzPos, 3.5, 0, Math.PI * 2);
-      pctx.fill();
-      pctx.restore();
-
-      // 9c. Directional chevron pointer based on player orientation (Non-transparent crisp arrow)
-      pctx.save();
-      pctx.translate(pxPos, pzPos);
-      pctx.rotate(-this.player.mesh.rotation.y);
-
-      pctx.fillStyle = '#fef08a';
-      pctx.strokeStyle = '#0f172a';
-      pctx.lineWidth = 1.5;
-      pctx.beginPath();
-      pctx.moveTo(0, -13);
-      pctx.lineTo(8, 8);
-      pctx.lineTo(0, 4);
-      pctx.lineTo(-8, 8);
-      pctx.closePath();
-      pctx.fill();
-      pctx.stroke();
-      pctx.restore();
-    }
-
-    // 10. Top Bar (Header with title and exploration %)
-    ctx.font = 'bold 10px Montserrat, sans-serif';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-    ctx.textAlign = 'left';
-    ctx.fillText('ИНТЕРАКТИВНАЯ КАРТА [TAB]', 8, 14);
-
-    const exploredPct = Math.min(100, Math.round((this.exploredChunks.size / 81) * 100));
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillText(`ТУМАН ВОЙНЫ: ${exploredPct}% ОТКРЫТО`, 492, 14);
+    drawCenterSquareMap({
+      ctx: this.minimapCtx,
+      playerCtx: this.minimapPlayerCtx,
+      width: this.minimapCanvas.width,
+      height: this.minimapCanvas.height,
+      player: this.player,
+      exploredChunks: this.exploredChunks,
+      dropManager: this.dropManager,
+      chestManager: this.chestManager,
+      discoveredAltars: this.discoveredAltars,
+      riftTeleporter: this.riftTeleporter,
+      merchantManager: this.merchantManager,
+      enemyManager: this.enemyManager,
+      partners: this.partners.length > 0 ? this.partners : this.partner ? [this.partner] : [],
+      animTimer: this.animTimer,
+      elMinimapCoords: this.elMinimapCoords,
+    });
   }
 
   /**
@@ -1273,9 +993,12 @@ export class MapManager {
       ctx.textBaseline = 'middle';
       ctx.fillText('💀', bx, bz);
 
+      const bossName = this.enemyManager.activeBoss.name
+        ? `«${this.enemyManager.activeBoss.name.toUpperCase()}»`
+        : '«БОСС РАЗЛОМА»';
       ctx.font = 'bold 12px "Cinzel", serif';
       ctx.fillStyle = '#ef4444';
-      ctx.fillText('«КРОВАВЫЙ ШЕРИФ»', bx, bz + 24);
+      ctx.fillText(bossName, bx, bz + 24);
     }
 
     // 9. Current Player Location Marker with Facing Direction Pointer

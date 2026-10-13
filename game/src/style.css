@@ -4,6 +4,7 @@
    ========================================================================== */
 @import './styles/variables.css';
 @import './styles/hud.css';
+@import './styles/hud-minimap.css';
 @import './styles/main-menu.css';
 @import './styles/battlepass.css';
 @import './styles/settings.css';

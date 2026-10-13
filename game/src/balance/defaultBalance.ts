@@ -382,29 +382,8 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       scalingType: 'additive',
       notes: 'Аддитивное масштабирование: 100 стаков = +200%, без ограничения'
     },
-    stat_sheriff_star: {
-      id: 'stat_sheriff_star',
-      name: 'Усилитель',
-      icon: '⭐',
-      description: '+2% к урону всех оружий',
-      baseValue: 2,
-      perStackValue: 2,
-      scalingType: 'additive',
-      notes: 'Аддитивное масштабирование: 100 стаков = +200%, без ограничения'
-    },
     stat_speed_boots: {
       id: 'stat_speed_boots',
-      name: 'Ботинки Скорости',
-      icon: '🥾',
-      description: '+3% к скорости передвижения (макс. 3.0x)',
-      baseValue: 3,
-      perStackValue: 3,
-      maxValue: 300,
-      scalingType: 'multiplicative',
-      notes: 'Мультипликативный множитель скорости: x1.03 на 1 ур., угасающая эффективность до потолка x3.0'
-    },
-    stat_spurs: {
-      id: 'stat_spurs',
       name: 'Ботинки Скорости',
       icon: '🥾',
       description: '+3% к скорости передвижения (макс. 3.0x)',
@@ -426,17 +405,6 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     },
     stat_magnet: {
       id: 'stat_magnet',
-      name: 'Магнит',
-      icon: '🧲',
-      description: '+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м)',
-      baseValue: 4,
-      perStackValue: 10,
-      maxValue: 50,
-      scalingType: 'diminishing',
-      notes: 'Базовый 4м, +10% на 1 ур., угасающая эффективность до 50м на 300 ур.'
-    },
-    stat_lasso: {
-      id: 'stat_lasso',
       name: 'Магнит',
       icon: '🧲',
       description: '+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м)',
@@ -471,12 +439,12 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'stat_watch',
       name: 'Карманные Часы',
       icon: '⏱️',
-      description: '+1% к ускорению перезарядки оружий (макс. 25%)',
+      description: '-1% к времени перезарядки оружий (угасающая эффективность до 30% на 300 ур., макс. 30%)',
       baseValue: 1,
       perStackValue: 1,
-      maxValue: 25,
-      scalingType: 'additive',
-      notes: 'Снижает КД на 1% за стак до жесткого капа 25%'
+      maxValue: 30,
+      scalingType: 'diminishing',
+      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 1%, 300 ур. = 30% (макс. 30%)'
     }
   },
   items: {
@@ -605,7 +573,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'crit_lens',
       name: 'Линза Критовика',
       rarity: 'rare',
-      icon: '🔍',
+      icon: '🎯',
       color: '#3b82f6',
       description: '+6.0% к шансу нанести критический удар (макс. 100%)',
       stackText: '+6.0% шанс за стак',
@@ -614,9 +582,9 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     },
     heavy_hollowpoint: {
       id: 'heavy_hollowpoint',
-      name: 'Экспансивные Пули',
+      name: 'Тяжёлый Наконечник',
       rarity: 'rare',
-      icon: '🪓',
+      icon: '💥',
       color: '#3b82f6',
       description: '+20% к множителю критического урона (макс. 1000%)',
       stackText: '+20% множитель за стак',
@@ -625,9 +593,9 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     },
     energy_amplifier: {
       id: 'energy_amplifier',
-      name: 'Усилитель Энергии',
+      name: 'Квантовый Резонатор',
       rarity: 'rare',
-      icon: '🔋',
+      icon: '⚡',
       color: '#3b82f6',
       description: '+18% ко всему наносимому урону героя',
       stackText: '+18% урона за стак',
@@ -638,7 +606,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'singularity_core',
       name: 'Ядро Сингулярности',
       rarity: 'legendary',
-      icon: '🌀',
+      icon: '🕳️',
       color: '#f97316',
       description: 'Каждые 10 убийств (-2/стак, мин 3) стягивает врагов и наносит 600% (+200%/стак) урона',
       stackText: '-2 к требуемым убийствам и +200% урона',
@@ -651,18 +619,18 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'legendary',
       icon: '🛰️',
       color: '#f97316',
-      description: 'Каждые 12 сек (-1.5с/стак, мин 4с) бьёт ионный луч радиусом 4.5м на 850% (+250%/стак) урона',
+      description: 'Каждые 12 сек (-1.5с/стак, мин 4с) бьёт ионный луч радиусом 4.5м на 800% (+250%/стак) урона',
       stackText: '-1.5с к КД и +250% урона',
-      baseValue: 850,
+      baseValue: 800,
       scaling: '-1.5с КД, +250% урона'
     },
     chronos_phylactery: {
       id: 'chronos_phylactery',
-      name: 'Хронос-Филактерия',
+      name: 'Кристалл Времени',
       rarity: 'legendary',
       icon: '⏳',
       color: '#f97316',
-      description: 'При получении смертельного урона замораживает время на 3.5с и восстанавливает 50% HP',
+      description: 'При получении смертельного урона замораживает время на 5.0с и восстанавливает 50% HP',
       stackText: '+1с заморозки и +20% HP за стак',
       baseValue: 50,
       scaling: 'Спасение от гибели 1 раз за уровень'
@@ -684,10 +652,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'legendary',
       icon: '🌌',
       color: '#f97316',
-      description: '+40% к критическому урону и +15% к шансу крита',
-      stackText: '+40% крит. урона и +15% шанс за стак',
+      description: '+40% к критическому урону и +15% к общему урону героя',
+      stackText: '+40% крит. урона и +15% к урону за стак',
       baseValue: 40,
-      scaling: '+40% крит. урон, +15% шанс крита'
+      scaling: '+40% крит. урон, +15% общий урон'
     },
     golem_core: {
       id: 'golem_core',

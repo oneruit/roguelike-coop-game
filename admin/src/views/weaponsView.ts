@@ -18,16 +18,12 @@ export function renderWeapons(
 
   weapons.sort((a, b) => {
     let val = 0;
-    const baseDpsA = a.cooldown > 0 ? a.damage / a.cooldown : a.damage * 60;
-    const baseDpsB = b.cooldown > 0 ? b.damage / b.cooldown : b.damage * 60;
-    const l20DpsA =
-      a.cooldown > 0
-        ? (a.damage + 19 * a.damagePerLevel) / a.cooldown
-        : (a.damage + 19 * a.damagePerLevel) * 60;
-    const l20DpsB =
-      b.cooldown > 0
-        ? (b.damage + 19 * b.damagePerLevel) / b.cooldown
-        : (b.damage + 19 * b.damagePerLevel) * 60;
+    const cdA = a.cooldown > 0 ? a.cooldown : 0.4;
+    const cdB = b.cooldown > 0 ? b.cooldown : 0.4;
+    const baseDpsA = (a.damage * (a.count || 1)) / cdA;
+    const baseDpsB = (b.damage * (b.count || 1)) / cdB;
+    const l20DpsA = ((a.damage + 19 * a.damagePerLevel) * (a.count || 1)) / cdA;
+    const l20DpsB = ((b.damage + 19 * b.damagePerLevel) * (b.count || 1)) / cdB;
     const isModA = Array.from(state.modifiedPaths).some((p) => p.startsWith(`weapons.${a.id}.`)) ? 1 : 0;
     const isModB = Array.from(state.modifiedPaths).some((p) => p.startsWith(`weapons.${b.id}.`)) ? 1 : 0;
 
@@ -69,9 +65,11 @@ export function renderWeapons(
     const isExpanded = state.expandedRows.has(rowId);
     const isModified = Array.from(state.modifiedPaths).some((p) => p.startsWith(`weapons.${w.id}.`));
 
-    const baseDps = w.cooldown > 0 ? (w.damage / w.cooldown).toFixed(1) : (w.damage * 60).toFixed(1);
+    const cd = w.cooldown > 0 ? w.cooldown : 0.4;
+    const count = w.count || 1;
+    const baseDps = ((w.damage * count) / cd).toFixed(1);
     const l20Dmg = w.damage + 19 * w.damagePerLevel;
-    const l20Dps = w.cooldown > 0 ? (l20Dmg / w.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+    const l20Dps = ((l20Dmg * count) / cd).toFixed(1);
     const textureUrl = getEntityTexture('weapons', w.id);
 
     const rowItem = document.createElement('div');

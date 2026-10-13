@@ -1,6 +1,6 @@
 import { SoundManager } from '../../core/SoundManager';
 import { Projectile } from '../../combat/Projectile';
-import { HolyAuraWeapon } from '../../combat/Weapon';
+import { FireRingWeapon } from '../../combat/Weapon';
 import { DamageNumberManager } from '../../combat/DamageNumberManager';
 
 export interface SettingsUIContext {
@@ -46,16 +46,29 @@ export class SettingsUI {
     const settingsBackBtn = document.getElementById('settings-btn-back');
 
     if (volumeSlider) {
+      const savedVolume = localStorage.getItem('rift_volume');
+      const initialVol = savedVolume !== null ? parseInt(savedVolume, 10) : 80;
+      volumeSlider.value = String(initialVol);
+      if (volumeVal) volumeVal.innerText = `${initialVol}%`;
+      SoundManager.setVolume(initialVol / 100);
+
       volumeSlider.addEventListener('input', () => {
         const val = parseInt(volumeSlider.value, 10);
         if (volumeVal) volumeVal.innerText = `${val}%`;
         SoundManager.setVolume(val / 100);
+        localStorage.setItem('rift_volume', String(val));
       });
     }
 
     if (muteCheckbox) {
+      const savedMute = localStorage.getItem('rift_muted');
+      const initialMute = savedMute === 'true';
+      muteCheckbox.checked = initialMute;
+      SoundManager.setMuted(initialMute);
+
       muteCheckbox.addEventListener('change', () => {
         SoundManager.setMuted(muteCheckbox.checked);
+        localStorage.setItem('rift_muted', muteCheckbox.checked ? 'true' : 'false');
       });
     }
 
@@ -65,60 +78,60 @@ export class SettingsUI {
     });
 
     if (vfxOpacitySlider) {
-      const savedVfx = localStorage.getItem('wildwest_vfx_opacity');
+      const savedVfx = localStorage.getItem('rift_vfx_opacity') ?? localStorage.getItem('wildwest_vfx_opacity');
       const initialVfx = savedVfx !== null ? parseInt(savedVfx, 10) : 100;
       vfxOpacitySlider.value = String(initialVfx);
       if (vfxOpacityVal) vfxOpacityVal.innerText = `${initialVfx}%`;
       const normVal = initialVfx / 100;
       Projectile.setVfxOpacity(normVal);
-      HolyAuraWeapon.setVfxOpacity(normVal);
+      FireRingWeapon.setVfxOpacity(normVal);
 
       vfxOpacitySlider.addEventListener('input', () => {
         const val = parseInt(vfxOpacitySlider.value, 10);
         if (vfxOpacityVal) vfxOpacityVal.innerText = `${val}%`;
         const nVal = val / 100;
         Projectile.setVfxOpacity(nVal);
-        HolyAuraWeapon.setVfxOpacity(nVal);
-        localStorage.setItem('wildwest_vfx_opacity', String(val));
+        FireRingWeapon.setVfxOpacity(nVal);
+        localStorage.setItem('rift_vfx_opacity', String(val));
       });
     }
 
     if (dmgNumbersCheckbox) {
-      const savedDmg = localStorage.getItem('wildwest_show_damage');
+      const savedDmg = localStorage.getItem('rift_show_damage') ?? localStorage.getItem('wildwest_show_damage');
       const dmgEnabled = savedDmg !== 'false';
       dmgNumbersCheckbox.checked = dmgEnabled;
       DamageNumberManager.damageEnabled = dmgEnabled;
       dmgNumbersCheckbox.addEventListener('change', () => {
         DamageNumberManager.damageEnabled = dmgNumbersCheckbox.checked;
-        localStorage.setItem('wildwest_show_damage', dmgNumbersCheckbox.checked ? 'true' : 'false');
+        localStorage.setItem('rift_show_damage', dmgNumbersCheckbox.checked ? 'true' : 'false');
       });
     }
 
     if (xpNumbersCheckbox) {
-      const savedXp = localStorage.getItem('wildwest_show_xp');
+      const savedXp = localStorage.getItem('rift_show_xp') ?? localStorage.getItem('wildwest_show_xp');
       const xpEnabled = savedXp !== 'false';
       xpNumbersCheckbox.checked = xpEnabled;
       DamageNumberManager.xpEnabled = xpEnabled;
       xpNumbersCheckbox.addEventListener('change', () => {
         DamageNumberManager.xpEnabled = xpNumbersCheckbox.checked;
-        localStorage.setItem('wildwest_show_xp', xpNumbersCheckbox.checked ? 'true' : 'false');
+        localStorage.setItem('rift_show_xp', xpNumbersCheckbox.checked ? 'true' : 'false');
       });
     }
 
     if (autoLevelupCheckbox) {
-      const savedAuto = localStorage.getItem('wildwest_auto_levelup');
+      const savedAuto = localStorage.getItem('rift_auto_levelup') ?? localStorage.getItem('wildwest_auto_levelup');
       this.isAutoLevelUp = savedAuto === 'true';
       autoLevelupCheckbox.checked = this.isAutoLevelUp;
       autoLevelupCheckbox.addEventListener('change', () => {
         this.isAutoLevelUp = autoLevelupCheckbox.checked;
-        localStorage.setItem('wildwest_auto_levelup', this.isAutoLevelUp ? 'true' : 'false');
+        localStorage.setItem('rift_auto_levelup', this.isAutoLevelUp ? 'true' : 'false');
       });
     }
 
     const mapOpacitySlider = document.getElementById('settings-map-opacity') as HTMLInputElement | null;
     const mapOpacityVal = document.getElementById('settings-map-opacity-val');
     if (mapOpacitySlider) {
-      const savedMapOpacity = localStorage.getItem('wildwest_map_opacity');
+      const savedMapOpacity = localStorage.getItem('rift_map_opacity') ?? localStorage.getItem('wildwest_map_opacity');
       const initialMapOpacity = savedMapOpacity !== null ? parseInt(savedMapOpacity, 10) : 65;
       mapOpacitySlider.value = String(initialMapOpacity);
       if (mapOpacityVal) mapOpacityVal.innerText = `${initialMapOpacity}%`;
@@ -127,14 +140,14 @@ export class SettingsUI {
       mapOpacitySlider.addEventListener('input', () => {
         const val = parseInt(mapOpacitySlider.value, 10);
         if (mapOpacityVal) mapOpacityVal.innerText = `${val}%`;
-        localStorage.setItem('wildwest_map_opacity', String(val));
+        localStorage.setItem('rift_map_opacity', String(val));
         document.documentElement.style.setProperty('--map-overlay-opacity', String(val / 100));
       });
     }
 
     const perfOverlayCheckbox = document.getElementById('settings-perf-overlay') as HTMLInputElement | null;
     if (perfOverlayCheckbox) {
-      const saved = localStorage.getItem('wildwest_show_perf');
+      const saved = localStorage.getItem('rift_show_perf') ?? localStorage.getItem('wildwest_show_perf');
       this.isPerfOverlayEnabled = saved !== 'false';
       perfOverlayCheckbox.checked = this.isPerfOverlayEnabled;
       if (this.ctx.perfOverlay) {
@@ -142,7 +155,7 @@ export class SettingsUI {
       }
       perfOverlayCheckbox.addEventListener('change', () => {
         this.isPerfOverlayEnabled = perfOverlayCheckbox.checked;
-        localStorage.setItem('wildwest_show_perf', this.isPerfOverlayEnabled ? 'true' : 'false');
+        localStorage.setItem('rift_show_perf', this.isPerfOverlayEnabled ? 'true' : 'false');
         if (this.ctx.perfOverlay) {
           this.ctx.perfOverlay.style.display = this.isPerfOverlayEnabled ? 'flex' : 'none';
         }
@@ -187,11 +200,11 @@ export class SettingsUI {
 
     const shadowQualitySelect = document.getElementById('settings-shadow-quality') as HTMLSelectElement | null;
     if (shadowQualitySelect) {
-      const savedQuality = localStorage.getItem('wildwest_shadow_quality') || '1024';
+      const savedQuality = localStorage.getItem('rift_shadow_quality') || localStorage.getItem('wildwest_shadow_quality') || '1024';
       shadowQualitySelect.value = savedQuality;
       shadowQualitySelect.addEventListener('change', () => {
         const val = parseInt(shadowQualitySelect.value, 10);
-        localStorage.setItem('wildwest_shadow_quality', String(val));
+        localStorage.setItem('rift_shadow_quality', String(val));
         if (this.onShadowQualityChanged) {
           this.onShadowQualityChanged(val);
         }

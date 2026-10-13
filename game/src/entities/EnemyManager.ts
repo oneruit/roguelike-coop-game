@@ -607,7 +607,7 @@ export class EnemyManager {
   }
 
   /**
-   * Spawns the inevitable 30-minute Immortal Boss (Death / Grim Reaper)
+   * Spawns an endgame rift boss
    */
   public spawnImmortalBoss(playerPos: Vector3) {
     const angle = Math.random() * Math.PI * 2;
@@ -620,7 +620,7 @@ export class EnemyManager {
 
     const reaperConfig: EnemyConfig = {
       type: 'boss',
-      name: 'Бессмертный Жнец Прерии',
+      name: 'Древний Владыка Разлома',
       texturePrefix: '/textures/bosses/boss_sheriff',
       hp: 99999999,
       speed: 7.6,
@@ -802,9 +802,10 @@ export class EnemyManager {
     showDamageNumber: boolean = true,
     isCrit: boolean = false,
     critTier: number = 1,
-    critMultiplier: number = 1.5
+    critMultiplier: number = 1.5,
+    weaponId?: string
   ) {
-    const isDead = enemy.takeDamage(amount, sourcePos, hitter);
+    const isDead = enemy.takeDamage(amount, sourcePos, hitter, weaponId);
     const displayedDamage = enemy.lastDamageTaken > 0 ? enemy.lastDamageTaken : amount;
     if (showDamageNumber && camera) {
       this.damageNumbers.spawnDamage(enemy.position, displayedDamage, isCrit, camera, false, critTier, critMultiplier);
@@ -913,7 +914,7 @@ export class EnemyManager {
           isImmortal: s.isImmortal
         };
         if (s.isImmortal) {
-          config.name = 'Бессмертный Жнец Прерии';
+          config.name = 'Древний Владыка Разлома';
           config.width = 5.6;
           config.height = 5.2;
           config.damage = 99999;

@@ -33,25 +33,25 @@
           <div class="quest-book-wrapper">
             <!-- Left Tabs Sidebar (Chapters of the Book) -->
             <aside class="quest-book-tabs-sidebar" id="quest-book-tabs-sidebar" aria-label="Главы книги">
-              <button id="quest-tab-ch1" class="quest-book-tab quest-chapter-tab active" data-chapter="1" type="button" title="Глава I: Пробуждение">
+              <button id="quest-tab-ch1" class="quest-book-tab quest-chapter-tab active" data-chapter="1" type="button" title="Глава I: «Пробуждение в Разломе» (Обучение и базовые механики)">
                 <div class="chapter-tab-content">
                   <span class="chapter-tab-prefix">ГЛ.</span>
                   <span class="chapter-tab-roman">I</span>
                 </div>
               </button>
-              <button id="quest-tab-ch2" class="quest-book-tab quest-chapter-tab" data-chapter="2" type="button" title="Глава II: Охота на Лешего">
+              <button id="quest-tab-ch2" class="quest-book-tab quest-chapter-tab" data-chapter="2" type="button" title="Глава II: «Тени Древнего Леса» (Биолюминесцентные дебри)">
                 <div class="chapter-tab-content">
                   <span class="chapter-tab-prefix">ГЛ.</span>
                   <span class="chapter-tab-roman">II</span>
                 </div>
               </button>
-              <button id="quest-tab-ch3" class="quest-book-tab quest-chapter-tab" data-chapter="3" type="button" title="Глава III: Стражи Разлома">
+              <button id="quest-tab-ch3" class="quest-book-tab quest-chapter-tab" data-chapter="3" type="button" title="Глава III: «Технологии Заброшенного Сектора» (Сектор 7 и артефакты)">
                 <div class="chapter-tab-content">
                   <span class="chapter-tab-prefix">ГЛ.</span>
                   <span class="chapter-tab-roman">III</span>
                 </div>
               </button>
-              <button id="quest-tab-ch4" class="quest-book-tab quest-chapter-tab" data-chapter="4" type="button" title="Глава IV: Контракты Охотников">
+              <button id="quest-tab-ch4" class="quest-book-tab quest-chapter-tab" data-chapter="4" type="button" title="Глава IV: «Охотничьи контракты» (Мастерство и высокий уровень)">
                 <div class="chapter-tab-content">
                   <span class="chapter-tab-prefix">ГЛ.</span>
                   <span class="chapter-tab-roman">IV</span>
@@ -71,76 +71,25 @@
               <div class="quest-book-spread">
                 <!-- Left Page: Quest Items List -->
                 <div class="quest-book-page quest-page-left">
+                  <!-- Chapter Header Plaque / Title -->
+                  <div class="quest-chapter-header" id="quest-chapter-header">
+                    <div class="quest-chapter-heading-roman" id="quest-chapter-heading-roman">Глава I: «Пробуждение в Разломе»</div>
+                    <div class="quest-chapter-heading-sub" id="quest-chapter-heading-sub">(Обучение и базовые механики)</div>
+                  </div>
+
                   <div class="quest-heroes-list" id="quest-items-list">
-                    <!-- 1. Chapter 1 (Valkyrie) -->
-                    <div class="quest-hero-item" data-quest-hero="valkyrie" data-quest-id="valkyrie" id="quest-item-valkyrie">
-                      <div class="quest-item-icon-box">
-                        <img src="/textures/quests/quest_icon_chapter1.png" class="quest-item-avatar" alt="Глава 1: Пробуждение" />
-                      </div>
-                      <div class="quest-item-info">
-                        <div class="quest-item-title" id="quest-title-valkyrie">Глава 1: Пробуждение (0/1)</div>
-                        <div class="quest-item-bar-wrap">
-                          <div class="quest-item-bar-fill" id="quest-prog-bar-valkyrie" style="width: 0%;"></div>
-                          <span class="quest-item-bar-val" id="quest-prog-text-valkyrie">0/1</span>
-                        </div>
-                      </div>
-                    </div>
+                    <!-- Populated dynamically by QuestsUI -->
+                  </div>
 
-                    <!-- 2. Resource Gathering Trees (Flail) -->
-                    <div class="quest-hero-item" data-quest-hero="flail" data-quest-id="flail" id="quest-item-flail">
-                      <div class="quest-item-icon-box">
-                        <img src="/textures/quests/quest_icon_resources_wood.png" class="quest-item-avatar" alt="Сбор Ресурсов" />
-                      </div>
-                      <div class="quest-item-info">
-                        <div class="quest-item-title" id="quest-title-flail">Сбор Ресурсов (5/10)</div>
-                        <div class="quest-item-bar-wrap">
-                          <div class="quest-item-bar-fill bar-cyan" id="quest-prog-bar-flail" style="width: 50%;"></div>
-                          <span class="quest-item-bar-val" id="quest-prog-text-flail">5/10</span>
-                        </div>
-                      </div>
+                  <!-- Chapter Final Reward Card -->
+                  <div class="quest-chapter-final-card" id="quest-chapter-final-card">
+                    <div class="chapter-final-reward-info">
+                      <span class="chapter-final-reward-lbl">ФИНАЛЬНАЯ НАГРАДА ГЛАВЫ:</span>
+                      <span class="chapter-final-reward-val" id="chapter-final-reward-val">2 000 🪙</span>
                     </div>
-
-                    <!-- 3. Chapter Leshen (Sorceress) -->
-                    <div class="quest-hero-item" data-quest-hero="sorceress" data-quest-id="sorceress" id="quest-item-sorceress">
-                      <div class="quest-item-icon-box">
-                        <img src="/textures/quests/quest_icon_chapter_leshen.png" class="quest-item-avatar" alt="Глава на Лешена" />
-                      </div>
-                      <div class="quest-item-info">
-                        <div class="quest-item-title" id="quest-title-sorceress">Глава на Лешена (0/1)</div>
-                        <div class="quest-item-bar-wrap">
-                          <div class="quest-item-bar-fill" id="quest-prog-bar-sorceress" style="width: 0%;"></div>
-                          <span class="quest-item-bar-val" id="quest-prog-text-sorceress">0/1</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- 4. Hunt for Leshy (Chakram) -->
-                    <div class="quest-hero-item active" data-quest-hero="chakram" data-quest-id="chakram" id="quest-item-chakram">
-                      <div class="quest-item-icon-box icon-box-leshy">
-                        <img src="/textures/quests/quest_icon_leshy.png" class="quest-item-avatar" alt="Охота на Лешего" />
-                      </div>
-                      <div class="quest-item-info">
-                        <div class="quest-item-title" id="quest-title-chakram">Охота на Лешего (0/1)</div>
-                        <div class="quest-item-bar-wrap">
-                          <div class="quest-item-bar-fill" id="quest-prog-bar-chakram" style="width: 0%;"></div>
-                          <span class="quest-item-bar-val" id="quest-prog-text-chakram">0/1</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- 5. Resource Gathering Ore (Archer) -->
-                    <div class="quest-hero-item" data-quest-hero="archer" data-quest-id="archer" id="quest-item-archer">
-                      <div class="quest-item-icon-box">
-                        <img src="/textures/quests/quest_icon_resources_ore.png" class="quest-item-avatar" alt="Сбор Ресурсов" />
-                      </div>
-                      <div class="quest-item-info">
-                        <div class="quest-item-title" id="quest-title-archer">Сбор Ресурсов (5/1)</div>
-                        <div class="quest-item-bar-wrap">
-                          <div class="quest-item-bar-fill bar-orange" id="quest-prog-bar-archer" style="width: 55%;"></div>
-                          <span class="quest-item-bar-val" id="quest-prog-text-archer">55/10</span>
-                        </div>
-                      </div>
-                    </div>
+                    <button id="quest-chapter-final-btn" class="quest-chapter-final-btn" type="button" disabled>
+                      ЗАБРАТЬ НАГРАДУ ГЛАВЫ
+                    </button>
                   </div>
                 </div>
 
@@ -149,18 +98,16 @@
 
                 <!-- Right Page: Quest Details -->
                 <div class="quest-book-page quest-page-right">
-                  <h2 id="quest-right-title" class="quest-detail-title">Охота на Лешего</h2>
+                  <h2 id="quest-right-title" class="quest-detail-title">1 «Смертоносный дебют»</h2>
 
                   <!-- Target Monster / Hero Row -->
                   <div class="quest-detail-target-row">
                     <div class="quest-target-avatar-frame">
-                      <img id="quest-target-avatar" src="/textures/quests/quest_target_leshy.png" class="quest-target-avatar-img" alt="Цель задания" />
+                      <img id="quest-target-avatar" src="/textures/weapons/weapon_greatsword.png" class="quest-target-avatar-img" alt="Цель задания" />
                     </div>
                     <div class="quest-target-desc-wrap">
                       <p id="quest-right-desc" class="quest-detail-desc">
-                        Найти следы в чаще.<br>
-                        Собрать 3 корня аконита.<br>
-                        Победить Лешего.
+                        Уничтожить 50 мобов оружием ближнего боя или заклинанием.
                       </p>
                     </div>
                   </div>
@@ -181,7 +128,7 @@
                   <div class="quest-rewards-block">
                     <div class="quest-rewards-heading">
                       <span class="rewards-wing-l">―o</span>
-                      <span class="rewards-heading-title">НАГРАДЫ</span>
+                      <span class="rewards-heading-title">НАГРАДЫ ЗАДАНИЯ</span>
                       <span class="rewards-wing-r">o―</span>
                     </div>
                     <div class="quest-rewards-grid" id="quest-rewards-grid">
@@ -193,12 +140,17 @@
                       <!-- 2. Pouch (Coins) -->
                       <div class="reward-slot reward-slot-pouch" title="Награда: Мешок золота">
                         <img src="/textures/quests/reward_pouch.png" class="reward-pixel-icon" alt="Золото" />
-                        <span class="reward-slot-badge" id="reward-val-coins">2000</span>
+                        <span class="reward-slot-badge" id="reward-val-coins">200</span>
                       </div>
                       <!-- 3. Potion -->
                       <div class="reward-slot reward-slot-potion" title="Награда: Зелье">
                         <img src="/textures/quests/reward_potion.png" class="reward-pixel-icon" alt="Зелье" />
-                        <span class="reward-slot-badge" id="reward-val-potions">x2</span>
+                        <span class="reward-slot-badge" id="reward-val-potions">x1</span>
+                      </div>
+                      <!-- 4. Hero Slot (optional) -->
+                      <div class="reward-slot reward-slot-hero hidden" id="reward-slot-hero" title="Разблокировка Героя">
+                        <img id="reward-hero-avatar" src="/textures/heroes/hero_valkyrie_front.png" class="reward-pixel-icon" alt="Герой" />
+                        <span class="reward-slot-badge">⭐</span>
                       </div>
                     </div>
                   </div>
