@@ -1,5 +1,6 @@
 import { CharacterType } from '../../entities/Player';
 import { ProgressionManager, SidebarQuestItem } from '../../core/ProgressionManager';
+import { getChapterDef } from '../../core/ChapterQuestsConfig';
 import { SoundManager } from '../../core/SoundManager';
 import { getAssetUrl } from '../../utils/assetPath';
 
@@ -33,45 +34,73 @@ export interface QuestsUIContext {
 
 export class QuestsUI {
   private ctx: QuestsUIContext;
-  public activeQuestHero: CharacterType = 'chakram';
+  public activeQuestHero: CharacterType = 'valkyrie';
   public activeQuestChapter: number = 1;
-  public activeQuestId: string = 'chakram';
+  public activeQuestId: string = 'ch1_deadly_debut';
   public isQuestsOpenInMenu: boolean = false;
   public isFromCharSelect: boolean = false;
+  private tabsBound: boolean = false;
 
   constructor(ctx: QuestsUIContext) {
     this.ctx = ctx;
+    this.setupEventListeners();
+  }
+
+  private setupEventListeners(): void {
+    if (this.tabsBound) return;
+    this.tabsBound = true;
+
+    const chapterTabs = document.querySelectorAll<HTMLElement>('.quest-chapter-tab[data-chapter]');
+    chapterTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const ch = parseInt(tab.getAttribute('data-chapter') || '1', 10);
+        SoundManager.playButtonClick();
+        this.selectQuestChapter(ch);
+      });
+    });
+
+    const finalBtn = document.getElementById('quest-chapter-final-btn');
+    finalBtn?.addEventListener('click', () => {
+      const prog = ProgressionManager.getInstance();
+      const ch = this.activeQuestChapter;
+      const res = prog.claimChapterFinalReward(ch);
+      if (res) {
+        SoundManager.playLevelUp();
+        const chDef = getChapterDef(ch);
+        this.ctx.triggerAltarNotification(
+          'Глава Завершена!',
+          `${chDef?.title}: +${res.coins} 🪙`,
+          '👑',
+          '#fbbf24'
+        );
+        this.renderQuestsModal(this.activeQuestId, this.activeQuestChapter);
+      }
+    });
   }
 
   public toggleQuestsInMainMenu() {
     if (this.isQuestsOpenInMenu && !this.ctx.questsModal.classList.contains('hidden')) {
       this.hideQuestsModal();
     } else {
-      this.showQuestsModal('chakram', 1);
+      this.showQuestsModal('ch1_deadly_debut', 1);
     }
   }
 
   public selectQuestChapter(chapter: number) {
     this.activeQuestChapter = chapter;
     const quests = this.getChapterQuests(chapter);
-    const defaultQuest = quests[0]?.id || 'chakram';
-    const targetId = (chapter === 1 && quests.some((q) => q.id === 'chakram')) ? 'chakram' : defaultQuest;
-    this.activeQuestId = targetId;
-    this.renderQuestsModal(targetId, chapter);
+    const defaultQuest = quests[0]?.id || 'ch1_deadly_debut';
+    this.activeQuestId = defaultQuest;
+    this.renderQuestsModal(defaultQuest, chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'chakram', chapter: number = 1, fromCharSelect: boolean = false) {
+  public showQuestsModal(selectedQuestId: string = 'ch1_deadly_debut', chapter: number = 1, fromCharSelect: boolean = false) {
     this.activeQuestChapter = chapter;
-    this.activeQuestId = selectedQuestId;
-    if (
-      selectedQuestId === 'chakram' ||
-      selectedQuestId === 'valkyrie' ||
-      selectedQuestId === 'flail' ||
-      selectedQuestId === 'sorceress' ||
-      selectedQuestId === 'archer'
-    ) {
-      this.activeQuestHero = selectedQuestId as CharacterType;
-    }
+    const quests = this.getChapterQuests(chapter);
+    const targetQuest = quests.some((q) => q.id === selectedQuestId)
+      ? selectedQuestId
+      : (quests[0]?.id || 'ch1_deadly_debut');
+    this.activeQuestId = targetQuest;
 
     if (fromCharSelect) {
       this.isFromCharSelect = true;
@@ -100,7 +129,7 @@ export class QuestsUI {
         this.ctx.pushMenu('quests');
       }
     }
-    this.renderQuestsModal(selectedQuestId, chapter);
+    this.renderQuestsModal(this.activeQuestId, chapter);
     this.ctx.questsModal.classList.remove('hidden');
   }
 
@@ -122,290 +151,29 @@ export class QuestsUI {
 
   public getChapterQuests(chapter: number): ChapterQuestItem[] {
     const prog = ProgressionManager.getInstance();
+    const chDef = getChapterDef(chapter);
+    if (!chDef) return [];
 
-    if (chapter === 1) {
-      const pVal = prog.getHeroProgress('valkyrie');
-      const pSorc = prog.getHeroProgress('sorceress');
-      const pChak = prog.getHeroProgress('chakram');
-
-      return [
-        {
-          id: 'valkyrie',
-          chapter: 1,
-          heroType: 'valkyrie',
-          title: 'Глава I: Пробуждение',
-          icon: '/textures/quests/quest_icon_chapter1.png',
-          barColor: 'purple',
-          progressVal: pVal,
-          targetAvatar: '/textures/heroes/hero_valkyrie_front.png',
-          desc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
-          steps: [
-            'Сражайтесь в экспедициях и накапливайте боевой опыт.',
-            `Достигните 5-го уровня аккаунта (текущий: ${prog.data.accountLevel}/5).`
-          ],
-          rewards: { potions: 2, coins: 1500, chest: 1 }
+    return chDef.quests.map((q) => {
+      const p = prog.getChapterQuestProgress(q.id);
+      return {
+        id: q.id,
+        chapter: q.chapter,
+        title: q.title,
+        icon: q.icon,
+        barColor: q.barColor,
+        progressVal: {
+          current: p.current,
+          max: p.max,
+          label: p.label,
+          isComplete: p.isComplete
         },
-        {
-          id: 'flail',
-          chapter: 1,
-          heroType: 'flail',
-          title: 'Заготовка древесины',
-          icon: '/textures/quests/quest_icon_resources_wood.png',
-          barColor: 'cyan',
-          progressVal: { current: 5, max: 10, label: '5/10', isComplete: false },
-          targetAvatar: '/textures/heroes/hero_flail_front.png',
-          desc: 'Бригитта укрепляет оборонительный лагерь и куёт цепи своего оружия. Отыщите прочную древнюю древесину в лесных массивах Разлома.',
-          steps: [
-            'Исследуйте лесные чащи и рощи Разлома.',
-            'Соберите 10 единиц древней древесины (собрано: 5/10).'
-          ],
-          rewards: { potions: 2, coins: 1000, chest: 1 }
-        },
-        {
-          id: 'sorceress',
-          chapter: 1,
-          heroType: 'sorceress',
-          title: 'Охота на Стража Разлома',
-          icon: '/textures/quests/quest_icon_chapter_leshen.png',
-          barColor: 'purple',
-          progressVal: pSorc,
-          targetAvatar: '/textures/heroes/hero_sorceress_front.png',
-          desc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
-          steps: [
-            'Активируйте телепорт или дождитесь 5-й минуты экспедиции.',
-            `Победите босса Разлома (побеждено: ${prog.data.bossesKilled}/1).`
-          ],
-          rewards: { potions: 3, coins: 2500, chest: 1 }
-        },
-        {
-          id: 'chakram',
-          chapter: 1,
-          heroType: 'chakram',
-          title: 'Охота на Лешего',
-          icon: '/textures/quests/quest_icon_leshy.png',
-          iconBoxClass: 'icon-box-leshy',
-          barColor: 'purple',
-          progressVal: pChak,
-          targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Древний дух чащи пробудился под тёмным влиянием Разлома. Выследите Лешего по лесным тропам, соберите редкие корни аконита и очистите чащу, чтобы освободить Киру.',
-          steps: [
-            'Найти следы в чаще.',
-            'Собрать 3 корня аконита.',
-            'Победить Лешего.'
-          ],
-          rewards: { potions: 2, coins: 2000, chest: 1 }
-        },
-        {
-          id: 'archer',
-          chapter: 1,
-          heroType: 'archer',
-          title: 'Добыча руды',
-          icon: '/textures/quests/quest_icon_resources_ore.png',
-          barColor: 'orange',
-          progressVal: { current: 55, max: 100, label: '55/100', isComplete: false },
-          targetAvatar: '/textures/heroes/hero_archer_front.png',
-          desc: 'Добыть кристаллическую руду и редкие минералы в шахтах Разлома для наконечников эльфийских стрел.',
-          steps: [
-            'Разбивайте рудные залежи и собирайте самоцветы.',
-            'Накопите минералы для улучшения лука (накоплено: 55/100).'
-          ],
-          rewards: { potions: 2, coins: 1200, chest: 1 }
-        }
-      ];
-    } else if (chapter === 2) {
-      const pChak = prog.getHeroProgress('chakram');
-      return [
-        {
-          id: 'chakram',
-          chapter: 2,
-          heroType: 'chakram',
-          title: 'Охота на Лешего',
-          icon: '/textures/quests/quest_icon_leshy.png',
-          iconBoxClass: 'icon-box-leshy',
-          barColor: 'purple',
-          progressVal: pChak,
-          targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Древний дух чащи пробудился под тёмным влиянием Разлома. Выследите Лешего по лесным тропам, соберите редкие корни аконита и очистите чащу, чтобы освободить Киру.',
-          steps: [
-            'Найти следы в чаще.',
-            'Собрать 3 корня аконита.',
-            'Победить Лешего.'
-          ],
-          rewards: { potions: 2, coins: 2000, chest: 1 }
-        },
-        {
-          id: 'leshen_tracks',
-          chapter: 2,
-          title: 'Следы в тёмной чаще',
-          icon: '/textures/quests/quest_icon_chapter_leshen.png',
-          barColor: 'purple',
-          progressVal: {
-            current: prog.data.questLeshySteps[0] ? 3 : 1,
-            max: 3,
-            label: prog.data.questLeshySteps[0] ? '3/3' : '1/3',
-            isComplete: prog.data.questLeshySteps[0]
-          },
-          targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Пройти по заросшим звериным тропам леса и обнаружить древние капища духов природы.',
-          steps: [
-            'Обнаружить отпечатки лап у лесного ручья.',
-            'Найти следы когтей на стволах вековых сосен.',
-            'Зафиксировать ауру Лешего.'
-          ],
-          rewards: { potions: 1, coins: 1200, chest: 1 }
-        },
-        {
-          id: 'aconite_herbs',
-          chapter: 2,
-          title: 'Сбор корня аконита',
-          icon: '/textures/quests/quest_icon_resources_wood.png',
-          barColor: 'cyan',
-          progressVal: {
-            current: prog.data.questLeshySteps[1] ? 3 : 2,
-            max: 3,
-            label: prog.data.questLeshySteps[1] ? '3/3' : '2/3',
-            isComplete: prog.data.questLeshySteps[1]
-          },
-          targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Собрать три редких корня аконита для приготовления оберега от древесного проклятия.',
-          steps: [
-            'Найти корень у мшистого валуна.',
-            'Собрать корень на топком болоте.',
-            'Добыть корень у подножия древнего дуба.'
-          ],
-          rewards: { potions: 3, coins: 1600, chest: 1 }
-        },
-        {
-          id: 'purge_woods',
-          chapter: 2,
-          title: 'Очищение рощи',
-          icon: '/textures/quests/quest_icon_chapter1.png',
-          barColor: 'purple',
-          progressVal: {
-            current: prog.data.questLeshySteps[2] ? 1 : 0,
-            max: 1,
-            label: prog.data.questLeshySteps[2] ? '1/1' : '0/1',
-            isComplete: prog.data.questLeshySteps[2]
-          },
-          targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Очистить священную рощу от проклятия и изгнать порождения тьмы из древнего леса.',
-          steps: [
-            'Зажечь очистительный алтарь в чаще.',
-            'Отразить нападение лесных призраков.',
-            'Освятить рощу и победить Лешего.'
-          ],
-          rewards: { potions: 2, coins: 1800, chest: 1 }
-        }
-      ];
-    } else if (chapter === 3) {
-      const pSorc = prog.getHeroProgress('sorceress');
-      const pFlail = prog.getHeroProgress('flail');
-      const pVal = prog.getHeroProgress('valkyrie');
-
-      return [
-        {
-          id: 'sorceress',
-          chapter: 3,
-          heroType: 'sorceress',
-          title: 'Охота на Стража Разлома',
-          icon: '/textures/quests/quest_icon_chapter_leshen.png',
-          barColor: 'purple',
-          progressVal: pSorc,
-          targetAvatar: '/textures/heroes/hero_sorceress_front.png',
-          desc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
-          steps: [
-            'Активируйте телепорт или дождитесь 5-й минуты экспедиции.',
-            `Победите босса Разлома (побеждено: ${prog.data.bossesKilled}/1).`
-          ],
-          rewards: { potions: 3, coins: 2500, chest: 1 }
-        },
-        {
-          id: 'flail',
-          chapter: 3,
-          heroType: 'flail',
-          title: 'Золотая лихорадка',
-          icon: '/textures/quests/quest_icon_resources_ore.png',
-          barColor: 'orange',
-          progressVal: pFlail,
-          targetAvatar: '/textures/heroes/hero_flail_front.png',
-          desc: 'Бригитта собирает редкие металлы и монеты для закалки цепей своего оружия. Соберите 100 монет в битвах.',
-          steps: [
-            'Уничтожайте монстров и собирайте кредиты Разлома.',
-            `Соберите 100 монет в экспедициях (собрано: ${Math.min(100, prog.data.totalCoinsEarned)}/100).`
-          ],
-          rewards: { potions: 2, coins: 1000, chest: 1 }
-        },
-        {
-          id: 'valkyrie',
-          chapter: 3,
-          heroType: 'valkyrie',
-          title: 'Испытание ветерана',
-          icon: '/textures/quests/quest_icon_chapter1.png',
-          barColor: 'purple',
-          progressVal: pVal,
-          targetAvatar: '/textures/heroes/hero_valkyrie_front.png',
-          desc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
-          steps: [
-            'Сражайтесь в экспедициях и накапливайте боевой опыт.',
-            `Достигните 5-го уровня аккаунта (текущий: ${prog.data.accountLevel}/5).`
-          ],
-          rewards: { potions: 2, coins: 1500, chest: 1 }
-        }
-      ];
-    } else {
-      const pArch = prog.getHeroProgress('archer');
-      const kills = Math.min(100, prog.data.enemiesKilled);
-      const coins = Math.min(500, prog.data.walletCoins);
-
-      return [
-        {
-          id: 'archer',
-          chapter: 4,
-          heroType: 'archer',
-          title: 'Контракт Следопыта',
-          icon: '/textures/quests/quest_icon_resources_ore.png',
-          barColor: 'orange',
-          progressVal: pArch,
-          targetAvatar: '/textures/heroes/hero_archer_front.png',
-          desc: 'Эльфийский мастер стрельбы готов присоединиться к отряду по контракту за 100 монет либо за охотничье достижение.',
-          steps: [
-            `Накопите 100 монет в кошельке ИЛИ уничтожьте 100 чудовищ (убито: ${kills}/100).`,
-            'Приобретите контракт за 100 монет либо подтвердите охотничье достижение.'
-          ],
-          rewards: { potions: 2, coins: 1200, chest: 1 }
-        },
-        {
-          id: 'monster_slayer',
-          chapter: 4,
-          title: 'Истребитель чудовищ',
-          icon: '/textures/quests/quest_icon_leshy.png',
-          barColor: 'purple',
-          progressVal: { current: kills, max: 100, label: `${kills}/100`, isComplete: kills >= 100 },
-          targetAvatar: '/textures/quests/quest_target_leshy.png',
-          desc: 'Защитите рубежи лагеря и уничтожьте 100 опасных чудовищ в экспедициях Разлома.',
-          steps: [
-            `Уничтожить 50 порождений тьмы (убито: ${Math.min(50, kills)}/50).`,
-            `Уничтожить еще 50 чудовищ Разлома (убито: ${Math.max(0, kills - 50)}/50).`
-          ],
-          rewards: { potions: 3, coins: 2200, chest: 1 }
-        },
-        {
-          id: 'treasury',
-          chapter: 4,
-          title: 'Казна следопытов',
-          icon: '/textures/quests/quest_icon_resources_wood.png',
-          barColor: 'cyan',
-          progressVal: { current: coins, max: 500, label: `${coins}/500`, isComplete: coins >= 500 },
-          targetAvatar: '/textures/heroes/hero_flail_front.png',
-          desc: 'Накопить состояние в 500 золотых монет в общем кошельке аккаунта.',
-          steps: [
-            'Побеждать элитных врагов и собирать золотые мешки.',
-            `Накопить 500 монет в кошельке (баланс: ${prog.data.walletCoins}/500).`
-          ],
-          rewards: { potions: 4, coins: 1000, chest: 2 }
-        }
-      ];
-    }
+        targetAvatar: q.targetAvatar,
+        desc: q.desc,
+        steps: q.steps,
+        rewards: q.rewards
+      };
+    });
   }
 
   public renderQuestsModal(
@@ -433,11 +201,22 @@ export class QuestsUI {
       }
     });
 
-    const quests = this.getChapterQuests(this.activeQuestChapter);
-    if (!quests.some((q) => q.id === this.activeQuestId)) {
-      this.activeQuestId = quests[0]?.id || 'chakram';
+    const chDef = getChapterDef(this.activeQuestChapter);
+    const headingRoman = document.getElementById('quest-chapter-heading-roman');
+    if (headingRoman && chDef) {
+      headingRoman.innerText = chDef.title;
+    }
+    const headingSub = document.getElementById('quest-chapter-heading-sub');
+    if (headingSub && chDef) {
+      headingSub.innerText = chDef.subtitle;
     }
 
+    const quests = this.getChapterQuests(this.activeQuestChapter);
+    if (!quests.some((q) => q.id === this.activeQuestId)) {
+      this.activeQuestId = quests[0]?.id || 'ch1_deadly_debut';
+    }
+
+    // Populate Left Page List
     const listContainer = document.getElementById('quest-items-list');
     if (listContainer) {
       listContainer.innerHTML = '';
@@ -445,22 +224,19 @@ export class QuestsUI {
         const itemEl = document.createElement('div');
         itemEl.className = 'quest-hero-item' + (q.id === this.activeQuestId ? ' active' : '');
         itemEl.setAttribute('data-quest-id', q.id);
-        if (q.heroType) {
-          itemEl.setAttribute('data-quest-hero', q.heroType);
-        }
 
         const pct = Math.max(0, Math.min(100, Math.round((q.progressVal.current / (q.progressVal.max || 1)) * 100)));
         let barClass = '';
         if (q.barColor === 'cyan') barClass = ' bar-cyan';
         else if (q.barColor === 'orange') barClass = ' bar-orange';
+        else if (q.barColor === 'green') barClass = ' bar-green';
         if (q.progressVal.isComplete) barClass += ' complete';
 
-        const iconBoxClass = q.iconBoxClass ? `quest-item-icon-box ${q.iconBoxClass}` : 'quest-item-icon-box';
         const isComplete = q.progressVal.isComplete;
         const badgeText = isComplete ? '✓ Готово' : q.progressVal.label;
 
         itemEl.innerHTML = `
-          <div class="${iconBoxClass}">
+          <div class="quest-item-icon-box">
             <img src="${getAssetUrl(q.icon)}" class="quest-item-avatar" alt="${q.title}" />
           </div>
           <div class="quest-item-info">
@@ -477,9 +253,6 @@ export class QuestsUI {
         itemEl.addEventListener('click', () => {
           SoundManager.playButtonClick();
           this.activeQuestId = q.id;
-          if (q.heroType) {
-            this.activeQuestHero = q.heroType;
-          }
           this.renderQuestsModal(q.id, this.activeQuestChapter);
         });
 
@@ -487,12 +260,36 @@ export class QuestsUI {
       });
     }
 
+    // Populate Chapter Final Reward Card
+    const finalVal = document.getElementById('chapter-final-reward-val');
+    const finalBtn = document.getElementById('quest-chapter-final-btn') as HTMLButtonElement | null;
+    if (chDef && finalVal) {
+      finalVal.innerText = `${chDef.finalRewardCoins.toLocaleString('ru-RU')} 🪙`;
+    }
+    if (chDef && finalBtn) {
+      const isComplete = prog.isChapterComplete(this.activeQuestChapter);
+      const isClaimed = prog.isChapterRewardClaimed(this.activeQuestChapter);
+      const completedCount = quests.filter((q) => q.progressVal.isComplete).length;
+      const totalCount = quests.length;
+
+      if (isClaimed) {
+        finalBtn.disabled = true;
+        finalBtn.className = 'quest-chapter-final-btn claimed';
+        finalBtn.innerHTML = `✓ НАГРАДА ГЛАВЫ ПОЛУЧЕНА (${chDef.finalRewardCoins.toLocaleString('ru-RU')} 🪙)`;
+      } else if (isComplete) {
+        finalBtn.disabled = false;
+        finalBtn.className = 'quest-chapter-final-btn claimable';
+        finalBtn.innerHTML = `🎁 ЗАБРАТЬ НАГРАДУ ГЛАВЫ (+${chDef.finalRewardCoins.toLocaleString('ru-RU')} 🪙)`;
+      } else {
+        finalBtn.disabled = true;
+        finalBtn.className = 'quest-chapter-final-btn';
+        finalBtn.innerHTML = `🔒 ЗАВЕРШИТЕ ВСЕ ЗАДАНИЯ ГЛАВЫ (${completedCount}/${totalCount})`;
+      }
+    }
+
+    // Populate Right Page Details
     const activeQuest = quests.find((q) => q.id === this.activeQuestId) || quests[0];
     if (!activeQuest) return;
-
-    if (activeQuest.heroType) {
-      this.activeQuestHero = activeQuest.heroType;
-    }
 
     const titleEl = document.getElementById('quest-right-title');
     if (titleEl) {
@@ -515,16 +312,7 @@ export class QuestsUI {
       activeQuest.steps.forEach((stepText, idx) => {
         const stepRow = document.createElement('div');
         stepRow.className = 'quest-step-item';
-
-        let isDone = false;
-        if (activeQuest.id === 'chakram') {
-          isDone = Boolean(prog.data.questLeshySteps[idx]);
-        } else if (activeQuest.heroType && prog.isHeroUnlocked(activeQuest.heroType)) {
-          isDone = true;
-        } else {
-          isDone = activeQuest.progressVal.isComplete;
-        }
-
+        const isDone = activeQuest.progressVal.isComplete;
         if (isDone) stepRow.classList.add('done');
 
         stepRow.innerHTML = `
@@ -543,139 +331,43 @@ export class QuestsUI {
     const chestEl = document.getElementById('reward-val-chest');
     if (chestEl) chestEl.innerText = String(activeQuest.rewards.chest);
 
-    const heroSlotEl = document.getElementById('reward-slot-hero');
-    const heroAvatarEl = document.getElementById('reward-hero-avatar') as HTMLImageElement | null;
-    if (heroSlotEl) {
-      if (activeQuest.heroType) {
-        heroSlotEl.classList.remove('hidden');
-        const hDef = prog.getHeroQuestDefinition(activeQuest.heroType);
-        heroSlotEl.setAttribute('title', `Награда: Разблокировка героя ${hDef.heroName}`);
-        if (heroAvatarEl) heroAvatarEl.src = getAssetUrl(hDef.avatarIcon);
-      } else {
-        heroSlotEl.classList.add('hidden');
-      }
-    }
-
     const statusEl = document.getElementById('quest-action-status-text');
     const actionsEl = document.getElementById('quest-action-buttons');
     if (statusEl && actionsEl) {
       actionsEl.innerHTML = '';
+      const qProg = prog.getChapterQuestProgress(activeQuest.id);
 
-      if (activeQuest.heroType) {
-        const hero = activeQuest.heroType;
-        const isUnlocked = prog.isHeroUnlocked(hero);
-        const hDef = prog.getHeroQuestDefinition(hero);
-
-        if (isUnlocked) {
-          statusEl.innerHTML = `<span class="quest-status-success">✓ Задание выполнено! Герой <strong>${hDef.heroName}</strong> ${hDef.heroSubtitle} доступен(на) в игре.</span>`;
-          actionsEl.innerHTML = `<div class="quest-btn-unlocked-badge">✓ РАЗБЛОКИРОВАНО</div>`;
-        } else {
-          if (hero === 'archer') {
-            const canAfford = prog.data.walletCoins >= 100;
-            const canAchieve = prog.canUnlockElfByAchievement();
-
-            statusEl.innerHTML = `Условия: <strong>100 🪙</strong> в кошельке (баланс: ${prog.data.walletCoins} 🪙) ИЛИ <strong>100 побед</strong> (${prog.data.enemiesKilled}/100)`;
-
-            const buyBtn = document.createElement('button');
-            buyBtn.className = 'quest-btn-buy';
-            buyBtn.type = 'button';
-            buyBtn.innerText = `КУПИТЬ ЗА 100 🪙`;
-            buyBtn.disabled = !canAfford;
-            buyBtn.title = canAfford ? 'Купить охотника за накопленные монеты' : 'Недостаточно монет в кошельке';
-            buyBtn.addEventListener('click', () => {
-              if (prog.buyElf()) {
-                SoundManager.playLevelUp();
-                this.ctx.triggerAltarNotification('Герой Разблокирован!', 'Эльф лучник доступен для игры!', '🏹', '#10b981');
-                this.renderQuestsModal('archer', this.activeQuestChapter);
-              }
-            });
-            actionsEl.appendChild(buyBtn);
-
-            if (canAchieve) {
-              const achieveBtn = document.createElement('button');
-              achieveBtn.className = 'quest-btn-claim';
-              achieveBtn.type = 'button';
-              achieveBtn.innerText = 'ОТКРЫТЬ ПО ДОСТИЖЕНИЮ';
-              achieveBtn.addEventListener('click', () => {
-                if (prog.unlockElfByAchievement()) {
-                  SoundManager.playLevelUp();
-                  this.ctx.triggerAltarNotification('Достижение Выполнено!', 'Эльф лучник разблокирован!', '🏹', '#10b981');
-                  this.renderQuestsModal('archer', this.activeQuestChapter);
-                }
-              });
-              actionsEl.appendChild(achieveBtn);
-            }
-          } else if (hero === 'chakram') {
-            const stepsDone = prog.data.questLeshySteps.filter(Boolean).length;
-            if (prog.data.questLeshyCompleted || stepsDone === 3) {
-              statusEl.innerHTML = '<span class="quest-status-ready">🎉 Все этапы выполнены! Заберите награду и разблокируйте героя.</span>';
-              const claimBtn = document.createElement('button');
-              claimBtn.className = 'quest-btn-claim';
-              claimBtn.type = 'button';
-              claimBtn.innerText = 'ЗАБРАТЬ НАГРАДУ / РАЗБЛОКИРОВАТЬ';
-              claimBtn.addEventListener('click', () => {
-                prog.unlockHero('chakram');
-                SoundManager.playLevelUp();
-                this.ctx.triggerAltarNotification('Квест Завершён!', 'Кира «Танцующий Чакрам» разблокирована!', '🪃', '#10b981');
-                this.renderQuestsModal('chakram', this.activeQuestChapter);
-              });
-              actionsEl.appendChild(claimBtn);
-            } else {
-              statusEl.innerText = `Выполнено шагов: ${stepsDone} из 3. Завершите этапы в Разломе или подтвердите шаг:`;
-              const nextStepIdx = prog.data.questLeshySteps.findIndex((s) => !s);
-              if (nextStepIdx >= 0 && nextStepIdx <= 2) {
-                const validStepIdx = nextStepIdx as 0 | 1 | 2;
-                const stepBtn = document.createElement('button');
-                stepBtn.className = 'quest-btn-step';
-                stepBtn.type = 'button';
-                stepBtn.innerText = `ВЫПОЛНИТЬ ШАГ ${validStepIdx + 1}`;
-                stepBtn.addEventListener('click', () => {
-                  prog.progressLeshyStep(validStepIdx);
-                  SoundManager.playChestOpen();
-                  this.renderQuestsModal('chakram', this.activeQuestChapter);
-                });
-                actionsEl.appendChild(stepBtn);
-              }
-            }
-          } else {
-            const p = prog.getHeroProgress(hero);
-            if (p.isComplete) {
-              statusEl.innerHTML = '<span class="quest-status-ready">🎉 Условие выполнено! Заберите награду и разблокируйте героя.</span>';
-              const claimBtn = document.createElement('button');
-              claimBtn.className = 'quest-btn-claim';
-              claimBtn.type = 'button';
-              claimBtn.innerText = 'ЗАБРАТЬ НАГРАДУ / РАЗБЛОКИРОВАТЬ';
-              claimBtn.addEventListener('click', () => {
-                prog.unlockHero(hero);
-                SoundManager.playLevelUp();
-                this.ctx.triggerAltarNotification('Герой Разблокирован!', `${hDef.heroName} доступен(на) для игры!`, '⭐', '#10b981');
-                this.renderQuestsModal(hero, this.activeQuestChapter);
-              });
-              actionsEl.appendChild(claimBtn);
-            } else {
-              statusEl.innerText = hDef.unlockConditionHint + ` (Текущий прогресс: ${p.label}).`;
-            }
-          }
-        }
-      } else {
-        if (activeQuest.progressVal.isComplete) {
-          statusEl.innerHTML = '<span class="quest-status-success">✓ Задание главы выполнено! Награда получена.</span>';
-          actionsEl.innerHTML = `<div class="quest-btn-unlocked-badge">✓ ВЫПОЛНЕНО</div>`;
-        } else {
-          statusEl.innerText = `Прогресс задания: ${activeQuest.progressVal.label}. Завершите условия в Разломе.`;
-          const testStepBtn = document.createElement('button');
-          testStepBtn.className = 'quest-btn-claim';
-          testStepBtn.type = 'button';
-          testStepBtn.innerText = 'ПОДТВЕРДИТЬ ЭТАП';
-          testStepBtn.addEventListener('click', () => {
+      if (qProg.isClaimed) {
+        statusEl.innerHTML = '<span class="quest-status-success">✓ Задание выполнено! Награда получена.</span>';
+        actionsEl.innerHTML = `<div class="quest-btn-unlocked-badge">✓ ВЫПОЛНЕНО</div>`;
+      } else if (qProg.isComplete) {
+        statusEl.innerHTML = `<span class="quest-status-ready">🎉 Задание выполнено! Заберите награду: <strong>${activeQuest.rewards.coins} 🪙</strong>.</span>`;
+        const claimBtn = document.createElement('button');
+        claimBtn.className = 'quest-btn-claim';
+        claimBtn.type = 'button';
+        claimBtn.innerText = `ЗАБРАТЬ НАГРАДУ (+${activeQuest.rewards.coins} 🪙)`;
+        claimBtn.addEventListener('click', () => {
+          const res = prog.claimChapterQuest(activeQuest.id);
+          if (res) {
             SoundManager.playLevelUp();
-            prog.addCoins(activeQuest.rewards.coins);
-            this.ctx.triggerAltarNotification('Задание Главы!', `${activeQuest.title} выполнено!`, '📜', '#a855f7');
-            activeQuest.progressVal.isComplete = true;
+            this.ctx.triggerAltarNotification('Задание Выполнено!', `${activeQuest.title}: +${res.coins} 🪙`, '🎁', '#10b981');
             this.renderQuestsModal(activeQuest.id, this.activeQuestChapter);
-          });
-          actionsEl.appendChild(testStepBtn);
-        }
+          }
+        });
+        actionsEl.appendChild(claimBtn);
+      } else {
+        statusEl.innerText = `Прогресс задания: ${activeQuest.progressVal.label}. Завершите условия в Разломе.`;
+        const testBtn = document.createElement('button');
+        testBtn.className = 'quest-btn-step';
+        testBtn.type = 'button';
+        testBtn.innerText = 'ПОДТВЕРДИТЬ ЭТАП';
+        testBtn.title = 'Тестовое завершение задания';
+        testBtn.addEventListener('click', () => {
+          prog.advanceChapterQuestForTest(activeQuest.id);
+          SoundManager.playChestOpen();
+          this.renderQuestsModal(activeQuest.id, this.activeQuestChapter);
+        });
+        actionsEl.appendChild(testBtn);
       }
     }
   }
@@ -769,9 +461,9 @@ export class QuestsUI {
         } else {
           SoundManager.playButtonClick();
           if (q.category === 'daily') {
-            this.showQuestsModal('chakram', 1);
+            this.showQuestsModal('ch1_deadly_debut', 1);
           } else {
-            this.showQuestsModal('archer', 4);
+            this.showQuestsModal('ch4_arrow_hail', 4);
           }
         }
       });

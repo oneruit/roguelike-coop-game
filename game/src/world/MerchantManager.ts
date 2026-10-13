@@ -17,6 +17,7 @@ import { Player } from '../entities/Player';
 import { BiomeManager } from './BiomeManager';
 import { BalanceManager } from '../balance/BalanceManager';
 import { getWeaponEffectiveCap } from '../combat/WeaponBase';
+import { ProgressionManager } from '../core/ProgressionManager';
 
 export interface MerchantItemStock {
   id: string;
@@ -397,6 +398,7 @@ export class MerchantManager {
         const def = RIFT_ITEMS[item.id as RiftItemId];
         if (def) {
           player.addRiftItem(def);
+          ProgressionManager.getInstance().recordSimultaneousPassives(player?.riftItems?.size ?? 0);
         }
       } else {
         player.applyPassiveBuff(item.id as PassiveBuffId);
@@ -405,6 +407,7 @@ export class MerchantManager {
 
     // Every purchase makes subsequent purchases 40% more expensive
     this.purchaseCount++;
+    ProgressionManager.getInstance().recordMerchantPurchaseInRun(1);
     for (const stockItem of this.stock) {
       stockItem.price = Math.round(stockItem.basePrice * Math.pow(1.4, this.purchaseCount));
       if (stockItem.id === 'merchant_upgrade_weapon') {

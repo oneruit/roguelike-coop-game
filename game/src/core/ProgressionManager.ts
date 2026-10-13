@@ -1,5 +1,6 @@
 import { CharacterType } from '../sim/types';
 import { getAssetUrl } from '../utils/assetPath';
+import { CHAPTERS_CONFIG, getChapterDef, getChapterQuestDef } from './ChapterQuestsConfig';
 
 export interface SidebarQuestItem {
   id: string;
@@ -23,6 +24,12 @@ export interface BattlePassData {
   claimedLevels: number[];
 }
 
+export interface ChapterQuestProgress {
+  current: number;
+  isComplete: boolean;
+  isClaimed: boolean;
+}
+
 export interface ProgressionData {
   accountLevel: number;
   accountXp: number;
@@ -37,6 +44,9 @@ export interface ProgressionData {
   unlockedHeroes: Record<CharacterType, boolean>;
   dailyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
   weeklyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
+  chapterQuestsProgress: Record<string, ChapterQuestProgress>;
+  claimedChapterRewards: Record<number, boolean>;
+  chapterQuestsReworkVersion?: number;
   battlePass?: BattlePassData;
 }
 
@@ -74,6 +84,13 @@ export class ProgressionManager {
   public onProgressionChanged?: () => void;
   public isTrainingMode: boolean = false;
 
+  // Runtime in-expedition trackers (reset to 0 at the start of each expedition)
+  public runCritsCount: number = 0;
+  public runMerchantPurchases: number = 0;
+  public runForestSurvivalSeconds: number = 0;
+  public runBossSpawnTime: number | null = null;
+  public runSimultaneousPassives: number = 0;
+
   private constructor() {
     this.data = this.loadFromStorage();
     this.checkAutoUnlocks();
@@ -86,6 +103,24 @@ export class ProgressionManager {
     return ProgressionManager.instance;
   }
 
+  public resetRunSessionProgress(): void {
+    this.runCritsCount = 0;
+    this.runMerchantPurchases = 0;
+    this.runForestSurvivalSeconds = 0;
+    this.runBossSpawnTime = null;
+    this.runSimultaneousPassives = 0;
+  }
+
+  private getDefaultChapterQuestsProgress(): Record<string, ChapterQuestProgress> {
+    const progress: Record<string, ChapterQuestProgress> = {};
+    for (const ch of CHAPTERS_CONFIG) {
+      for (const q of ch.quests) {
+        progress[q.id] = { current: 0, isComplete: false, isClaimed: false };
+      }
+    }
+    return progress;
+  }
+
   private getDefaultData(): ProgressionData {
     return {
       accountLevel: 1,
@@ -95,9 +130,9 @@ export class ProgressionManager {
       walletCoins: 0,
       bossesKilled: 0,
       enemiesKilled: 0,
-      resourcesGathered: 2,
-      questLeshySteps: [true, true, true],
-      questLeshyCompleted: true,
+      resourcesGathered: 0,
+      questLeshySteps: [false, false, false],
+      questLeshyCompleted: false,
       unlockedHeroes: {
         ronin: true,     // Ren (unlocked)
         valkyrie: true,  // Kael (unlocked)
@@ -111,13 +146,21 @@ export class ProgressionManager {
         archer: false    // Elf: Locked! (Buy / Achievement)
       },
       dailyQuestsProgress: {
-        daily_goblins: { current: 2, isClaimed: false },
-        daily_bosses: { current: 2, isClaimed: false }
+        daily_goblins: { current: 0, isClaimed: false },
+        daily_bosses: { current: 0, isClaimed: false }
       },
       weeklyQuestsProgress: {
-        weekly_goblins: { current: 2, isClaimed: false },
-        weekly_resources: { current: 2, isClaimed: false }
+        weekly_goblins: { current: 0, isClaimed: false },
+        weekly_resources: { current: 0, isClaimed: false }
       },
+      chapterQuestsProgress: this.getDefaultChapterQuestsProgress(),
+      claimedChapterRewards: {
+        1: false,
+        2: false,
+        3: false,
+        4: false
+      },
+      chapterQuestsReworkVersion: 1,
       battlePass: {
         seasonId: 'season_1',
         points: 0,
@@ -132,6 +175,7 @@ export class ProgressionManager {
       if (raw) {
         const parsed = JSON.parse(raw);
         const defaults = this.getDefaultData();
+        const isReworked = parsed.chapterQuestsReworkVersion === 1;
         return {
           accountLevel: Math.max(1, parsed.accountLevel ?? defaults.accountLevel),
           accountXp: Math.max(0, parsed.accountXp ?? defaults.accountXp),
@@ -157,12 +201,19 @@ export class ProgressionManager {
             amazon: parsed.unlockedHeroes?.amazon ?? true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
           },
-          dailyQuestsProgress: parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
+          dailyQuestsProgress: isReworked && parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
             ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
             : defaults.dailyQuestsProgress,
-          weeklyQuestsProgress: parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
+          weeklyQuestsProgress: isReworked && parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
             ? { ...defaults.weeklyQuestsProgress, ...parsed.weeklyQuestsProgress }
             : defaults.weeklyQuestsProgress,
+          chapterQuestsProgress: isReworked && parsed.chapterQuestsProgress && typeof parsed.chapterQuestsProgress === 'object'
+            ? { ...defaults.chapterQuestsProgress, ...parsed.chapterQuestsProgress }
+            : defaults.chapterQuestsProgress,
+          claimedChapterRewards: isReworked && parsed.claimedChapterRewards && typeof parsed.claimedChapterRewards === 'object'
+            ? { ...defaults.claimedChapterRewards, ...parsed.claimedChapterRewards }
+            : defaults.claimedChapterRewards,
+          chapterQuestsReworkVersion: 1,
           battlePass: parsed.battlePass && typeof parsed.battlePass === 'object'
             ? {
                 seasonId: typeof parsed.battlePass.seasonId === 'string' ? parsed.battlePass.seasonId : 'season_1',
@@ -309,8 +360,8 @@ export class ProgressionManager {
   }
 
   public getDailySidebarQuests(): SidebarQuestItem[] {
-    const gobProg = this.data.dailyQuestsProgress?.daily_goblins ?? { current: 2, isClaimed: false };
-    const bossProg = this.data.dailyQuestsProgress?.daily_bosses ?? { current: 2, isClaimed: false };
+    const gobProg = this.data.dailyQuestsProgress?.daily_goblins ?? { current: 0, isClaimed: false };
+    const bossProg = this.data.dailyQuestsProgress?.daily_bosses ?? { current: 0, isClaimed: false };
 
     const gobCurrent = Math.min(2, Math.max(0, gobProg.current));
     const bossCurrent = Math.min(2, Math.max(0, bossProg.current));
@@ -350,8 +401,8 @@ export class ProgressionManager {
   }
 
   public getWeeklySidebarQuests(): SidebarQuestItem[] {
-    const gobProg = this.data.weeklyQuestsProgress?.weekly_goblins ?? { current: 2, isClaimed: false };
-    const resProg = this.data.weeklyQuestsProgress?.weekly_resources ?? { current: 2, isClaimed: false };
+    const gobProg = this.data.weeklyQuestsProgress?.weekly_goblins ?? { current: 0, isClaimed: false };
+    const resProg = this.data.weeklyQuestsProgress?.weekly_resources ?? { current: 0, isClaimed: false };
 
     const gobCurrent = Math.min(2, Math.max(0, gobProg.current));
     const resCurrent = Math.min(2, Math.max(0, resProg.current));
@@ -467,8 +518,329 @@ export class ProgressionManager {
     return this.data.enemiesKilled >= 100 || this.data.totalCoinsEarned >= 100;
   }
 
+  // --- Chapter Quests Tracking & Claiming ---
+
+  public recordMeleeOrSpellKill(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch1_deadly_debut;
+    if (q && !q.isComplete) {
+      q.current = Math.min(50, q.current + count);
+      if (q.current >= 50) q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public recordXpGemCollected(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch1_essence_collection;
+    if (q && !q.isComplete) {
+      q.current = Math.min(100, q.current + count);
+      if (q.current >= 100) q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public recordAltarCaptured(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch1_altar_call;
+    if (q && !q.isComplete) {
+      q.current = Math.min(1, q.current + count);
+      if (q.current >= 1) q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public recordTeleporterBossKilled(): void {
+    if (this.isTrainingMode) return;
+    let changed = false;
+    const q1 = this.data.chapterQuestsProgress?.ch1_veil_breakthrough;
+    if (q1 && !q1.isComplete) {
+      q1.current = 1;
+      q1.isComplete = true;
+      changed = true;
+    }
+    const q2 = this.data.chapterQuestsProgress?.ch2_fall_of_leshy;
+    if (q2 && !q2.isComplete) {
+      q2.current = 1;
+      q2.isComplete = true;
+      changed = true;
+    }
+    if (changed) this.save();
+  }
+
+  public recordCrawlerOrCoyoteKilled(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch2_trail_of_beasts;
+    if (q && !q.isComplete) {
+      q.current = Math.min(75, q.current + count);
+      if (q.current >= 75) q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public recordForestGoldenChestOpened(): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch2_forest_cache;
+    if (q && !q.isComplete) {
+      q.current = 1;
+      q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public recordForestSurvivalTime(seconds: number): void {
+    if (this.isTrainingMode) return;
+    this.runForestSurvivalSeconds = Math.max(this.runForestSurvivalSeconds, seconds);
+    const minutes = Math.min(12, Math.floor(seconds / 60));
+    const q = this.data.chapterQuestsProgress?.ch2_cleanse_roots;
+    if (q && !q.isComplete) {
+      q.current = Math.max(q.current, minutes);
+      if (seconds >= 720 || q.current >= 12) {
+        q.current = 12;
+        q.isComplete = true;
+      }
+      this.save();
+    }
+  }
+
+  public recordLeshyDefeated(): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch2_fall_of_leshy;
+    if (q && !q.isComplete) {
+      q.current = 1;
+      q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public recordRunCrit(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    this.runCritsCount += count;
+    const q = this.data.chapterQuestsProgress?.ch3_critical_overload;
+    if (q && !q.isComplete) {
+      q.current = Math.min(50, this.runCritsCount);
+      if (this.runCritsCount >= 50) {
+        q.current = 50;
+        q.isComplete = true;
+      }
+      this.save();
+    }
+  }
+
+  public recordSimultaneousPassives(count: number): void {
+    if (this.isTrainingMode) return;
+    this.runSimultaneousPassives = Math.max(this.runSimultaneousPassives, count);
+    const q = this.data.chapterQuestsProgress?.ch3_energy_symbiosis;
+    if (q && !q.isComplete) {
+      q.current = Math.min(4, Math.max(q.current, count));
+      if (count >= 4) {
+        q.current = 4;
+        q.isComplete = true;
+      }
+      this.save();
+    }
+  }
+
+  public recordMerchantPurchaseInRun(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    this.runMerchantPurchases += count;
+    const q = this.data.chapterQuestsProgress?.ch3_rift_smuggler;
+    if (q && !q.isComplete) {
+      q.current = Math.min(3, this.runMerchantPurchases);
+      if (this.runMerchantPurchases >= 3) {
+        q.current = 3;
+        q.isComplete = true;
+      }
+      this.save();
+    }
+  }
+
+  public recordBossSpawn(gameTime: number): void {
+    this.runBossSpawnTime = gameTime;
+  }
+
+  public recordBossDefeat(gameTime: number): void {
+    if (this.isTrainingMode) return;
+    if (this.runBossSpawnTime !== null && (gameTime - this.runBossSpawnTime) <= 90) {
+      const q = this.data.chapterQuestsProgress?.ch3_death_of_titan;
+      if (q && !q.isComplete) {
+        q.current = 1;
+        q.isComplete = true;
+        this.save();
+      }
+    }
+  }
+
+  public recordRangedKill(count: number = 1): void {
+    if (this.isTrainingMode) return;
+    const q = this.data.chapterQuestsProgress?.ch4_arrow_hail;
+    if (q && !q.isComplete) {
+      q.current = Math.min(200, q.current + count);
+      if (q.current >= 200) q.isComplete = true;
+      this.save();
+    }
+  }
+
+  public getChapterQuestProgress(questId: string): {
+    current: number;
+    max: number;
+    label: string;
+    isComplete: boolean;
+    isClaimed: boolean;
+  } {
+    const def = getChapterQuestDef(questId);
+    const maxVal = def?.max ?? 1;
+
+    if (!this.data.chapterQuestsProgress) {
+      this.data.chapterQuestsProgress = this.getDefaultChapterQuestsProgress();
+    }
+    const qData = this.data.chapterQuestsProgress[questId] || { current: 0, isComplete: false, isClaimed: false };
+
+    if (questId === 'ch4_veteran') {
+      const lvl = this.data.accountLevel;
+      const complete = lvl >= 5;
+      return {
+        current: Math.min(5, lvl),
+        max: 5,
+        label: `${Math.min(5, lvl)}/5`,
+        isComplete: complete,
+        isClaimed: qData.isClaimed
+      };
+    }
+
+    if (questId === 'ch4_golden_treasury') {
+      const coins = this.data.walletCoins;
+      const complete = coins >= 500;
+      return {
+        current: Math.min(500, coins),
+        max: 500,
+        label: `${Math.min(500, coins)}/500`,
+        isComplete: complete,
+        isClaimed: qData.isClaimed
+      };
+    }
+
+    if (questId === 'ch3_critical_overload' && !qData.isComplete) {
+      const cur = Math.min(maxVal, this.runCritsCount);
+      return {
+        current: cur,
+        max: maxVal,
+        label: `${cur}/${maxVal}`,
+        isComplete: cur >= maxVal,
+        isClaimed: qData.isClaimed
+      };
+    }
+
+    if (questId === 'ch3_rift_smuggler' && !qData.isComplete) {
+      const cur = Math.min(maxVal, this.runMerchantPurchases);
+      return {
+        current: cur,
+        max: maxVal,
+        label: `${cur}/${maxVal}`,
+        isComplete: cur >= maxVal,
+        isClaimed: qData.isClaimed
+      };
+    }
+
+    if (questId === 'ch2_cleanse_roots') {
+      const cur = Math.min(maxVal, qData.current);
+      return {
+        current: cur,
+        max: maxVal,
+        label: `${cur}/${maxVal} мин`,
+        isComplete: qData.isComplete || cur >= maxVal,
+        isClaimed: qData.isClaimed
+      };
+    }
+
+    const cur = Math.min(maxVal, qData.current);
+    const complete = qData.isComplete || cur >= maxVal;
+    return {
+      current: cur,
+      max: maxVal,
+      label: complete ? '✓ Готово' : `${cur}/${maxVal}`,
+      isComplete: complete,
+      isClaimed: qData.isClaimed
+    };
+  }
+
+  public claimChapterQuest(questId: string): { success: boolean; coins: number } | null {
+    const p = this.getChapterQuestProgress(questId);
+    if (!p.isComplete || p.isClaimed) return null;
+    const def = getChapterQuestDef(questId);
+    if (!def) return null;
+
+    if (!this.data.chapterQuestsProgress[questId]) {
+      this.data.chapterQuestsProgress[questId] = { current: def.max, isComplete: true, isClaimed: true };
+    } else {
+      this.data.chapterQuestsProgress[questId].isComplete = true;
+      this.data.chapterQuestsProgress[questId].isClaimed = true;
+    }
+
+    if (def.rewards.coins > 0) {
+      this.addCoins(def.rewards.coins);
+    }
+    this.save();
+    return { success: true, coins: def.rewards.coins };
+  }
+
+  public isChapterComplete(chapter: number): boolean {
+    const chDef = getChapterDef(chapter);
+    if (!chDef) return false;
+    return chDef.quests.every((q) => this.getChapterQuestProgress(q.id).isComplete);
+  }
+
+  public isChapterRewardClaimed(chapter: number): boolean {
+    return Boolean(this.data.claimedChapterRewards?.[chapter]);
+  }
+
+  public claimChapterFinalReward(chapter: number): { success: boolean; coins: number } | null {
+    if (!this.isChapterComplete(chapter) || this.isChapterRewardClaimed(chapter)) return null;
+    const chDef = getChapterDef(chapter);
+    if (!chDef) return null;
+
+    if (!this.data.claimedChapterRewards) {
+      this.data.claimedChapterRewards = {};
+    }
+    this.data.claimedChapterRewards[chapter] = true;
+    this.addCoins(chDef.finalRewardCoins);
+    this.save();
+    return { success: true, coins: chDef.finalRewardCoins };
+  }
+
+  public advanceChapterQuestForTest(questId: string): void {
+    const def = getChapterQuestDef(questId);
+    if (!def) return;
+    if (!this.data.chapterQuestsProgress[questId]) {
+      this.data.chapterQuestsProgress[questId] = { current: 0, isComplete: false, isClaimed: false };
+    }
+    const q = this.data.chapterQuestsProgress[questId];
+    q.current = def.max;
+    q.isComplete = true;
+    this.save();
+  }
+
+  public resetAllTasksToZero(): void {
+    this.data.chapterQuestsProgress = this.getDefaultChapterQuestsProgress();
+    this.data.claimedChapterRewards = { 1: false, 2: false, 3: false, 4: false };
+    this.data.dailyQuestsProgress = {
+      daily_goblins: { current: 0, isClaimed: false },
+      daily_bosses: { current: 0, isClaimed: false }
+    };
+    this.data.weeklyQuestsProgress = {
+      weekly_goblins: { current: 0, isClaimed: false },
+      weekly_resources: { current: 0, isClaimed: false }
+    };
+    this.data.resourcesGathered = 0;
+    this.data.enemiesKilled = 0;
+    this.data.bossesKilled = 0;
+    this.resetRunSessionProgress();
+    this.save();
+  }
+
   public resetAllProgress() {
     this.data = this.getDefaultData();
+    this.resetRunSessionProgress();
     this.save();
   }
 

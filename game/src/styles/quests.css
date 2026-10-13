@@ -416,11 +416,126 @@
   min-width: 0;
 }
 
+/* Chapter Header on Left Page */
+.quest-chapter-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  padding: 5px 8px;
+  background: rgba(90, 60, 30, 0.14);
+  border: 1px solid rgba(142, 115, 76, 0.35);
+  border-radius: 8px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.quest-chapter-heading-roman {
+  font-family: 'Cinzel', 'Montserrat', serif, sans-serif;
+  font-size: 13.5px;
+  font-weight: 900;
+  color: #2b180d;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+  line-height: 1.25;
+}
+
+.quest-chapter-heading-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #634327;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Chapter Final Reward Card on Left Page */
+.quest-chapter-final-card {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #382417 0%, #201309 100%);
+  border: 1.5px solid #8e734c;
+  outline: 1px solid #4a3420;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7), 0 3px 6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chapter-final-reward-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chapter-final-reward-lbl {
+  font-family: 'Cinzel', 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fef08a;
+  letter-spacing: 0.6px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.chapter-final-reward-val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+}
+
+.quest-chapter-final-btn {
+  width: 100%;
+  padding: 6px 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  background: #271a12;
+  border: 1px solid #473223;
+  border-radius: 6px;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.quest-chapter-final-btn.claimable {
+  background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+  border: 1.5px solid #fef08a;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: finalBtnPulse 2s infinite ease-in-out;
+}
+
+.quest-chapter-final-btn.claimable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.85);
+}
+
+.quest-chapter-final-btn.claimed {
+  background: #14532d;
+  border: 1px solid #22c55e;
+  color: #86efac;
+  cursor: default;
+}
+
+@keyframes finalBtnPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+  50% { box-shadow: 0 0 18px rgba(245, 158, 11, 0.85); }
+}
+
 .quest-heroes-list {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -589,6 +704,11 @@
 .quest-item-bar-fill.bar-orange {
   background: linear-gradient(90deg, #ea580c 0%, #f97316 100%) !important;
   box-shadow: 0 0 6px rgba(249, 115, 22, 0.5);
+}
+
+.quest-item-bar-fill.bar-green {
+  background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%) !important;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
 }
 
 .quest-item-bar-fill.complete {

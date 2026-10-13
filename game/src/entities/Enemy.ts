@@ -66,6 +66,7 @@ export class Enemy {
   public readonly spellControl = new SpellControlState();
   public get canAttack(): boolean { return !this.isFrozen && !this.isStunned && this.spellControl.canAttack; }
   public lastHitBy: string = 'p1';
+  public lastSourceWeaponId?: string;
   public boundingRadius: number;
 
   // Resistance mechanics (scales in late game to prevent perma-cc and instant boss melting)
@@ -736,7 +737,8 @@ export class Enemy {
   public takeDamage(
     amount: number,
     sourcePos?: Vector3,
-    hitter: string = 'p1'
+    hitter: string = 'p1',
+    weaponId?: string
   ): boolean {
     if (this.isImmortal) {
       this.flashTimer = 0.09;
@@ -745,6 +747,9 @@ export class Enemy {
     }
 
     this.lastHitBy = hitter;
+    if (weaponId) {
+      this.lastSourceWeaponId = weaponId;
+    }
     let incomingAmount = amount;
     if (this.isShocked) {
       incomingAmount = Math.round(incomingAmount * 1.10);
