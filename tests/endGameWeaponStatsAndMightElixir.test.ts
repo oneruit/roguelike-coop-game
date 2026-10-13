@@ -51,7 +51,6 @@ if (typeof (globalThis as any).document === 'undefined') {
       addEventListener: () => {},
       removeEventListener: () => {},
       src: '',
-      set src(_val: string) {},
       style: {}
     }),
     createElement: () => ({
@@ -95,12 +94,13 @@ if (typeof (globalThis as any).document === 'undefined') {
 test('Elixir of Might (Эликсир Могущества) character stats integration', async (t) => {
   await t.test('mightElixirCount scales passiveDamageMultiplier and persists across recalculateStats', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
 
     // Initial state
     assert.equal(player.mightElixirCount, 0);
     assert.equal(player.passiveDamageMultiplier, 1.0);
 
+    // Starting weapon and other weapon damage should both scale up by 5%
     const initialStartingDmg = player.getDamageMultiplier(player.startingWeaponId);
     const initialOtherDmg = player.getDamageMultiplier('other_weapon');
 
@@ -125,18 +125,18 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
     assert.equal(player.mightElixirCount, 1);
     assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.05);
 
-    // Add 2nd Elixir of Might (+5%) and 1 Sheriff Star (+2%)
+    // Add 2nd Elixir of Might (+5%) and 1 Amplifier (+2%)
     player.addMightElixirBonus();
-    player.addSheriffStarBonus();
+    player.addAmplifierBonus();
     assert.equal(player.mightElixirCount, 2);
-    assert.equal(player.sheriffStarCount, 1);
+    assert.equal(player.amplifierCount, 1);
     // 1.0 + 1 * 0.02 + 2 * 0.05 = 1.12
     assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.12);
   });
 
   await t.test('LevelUpUI bonus_damage_elixir correctly triggers addMightElixirBonus', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
     player.weapons = [
       new KukriWeapon(),
       new BowWeapon(),
@@ -149,12 +149,19 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
     }
 
     const context: LevelUpUIContext = {
-      levelUpModal: document.getElementById('level-up-modal')!,
-      levelUpTitle: document.getElementById('level-up-title')!,
-      levelUpStepIndicator: document.getElementById('level-up-step-indicator')!,
-      upgradeCardsContainer: document.getElementById('upgrade-cards')!,
-      levelUpRerollContainer: document.getElementById('level-up-reroll-container')!,
-      btnLevelUpReroll: document.getElementById('btn-level-up-reroll')!
+      elements: {
+        levelUpModal: document.getElementById('level-up-modal')!,
+        levelUpTitle: document.getElementById('level-up-title')!,
+        levelUpStepIndicator: document.getElementById('level-up-step-indicator')!,
+        upgradeCardsContainer: document.getElementById('upgrade-cards')!,
+        levelUpRerollContainer: document.getElementById('level-up-reroll-container')!,
+        btnLevelUpReroll: document.getElementById('btn-level-up-reroll')!
+      } as any,
+      getScene: () => scene,
+      getCurrentStageNumber: () => 1,
+      getIsAutoLevelUp: () => false,
+      updateWeaponsBar: () => {},
+      updatePassivesBar: () => {}
     };
 
     const levelUpUI = new LevelUpUI(context);
@@ -171,7 +178,7 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
 
   await t.test('InventoryUI accounts for and displays Elixir of Might in stats and passives', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
     player.addMightElixirBonus();
     player.addMightElixirBonus(); // 2 stacks (+10%)
 
@@ -192,7 +199,7 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
 
   await t.test('player.reset resets mightElixirCount to 0', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
     player.addMightElixirBonus();
     assert.equal(player.mightElixirCount, 1);
 

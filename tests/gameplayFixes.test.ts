@@ -15,7 +15,6 @@ if (typeof (globalThis as any).document === 'undefined') {
       addEventListener: () => {},
       removeEventListener: () => {},
       src: '',
-      set src(_val: string) {},
       style: {}
     }),
     createElement: () => ({
@@ -54,7 +53,7 @@ if (typeof (globalThis as any).document === 'undefined') {
 test('Time Crystal consumption from inventory', async (t) => {
   await t.test('consumes exactly 1 Time Crystal on lethal damage if multiple are held', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
 
     // Add 2 Time Crystals
     player.addRiftItem(RIFT_ITEMS.chronos_phylactery);
@@ -176,7 +175,7 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
 
   await t.test('weapon grade is NOT offered when any weapon is below level 12', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
     player.weapons = [
       new BowWeapon(),
       new KukriWeapon(),
@@ -200,7 +199,7 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
 
   await t.test('weapon grade IS offered and gives exactly 3 choices when all weapons are level 12', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
     player.weapons = [
       new BowWeapon(),
       new KukriWeapon(),
@@ -223,7 +222,7 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
 
   await t.test('after first weapon grade, choices remain exactly 3 and at most 1 tier upgrade is offered while leveling up', () => {
     const scene = new Scene();
-    const player = new Player(scene, 'cowboy');
+    const player = new Player(scene, 'ronin');
     player.weapons = [
       new BowWeapon(),
       new KukriWeapon(),

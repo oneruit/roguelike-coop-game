@@ -36,7 +36,6 @@ export interface LobbyUIElements {
   pwdPromptInput: HTMLInputElement | null;
   pwdPromptError: HTMLElement | null;
 
-  guideModal: HTMLElement;
   settingsModal: HTMLElement;
   pauseModal: HTMLElement;
   coopBadge: HTMLElement;
@@ -583,31 +582,6 @@ export class LobbyUI {
   public setJoinStatus(text: string, isError: boolean = false) {
     this.el.joinStatusText.innerText = text;
     this.el.joinStatusText.style.color = isError ? '#ef4444' : '#fbbf24';
-  }
-
-  public showGuide() {
-    if (!this.el.settingsModal.classList.contains('hidden')) {
-      this.el.settingsModal.classList.add('hidden');
-      const stack = this.ctx.getMenuStack();
-      if (stack[stack.length - 1] !== 'guide') {
-        this.ctx.pushMenu('guide');
-      }
-    } else if (!this.el.pauseModal.classList.contains('hidden')) {
-      this.el.pauseModal.classList.add('hidden');
-      const stack = this.ctx.getMenuStack();
-      if (stack[stack.length - 1] !== 'guide') {
-        this.ctx.pushMenu('guide');
-      }
-    } else {
-      this.ctx.hideMainMenu();
-      this.ctx.setMenuStack(['guide']);
-    }
-    this.el.guideModal.classList.remove('hidden');
-  }
-
-  public hideGuide() {
-    this.el.guideModal.classList.add('hidden');
-    this.ctx.removeMenu('guide');
   }
 
   public setCoopBadge(roomCode: string | null) {

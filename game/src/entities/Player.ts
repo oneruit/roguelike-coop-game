@@ -94,15 +94,6 @@ export class Player {
   public speedBootsCount: number = 0;
   public flaskCount: number = 0;
   public magnetCount: number = 0;
-
-  // Backwards compatibility aliases
-  public get sheriffStarCount(): number { return this.amplifierCount; }
-  public set sheriffStarCount(v: number) { this.amplifierCount = v; }
-  public get spursCount(): number { return this.speedBootsCount; }
-  public set spursCount(v: number) { this.speedBootsCount = v; }
-  public get lassoCount(): number { return this.magnetCount; }
-  public set lassoCount(v: number) { this.magnetCount = v; }
-
   public amuletCount: number = 0;
   public vestCount: number = 0;
   public watchCount: number = 0;
@@ -118,7 +109,6 @@ export class Player {
   public critChance: number = 0.05; // 5% base crit chance (max 100% / 1.0)
   public critDamage: number = 0.50; // 50% base crit damage (max 1000% / 10.0)
   public startingWeaponId: string = '';
-  public hasChronosReady: boolean = true;
   public singularityKillCounter: number = 0;
   public orbitalStrikeTimer: number = 12.0;
   public golemCoreTimer: number = 6.0;
@@ -675,7 +665,6 @@ export class Player {
   }
 
   public addAmplifierBonus(_multiplier?: number) { this.amplifierCount++; this.recalculateStats(); }
-  public addSheriffStarBonus(multiplier?: number) { this.addAmplifierBonus(multiplier); }
   public addMightElixirBonus() { this.mightElixirCount++; this.recalculateStats(); }
 
   public recordWeaponDamage(weaponId: string | undefined, damage: number): void {
@@ -709,7 +698,6 @@ export class Player {
   }
 
   public addMagnetBonus(_multiplier: number = 1.10) { this.magnetCount++; this.recalculateStats(); }
-  public addLassoBonus(multiplier: number = 1.10) { this.addMagnetBonus(multiplier); }
 
 
   /**

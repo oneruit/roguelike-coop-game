@@ -766,7 +766,7 @@ export class InGameOverlayUI {
       window.clearTimeout(this.bossWarningTimeout);
       this.bossWarningTimeout = null;
     }
-    const name = bossName || (tier ? `КРОВАВЫЙ ШЕРИФ (УР. ${tier})` : 'КРОВАВЫЙ ШЕРИФ');
+    const name = bossName || (tier ? `КРОВАВЫЙ ДЕМОН (УР. ${tier})` : 'КРОВАВЫЙ ДЕМОН');
     if (this.bossWarningText) {
       this.bossWarningText.innerText = `ВНИМАНИЕ: ПОЯВИЛСЯ БОСС «${name.toUpperCase()}»!`;
       this.bossWarningText.style.color = '#fbbf24';
@@ -786,7 +786,7 @@ export class InGameOverlayUI {
       window.clearTimeout(this.bossWarningTimeout);
       this.bossWarningTimeout = null;
     }
-    const name = bossName || 'БЕССМЕРТНЫЙ ЖНЕЦ ПРЕРИИ';
+    const name = bossName || 'БЕССМЕРТНЫЙ ЖНЕЦ РАЗЛОМА';
     if (this.bossWarningText) {
       this.bossWarningText.innerText = `НАСТУПИЛА ПОЛНОЧЬ (30 МИНУТ): ПОЯВИЛСЯ ${name.toUpperCase()}! СМЕРТЬ НЕИЗБЕЖНА!`;
       this.bossWarningText.style.color = '#e9d5ff';
