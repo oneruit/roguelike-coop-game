@@ -1,0 +1,140 @@
+      <div id="main-menu-modal" class="modal main-menu-modal">
+        <div class="modal-backdrop main-menu-backdrop"></div>
+
+        <!-- Top Center Game Title Logo: THE RIFT -->
+        <div class="main-menu-game-title" id="main-menu-game-title">
+          <div class="main-menu-title-glow-fx"></div>
+          <img src="/textures/ui/game_logo_rift.png" class="main-menu-logo-img" alt="THE RIFT" />
+        </div>
+
+        <!-- Top Left Battle Pass Widget -->
+        <aside id="main-menu-battle-pass" class="battle-pass-widget" aria-label="Боевой пропуск">
+          <div class="battle-pass-card" id="battle-pass-card">
+            <!-- Header -->
+            <div class="bp-header" id="bp-header-btn" role="button" tabindex="0" title="Нажмите, чтобы открыть весь боевой пропуск">
+              <span class="bp-title">БОЕВОЙ ПРОПУСК</span>
+              <span class="bp-season">СЕЗОН 1: ТЕНИ ДРЕВНЕГО ЛЕСА</span>
+            </div>
+
+            <!-- Track / Progress section -->
+            <div class="bp-track-section">
+              <div class="bp-star-icon" title="Звезда сезона">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="#38bdf8">
+                  <polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" />
+                </svg>
+              </div>
+
+              <div class="bp-progress-bar-container">
+                <!-- Milestone chests above/along bar -->
+                <div class="bp-milestones">
+                  <div class="bp-milestone bp-m-lvl10" title="Уровень 10">
+                    <span class="bp-m-label">Lvl 10</span>
+                    <img src="/textures/ui/bp_chest_silver.png" class="bp-m-chest" alt="Lvl 10" />
+                  </div>
+                  <div class="bp-milestone bp-m-lvl15" title="Уровень 15">
+                    <span class="bp-m-label">Lvl 15</span>
+                    <img src="/textures/ui/bp_chest_wood.png" class="bp-m-chest" alt="Lvl 15" />
+                  </div>
+                </div>
+
+                <!-- Recessed Track -->
+                <div class="bp-bar-track">
+                  <div id="bp-bar-fill" class="bp-bar-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rewards Row (Free card + 6 preview slots) -->
+            <div class="bp-rewards-row" id="bp-rewards-row">
+              <!-- Rendered dynamically via HUD.ts -->
+            </div>
+          </div>
+        </aside>
+
+        <!-- Left Menu Buttons -->
+        <div class="modal-card main-menu-card">
+          <!-- Top HUD Accent Bracket -->
+          <div class="main-menu-hud-corner">
+            <div class="hud-corner-bracket"></div>
+            <div class="hud-corner-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
+          <div class="main-menu-buttons">
+            <!-- 1. НОВАЯ ИГРА (ENTER THE RIFT) -->
+            <button id="menu-btn-single" class="main-menu-action-btn btn-single" type="button">
+              <div class="menu-btn-content">
+                <span class="menu-btn-title">ОДИНОЧНЫЙ РЕЖИМ</span>
+              </div>
+            </button>
+
+            <!-- 2. КООП НА 5 ЧЕЛОВЕК -->
+            <button id="menu-btn-coop" class="main-menu-gothic-btn btn-coop" type="button">
+              <div class="menu-btn-content">
+                <span class="menu-btn-title">КООПЕРАТИВ (5 ИГРОКОВ)</span>
+              </div>
+            </button>
+
+            <!-- 3. ЗАДАНИЯ -->
+            <button id="menu-btn-quests" class="main-menu-gothic-btn btn-quests" type="button">
+              <div class="menu-btn-content">
+                <span class="menu-btn-title">ЗАДАНИЯ</span>
+              </div>
+            </button>
+
+            <!-- 4. НАСТРОЙКИ -->
+            <button id="menu-btn-settings" class="main-menu-gothic-btn btn-settings" type="button">
+              <div class="menu-btn-content">
+                <span class="menu-btn-title">НАСТРОЙКИ</span>
+              </div>
+            </button>
+
+            <!-- 5. ВЫХОД -->
+            <button id="menu-btn-exit" class="main-menu-gothic-btn btn-exit" type="button">
+              <div class="menu-btn-content">
+                <span class="menu-btn-title">ВЫХОД</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Client Version & Update Pill in Main Menu -->
+          <div id="main-menu-version-tag" class="main-menu-version-tag" title="Версия клиента">
+            <span id="main-menu-version-text">v1.0.0</span>
+          </div>
+        </div>
+
+
+        <!-- Right Side: Daily & Weekly Quests Sidebar -->
+        <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий">
+          <!-- 1. Daily Quests Card -->
+          <section class="quest-sidebar-card daily-quests-card" id="daily-quests-card" aria-label="Ежедневные задания">
+            <header class="quest-card-header" id="daily-quests-header" title="Нажмите, чтобы открыть журнал заданий">
+              <span class="quest-card-header-title">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</span>
+            </header>
+            <div class="quest-card-body">
+              <div class="quest-card-subtitle">Бессменные ежедневные задания.</div>
+              <div class="quest-card-items" id="daily-quest-items-list">
+                <!-- Populated dynamically via HUD.ts -->
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Weekly Quests Card -->
+          <section class="quest-sidebar-card weekly-quests-card" id="weekly-quests-card" aria-label="Еженедельные задания">
+            <header class="quest-card-header" id="weekly-quests-header" title="Нажмите, чтобы открыть журнал заданий">
+              <span class="quest-card-header-title">ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ</span>
+            </header>
+            <div class="quest-card-body">
+              <div class="quest-card-subtitle">Контракты и еженедельные испытания.</div>
+              <div class="quest-card-items" id="weekly-quest-items-list">
+                <!-- Populated dynamically via HUD.ts -->
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- Co-op Mode Selection Modal -->

@@ -8,7 +8,6 @@ import { PublicRoomInfo } from '../net/RoomDirectory';
 import { RiftItemId, type RiftItemDef } from '../items/RiftItemSystem';
 import { ProgressionManager } from '../core/ProgressionManager';
 import { BattlePassManager } from '../core/BattlePassManager';
-import { SoundManager } from '../core/SoundManager';
 import { getAssetUrl } from '../utils/assetPath';
 import { MerchantManager } from '../world/MerchantManager';
 
@@ -28,6 +27,9 @@ import { MerchantAndChestUI } from './modules/MerchantAndChestUI';
 import { GameOverUI, type DetailedPlayerResult, BattlePassGameOverResult } from './modules/GameOverUI';
 import { InGameOverlayUI } from './modules/InGameOverlayUI';
 import { CharacterSelectUI } from './modules/CharacterSelectUI';
+import { ScreenManager } from './core/ScreenManager';
+import { MainMenuScreen } from './screens/MainMenu/MainMenuScreen';
+import { CharacterSelectScreen } from './screens/CharacterSelect/CharacterSelectScreen';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -62,6 +64,8 @@ export class HUD {
   private gameOverUI: GameOverUI;
   private inGameOverlayUI: InGameOverlayUI;
   private characterSelectUI?: CharacterSelectUI;
+  private mainMenuScreen?: MainMenuScreen;
+  private characterSelectScreen?: CharacterSelectScreen;
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
@@ -440,38 +444,33 @@ export class HUD {
   // --- Main Menu & Navigation Listeners ---
 
   private bindMainMenuListeners() {
-    document.getElementById('menu-btn-single')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.hideMainMenu();
-      this.showCharacterSelect();
-      this.onSinglePlayerSelected?.();
+    this.mainMenuScreen = new MainMenuScreen({
+      container: this.mainMenuModal,
+      onSinglePlayer: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.showCharacterSelect();
+        this.onSinglePlayerSelected?.();
+      },
+      onCoop: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.showCoopMenu();
+      },
+      onQuests: () => {
+        this.toggleQuestsInMainMenu();
+      },
+      onSettings: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.showSettings('main');
+      },
+      onExit: () => {
+        this.hideQuestsModal();
+        this.showExitModal();
+      }
     });
-
-    document.getElementById('menu-btn-coop')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.hideMainMenu();
-      this.showCoopMenu();
-    });
-
-    document.getElementById('menu-btn-quests')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.toggleQuestsInMainMenu();
-    });
-
-    document.getElementById('menu-btn-settings')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.hideMainMenu();
-      this.showSettings('main');
-    });
-
-    document.getElementById('menu-btn-exit')?.addEventListener('click', () => {
-      SoundManager.playButtonClick();
-      this.hideQuestsModal();
-      this.showExitModal();
-    });
+    ScreenManager.getInstance().register(this.mainMenuScreen);
 
     document.getElementById('coop-btn-host')?.addEventListener('click', () => {
       this.hideCoopMenu();
@@ -574,8 +573,8 @@ export class HUD {
       timeOfDay?: 'random' | 'day' | 'night'
     ) => void
   ) {
-    this.characterSelectUI = new CharacterSelectUI({
-      modal: this.charSelectModal,
+    this.characterSelectScreen = new CharacterSelectScreen({
+      container: this.charSelectModal,
       onSelectHero: (hero, seedInput, isTraining, timeOfDay) => {
         this.hideCharacterSelect();
         document.body.classList.remove('is-main-menu');
@@ -590,6 +589,8 @@ export class HUD {
         this.showQuestsModal(hero, 1, true);
       }
     });
+    ScreenManager.getInstance().register(this.characterSelectScreen);
+    this.characterSelectUI = this.characterSelectScreen;
   }
 
   private setupExitListeners() {
@@ -657,11 +658,19 @@ export class HUD {
     this.updateMainMenuQuests();
     this.updateMainMenuBattlePass();
     HUD.applyRandomMenuBackground();
-    this.mainMenuModal.classList.remove('hidden');
+    if (this.mainMenuScreen) {
+      this.mainMenuScreen.show();
+    } else {
+      this.mainMenuModal.classList.remove('hidden');
+    }
   }
 
   public hideMainMenu() {
-    this.mainMenuModal.classList.add('hidden');
+    if (this.mainMenuScreen) {
+      this.mainMenuScreen.hide();
+    } else {
+      this.mainMenuModal.classList.add('hidden');
+    }
   }
 
   public showCoopMenu() {
@@ -709,6 +718,10 @@ export class HUD {
         textElem.textContent = `#${activeSeed}`;
       }
     }
+    const btnDev = document.getElementById('btn-pause-dev');
+    if (btnDev) {
+      btnDev.classList.toggle('hidden', !this.isTrainingModeActive);
+    }
     const btnSame = document.getElementById('btn-pause-restart-same');
     if (btnSame) {
       btnSame.classList.toggle('hidden', !this.isTrainingModeActive);
@@ -743,14 +756,22 @@ export class HUD {
       this.hideMainMenu();
       this.menuStack = ['char_select'];
     }
-    this.charSelectModal.classList.remove('hidden');
-    this.characterSelectUI?.startAnimation();
+    if (this.characterSelectScreen) {
+      this.characterSelectScreen.show();
+    } else {
+      this.charSelectModal.classList.remove('hidden');
+      this.characterSelectUI?.startAnimation();
+    }
   }
 
   public hideCharacterSelect() {
-    this.charSelectModal.classList.add('hidden');
+    if (this.characterSelectScreen) {
+      this.characterSelectScreen.hide();
+    } else {
+      this.charSelectModal.classList.add('hidden');
+      this.characterSelectUI?.stopAnimation();
+    }
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
-    this.characterSelectUI?.stopAnimation();
   }
 
   public isAnyMenuOpen(): boolean {
@@ -1223,6 +1244,10 @@ export class HUD {
   public setTrainingModeActive(active: boolean) {
     this.isTrainingModeActive = active;
     this.inGameOverlayUI.setTrainingModeActive(active);
+    const btnDev = document.getElementById('btn-pause-dev');
+    if (btnDev) {
+      btnDev.classList.toggle('hidden', !active);
+    }
     const btnSame = document.getElementById('btn-pause-restart-same');
     if (btnSame) {
       btnSame.classList.toggle('hidden', !active);

@@ -932,12 +932,15 @@ export class InGameOverlayUI {
     this.isTrainingModeActive = active;
     const mobileDevBtn = document.getElementById('btn-dev-mobile-trigger');
     const pauseDevBtn = document.getElementById('btn-pause-dev');
+    const pauseRestartSameBtn = document.getElementById('btn-pause-restart-same');
     if (active) {
       mobileDevBtn?.classList.remove('hidden');
       pauseDevBtn?.classList.remove('hidden');
+      pauseRestartSameBtn?.classList.remove('hidden');
     } else {
       mobileDevBtn?.classList.add('hidden');
       pauseDevBtn?.classList.add('hidden');
+      pauseRestartSameBtn?.classList.add('hidden');
     }
   }
 }
