@@ -287,6 +287,65 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       p.classList.toggle('active', p.id === `tab-${target}`);
     });
 
+    const accordionTabs = ['weapons', 'heroes', 'monsters', 'bosses', 'passives', 'items'];
+    const quickTools = document.querySelector('.header-quick-tools');
+    if (quickTools) {
+      quickTools.classList.toggle('hidden', !accordionTabs.includes(target));
+    }
+
+    const pageTitleEl = document.querySelector('.page-title') as HTMLElement | null;
+    const pageSubtitleEl = document.querySelector('.page-subtitle') as HTMLElement | null;
+    const tabHeaders: Record<string, { title: string; subtitle: string }> = {
+      dashboard: {
+        title: 'Главная панель',
+        subtitle: 'Обзор ключевых показателей игры, быстрый переход к разделам и статус синхронизации'
+      },
+      weapons: {
+        title: 'Арсенал оружия',
+        subtitle: 'Параметры базового урона, кулдаунов и DPS оружия'
+      },
+      heroes: {
+        title: 'Герои и персонажи',
+        subtitle: 'Характеристики выживаемости, скорости и классовых способностей'
+      },
+      monsters: {
+        title: 'Обычные монстры',
+        subtitle: 'Базовые характеристики здоровья, скорости и урона рядовых противников'
+      },
+      bosses: {
+        title: 'Эпические боссы',
+        subtitle: 'Боссы арен с фазами ярости и особыми способностями'
+      },
+      passives: {
+        title: 'Пассивные навыки',
+        subtitle: 'Бонусы к характеристикам и прокачка пассивок'
+      },
+      items: {
+        title: 'Предметы Разлома',
+        subtitle: 'Артефакты, свитки и экипируемые предметы'
+      },
+      progression: {
+        title: 'Скейлинг волн',
+        subtitle: 'Динамика сложности, множители характеристик и тайминги волн'
+      },
+      simulation: {
+        title: 'Симулятор DPS',
+        subtitle: 'Моделирование урона комбинаций оружия и пассивок'
+      },
+      global: {
+        title: 'Глобальные настройки',
+        subtitle: 'Общие коэффициенты и системные константы'
+      },
+      connection: {
+        title: 'Подключение к Supabase',
+        subtitle: 'Настройки доступа и статус синхронизации базы данных'
+      }
+    };
+    if (tabHeaders[target]) {
+      if (pageTitleEl) pageTitleEl.innerText = tabHeaders[target].title;
+      if (pageSubtitleEl) pageSubtitleEl.innerText = tabHeaders[target].subtitle;
+    }
+
     if (target === 'dashboard') renderDashboard(this.state);
     else if (target === 'progression') this.progression.render();
     else if (target === 'simulation') this.simulation.render();

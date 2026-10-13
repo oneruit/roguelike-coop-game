@@ -786,9 +786,9 @@ export class InGameOverlayUI {
       window.clearTimeout(this.bossWarningTimeout);
       this.bossWarningTimeout = null;
     }
-    const name = bossName || 'БЕССМЕРТНЫЙ ЖНЕЦ РАЗЛОМА';
+    const name = bossName || 'ДРЕВНИЙ ВЛАДЫКА РАЗЛОМА';
     if (this.bossWarningText) {
-      this.bossWarningText.innerText = `НАСТУПИЛА ПОЛНОЧЬ (30 МИНУТ): ПОЯВИЛСЯ ${name.toUpperCase()}! СМЕРТЬ НЕИЗБЕЖНА!`;
+      this.bossWarningText.innerText = `ПРИБЛИЖАЕТСЯ ${name.toUpperCase()}! ПРИГОТОВЬТЕСЬ К БИТВЕ!`;
       this.bossWarningText.style.color = '#e9d5ff';
     }
     this.bossWarningBanner.style.borderColor = '#a855f7';

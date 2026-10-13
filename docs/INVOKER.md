@@ -41,11 +41,9 @@ Ghost Walk damage protection duration remains fixed at 3 seconds.
 
 This is adapted for existing game rules: enemies lack mana pools, so EMP deals damage
 and applies a slow; Ghost Walk protects against standard damage without disabling enemy
-pathfinding; Tornado stuns without vertical mesh lifting. Bosses resist crowd control,
-and the immortal reaper boss is completely immune. Standalone Ghost Walk weapon always
-enforces a minimum 1.5-second cooldown gap between the end of protection and the next cast,
-even at maximum level. Protection does not prevent attacks from the immortal boss or
-forced final stage damage.
+pathfinding; Tornado stuns without vertical mesh lifting. Bosses resist crowd control.
+Standalone Ghost Walk weapon always enforces a minimum 1.5-second cooldown gap between the
+end of protection and the next cast, even at maximum level.
 
 ## Animations and Asset Provenance
 
