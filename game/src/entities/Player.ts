@@ -49,6 +49,7 @@ import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/ty
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
 import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
 import { PlayerStatusManager } from './PlayerStatusManager';
+import { renderPlayerOverhead } from './PlayerOverheadRenderer';
 
 export class Player {
   public mesh: Group;
@@ -447,7 +448,7 @@ export class Player {
       this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5)));
     } else if (this.charType === 'flail') {
       this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45)));
-    } else if (this.charType === 'sorceress') {
+    } else if (this.charType === 'sorceress' || this.charType === 'necromancer') {
       this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48)));
     } else if (this.charType === 'chakram') {
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
@@ -643,7 +644,7 @@ export class Player {
     this.passiveDamageMultiplier = 1.0 + (this.amplifierCount * 0.02) + (this.mightElixirCount * 0.05);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
-    const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
+    const ampMult = (1 + this.getItemStacks('energy_amplifier') * 0.18) * (1 + this.getItemStacks('void_catalyst') * 0.15);
     const baseDmg = this.isOneHitKill ? 50.0 : (this.baseDamageMultiplier * this.passiveDamageMultiplier * ampMult);
     this.damageMultiplier = baseDmg * (1 + dmgBonus);
   }
@@ -651,11 +652,11 @@ export class Player {
   /**
    * Calculates effective damage multiplier for a given weapon.
    * Per rule: initial hero damage bonus applies ONLY to their starting weapon!
-   * Other weapons receive 1.0 * general bonuses (passive damage, altars, buffs, cheats, energy amplifier).
+   * Other weapons receive 1.0 * general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst).
    */
   public getDamageMultiplier(weaponId?: string): number {
     const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
-    const ampMult = 1 + this.getItemStacks('energy_amplifier') * 0.18;
+    const ampMult = (1 + this.getItemStacks('energy_amplifier') * 0.18) * (1 + this.getItemStacks('void_catalyst') * 0.15);
     const generalBonus = (this.isOneHitKill ? 50.0 : this.passiveDamageMultiplier * ampMult) * (1 + dmgBonus);
     const isStarting = !weaponId ||
       weaponId === this.startingWeaponId ||
@@ -1200,16 +1201,16 @@ export class Player {
   }
 
   public giveAllWeapons(scene: Scene) {
-    const hasBow = this.weapons.some(w => w.id === 'bow' || w.id === 'heavy_colt');
+    const hasBow = this.weapons.some(w => w.id === 'bow');
     if (!hasBow && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
 
-    const hasKukri = this.weapons.some(w => w.id === 'kukri' || w.id === 'dual_revolvers');
+    const hasKukri = this.weapons.some(w => w.id === 'kukri');
     if (!hasKukri && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KukriWeapon());
 
-    const hasOrbs = this.weapons.some(w => w.id === 'reaper_scythe' || w.id === 'orbiting_barrier');
+    const hasOrbs = this.weapons.some(w => w.id === 'reaper_scythe');
     if (!hasOrbs && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new ReaperScytheWeapon());
 
-    const hasAura = this.weapons.some(w => w.id === 'fire_ring' || w.id === 'holy_aura');
+    const hasAura = this.weapons.some(w => w.id === 'fire_ring');
     if (!hasAura && this.weapons.length < Player.MAX_WEAPONS) {
       const aura = new FireRingWeapon();
       aura.initVisual(scene, this.position);
@@ -1312,125 +1313,16 @@ export class Player {
 
     const ctx = this.overheadCtx;
     if (!ctx) return;
-    const w = this.overheadCanvas.width;
-    const h = this.overheadCanvas.height;
-
-    ctx.clearRect(0, 0, w, h);
-
-    if (this.isDowned) {
-      // Downed Badge
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
-      ctx.beginPath();
-      ctx.roundRect(16, 8, w - 32, 34, 8);
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px "Cinzel", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('⚠️ РАНЕН! СПАСИТЕ!', w / 2, 25);
-
-      // Revive progress bar
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.beginPath();
-      ctx.roundRect(24, 48, w - 48, 18, 9);
-      ctx.fill();
-
-      if (this.reviveProgress > 0) {
-        ctx.fillStyle = '#10b981';
-        ctx.beginPath();
-        ctx.roundRect(26, 50, (w - 52) * Math.min(1, this.reviveProgress), 14, 7);
-        ctx.fill();
-      }
-    } else {
-      // Name & Level Pill
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-      ctx.strokeStyle = this.colorCss;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.roundRect(16, 6, w - 32, 36, 18);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = this.colorCss;
-      ctx.font = 'bold 17px "Cinzel", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      const heroName =
-        this.charType === 'invoker'
-          ? 'Инвокер'
-          : this.charType === 'valkyrie'
-          ? 'Каэла'
-          : this.charType === 'flail'
-          ? 'Бригитта'
-          : this.charType === 'sorceress'
-          ? 'Ария'
-          : this.charType === 'chakram'
-          ? 'Кира'
-          : this.charType === 'archer'
-          ? 'Эльф'
-          : this.charType === 'rocket'
-          ? 'Ракета'
-          : this.charType === 'necromancer'
-          ? 'Мортис'
-          : this.charType === 'amazon'
-          ? 'Амазонка'
-          : 'Рен';
-      ctx.fillText(`${this.displayName} (${heroName}) [L${this.level}]`, w / 2, 24);
-
-      // Health Bar (XP-bar capsule style, red palette, lighter as HP drops)
-      const barX = 22;
-      const barY = 48;
-      const barW = w - 44;
-      const barH = 17;
-      const radius = barH / 2;
-
-      // Track Container (matching XP-bar glass capsule)
-      ctx.fillStyle = 'rgba(6, 12, 22, 0.94)';
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(barX, barY, barW, barH, radius);
-      ctx.fill();
-      ctx.stroke();
-
-      // Fill with dynamic lightness (less HP = lighter red)
-      const hpPct = Math.max(0, Math.min(1, this.hp / (this.maxHp || 100)));
-      const fillW = (barW - 4) * hpPct;
-      if (hpPct > 0 && fillW > 0) {
-        const lightnessFactor = 1 - hpPct; // 0 at full HP -> 1 at empty HP
-        const l1 = Math.round(38 + lightnessFactor * 32); // 38% -> 70%
-        const l2 = Math.round(50 + lightnessFactor * 30); // 50% -> 80%
-        if (ctx.createLinearGradient) {
-          const grad = ctx.createLinearGradient(barX + 2, barY, barX + 2 + fillW, barY);
-          grad.addColorStop(0, `hsl(0, 90%, ${l1}%)`);
-          grad.addColorStop(1, `hsl(0, 95%, ${l2}%)`);
-          ctx.fillStyle = grad;
-        } else {
-          ctx.fillStyle = `hsl(0, 90%, ${l1}%)`;
-        }
-        ctx.beginPath();
-        ctx.roundRect(barX + 2, barY + 2, fillW, barH - 4, (barH - 4) / 2);
-        ctx.fill();
-
-        // Subtle XP-style glass gloss highlight on upper half
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-        ctx.beginPath();
-        ctx.roundRect(barX + 4, barY + 2.5, Math.max(0, fillW - 4), (barH - 4) * 0.38, (barH - 4) * 0.19);
-        ctx.fill();
-      }
-
-      // Numeric HP Text
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-      ctx.shadowBlur = 4;
-      ctx.font = 'bold 11px "Cinzel", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
-      ctx.shadowBlur = 0;
-    }
-
+    renderPlayerOverhead(ctx, this.overheadCanvas.width, this.overheadCanvas.height, {
+      hp: this.hp,
+      maxHp: this.maxHp,
+      level: this.level,
+      isDowned: this.isDowned,
+      reviveProgress: this.reviveProgress,
+      charType: this.charType,
+      displayName: this.displayName,
+      colorCss: this.colorCss
+    });
     this.overheadTexture.needsUpdate = true;
   }
 

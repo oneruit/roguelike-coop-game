@@ -9,6 +9,7 @@ import {
   INVOKER_EXCLUSIVE_WEAPONS
 } from '../game/src/shared/UniqueCharacters';
 import { INVOKER_SPELL_IDS, invokerWeaponId } from '../game/src/shared/InvokerSpells';
+import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 
 test('Unique Character System - Invoker is unique and isolated', () => {
   assert.equal(isUniqueCharacter('invoker'), true);
@@ -75,7 +76,7 @@ test('Unique Character System - Invoker weapon acquisition rules', () => {
 });
 
 test('Unique Character System - Other characters CANNOT acquire Invoker abilities', () => {
-  const otherHeroes = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer', 'rocket'] as const;
+  const otherHeroes = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer', 'rocket', 'necromancer', 'amazon'] as const;
 
   for (const hero of otherHeroes) {
     // Cannot acquire invoke
@@ -107,6 +108,11 @@ test('Unique Character System - Other characters CANNOT acquire Invoker abilitie
       `${hero} should be able to acquire katana_slash`
     );
   }
+});
+
+test('Hero Starting Weapons - Necromancer and Amazon are properly configured', () => {
+  assert.equal(DEFAULT_BALANCE.heroes.necromancer.startingWeapon, 'astral_staff');
+  assert.equal(DEFAULT_BALANCE.heroes.amazon.startingWeapon, 'reaper_scythe');
 });
 
 test('Unique Character System - Extensibility for future unique characters', () => {

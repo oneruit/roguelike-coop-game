@@ -21,7 +21,6 @@ export interface SimulationState {
   hero: string;
   amplifierStacks: number;
   mightElixirStacks: number;
-  sheriffStacks?: number;
   watchStacks: number;
   injectorStacks: number;
   critVisorStacks: number;
