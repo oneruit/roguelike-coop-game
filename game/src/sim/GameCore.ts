@@ -562,7 +562,7 @@ export class GameCore {
 
         player.anim = player.attackAnimTimer > 0 ? 'WALK_ATTACK' : 'WALK';
       } else {
-        player.anim = player.attackAnimTimer > 0 ? 'ATTACK' : 'IDLE';
+        player.anim = player.attackAnimTimer > 0 ? 'IDLE_ATTACK' : 'IDLE';
       }
 
       // Update Weapons

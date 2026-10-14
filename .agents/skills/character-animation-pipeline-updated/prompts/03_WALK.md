@@ -1,6 +1,8 @@
-# WALK Animation Prompt Guide (6-Frame Looping Cycle)
+# WALK Animation Prompt Guide (6-Frame Looping Cycle — Locomotion / Movement State)
 
 This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_walk.png`**.
+
+**WALK is the locomotion / movement state**: The character is in motion (locomotion / walking), rhythmically alternating booted feet along the baseline (`y ≈ 88`) in a steady walking cycle without executing an attack.
 
 ---
 
@@ -9,8 +11,8 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 | Property | Value |
 |---|---|
 | Grid Dimensions | 6 columns × 4 rows (24 cells) |
-| Cell Dimensions | 128 × 128 px |
-| Total Resolution | 768 × 512 px (or 1536 × 1024 px for high-res source) |
+| Cell Dimensions | 96 × 96 px |
+| Total Resolution | 576 × 384 px (or 1152 × 768 px for high-res source) |
 | Background | Pure solid magenta chromakey `rgb(255,0,255)` (`#ff00ff`) |
 | Direction Rows (Top to Bottom) | Row 0: `FRONT` (face)<br>Row 1: `BACK` (back)<br>Row 2 (3rd row): `RIGHT` (right — body sideways, face strictly in profile)<br>Row 3 (4th row): `LEFT` (left — body sideways, face strictly in profile) |
 

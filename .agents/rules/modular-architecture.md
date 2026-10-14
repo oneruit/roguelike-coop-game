@@ -36,7 +36,7 @@ This rule defines mandatory architecture standards for all UI components, game m
 
 1. **Dedicated Entity Directories**:
    - Assets must not be dumped as flat files in root folders.
-   - **Heroes**: `public/textures/heroes/<hero_id>/` containing `idle.png`, `walk.png`, `attack.png`, `front.png`, `portrait.png`, `walk_attack.png`.
+   - **Heroes**: `public/textures/heroes/<hero_id>/` containing `idle.png`, `walk.png`, `attack.png`, `front.png`, `portrait.png`.
    - **Biomes**: `public/textures/biomes/<biome_id>/` containing `surface.jpg`, `tree.png`, `obstacle.png`, `props.png`, etc.
    - **Monsters**: `public/textures/monsters/<monster_id>/` containing `front.png`, `walk.png`, `attack.png`.
    - **Bosses**: `public/textures/bosses/<boss_id>/` containing `front.png`, `walk.png`, `attack.png`.
@@ -55,7 +55,7 @@ This rule defines mandatory architecture standards for all UI components, game m
 
 1. **Single Responsibility**:
    - Game mechanics (combat, movement, buffs, progression, world generation, audio) must reside in separate files and modules.
-   - Avoid monolithic files exceeding limits. Keep files under 1500 lines per `.agents/rules/file-size-limit.md`.
+   - Avoid monolithic files. Break complex features into cohesive, single-purpose helper modules and classes.
 
 2. **Decoupled Mechanics via Events**:
    - Entities (such as Player or Enemies) should emit events (`player:damage`, `player:levelup`, `boss:spawn`) rather than directly calling UI methods or network methods.

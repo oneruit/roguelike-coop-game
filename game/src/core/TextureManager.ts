@@ -26,8 +26,9 @@ export interface DirectionalTextures {
 export interface AnimatedCharacterTextures {
   idle: Texture;
   walk: Texture;
-  attack: Texture;
+  idle_attack: Texture;
   walk_attack: Texture;
+  attack?: Texture;
 }
 
 export interface BossTextures {
@@ -60,7 +61,7 @@ export class TextureManager {
     if (rel.includes('/')) return url;
 
     if (rel.startsWith('hero_')) {
-      const match = rel.match(/^hero_([a-z0-9_]+)_(idle|walk|attack|front|portrait|walk_attack)\.png$/);
+      const match = rel.match(/^hero_([a-z0-9_]+)_(idle|walk|attack|idle_attack|front|portrait|walk_attack)\.png$/);
       if (match) {
         return `/textures/heroes/${match[1]}/${match[2]}.png`;
       }
@@ -226,7 +227,7 @@ export class TextureManager {
     '/textures/vfx/vfx_rift_open.png',
     '/textures/vfx/vfx_sulfur_smoke.png',
 
-    // Heroes - 10 Playable Characters (Walk, Attack, Idle, Walk-Attack, Front)
+    // Heroes - 10 Playable Characters (Walk, Attack, Idle, Front, Walk Attack)
     '/textures/heroes/ronin/front.png',
     '/textures/heroes/ronin/idle.png',
     '/textures/heroes/ronin/walk.png',
@@ -515,11 +516,14 @@ export class TextureManager {
     };
 
     const cleanId = baseName.replace(/^hero_/, '');
+    const idleAttackTex = loadPixel(`/textures/heroes/${cleanId}/attack.png`);
+    const walkAttackTex = loadPixel(`/textures/heroes/${cleanId}/walk_attack.png`);
     return {
       idle: loadPixel(`/textures/heroes/${cleanId}/idle.png`),
       walk: loadPixel(`/textures/heroes/${cleanId}/walk.png`),
-      attack: loadPixel(`/textures/heroes/${cleanId}/attack.png`),
-      walk_attack: loadPixel(`/textures/heroes/${cleanId}/walk_attack.png`)
+      idle_attack: idleAttackTex,
+      walk_attack: walkAttackTex,
+      attack: idleAttackTex
     };
   }
 

@@ -1,7 +1,7 @@
 # Changes from the previous pipeline
 
 1. Standard animation states reduced from four (`IDLE`, `WALK`, `ATTACK`, `WALK_ATTACK`) to three (`IDLE`, `WALK`, `ATTACK`). `WALK_ATTACK` is not a required runtime asset.
-2. Each state remains a separate 6×4 sheet at 128×128 per cell (768×512 overall).
+2. Each state remains a separate 6×4 sheet at 96×96 per cell (576×384 overall).
 3. Authoritative row mapping:
    - Row 0: `FRONT` (face)
    - Row 1: `BACK` (back)
@@ -27,3 +27,5 @@
 20. Dual input modes: Support both direct prompt / image generation (no redundant questionnaires) and brief description auto-enrichment using sensible archetype defaults.
 21. Closed eyes on frame 3: Column 3 across all rows in IDLE, WALK, and ATTACK depicts the character with closed eyes (natural blink / breath peak / stride focus / wind-up tension).
 22. Zero floor clutter: Strictly forbidden ground shadows, drop shadows, cast shadows, floor lines, or pedestals under the character.
+23. Cell resolution update: Standard character cell size reduced from 128×128 to 96×96 px (overall sheet dimensions: 576×384 px; feet baseline y ≈ 88).
+24. Unified 3-state runtime animation: Local and remote characters share a single CharacterAnimator using IDLE, WALK, and ATTACK (attack state is used whenever attacking, whether moving or idle).

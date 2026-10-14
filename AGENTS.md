@@ -24,9 +24,9 @@ This document defines the mandatory Git workflow for AI agents contributing to t
 7. `development → master` is a manual developer-controlled release.
 8. **Never enable auto-merge.** All PRs require manual review and approval by the developer before merging.
 9. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
-10. **File size limit**: Files must not exceed 1500 lines of code. If a file approaches or exceeds 1500 lines, it must be split and modularized into smaller units. See [`.agents/rules/file-size-limit.md`](.agents/rules/file-size-limit.md).
-11. **Bug fixing and reporting**: In case a bug or unexpected error is found during development or testing, fix it immediately and report it clearly in the summary to the developer. See [`.agents/rules/bug-handling.md`](.agents/rules/bug-handling.md).
-12. **Modular and structured architecture**: All UI screens, game mechanics, and assets must follow strict modularity, scoping, and directory hierarchy. See [`.agents/rules/modular-architecture.md`](.agents/rules/modular-architecture.md).
+10. **Bug fixing and reporting**: In case a bug or unexpected error is found during development or testing, fix it immediately and report it clearly in the summary to the developer. See [`.agents/rules/bug-handling.md`](.agents/rules/bug-handling.md).
+11. **Modular and structured architecture**: All UI screens, game mechanics, and assets must follow strict modularity, scoping, and directory hierarchy. See [`.agents/rules/modular-architecture.md`](.agents/rules/modular-architecture.md).
+12. **Documentation Language**: All documentation, architecture specifications, skills, rules, prompts, guides, and markdown (`.md`) files in this repository must be written in English. See [`.agents/rules/documentation-language.md`](.agents/rules/documentation-language.md).
 
 ## Workflow
 

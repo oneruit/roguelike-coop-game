@@ -256,7 +256,7 @@ Before finalizing any UI asset task, verify every item:
 - [ ] **Blank Button Check**: Buttons have **zero baked-in text**; all text is rendered cleanly via HTML `<span>` and CSS typography.
 - [ ] **9-Slice Symmetry**: Frames have uniform corner slice dimensions ($32$px, $48$px) and transparent cavities where required.
 - [ ] **Alpha Extraction**: Backgrounds are cleanly removed with zero white/magenta halo or fringe bleeding against dark surfaces.
-- [ ] **File Size Compliance**: All modified CSS/TS files remain strictly under 1500 lines per `.agents/rules/file-size-limit.md`.
+- [ ] **Modularity Compliance**: All modified CSS/TS files follow modular architecture standards.
 - [ ] **Approval Rule**: Generated assets were previewed and confirmed by the user via `ask_question`.
 - [ ] **Mandatory Verification Commands Pass**:
   ```powershell

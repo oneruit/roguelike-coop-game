@@ -32,7 +32,7 @@ If the user provides a brief description (e.g. *"female amazon in red bikini wit
 ## 2. Master Prompt Template
 
 ```text
-128x128 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
+96x96 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
 
 Chibi proportions with an intentionally oversized head and compact body, [body type], [limb description], [stance], strong readable silhouette.
 
@@ -82,4 +82,4 @@ In all multi-view sheets and directional spritesheets, the standard row mapping 
 * **Global Removal**: Magenta is NEVER used as a character color. Magenta is removed completely and globally — **both outside the character and inside any enclosed gaps, holes, limbs, or weapon loops**.
 * **Zero Magenta Aura**: The pipeline cleans all boundary pixels touching transparency with a crisp 1px black outline `[0, 0, 0, 255]`, preventing any purple/magenta halo or fringe while leaving all interior character textures 100% untouched.
 * **Zero Floor Elements**: Absolutely NO shadows under feet, NO drop shadows, NO cast shadows, NO ground line, NO floor tiles, NO platform, NO pedestal.
-* **Cell Clearance**: Every cell is 128×128 px. All body parts, weapon tips, hair, and accessories must remain inside the cell with ~10 px bottom margin (`feet baseline y ≈ 118`).
+* **Cell Clearance**: Every cell is 96×96 px. All body parts, weapon tips, hair, and accessories must remain inside the cell with ~8 px bottom margin (`feet baseline y ≈ 88`).

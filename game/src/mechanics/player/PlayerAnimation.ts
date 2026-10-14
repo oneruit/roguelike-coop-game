@@ -1,11 +1,10 @@
 import {
-  Texture,
   Mesh,
   MeshBasicMaterial,
   MeshDepthMaterial
 } from 'three';
 import { CharacterType, HeroAnimState, SpriteDirection } from '../../shared/types';
-import { CharacterAnimator, ANIM_LAYOUT_V2 } from '../../entities/CharacterAnimator';
+import { CharacterAnimator, getCharacterAnimLayout } from '../../entities/CharacterAnimator';
 import { TextureManager, AnimatedCharacterTextures } from '../../core/TextureManager';
 
 export interface PlayerAnimationOptions {
@@ -15,8 +14,9 @@ export interface PlayerAnimationOptions {
 }
 
 /**
- * Handles sprite direction, sheet animations (IDLE, WALK, ATTACK, WALK_ATTACK),
+ * Handles sprite direction, sheet animations (IDLE, WALK, ATTACK),
  * texture loading, and damage/status color tints for players.
+ * Uses unified CharacterAnimator for all character types.
  */
 export class PlayerAnimation {
   public spriteMesh: Mesh;
@@ -59,15 +59,18 @@ export class PlayerAnimation {
         ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();
 
+    const idleAttack = (raw.idle_attack || raw.attack).clone();
+    const walkAttack = (raw.walk_attack || raw.idle_attack || raw.attack).clone();
     const textures: AnimatedCharacterTextures = {
       idle: raw.idle.clone(),
       walk: raw.walk.clone(),
-      attack: raw.attack.clone(),
-      walk_attack: raw.walk_attack.clone()
+      idle_attack: idleAttack,
+      walk_attack: walkAttack,
+      attack: idleAttack
     };
     textures.idle.needsUpdate = true;
     textures.walk.needsUpdate = true;
-    textures.attack.needsUpdate = true;
+    textures.idle_attack.needsUpdate = true;
     textures.walk_attack.needsUpdate = true;
     return textures;
   }
@@ -78,11 +81,11 @@ export class PlayerAnimation {
 
   public loadCharacterTextures(charType: CharacterType): AnimatedCharacterTextures {
     this.animatedTextures = PlayerAnimation.loadTextures(charType);
-    if (charType === 'amazon') {
-      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
-    } else {
-      this.animator = undefined;
-    }
+    this.animator = new CharacterAnimator(
+      this.animatedTextures,
+      getCharacterAnimLayout(charType)
+    );
+    this.animator.setDirection(this.currentDir);
     return this.animatedTextures;
   }
 
@@ -103,68 +106,15 @@ export class PlayerAnimation {
   public update(
     dt: number,
     isMoving: boolean,
-    charType: CharacterType,
+    _charType: CharacterType,
     spriteMaterial: MeshBasicMaterial,
     customDepthMaterial?: MeshDepthMaterial
   ): void {
-    if (!this.animatedTextures) return;
+    if (!this.animatedTextures || !this.animator) return;
 
-    if (this.animator) {
-      this.animator.update(dt, isMoving, spriteMaterial, customDepthMaterial);
-      this.animState = this.animator.animState;
-      return;
-    }
-
-    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: {
-        texture: this.animatedTextures.idle,
-        cols: 6,
-        fps: 8
-      },
-      WALK: {
-        texture: this.animatedTextures.walk,
-        cols: 6,
-        fps: 12
-      },
-      ATTACK: {
-        texture: this.animatedTextures.attack,
-        cols: 6,
-        fps: 16
-      },
-      WALK_ATTACK: {
-        texture: this.animatedTextures.walk_attack,
-        cols: 6,
-        fps: 14
-      }
-    };
-
-    const cfg = STATE_CONFIG[this.animState];
-    const tex = cfg.texture;
-
-    const img = (tex as any).image as { width?: number; height?: number } | undefined;
-    const dynamicCols = (img && img.width && img.height && img.height > 0)
-      ? Math.round((img.width / img.height) * 4)
-      : cfg.cols;
-
-    this.animFrameTimer += dt * cfg.fps;
-    const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
-
-    const isNewStandard = charType === 'necromancer';
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = isNewStandard
-      ? { front: 0, back: 1, left: 2, right: 3 }
-      : { front: 0, left: 1, right: 2, back: 3 };
-    const row = DIR_ROW_MAP[this.currentDir];
-
-    if (spriteMaterial.map !== tex) {
-      spriteMaterial.map = tex;
-      if (customDepthMaterial) {
-        customDepthMaterial.map = tex;
-        customDepthMaterial.needsUpdate = true;
-      }
-    }
-
-    tex.repeat.set(1 / dynamicCols, 1 / 4);
-    tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
+    this.animator.update(dt, isMoving, spriteMaterial, customDepthMaterial);
+    this.animState = this.animator.animState;
+    this.animFrameTimer = this.animator.animFrameTimer;
   }
 
   public updateVisualTints(

@@ -1,13 +1,13 @@
 ---
 name: monster-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 128x128px per cell) in menacing 16-bit pixel art style (strictly NO anime/chibi/cute) with 10px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
+description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 96x96px per cell) in menacing 16-bit pixel art style (strictly NO anime/chibi/cute) with 8px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
 ---
 
 # Monster Animation Pipeline Skill
 
 This skill defines the standardized master pipeline for creating, generating, processing, and integrating **4-frame animated monsters and regular enemies** into the game engine.
 
-Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$128 \times 128$ pixel cells** (clean Power-of-Two **$512 \times 512$ px** texture), **compact aggressive monster proportions** (menacing beasts, ferocious vermin, undead), a **10px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
+Standardizing on **2 core animation states (WALK and ATTACK)** and **1 portrait avatar image**, using a unified **4 columns $\times$ 4 rows (16 frames)** grid with **$96 \times 96$ pixel cells** (**$384 \times 384$ px** texture), **compact aggressive monster proportions** (menacing beasts, ferocious vermin, undead), an **8px bottom margin** for claw/bite clearance, strict **quadruped & insect anatomical consistency rules**, **contact ground shadows**, and **ground anchoring** so monsters walk, creep, and lunge realistically on the ground plane.
 
 ---
 
@@ -18,9 +18,9 @@ Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state
 
 | Texture File | Action State | Layout | Frame Cell Size | Total Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| `monster_<name>_walk.png` | **WALK** (run, creeping stalk, pack sprint) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_attack.png` | **ATTACK** (bite, claw strike, sting) | 4 cols $\times$ 4 rows (16 frames) | $128 \times 128$ px | **$512 \times 512$ px** |
-| `monster_<name>_front.png` | **PORTRAIT** (avatar, bestiary icon from 1st frame) | 1 frame icon | $128 \times 128$ px | **$128 \times 128$ px** |
+| `monster_<name>_walk.png` | **WALK** (run, creeping stalk, pack sprint) | 4 cols $\times$ 4 rows (16 frames) | $96 \times 96$ px | **$384 \times 384$ px** |
+| `monster_<name>_attack.png` | **ATTACK** (bite, claw strike, sting) | 4 cols $\times$ 4 rows (16 frames) | $96 \times 96$ px | **$384 \times 384$ px** |
+| `monster_<name>_front.png` | **PORTRAIT** (avatar, bestiary icon from 1st frame) | 1 frame icon | $96 \times 96$ px | **$96 \times 96$ px** |
 
 *Note:* `process_monster_sheets.py` also automatically extracts static directional fallbacks for all 4 directions: `monster_<name>_{front,back,left,right}.png`.
 
@@ -35,12 +35,12 @@ Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state
    - Clean 16-bit pixel art style with hard pixel edges, limited color palette, and high contrast.
 
 2. **Monster Height Limit:**
-   - Monster height **must not exceed 96 pixels** (`height <= 96px`) inside the $128 \times 128$ cell.
-   - Guarantees at least 22 pixels of overhead headroom for spines, ears, horns, and leaping animations.
+   - Monster height **must not exceed 72 pixels** (`height <= 72px`) inside the $96 \times 96$ cell.
+   - Guarantees overhead headroom for spines, ears, horns, and leaping animations.
 
-3. **10px Bottom Margin & Ground Anchoring (`target_feet_y = 118`):**
-   - The contact point where the monster's paws or belly meet the ground is anchored at **$y = 118$** (`target_feet_y = 118` in a 128px cell).
-   - Leaves a clean **10px margin at the bottom** ($128 - 118 = 10$ px), preventing claws, stingers, and paws from clipping against the frame edge.
+3. **8px Bottom Margin & Ground Anchoring (`target_feet_y = 88`):**
+   - The contact point where the monster's paws or belly meet the ground is anchored at **$y = 88$** (`target_feet_y = 88` in a 96px cell).
+   - Leaves a clean **8px margin at the bottom** ($96 - 88 = 8$ px), preventing claws, stingers, and paws from clipping against the frame edge.
 
 4. **Natural Clean Alpha Edges (No Artificial 1px Black Border):**
    - Natural pixel art antialiasing without thick artificial 1px black borders.
@@ -55,10 +55,10 @@ Monsters strictly utilize **2 animation states: WALK and ATTACK**. An IDLE state
 ### 1.3 Directional Row Mapping (Rows 0 to 3)
 In Three.js UV coordinates:
 
-- **Row 0 (Top, $y \in [0, 128)$)**: **Front** — front-facing view (snout/face facing player).
-- **Row 1 ($y \in [128, 256)$)**: **Left** — left-facing view (moving left; mirrored from Row 2).
-- **Row 2 ($y \in [256, 384)$)**: **Right** — right-facing view (moving right).
-- **Row 3 (Bottom, $y \in [384, 512)$)**: **Back** — back-facing view (moving up away from camera).
+- **Row 0 (Top, $y \in [0, 96)$)**: **Front** — front-facing view (snout/face facing player).
+- **Row 1 ($y \in [96, 192)$)**: **Left** — left-facing view (moving left; mirrored from Row 2).
+- **Row 2 ($y \in [192, 288)$)**: **Right** — right-facing view (moving right).
+- **Row 3 (Bottom, $y \in [288, 384)$)**: **Back** — back-facing view (moving up away from camera).
 
 ```
 +---------------+---------------+---------------+---------------+
@@ -75,13 +75,13 @@ In Three.js UV coordinates:
 ---
 
 ### 1.4 Three.js Ground Anchoring Math for Monsters
-For a Three.js plane geometry of size $2.2 \times 2.2$ units with contact point $y = 118$ in a 128px cell:
+For a Three.js plane geometry with contact point $y = 88$ in a 96px cell:
 
-$$\text{translation}_y = \left(\frac{118}{128} - 0.5\right) \times \text{world\_size} = (0.921875 - 0.5) \times 2.2 = 0.421875 \times 2.2 = \mathbf{0.9281}$$
+$$\text{translation}_y = \left(\frac{88}{96} - 0.5\right) \times \text{world\_height} = (0.916667 - 0.5) \times \text{world\_height} = 0.416667 \times \text{world\_height}$$
 
-With plane geometry translation $+0.928$ along the $Y$ axis:
+With plane geometry translation $+0.416667 \times \text{world\_height}$ along the $Y$ axis:
 - The monster's paws rest directly on ground level $y = 0.000$ on top of `shadowMesh`.
-- The 10px buffer prevents any visual floating or ground clipping.
+- The 8px buffer prevents any visual floating or ground clipping.
 
 ---
 
@@ -114,8 +114,8 @@ To prevent monster anatomical drift and ensure visual satisfaction before genera
 
 ### Step 3.1: Monster Concept Sheet Generation (`monster_<name>_concept.png`)
 Generate a single composite **Monster Concept Sheet** featuring 3 distinct sections on pure solid white background `rgb(255,255,255)`:
-1. **Left section (Bestiary Portrait / Snout View):** Close-up 128x128 menacing monster icon (sharp predatory eyes, bared fangs, horns, antennae, threat snarl).
-2. **Center section (Full-Body Monster Sprite):** Full-body compact aggressive beast/vermin/undead sprite in front combat stance (height $\le 96$ px, 10px bottom margin, predatory posture, paws/claws/carapace).
+1. **Left section (Bestiary Portrait / Snout View):** Close-up 96x96 menacing monster icon (sharp predatory eyes, bared fangs, horns, antennae, threat snarl).
+2. **Center section (Full-Body Monster Sprite):** Full-body compact aggressive beast/vermin/undead sprite in front combat stance (height $\le 72$ px, 8px bottom margin, predatory posture, paws/claws/carapace).
 3. **Right section (Signature Attack Feature / Threat Detail):** Standalone close-up detail of the monster's primary weapon or natural attack feature (e.g. venomous stinger, crushing pincers, gnashing jaw, barbed spikes).
 
 #### Master Concept Sheet Prompt (Example: Prairie Coyote)
@@ -123,7 +123,7 @@ Generate a single composite **Monster Concept Sheet** featuring 3 distinct secti
 Monster concept reference sheet of Prairie Coyote, a vicious and deadly desert predator beast.
 
 Three clear distinct sections on pure solid white background rgb(255,255,255):
-1. Left section: close-up 128x128 menacing monster portrait icon, snarling aggressive muzzle, sharp bared white fangs, glowing amber eyes, alert pointed ears, no cute or friendly expression.
+1. Left section: close-up 96x96 menacing monster portrait icon, snarling aggressive muzzle, sharp bared white fangs, glowing amber eyes, alert pointed ears, no cute or friendly expression.
 2. Center section: full-body compact aggressive beast sprite in front combat stance, muscular canine frame, sturdy paws, spiky sandy-brown fur, bushy tail, exactly 4 legs and 1 tail.
 3. Right section: isolated detailed display of open snapping predator jaws and sharp white canine teeth.
 
@@ -153,7 +153,7 @@ When generating `monster_<name>_walk.png` and `monster_<name>_attack.png`, **alw
 
 #### Master PORTRAIT Prompt (`monster_coyote_front.png`)
 ```text
-128x128 menacing pixel art monster portrait of Prairie Coyote, a vicious and deadly desert predator.
+96x96 menacing pixel art monster portrait of Prairie Coyote, a vicious and deadly desert predator.
 
 Compact aggressive beast proportions, muscular canine frame, sturdy paws, predatory stance, strong readable silhouette.
 
@@ -262,10 +262,10 @@ python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.
   --attack "<path_to_attack>" \
   --portrait "<path_to_portrait>" \
   --out-dir "public/textures/monsters" \
-  --cell-size 128 \
-  --feet-y 118 \
-  --char-h 92.0 \
-  --max-h 96.0 \
+  --cell-size 96 \
+  --feet-y 88 \
+  --char-h 68.0 \
+  --max-h 72.0 \
   --mirror-left
 ```
 
@@ -315,6 +315,6 @@ this.spriteMesh.castShadow = true;
 
 1. `python .agents/skills/monster-animation-pipeline/scripts/process_monster_sheets.py ...` -> Exit code 0.
 2. Resolution verification:
-   - Sprite sheets `monster_<name>_{walk,attack}.png`: $512 \times 512$ px (4 cols $\times$ 4 rows @ 128x128).
-   - Portrait `monster_<name>_front.png`: $128 \times 128$ px.
+   - Sprite sheets `monster_<name>_{walk,attack}.png`: $384 \times 384$ px (4 cols $\times$ 4 rows @ 96x96).
+   - Portrait `monster_<name>_front.png`: $96 \times 96$ px.
 3. `npm run typecheck` and `npm run build` — 0 errors.

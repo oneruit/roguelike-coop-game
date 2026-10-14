@@ -46,7 +46,7 @@ import type { MeleeAttackInfo } from '../shared/types';
 
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
-import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
+import { CharacterAnimator, getCharacterAnimLayout } from './CharacterAnimator';
 import { PlayerStatusManager } from './PlayerStatusManager';
 import { renderPlayerOverhead } from './PlayerOverheadRenderer';
 import { PlayerMotor } from '../mechanics/player/PlayerMotor';
@@ -204,17 +204,16 @@ export class Player {
 
   private static geometryCache = new Map<CharacterType, PlaneGeometry>();
 
-  public static getCharacterGeometry(charType: CharacterType): PlaneGeometry {
-    let geom = Player.geometryCache.get(charType);
+  public static getCharacterGeometry(_charType?: CharacterType): PlaneGeometry {
+    const key = 'standard_96';
+    let geom = Player.geometryCache.get(key as any);
     if (!geom) {
-      geom = new PlaneGeometry(3.6, 3.6);
-      // 128x128 chibi standard: feet anchored at y=118 in 128px cell (10px bottom margin)
-      // translation = (118 / 128 - 0.5) * 3.6 = 0.421875 * 3.6 = 1.51875
-      // Legacy 96x96 standard: feet anchored at y=74 in 96px cell -> 0.975
-      const is128Standard = charType === 'valkyrie' || charType === 'necromancer' || charType === 'amazon';
-      const translateY = is128Standard ? 1.51875 : 0.975;
-      geom.translate(0, translateY, 0);
-      Player.geometryCache.set(charType, geom);
+      geom = new PlaneGeometry(2.7, 2.7);
+      // Standardized 96px chibi geometry for all heroes:
+      // Feet anchored at y=88 in 96px cell (8px bottom margin)
+      // translation = (88 / 96 - 0.5) * 2.7 = (5 / 12) * 2.7 = 1.125
+      geom.translate(0, 1.125, 0);
+      Player.geometryCache.set(key as any, geom);
     }
     return geom;
   }
@@ -228,9 +227,10 @@ export class Player {
     this.roninGeom = Player.getCharacterGeometry('ronin');
 
     this.loadCharacterTextures(this.charType);
-    if (this.charType === 'amazon') {
-      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
-    }
+    this.animator = new CharacterAnimator(
+      this.animatedTextures,
+      getCharacterAnimLayout(this.charType)
+    );
 
     this.spriteMaterial = new MeshBasicMaterial({
       map: this.animatedTextures.idle,
@@ -255,6 +255,7 @@ export class Player {
     this.mesh.add(this.spriteMesh);
     this.animation = new PlayerAnimation({ spriteMesh: this.spriteMesh, spriteMaterial: this.spriteMaterial });
     this.animation.loadCharacterTextures(this.charType);
+    this.animation.animator = this.animator;
 
     // Hero Light Glow
     const light = new PointLight(0xf59e0b, 1.4, 9);
@@ -275,7 +276,7 @@ export class Player {
       depthTest: false
     });
     this.overheadSprite = new Sprite(spriteMat);
-    this.overheadSprite.position.set(0, 3.85, 0);
+    this.overheadSprite.position.set(0, 2.95, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
     this.mesh.add(this.overheadSprite);
@@ -372,26 +373,29 @@ export class Player {
         ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();
 
+    const idleAttack = (raw.idle_attack || raw.attack).clone();
+    const walkAttack = (raw.walk_attack || raw.idle_attack || raw.attack).clone();
     this.animatedTextures = {
       idle: raw.idle.clone(),
       walk: raw.walk.clone(),
-      attack: raw.attack.clone(),
-      walk_attack: raw.walk_attack.clone()
+      idle_attack: idleAttack,
+      walk_attack: walkAttack,
+      attack: idleAttack
     };
     this.animatedTextures.idle.needsUpdate = true;
     this.animatedTextures.walk.needsUpdate = true;
-    this.animatedTextures.attack.needsUpdate = true;
+    this.animatedTextures.idle_attack.needsUpdate = true;
     this.animatedTextures.walk_attack.needsUpdate = true;
   }
 
   public setCharacter(charType: CharacterType = 'ronin') {
     this.charType = charType;
     this.loadCharacterTextures(this.charType);
-    if (this.charType === 'amazon') {
-      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
-    } else {
-      this.animator = undefined;
-    }
+    this.animator = new CharacterAnimator(
+      this.animatedTextures,
+      getCharacterAnimLayout(this.charType)
+    );
+    this.animation.animator = this.animator;
     this.spriteMesh.geometry = Player.getCharacterGeometry(this.charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
     if (this.customDepthMaterial) {
@@ -849,12 +853,12 @@ export class Player {
       this.animTimer += dt * 3;
     }
 
-    // 4. Animation Execution: 4-State Machine (IDLE, WALK, ATTACK, WALK_ATTACK)
+    // 4. Animation Execution: 4-State Machine (IDLE, WALK, IDLE_ATTACK, WALK_ATTACK)
     let newState: HeroAnimState = 'IDLE';
     if (isAttacking && isMoving) {
       newState = 'WALK_ATTACK';
     } else if (isAttacking) {
-      newState = 'ATTACK';
+      newState = 'IDLE_ATTACK';
     } else if (isMoving) {
       newState = 'WALK';
     } else {
