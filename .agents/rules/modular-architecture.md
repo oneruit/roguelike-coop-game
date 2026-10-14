@@ -60,3 +60,12 @@ This rule defines mandatory architecture standards for all UI components, game m
 2. **Decoupled Mechanics via Events**:
    - Entities (such as Player or Enemies) should emit events (`player:damage`, `player:levelup`, `boss:spawn`) rather than directly calling UI methods or network methods.
    - Systems subscribe to events, keeping simulation logic decoupled from presentation and UI.
+
+---
+
+## 4. Documentation & Indexing Culture
+
+1. **JSDoc for Classes and Public Methods**:
+   - When creating or refactoring major classes, interfaces, managers, or public methods, write a concise 1–2 line JSDoc comment (`/** ... */`) describing their role.
+   - The automated indexer (`npm run index`) automatically extracts these descriptions into `.agents/cache/codebase-index.json`, making their purpose immediately discoverable via the `find_symbol` MCP tool without reading file contents.
+

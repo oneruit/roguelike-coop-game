@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-14T23:15:49.091Z | **Files:** 148 | **Top-level:** 457 | **Class Methods:** 1051
+> **Generated:** 2026-10-14T23:40:58.418Z | **Files:** 148 | **Top-level:** 457 | **Class Methods:** 1051
 > **Entities Registered:** 10 Heroes, 25 Weapons, 2 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.

@@ -60,7 +60,7 @@ git ls-files "*<pattern>*"
 
 When the `codebase-indexer` MCP server is available, prefer using native MCP tools over running terminal commands:
 
-- **`find_symbol(name)`**: Instant lookup of classes, interfaces, types, functions, constants, or class methods; returns exact file path, line number, and declaration code snippet.
+- **`find_symbol(name)`**: Instant lookup of classes, interfaces, types, functions, constants, or class methods. Returns exact file path, line number, JSDoc summary, and declaration code snippet. Supports **fuzzy matching**, CamelCase acronyms (e.g. `css` for `CharacterSelectScreen`), abbreviations (e.g. `authmgr` for `AuthManager`), and typo tolerance.
 - **`get_game_entities(category)`**: Instant table of heroes, weapons, bosses, monsters, items, or passives from `DEFAULT_BALANCE` without reading large files.
 - **`search_code(query, directory, caseSensitive, maxResults)`**: High-speed git-indexed search (<50ms).
 - **`get_file_outline(file)`**: Lists all exported symbols and class methods for a file without reading the whole file.
