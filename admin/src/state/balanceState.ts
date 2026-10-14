@@ -18,7 +18,8 @@ export class BalanceState {
     monsters: { col: 'name', dir: 'asc' },
     bosses: { col: 'name', dir: 'asc' },
     passives: { col: 'name', dir: 'asc' },
-    items: { col: 'name', dir: 'asc' }
+    items: { col: 'name', dir: 'asc' },
+    talents: { col: 'name', dir: 'asc' }
   };
 
   constructor() {

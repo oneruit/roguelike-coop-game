@@ -340,6 +340,20 @@ export class SupabaseService {
       });
     }
 
+    // 30 Talents
+    for (const [key, talent] of Object.entries(DEFAULT_BALANCE.talents)) {
+      rows.push({
+        id: `talent:${key}`,
+        category: 'talent',
+        key,
+        name: talent.name,
+        description: talent.description,
+        data: talent,
+        version: 1,
+        updated_at: new Date().toISOString()
+      });
+    }
+
     // Global
     rows.push({
       id: 'global:combat',
@@ -446,6 +460,9 @@ export class SupabaseService {
           name = dataPayload.name || key;
         } else if (cat === 'items') {
           dataPayload = this.state.draftBalance.items[key];
+          name = dataPayload.name || key;
+        } else if (cat === 'talents') {
+          dataPayload = this.state.draftBalance.talents[key];
           name = dataPayload.name || key;
         } else if (cat === 'global') {
           dataPayload = this.state.draftBalance.global;

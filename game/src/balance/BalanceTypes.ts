@@ -1,4 +1,18 @@
-export type BalanceCategory = 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item';
+export type BalanceCategory = 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item' | 'talent';
+
+export interface TalentBalanceConfig {
+  id: string;
+  branch: 'offense' | 'defense' | 'utility';
+  name: string;
+  icon: string;
+  description: string;
+  maxLevel: number;
+  costPerLevel: number[];
+  bonusPerLevel: number;
+  unit?: string;
+  statKey: string;
+  notes?: string;
+}
 
 export interface WeaponBalanceConfig {
   id: string;
@@ -103,6 +117,7 @@ export interface GameBalanceState {
   bosses: Record<string, BossBalanceConfig>;
   passives: Record<string, PassiveBalanceConfig>;
   items: Record<string, ItemBalanceConfig>;
+  talents: Record<string, TalentBalanceConfig>;
   global: GlobalBalanceConfig;
 }
 

@@ -1,13 +1,13 @@
-<div id="shop-modal" class="modal shop-modal hidden" aria-label="Магазин Разлома">
+<div class="modal shop-modal" aria-label="Магазин Разлома">
   <div class="modal-backdrop shop-backdrop"></div>
 
   <div class="modal-card shop-card">
     <!-- Header -->
     <header class="shop-header">
       <div class="shop-header-title-wrap">
-        <div class="shop-header-badge">META PROGRESSION</div>
+        <div class="shop-header-badge">META PROGRESSION • 30 ТАЛАНТОВ</div>
         <h2 class="shop-title">ТАЛАНТЫ РАЗЛОМА</h2>
-        <p class="shop-subtitle">Улучшения действуют на всех героев одновременно и сохраняются навсегда</p>
+        <p class="shop-subtitle">3 ветки по 10 улучшений (до 5 рангов). Бонусы действуют на всех героев и сохраняются навсегда</p>
       </div>
 
       <div class="shop-header-right">
@@ -24,131 +24,50 @@
       </div>
     </header>
 
-    <!-- 3 Progression Branches -->
-    <main class="shop-branches-grid">
-      <!-- 1. Offense Branch -->
-      <section class="shop-branch-card branch-offense" id="branch-card-offense">
-        <div class="branch-card-header">
-          <div class="branch-icon-wrap">⚔️</div>
-          <div class="branch-meta">
-            <h3 class="branch-name">ВЕТКА МОГУЩЕСТВА</h3>
-            <span class="branch-level-badge">УРОВЕНЬ <strong id="offense-level-text">0</strong> / 10</span>
-          </div>
-        </div>
+    <!-- Branch Navigation Tabs -->
+    <div class="shop-tabs-bar">
+      <button class="shop-tab-btn active" data-branch="offense" id="shop-tab-offense" type="button">
+        <span class="shop-tab-icon">⚔️</span>
+        <span class="shop-tab-text">Ветка Могущества</span>
+        <span class="shop-tab-badge" id="offense-branch-pts">0 / 50</span>
+      </button>
 
-        <div class="branch-pips-row" id="offense-pips">
-          <!-- 10 pips dynamically generated -->
-        </div>
+      <button class="shop-tab-btn" data-branch="defense" id="shop-tab-defense" type="button">
+        <span class="shop-tab-icon">🛡️</span>
+        <span class="shop-tab-text">Ветка Стойкости</span>
+        <span class="shop-tab-badge" id="defense-branch-pts">0 / 50</span>
+      </button>
 
-        <p class="branch-desc">
-          Увеличивает общий урон всего оружия (+3% за ранг), шанс критического удара, критический урон и сокращает время перезарядки.
-        </p>
+      <button class="shop-tab-btn" data-branch="utility" id="shop-tab-utility" type="button">
+        <span class="shop-tab-icon">🔮</span>
+        <span class="shop-tab-text">Ветка Мастерства</span>
+        <span class="shop-tab-badge" id="utility-branch-pts">0 / 50</span>
+      </button>
+    </div>
 
-        <div class="branch-stats-box">
-          <div class="branch-stat-row">
-            <span class="stat-name">Текущий бонус:</span>
-            <span class="stat-value current" id="offense-cur-bonus">Нет</span>
-          </div>
-          <div class="branch-stat-row">
-            <span class="stat-name">Следующий ранг:</span>
-            <span class="stat-value next" id="offense-next-bonus">+3% к урону</span>
-          </div>
-        </div>
+    <!-- Branch Description Banner -->
+    <div class="shop-branch-banner" id="shop-branch-banner">
+      <div class="branch-banner-text" id="shop-branch-banner-desc">
+        Усиливает общий урон всего арсенала, критические удары, баллистику, радиус поражения и урон по боссам.
+      </div>
+    </div>
 
-        <button id="btn-upgrade-offense" class="shop-upgrade-btn" type="button">
-          <span class="btn-text">УЛУЧШИТЬ</span>
-          <span class="btn-cost" id="offense-cost-wrap">
-            <img src="/textures/ui/bp_crystal.png" class="btn-crystal-icon" alt="🔮" />
-            <span id="offense-cost-text">10</span>
-          </span>
-        </button>
-      </section>
-
-      <!-- 2. Defense Branch -->
-      <section class="shop-branch-card branch-defense" id="branch-card-defense">
-        <div class="branch-card-header">
-          <div class="branch-icon-wrap">🛡️</div>
-          <div class="branch-meta">
-            <h3 class="branch-name">ВЕТКА СТОЙКОСТИ</h3>
-            <span class="branch-level-badge">УРОВЕНЬ <strong id="defense-level-text">0</strong> / 10</span>
-          </div>
-        </div>
-
-        <div class="branch-pips-row" id="defense-pips">
-          <!-- 10 pips dynamically generated -->
-        </div>
-
-        <p class="branch-desc">
-          Увеличивает максимальный запас здоровья (+10 за ранг), снижает весь входящий урон и наделяет постоянной пассивной регенерацией.
-        </p>
-
-        <div class="branch-stats-box">
-          <div class="branch-stat-row">
-            <span class="stat-name">Текущий бонус:</span>
-            <span class="stat-value current" id="defense-cur-bonus">Нет</span>
-          </div>
-          <div class="branch-stat-row">
-            <span class="stat-name">Следующий ранг:</span>
-            <span class="stat-value next" id="defense-next-bonus">+10 к HP, -1% урона</span>
-          </div>
-        </div>
-
-        <button id="btn-upgrade-defense" class="shop-upgrade-btn" type="button">
-          <span class="btn-text">УЛУЧШИТЬ</span>
-          <span class="btn-cost" id="defense-cost-wrap">
-            <img src="/textures/ui/bp_crystal.png" class="btn-crystal-icon" alt="🔮" />
-            <span id="defense-cost-text">10</span>
-          </span>
-        </button>
-      </section>
-
-      <!-- 3. Utility Branch -->
-      <section class="shop-branch-card branch-utility" id="branch-card-utility">
-        <div class="branch-card-header">
-          <div class="branch-icon-wrap">🔮</div>
-          <div class="branch-meta">
-            <h3 class="branch-name">ВЕТКА МАСТЕРСТВА</h3>
-            <span class="branch-level-badge">УРОВЕНЬ <strong id="utility-level-text">0</strong> / 10</span>
-          </div>
-        </div>
-
-        <div class="branch-pips-row" id="utility-pips">
-          <!-- 10 pips dynamically generated -->
-        </div>
-
-        <p class="branch-desc">
-          Увеличивает скорость перемещения (+2% за ранг), радиус магнитного притяжения кристаллов и повышает шанс выпадения Кристаллов Разлома.
-        </p>
-
-        <div class="branch-stats-box">
-          <div class="branch-stat-row">
-            <span class="stat-name">Текущий бонус:</span>
-            <span class="stat-value current" id="utility-cur-bonus">Нет</span>
-          </div>
-          <div class="branch-stat-row">
-            <span class="stat-name">Следующий ранг:</span>
-            <span class="stat-value next" id="utility-next-bonus">+2% к скорости, +0.5м магнита</span>
-          </div>
-        </div>
-
-        <button id="btn-upgrade-utility" class="shop-upgrade-btn" type="button">
-          <span class="btn-text">УЛУЧШИТЬ</span>
-          <span class="btn-cost" id="utility-cost-wrap">
-            <img src="/textures/ui/bp_crystal.png" class="btn-crystal-icon" alt="🔮" />
-            <span id="utility-cost-text">10</span>
-          </span>
-        </button>
-      </section>
+    <!-- Talents Grid (10 cards for active branch) -->
+    <main class="shop-talents-scroll">
+      <div class="shop-talents-grid" id="shop-talents-grid">
+        <!-- Dynamically rendered talent cards via ShopScreen.ts -->
+      </div>
     </main>
 
     <!-- Footer Controls -->
     <footer class="shop-footer">
       <div class="shop-footer-left">
         <button id="shop-btn-respec" class="shop-respec-btn" type="button" title="Вернуть 100% кристаллов">
-          🔄 Сбросить улучшения (100% возврат)
+          🔄 Сбросить таланты (100% возврат)
         </button>
         <span class="shop-invested-info">
           Вложено: <strong id="shop-total-invested">0</strong> <img src="/textures/ui/bp_crystal.png" class="mini-crystal" alt="🔮" />
+          <span class="shop-total-pts-badge" id="shop-total-pts">0 / 150 очков</span>
         </span>
       </div>
 

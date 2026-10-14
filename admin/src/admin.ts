@@ -11,6 +11,7 @@ import { renderMonsters } from './views/monstersView';
 import { renderBosses } from './views/bossesView';
 import { renderPassives } from './views/passivesView';
 import { renderItems } from './views/itemsView';
+import { renderTalents } from './views/talentsView';
 import { renderMerchant } from './views/merchantView';
 import { renderGlobal } from './views/globalView';
 import { DEFAULT_BALANCE } from '../../game/src/balance/defaultBalance';
@@ -21,6 +22,7 @@ export class AdminController {
   public modal: ModalManager;
   public progression: ProgressionView;
   public simulation: SimulationView;
+  public selectedTalentsBranchFilter: string = 'all';
 
   constructor() {
     this.state = new BalanceState();
@@ -84,6 +86,7 @@ export class AdminController {
         else if (table === 'bosses') this.renderBosses();
         else if (table === 'passives') this.renderPassives();
         else if (table === 'items') this.renderItems();
+        else if (table === 'talents') this.renderTalents();
       });
     });
 
@@ -227,6 +230,25 @@ export class AdminController {
       }
     });
 
+    document.getElementById('btn-reset-talents-all')?.addEventListener('click', () => {
+      if (confirm('Сбросить все таланты к значениям по умолчанию?')) {
+        this.state.draftBalance.talents = JSON.parse(JSON.stringify(DEFAULT_BALANCE.talents));
+        this.state.checkAllCategoryChanges('talents');
+        this.renderTalents();
+        updateOverviewStats(this.state);
+      }
+    });
+
+    document.querySelectorAll('[data-talent-branch]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const branch = (e.currentTarget as HTMLElement).dataset.talentBranch || 'all';
+        this.selectedTalentsBranchFilter = branch;
+        document.querySelectorAll('[data-talent-branch]').forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+        this.renderTalents();
+      });
+    });
+
     document.getElementById('btn-reset-global-all')?.addEventListener('click', () => {
       if (confirm('Сбросить глобальные настройки к defaults?')) {
         this.state.draftBalance.global = JSON.parse(JSON.stringify(DEFAULT_BALANCE.global));
@@ -328,6 +350,10 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         title: 'Предметы Разлома',
         subtitle: 'Артефакты, свитки и экипируемые предметы'
       },
+      talents: {
+        title: 'Мета-прокачка (Таланты)',
+        subtitle: 'Улучшения за Кристаллы Разлома: 3 ветки по 10 талантов (до 5 рангов)'
+      },
       merchant: {
         title: 'Торговец Разлома',
         subtitle: 'Настройка интервалов визита, времени стоянки и ценовой политики товаров'
@@ -364,6 +390,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       else if (target === 'bosses') this.renderBosses();
       else if (target === 'passives') this.renderPassives();
       else if (target === 'items') this.renderItems();
+      else if (target === 'talents') this.renderTalents();
       else if (target === 'merchant') this.renderMerchant();
       else if (target === 'global') this.renderGlobal();
     } catch (err) {
@@ -378,6 +405,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     else if (this.state.activeTab === 'bosses') this.renderBosses();
     else if (this.state.activeTab === 'passives') this.renderPassives();
     else if (this.state.activeTab === 'items') this.renderItems();
+    else if (this.state.activeTab === 'talents') this.renderTalents();
     else if (this.state.activeTab === 'merchant') this.renderMerchant();
     else if (this.state.activeTab === 'dashboard') {
       // If user is searching on dashboard, jump to weapons to show results
@@ -591,6 +619,20 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     );
   }
 
+  public renderTalents(): void {
+    renderTalents(
+      this.state,
+      (cat, id) => {
+        this.state.resetSingleItem(cat, id);
+        this.renderTalents();
+        updateOverviewStats(this.state);
+      },
+      (path, val) => this.handleFieldChange(path, val),
+      () => this.clearSearch(),
+      this.selectedTalentsBranchFilter
+    );
+  }
+
   public renderMerchant(): void {
     try {
       renderMerchant(this.state, (path, val) => this.handleFieldChange(path, val));
@@ -611,6 +653,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.renderBosses();
     this.renderPassives();
     this.renderItems();
+    this.renderTalents();
     this.renderMerchant();
     this.renderGlobal();
     this.progression.render();
