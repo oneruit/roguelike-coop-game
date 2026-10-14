@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "codebase-indexer": {
+      "command": "node",
+      "args": [".agents/mcp/server.mjs"],
+      "env": {
+        "WORKSPACE_ROOT": "d:/projects/Git/my-lovely-game"
+      }
+    }
+  }
+}
