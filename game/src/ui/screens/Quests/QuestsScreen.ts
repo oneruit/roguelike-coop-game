@@ -24,9 +24,9 @@ export interface ChapterQuestItem {
 export interface QuestsScreenOptions {
   container?: HTMLElement | null;
   questsModal?: HTMLElement | null;
-  mainMenuModal: HTMLElement;
+  mainMenuModal?: HTMLElement;
   pauseModal: HTMLElement;
-  getMainMenuBattlePass: () => HTMLElement | null;
+  getMainMenuBattlePass?: () => HTMLElement | null;
   isPaused: () => boolean;
   getMenuStack: () => string[];
   pushMenu: (menu: string) => void;
@@ -65,6 +65,11 @@ export class QuestsScreen extends Screen {
 
     const closeBtn = SafeDOM.query(this.container, '#quests-btn-close');
     closeBtn?.addEventListener('click', () => {
+      this.hideQuestsModal();
+    });
+
+    const backdrop = SafeDOM.query(this.container, '.modal-backdrop');
+    backdrop?.addEventListener('click', () => {
       this.hideQuestsModal();
     });
 
@@ -108,7 +113,7 @@ export class QuestsScreen extends Screen {
   }
 
   public toggleQuestsInMainMenu(): void {
-    if (this.isQuestsOpenInMenu && !this.container.classList.contains('hidden')) {
+    if (!this.container.classList.contains('hidden')) {
       this.hideQuestsModal();
     } else {
       this.showQuestsModal('ch1_deadly_debut', 1);
@@ -144,40 +149,26 @@ export class QuestsScreen extends Screen {
     if (fromCharSelect) {
       this.isFromCharSelect = true;
       this.isQuestsOpenInMenu = false;
-      this.container.classList.remove('in-main-menu');
-      const stack = this.ctx.getMenuStack();
-      if (stack[stack.length - 1] !== 'quests') {
-        this.ctx.pushMenu('quests');
-      }
     } else if (this.ctx.isPaused() || this.ctx.getMenuStack().includes('pause')) {
       this.ctx.pauseModal.classList.add('hidden');
-      const stack = this.ctx.getMenuStack();
-      if (stack[stack.length - 1] !== 'quests') {
-        this.ctx.pushMenu('quests');
-      }
-      this.container.classList.remove('in-main-menu');
+      this.isFromCharSelect = false;
       this.isQuestsOpenInMenu = false;
     } else {
-      this.ctx.mainMenuModal.classList.add('quests-open');
-      this.container.classList.add('in-main-menu');
-      this.ctx.getMainMenuBattlePass()?.classList.add('hidden');
-      SafeDOM.getElementById('menu-btn-quests')?.classList.add('active');
+      this.isFromCharSelect = false;
       this.isQuestsOpenInMenu = true;
-      const stack = this.ctx.getMenuStack();
-      if (stack[stack.length - 1] !== 'quests') {
-        this.ctx.pushMenu('quests');
-      }
     }
+
+    const stack = this.ctx.getMenuStack();
+    if (stack[stack.length - 1] !== 'quests') {
+      this.ctx.pushMenu('quests');
+    }
+
     this.renderQuestsModal(this.activeQuestId, chapter);
     this.show();
   }
 
   public hideQuestsModal(): void {
     this.hide();
-    this.container.classList.remove('in-main-menu');
-    this.ctx.mainMenuModal.classList.remove('quests-open');
-    this.ctx.getMainMenuBattlePass()?.classList.remove('hidden');
-    SafeDOM.getElementById('menu-btn-quests')?.classList.remove('active');
     this.isQuestsOpenInMenu = false;
     this.ctx.removeMenu('quests');
     if (this.isFromCharSelect) {

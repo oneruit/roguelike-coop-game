@@ -17,29 +17,6 @@
   box-sizing: border-box !important;
 }
 
-.main-menu-modal.quests-open {
-  align-items: center !important;
-  padding-bottom: 0 !important;
-}
-
-.main-menu-modal.quests-open .main-menu-quests-sidebar {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.main-menu-modal.quests-open .main-menu-game-title {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.main-menu-modal.quests-open .battle-pass-widget {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
 .main-menu-backdrop {
   position: absolute;
   top: 0;
