@@ -482,6 +482,39 @@ body.is-in-game .menu-scenic-backdrop::after {
   text-align: center;
 }
 
+.chest-modal-header-with-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.chest-modal-badge-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 14px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chest-modal-anim-img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
+}
+
+.chest-modal-header-text {
+  text-align: left;
+}
+
 .chest-hint {
   font-size: 13px;
   color: #94a3b8;

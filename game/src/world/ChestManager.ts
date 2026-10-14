@@ -4,15 +4,23 @@ import {
   Mesh,
   type Scene,
   BoxGeometry,
-  MeshStandardMaterial,
   OctahedronGeometry,
   MeshBasicMaterial,
   RingGeometry,
-  DoubleSide
+  DoubleSide,
+  PlaneGeometry,
+  Texture,
+  TextureLoader,
+  SRGBColorSpace,
+  LinearFilter,
+  PointLight,
+  MeshDepthMaterial,
+  RGBADepthPacking
 } from 'three';
 import { rollChestDropPair, RiftItemDef } from '../items/RiftItemSystem';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { SeededRNG } from '../core/SeededRNG';
+import { getAssetUrl } from '../utils/assetPath';
 
 export type ChestTier = 'small' | 'large' | 'legendary';
 
@@ -26,6 +34,11 @@ export interface ChestInstance {
   lidMesh: Mesh;
   hologramMesh: Mesh;
   glowMesh: Mesh;
+  spriteMesh?: Mesh;
+  spriteTexture?: Texture;
+  openProgress?: number;
+  isAnimating?: boolean;
+  flashLight?: PointLight;
 }
 
 export class ChestManager {
@@ -34,40 +47,58 @@ export class ChestManager {
   public chronosDroppedInCurrentBiome: boolean = false;
   private static nextId = 1;
 
-  // Shared Geometries & Materials for high performance
-  private smallBaseGeom = new BoxGeometry(1.6, 0.9, 1.2);
-  private smallLidGeom = new BoxGeometry(1.65, 0.35, 1.25);
-  private largeBaseGeom = new BoxGeometry(2.2, 1.2, 1.6);
-  private largeLidGeom = new BoxGeometry(2.25, 0.45, 1.65);
+  // Shared Textures & Geometry for high performance
+  private static textureLoader = new TextureLoader();
+  private static sheetSmall: Texture | null = null;
+  private static sheetLarge: Texture | null = null;
+  private static sheetLegendary: Texture | null = null;
+  private static sharedPlaneGeom: PlaneGeometry | null = null;
 
-  private smallMat = new MeshStandardMaterial({
-    color: 0x334155,
-    metalness: 0.8,
-    roughness: 0.3,
-    emissive: 0x0284c7,
-    emissiveIntensity: 0.3
-  });
-  private largeMat = new MeshStandardMaterial({
-    color: 0x1e293b,
-    metalness: 0.85,
-    roughness: 0.25,
-    emissive: 0x16a34a,
-    emissiveIntensity: 0.35
-  });
-  private legendaryMat = new MeshStandardMaterial({
-    color: 0x450a0a,
-    metalness: 0.9,
-    roughness: 0.2,
-    emissive: 0xdc2626,
-    emissiveIntensity: 0.5
-  });
+  private static getChestGeometry(): PlaneGeometry {
+    if (!ChestManager.sharedPlaneGeom) {
+      const geom = new PlaneGeometry(1.9, 1.9);
+      // Anchor contact shadow to ground level y=0
+      geom.translate(0, 0.77, 0);
+      ChestManager.sharedPlaneGeom = geom;
+    }
+    return ChestManager.sharedPlaneGeom;
+  }
+
+  private static getSheetTexture(tier: ChestTier): Texture {
+    let url = '/textures/chests/chest_small_sheet.png';
+    let cached: Texture | null = null;
+
+    if (tier === 'large') {
+      url = '/textures/chests/chest_large_sheet.png';
+      cached = ChestManager.sheetLarge;
+    } else if (tier === 'legendary') {
+      url = '/textures/chests/chest_legendary_sheet.png';
+      cached = ChestManager.sheetLegendary;
+    } else {
+      cached = ChestManager.sheetSmall;
+    }
+
+    if (!cached) {
+      const tex = ChestManager.textureLoader.load(getAssetUrl(url));
+      tex.colorSpace = SRGBColorSpace;
+      tex.minFilter = LinearFilter;
+      tex.magFilter = LinearFilter;
+
+      if (tier === 'large') ChestManager.sheetLarge = tex;
+      else if (tier === 'legendary') ChestManager.sheetLegendary = tex;
+      else ChestManager.sheetSmall = tex;
+
+      return tex;
+    }
+    return cached;
+  }
 
   constructor(scene: Scene) {
     this.scene = scene;
   }
 
   /**
-   * Spawns a chest at the given position.
+   * Spawns an animated 2.5D chest at the given position.
    */
   public spawnChest(
     x: number,
@@ -82,50 +113,55 @@ export class ChestManager {
     group.position.set(x, y, z);
 
     let baseCost = customBaseCost ?? 25;
-    let baseGeom = this.smallBaseGeom;
-    let lidGeom = this.smallLidGeom;
-    let mat = this.smallMat;
-    let glowColor = 0x38bdf8;
+    let glowColor = 0xf59e0b; // Small tier: warm gold
 
     if (tier === 'large') {
       baseCost = customBaseCost ?? 50;
-      baseGeom = this.largeBaseGeom;
-      lidGeom = this.largeLidGeom;
-      mat = this.largeMat;
-      glowColor = 0x4ade80;
+      glowColor = 0x06b6d4; // Large tier: arcane cyan
     } else if (tier === 'legendary') {
       baseCost = customBaseCost ?? 100;
-      baseGeom = this.largeBaseGeom;
-      lidGeom = this.largeLidGeom;
-      mat = this.legendaryMat;
-      glowColor = 0xf87171;
+      glowColor = 0xf43f5e; // Legendary tier: crimson rose
     }
 
-    // Base body
-    const baseMesh = new Mesh(baseGeom, mat);
-    baseMesh.position.y = baseGeom.parameters.height / 2;
-    baseMesh.castShadow = true;
-    baseMesh.receiveShadow = true;
-    group.add(baseMesh);
+    // 1. Cloned UV-offset texture for independent 6-frame animation
+    const sheet = ChestManager.getSheetTexture(tier);
+    const spriteTex = sheet.clone();
+    spriteTex.repeat.set(1 / 6, 1);
+    spriteTex.offset.set(0, 0); // Frame 1: closed
 
-    // Opening Lid (hinged at back)
-    const lidMesh = new Mesh(lidGeom, mat);
-    lidMesh.position.set(0, baseGeom.parameters.height + lidGeom.parameters.height / 2, 0);
-    lidMesh.castShadow = true;
-    group.add(lidMesh);
+    const spriteMat = new MeshBasicMaterial({
+      map: spriteTex,
+      transparent: true,
+      alphaTest: 0.15,
+      side: DoubleSide,
+      depthWrite: true,
+      depthTest: true
+    });
 
-    // Glowing Hologram Beacon above chest
-    const holoGeom = new OctahedronGeometry(0.35);
+    const spriteMesh = new Mesh(ChestManager.getChestGeometry(), spriteMat);
+    // Align with 2.5D camera perspective (-37.5 degrees)
+    spriteMesh.rotation.x = -Math.PI / 4.8;
+    spriteMesh.position.y = 0.05;
+    spriteMesh.castShadow = true;
+    spriteMesh.customDepthMaterial = new MeshDepthMaterial({
+      depthPacking: RGBADepthPacking,
+      map: spriteTex,
+      alphaTest: 0.15
+    });
+    group.add(spriteMesh);
+
+    // 2. Glowing Hologram Beacon above chest
+    const holoGeom = new OctahedronGeometry(0.32);
     const holoMat = new MeshBasicMaterial({
       color: glowColor,
       wireframe: true
     });
     const hologramMesh = new Mesh(holoGeom, holoMat);
-    hologramMesh.position.y = baseGeom.parameters.height + 1.2;
+    hologramMesh.position.y = 1.95;
     group.add(hologramMesh);
 
-    // Ground energy aura
-    const auraGeom = new RingGeometry(1.2, 1.5, 24);
+    // 3. Ground magic energy aura ring
+    const auraGeom = new RingGeometry(1.0, 1.35, 24);
     auraGeom.rotateX(-Math.PI / 2);
     const auraMat = new MeshBasicMaterial({
       color: glowColor,
@@ -134,8 +170,12 @@ export class ChestManager {
       side: DoubleSide
     });
     const glowMesh = new Mesh(auraGeom, auraMat);
-    glowMesh.position.y = 0.05;
+    glowMesh.position.y = 0.03;
     group.add(glowMesh);
+
+    // 4. Dummy lid for backward compatibility
+    const lidMesh = new Mesh(new BoxGeometry(0.01, 0.01, 0.01), new MeshBasicMaterial({ visible: false }));
+    group.add(lidMesh);
 
     const chest: ChestInstance = {
       id,
@@ -146,7 +186,11 @@ export class ChestManager {
       mesh: group,
       lidMesh,
       hologramMesh,
-      glowMesh
+      glowMesh,
+      spriteMesh,
+      spriteTexture: spriteTex,
+      openProgress: 0,
+      isAnimating: false
     };
 
     this.chests.push(chest);
@@ -240,18 +284,36 @@ export class ChestManager {
   }
 
   /**
-   * Updates floating chest hologram visuals.
+   * Updates floating chest hologram visuals, pulse aura, and opening animations.
    */
   public update(dt: number) {
     for (const chest of this.chests) {
       if (!chest.isOpened) {
         chest.hologramMesh.rotation.y += dt * 2.0;
         chest.hologramMesh.rotation.x += dt * 0.8;
+        if (chest.glowMesh && chest.glowMesh.material instanceof MeshBasicMaterial) {
+          const pulse = 0.35 + 0.15 * Math.sin(Date.now() * 0.003 + chest.position.x);
+          chest.glowMesh.material.opacity = pulse;
+        }
       } else {
-        // Smoothly swing lid open backwards
-        if (chest.lidMesh.rotation.x > -Math.PI * 0.4) {
-          chest.lidMesh.rotation.x -= dt * 4.0;
-          chest.lidMesh.position.z -= dt * 0.8;
+        // Animate 6-frame opening sequence over 0.5s
+        if (chest.isAnimating && chest.spriteTexture) {
+          chest.openProgress = (chest.openProgress || 0) + dt / 0.5;
+          if (chest.openProgress >= 1) {
+            chest.openProgress = 1;
+            chest.isAnimating = false;
+          }
+          const frameIndex = Math.min(5, Math.floor(chest.openProgress * 6));
+          chest.spriteTexture.offset.x = frameIndex / 6;
+        }
+
+        // Fade out opening burst light if present
+        if (chest.flashLight) {
+          chest.flashLight.intensity = Math.max(0, chest.flashLight.intensity - dt * 4.0);
+          if (chest.flashLight.intensity <= 0.01) {
+            chest.mesh.remove(chest.flashLight);
+            chest.flashLight = undefined;
+          }
         }
       }
     }
@@ -288,7 +350,7 @@ export class ChestManager {
   }
 
   /**
-   * Opens the chest, awards item and returns dropped item.
+   * Opens the chest, triggers opening animation and light burst, awards item and returns dropped item.
    */
   public openChest(
     chest: ChestInstance,
@@ -296,8 +358,21 @@ export class ChestManager {
     isItemMaxed?: (id: string) => boolean
   ): [RiftItemDef, RiftItemDef] {
     chest.isOpened = true;
+    chest.isAnimating = true;
+    chest.openProgress = 0;
     chest.hologramMesh.visible = false;
     chest.glowMesh.visible = false;
+
+    // Opening burst light flare
+    let glowColor = 0xf59e0b;
+    if (chest.tier === 'large') glowColor = 0x06b6d4;
+    else if (chest.tier === 'legendary') glowColor = 0xf43f5e;
+
+    const flash = new PointLight(glowColor, 2.5, 7.0);
+    flash.position.set(0, 0.9, 0.3);
+    chest.mesh.add(flash);
+    chest.flashLight = flash;
+
     const pair = rollChestDropPair(stageNumber, Math.random, this.chronosDroppedInCurrentBiome, isItemMaxed);
     if (pair[0].id === 'chronos_phylactery' || pair[1].id === 'chronos_phylactery') {
       this.chronosDroppedInCurrentBiome = true;
@@ -340,10 +415,13 @@ export class ChestManager {
         const chest = this.spawnChest(snap.x, snap.z, snap.tier, snap.id, snap.baseCost);
         if (snap.isOpened) {
           chest.isOpened = true;
+          chest.isAnimating = false;
+          chest.openProgress = 1;
           chest.hologramMesh.visible = false;
           chest.glowMesh.visible = false;
-          chest.lidMesh.rotation.x = -Math.PI * 0.4;
-          chest.lidMesh.position.z -= 0.3;
+          if (chest.spriteTexture) {
+            chest.spriteTexture.offset.x = 5 / 6; // Stay on frame 6 (opened)
+          }
         }
       }
       return;
