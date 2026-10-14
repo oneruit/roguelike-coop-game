@@ -39,7 +39,7 @@ The game features **6 unique heroes**. Character selection determines base healt
 | **Tactical Dash** | CD: **2.5 s**, dur: **0.22 s** | Dash speed: **x2.5** current movement speed | Full collision invulnerability |
 | **Critical Strike Chance** | **5% (0.05)** | +12% per stack of Sniper Visor (`crit_visor`) | 100% |
 | **Critical Strike Damage** | **200% (x2.0)** | Fixed | x2.0 |
-| **Pickup Radius (Magnet)** | **3.5 m** | x1.35 per stack of Magnetic Lasso (`stat_lasso`) | **25.0 m** |
+| **Pickup Radius (Magnet)** | **3.5 m** | x1.35 per stack of Magnet (`stat_magnet`) | **25.0 m** |
 | **Health Regeneration** | **0 HP/s** | +1.5 HP/s (Hunter's Amulet), +2.5 HP/s (Bio-Injector) | **30.0 HP/s** |
 | **Damage Reduction (Armor)** | **0%** | +10% (Leather Vest), diminishing returns (Nano-Plating) | **75% (0.75)** |
 | **Cooldown Reduction (CDR)** | **0%** | -8% (Pocket Watch), x0.85 (Kinetic Accelerator) | **70-80%** (CD min 0.12–0.30s) |
@@ -257,13 +257,13 @@ Picking up a gold gem awards one of 7 passives:
 
 | Passive | ID | Icon | Effect per Gem | Maximum Cap | Balance Impact |
 | :--- | :--- | :---: | :--- | :---: | :--- |
-| **Sheriff Star** | `stat_sheriff_star` | ⭐ | **+2%** global damage multiplier | No cap (multiplicative) | Adds +20–40% total DPS by minute 20 |
-| **Fleet Spurs** | `stat_spurs` | 👢 | **+3%** movement speed | **x2.5** (max 20–22 m/s) | Allows comfortable kiting of bisons and bosses |
+| **Amplifier** | `stat_amplifier` | ⭐ | **+2%** global damage multiplier | No cap (multiplicative) | Adds +20–40% total DPS by minute 20 |
+| **Speed Boots** | `stat_speed_boots` | 🥾 | **+3%** movement speed | **x3.0** (diminishing returns) | Allows comfortable kiting of bisons and bosses |
 | **Whiskey Flask** | `stat_flask` | 🍶 | **+30 Max HP** + full instant heal | No cap | Emergency rescue and health pool scaling |
-| **Magnetic Lasso** | `stat_lasso` | ➰ | **+35%** XP pickup radius | **25.0 meters** | Vacuums XP without entering monster packs |
-| **Hunter's Amulet** | `stat_amulet` | 🧿 | **+1.5 HP/s** health regeneration | **30.0 HP/s** | Core passive sustain |
-| **Leather Vest** | `stat_vest` | 🦺 | **-10%** damage taken | **70% (0.70)** | Crucial defensive stat against high-tier attacks |
-| **Pocket Watch** | `stat_watch` | ⏱️ | **+8%** weapon attack speed (-8% CD) | **70% (0.30 multiplier)** | Amplifies fire rate across all weapons |
+| **Magnet** | `stat_magnet` | 🧲 | **+10%** XP pickup radius | **50.0 meters** | Vacuums XP without entering monster packs |
+| **Hunter's Amulet** | `stat_amulet` | 🧿 | **+1.0 HP/s** health regeneration | No cap | Core passive sustain |
+| **Leather Vest** | `stat_vest` | 🦺 | **-2%** damage taken | **70% (0.70)** | Crucial defensive stat against high-tier attacks |
+| **Pocket Watch** | `stat_watch` | ⏱️ | **-1%** weapon cooldown | **30% (0.70 multiplier)** | Amplifies fire rate across all weapons |
 
 ---
 

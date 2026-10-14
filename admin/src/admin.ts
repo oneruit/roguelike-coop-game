@@ -172,7 +172,7 @@ export class AdminController {
 
     // Reset All Category buttons
     document.getElementById('btn-reset-weapons-all')?.addEventListener('click', () => {
-      if (confirm('Сбросить параметры всех 13 видов оружия к значениям из BALANCE_REFERENCE.md?')) {
+      if (confirm('Сбросить параметры всех видов оружия к значениям по умолчанию?')) {
         for (const key of Object.keys(DEFAULT_BALANCE.weapons)) {
           this.state.draftBalance.weapons[key] = JSON.parse(JSON.stringify(DEFAULT_BALANCE.weapons[key]));
         }

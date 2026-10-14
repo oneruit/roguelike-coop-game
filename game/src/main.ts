@@ -23,6 +23,7 @@ import { BiomeManager } from './world/BiomeManager';
 import { ChestManager } from './world/ChestManager';
 import { RiftTeleporter } from './world/RiftTeleporter';
 import { ProgressionManager } from './core/ProgressionManager';
+import { MetaProgression } from './meta/MetaProgression';
 import { BalanceManager } from './balance/BalanceManager';
 import { UpdateNotifier } from './core/UpdateNotifier';
 import { UpdateNotificationUI } from './ui/UpdateNotificationUI';
@@ -860,6 +861,12 @@ class Game {
             this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
             SoundManager.playBuffExpire();
             this.hud.updatePassivesBar(this.player);
+          } else if (gem.type === 'crystal') {
+            const count = gem.crystalValue || 1;
+            MetaProgression.getInstance().addCrystals(count);
+            this.damageNumbers.spawnPassiveBuff(this.player.position, `+${count} 🔮 Кристалл Разлома`, this.engine.camera);
+            SoundManager.playItemPickup();
+            this.hud.updateCrystalsCounter(MetaProgression.getInstance().getCrystals());
           }
 
           if (this.net.role === 'client') {

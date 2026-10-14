@@ -32,6 +32,7 @@ import { getPassiveBuffId } from '../drops/PassiveBuffs';
 import { MerchantManager } from '../world/MerchantManager';
 import { FireRingWeapon } from '../combat/weapons/MagicWeapons';
 import { SulfurSmokeManager } from '../vfx/SulfurSmokeVfx';
+import { MetaProgression } from '../meta/MetaProgression';
 
 export enum GameState {
   MAIN_MENU,
@@ -725,6 +726,10 @@ export class SessionDirector {
           const toast = this.player.applyPassiveBuff(buffId);
           this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
           this.hud.updatePassivesBar(this.player);
+        } else if (gem.type === 'crystal') {
+          const count = gem.crystalValue || 1;
+          MetaProgression.getInstance().addCrystals(count);
+          this.damageNumbers.spawnPassiveBuff(this.player.position, `+${count} 🔮 Кристалл Разлома`, this.engine.camera);
         }
       });
       if (sweptXp > 0) {
@@ -828,6 +833,10 @@ export class SessionDirector {
           const toast = this.player.applyPassiveBuff(buffId);
           this.damageNumbers.spawnPassiveBuff(this.player.position, toast, this.engine.camera);
           this.hud.updatePassivesBar(this.player);
+        } else if (gem.type === 'crystal') {
+          const count = gem.crystalValue || 1;
+          MetaProgression.getInstance().addCrystals(count);
+          this.damageNumbers.spawnPassiveBuff(this.player.position, `+${count} 🔮 Кристалл Разлома`, this.engine.camera);
         }
       });
       if (sweptXp > 0) {

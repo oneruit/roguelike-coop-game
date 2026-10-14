@@ -11,7 +11,7 @@ export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
 
 export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable' | 'ghost' | 'alacrity';
 
-export type GemType = 'blue' | 'green' | 'red' | 'gold';
+export type GemType = 'blue' | 'green' | 'red' | 'gold' | 'crystal';
 
 export type EnemyType =
   | 'coyote'
