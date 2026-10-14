@@ -424,8 +424,25 @@ export class Player {
   public onMeleeAttack?: (attack: MeleeAttackInfo) => void;
   public onDamageTaken?: (amount: number, currentHp: number, maxHp: number) => void;
 
-  public triggerAttackAnim(duration: number = 0.5) {
-    this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
+  public triggerAttackAnim(baseDuration: number = 0.5, sourceWeaponId?: string) {
+    if (sourceWeaponId && this.startingWeaponId) {
+      const isMatch =
+        sourceWeaponId === this.startingWeaponId ||
+        (this.charType === 'invoker' && sourceWeaponId.startsWith('invoker_'));
+      if (!isMatch) return;
+    }
+    const mainWeapon = this.weapons.find(w => w.id === this.startingWeaponId) || this.weapons[0];
+    let duration = baseDuration;
+    if (mainWeapon && mainWeapon.effectiveCooldown !== undefined) {
+      duration = Math.min(baseDuration, Math.max(0.08, mainWeapon.effectiveCooldown * 0.95));
+    }
+
+    this.attackAnimTimer = duration;
+    this.animFrameTimer = 0;
+    if (this.animation) {
+      this.animation.attackAnimTimer = duration;
+      this.animation.animFrameTimer = 0;
+    }
     if (this.animator) {
       this.animator.triggerAttack(duration);
     }
@@ -454,23 +471,23 @@ export class Player {
     this.baseSpeed = heroCfg.baseSpeed;
 
     if (this.charType === 'invoker') {
-      this.weapons.push(new InvokerInvokeWeapon(() => this.triggerAttackAnim(.5)));
+      this.weapons.push(new InvokerInvokeWeapon(() => this.triggerAttackAnim(.5, 'invoker_invoke')));
     } else if (this.charType === 'valkyrie') {
-      this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5)));
+      this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5, 'greatsword')));
     } else if (this.charType === 'flail') {
-      this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45)));
+      this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45, 'flail')));
     } else if (this.charType === 'sorceress' || this.charType === 'necromancer') {
-      this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48)));
+      this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48, 'astral_staff')));
     } else if (this.charType === 'chakram') {
-      this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44)));
+      this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44, 'chakram')));
     } else if (this.charType === 'archer') {
-      this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+      this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40, 'bow')));
     } else if (this.charType === 'rocket') {
-      this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20)));
+      this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20, 'assault_rifle')));
     } else if (this.charType === 'amazon') {
       this.weapons.push(new ReaperScytheWeapon());
     } else {
-      this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42)));
+      this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42, 'whirlwind_slash')));
     }
     this.startingWeaponId = this.weapons[0]?.id || heroCfg.startingWeapon || '';
     this.passiveDamageMultiplier = 1.0;
@@ -934,7 +951,7 @@ export class Player {
             this.setDirection(Math.abs(cast.dx) >= Math.abs(cast.dz) ?
               (cast.dx < 0 ? 'left' : 'right') : (cast.dz < 0 ? 'back' : 'front'));
           }
-          this.triggerAttackAnim(.5);
+          this.triggerAttackAnim(.5, weapon.id);
           this.onSpellCast?.(cast);
         };
         weapon.onSpellControl = this.onSpellControl;
@@ -1107,7 +1124,7 @@ export class Player {
 
   public giveAllWeapons(scene: Scene) {
     const hasBow = this.weapons.some(w => w.id === 'bow');
-    if (!hasBow && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40)));
+    if (!hasBow && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new BowWeapon());
 
     const hasKukri = this.weapons.some(w => w.id === 'kukri');
     if (!hasKukri && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KukriWeapon());
@@ -1123,7 +1140,7 @@ export class Player {
     }
 
     const hasKatana = this.weapons.some(w => w.id === 'katana_slash');
-    if (!hasKatana && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KatanaSlashWeapon(() => this.triggerAttackAnim(0.48)));
+    if (!hasKatana && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KatanaSlashWeapon());
     this.recalculateStats();
   }
 

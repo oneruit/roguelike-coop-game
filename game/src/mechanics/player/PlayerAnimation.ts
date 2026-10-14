@@ -97,7 +97,8 @@ export class PlayerAnimation {
   }
 
   public triggerAttackAnim(duration: number = 0.5): void {
-    this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
+    this.attackAnimTimer = duration;
+    this.animFrameTimer = 0;
     if (this.animator) {
       this.animator.triggerAttack(duration);
     }
