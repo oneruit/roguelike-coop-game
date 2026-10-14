@@ -46,7 +46,7 @@ import type { MeleeAttackInfo } from '../shared/types';
 
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
-import { CharacterAnimator, ANIM_LAYOUT_V2 } from './CharacterAnimator';
+import { CharacterAnimator, getCharacterAnimLayout } from './CharacterAnimator';
 import { PlayerStatusManager } from './PlayerStatusManager';
 import { renderPlayerOverhead } from './PlayerOverheadRenderer';
 import { PlayerMotor } from '../mechanics/player/PlayerMotor';
@@ -228,9 +228,10 @@ export class Player {
     this.roninGeom = Player.getCharacterGeometry('ronin');
 
     this.loadCharacterTextures(this.charType);
-    if (this.charType === 'amazon') {
-      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
-    }
+    this.animator = new CharacterAnimator(
+      this.animatedTextures,
+      getCharacterAnimLayout(this.charType)
+    );
 
     this.spriteMaterial = new MeshBasicMaterial({
       map: this.animatedTextures.idle,
@@ -255,6 +256,7 @@ export class Player {
     this.mesh.add(this.spriteMesh);
     this.animation = new PlayerAnimation({ spriteMesh: this.spriteMesh, spriteMaterial: this.spriteMaterial });
     this.animation.loadCharacterTextures(this.charType);
+    this.animation.animator = this.animator;
 
     // Hero Light Glow
     const light = new PointLight(0xf59e0b, 1.4, 9);
@@ -375,23 +377,21 @@ export class Player {
     this.animatedTextures = {
       idle: raw.idle.clone(),
       walk: raw.walk.clone(),
-      attack: raw.attack.clone(),
-      walk_attack: raw.walk_attack.clone()
+      attack: raw.attack.clone()
     };
     this.animatedTextures.idle.needsUpdate = true;
     this.animatedTextures.walk.needsUpdate = true;
     this.animatedTextures.attack.needsUpdate = true;
-    this.animatedTextures.walk_attack.needsUpdate = true;
   }
 
   public setCharacter(charType: CharacterType = 'ronin') {
     this.charType = charType;
     this.loadCharacterTextures(this.charType);
-    if (this.charType === 'amazon') {
-      this.animator = new CharacterAnimator(this.animatedTextures, ANIM_LAYOUT_V2);
-    } else {
-      this.animator = undefined;
-    }
+    this.animator = new CharacterAnimator(
+      this.animatedTextures,
+      getCharacterAnimLayout(this.charType)
+    );
+    this.animation.animator = this.animator;
     this.spriteMesh.geometry = Player.getCharacterGeometry(this.charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
     if (this.customDepthMaterial) {
@@ -849,11 +849,10 @@ export class Player {
       this.animTimer += dt * 3;
     }
 
-    // 4. Animation Execution: 4-State Machine (IDLE, WALK, ATTACK, WALK_ATTACK)
+    // 4. Animation Execution: 3-State Machine (IDLE, WALK, ATTACK)
+    // When attacking, whether moving or idle, the general attack state is used.
     let newState: HeroAnimState = 'IDLE';
-    if (isAttacking && isMoving) {
-      newState = 'WALK_ATTACK';
-    } else if (isAttacking) {
+    if (isAttacking) {
       newState = 'ATTACK';
     } else if (isMoving) {
       newState = 'WALK';

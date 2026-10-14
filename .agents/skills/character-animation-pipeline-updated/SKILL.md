@@ -1,13 +1,13 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, reviewing, validating, and integrating three 6x4 animation sprite sheets (IDLE, WALK, ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure magenta RGB(255,0,255) chromakey background with closed eyes on frame 3. Each cell is 128x128 px. Rows top to bottom are FRONT, BACK, RIGHT, LEFT. In RIGHT and LEFT rows, the body is strictly sideways and face in profile. Preserve character identity and weapon continuity; no visual attack effects by default.
+description: Standardized pipeline for creating, reviewing, validating, and integrating three 6x4 animation sprite sheets (IDLE, WALK, ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure magenta RGB(255,0,255) chromakey background with closed eyes on frame 3. Each cell is 96x96 px. Rows top to bottom are FRONT, BACK, RIGHT, LEFT. In RIGHT and LEFT rows, the body is strictly sideways and face in profile. Preserve character identity and weapon continuity; no visual attack effects by default.
 ---
 
 # Character Animation Pipeline Skill
 
 ## Goal
 
-Produce **three separate animation sheets** for each playable character: `IDLE`, `WALK`, and `ATTACK`. Every sheet is a strict **6 columns × 4 rows** grid: 24 frames at **128 × 128 px per cell**, total **768 × 512 px**. The game uses 2D pixel-art sprites in a 2.5D world with a camera tilted approximately 30°.
+Produce **three separate animation sheets** for each playable character: `IDLE`, `WALK`, and `ATTACK`. Every sheet is a strict **6 columns × 4 rows** grid: 24 frames at **96 × 96 px per cell**, total **576 × 384 px**. The game uses 2D pixel-art sprites in a 2.5D world with a camera tilted approximately 30°.
 
 ---
 
@@ -45,7 +45,7 @@ The pipeline accepts two primary modes of user input:
 ## 2. Master Prompt Template
 
 ```text
-128x128 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
+96x96 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
 
 Chibi proportions with an intentionally oversized head and compact body, [body type], [limb description], [stance], strong readable silhouette.
 
@@ -135,7 +135,7 @@ Row 3 LEFT:  [L1][L2][L3 (closed eyes)][L4][L5][L6]  <-- Body strictly sideways,
 5. Follow-through.
 6. Recovery / reset to ready stance.
 - **Strictly No Attack VFX**: No slash arcs, no magic blades, no sparks, no particles, no speed lines. Physical weapon attack only.
-- Entire weapon and character stay inside each 128×128 cell.
+- Entire weapon and character stay inside each 96×96 cell.
 
 ---
 
@@ -147,7 +147,7 @@ The package includes two verified scripts:
 - Targets pure magenta chromakey `RGB(255, 0, 255)` (`#ff00ff`) globally by default (`--bg-mode magenta --bg-tolerance 65`).
 - Removes magenta both outside and inside the silhouette.
 - Defringes boundary pixels with a crisp 1px black outline, removing any magenta halo without painting over inner textures.
-- Aligns character baselines to `target_feet_y = 118` with consistent shared scale across IDLE/WALK/ATTACK.
+- Aligns character baselines to `target_feet_y = 88` with consistent shared scale across IDLE/WALK/ATTACK.
 - Default row order: `--row-order fbrl` (Row 2 = RIGHT, Row 3 = LEFT).
 - Automatically runs facing direction verification on the processed sheets!
 
@@ -163,7 +163,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/process_chara
 ```
 
 ### 2. `scripts/validate_sheets.py`
-Validates both exact dimensions (768×512) AND facing directions:
+Validates both exact dimensions (576×384) AND facing directions:
 - Verifies that Row 2 (3rd row) is facing RIGHT and Row 3 (4th row) is facing LEFT.
 - Verifies that in both profile rows, the body is turned sideways and face is in profile.
 - Checks horizontal flip alignment: `IoU(flip(Row2), Row3) > IoU(Row2, Row3)`.
@@ -181,7 +181,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 ## 7. Acceptance Checklist
 
 - [ ] Dual input respected: direct prompt/image executed directly, brief descriptions auto-enriched via defaults.
-- [ ] Exactly three animation sheets exist: IDLE, WALK, ATTACK (6×4 grid, 128×128 cells, 768×512 px).
+- [ ] Exactly three animation sheets exist: IDLE, WALK, ATTACK (6×4 grid, 96×96 cells, 576×384 px).
 - [ ] Row mapping: Row 0 FRONT, Row 1 BACK, Row 2 (3rd row) RIGHT, Row 3 (4th row) LEFT.
 - [ ] **Strict Profile Checked**: In Row 2 and Row 3, character body is ALWAYS sideways and face in profile, no 3/4 turn.
 - [ ] Background is pure solid magenta `rgb(255,0,255)` (`#ff00ff`) in generation sources.
@@ -193,5 +193,6 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 - [ ] **Frame 3 closed eyes verified**: In IDLE, WALK, and ATTACK, column 3 has closed eyes across all rows.
 - [ ] Weapon continuity maintained across all frames and rows.
 - [ ] ATTACK has no visual effects (no slash arcs, sparks, magic trails).
+- [ ] Approval gateway respected: Generated images are presented to the user with "Подходит", "Переделать", or "Свой вариант" before proceeding.
 - [ ] Scripts pass: `process_character_sheets.py` and `validate_sheets.py` exit with code 0 and facing directions verified.
 - [ ] `npm run typecheck`, `npm run build`, and `npm run build:admin` succeed.

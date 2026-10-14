@@ -1,6 +1,6 @@
-# Optional UI Portrait — Single 128×128 Avatar Frame
+# Optional UI Portrait — Single 96×96 Avatar Frame
 
-Create one 128×128 pixel-art portrait/avatar of the **same approved character** for UI dialogs and HUD frames. Preserve face, skin tone, eyes, headgear, hair, costume palette, and serious battle-ready expression. The crop should remain readable at small UI size.
+Create one 96×96 pixel-art portrait/avatar of the **same approved character** for UI dialogs and HUD frames. Preserve face, skin tone, eyes, headgear, hair, costume palette, and serious battle-ready expression. The crop should remain readable at small UI size.
 
 ---
 

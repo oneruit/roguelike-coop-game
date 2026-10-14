@@ -2,7 +2,7 @@
 """Validate dimensions and facing directions of IDLE, WALK, and ATTACK sprite sheets.
 
 Checks:
-1. PNG signature, readability, and exact 6x4 768x512 dimensions.
+1. PNG signature, readability, and exact 6x4 576x384 dimensions.
 2. Facing directions: Row 2 (3rd row) must face RIGHT and Row 3 (4th row) must face LEFT,
    with the character's body turned sideways (боком) and face in strict profile (в профиль).
 """
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
-CELL_SIZE = 128
+CELL_SIZE = 96
 COLS = 6
 ROWS = 4
 EXPECTED_SIZE = (CELL_SIZE * COLS, CELL_SIZE * ROWS)

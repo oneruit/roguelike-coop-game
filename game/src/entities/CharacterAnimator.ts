@@ -1,6 +1,6 @@
 import { MeshBasicMaterial, MeshDepthMaterial, Texture } from 'three';
 import { AnimatedCharacterTextures, SpriteDirection } from '../core/TextureManager';
-import { HeroAnimState } from '../shared/types/entities';
+import { CharacterType, HeroAnimState } from '../shared/types/entities';
 
 /**
  * Grid layout specification for directional spritesheets.
@@ -69,9 +69,32 @@ export const ANIM_LAYOUT_LEGACY: CharacterAnimLayout = {
 };
 
 /**
+ * Resolves standard row layouts for all playable characters.
+ */
+export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLayout {
+  switch (charType) {
+    case 'necromancer':
+      return ANIM_LAYOUT_NECROMANCER;
+    case 'amazon':
+    case 'valkyrie':
+      return ANIM_LAYOUT_V2;
+    case 'ronin':
+    case 'flail':
+    case 'sorceress':
+    case 'chakram':
+    case 'invoker':
+    case 'archer':
+    case 'rocket':
+    default:
+      return ANIM_LAYOUT_LEGACY;
+  }
+}
+
+/**
  * Modular Character Animator
  * Handles directional sprite state machines, UV repeat/offset calculations,
- * and Three.js material bindings across all character animation states.
+ * and Three.js material bindings across 3 animation states: IDLE, WALK, ATTACK.
+ * When attacking, whether moving or idle, the general ATTACK state is used.
  */
 export class CharacterAnimator {
   public animState: HeroAnimState = 'IDLE';
@@ -82,8 +105,7 @@ export class CharacterAnimator {
   private stateConfigs: Record<HeroAnimState, CharacterAnimStateConfig> = {
     IDLE: { fps: 8, loop: true },
     WALK: { fps: 12, loop: true },
-    ATTACK: { fps: 16, loop: false },
-    WALK_ATTACK: { fps: 14, loop: true }
+    ATTACK: { fps: 16, loop: false }
   };
 
   constructor(
@@ -115,8 +137,6 @@ export class CharacterAnimator {
     switch (this.animState) {
       case 'ATTACK':
         return this.textures.attack;
-      case 'WALK_ATTACK':
-        return this.textures.walk_attack;
       case 'WALK':
         return this.textures.walk;
       case 'IDLE':
@@ -132,25 +152,27 @@ export class CharacterAnimator {
     dt: number,
     isMoving: boolean,
     targetMaterial: MeshBasicMaterial,
-    depthMaterial?: MeshDepthMaterial
+    depthMaterial?: MeshDepthMaterial,
+    forcedState?: HeroAnimState
   ): void {
     if (this.attackAnimTimer > 0) {
       this.attackAnimTimer -= dt;
     }
 
-    const isAttacking = this.attackAnimTimer > 0;
-    let nextState: HeroAnimState = 'IDLE';
-    if (isAttacking && isMoving) {
-      nextState = 'WALK_ATTACK';
-    } else if (isAttacking) {
-      nextState = 'ATTACK';
-    } else if (isMoving) {
-      nextState = 'WALK';
+    if (forcedState) {
+      this.setState(forcedState);
     } else {
-      nextState = 'IDLE';
+      const isAttacking = this.attackAnimTimer > 0;
+      let nextState: HeroAnimState = 'IDLE';
+      if (isAttacking) {
+        nextState = 'ATTACK';
+      } else if (isMoving) {
+        nextState = 'WALK';
+      } else {
+        nextState = 'IDLE';
+      }
+      this.setState(nextState);
     }
-
-    this.setState(nextState);
 
     const cfg = this.stateConfigs[this.animState];
     const tex = this.getActiveTexture();

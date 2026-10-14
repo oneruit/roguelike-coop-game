@@ -560,7 +560,7 @@ export class GameCore {
           player.dir = mz > 0 ? 'front' : 'back';
         }
 
-        player.anim = player.attackAnimTimer > 0 ? 'WALK_ATTACK' : 'WALK';
+        player.anim = player.attackAnimTimer > 0 ? 'ATTACK' : 'WALK';
       } else {
         player.anim = player.attackAnimTimer > 0 ? 'ATTACK' : 'IDLE';
       }

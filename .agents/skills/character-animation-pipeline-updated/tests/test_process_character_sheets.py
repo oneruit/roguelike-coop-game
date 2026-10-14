@@ -19,31 +19,31 @@ from process_character_sheets import (
 
 class ProcessCharacterSheetsTests(unittest.TestCase):
     def make_sheet(self, color=(40, 60, 90), bg_color=(255, 0, 255)) -> Image.Image:
-        sheet = Image.new("RGB", (768, 512), bg_color)
+        sheet = Image.new("RGB", (576, 384), bg_color)
         draw = ImageDraw.Draw(sheet)
         for row in range(4):
             for col in range(6):
-                x = col * 128
-                y = row * 128
+                x = col * 96
+                y = row * 96
                 # Main character body with realistic directional profile reach
                 if row == 2:  # Row 2 (3rd row) facing RIGHT: asymmetric reach to the right
-                    draw.rectangle((x + 40, y + 20, x + 92, y + 116), fill=color, outline=(0, 0, 0), width=3)
-                    draw.rectangle((x + 55, y + 50, x + 70, y + 65), fill=(255, 0, 255))
-                    draw.rectangle((x + 72, y + 25, x + 90, y + 45), fill=(220, 160, 120))
+                    draw.rectangle((x + 30, y + 15, x + 69, y + 87), fill=color, outline=(0, 0, 0), width=3)
+                    draw.rectangle((x + 41, y + 37, x + 52, y + 49), fill=(255, 0, 255))
+                    draw.rectangle((x + 54, y + 18, x + 67, y + 34), fill=(220, 160, 120))
                 elif row == 3:  # Row 3 (4th row) facing LEFT: asymmetric reach to the left
-                    draw.rectangle((x + 36, y + 20, x + 88, y + 116), fill=color, outline=(0, 0, 0), width=3)
-                    draw.rectangle((x + 58, y + 50, x + 73, y + 65), fill=(255, 0, 255))
-                    draw.rectangle((x + 38, y + 25, x + 56, y + 45), fill=(220, 160, 120))
+                    draw.rectangle((x + 27, y + 15, x + 66, y + 87), fill=color, outline=(0, 0, 0), width=3)
+                    draw.rectangle((x + 43, y + 37, x + 55, y + 49), fill=(255, 0, 255))
+                    draw.rectangle((x + 28, y + 18, x + 42, y + 34), fill=(220, 160, 120))
                 else:
-                    draw.rectangle((x + 40, y + 20, x + 88, y + 116), fill=color, outline=(0, 0, 0), width=3)
-                    draw.rectangle((x + 50, y + 50, x + 65, y + 65), fill=(255, 0, 255))
+                    draw.rectangle((x + 30, y + 15, x + 66, y + 87), fill=color, outline=(0, 0, 0), width=3)
+                    draw.rectangle((x + 37, y + 37, x + 49, y + 49), fill=(255, 0, 255))
         return sheet
 
     def test_magenta_removed_globally_inside_and_outside_and_aura_defringed(self) -> None:
         sheet = self.make_sheet()
         # Add artificial magenta fringe on outer boundary
         sheet_arr = np.array(sheet)
-        sheet_arr[19, 40:87] = [180, 30, 180]  # Fringe right above character
+        sheet_arr[14, 30:66] = [180, 30, 180]  # Fringe right above character
 
         rgba = detect_and_clean_background(sheet_arr, "magenta", tolerance=65.0)
 
@@ -51,14 +51,14 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
         self.assertEqual(int(rgba[5, 5, 3]), 0)
 
         # 2. Inner enclosed magenta hole is ALSO removed (alpha == 0)
-        self.assertEqual(int(rgba[55, 55, 3]), 0)
+        self.assertEqual(int(rgba[40, 40, 3]), 0)
 
         # 3. True character interior body is preserved (alpha == 255, original color)
-        self.assertEqual(int(rgba[35, 50, 3]), 255)
-        self.assertEqual(tuple(rgba[35, 50, :3]), (40, 60, 90))
+        self.assertEqual(int(rgba[25, 38, 3]), 255)
+        self.assertEqual(tuple(rgba[25, 38, :3]), (40, 60, 90))
 
         # 4. Magenta fringe along boundary was either keyed out or converted to 1px black outline
-        fringe_pixel = rgba[20, 50]  # The top boundary of the character
+        fringe_pixel = rgba[15, 38]  # The top boundary of the character
         self.assertEqual(int(fringe_pixel[3]), 255)
         # Should be converted to black outline [0, 0, 0], no magenta tint!
         self.assertTrue(fringe_pixel[0] == 0 and fringe_pixel[2] == 0)
@@ -66,13 +66,13 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
     def test_pack_sheet_has_standard_dimensions_and_transparency(self) -> None:
         rgba = detect_and_clean_background(np.asarray(self.make_sheet().convert("RGBA")), "magenta")
         packed = align_and_pack_sheet(rgba, label="TEST", row_order="fbrl")
-        self.assertEqual(packed.size, (768, 512))
+        self.assertEqual(packed.size, (576, 384))
         result = np.asarray(packed)
         self.assertEqual(int(result[0, 0, 3]), 0)
         self.assertTrue(np.any(result[:, :, 3] > 0))
 
     def test_non_square_source_cells_fail_fast(self) -> None:
-        rgba = np.zeros((512, 900, 4), dtype=np.uint8)
+        rgba = np.zeros((384, 700, 4), dtype=np.uint8)
         with self.assertRaises(ValueError):
             align_and_pack_sheet(rgba, label="BAD")
 
@@ -109,10 +109,10 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
 
             for state in ("idle", "walk", "attack"):
                 with Image.open(output / f"hero_test_hero_{state}.png") as result:
-                    self.assertEqual(result.size, (768, 512))
+                    self.assertEqual(result.size, (576, 384))
                     self.assertEqual(result.mode, "RGBA")
             with Image.open(output / "hero_test_hero_portrait.png") as portrait:
-                self.assertEqual(portrait.size, (128, 128))
+                self.assertEqual(portrait.size, (96, 96))
             self.assertFalse((output / "hero_test_hero_walk_attack.png").exists())
 
 

@@ -22,7 +22,7 @@ from typing import Optional
 import numpy as np
 from PIL import Image
 
-CELL_SIZE = 128
+CELL_SIZE = 96
 COLS = 6
 ROWS = 4
 EXPECTED_ROW_ORDER = ("FRONT", "BACK", "LEFT", "RIGHT")
@@ -274,9 +274,9 @@ def analyze_sheet(
     cell_size: int = CELL_SIZE,
     cols: int = COLS,
     rows: int = ROWS,
-    target_feet_y: int = 118,
-    target_char_h: float = 92.0,
-    max_char_h: float = 96.0,
+    target_feet_y: int = 88,
+    target_char_h: float = 68.0,
+    max_char_h: float = 72.0,
     label: str = "sheet",
 ) -> dict[str, object]:
     """Inspect a sheet and return its target scale, safe scale ceiling, and row baselines."""
@@ -372,9 +372,9 @@ def align_and_pack_sheet(
     cell_size: int = CELL_SIZE,
     cols: int = COLS,
     rows: int = ROWS,
-    target_feet_y: int = 118,
-    target_char_h: float = 92.0,
-    max_char_h: float = 96.0,
+    target_feet_y: int = 88,
+    target_char_h: float = 68.0,
+    max_char_h: float = 72.0,
     mirror_left: bool = False,
     mirror_right: bool = False,
     label: str = "sheet",
@@ -409,7 +409,7 @@ def align_and_pack_sheet(
     if scale < wanted_scale - 1e-4:
         _print(
             f"WARNING {label}: scale reduced from {wanted_scale:.3f} to {scale:.3f} "
-            "to keep all visible pixels inside the 128x128 cells. Inspect long-weapon frames."
+            "to keep all visible pixels inside the 96x96 cells. Inspect long-weapon frames."
         )
 
     output = np.zeros((rows * cell_size, cols * cell_size, 4), dtype=np.uint8)
@@ -482,7 +482,7 @@ def process_portrait(
     bg_mode: str = "auto",
     bg_tolerance: float = 36.0,
 ) -> None:
-    """Write a 128x128 portrait; use IDLE front frame if no separate image is supplied."""
+    """Write a 96x96 portrait; use IDLE front frame if no separate image is supplied."""
     if portrait_input:
         source_path = Path(portrait_input)
         if not source_path.is_file():
@@ -614,9 +614,9 @@ def process_character(
     cell_size: int = CELL_SIZE,
     cols: int = COLS,
     rows: int = ROWS,
-    target_feet_y: int = 118,
-    target_char_h: float = 92.0,
-    max_char_h: float = 96.0,
+    target_feet_y: int = 88,
+    target_char_h: float = 68.0,
+    max_char_h: float = 72.0,
     mirror_left: bool = False,
     mirror_right: bool = False,
     bg_mode: str = "magenta",
@@ -725,7 +725,7 @@ def process_character(
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Process three separate 6x4 IDLE/WALK/ATTACK sheets into 128x128 RGBA sprite cells."
+        description="Process three separate 6x4 IDLE/WALK/ATTACK sheets into 96x96 RGBA sprite cells."
     )
     parser.add_argument("--name", "-n", required=True, help="Character name (e.g. glaive_warrior or hero_glaive_warrior)")
     parser.add_argument("--idle", required=True, help="Path to the 6x4 IDLE sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
@@ -733,12 +733,12 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--attack", required=True, help="Path to the 6x4 ATTACK sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
     parser.add_argument("--portrait", help="Optional separate portrait; if omitted the first IDLE FRONT cell is used")
     parser.add_argument("--out-dir", "-o", default="public/textures/heroes", help="Output directory")
-    parser.add_argument("--cell-size", type=int, default=CELL_SIZE, help="Output cell size (default: 128)")
+    parser.add_argument("--cell-size", type=int, default=CELL_SIZE, help="Output cell size (default: 96)")
     parser.add_argument("--cols", type=int, default=COLS, help="Source columns (pipeline default: 6)")
     parser.add_argument("--rows", type=int, default=ROWS, help="Source rows (pipeline default: 4)")
-    parser.add_argument("--feet-y", type=int, default=118, help="Target foot baseline (default: 118; 10px bottom buffer)")
-    parser.add_argument("--char-h", type=float, default=92.0, help="Target estimated body height in output pixels (default: 92)")
-    parser.add_argument("--max-h", type=float, default=96.0, help="Maximum estimated body height in output pixels (default: 96)")
+    parser.add_argument("--feet-y", type=int, default=88, help="Target foot baseline (default: 88; 8px bottom buffer)")
+    parser.add_argument("--char-h", type=float, default=68.0, help="Target estimated body height in output pixels (default: 68)")
+    parser.add_argument("--max-h", type=float, default=72.0, help="Maximum estimated body height in output pixels (default: 72)")
     parser.add_argument("--bg-mode", choices=("magenta", "auto", "white", "black", "chroma", "none"), default="magenta", help="Background to remove (default: magenta RGB(255,0,255)); auto detects from corners")
     parser.add_argument("--bg-tolerance", type=float, default=65.0, help="Euclidean RGB background tolerance (default: 65.0)")
     parser.add_argument("--row-order", choices=("fbrl", "fblr"), default="fbrl", help="Row order: fbrl (FRONT, BACK, RIGHT, LEFT) or fblr (FRONT, BACK, LEFT, RIGHT). Default: fbrl")
@@ -748,8 +748,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--strict-facing", action="store_true", help="Fail with error if Row 2/3 facing directions do not match expected orientation")
     args = parser.parse_args(argv)
 
-    if args.cell_size != 128 or args.cols != 6 or args.rows != 4:
-        parser.error("this pipeline requires --cell-size 128 --cols 6 --rows 4 (768x512 output sheets)")
+    if args.cell_size != 96 or args.cols != 6 or args.rows != 4:
+        parser.error("this pipeline requires --cell-size 96 --cols 6 --rows 4 (576x384 output sheets)")
     if args.feet_y < 0 or args.feet_y >= args.cell_size:
         parser.error("--feet-y must be inside the output cell")
     if args.char_h <= 0 or args.max_h <= 0:
