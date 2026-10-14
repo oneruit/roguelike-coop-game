@@ -66,6 +66,7 @@ export class BattlePassUI {
     const barFill = this.ctx.getBpBarFill() || document.getElementById('bp-bar-fill');
     if (barFill) {
       barFill.style.width = `${progressPct}%`;
+      barFill.style.opacity = progressPct > 0 ? '1' : '0';
     }
 
     const m10 = document.querySelector('.bp-milestone.bp-m-lvl10');
@@ -173,6 +174,7 @@ export class BattlePassUI {
     const barFill = this.ctx.getBpModalBarFill();
     if (barFill) {
       barFill.style.width = `${progressPct}%`;
+      barFill.style.opacity = progressPct > 0 ? '1' : '0';
     }
 
     const container = this.ctx.getBpModalTiersContainer() || document.getElementById('bp-modal-tiers-container');
