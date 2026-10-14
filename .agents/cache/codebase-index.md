@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, and constants.
-> **Generated:** 2026-10-14T20:32:25.407Z | **Source Files:** 147 | **Total Symbols:** 454
+> **Generated:** 2026-10-14T21:22:59.209Z | **Source Files:** 147 | **Total Symbols:** 454
 
 Run `npm run index` to refresh this cache.
 

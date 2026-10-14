@@ -151,7 +151,10 @@ When creating a new boss `<boss_id>`:
 
 ## 5. Pre-commit Verification Checklist
 Before submitting changes to Git, always execute:
-1. `npm run typecheck` — 0 errors.
-2. `npm run build` — 0 errors (game build).
-3. `npm run build:admin` — 0 errors (admin panel build).
-4. Verify that the new entity correctly displays icon, name, and numeric stats without NaN/undefined.
+1. `npm run index` — refresh codebase symbol index cache.
+2. `npm run typecheck` — 0 errors.
+3. `npm run build` — 0 errors (game build).
+4. `npm run build:admin` — 0 errors (admin panel build).
+5. `npm test` — all test suites pass.
+6. Verify that the new entity correctly displays icon, name, and numeric stats without NaN/undefined.
+
