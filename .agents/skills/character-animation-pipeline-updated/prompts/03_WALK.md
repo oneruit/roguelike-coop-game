@@ -1,8 +1,8 @@
-# WALK Animation Prompt Guide (6-Frame Looping Cycle — Состояние движения)
+# WALK Animation Prompt Guide (6-Frame Looping Cycle — Locomotion / Movement State)
 
 This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_walk.png`**.
 
-**WALK — это состояние движения**: персонаж находится в движении (перемещение / шаг), мерно переставляя обутые ноги по базовой линии (`y ≈ 88`) в устойчивом цикле ходьбы без выполнения атаки.
+**WALK is the locomotion / movement state**: The character is in motion (locomotion / walking), rhythmically alternating booted feet along the baseline (`y ≈ 88`) in a steady walking cycle without executing an attack.
 
 ---
 

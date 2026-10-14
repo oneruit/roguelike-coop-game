@@ -1,8 +1,8 @@
-# IDLE Animation Prompt Guide (6-Frame Seamless Loop — Состояние покоя)
+# IDLE Animation Prompt Guide (6-Frame Seamless Loop — Stationary Rest State)
 
 This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_idle.png`**.
 
-**IDLE — это состояние покоя**: персонаж находится в покое на месте в боевой готовности, сохраняет устойчивую позицию без шагов или перемещения, совершает мерное дыхание; ноги прочно стоят на базовой линии (`y ≈ 88`).
+**IDLE is the stationary rest state**: The character is at rest in battle-ready stance, maintaining a stable grounded posture without steps or displacement, executing measured rhythmic breathing; feet remain firmly planted on the baseline (`y ≈ 88`).
 
 ---
 

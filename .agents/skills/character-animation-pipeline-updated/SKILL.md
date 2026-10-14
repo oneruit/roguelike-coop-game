@@ -8,10 +8,10 @@ description: Standardized pipeline for creating, reviewing, validating, and inte
 ## Goal
 
 Produce **four separate animation sheets** for each playable character:
-1. `IDLE` — **состояние покоя**
-2. `WALK` — **состояние движения**
-3. `IDLE_ATTACK` — **состояние атаки в покое** (также сохраняется как `ATTACK` для совместимости)
-4. `WALK_ATTACK` — **атака в движении**
+1. `IDLE` — **stationary rest state**
+2. `WALK` — **locomotion / movement state**
+3. `IDLE_ATTACK` — **stationary attack state** (also retained as `ATTACK` for backwards compatibility)
+4. `WALK_ATTACK` — **attack while moving**
 
 Every sheet is a strict **6 columns × 4 rows** grid: 24 frames at **96 × 96 px per cell**, total **576 × 384 px**. The game uses 2D pixel-art sprites in a 2.5D world with a camera tilted approximately 30°.
 
@@ -120,38 +120,38 @@ Row 3 LEFT:  [L1][L2][L3 (closed eyes)][L4][L5][L6]  <-- Body strictly sideways,
 ## 5. Animation State Requirements
 
 ### 5.1 IDLE — Six-Frame Seamless Loop (`prompts/02_IDLE.md`)
-- **Состояние покоя**: персонаж стоит на месте в боевой готовности, сохраняя устойчивую позу. Ноги неподвижно стоят на базовой линии (`y ≈ 88`).
-- Спокойное дыхание: торс приподнимается на 1–2 px на вдохе и опускается на выдохе.
-- **Column 3 Closed Eyes**: На пике вдоха (кадр 3) глаза закрываются в спокойном моргании во всех направлениях.
-- Кадр 4: глаза открываются; кадр 6 плавно зацикливается на кадр 1.
-- Оружие стабильно удерживается в боевой стойке.
+- **Stationary rest state**: The character stands grounded in battle readiness, maintaining a stable posture. Feet remain motionless on the baseline (`y ≈ 88`).
+- Calm breathing: Torso subtly expands and rises 1–2 px on the inhale and lowers on the exhale.
+- **Column 3 Closed Eyes**: At peak inhale (frame 3), eyes close in a calm blink across all directions.
+- Frame 4: Eyes open; frame 6 loops seamlessly back into frame 1.
+- Weapon held steadily in ready combat stance.
 
 ### 5.2 WALK — Six-Frame Seamless Loop (`prompts/03_WALK.md`)
-- **Состояние движения**: персонаж перемещается (шагает/движется) без выполнения атаки.
-- Чёткий шаг с попеременной перестановкой массивных ботинок по базовой линии.
-- **Column 3 Closed Eyes**: В фазе проноса ноги (кадр 3) глаза кратковременно прикрываются во всех направлениях.
-- Торс плавно покачивается (+1 px); центр тяжести стабилен.
-- Кадр 6 плавно зацикливается на кадр 1.
+- **Locomotion / movement state**: The character traverses (strides/moves) without executing an attack.
+- Crisp stride with rhythmic alternation of chunky boots along the baseline.
+- **Column 3 Closed Eyes**: During the leg passing phase (frame 3), eyes briefly close in a momentary blink of focus across all directions.
+- Torso sways subtly (+1 px); center of gravity remains stable.
+- Frame 6 loops seamlessly back into frame 1.
 
 ### 5.3 IDLE_ATTACK — Six-Frame One-Shot Action (`prompts/04_IDLE_ATTACK.md`)
-- **Состояние атаки в покое**: персонаж наносит удар, выстрел или атаку оружием, оставаясь на месте (в покое, без перемещения).
-1. Исходная стойка покоя (глаза открыты).
-2. Подготовка / перенос веса.
-3. Замах / отвод оружия назад (**кадр 3: глаза закрыты в боевой концентрации**).
-4. Основной удар / максимальный вылет оружия (глаза широко открываются).
-5. Сброс инерции удара.
-6. Возврат в боевой покой.
-- **Strictly No Attack VFX**: Никаких полос взмаха, искр, светящихся шлейфов. Только честная анимация тела и оружия.
+- **Stationary attack state**: The character executes a strike, shot, or weapon release while remaining stationary in place (no positional displacement).
+1. Initial resting combat stance (eyes open).
+2. Preparation / weight shift.
+3. Wind-up / weapon cocked back (**frame 3: eyes closed in combat focus**).
+4. Main strike / maximum weapon release (eyes snap wide open).
+5. Weapon follow-through and recoil recovery.
+6. Return to resting combat stance.
+- **Strictly No Attack VFX**: No slash trails, sparks, or glowing streaks. Only authentic physical motion of body and weapon.
 
 ### 5.4 WALK_ATTACK — Six-Frame Action Cycle (`prompts/05_WALK_ATTACK.md`)
-- **Атака в движении**: персонаж одновременно перемещается (шаг/бег) и совершает атаку оружием (стреляет на бегу, рубит в выпаде на ходу).
-1. Ударная нога наступает на линию + замах оружия.
-2. Прокат веса вперёд на шаге + зарядка удара.
-3. Фаза проноса ноги (**кадр 3: глаза закрыты в боевой концентрации на шаге**).
-4. Контакт противоположной ноги + удар/выстрел (глаза широко открыты).
-5. Сброс инерции удара при непрерывном шаге.
-6. Завершение шага и возврат в цикл непрерывной атаки на ходу.
-- **Strictly No Attack VFX**: Физическое движение оружия и шагающее тело.
+- **Attack while moving**: The character simultaneously moves (walking/running) and executes a weapon attack (firing on the run, slashing in stride, hurling projectiles or casting spells on the move).
+1. Strike foot plants on the baseline + weapon wind-up begins.
+2. Weight shifts forward in stride + attack chambers.
+3. Leg passing phase (**frame 3: eyes closed in combat focus mid-stride**).
+4. Opposite foot plants + strike release / projectile discharge (eyes snap wide open).
+5. Follow-through and momentum recovery while stride continues smoothly.
+6. Stride completes and returns to continuous moving-attack loop.
+- **Strictly No Attack VFX**: Physical motion of weapon and striding character body only.
 
 ---
 
@@ -199,7 +199,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 ## 7. Acceptance Checklist
 
 - [ ] Dual input respected: direct prompt/image executed directly, brief descriptions auto-enriched via defaults.
-- [ ] Four animation sheets exist: IDLE (покой), WALK (движение), IDLE_ATTACK (атака в покое / attack), WALK_ATTACK (атака в движении) (6×4 grid, 96×96 cells, 576×384 px).
+- [ ] Four animation sheets exist: IDLE (rest), WALK (movement), IDLE_ATTACK (stationary attack / attack), WALK_ATTACK (attack while moving) (6×4 grid, 96×96 cells, 576×384 px).
 - [ ] Row mapping: Row 0 FRONT, Row 1 BACK, Row 2 (3rd row) RIGHT, Row 3 (4th row) LEFT.
 - [ ] **Strict Profile Checked**: In Row 2 and Row 3, character body is ALWAYS sideways and face in profile, no 3/4 turn.
 - [ ] Background is pure solid magenta `rgb(255,0,255)` (`#ff00ff`) in generation sources.
@@ -211,6 +211,6 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 - [ ] **Frame 3 closed eyes verified**: In IDLE, WALK, IDLE_ATTACK, and WALK_ATTACK, column 3 has closed eyes across all rows.
 - [ ] Weapon continuity maintained across all frames and rows.
 - [ ] Attacks have no visual effects (no slash arcs, sparks, magic trails).
-- [ ] Approval gateway respected: Generated images are presented to the user with "Подходит", "Переделать", or "Свой вариант" before proceeding.
+- [ ] Approval gateway respected: Generated images are presented to the user with "Approved", "Redo / Revise", or "Custom variant" before proceeding.
 - [ ] Scripts pass: `process_character_sheets.py` and `validate_sheets.py` exit with code 0 and facing directions verified.
 - [ ] `npm run typecheck`, `npm run build`, and `npm run build:admin` succeed.

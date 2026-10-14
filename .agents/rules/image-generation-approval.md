@@ -26,9 +26,9 @@ After generating an image, the agent **MUST**:
 
 1. **Display the image to the user in chat** (using markdown image preview or link).
 2. **Immediately call the `ask_question` tool**, asking whether the generated image fits, needs to be redone, or if the user wants to provide their own variant:
-   - **`Option 1 (Recommended):`** `Подходит (продолжить работу / интегрировать в игру)`
-   - **`Option 2:`** `Переделать (укажу правки или сгенерировать заново)`
-   - **`Option 3:`** `Свой вариант (загружу своё изображение или укажу путь к файлу)`
+   - **`Option 1 (Recommended):`** `Approved / Fits well (proceed with work / integrate into the game)`
+   - **`Option 2:`** `Redo / Revise (specify adjustments or regenerate)`
+   - **`Option 3:`** `Custom variant (provide custom image or specify file path)`
 
 3. **Halt execution** and await user input.
 
@@ -36,21 +36,21 @@ After generating an image, the agent **MUST**:
 
 ## 3. Handling User Decisions
 
-### Scenario A: "Подходит" (Approved)
+### Scenario A: Approved ("Fits well")
 * The agent records the approved asset.
 * Advances to the next stage (Python post-processing, slicing, moving to `public/textures/`, CSS/TypeScript integration).
 
-### Scenario B: "Переделать" (Redo / Request changes)
+### Scenario B: Redo / Revise ("Request changes")
 * The agent analyzes user feedback (adjusting colors, proportions, details, equipment elements).
 * Revises the prompt taking all feedback into account.
 * Calls `generate_image` again.
 * **Calls `ask_question` again** with the same choices until fully approved.
 
-### Scenario C: "Свой вариант" (Custom variant)
+### Scenario C: Custom variant ("User provided asset")
 * The user provides their own image file or specifies a path to a custom asset.
 * The agent verifies the user's asset dimensions and format, places it into the pipeline, and proceeds to post-processing/slicing/integration using the user's provided asset.
 
-### Scenario D: "Отмена задачи / Cancel task"
+### Scenario D: Cancel task
 * If the user decides against creating the asset or explicitly cancels the task.
 * The agent **IMMEDIATELY stops task execution**.
 * Does not make unwanted changes to the codebase (`game/`, `admin/`, CSS, textures).
@@ -62,4 +62,4 @@ After generating an image, the agent **MUST**:
 ## 4. Strict Prohibitions
 * **PROHIBITED**: Automatically accepting a generated image and committing/integrating it into the game without explicit human approval.
 * **PROHIBITED**: Generating full animation sheets for characters or bosses before the concept sheet (`concept.png` / turnaround) has been approved.
-* **PROHIBITED**: Proceeding without giving the user the choice between "Подходит", "Переделать", and "Свой вариант".
+* **PROHIBITED**: Proceeding without giving the user the choice between "Approved", "Redo / Revise", and "Custom variant".

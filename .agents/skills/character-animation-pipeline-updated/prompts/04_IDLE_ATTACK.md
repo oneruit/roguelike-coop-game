@@ -1,8 +1,8 @@
-# IDLE_ATTACK Animation Prompt Guide (6-Frame One-Shot Weapon Strike — Состояние атаки в покое)
+# IDLE_ATTACK Animation Prompt Guide (6-Frame One-Shot Weapon Strike — Stationary Attack State)
 
-This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_idle_attack.png`** (также сохраняется как `hero_[name]_attack.png` для обратной совместимости).
+This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_idle_attack.png`** (also saved as `hero_[name]_attack.png` for backwards compatibility).
 
-**IDLE_ATTACK — это состояние атаки в покое**: персонаж совершает удар, выстрел или применение оружия, оставаясь на месте (в покое, без перемещения). Ноги прочно зафиксированы в боевой стойке на базовой линии (`y ≈ 88`), всё тело отрабатывает силовой замах, удар и возврат в боевой покой.
+**IDLE_ATTACK is the stationary attack state**: The character executes a strike, shot, or weapon release while remaining stationary in place (at rest, without displacement). Feet are firmly locked in combat stance on the baseline (`y ≈ 88`), with the entire body executing a powerful wind-up, strike impact, and recovery back to resting combat stance.
 
 ---
 

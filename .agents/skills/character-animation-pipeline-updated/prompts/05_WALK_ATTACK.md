@@ -1,8 +1,8 @@
-# WALK_ATTACK Animation Prompt Guide (6-Frame Action Cycle — Атака в движении)
+# WALK_ATTACK Animation Prompt Guide (6-Frame Action Cycle — Attack While Moving)
 
 This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_walk_attack.png`**.
 
-**WALK_ATTACK — это атака в движении**: персонаж одновременно перемещается (шаг / бег) и совершает атаку оружием (стреляет на бегу, наносит рубящий взмах клинком в выпаде, мечет метательное оружие или произносит боевое заклинание на ходу). Ноги динамично отрабатывают шаговый цикл по базовой линии (`y ≈ 88`), в то время как торс и руки выполняют замах, удар и сброс инерции в непрерывном движении.
+**WALK_ATTACK is the attack-while-moving state**: The character simultaneously moves (walking / running) and executes a weapon attack (firing on the run, slashing in stride, hurling projectiles or casting spells while advancing). Legs dynamically cycle foot-strikes along the baseline (`y ≈ 88`), while torso and arms execute wind-up, strike impact, and momentum follow-through in continuous motion.
 
 ---
 

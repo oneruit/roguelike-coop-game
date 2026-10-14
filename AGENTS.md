@@ -26,6 +26,7 @@ This document defines the mandatory Git workflow for AI agents contributing to t
 9. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
 10. **Bug fixing and reporting**: In case a bug or unexpected error is found during development or testing, fix it immediately and report it clearly in the summary to the developer. See [`.agents/rules/bug-handling.md`](.agents/rules/bug-handling.md).
 11. **Modular and structured architecture**: All UI screens, game mechanics, and assets must follow strict modularity, scoping, and directory hierarchy. See [`.agents/rules/modular-architecture.md`](.agents/rules/modular-architecture.md).
+12. **Documentation Language**: All documentation, architecture specifications, skills, rules, prompts, guides, and markdown (`.md`) files in this repository must be written in English. See [`.agents/rules/documentation-language.md`](.agents/rules/documentation-language.md).
 
 ## Workflow
 
