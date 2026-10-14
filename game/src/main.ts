@@ -422,6 +422,12 @@ class Game {
         if (enemy.type === 'crawler' || enemy.type === 'coyote') {
           ProgressionManager.getInstance().recordCrawlerOrCoyoteKilled();
         }
+        if (enemy.type === 'coyote' && enemy.eliteAffix) {
+          ProgressionManager.getInstance().recordEliteCoyoteKilled();
+        }
+        if (enemy.type === 'bison' && enemy.eliteAffix) {
+          ProgressionManager.getInstance().recordEliteBisonKilled();
+        }
 
         const wId = enemy.lastSourceWeaponId;
         const isRanged = wId === 'bow' || wId === 'assault_rifle' || wId === 'heavy_colt' ||
@@ -600,6 +606,12 @@ class Game {
             ProgressionManager.getInstance().recordEnemyKilled();
             if (enemy.type === 'crawler' || enemy.type === 'coyote') {
               ProgressionManager.getInstance().recordCrawlerOrCoyoteKilled();
+            }
+            if (enemy.type === 'coyote' && enemy.eliteAffix) {
+              ProgressionManager.getInstance().recordEliteCoyoteKilled();
+            }
+            if (enemy.type === 'bison' && enemy.eliteAffix) {
+              ProgressionManager.getInstance().recordEliteBisonKilled();
             }
             const isRanged = weaponId === 'bow' || weaponId === 'assault_rifle' || weaponId === 'heavy_colt' ||
               (!weaponId && (this.player.charType === 'archer' || this.player.charType === 'rocket'));

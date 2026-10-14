@@ -769,7 +769,10 @@ export class EnemyManager {
     const spdMult = this.getSpeedMultiplier();
 
     // Check elite spawn chance from Difficulty Director
-    const isElite = Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
+    const eliteChance = type === 'coyote'
+      ? Math.max(0.15, DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage))
+      : DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
+    const isElite = Math.random() < eliteChance;
     const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
     const chosenAffix = isElite ? affixes[Math.floor(Math.random() * affixes.length)] : undefined;
 
@@ -842,7 +845,7 @@ export class EnemyManager {
     }
   }
 
-  public spawnSpecificEnemy(type: EnemyType | 'reaper', playerPos: Vector3) {
+  public spawnSpecificEnemy(type: EnemyType | 'reaper' | 'elite_coyote' | 'elite_bison', playerPos: Vector3) {
     if (type === 'reaper') {
       this.spawnImmortalBossNow(playerPos);
       return;
@@ -855,7 +858,45 @@ export class EnemyManager {
       this.spawnHydraNow(playerPos);
       return;
     }
+    if (type === 'elite_coyote') {
+      this.spawnEliteEnemy('coyote', playerPos);
+      return;
+    }
+    if (type === 'elite_bison') {
+      this.spawnEliteEnemy('bison', playerPos);
+      return;
+    }
     this.spawnSingleEnemy(type, playerPos);
+  }
+
+  public spawnEliteEnemy(type: EnemyType, playerPos: Vector3) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 12;
+    const spawnPos = new Vector3(
+      Math.max(-219, Math.min(219, playerPos.x + Math.cos(angle) * distance)),
+      0,
+      Math.max(-219, Math.min(219, playerPos.z + Math.sin(angle) * distance))
+    );
+    if (this.getElevation) {
+      spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+    }
+    const baseConfig = this.configs[type] || this.configs.coyote;
+    const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
+    const chosenAffix = affixes[Math.floor(Math.random() * affixes.length)];
+    const enemy = this.registerEnemy(
+      new Enemy(
+        {
+          ...baseConfig,
+          hp: Math.round(baseConfig.hp * 2.5),
+          damage: Math.round(baseConfig.damage * 1.5),
+          eliteAffix: chosenAffix,
+          creditsValue: 16
+        },
+        spawnPos
+      )
+    );
+    this.enemies.push(enemy);
+    this.scene.add(enemy.mesh);
   }
 
   public spawnBossNow(playerPos: Vector3) {

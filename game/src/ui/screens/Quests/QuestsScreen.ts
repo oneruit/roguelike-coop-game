@@ -479,7 +479,6 @@ export class QuestsScreen extends Screen {
         </div>
         <div class="quest-card-reward ${q.isComplete && !q.isClaimed ? 'claimable-pulse' : ''}">
           <img src="${getAssetUrl(q.rewardIcon)}" alt="${q.rewardLabel}" draggable="false" />
-          <span class="quest-card-reward-val">${q.rewardAmount}</span>
           ${statusBadge}
         </div>
       `;

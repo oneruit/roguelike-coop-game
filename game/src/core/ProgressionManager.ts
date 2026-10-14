@@ -17,6 +17,7 @@ export interface SidebarQuestItem {
   rewardAmount: number;
   rewardIcon: string;
   rewardLabel: string;
+  badge?: string;
 }
 
 export interface BattlePassData {
@@ -48,6 +49,7 @@ export interface ProgressionData {
   chapterQuestsProgress: Record<string, ChapterQuestProgress>;
   claimedChapterRewards: Record<number, boolean>;
   chapterQuestsReworkVersion?: number;
+  sidebarQuestsVersion?: number;
   battlePass?: BattlePassData;
 }
 
@@ -148,12 +150,12 @@ export class ProgressionManager {
         archer: false    // Elf: Locked! (Buy / Achievement)
       },
       dailyQuestsProgress: {
-        daily_goblins: { current: 0, isClaimed: false },
-        daily_bosses: { current: 0, isClaimed: false }
+        daily_elite_coyotes: { current: 0, isClaimed: false },
+        daily_bosses: { current: 0, isClaimed: false },
+        daily_play_invoker: { current: 0, isClaimed: false }
       },
       weeklyQuestsProgress: {
-        weekly_goblins: { current: 0, isClaimed: false },
-        weekly_resources: { current: 0, isClaimed: false }
+        weekly_elite_bisons: { current: 0, isClaimed: false }
       },
       chapterQuestsProgress: this.getDefaultChapterQuestsProgress(),
       claimedChapterRewards: {
@@ -163,6 +165,7 @@ export class ProgressionManager {
         4: false
       },
       chapterQuestsReworkVersion: 2,
+      sidebarQuestsVersion: 1,
       battlePass: {
         seasonId: 'season_1',
         points: 0,
@@ -178,6 +181,7 @@ export class ProgressionManager {
         const parsed = JSON.parse(raw);
         const defaults = this.getDefaultData();
         const isReworked = parsed.chapterQuestsReworkVersion === 2;
+        const isSidebarReworked = parsed.sidebarQuestsVersion === 1;
         return {
           accountLevel: Math.max(1, parsed.accountLevel ?? defaults.accountLevel),
           accountXp: Math.max(0, parsed.accountXp ?? defaults.accountXp),
@@ -203,10 +207,10 @@ export class ProgressionManager {
             amazon: parsed.unlockedHeroes?.amazon ?? true,
             archer: Boolean(parsed.unlockedHeroes?.archer)
           },
-          dailyQuestsProgress: isReworked && parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
+          dailyQuestsProgress: isSidebarReworked && parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
             ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
             : defaults.dailyQuestsProgress,
-          weeklyQuestsProgress: isReworked && parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
+          weeklyQuestsProgress: isSidebarReworked && parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
             ? { ...defaults.weeklyQuestsProgress, ...parsed.weeklyQuestsProgress }
             : defaults.weeklyQuestsProgress,
           chapterQuestsProgress: isReworked && parsed.chapterQuestsProgress && typeof parsed.chapterQuestsProgress === 'object'
@@ -216,6 +220,7 @@ export class ProgressionManager {
             ? { ...defaults.claimedChapterRewards, ...parsed.claimedChapterRewards }
             : defaults.claimedChapterRewards,
           chapterQuestsReworkVersion: 2,
+          sidebarQuestsVersion: 1,
           battlePass: parsed.battlePass && typeof parsed.battlePass === 'object'
             ? {
                 seasonId: typeof parsed.battlePass.seasonId === 'string' ? parsed.battlePass.seasonId : 'season_1',
@@ -355,34 +360,78 @@ export class ProgressionManager {
   public recordResourceGather(amount: number = 1) {
     if (this.isTrainingMode) return;
     this.data.resourcesGathered = (this.data.resourcesGathered ?? 0) + amount;
-    if (this.data.weeklyQuestsProgress?.weekly_resources && !this.data.weeklyQuestsProgress.weekly_resources.isClaimed) {
-      this.data.weeklyQuestsProgress.weekly_resources.current = Math.min(2, this.data.weeklyQuestsProgress.weekly_resources.current + amount);
-    }
     this.save();
   }
 
-  public getDailySidebarQuests(): SidebarQuestItem[] {
-    const gobProg = this.data.dailyQuestsProgress?.daily_goblins ?? { current: 0, isClaimed: false };
-    const bossProg = this.data.dailyQuestsProgress?.daily_bosses ?? { current: 0, isClaimed: false };
+  public recordEliteCoyoteKilled(): void {
+    if (this.isTrainingMode) return;
+    if (!this.data.dailyQuestsProgress) {
+      this.data.dailyQuestsProgress = {};
+    }
+    if (!this.data.dailyQuestsProgress.daily_elite_coyotes) {
+      this.data.dailyQuestsProgress.daily_elite_coyotes = { current: 0, isClaimed: false };
+    }
+    if (!this.data.dailyQuestsProgress.daily_elite_coyotes.isClaimed) {
+      this.data.dailyQuestsProgress.daily_elite_coyotes.current = Math.min(10, this.data.dailyQuestsProgress.daily_elite_coyotes.current + 1);
+      this.save();
+    }
+  }
 
-    const gobCurrent = Math.min(2, Math.max(0, gobProg.current));
+  public recordEliteBisonKilled(): void {
+    if (this.isTrainingMode) return;
+    if (!this.data.weeklyQuestsProgress) {
+      this.data.weeklyQuestsProgress = {};
+    }
+    if (!this.data.weeklyQuestsProgress.weekly_elite_bisons) {
+      this.data.weeklyQuestsProgress.weekly_elite_bisons = { current: 0, isClaimed: false };
+    }
+    if (!this.data.weeklyQuestsProgress.weekly_elite_bisons.isClaimed) {
+      this.data.weeklyQuestsProgress.weekly_elite_bisons.current = Math.min(100, this.data.weeklyQuestsProgress.weekly_elite_bisons.current + 1);
+      this.save();
+    }
+  }
+
+  public recordHeroPlayed(hero: CharacterType): void {
+    if (this.isTrainingMode) return;
+    if (hero === 'invoker') {
+      if (!this.data.dailyQuestsProgress) {
+        this.data.dailyQuestsProgress = {};
+      }
+      if (!this.data.dailyQuestsProgress.daily_play_invoker) {
+        this.data.dailyQuestsProgress.daily_play_invoker = { current: 0, isClaimed: false };
+      }
+      if (!this.data.dailyQuestsProgress.daily_play_invoker.isClaimed) {
+        this.data.dailyQuestsProgress.daily_play_invoker.current = 1;
+        this.save();
+      }
+    }
+  }
+
+  public getDailySidebarQuests(): SidebarQuestItem[] {
+    const coyoteProg = this.data.dailyQuestsProgress?.daily_elite_coyotes ?? { current: 0, isClaimed: false };
+    const bossProg = this.data.dailyQuestsProgress?.daily_bosses ?? { current: 0, isClaimed: false };
+    const invokerProg = this.data.dailyQuestsProgress?.daily_play_invoker ?? { current: 0, isClaimed: false };
+
+    const coyoteCurrent = Math.min(10, Math.max(0, coyoteProg.current));
     const bossCurrent = Math.min(2, Math.max(0, bossProg.current));
+    const invokerCurrent = Math.min(1, Math.max(0, invokerProg.current));
 
     return [
       {
-        id: 'daily_goblins',
+        id: 'daily_elite_coyotes',
         category: 'daily',
-        title: 'Убить 2 гоблинов',
-        icon: getAssetUrl('/textures/quests/ui_quest_slot_goblin.png'),
-        current: gobCurrent,
-        max: 2,
-        progressPercent: Math.min(100, Math.round((gobCurrent / 2) * 100)),
-        isComplete: gobCurrent >= 2,
-        isClaimed: Boolean(gobProg.isClaimed),
+        title: 'Убить 10 элитных койотов',
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_coyote.png'),
+        current: coyoteCurrent,
+        max: 10,
+        progressPercent: Math.min(100, Math.round((coyoteCurrent / 10) * 100)),
+        isComplete: coyoteCurrent >= 10,
+        isClaimed: Boolean(coyoteProg.isClaimed),
         rewardType: 'gem',
-        rewardAmount: 4,
-        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_gem.png'),
-        rewardLabel: '4 изумруда'
+        rewardAmount: 10,
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_reward_green.png'),
+        rewardLabel: '10 изумрудов',
+        badge: 'МАЛЫЕ'
       },
       {
         id: 'daily_bosses',
@@ -395,50 +444,50 @@ export class ProgressionManager {
         isComplete: bossCurrent >= 2,
         isClaimed: Boolean(bossProg.isClaimed),
         rewardType: 'coin',
-        rewardAmount: 2,
-        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_coin.png'),
-        rewardLabel: '2 монеты'
+        rewardAmount: 100,
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_reward_coin.png'),
+        rewardLabel: '100 монет',
+        badge: 'МАЛЫЕ'
+      },
+      {
+        id: 'daily_play_invoker',
+        category: 'daily',
+        title: 'Сыграть на персонаже Инвокер',
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_invoker.png'),
+        current: invokerCurrent,
+        max: 1,
+        progressPercent: Math.min(100, Math.round((invokerCurrent / 1) * 100)),
+        isComplete: invokerCurrent >= 1,
+        isClaimed: Boolean(invokerProg.isClaimed),
+        rewardType: 'gem',
+        rewardAmount: 15,
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_reward_blue.png'),
+        rewardLabel: '15 кристаллов',
+        badge: 'МАЛЫЕ'
       }
     ];
   }
 
   public getWeeklySidebarQuests(): SidebarQuestItem[] {
-    const gobProg = this.data.weeklyQuestsProgress?.weekly_goblins ?? { current: 0, isClaimed: false };
-    const resProg = this.data.weeklyQuestsProgress?.weekly_resources ?? { current: 0, isClaimed: false };
-
-    const gobCurrent = Math.min(2, Math.max(0, gobProg.current));
-    const resCurrent = Math.min(2, Math.max(0, resProg.current));
+    const bisonProg = this.data.weeklyQuestsProgress?.weekly_elite_bisons ?? { current: 0, isClaimed: false };
+    const bisonCurrent = Math.min(100, Math.max(0, bisonProg.current));
 
     return [
       {
-        id: 'weekly_goblins',
+        id: 'weekly_elite_bisons',
         category: 'weekly',
-        title: 'Убить 2 гоблинов',
-        icon: getAssetUrl('/textures/quests/ui_quest_slot_goblin.png'),
-        current: gobCurrent,
-        max: 2,
-        progressPercent: Math.min(100, Math.round((gobCurrent / 2) * 100)),
-        isComplete: gobCurrent >= 2,
-        isClaimed: Boolean(gobProg.isClaimed),
-        rewardType: 'gem',
-        rewardAmount: 10,
-        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_gem.png'),
-        rewardLabel: '10 изумрудов'
-      },
-      {
-        id: 'weekly_resources',
-        category: 'weekly',
-        title: 'Собрать 2 ресурса',
-        icon: getAssetUrl('/textures/quests/ui_quest_slot_wood.png'),
-        current: resCurrent,
-        max: 2,
-        progressPercent: Math.min(100, Math.round((resCurrent / 2) * 100)),
-        isComplete: resCurrent >= 2,
-        isClaimed: Boolean(resProg.isClaimed),
+        title: 'Убить 100 элитных бизонов',
+        icon: getAssetUrl('/textures/quests/ui_quest_slot_bison.png'),
+        current: bisonCurrent,
+        max: 100,
+        progressPercent: Math.min(100, Math.round((bisonCurrent / 100) * 100)),
+        isComplete: bisonCurrent >= 100,
+        isClaimed: Boolean(bisonProg.isClaimed),
         rewardType: 'chest',
         rewardAmount: 1,
-        rewardIcon: getAssetUrl('/textures/quests/ui_quest_slot_chest.png'),
-        rewardLabel: '1 сундук'
+        rewardIcon: getAssetUrl('/textures/quests/ui_quest_reward_combo.png'),
+        rewardLabel: 'Кристальный сундук',
+        badge: 'МАЛЫЕ'
       }
     ];
   }
@@ -826,13 +875,14 @@ export class ProgressionManager {
     this.data.chapterQuestsProgress = this.getDefaultChapterQuestsProgress();
     this.data.claimedChapterRewards = { 1: false, 2: false, 3: false, 4: false };
     this.data.dailyQuestsProgress = {
-      daily_goblins: { current: 0, isClaimed: false },
-      daily_bosses: { current: 0, isClaimed: false }
+      daily_elite_coyotes: { current: 0, isClaimed: false },
+      daily_bosses: { current: 0, isClaimed: false },
+      daily_play_invoker: { current: 0, isClaimed: false }
     };
     this.data.weeklyQuestsProgress = {
-      weekly_goblins: { current: 0, isClaimed: false },
-      weekly_resources: { current: 0, isClaimed: false }
+      weekly_elite_bisons: { current: 0, isClaimed: false }
     };
+    this.data.sidebarQuestsVersion = 1;
     this.data.resourcesGathered = 0;
     this.data.enemiesKilled = 0;
     this.data.bossesKilled = 0;

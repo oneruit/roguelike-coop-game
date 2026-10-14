@@ -270,4 +270,88 @@ describe('Chapter Quests Rework & Zero State', () => {
     prog.recordTeleporterBossKilled();
     assert.equal(prog.isChapterComplete(1), true);
   });
+
+  test('Daily and Weekly sidebar quests start at 0 and track progress properly', () => {
+    const prog = ProgressionManager.getInstance();
+    prog.resetAllTasksToZero();
+
+    const daily = prog.getDailySidebarQuests();
+    const weekly = prog.getWeeklySidebarQuests();
+
+    assert.equal(daily.length, 3);
+    assert.equal(weekly.length, 1);
+
+    // 1. Daily elite coyotes
+    const coyoteQuest = daily.find((q) => q.id === 'daily_elite_coyotes')!;
+    assert.ok(coyoteQuest);
+    assert.equal(coyoteQuest.current, 0);
+    assert.equal(coyoteQuest.max, 10);
+    assert.equal(coyoteQuest.isComplete, false);
+
+    // 2. Daily bosses
+    const bossQuest = daily.find((q) => q.id === 'daily_bosses')!;
+    assert.ok(bossQuest);
+    assert.equal(bossQuest.current, 0);
+    assert.equal(bossQuest.max, 2);
+    assert.equal(bossQuest.isComplete, false);
+
+    // 3. Daily play invoker
+    const invokerQuest = daily.find((q) => q.id === 'daily_play_invoker')!;
+    assert.ok(invokerQuest);
+    assert.equal(invokerQuest.current, 0);
+    assert.equal(invokerQuest.max, 1);
+    assert.equal(invokerQuest.isComplete, false);
+
+    // 4. Weekly elite bisons
+    const bisonQuest = weekly.find((q) => q.id === 'weekly_elite_bisons')!;
+    assert.ok(bisonQuest);
+    assert.equal(bisonQuest.current, 0);
+    assert.equal(bisonQuest.max, 100);
+    assert.equal(bisonQuest.isComplete, false);
+
+    // Test Progressing Coyote
+    for (let i = 0; i < 10; i++) {
+      prog.recordEliteCoyoteKilled();
+    }
+    const updatedDaily1 = prog.getDailySidebarQuests();
+    assert.equal(updatedDaily1.find((q) => q.id === 'daily_elite_coyotes')!.current, 10);
+    assert.equal(updatedDaily1.find((q) => q.id === 'daily_elite_coyotes')!.isComplete, true);
+
+    // Test Progressing Bosses
+    prog.recordBossKilled();
+    prog.recordBossKilled();
+    const updatedDaily2 = prog.getDailySidebarQuests();
+    assert.equal(updatedDaily2.find((q) => q.id === 'daily_bosses')!.current, 2);
+    assert.equal(updatedDaily2.find((q) => q.id === 'daily_bosses')!.isComplete, true);
+
+    // Test Playing other hero vs Invoker
+    prog.recordHeroPlayed('ronin');
+    assert.equal(prog.getDailySidebarQuests().find((q) => q.id === 'daily_play_invoker')!.current, 0);
+    prog.recordHeroPlayed('invoker');
+    assert.equal(prog.getDailySidebarQuests().find((q) => q.id === 'daily_play_invoker')!.current, 1);
+    assert.equal(prog.getDailySidebarQuests().find((q) => q.id === 'daily_play_invoker')!.isComplete, true);
+
+    // Test Progressing Bisons
+    for (let i = 0; i < 100; i++) {
+      prog.recordEliteBisonKilled();
+    }
+    const updatedWeekly = prog.getWeeklySidebarQuests();
+    assert.equal(updatedWeekly[0].current, 100);
+    assert.equal(updatedWeekly[0].isComplete, true);
+
+    // Test Claiming
+    const claimRes = prog.claimSidebarQuest('daily_elite_coyotes');
+    assert.ok(claimRes);
+    assert.equal(claimRes.rewardType, 'gem');
+    assert.equal(prog.getDailySidebarQuests().find((q) => q.id === 'daily_elite_coyotes')!.isClaimed, true);
+
+    // Test Reset
+    prog.resetAllTasksToZero();
+    const resetDaily = prog.getDailySidebarQuests();
+    const resetWeekly = prog.getWeeklySidebarQuests();
+    assert.equal(resetDaily.find((q) => q.id === 'daily_elite_coyotes')!.current, 0);
+    assert.equal(resetDaily.find((q) => q.id === 'daily_bosses')!.current, 0);
+    assert.equal(resetDaily.find((q) => q.id === 'daily_play_invoker')!.current, 0);
+    assert.equal(resetWeekly[0].current, 0);
+  });
 });

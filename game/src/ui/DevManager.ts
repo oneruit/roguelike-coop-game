@@ -352,7 +352,7 @@ export class DevManager {
       btn.addEventListener('click', (e) => {
         if (this.isCoop() && !this.isHost()) return;
         const target = e.currentTarget as HTMLElement;
-        const type = (target.getAttribute('data-type') || 'coyote') as EnemyType | 'reaper';
+        const type = (target.getAttribute('data-type') || 'coyote') as EnemyType | 'reaper' | 'elite_coyote' | 'elite_bison';
         this.enemyManager.spawnSpecificEnemy(type, this.player.position);
       });
     });
