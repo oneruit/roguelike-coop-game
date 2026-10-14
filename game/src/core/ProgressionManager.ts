@@ -161,7 +161,7 @@ export class ProgressionManager {
         3: false,
         4: false
       },
-      chapterQuestsReworkVersion: 1,
+      chapterQuestsReworkVersion: 2,
       battlePass: {
         seasonId: 'season_1',
         points: 0,
@@ -176,7 +176,7 @@ export class ProgressionManager {
       if (raw) {
         const parsed = JSON.parse(raw);
         const defaults = this.getDefaultData();
-        const isReworked = parsed.chapterQuestsReworkVersion === 1;
+        const isReworked = parsed.chapterQuestsReworkVersion === 2;
         return {
           accountLevel: Math.max(1, parsed.accountLevel ?? defaults.accountLevel),
           accountXp: Math.max(0, parsed.accountXp ?? defaults.accountXp),
@@ -214,7 +214,7 @@ export class ProgressionManager {
           claimedChapterRewards: isReworked && parsed.claimedChapterRewards && typeof parsed.claimedChapterRewards === 'object'
             ? { ...defaults.claimedChapterRewards, ...parsed.claimedChapterRewards }
             : defaults.claimedChapterRewards,
-          chapterQuestsReworkVersion: 1,
+          chapterQuestsReworkVersion: 2,
           battlePass: parsed.battlePass && typeof parsed.battlePass === 'object'
             ? {
                 seasonId: typeof parsed.battlePass.seasonId === 'string' ? parsed.battlePass.seasonId : 'season_1',
