@@ -189,7 +189,7 @@ test('Initial hero damage bonuses apply ONLY to starting weapon', () => {
   const kukriMult = getMultiplier(acquiredWeapon, startingWeapon, sheriffMultiplier, 1.0);
   assert.equal(kukriMult, 1.0);
 
-  // When general bonus (e.g. Sheriff Star passive) is acquired, it applies to both
+  // When general bonus (e.g. Amplifier passive) is acquired, it applies to both
   const generalBonus = 1.25;
   assert.equal(
     getMultiplier(startingWeapon, startingWeapon, sheriffMultiplier, generalBonus),

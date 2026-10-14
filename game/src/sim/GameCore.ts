@@ -332,7 +332,7 @@ export class SimDropInternal {
     this.id = id;
     this.type = type;
     this.position = position.clone();
-    this.xpValue = type === 'red' ? 25 : type === 'green' ? 8 : type === 'gold' ? 20 : 2;
+    this.xpValue = type === 'red' ? 25 : type === 'green' ? 8 : type === 'gold' ? 20 : type === 'crystal' ? 5 : 2;
   }
 }
 

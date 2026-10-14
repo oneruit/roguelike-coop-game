@@ -7,6 +7,12 @@
           <img src="/textures/ui/game_logo_rift.png" class="main-menu-logo-img" alt="THE RIFT" />
         </div>
 
+        <!-- Top Crystals Pill -->
+        <div id="main-menu-crystals-pill" class="main-menu-crystals-pill" role="button" tabindex="0" title="Кристаллы Разлома (Нажмите, чтобы открыть магазин)">
+          <img src="/textures/ui/bp_crystal.png" class="main-menu-crystal-icon" alt="🔮" />
+          <span id="main-menu-crystals-count">0</span>
+        </div>
+
         <!-- Top Left Battle Pass Widget -->
         <aside id="main-menu-battle-pass" class="battle-pass-widget" aria-label="Боевой пропуск">
           <div class="battle-pass-card" id="battle-pass-card">
@@ -78,7 +84,14 @@
               </div>
             </button>
 
-            <!-- 3. ЗАДАНИЯ -->
+            <!-- 3. ТАЛАНТЫ РАЗЛОМА (МАГАЗИН) -->
+            <button id="menu-btn-shop" class="main-menu-gothic-btn btn-shop" type="button">
+              <div class="menu-btn-content">
+                <span class="menu-btn-title">ТАЛАНТЫ (МАГАЗИН)</span>
+              </div>
+            </button>
+
+            <!-- 4. ЗАДАНИЯ -->
             <button id="menu-btn-quests" class="main-menu-gothic-btn btn-quests" type="button">
               <div class="menu-btn-content">
                 <span class="menu-btn-title">ЗАДАНИЯ</span>

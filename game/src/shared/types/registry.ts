@@ -41,6 +41,6 @@ export const ENEMIES: readonly EnemyType[] = [
   'hydra'
 ] as const;
 
-export const GEMS: readonly GemType[] = ['blue', 'green', 'red', 'gold'] as const;
+export const GEMS: readonly GemType[] = ['blue', 'green', 'red', 'gold', 'crystal'] as const;
 
 export const BUFF_TYPES: readonly string[] = ['damage', 'speed', 'regen', 'invulnerable', 'ghost', 'alacrity'] as const;

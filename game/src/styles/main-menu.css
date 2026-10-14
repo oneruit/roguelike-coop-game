@@ -1061,4 +1061,49 @@
   transform: scale(0.97);
 }
 
+.main-menu-gothic-btn.btn-shop:hover {
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.75));
+}
+
+/* Crystal Currency Pill in Main Menu */
+.main-menu-crystals-pill {
+  position: absolute;
+  top: clamp(16px, 3.2vh, 36px);
+  left: clamp(16px, 2.8vw, 36px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.main-menu-crystals-pill:hover {
+  border-color: rgba(192, 132, 252, 0.9);
+  box-shadow: 0 0 22px rgba(192, 132, 252, 0.45);
+  transform: translateY(-1px);
+}
+
+.main-menu-crystals-pill .main-menu-crystal-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px #c084fc);
+}
+
+.main-menu-crystals-pill #main-menu-crystals-count {
+  font-family: var(--font-primary, 'Montserrat', sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  color: #faf5ff;
+  letter-spacing: 0.04em;
+}
+
 

@@ -8,6 +8,7 @@ import { ObstacleManager } from '../world/ObstacleManager';
 import { EnemySnapshot } from '../net/NetworkManager';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { BalanceManager } from '../balance/BalanceManager';
+import { MetaProgression } from '../meta/MetaProgression';
 
 export interface PlayerTargetInfo {
   id: string; // 'p1', 'p2', 'p3', 'p4', 'p5'
@@ -460,6 +461,19 @@ export class EnemyManager {
               );
               this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
             }
+
+            // Boss drops Rift Crystals (10-15 crystals + meta bonus)
+            const metaBonus = MetaProgression.getInstance().getBonuses();
+            const crystalDropCount = Math.round((10 + Math.floor(Math.random() * 6)) * (1 + metaBonus.crystalDropBonus));
+            for (let c = 0; c < crystalDropCount; c++) {
+              const cOffset = new Vector3(
+                (Math.random() - 0.5) * 3.2,
+                0,
+                (Math.random() - 0.5) * 3.2
+              );
+              this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
+            }
+
             if (this.onBossDefeat) this.onBossDefeat();
           }
 
@@ -479,6 +493,22 @@ export class EnemyManager {
               (Math.random() - 0.5)
             );
             this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
+          }
+
+          // Rift Crystals drop: 25% for regular creeps, 60% for tough mobs (scales with utility meta branch)
+          const metaBonus = MetaProgression.getInstance().getBonuses();
+          const baseCrystalChance = isTough ? 0.60 : 0.25;
+          const crystalChance = baseCrystalChance * (1 + metaBonus.crystalDropBonus);
+          if (Math.random() < crystalChance) {
+            const count = isTough ? (Math.random() < 0.4 ? 2 : 1) : 1;
+            for (let c = 0; c < count; c++) {
+              const cOffset = new Vector3(
+                (Math.random() - 0.5) * 1.2,
+                0,
+                (Math.random() - 0.5) * 1.2
+              );
+              this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
+            }
           }
         }
 

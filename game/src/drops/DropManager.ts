@@ -29,7 +29,7 @@ export class DropManager {
 
     // Search for nearest visible uncollected XP gem to targetPos (within screen distance <= 22m)
     for (const g of this.gems) {
-      if (g === gemToExclude || g.type === 'gold' || g.isCollected) continue;
+      if (g === gemToExclude || g.type === 'gold' || g.type === 'crystal' || g.isCollected) continue;
       if (targetPos) {
         const dSq = g.position.distanceToSquared(targetPos);
         if (dSq <= 22 * 22 && dSq < bestDistSq) {
@@ -68,8 +68,8 @@ export class DropManager {
   public spawnGem(position: Vector3, type: GemType = 'blue', id?: string) {
     // If ground is cluttered, condense oldest common uncollected gem into remaining gems
     if (this.gems.length >= DropManager.MAX_GEMS) {
-      const nonGoldIdx = this.gems.findIndex(g => g.type !== 'gold');
-      const oldest = nonGoldIdx !== -1 ? this.gems.splice(nonGoldIdx, 1)[0] : this.gems.shift();
+      const nonSpecialIdx = this.gems.findIndex(g => g.type !== 'gold' && g.type !== 'crystal');
+      const oldest = nonSpecialIdx !== -1 ? this.gems.splice(nonSpecialIdx, 1)[0] : this.gems.shift();
       if (oldest) {
         this.condenseXp(oldest.xpValue, position, oldest);
         oldest.destroy(this.scene);
@@ -121,8 +121,8 @@ export class DropManager {
 
       // Cull regular gems left far behind in the world, condensing their XP near the player into closest visible crystal
       if (!gem.isAttracted && minDistanceSq > 32 * 32) {
-        if (gem.type === 'gold') {
-          // Gold passive crystals NEVER despawn! They persist indefinitely.
+        if (gem.type === 'gold' || gem.type === 'crystal') {
+          // Gold passive crystals and Rift Crystals NEVER despawn! They persist indefinitely.
           continue;
         }
         this.condenseXp(gem.xpValue, closest.position, gem);

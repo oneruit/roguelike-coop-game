@@ -31,6 +31,7 @@ import { ScreenManager } from './core/ScreenManager';
 import { SafeDOM } from './core/SafeDOM';
 import { MainMenuScreen } from './screens/MainMenu/MainMenuScreen';
 import { CharacterSelectScreen } from './screens/CharacterSelect/CharacterSelectScreen';
+import { ShopScreen } from './screens/Shop/ShopScreen';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -45,6 +46,7 @@ export class HUD {
   // Main UI Menus & Modals
   private mainMenuModal: HTMLElement;
   private coopModal: HTMLElement;
+  private shopModal: HTMLElement;
   private settingsModal: HTMLElement;
   private exitModal: HTMLElement;
   private charSelectModal: HTMLElement;
@@ -66,6 +68,7 @@ export class HUD {
   private inGameOverlayUI: InGameOverlayUI;
   private characterSelectUI?: CharacterSelectUI;
   private mainMenuScreen?: MainMenuScreen;
+  private shopScreen?: ShopScreen;
   private characterSelectScreen?: CharacterSelectScreen;
 
   // Public Callbacks
@@ -111,6 +114,7 @@ export class HUD {
     document.body.classList.remove('is-in-game');
     HUD.applyRandomMenuBackground();
     this.coopModal = getEl('coop-modal');
+    this.shopModal = getEl('shop-modal');
     this.settingsModal = getEl('settings-modal');
     this.exitModal = getEl('exit-modal');
     this.charSelectModal = getEl('character-select-modal');
@@ -456,6 +460,14 @@ export class HUD {
   // --- Main Menu & Navigation Listeners ---
 
   private bindMainMenuListeners() {
+    this.shopScreen = new ShopScreen({
+      container: this.shopModal,
+      onClose: () => {
+        this.showMainMenu();
+      }
+    });
+    ScreenManager.getInstance().register(this.shopScreen);
+
     this.mainMenuScreen = new MainMenuScreen({
       container: this.mainMenuModal,
       onSinglePlayer: () => {
@@ -468,6 +480,10 @@ export class HUD {
         this.hideQuestsModal();
         this.hideMainMenu();
         this.showCoopMenu();
+      },
+      onShop: () => {
+        this.hideQuestsModal();
+        this.showShopModal();
       },
       onQuests: () => {
         this.toggleQuestsInMainMenu();
@@ -667,8 +683,10 @@ export class HUD {
     this.hideQuestsModal();
     this.hideBattlePassModal();
     this.hideMerchant();
+    this.hideShopModal();
     this.updateMainMenuQuests();
     this.updateMainMenuBattlePass();
+    this.mainMenuScreen?.updateCrystalsDisplay();
     HUD.applyRandomMenuBackground();
     if (this.mainMenuScreen) {
       this.mainMenuScreen.show();
@@ -683,6 +701,33 @@ export class HUD {
     } else {
       this.mainMenuModal.classList.add('hidden');
     }
+  }
+
+  public showShopModal() {
+    this.hideMainMenu();
+    this.hideQuestsModal();
+    this.menuStack.push('shop');
+    if (this.shopScreen) {
+      this.shopScreen.show();
+    } else {
+      this.shopModal.classList.remove('hidden');
+    }
+  }
+
+  public hideShopModal() {
+    if (this.shopScreen) {
+      this.shopScreen.hide();
+    } else {
+      this.shopModal.classList.add('hidden');
+    }
+    this.menuStack = this.menuStack.filter((s) => s !== 'shop');
+  }
+
+  public updateCrystalsCounter(count: number): void {
+    const el = document.getElementById('rift-crystals-count');
+    if (el) el.textContent = count.toLocaleString();
+    const menuEl = document.getElementById('main-menu-crystals-count');
+    if (menuEl) menuEl.textContent = count.toLocaleString();
   }
 
   public showCoopMenu() {
@@ -804,6 +849,12 @@ export class HUD {
         if (!this.menuStack.includes('pause')) {
           this.menuStack.push('pause');
         }
+        return 'handled';
+      }
+
+      case 'shop': {
+        this.hideShopModal();
+        this.showMainMenu();
         return 'handled';
       }
 

@@ -42,6 +42,7 @@ import { ObstacleManager } from '../world/ObstacleManager';
 import { PassiveBuffId } from '../drops/PassiveBuffs';
 import { RiftItemId, RiftItemDef } from '../items/RiftItemSystem';
 import { BalanceManager } from '../balance/BalanceManager';
+import { MetaProgression } from '../meta/MetaProgression';
 import type { MeleeAttackInfo } from '../shared/types';
 
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
@@ -464,10 +465,11 @@ export class Player {
   private applyCharacterPerks() {
     this.clearWeapons();
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
+    const metaBonuses = MetaProgression.getInstance().getBonuses();
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
-    this.maxHp = heroCfg.maxHp;
-    this.baseMaxHp = heroCfg.maxHp;
-    this.hp = heroCfg.maxHp;
+    this.maxHp = heroCfg.maxHp + metaBonuses.maxHpBonus;
+    this.baseMaxHp = heroCfg.maxHp + metaBonuses.maxHpBonus;
+    this.hp = this.maxHp;
     this.baseSpeed = heroCfg.baseSpeed;
 
     if (this.charType === 'invoker') {
@@ -509,13 +511,15 @@ export class Player {
 
   public syncBalance(): void {
     const heroCfg = BalanceManager.getHeroConfig(this.charType);
+    const metaBonuses = MetaProgression.getInstance().getBonuses();
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.baseSpeed = heroCfg.baseSpeed;
     const titanBonus = this.getItemStacks('titan_heart') * 150;
-    const bonusHp = this.flaskCount * 30 + titanBonus;
+    const bonusHp = this.flaskCount * 30 + titanBonus + metaBonuses.maxHpBonus;
     const newMaxHp = heroCfg.maxHp + bonusHp;
     const hpRatio = this.maxHp > 0 ? this.hp / this.maxHp : 1.0;
     this.maxHp = newMaxHp;
+    this.baseMaxHp = heroCfg.maxHp + metaBonuses.maxHpBonus;
     this.hp = Math.min(this.maxHp, Math.max(1, Math.round(this.maxHp * hpRatio)));
 
     for (const weapon of this.weapons) {
@@ -583,6 +587,7 @@ export class Player {
   }
 
   public recalculateStats() {
+    const metaBonuses = MetaProgression.getInstance().getBonuses();
     const stats = PlayerStats.recalculate(
       this.baseMaxHp,
       this.baseSpeed,
@@ -603,7 +608,8 @@ export class Player {
         isSpeedCheat: this.isSpeedCheat,
         isOneHitKill: this.isOneHitKill
       },
-      this.weapons
+      this.weapons,
+      metaBonuses
     );
 
     this.passiveHpRegen = stats.hpRegen;
@@ -700,10 +706,10 @@ export class Player {
     if (itemId === 'stat_vest') {
       return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
     }
-    if (itemId === 'stat_speed_boots' || itemId === 'stat_spurs') {
+    if (itemId === 'stat_speed_boots') {
       return this.passiveSpeedMultiplier >= 3.0 || this.speedBootsCount >= 300;
     }
-    if (itemId === 'stat_magnet' || itemId === 'stat_lasso') {
+    if (itemId === 'stat_magnet') {
       return this.pickupRadius >= 50.0 || this.magnetCount >= 300;
     }
     return false;
@@ -712,18 +718,15 @@ export class Player {
   public applyPassiveBuff(id: PassiveBuffId): string {
     switch (id) {
       case 'stat_amplifier':
-      case 'stat_sheriff_star':
         this.addAmplifierBonus();
         return `⭐ +2% Урон (+${Math.round((this.passiveDamageMultiplier - 1) * 100)}%)`;
       case 'stat_speed_boots':
-      case 'stat_spurs':
         this.addSpeedBootsBonus(1.03);
         return `🥾 +3% Скорость (x${this.passiveSpeedMultiplier.toFixed(2)} / макс. x3.0)`;
       case 'stat_flask':
         this.addFlaskBonus(30);
         return `🍶 +30 Макс HP & Исцеление (${this.maxHp} HP)`;
       case 'stat_magnet':
-      case 'stat_lasso':
         this.addMagnetBonus(1.10);
         return `🧲 +10% Радиус магнита (${this.pickupRadius.toFixed(1)}м / макс. 50м)`;
       case 'stat_amulet':

@@ -5,11 +5,7 @@ export type PassiveBuffId =
   | 'stat_magnet'
   | 'stat_amulet'
   | 'stat_vest'
-  | 'stat_watch'
-  // Backwards compatibility aliases
-  | 'stat_sheriff_star'
-  | 'stat_spurs'
-  | 'stat_lasso';
+  | 'stat_watch';
 
 export interface PassiveBuffDef {
   id: PassiveBuffId;
@@ -60,25 +56,6 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     title: 'Карманные Часы',
     icon: '⏱️',
     description: '-1% к времени перезарядки оружий (с угасающей эффективностью до 30% на 300 ур., макс. 30%)'
-  },
-  // Backwards compatibility aliases
-  stat_sheriff_star: {
-    id: 'stat_sheriff_star',
-    title: 'Усилитель',
-    icon: '⭐',
-    description: '+2% к урону ВСЕХ оружий (складывается)'
-  },
-  stat_spurs: {
-    id: 'stat_spurs',
-    title: 'Ботинки Скорости',
-    icon: '🥾',
-    description: '+3% к скорости бега (с угасающей эффективностью до x3 на 300 ур., макс. x3)'
-  },
-  stat_lasso: {
-    id: 'stat_lasso',
-    title: 'Магнит',
-    icon: '🧲',
-    description: '+10% к радиусу магнита (базовый 4м, с угасающей эффективностью до 50м на 300 ур., макс. 50м)'
   }
 };
 
