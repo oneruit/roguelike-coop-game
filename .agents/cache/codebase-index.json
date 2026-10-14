@@ -1,0 +1,2731 @@
+{
+  "generatedAt": "2026-10-14T20:32:25.407Z",
+  "totalFiles": 147,
+  "totalSymbols": 454,
+  "symbols": [
+    {
+      "name": "ActiveBuff",
+      "kind": "interface",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 28
+    },
+    {
+      "name": "AdminConfig",
+      "kind": "interface",
+      "file": "admin/src/types.ts",
+      "line": 6
+    },
+    {
+      "name": "AdminController",
+      "kind": "class",
+      "file": "admin/src/admin.ts",
+      "line": 19
+    },
+    {
+      "name": "Altar",
+      "kind": "class",
+      "file": "game/src/world/Altar.ts",
+      "line": 108
+    },
+    {
+      "name": "ALTAR_CONFIGS",
+      "kind": "const",
+      "file": "game/src/world/Altar.ts",
+      "line": 37
+    },
+    {
+      "name": "AltarConfig",
+      "kind": "interface",
+      "file": "game/src/world/Altar.ts",
+      "line": 27
+    },
+    {
+      "name": "AltarManager",
+      "kind": "class",
+      "file": "game/src/world/AltarManager.ts",
+      "line": 5
+    },
+    {
+      "name": "AltarNotificationPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 46
+    },
+    {
+      "name": "ANIM_LAYOUT_LEGACY",
+      "kind": "const",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 60
+    },
+    {
+      "name": "ANIM_LAYOUT_NECROMANCER",
+      "kind": "const",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 45
+    },
+    {
+      "name": "ANIM_LAYOUT_V2",
+      "kind": "const",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 30
+    },
+    {
+      "name": "ANIM_STATES",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 13
+    },
+    {
+      "name": "AnimatedCharacterTextures",
+      "kind": "interface",
+      "file": "game/src/core/TextureManager.ts",
+      "line": 26
+    },
+    {
+      "name": "AssaultRifleWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/RangedWeapons.ts",
+      "line": 242
+    },
+    {
+      "name": "AssetPreloader",
+      "kind": "class",
+      "file": "game/src/core/AssetPreloader.ts",
+      "line": 4
+    },
+    {
+      "name": "AssetResolver",
+      "kind": "class",
+      "file": "game/src/utils/AssetResolver.ts",
+      "line": 10
+    },
+    {
+      "name": "AstralStaffWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 268
+    },
+    {
+      "name": "attachInputListeners",
+      "kind": "function",
+      "file": "admin/src/views/controlHelpers.ts",
+      "line": 35
+    },
+    {
+      "name": "AuthListener",
+      "kind": "type",
+      "file": "game/src/auth/AuthManager.ts",
+      "line": 15
+    },
+    {
+      "name": "AuthManager",
+      "kind": "class",
+      "file": "game/src/auth/AuthManager.ts",
+      "line": 25
+    },
+    {
+      "name": "AuthModalScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/Auth/AuthModalScreen.ts",
+      "line": 15
+    },
+    {
+      "name": "AuthModalScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Auth/AuthModalScreen.ts",
+      "line": 6
+    },
+    {
+      "name": "AuthType",
+      "kind": "type",
+      "file": "game/src/auth/AuthManager.ts",
+      "line": 3
+    },
+    {
+      "name": "AuthUser",
+      "kind": "interface",
+      "file": "game/src/auth/AuthManager.ts",
+      "line": 5
+    },
+    {
+      "name": "AVAILABLE_SLOT_IDS",
+      "kind": "const",
+      "file": "game/src/shared/types/network.ts",
+      "line": 171
+    },
+    {
+      "name": "BalanceCategory",
+      "kind": "type",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 1
+    },
+    {
+      "name": "BalanceChangeEvent",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 136
+    },
+    {
+      "name": "BalanceManager",
+      "kind": "const",
+      "file": "game/src/balance/BalanceManager.ts",
+      "line": 310
+    },
+    {
+      "name": "BalanceRow",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 124
+    },
+    {
+      "name": "BalanceState",
+      "kind": "class",
+      "file": "admin/src/state/balanceState.ts",
+      "line": 6
+    },
+    {
+      "name": "BATTLE_PASS_REWARDS",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 40
+    },
+    {
+      "name": "BattlePassData",
+      "kind": "interface",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 22
+    },
+    {
+      "name": "BattlePassGameOverResult",
+      "kind": "interface",
+      "file": "game/src/ui/screens/GameOver/GameOverScreen.ts",
+      "line": 23
+    },
+    {
+      "name": "BattlePassManager",
+      "kind": "class",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 155
+    },
+    {
+      "name": "BattlePassReward",
+      "kind": "interface",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 4
+    },
+    {
+      "name": "BattlePassUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/BattlePassUI.ts",
+      "line": 29
+    },
+    {
+      "name": "BattlePassUIContext",
+      "kind": "interface",
+      "file": "game/src/ui/modules/BattlePassUI.ts",
+      "line": 10
+    },
+    {
+      "name": "BIOME_GRADE_CHANCES",
+      "kind": "const",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 74
+    },
+    {
+      "name": "BIOME_TREE_CONFIGS",
+      "kind": "const",
+      "file": "game/src/world/TreeManager.ts",
+      "line": 32
+    },
+    {
+      "name": "BiomeConfig",
+      "kind": "interface",
+      "file": "game/src/world/BiomeManager.ts",
+      "line": 28
+    },
+    {
+      "name": "BiomeGradeChances",
+      "kind": "interface",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 67
+    },
+    {
+      "name": "BiomeLightingConfig",
+      "kind": "interface",
+      "file": "game/src/world/BiomeManager.ts",
+      "line": 18
+    },
+    {
+      "name": "BiomeManager",
+      "kind": "class",
+      "file": "game/src/world/BiomeManager.ts",
+      "line": 220
+    },
+    {
+      "name": "BIOMES",
+      "kind": "const",
+      "file": "game/src/world/BiomeManager.ts",
+      "line": 49
+    },
+    {
+      "name": "BiomeTextureElement",
+      "kind": "type",
+      "file": "game/src/utils/AssetResolver.ts",
+      "line": 4
+    },
+    {
+      "name": "BleedStack",
+      "kind": "interface",
+      "file": "game/src/entities/Enemy.ts",
+      "line": 41
+    },
+    {
+      "name": "BOSS_ITEMS",
+      "kind": "const",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 270
+    },
+    {
+      "name": "BossAnimState",
+      "kind": "type",
+      "file": "game/src/entities/Enemy.ts",
+      "line": 19
+    },
+    {
+      "name": "BossBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 60
+    },
+    {
+      "name": "BossHpPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 40
+    },
+    {
+      "name": "BossSpawnPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 35
+    },
+    {
+      "name": "BossTextures",
+      "kind": "interface",
+      "file": "game/src/core/TextureManager.ts",
+      "line": 34
+    },
+    {
+      "name": "BowWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/RangedWeapons.ts",
+      "line": 13
+    },
+    {
+      "name": "BP_MAX_LEVEL",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 17
+    },
+    {
+      "name": "BP_MAX_POINTS",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 19
+    },
+    {
+      "name": "BP_POINTS_PER_LEVEL",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 18
+    },
+    {
+      "name": "BP_SEASON_ID",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 14
+    },
+    {
+      "name": "BP_SEASON_SUBTITLE",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 16
+    },
+    {
+      "name": "BP_SEASON_TITLE",
+      "kind": "const",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 15
+    },
+    {
+      "name": "BUFF_TYPES",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 46
+    },
+    {
+      "name": "BuffType",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 12
+    },
+    {
+      "name": "calculateBattlePassPoints",
+      "kind": "function",
+      "file": "game/src/core/BattlePassManager.ts",
+      "line": 30
+    },
+    {
+      "name": "CalculatedPlayerStats",
+      "kind": "interface",
+      "file": "game/src/mechanics/player/PlayerStats.ts",
+      "line": 13
+    },
+    {
+      "name": "canAcquireInvokerWeapon",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 160
+    },
+    {
+      "name": "canCharacterAcquireWeapon",
+      "kind": "function",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 122
+    },
+    {
+      "name": "canRerollWeaponOptions",
+      "kind": "function",
+      "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
+      "line": 29
+    },
+    {
+      "name": "CenterSquareMapRenderContext",
+      "kind": "interface",
+      "file": "game/src/ui/MapCenterSquareRenderer.ts",
+      "line": 10
+    },
+    {
+      "name": "ChakramWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/RangedWeapons.ts",
+      "line": 126
+    },
+    {
+      "name": "ChapterDef",
+      "kind": "interface",
+      "file": "game/src/core/ChapterQuestsConfig.ts",
+      "line": 17
+    },
+    {
+      "name": "ChapterQuestDef",
+      "kind": "interface",
+      "file": "game/src/core/ChapterQuestsConfig.ts",
+      "line": 3
+    },
+    {
+      "name": "ChapterQuestItem",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Quests/QuestsScreen.ts",
+      "line": 9
+    },
+    {
+      "name": "ChapterQuestProgress",
+      "kind": "interface",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 28
+    },
+    {
+      "name": "CHAPTERS_CONFIG",
+      "kind": "const",
+      "file": "game/src/core/ChapterQuestsConfig.ts",
+      "line": 25
+    },
+    {
+      "name": "CharacterAnimator",
+      "kind": "class",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 102
+    },
+    {
+      "name": "CharacterAnimLayout",
+      "kind": "interface",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 8
+    },
+    {
+      "name": "CharacterAnimStateConfig",
+      "kind": "interface",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 17
+    },
+    {
+      "name": "CharacterPreviewRenderer",
+      "kind": "class",
+      "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
+      "line": 8
+    },
+    {
+      "name": "CHARACTERS",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 15
+    },
+    {
+      "name": "CharacterSelectScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts",
+      "line": 39
+    },
+    {
+      "name": "CharacterSelectScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts",
+      "line": 22
+    },
+    {
+      "name": "CharacterSelectUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/CharacterSelectUI.ts",
+      "line": 11
+    },
+    {
+      "name": "CharacterSelectUIOptions",
+      "kind": "type",
+      "file": "game/src/ui/modules/CharacterSelectUI.ts",
+      "line": 6
+    },
+    {
+      "name": "CharacterType",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 6
+    },
+    {
+      "name": "ChartOptions",
+      "kind": "interface",
+      "file": "admin/src/chartUtils.ts",
+      "line": 15
+    },
+    {
+      "name": "ChartSeries",
+      "kind": "interface",
+      "file": "admin/src/chartUtils.ts",
+      "line": 6
+    },
+    {
+      "name": "CHEST_TIERS",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 28
+    },
+    {
+      "name": "ChestInstance",
+      "kind": "interface",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 27
+    },
+    {
+      "name": "ChestManager",
+      "kind": "class",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 44
+    },
+    {
+      "name": "ChestSyncInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 188
+    },
+    {
+      "name": "ChestTier",
+      "kind": "type",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 29
+    },
+    {
+      "name": "ChestTier",
+      "kind": "type",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 25
+    },
+    {
+      "name": "ChunkManager",
+      "kind": "class",
+      "file": "game/src/world/ChunkManager.ts",
+      "line": 28
+    },
+    {
+      "name": "ClientSyncMessage",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 226
+    },
+    {
+      "name": "CombatDirector",
+      "kind": "class",
+      "file": "game/src/combat/CombatDirector.ts",
+      "line": 18
+    },
+    {
+      "name": "COMMON_ITEMS",
+      "kind": "const",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 244
+    },
+    {
+      "name": "createInvokerBuff",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 273
+    },
+    {
+      "name": "createSimWeaponById",
+      "kind": "function",
+      "file": "game/src/sim/weapons/SimWeaponFactory.ts",
+      "line": 55
+    },
+    {
+      "name": "createSimWeaponForCharacter",
+      "kind": "function",
+      "file": "game/src/sim/weapons/SimWeaponFactory.ts",
+      "line": 27
+    },
+    {
+      "name": "DamageDealtEvent",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 77
+    },
+    {
+      "name": "DamageNumberManager",
+      "kind": "class",
+      "file": "game/src/combat/DamageNumberManager.ts",
+      "line": 3
+    },
+    {
+      "name": "DebugHUD",
+      "kind": "class",
+      "file": "game/src/ui/DebugHUD.ts",
+      "line": 19
+    },
+    {
+      "name": "DebugHudStats",
+      "kind": "interface",
+      "file": "game/src/ui/DebugHUD.ts",
+      "line": 1
+    },
+    {
+      "name": "DedicatedGameServer",
+      "kind": "class",
+      "file": "server/dedicatedServer.ts",
+      "line": 33
+    },
+    {
+      "name": "DedicatedServerOptions",
+      "kind": "interface",
+      "file": "server/dedicatedServer.ts",
+      "line": 18
+    },
+    {
+      "name": "DEFAULT_BALANCE",
+      "kind": "const",
+      "file": "game/src/balance/defaultBalance.ts",
+      "line": 4
+    },
+    {
+      "name": "DetailedPlayerResult",
+      "kind": "interface",
+      "file": "game/src/ui/screens/GameOver/GameOverScreen.ts",
+      "line": 14
+    },
+    {
+      "name": "DevManager",
+      "kind": "class",
+      "file": "game/src/ui/DevManager.ts",
+      "line": 8
+    },
+    {
+      "name": "DIFFICULTY_TIERS",
+      "kind": "const",
+      "file": "game/src/director/DifficultyDirector.ts",
+      "line": 8
+    },
+    {
+      "name": "DifficultyDirector",
+      "kind": "class",
+      "file": "game/src/director/DifficultyDirector.ts",
+      "line": 22
+    },
+    {
+      "name": "DifficultyTier",
+      "kind": "interface",
+      "file": "game/src/director/DifficultyDirector.ts",
+      "line": 1
+    },
+    {
+      "name": "DirectionalTextures",
+      "kind": "interface",
+      "file": "game/src/core/TextureManager.ts",
+      "line": 19
+    },
+    {
+      "name": "DIRECTIONS",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 11
+    },
+    {
+      "name": "DiscoveredAltar",
+      "kind": "interface",
+      "file": "game/src/ui/MapManager.ts",
+      "line": 13
+    },
+    {
+      "name": "DropManager",
+      "kind": "class",
+      "file": "game/src/drops/DropManager.ts",
+      "line": 15
+    },
+    {
+      "name": "DropSnapshot",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 32
+    },
+    {
+      "name": "DualRevolversWeapon",
+      "kind": "const",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 110
+    },
+    {
+      "name": "DualRevolversWeapon",
+      "kind": "type",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 111
+    },
+    {
+      "name": "ENEMIES",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 31
+    },
+    {
+      "name": "Enemy",
+      "kind": "class",
+      "file": "game/src/entities/Enemy.ts",
+      "line": 48
+    },
+    {
+      "name": "EnemyAnimState",
+      "kind": "type",
+      "file": "game/src/entities/Enemy.ts",
+      "line": 18
+    },
+    {
+      "name": "EnemyConfig",
+      "kind": "interface",
+      "file": "game/src/entities/Enemy.ts",
+      "line": 24
+    },
+    {
+      "name": "EnemyManager",
+      "kind": "class",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 20
+    },
+    {
+      "name": "EnemySnapshot",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 21
+    },
+    {
+      "name": "EnemyType",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 16
+    },
+    {
+      "name": "Engine",
+      "kind": "class",
+      "file": "game/src/core/Engine.ts",
+      "line": 20
+    },
+    {
+      "name": "filterAndShuffleForReroll",
+      "kind": "function",
+      "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
+      "line": 40
+    },
+    {
+      "name": "findClosestEnemies",
+      "kind": "function",
+      "file": "game/src/combat/WeaponBase.ts",
+      "line": 28
+    },
+    {
+      "name": "findClosestSimEnemies",
+      "kind": "function",
+      "file": "game/src/sim/weapons/SimWeaponBase.ts",
+      "line": 54
+    },
+    {
+      "name": "FireballWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 590
+    },
+    {
+      "name": "FireRingWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 123
+    },
+    {
+      "name": "FlailWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 378
+    },
+    {
+      "name": "GameBalanceState",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 113
+    },
+    {
+      "name": "GameCore",
+      "kind": "class",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 363
+    },
+    {
+      "name": "GameCoreConfig",
+      "kind": "interface",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 32
+    },
+    {
+      "name": "GameEventBus",
+      "kind": "class",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 57
+    },
+    {
+      "name": "GameEventListener",
+      "kind": "type",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 1
+    },
+    {
+      "name": "GameNetworkCoordinator",
+      "kind": "class",
+      "file": "game/src/net/GameNetworkCoordinator.ts",
+      "line": 30
+    },
+    {
+      "name": "GameOverScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/GameOver/GameOverScreen.ts",
+      "line": 36
+    },
+    {
+      "name": "GameOverScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/GameOver/GameOverScreen.ts",
+      "line": 32
+    },
+    {
+      "name": "GameOverUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/GameOverUI.ts",
+      "line": 13
+    },
+    {
+      "name": "GameStartMessage",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 246
+    },
+    {
+      "name": "GameState",
+      "kind": "enum",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 37
+    },
+    {
+      "name": "Gem",
+      "kind": "class",
+      "file": "game/src/drops/Gem.ts",
+      "line": 17
+    },
+    {
+      "name": "GemCollector",
+      "kind": "interface",
+      "file": "game/src/drops/DropManager.ts",
+      "line": 6
+    },
+    {
+      "name": "GEMS",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 44
+    },
+    {
+      "name": "GemType",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 14
+    },
+    {
+      "name": "getAdminPasscode",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 51
+    },
+    {
+      "name": "getAdminSupabaseClient",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 94
+    },
+    {
+      "name": "getAssetUrl",
+      "kind": "function",
+      "file": "game/src/utils/assetPath.ts",
+      "line": 5
+    },
+    {
+      "name": "getAuthSupabaseClient",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 117
+    },
+    {
+      "name": "getBiomeGradeChances",
+      "kind": "function",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 81
+    },
+    {
+      "name": "getChapterDef",
+      "kind": "function",
+      "file": "game/src/core/ChapterQuestsConfig.ts",
+      "line": 258
+    },
+    {
+      "name": "getChapterQuestDef",
+      "kind": "function",
+      "file": "game/src/core/ChapterQuestsConfig.ts",
+      "line": 262
+    },
+    {
+      "name": "getCharacterAnimLayout",
+      "kind": "function",
+      "file": "game/src/entities/CharacterAnimator.ts",
+      "line": 74
+    },
+    {
+      "name": "getEntityTexture",
+      "kind": "function",
+      "file": "admin/src/constants.ts",
+      "line": 161
+    },
+    {
+      "name": "getExclusiveWeaponOwner",
+      "kind": "function",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 100
+    },
+    {
+      "name": "getGradeColor",
+      "kind": "function",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 108
+    },
+    {
+      "name": "getGradeLabel",
+      "kind": "function",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 104
+    },
+    {
+      "name": "getGradeTier",
+      "kind": "function",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 95
+    },
+    {
+      "name": "getHeroAvatar",
+      "kind": "function",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 33
+    },
+    {
+      "name": "getHeroDetails",
+      "kind": "function",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 54
+    },
+    {
+      "name": "getHeroIcon",
+      "kind": "function",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 6
+    },
+    {
+      "name": "getHeroName",
+      "kind": "function",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 10
+    },
+    {
+      "name": "getHeroRussianName",
+      "kind": "function",
+      "file": "game/src/entities/PlayerOverheadRenderer.ts",
+      "line": 14
+    },
+    {
+      "name": "getInvokerScaling",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 172
+    },
+    {
+      "name": "getInvokerSpellDuration",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 182
+    },
+    {
+      "name": "getItemsByGrade",
+      "kind": "function",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 275
+    },
+    {
+      "name": "getMonsterColor",
+      "kind": "function",
+      "file": "admin/src/constants.ts",
+      "line": 93
+    },
+    {
+      "name": "getPassiveBuffId",
+      "kind": "function",
+      "file": "game/src/drops/PassiveBuffs.ts",
+      "line": 76
+    },
+    {
+      "name": "getPlayerSlotDisplayName",
+      "kind": "function",
+      "file": "game/src/shared/types/network.ts",
+      "line": 183
+    },
+    {
+      "name": "getPlayerSlotNumber",
+      "kind": "function",
+      "file": "game/src/shared/types/network.ts",
+      "line": 173
+    },
+    {
+      "name": "getPublicSupabaseClient",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 65
+    },
+    {
+      "name": "getSupabaseAnonKey",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 32
+    },
+    {
+      "name": "getSupabaseServiceRoleKey",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 40
+    },
+    {
+      "name": "getSupabaseUrl",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 24
+    },
+    {
+      "name": "getUniqueCharacterConfig",
+      "kind": "function",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 86
+    },
+    {
+      "name": "getWeaponColor",
+      "kind": "function",
+      "file": "admin/src/constants.ts",
+      "line": 83
+    },
+    {
+      "name": "getWeaponEffectiveCap",
+      "kind": "function",
+      "file": "game/src/combat/WeaponBase.ts",
+      "line": 263
+    },
+    {
+      "name": "getWeaponIconUrl",
+      "kind": "function",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 191
+    },
+    {
+      "name": "getWeaponIconUrl",
+      "kind": "function",
+      "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
+      "line": 42
+    },
+    {
+      "name": "GlobalBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 94
+    },
+    {
+      "name": "GreatswordWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 290
+    },
+    {
+      "name": "HeavyColtWeapon",
+      "kind": "const",
+      "file": "game/src/combat/weapons/RangedWeapons.ts",
+      "line": 119
+    },
+    {
+      "name": "HeavyColtWeapon",
+      "kind": "type",
+      "file": "game/src/combat/weapons/RangedWeapons.ts",
+      "line": 120
+    },
+    {
+      "name": "HERO_ORDER",
+      "kind": "const",
+      "file": "game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts",
+      "line": 9
+    },
+    {
+      "name": "HeroAbility",
+      "kind": "interface",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 37
+    },
+    {
+      "name": "HeroAnimState",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 8
+    },
+    {
+      "name": "HeroBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 40
+    },
+    {
+      "name": "HeroDetails",
+      "kind": "interface",
+      "file": "game/src/ui/modules/HeroUIHelpers.ts",
+      "line": 42
+    },
+    {
+      "name": "HeroQuestDefinition",
+      "kind": "interface",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 60
+    },
+    {
+      "name": "HeroTextureAction",
+      "kind": "type",
+      "file": "game/src/utils/AssetResolver.ts",
+      "line": 3
+    },
+    {
+      "name": "HostSnapshotMessage",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 206
+    },
+    {
+      "name": "HUD",
+      "kind": "class",
+      "file": "game/src/ui/HUD.ts",
+      "line": 41
+    },
+    {
+      "name": "IceSpikeWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 483
+    },
+    {
+      "name": "InGameHUDScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/InGameHUD/InGameHUDScreen.ts",
+      "line": 12
+    },
+    {
+      "name": "InGameHUDScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/InGameHUD/InGameHUDScreen.ts",
+      "line": 4
+    },
+    {
+      "name": "InGameOverlayUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 16
+    },
+    {
+      "name": "InputManager",
+      "kind": "class",
+      "file": "game/src/core/InputManager.ts",
+      "line": 3
+    },
+    {
+      "name": "InventoryScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
+      "line": 11
+    },
+    {
+      "name": "InventoryScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
+      "line": 7
+    },
+    {
+      "name": "InventoryUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/InventoryUI.ts",
+      "line": 11
+    },
+    {
+      "name": "INVOKE_BASE_DAMAGE",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 167
+    },
+    {
+      "name": "INVOKE_COOLDOWN_FACTOR",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 169
+    },
+    {
+      "name": "INVOKE_DAMAGE_PER_LEVEL",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 168
+    },
+    {
+      "name": "INVOKER_EXCLUSIVE_WEAPONS",
+      "kind": "const",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 6
+    },
+    {
+      "name": "INVOKER_SPELL_IDS",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 3
+    },
+    {
+      "name": "INVOKER_SPELLS",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 27
+    },
+    {
+      "name": "InvokerInvokeWeapon",
+      "kind": "class",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 168
+    },
+    {
+      "name": "InvokerSpellCast",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 197
+    },
+    {
+      "name": "InvokerSpellDefinition",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 16
+    },
+    {
+      "name": "InvokerSpellEffects",
+      "kind": "class",
+      "file": "game/src/combat/InvokerSpellEffects.ts",
+      "line": 35
+    },
+    {
+      "name": "invokerSpellFromWeaponId",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 153
+    },
+    {
+      "name": "InvokerSpellId",
+      "kind": "type",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 15
+    },
+    {
+      "name": "InvokerSpellRuntime",
+      "kind": "class",
+      "file": "game/src/shared/InvokerSpellRuntime.ts",
+      "line": 36
+    },
+    {
+      "name": "InvokerSpellWeapon",
+      "kind": "class",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 173
+    },
+    {
+      "name": "InvokerWeapon",
+      "kind": "class",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 25
+    },
+    {
+      "name": "invokerWeaponId",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 150
+    },
+    {
+      "name": "isBinarySnapshot",
+      "kind": "function",
+      "file": "game/src/net/BinarySnapshot.ts",
+      "line": 29
+    },
+    {
+      "name": "isExclusiveWeapon",
+      "kind": "function",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 93
+    },
+    {
+      "name": "isInvokerSpellId",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 147
+    },
+    {
+      "name": "isUniqueCharacter",
+      "kind": "function",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 79
+    },
+    {
+      "name": "ItemBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 81
+    },
+    {
+      "name": "ItemRarity",
+      "kind": "type",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 3
+    },
+    {
+      "name": "ItemRarity",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 45
+    },
+    {
+      "name": "KatanaSlashWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 117
+    },
+    {
+      "name": "KukriWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 13
+    },
+    {
+      "name": "LEGENDARY_ITEMS",
+      "kind": "const",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 264
+    },
+    {
+      "name": "LevelUpScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
+      "line": 84
+    },
+    {
+      "name": "LevelUpScreenElements",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
+      "line": 64
+    },
+    {
+      "name": "LevelUpScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
+      "line": 73
+    },
+    {
+      "name": "LevelUpUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/LevelUpUI.ts",
+      "line": 18
+    },
+    {
+      "name": "LevelUpUIContext",
+      "kind": "type",
+      "file": "game/src/ui/modules/LevelUpUI.ts",
+      "line": 13
+    },
+    {
+      "name": "LevelUpUIElements",
+      "kind": "type",
+      "file": "game/src/ui/modules/LevelUpUI.ts",
+      "line": 12
+    },
+    {
+      "name": "LightningStrikeWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 376
+    },
+    {
+      "name": "LobbyCoordinator",
+      "kind": "class",
+      "file": "game/src/net/LobbyCoordinator.ts",
+      "line": 6
+    },
+    {
+      "name": "LobbyPlayerInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 151
+    },
+    {
+      "name": "LobbyScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/Lobby/LobbyScreen.ts",
+      "line": 58
+    },
+    {
+      "name": "LobbyScreenElements",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Lobby/LobbyScreen.ts",
+      "line": 9
+    },
+    {
+      "name": "LobbyScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Lobby/LobbyScreen.ts",
+      "line": 47
+    },
+    {
+      "name": "LobbyUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/LobbyUI.ts",
+      "line": 13
+    },
+    {
+      "name": "LobbyUIContext",
+      "kind": "type",
+      "file": "game/src/ui/modules/LobbyUI.ts",
+      "line": 8
+    },
+    {
+      "name": "LobbyUIElements",
+      "kind": "type",
+      "file": "game/src/ui/modules/LobbyUI.ts",
+      "line": 7
+    },
+    {
+      "name": "LobbyUpdateMessage",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 241
+    },
+    {
+      "name": "MainMenuScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
+      "line": 22
+    },
+    {
+      "name": "MainMenuScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
+      "line": 7
+    },
+    {
+      "name": "MapManager",
+      "kind": "class",
+      "file": "game/src/ui/MapManager.ts",
+      "line": 22
+    },
+    {
+      "name": "matchesSearch",
+      "kind": "function",
+      "file": "admin/src/ui/filter.ts",
+      "line": 9
+    },
+    {
+      "name": "MeleeAttackEffects",
+      "kind": "class",
+      "file": "game/src/combat/MeleeAttackEffects.ts",
+      "line": 27
+    },
+    {
+      "name": "MeleeAttackInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/combat.ts",
+      "line": 4
+    },
+    {
+      "name": "MeleeWeaponId",
+      "kind": "type",
+      "file": "game/src/shared/types/combat.ts",
+      "line": 1
+    },
+    {
+      "name": "MerchantAndChestUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/MerchantAndChestUI.ts",
+      "line": 8
+    },
+    {
+      "name": "MerchantItemStock",
+      "kind": "interface",
+      "file": "game/src/world/MerchantManager.ts",
+      "line": 22
+    },
+    {
+      "name": "MerchantManager",
+      "kind": "class",
+      "file": "game/src/world/MerchantManager.ts",
+      "line": 34
+    },
+    {
+      "name": "META_BRANCHES",
+      "kind": "const",
+      "file": "game/src/meta/MetaProgression.ts",
+      "line": 62
+    },
+    {
+      "name": "MetaBonuses",
+      "kind": "interface",
+      "file": "game/src/meta/MetaProgression.ts",
+      "line": 17
+    },
+    {
+      "name": "MetaBranchDef",
+      "kind": "interface",
+      "file": "game/src/meta/MetaProgression.ts",
+      "line": 7
+    },
+    {
+      "name": "MetaBranchId",
+      "kind": "type",
+      "file": "game/src/meta/MetaProgression.ts",
+      "line": 5
+    },
+    {
+      "name": "MetaProgression",
+      "kind": "class",
+      "file": "game/src/meta/MetaProgression.ts",
+      "line": 128
+    },
+    {
+      "name": "MetaProgressionSave",
+      "kind": "interface",
+      "file": "game/src/meta/MetaProgression.ts",
+      "line": 55
+    },
+    {
+      "name": "ModalManager",
+      "kind": "class",
+      "file": "admin/src/ui/modal.ts",
+      "line": 3
+    },
+    {
+      "name": "MONSTER_COLORS",
+      "kind": "const",
+      "file": "admin/src/constants.ts",
+      "line": 70
+    },
+    {
+      "name": "MonsterBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 50
+    },
+    {
+      "name": "MonsterTextures",
+      "kind": "interface",
+      "file": "game/src/core/TextureManager.ts",
+      "line": 39
+    },
+    {
+      "name": "NetBuffInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 46
+    },
+    {
+      "name": "NetEvent",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 112
+    },
+    {
+      "name": "NetMessage",
+      "kind": "type",
+      "file": "game/src/shared/types/network.ts",
+      "line": 260
+    },
+    {
+      "name": "NetRole",
+      "kind": "type",
+      "file": "game/src/shared/types/network.ts",
+      "line": 19
+    },
+    {
+      "name": "NetShotInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 87
+    },
+    {
+      "name": "NetWeaponInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 39
+    },
+    {
+      "name": "NetworkManager",
+      "kind": "class",
+      "file": "game/src/net/NetworkManager.ts",
+      "line": 70
+    },
+    {
+      "name": "Obstacle",
+      "kind": "interface",
+      "file": "game/src/world/ObstacleManager.ts",
+      "line": 3
+    },
+    {
+      "name": "ObstacleManager",
+      "kind": "class",
+      "file": "game/src/world/ObstacleManager.ts",
+      "line": 15
+    },
+    {
+      "name": "ObstacleType",
+      "kind": "type",
+      "file": "game/src/world/ObstacleManager.ts",
+      "line": 1
+    },
+    {
+      "name": "OccupiedArea",
+      "kind": "interface",
+      "file": "game/src/world/ChunkManager.ts",
+      "line": 22
+    },
+    {
+      "name": "ONE_MONTH_MS",
+      "kind": "const",
+      "file": "game/src/auth/AuthManager.ts",
+      "line": 19
+    },
+    {
+      "name": "packHostSnapshot",
+      "kind": "function",
+      "file": "game/src/net/BinarySnapshot.ts",
+      "line": 47
+    },
+    {
+      "name": "PASSIVE_BUFF_IDS",
+      "kind": "const",
+      "file": "game/src/drops/PassiveBuffs.ts",
+      "line": 62
+    },
+    {
+      "name": "PASSIVE_BUFFS",
+      "kind": "const",
+      "file": "game/src/drops/PassiveBuffs.ts",
+      "line": 17
+    },
+    {
+      "name": "PassiveBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 69
+    },
+    {
+      "name": "PassiveBuffDef",
+      "kind": "interface",
+      "file": "game/src/drops/PassiveBuffs.ts",
+      "line": 10
+    },
+    {
+      "name": "PassiveBuffId",
+      "kind": "type",
+      "file": "game/src/drops/PassiveBuffs.ts",
+      "line": 1
+    },
+    {
+      "name": "Player",
+      "kind": "class",
+      "file": "game/src/entities/Player.ts",
+      "line": 58
+    },
+    {
+      "name": "PLAYER_COLORS",
+      "kind": "const",
+      "file": "game/src/shared/types/network.ts",
+      "line": 163
+    },
+    {
+      "name": "PlayerAnimation",
+      "kind": "class",
+      "file": "game/src/mechanics/player/PlayerAnimation.ts",
+      "line": 21
+    },
+    {
+      "name": "PlayerAnimationOptions",
+      "kind": "interface",
+      "file": "game/src/mechanics/player/PlayerAnimation.ts",
+      "line": 10
+    },
+    {
+      "name": "PlayerDamagePayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 3
+    },
+    {
+      "name": "PlayerDeathPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 29
+    },
+    {
+      "name": "PlayerHealPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 10
+    },
+    {
+      "name": "PlayerLevelUpPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 17
+    },
+    {
+      "name": "PlayerMotor",
+      "kind": "class",
+      "file": "game/src/mechanics/player/PlayerMotor.ts",
+      "line": 16
+    },
+    {
+      "name": "PlayerMotorOptions",
+      "kind": "interface",
+      "file": "game/src/mechanics/player/PlayerMotor.ts",
+      "line": 5
+    },
+    {
+      "name": "PlayerNetState",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 55
+    },
+    {
+      "name": "PlayerOverheadData",
+      "kind": "interface",
+      "file": "game/src/entities/PlayerOverheadRenderer.ts",
+      "line": 3
+    },
+    {
+      "name": "PlayerStats",
+      "kind": "class",
+      "file": "game/src/mechanics/player/PlayerStats.ts",
+      "line": 31
+    },
+    {
+      "name": "PlayerStats",
+      "kind": "interface",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 38
+    },
+    {
+      "name": "PlayerStatsConfig",
+      "kind": "interface",
+      "file": "game/src/mechanics/player/PlayerStats.ts",
+      "line": 6
+    },
+    {
+      "name": "PlayerStatusManager",
+      "kind": "class",
+      "file": "game/src/entities/PlayerStatusManager.ts",
+      "line": 1
+    },
+    {
+      "name": "PlayerTargetInfo",
+      "kind": "interface",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 13
+    },
+    {
+      "name": "PlayerXpPayload",
+      "kind": "interface",
+      "file": "game/src/mechanics/events/GameEventBus.ts",
+      "line": 23
+    },
+    {
+      "name": "ProgressionChartState",
+      "kind": "interface",
+      "file": "admin/src/types.ts",
+      "line": 31
+    },
+    {
+      "name": "ProgressionData",
+      "kind": "interface",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 34
+    },
+    {
+      "name": "ProgressionManager",
+      "kind": "class",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 81
+    },
+    {
+      "name": "ProgressionView",
+      "kind": "class",
+      "file": "admin/src/views/progressionView.ts",
+      "line": 6
+    },
+    {
+      "name": "Projectile",
+      "kind": "class",
+      "file": "game/src/combat/Projectile.ts",
+      "line": 47
+    },
+    {
+      "name": "ProjectileOptions",
+      "kind": "interface",
+      "file": "game/src/combat/Projectile.ts",
+      "line": 18
+    },
+    {
+      "name": "PublicRoomInfo",
+      "kind": "interface",
+      "file": "game/src/net/RoomDirectory.ts",
+      "line": 3
+    },
+    {
+      "name": "QuestsScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/Quests/QuestsScreen.ts",
+      "line": 38
+    },
+    {
+      "name": "QuestsScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Quests/QuestsScreen.ts",
+      "line": 24
+    },
+    {
+      "name": "QuestStepItem",
+      "kind": "interface",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 54
+    },
+    {
+      "name": "QuestsUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/QuestsUI.ts",
+      "line": 13
+    },
+    {
+      "name": "QuestsUIContext",
+      "kind": "type",
+      "file": "game/src/ui/modules/QuestsUI.ts",
+      "line": 8
+    },
+    {
+      "name": "RARE_ITEMS",
+      "kind": "const",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 258
+    },
+    {
+      "name": "ReaperScytheWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 23
+    },
+    {
+      "name": "registerUniqueCharacter",
+      "kind": "function",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 72
+    },
+    {
+      "name": "RemotePlayer",
+      "kind": "class",
+      "file": "game/src/entities/RemotePlayer.ts",
+      "line": 27
+    },
+    {
+      "name": "renderBosses",
+      "kind": "function",
+      "file": "admin/src/views/bossesView.ts",
+      "line": 6
+    },
+    {
+      "name": "renderCenterSquareMap",
+      "kind": "function",
+      "file": "game/src/ui/MapCenterSquareRenderer.ts",
+      "line": 34
+    },
+    {
+      "name": "renderDashboard",
+      "kind": "function",
+      "file": "admin/src/views/dashboardView.ts",
+      "line": 4
+    },
+    {
+      "name": "renderEmptySearchState",
+      "kind": "function",
+      "file": "admin/src/ui/filter.ts",
+      "line": 54
+    },
+    {
+      "name": "renderGlobal",
+      "kind": "function",
+      "file": "admin/src/views/globalView.ts",
+      "line": 4
+    },
+    {
+      "name": "renderHeroes",
+      "kind": "function",
+      "file": "admin/src/views/heroesView.ts",
+      "line": 6
+    },
+    {
+      "name": "renderItems",
+      "kind": "function",
+      "file": "admin/src/views/itemsView.ts",
+      "line": 5
+    },
+    {
+      "name": "renderMerchant",
+      "kind": "function",
+      "file": "admin/src/views/merchantView.ts",
+      "line": 4
+    },
+    {
+      "name": "renderMonsters",
+      "kind": "function",
+      "file": "admin/src/views/monstersView.ts",
+      "line": 6
+    },
+    {
+      "name": "renderPassives",
+      "kind": "function",
+      "file": "admin/src/views/passivesView.ts",
+      "line": 5
+    },
+    {
+      "name": "renderPlayerOverhead",
+      "kind": "function",
+      "file": "game/src/entities/PlayerOverheadRenderer.ts",
+      "line": 40
+    },
+    {
+      "name": "renderStatControl",
+      "kind": "function",
+      "file": "admin/src/views/controlHelpers.ts",
+      "line": 3
+    },
+    {
+      "name": "renderTalents",
+      "kind": "function",
+      "file": "admin/src/views/talentsView.ts",
+      "line": 5
+    },
+    {
+      "name": "renderWeapons",
+      "kind": "function",
+      "file": "admin/src/views/weaponsView.ts",
+      "line": 6
+    },
+    {
+      "name": "resetSupabaseClients",
+      "kind": "function",
+      "file": "game/src/balance/supabaseClient.ts",
+      "line": 140
+    },
+    {
+      "name": "ReviveActionMessage",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 252
+    },
+    {
+      "name": "RIFT_ITEMS",
+      "kind": "const",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 43
+    },
+    {
+      "name": "RiftItemDef",
+      "kind": "interface",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 33
+    },
+    {
+      "name": "RiftItemId",
+      "kind": "type",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 5
+    },
+    {
+      "name": "RiftItemId",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 47
+    },
+    {
+      "name": "RiftTeleporter",
+      "kind": "class",
+      "file": "game/src/world/RiftTeleporter.ts",
+      "line": 32
+    },
+    {
+      "name": "RiftUpdateResult",
+      "kind": "interface",
+      "file": "game/src/world/RiftTeleporter.ts",
+      "line": 19
+    },
+    {
+      "name": "rollChestDropPair",
+      "kind": "function",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 311
+    },
+    {
+      "name": "rollRiftItem",
+      "kind": "function",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 348
+    },
+    {
+      "name": "rollRiftItemByStage",
+      "kind": "function",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 288
+    },
+    {
+      "name": "rollWeaponGrade",
+      "kind": "function",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 86
+    },
+    {
+      "name": "RoomDirectory",
+      "kind": "class",
+      "file": "game/src/net/RoomDirectory.ts",
+      "line": 15
+    },
+    {
+      "name": "RoughTerrainManager",
+      "kind": "class",
+      "file": "game/src/world/RoughTerrainManager.ts",
+      "line": 24
+    },
+    {
+      "name": "RoughZone",
+      "kind": "interface",
+      "file": "game/src/world/RoughTerrainManager.ts",
+      "line": 17
+    },
+    {
+      "name": "SafeDOM",
+      "kind": "class",
+      "file": "game/src/ui/core/SafeDOM.ts",
+      "line": 5
+    },
+    {
+      "name": "Screen",
+      "kind": "class",
+      "file": "game/src/ui/core/Screen.ts",
+      "line": 5
+    },
+    {
+      "name": "ScreenManager",
+      "kind": "class",
+      "file": "game/src/ui/core/ScreenManager.ts",
+      "line": 6
+    },
+    {
+      "name": "SeededRNG",
+      "kind": "class",
+      "file": "game/src/core/SeededRNG.ts",
+      "line": 5
+    },
+    {
+      "name": "selectWeaponUpgradeOptions",
+      "kind": "function",
+      "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
+      "line": 5
+    },
+    {
+      "name": "SessionDirector",
+      "kind": "class",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 57
+    },
+    {
+      "name": "SettingsScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/Settings/SettingsScreen.ts",
+      "line": 29
+    },
+    {
+      "name": "SettingsScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Settings/SettingsScreen.ts",
+      "line": 10
+    },
+    {
+      "name": "SettingsUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/SettingsUI.ts",
+      "line": 8
+    },
+    {
+      "name": "SettingsUIContext",
+      "kind": "type",
+      "file": "game/src/ui/modules/SettingsUI.ts",
+      "line": 3
+    },
+    {
+      "name": "ShopScreen",
+      "kind": "class",
+      "file": "game/src/ui/screens/Shop/ShopScreen.ts",
+      "line": 20
+    },
+    {
+      "name": "ShopScreenOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/Shop/ShopScreen.ts",
+      "line": 10
+    },
+    {
+      "name": "showToast",
+      "kind": "function",
+      "file": "admin/src/ui/toast.ts",
+      "line": 1
+    },
+    {
+      "name": "SidebarQuestItem",
+      "kind": "interface",
+      "file": "game/src/core/ProgressionManager.ts",
+      "line": 6
+    },
+    {
+      "name": "SimAltarInternal",
+      "kind": "class",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 339
+    },
+    {
+      "name": "SimAltarState",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 96
+    },
+    {
+      "name": "SimAssaultRifleWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 197
+    },
+    {
+      "name": "SimAstralStaffWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 13
+    },
+    {
+      "name": "SimBowWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 13
+    },
+    {
+      "name": "SimChakramWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 147
+    },
+    {
+      "name": "SimDropInternal",
+      "kind": "class",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 324
+    },
+    {
+      "name": "SimDropState",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 89
+    },
+    {
+      "name": "SimDualRevolversWeapon",
+      "kind": "const",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 191
+    },
+    {
+      "name": "SimDualRevolversWeapon",
+      "kind": "type",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 192
+    },
+    {
+      "name": "SimEnemyConfig",
+      "kind": "interface",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 39
+    },
+    {
+      "name": "SimEnemyInternal",
+      "kind": "class",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 193
+    },
+    {
+      "name": "SimEnemyRef",
+      "kind": "interface",
+      "file": "game/src/sim/weapons/SimWeaponBase.ts",
+      "line": 39
+    },
+    {
+      "name": "SimEnemyState",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 59
+    },
+    {
+      "name": "SimEvent",
+      "kind": "type",
+      "file": "game/src/sim/types.ts",
+      "line": 106
+    },
+    {
+      "name": "SimFireballWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 407
+    },
+    {
+      "name": "SimFireRingWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 101
+    },
+    {
+      "name": "SimFlailWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
+      "line": 130
+    },
+    {
+      "name": "SimGreatswordWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
+      "line": 71
+    },
+    {
+      "name": "SimHeavyColtWeapon",
+      "kind": "const",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 101
+    },
+    {
+      "name": "SimHeavyColtWeapon",
+      "kind": "type",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 102
+    },
+    {
+      "name": "SimIceSpikeWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 329
+    },
+    {
+      "name": "SimInvokerWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 22
+    },
+    {
+      "name": "SimKatanaSlashWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
+      "line": 259
+    },
+    {
+      "name": "SimKukriWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimRangedWeapons.ts",
+      "line": 107
+    },
+    {
+      "name": "SimLightningStrikeWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 251
+    },
+    {
+      "name": "SimPlayerInput",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 24
+    },
+    {
+      "name": "SimPlayerInternal",
+      "kind": "class",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 53
+    },
+    {
+      "name": "SimPlayerRef",
+      "kind": "interface",
+      "file": "game/src/sim/weapons/SimWeaponBase.ts",
+      "line": 46
+    },
+    {
+      "name": "SimPlayerState",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 37
+    },
+    {
+      "name": "SimPlayerStats",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 30
+    },
+    {
+      "name": "SimPoint2D",
+      "kind": "interface",
+      "file": "game/src/world/ObstacleManager.ts",
+      "line": 10
+    },
+    {
+      "name": "SimProjectileData",
+      "kind": "interface",
+      "file": "game/src/sim/weapons/SimWeaponBase.ts",
+      "line": 13
+    },
+    {
+      "name": "SimProjectileInternal",
+      "kind": "class",
+      "file": "game/src/sim/GameCore.ts",
+      "line": 264
+    },
+    {
+      "name": "SimProjectileState",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 73
+    },
+    {
+      "name": "SimReaperScytheWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
+      "line": 189
+    },
+    {
+      "name": "SimRNG",
+      "kind": "class",
+      "file": "game/src/sim/SimRNG.ts",
+      "line": 5
+    },
+    {
+      "name": "SimSnapshot",
+      "kind": "interface",
+      "file": "game/src/sim/types.ts",
+      "line": 187
+    },
+    {
+      "name": "SimulationSlot",
+      "kind": "interface",
+      "file": "admin/src/types.ts",
+      "line": 13
+    },
+    {
+      "name": "SimulationState",
+      "kind": "interface",
+      "file": "admin/src/types.ts",
+      "line": 19
+    },
+    {
+      "name": "SimulationView",
+      "kind": "class",
+      "file": "admin/src/views/simulationView.ts",
+      "line": 8
+    },
+    {
+      "name": "SimVec3",
+      "kind": "class",
+      "file": "game/src/sim/math/SimVector.ts",
+      "line": 5
+    },
+    {
+      "name": "SimWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimWeaponBase.ts",
+      "line": 117
+    },
+    {
+      "name": "SimWeaponInfo",
+      "kind": "interface",
+      "file": "game/src/sim/weapons/SimWeaponBase.ts",
+      "line": 3
+    },
+    {
+      "name": "SimWhirlwindSlashWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
+      "line": 12
+    },
+    {
+      "name": "SlotId",
+      "kind": "type",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 9
+    },
+    {
+      "name": "SLOTS",
+      "kind": "const",
+      "file": "game/src/shared/types/registry.ts",
+      "line": 8
+    },
+    {
+      "name": "SoundManager",
+      "kind": "class",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 5
+    },
+    {
+      "name": "SpatialGrid",
+      "kind": "class",
+      "file": "game/src/entities/SpatialGrid.ts",
+      "line": 10
+    },
+    {
+      "name": "SPAWN_OFFSETS",
+      "kind": "const",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 48
+    },
+    {
+      "name": "SpellContext",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpellRuntime.ts",
+      "line": 20
+    },
+    {
+      "name": "SpellControl",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 213
+    },
+    {
+      "name": "SpellControlState",
+      "kind": "class",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 223
+    },
+    {
+      "name": "SpellEnemy",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpellRuntime.ts",
+      "line": 15
+    },
+    {
+      "name": "SpellPosition",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpellRuntime.ts",
+      "line": 10
+    },
+    {
+      "name": "SpriteDirection",
+      "kind": "type",
+      "file": "game/src/shared/types/entities.ts",
+      "line": 10
+    },
+    {
+      "name": "SulfurSmokeManager",
+      "kind": "class",
+      "file": "game/src/vfx/SulfurSmokeVfx.ts",
+      "line": 131
+    },
+    {
+      "name": "SulfurSmokeOptions",
+      "kind": "interface",
+      "file": "game/src/vfx/SulfurSmokeVfx.ts",
+      "line": 13
+    },
+    {
+      "name": "SulfurSmokeVfxInstance",
+      "kind": "class",
+      "file": "game/src/vfx/SulfurSmokeVfx.ts",
+      "line": 25
+    },
+    {
+      "name": "SupabaseService",
+      "kind": "class",
+      "file": "admin/src/api/supabaseService.ts",
+      "line": 9
+    },
+    {
+      "name": "SvgChartRenderer",
+      "kind": "class",
+      "file": "admin/src/chartUtils.ts",
+      "line": 30
+    },
+    {
+      "name": "SwordsmanTextures",
+      "kind": "type",
+      "file": "game/src/core/TextureManager.ts",
+      "line": 44
+    },
+    {
+      "name": "TableSort",
+      "kind": "interface",
+      "file": "admin/src/types.ts",
+      "line": 1
+    },
+    {
+      "name": "TalentBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 3
+    },
+    {
+      "name": "TeleporterState",
+      "kind": "type",
+      "file": "game/src/world/RiftTeleporter.ts",
+      "line": 17
+    },
+    {
+      "name": "TeleporterSyncInfo",
+      "kind": "interface",
+      "file": "game/src/shared/types/network.ts",
+      "line": 197
+    },
+    {
+      "name": "TerrainElevation",
+      "kind": "class",
+      "file": "game/src/world/TerrainElevation.ts",
+      "line": 8
+    },
+    {
+      "name": "TerrainMaterials",
+      "kind": "class",
+      "file": "game/src/world/TerrainProps.ts",
+      "line": 21
+    },
+    {
+      "name": "TerrainProps",
+      "kind": "class",
+      "file": "game/src/world/TerrainProps.ts",
+      "line": 217
+    },
+    {
+      "name": "TEXTURE_MAP",
+      "kind": "const",
+      "file": "admin/src/constants.ts",
+      "line": 4
+    },
+    {
+      "name": "TextureManager",
+      "kind": "class",
+      "file": "game/src/core/TextureManager.ts",
+      "line": 46
+    },
+    {
+      "name": "toggleRow",
+      "kind": "function",
+      "file": "admin/src/views/controlHelpers.ts",
+      "line": 52
+    },
+    {
+      "name": "toPluralCategory",
+      "kind": "function",
+      "file": "admin/src/constants.ts",
+      "line": 132
+    },
+    {
+      "name": "toSingularCategory",
+      "kind": "function",
+      "file": "admin/src/constants.ts",
+      "line": 103
+    },
+    {
+      "name": "TreeManager",
+      "kind": "class",
+      "file": "game/src/world/TreeManager.ts",
+      "line": 95
+    },
+    {
+      "name": "TreeTypeConfig",
+      "kind": "interface",
+      "file": "game/src/world/TreeManager.ts",
+      "line": 21
+    },
+    {
+      "name": "UIEventBus",
+      "kind": "class",
+      "file": "game/src/ui/core/UIEventBus.ts",
+      "line": 6
+    },
+    {
+      "name": "UIEventListener",
+      "kind": "type",
+      "file": "game/src/ui/core/UIEventBus.ts",
+      "line": 1
+    },
+    {
+      "name": "UNCOMMON_ITEMS",
+      "kind": "const",
+      "file": "game/src/items/RiftItemSystem.ts",
+      "line": 251
+    },
+    {
+      "name": "UNIQUE_CHARACTERS",
+      "kind": "const",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 54
+    },
+    {
+      "name": "UniqueCharacterConfig",
+      "kind": "interface",
+      "file": "game/src/shared/UniqueCharacters.ts",
+      "line": 24
+    },
+    {
+      "name": "unpackHostSnapshot",
+      "kind": "function",
+      "file": "game/src/net/BinarySnapshot.ts",
+      "line": 240
+    },
+    {
+      "name": "UpdateListener",
+      "kind": "type",
+      "file": "game/src/core/UpdateNotifier.ts",
+      "line": 8
+    },
+    {
+      "name": "UpdateNotificationUI",
+      "kind": "class",
+      "file": "game/src/ui/UpdateNotificationUI.ts",
+      "line": 8
+    },
+    {
+      "name": "UpdateNotifier",
+      "kind": "class",
+      "file": "game/src/core/UpdateNotifier.ts",
+      "line": 14
+    },
+    {
+      "name": "updateOverviewStats",
+      "kind": "function",
+      "file": "admin/src/views/dashboardView.ts",
+      "line": 160
+    },
+    {
+      "name": "UpgradeOption",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
+      "line": 31
+    },
+    {
+      "name": "VersionInfo",
+      "kind": "interface",
+      "file": "game/src/core/UpdateNotifier.ts",
+      "line": 1
+    },
+    {
+      "name": "Weapon",
+      "kind": "class",
+      "file": "game/src/combat/WeaponBase.ts",
+      "line": 91
+    },
+    {
+      "name": "WEAPON_COLORS",
+      "kind": "const",
+      "file": "admin/src/constants.ts",
+      "line": 51
+    },
+    {
+      "name": "WEAPON_GRADES",
+      "kind": "const",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 16
+    },
+    {
+      "name": "WeaponBalanceConfig",
+      "kind": "interface",
+      "file": "game/src/balance/BalanceTypes.ts",
+      "line": 17
+    },
+    {
+      "name": "WeaponGrade",
+      "kind": "type",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 1
+    },
+    {
+      "name": "WeaponGradeConfig",
+      "kind": "interface",
+      "file": "game/src/combat/WeaponGrades.ts",
+      "line": 3
+    },
+    {
+      "name": "WeaponInfo",
+      "kind": "interface",
+      "file": "game/src/combat/WeaponBase.ts",
+      "line": 13
+    },
+    {
+      "name": "WhirlwindSlashWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MeleeWeapons.ts",
+      "line": 204
+    }
+  ]
+}
