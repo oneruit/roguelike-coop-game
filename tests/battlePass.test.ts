@@ -9,6 +9,7 @@ import {
   BP_MAX_POINTS
 } from '../game/src/core/BattlePassManager';
 import { ProgressionManager } from '../game/src/core/ProgressionManager';
+import { BattlePassUI } from '../game/src/ui/modules/BattlePassUI';
 
 // Mock localStorage for headless Node environment
 if (typeof globalThis.localStorage === 'undefined') {
@@ -18,6 +19,29 @@ if (typeof globalThis.localStorage === 'undefined') {
     setItem: (key: string, val: string) => store.set(key, val),
     removeItem: (key: string) => store.delete(key),
     clear: () => store.clear()
+  };
+}
+
+if (typeof (globalThis as any).document === 'undefined') {
+  (globalThis as any).document = {
+    createElement: () => ({
+      style: {},
+      setAttribute: () => {},
+      getAttribute: () => '',
+      addEventListener: () => {},
+      classList: {
+        add: () => {},
+        remove: () => {},
+        toggle: () => {},
+        contains: () => false
+      },
+      appendChild: () => {},
+      querySelector: () => null,
+      querySelectorAll: () => []
+    }),
+    getElementById: () => null,
+    querySelector: () => null,
+    querySelectorAll: () => []
   };
 }
 
@@ -163,4 +187,104 @@ describe('Battle Pass Survival XP System', () => {
     assert.equal(bp.isLevelClaimed(2), true);
     assert.equal(bp.isLevelClaimed(3), true);
   });
+
+  test('BattlePassUI binds listeners and handles claim all and close actions', () => {
+    const claimAllListeners: Array<() => void> = [];
+    const closeListeners: Array<() => void> = [];
+    const backdropListeners: Array<() => void> = [];
+    const headerListeners: Array<() => void> = [];
+
+    const mockClaimBtn = {
+      addEventListener: (evt: string, cb: () => void) => {
+        if (evt === 'click') claimAllListeners.push(cb);
+      },
+      classList: {
+        toggle: () => {},
+        add: () => {},
+        remove: () => {}
+      }
+    } as any;
+
+    const mockCloseBtn = {
+      addEventListener: (evt: string, cb: () => void) => {
+        if (evt === 'click') closeListeners.push(cb);
+      }
+    } as any;
+
+    const mockBackdrop = {
+      addEventListener: (evt: string, cb: () => void) => {
+        if (evt === 'click') backdropListeners.push(cb);
+      }
+    } as any;
+
+    const mockHeaderBtn = {
+      addEventListener: (evt: string, cb: () => void) => {
+        if (evt === 'click') headerListeners.push(cb);
+      }
+    } as any;
+
+    let menuStack: string[] = [];
+    let modalHidden = true;
+    let toastMessage = '';
+
+    const mockModal = {
+      classList: {
+        remove: (cls: string) => { if (cls === 'hidden') modalHidden = false; },
+        add: (cls: string) => { if (cls === 'hidden') modalHidden = true; },
+        contains: (cls: string) => (cls === 'hidden' ? modalHidden : false)
+      }
+    } as any;
+
+    const mockTiersContainer = {
+      innerHTML: '',
+      appendChild: () => {}
+    } as any;
+
+    const ui = new BattlePassUI({
+      getBpBarFill: () => null,
+      getBpRewardsRow: () => null,
+      getBattlePassModal: () => mockModal,
+      getBpModalCurLvl: () => null,
+      getBpModalCurXp: () => null,
+      getBpModalTotalXp: () => null,
+      getBpModalBarFill: () => null,
+      getBtnBpClaimAll: () => mockClaimBtn,
+      getBpModalTiersContainer: () => mockTiersContainer,
+      getBtnBpClose: () => mockCloseBtn,
+      getBpBackdrop: () => mockBackdrop,
+      getBpHeaderBtn: () => mockHeaderBtn,
+      getMenuStack: () => menuStack,
+      pushMenu: (m) => menuStack.push(m),
+      removeMenu: (m) => { menuStack = menuStack.filter((x) => x !== m); },
+      showBalanceToast: (msg) => { toastMessage = msg; }
+    });
+
+    assert.equal(claimAllListeners.length, 1, 'Claim all listener must be attached');
+    assert.equal(closeListeners.length, 1, 'Close button listener must be attached');
+    assert.equal(backdropListeners.length, 1, 'Backdrop listener must be attached');
+    assert.equal(headerListeners.length, 1, 'Header button listener must be attached');
+
+    // Test open via header click
+    headerListeners[0]();
+    assert.equal(modalHidden, false, 'Modal should be visible after header click');
+    assert.ok(menuStack.includes('battle_pass'), 'battle_pass should be in menu stack');
+
+    // Test close via close button click
+    closeListeners[0]();
+    assert.equal(modalHidden, true, 'Modal should be hidden after close button click');
+    assert.ok(!menuStack.includes('battle_pass'), 'battle_pass should be removed from menu stack');
+
+    // Test open and close via backdrop click
+    ui.openBattlePassModal();
+    assert.equal(modalHidden, false);
+    backdropListeners[0]();
+    assert.equal(modalHidden, true, 'Modal should be hidden after backdrop click');
+
+    // Test claim all click
+    const prog = ProgressionManager.getInstance();
+    prog.data.battlePass = { seasonId: 'season_1', points: 600, claimedLevels: [] };
+    claimAllListeners[0]();
+    assert.ok(toastMessage.includes('Забрано'), 'Toast notification should trigger on claim all');
+  });
 });
+

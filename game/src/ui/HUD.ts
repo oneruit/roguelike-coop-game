@@ -176,6 +176,9 @@ export class HUD {
       getBpModalBarFill: () => SafeDOM.getElementById('bp-modal-bar-fill'),
       getBtnBpClaimAll: () => SafeDOM.getElementById('btn-bp-claim-all'),
       getBpModalTiersContainer: () => SafeDOM.getElementById('bp-modal-tiers-container'),
+      getBtnBpClose: () => SafeDOM.getElementById('btn-close-bp-modal'),
+      getBpBackdrop: () => SafeDOM.getElementById('battle-pass-backdrop'),
+      getBpHeaderBtn: () => SafeDOM.getElementById('bp-header-btn'),
       getMenuStack: () => this.menuStack,
       pushMenu: (menu) => {
         if (!this.menuStack.includes(menu)) this.menuStack.push(menu);

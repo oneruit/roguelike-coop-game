@@ -17,6 +17,9 @@ export interface BattlePassUIContext {
   getBpModalBarFill: () => HTMLElement | null;
   getBtnBpClaimAll: () => HTMLElement | null;
   getBpModalTiersContainer: () => HTMLElement | null;
+  getBtnBpClose?: () => HTMLElement | null;
+  getBpBackdrop?: () => HTMLElement | null;
+  getBpHeaderBtn?: () => HTMLElement | null;
   getMenuStack: () => string[];
   pushMenu: (menu: string) => void;
   removeMenu: (menu: string) => void;
@@ -28,6 +31,31 @@ export class BattlePassUI {
 
   constructor(ctx: BattlePassUIContext) {
     this.ctx = ctx;
+    this.bindListeners();
+  }
+
+  public bindListeners() {
+    const claimAllBtn = this.ctx.getBtnBpClaimAll() || document.getElementById('btn-bp-claim-all');
+    claimAllBtn?.addEventListener('click', () => {
+      this.handleClaimAllBattlePass();
+    });
+
+    const closeBtn = this.ctx.getBtnBpClose?.() || document.getElementById('btn-close-bp-modal');
+    closeBtn?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.hideBattlePassModal();
+    });
+
+    const backdrop = this.ctx.getBpBackdrop?.() || document.getElementById('battle-pass-backdrop');
+    backdrop?.addEventListener('click', () => {
+      this.hideBattlePassModal();
+    });
+
+    const headerBtn = this.ctx.getBpHeaderBtn?.() || document.getElementById('bp-header-btn');
+    headerBtn?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.openBattlePassModal();
+    });
   }
 
   public updateMainMenuBattlePass() {
@@ -167,7 +195,7 @@ export class BattlePassUI {
       if (isClaimed) {
         btnHtml = `<button class="bp-tier-btn claimed" disabled>Получено ✓</button>`;
       } else if (canClaim) {
-        btnHtml = `<button class="bp-tier-btn claim-now select-btn">ЗАБРАТЬ</button>`;
+        btnHtml = `<button class="bp-tier-btn claim-now">ЗАБРАТЬ</button>`;
       } else {
         btnHtml = `<button class="bp-tier-btn locked" disabled>Требуется ур. ${reward.level}</button>`;
       }
