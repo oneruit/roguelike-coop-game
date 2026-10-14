@@ -78,10 +78,10 @@ export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLa
     case 'amazon':
     case 'valkyrie':
     case 'sorceress':
+    case 'chakram':
       return ANIM_LAYOUT_V2;
     case 'ronin':
     case 'flail':
-    case 'chakram':
     case 'invoker':
     case 'archer':
     case 'rocket':
