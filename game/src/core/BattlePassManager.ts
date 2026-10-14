@@ -161,6 +161,9 @@ export class BattlePassManager {
   public static getInstance(): BattlePassManager {
     if (!BattlePassManager.instance) {
       BattlePassManager.instance = new BattlePassManager();
+      ProgressionManager.getInstance().onProgressionReset = () => {
+        BattlePassManager.instance?.notifyChanged();
+      };
     }
     return BattlePassManager.instance;
   }
@@ -175,6 +178,17 @@ export class BattlePassManager {
       };
     }
     return prog.data.battlePass;
+  }
+
+  public reset(): void {
+    const prog = ProgressionManager.getInstance();
+    prog.data.battlePass = {
+      seasonId: BP_SEASON_ID,
+      points: 0,
+      claimedLevels: []
+    };
+    prog.save();
+    this.notifyChanged();
   }
 
   public getPoints(): number {

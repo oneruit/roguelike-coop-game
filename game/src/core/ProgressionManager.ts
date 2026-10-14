@@ -83,6 +83,7 @@ export class ProgressionManager {
 
   public data: ProgressionData;
   public onProgressionChanged?: () => void;
+  public onProgressionReset?: () => void;
   public isTrainingMode: boolean = false;
 
   // Runtime in-expedition trackers (reset to 0 at the start of each expedition)
@@ -843,6 +844,7 @@ export class ProgressionManager {
     this.data = this.getDefaultData();
     this.resetRunSessionProgress();
     this.save();
+    this.onProgressionReset?.();
   }
 
   public getHeroQuestDefinition(hero: CharacterType): HeroQuestDefinition {

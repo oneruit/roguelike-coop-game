@@ -286,5 +286,42 @@ describe('Battle Pass Survival XP System', () => {
     claimAllListeners[0]();
     assert.ok(toastMessage.includes('Забрано'), 'Toast notification should trigger on claim all');
   });
+
+  test('Account reset (resetAllProgress) completely resets Battle Pass progression', () => {
+    const prog = ProgressionManager.getInstance();
+    const bp = BattlePassManager.getInstance();
+
+    // Advance battle pass to level 5 with claimed levels
+    prog.data.battlePass = {
+      seasonId: 'season_1',
+      points: 800,
+      claimedLevels: [1, 2, 3]
+    };
+    assert.equal(bp.getLevel(), 5);
+    assert.equal(bp.getPoints(), 800);
+    assert.equal(bp.isLevelClaimed(1), true);
+
+    let changeNotified = false;
+    bp.onBattlePassChanged = () => {
+      changeNotified = true;
+    };
+
+    // Trigger full account reset
+    prog.resetAllProgress();
+
+    assert.equal(bp.getLevel(), 1, 'Level should reset to 1');
+    assert.equal(bp.getPoints(), 0, 'Points should reset to 0');
+    assert.equal(bp.getProgressPercent(), 0, 'Progress should reset to 0%');
+    assert.equal(bp.isLevelClaimed(1), false, 'Claimed levels should be cleared');
+    assert.equal(changeNotified, true, 'BattlePass change callback should have fired on reset');
+
+    // Also test bp.reset() directly
+    prog.data.battlePass.points = 400;
+    changeNotified = false;
+    bp.reset();
+    assert.equal(bp.getPoints(), 0);
+    assert.equal(changeNotified, true);
+  });
 });
+
 
