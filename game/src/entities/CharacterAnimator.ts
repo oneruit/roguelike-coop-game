@@ -93,8 +93,11 @@ export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLa
 /**
  * Modular Character Animator
  * Handles directional sprite state machines, UV repeat/offset calculations,
- * and Three.js material bindings across 3 animation states: IDLE, WALK, ATTACK.
- * When attacking, whether moving or idle, the general ATTACK state is used.
+ * and Three.js material bindings across 4 animation states:
+ * - IDLE: состояние покоя
+ * - WALK: состояние движения
+ * - IDLE_ATTACK: состояние атаки в покое
+ * - WALK_ATTACK: атака в движении
  */
 export class CharacterAnimator {
   public animState: HeroAnimState = 'IDLE';
@@ -105,7 +108,8 @@ export class CharacterAnimator {
   private stateConfigs: Record<HeroAnimState, CharacterAnimStateConfig> = {
     IDLE: { fps: 8, loop: true },
     WALK: { fps: 12, loop: true },
-    ATTACK: { fps: 16, loop: false }
+    IDLE_ATTACK: { fps: 16, loop: false },
+    WALK_ATTACK: { fps: 16, loop: false }
   };
 
   constructor(
@@ -135,8 +139,10 @@ export class CharacterAnimator {
 
   public getActiveTexture(): Texture {
     switch (this.animState) {
-      case 'ATTACK':
-        return this.textures.attack;
+      case 'IDLE_ATTACK':
+        return this.textures.idle_attack ?? this.textures.attack ?? this.textures.idle;
+      case 'WALK_ATTACK':
+        return this.textures.walk_attack ?? this.textures.idle_attack ?? this.textures.attack ?? this.textures.walk;
       case 'WALK':
         return this.textures.walk;
       case 'IDLE':
@@ -160,12 +166,18 @@ export class CharacterAnimator {
     }
 
     if (forcedState) {
-      this.setState(forcedState);
+      let state = forcedState;
+      if ((state as string) === 'ATTACK') {
+        state = isMoving ? 'WALK_ATTACK' : 'IDLE_ATTACK';
+      }
+      this.setState(state);
     } else {
       const isAttacking = this.attackAnimTimer > 0;
       let nextState: HeroAnimState = 'IDLE';
-      if (isAttacking) {
-        nextState = 'ATTACK';
+      if (isAttacking && isMoving) {
+        nextState = 'WALK_ATTACK';
+      } else if (isAttacking) {
+        nextState = 'IDLE_ATTACK';
       } else if (isMoving) {
         nextState = 'WALK';
       } else {

@@ -608,7 +608,9 @@ def process_character(
     name: str,
     idle_path: str,
     walk_path: str,
-    attack_path: str,
+    attack_path: Optional[str] = None,
+    idle_attack_path: Optional[str] = None,
+    walk_attack_path: Optional[str] = None,
     portrait_path: Optional[str] = None,
     out_dir: str = "public/textures/heroes",
     cell_size: int = CELL_SIZE,
@@ -629,7 +631,18 @@ def process_character(
     output_dir.mkdir(parents=True, exist_ok=True)
     clean_name = name if name.startswith("hero_") else f"hero_{name}"
 
-    inputs = {"idle": idle_path, "walk": walk_path, "attack": attack_path}
+    resolved_idle_attack = idle_attack_path or attack_path
+    if not resolved_idle_attack:
+        raise ValueError("Must provide either --idle-attack or --attack for the stationary attack animation.")
+
+    inputs: dict[str, str] = {
+        "idle": idle_path,
+        "walk": walk_path,
+        "attack": resolved_idle_attack
+    }
+    if walk_attack_path:
+        inputs["walk_attack"] = walk_attack_path
+
     rgba_sources: dict[str, np.ndarray] = {}
     analyses: dict[str, dict[str, object]] = {}
 
@@ -700,6 +713,13 @@ def process_character(
         processed[state] = sheet
         _print(f"[OK] Processed {state.upper()}: {out_file} ({sheet.size})")
 
+        if state == "attack":
+            idle_attack_file = output_dir / f"{clean_name}_idle_attack.png"
+            temp_idle_attack = idle_attack_file.with_suffix(idle_attack_file.suffix + ".tmp")
+            sheet.save(temp_idle_attack, format="PNG", optimize=True)
+            os.replace(temp_idle_attack, idle_attack_file)
+            _print(f"[OK] Processed IDLE_ATTACK: {idle_attack_file} ({sheet.size})")
+
         # Facing direction verification for Row 2 (3rd row) and Row 3 (4th row)
         facing_ok, facing_msg = verify_facing_directions(
             np.asarray(sheet), cols=cols, rows=rows, label=state.upper(), expected_row_order=row_order
@@ -725,12 +745,14 @@ def process_character(
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Process three separate 6x4 IDLE/WALK/ATTACK sheets into 96x96 RGBA sprite cells."
+        description="Process 6x4 IDLE/WALK/IDLE_ATTACK/WALK_ATTACK sheets into 96x96 RGBA sprite cells."
     )
     parser.add_argument("--name", "-n", required=True, help="Character name (e.g. glaive_warrior or hero_glaive_warrior)")
     parser.add_argument("--idle", required=True, help="Path to the 6x4 IDLE sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
     parser.add_argument("--walk", required=True, help="Path to the 6x4 WALK sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
-    parser.add_argument("--attack", required=True, help="Path to the 6x4 ATTACK sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
+    parser.add_argument("--attack", help="Path to the 6x4 IDLE_ATTACK sheet; rows FRONT/BACK/RIGHT/LEFT (or FRONT/BACK/LEFT/RIGHT)")
+    parser.add_argument("--idle-attack", help="Alias for --attack (path to stationary attack sheet)")
+    parser.add_argument("--walk-attack", help="Optional path to the 6x4 WALK_ATTACK sheet")
     parser.add_argument("--portrait", help="Optional separate portrait; if omitted the first IDLE FRONT cell is used")
     parser.add_argument("--out-dir", "-o", default="public/textures/heroes", help="Output directory")
     parser.add_argument("--cell-size", type=int, default=CELL_SIZE, help="Output cell size (default: 96)")
@@ -748,6 +770,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--strict-facing", action="store_true", help="Fail with error if Row 2/3 facing directions do not match expected orientation")
     args = parser.parse_args(argv)
 
+    if not args.attack and not args.idle_attack:
+        parser.error("one of --idle-attack or --attack is required")
+
     if args.cell_size != 96 or args.cols != 6 or args.rows != 4:
         parser.error("this pipeline requires --cell-size 96 --cols 6 --rows 4 (576x384 output sheets)")
     if args.feet_y < 0 or args.feet_y >= args.cell_size:
@@ -763,6 +788,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             idle_path=args.idle,
             walk_path=args.walk,
             attack_path=args.attack,
+            idle_attack_path=args.idle_attack,
+            walk_attack_path=args.walk_attack,
             portrait_path=args.portrait,
             out_dir=args.out_dir,
             cell_size=args.cell_size,

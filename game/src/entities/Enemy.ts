@@ -316,8 +316,8 @@ export class Enemy {
       if (!cachedGeom) {
         cachedGeom = new PlaneGeometry(this.width, this.height);
         // Anchor at feet so sprite sits cleanly on the ground
-        // For animated monsters: target_feet_y = 118 in 128px cell -> (118/128 - 0.5) = 0.421875
-        const anchorFactor = config.animated ? 0.421875 : 0.5;
+        // For animated monsters: target_feet_y = 88 in 96px cell -> (88/96 - 0.5) = 5/12 = 0.416667
+        const anchorFactor = config.animated ? 0.416667 : 0.5;
         cachedGeom.translate(0, this.height * anchorFactor, 0);
         Enemy.geometryCache.set(this.type, cachedGeom);
       }

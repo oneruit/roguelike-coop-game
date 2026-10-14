@@ -59,14 +59,19 @@ export class PlayerAnimation {
         ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();
 
+    const idleAttack = (raw.idle_attack || raw.attack).clone();
+    const walkAttack = (raw.walk_attack || raw.idle_attack || raw.attack).clone();
     const textures: AnimatedCharacterTextures = {
       idle: raw.idle.clone(),
       walk: raw.walk.clone(),
-      attack: raw.attack.clone()
+      idle_attack: idleAttack,
+      walk_attack: walkAttack,
+      attack: idleAttack
     };
     textures.idle.needsUpdate = true;
     textures.walk.needsUpdate = true;
-    textures.attack.needsUpdate = true;
+    textures.idle_attack.needsUpdate = true;
+    textures.walk_attack.needsUpdate = true;
     return textures;
   }
 

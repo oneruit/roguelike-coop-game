@@ -1,6 +1,8 @@
-# IDLE Animation Prompt Guide (6-Frame Seamless Loop)
+# IDLE Animation Prompt Guide (6-Frame Seamless Loop — Состояние покоя)
 
 This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_idle.png`**.
+
+**IDLE — это состояние покоя**: персонаж находится в покое на месте в боевой готовности, сохраняет устойчивую позицию без шагов или перемещения, совершает мерное дыхание; ноги прочно стоят на базовой линии (`y ≈ 88`).
 
 ---
 

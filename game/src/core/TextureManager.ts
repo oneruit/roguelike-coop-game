@@ -26,8 +26,9 @@ export interface DirectionalTextures {
 export interface AnimatedCharacterTextures {
   idle: Texture;
   walk: Texture;
-  attack: Texture;
-  walk_attack?: Texture;
+  idle_attack: Texture;
+  walk_attack: Texture;
+  attack?: Texture;
 }
 
 export interface BossTextures {
@@ -60,7 +61,7 @@ export class TextureManager {
     if (rel.includes('/')) return url;
 
     if (rel.startsWith('hero_')) {
-      const match = rel.match(/^hero_([a-z0-9_]+)_(idle|walk|attack|front|portrait|walk_attack)\.png$/);
+      const match = rel.match(/^hero_([a-z0-9_]+)_(idle|walk|attack|idle_attack|front|portrait|walk_attack)\.png$/);
       if (match) {
         return `/textures/heroes/${match[1]}/${match[2]}.png`;
       }
@@ -226,58 +227,68 @@ export class TextureManager {
     '/textures/vfx/vfx_rift_open.png',
     '/textures/vfx/vfx_sulfur_smoke.png',
 
-    // Heroes - 10 Playable Characters (Walk, Attack, Idle, Front)
+    // Heroes - 10 Playable Characters (Walk, Attack, Idle, Front, Walk Attack)
     '/textures/heroes/ronin/front.png',
     '/textures/heroes/ronin/idle.png',
     '/textures/heroes/ronin/walk.png',
     '/textures/heroes/ronin/attack.png',
+    '/textures/heroes/ronin/walk_attack.png',
 
     '/textures/heroes/valkyrie/front.png',
     '/textures/heroes/valkyrie/idle.png',
     '/textures/heroes/valkyrie/walk.png',
     '/textures/heroes/valkyrie/attack.png',
+    '/textures/heroes/valkyrie/walk_attack.png',
 
     '/textures/heroes/flail/front.png',
     '/textures/heroes/flail/idle.png',
     '/textures/heroes/flail/walk.png',
     '/textures/heroes/flail/attack.png',
+    '/textures/heroes/flail/walk_attack.png',
 
     '/textures/heroes/sorceress/front.png',
     '/textures/heroes/sorceress/idle.png',
     '/textures/heroes/sorceress/walk.png',
     '/textures/heroes/sorceress/attack.png',
+    '/textures/heroes/sorceress/walk_attack.png',
 
     '/textures/heroes/chakram/front.png',
     '/textures/heroes/chakram/idle.png',
     '/textures/heroes/chakram/walk.png',
     '/textures/heroes/chakram/attack.png',
+    '/textures/heroes/chakram/walk_attack.png',
 
     '/textures/heroes/invoker/front.png',
     '/textures/heroes/invoker/idle.png',
     '/textures/heroes/invoker/walk.png',
     '/textures/heroes/invoker/attack.png',
+    '/textures/heroes/invoker/walk_attack.png',
 
     '/textures/heroes/archer/front.png',
     '/textures/heroes/archer/idle.png',
     '/textures/heroes/archer/walk.png',
     '/textures/heroes/archer/attack.png',
+    '/textures/heroes/archer/walk_attack.png',
 
     '/textures/heroes/rocket/front.png',
     '/textures/heroes/rocket/idle.png',
     '/textures/heroes/rocket/walk.png',
     '/textures/heroes/rocket/attack.png',
+    '/textures/heroes/rocket/walk_attack.png',
 
     '/textures/heroes/necromancer/front.png',
     '/textures/heroes/necromancer/portrait.png',
     '/textures/heroes/necromancer/idle.png',
     '/textures/heroes/necromancer/walk.png',
     '/textures/heroes/necromancer/attack.png',
+    '/textures/heroes/necromancer/walk_attack.png',
 
     '/textures/heroes/amazon/front.png',
     '/textures/heroes/amazon/portrait.png',
     '/textures/heroes/amazon/idle.png',
     '/textures/heroes/amazon/walk.png',
     '/textures/heroes/amazon/attack.png',
+    '/textures/heroes/amazon/walk_attack.png',
 
     // Bosses
     '/textures/bosses/boss_demon_walk.png',
@@ -505,12 +516,14 @@ export class TextureManager {
     };
 
     const cleanId = baseName.replace(/^hero_/, '');
-    const attackTex = loadPixel(`/textures/heroes/${cleanId}/attack.png`);
+    const idleAttackTex = loadPixel(`/textures/heroes/${cleanId}/attack.png`);
+    const walkAttackTex = loadPixel(`/textures/heroes/${cleanId}/walk_attack.png`);
     return {
       idle: loadPixel(`/textures/heroes/${cleanId}/idle.png`),
       walk: loadPixel(`/textures/heroes/${cleanId}/walk.png`),
-      attack: attackTex,
-      walk_attack: attackTex
+      idle_attack: idleAttackTex,
+      walk_attack: walkAttackTex,
+      attack: idleAttackTex
     };
   }
 

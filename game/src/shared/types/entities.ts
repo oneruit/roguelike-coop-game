@@ -5,7 +5,7 @@
 
 export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer' | 'rocket' | 'invoker' | 'necromancer' | 'amazon';
 
-export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK';
+export type HeroAnimState = 'IDLE' | 'WALK' | 'IDLE_ATTACK' | 'WALK_ATTACK';
 
 export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
 

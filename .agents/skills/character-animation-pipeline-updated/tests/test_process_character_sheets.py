@@ -88,32 +88,32 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
         ok_bad, _ = verify_facing_directions(rgba, expected_row_order="fblr", label="TEST_SHEET")
         self.assertFalse(ok_bad)
 
-    def test_process_character_writes_only_three_states_and_portrait(self) -> None:
+    def test_process_character_writes_expected_states_and_portrait(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             source = root / "source"
             output = root / "output"
             source.mkdir()
-            for state in ("idle", "walk", "attack"):
+            for state in ("idle", "walk", "attack", "walk_attack"):
                 self.make_sheet().save(source / f"{state}.png")
 
             process_character(
                 name="test_hero",
                 idle_path=str(source / "idle.png"),
                 walk_path=str(source / "walk.png"),
-                attack_path=str(source / "attack.png"),
+                idle_attack_path=str(source / "attack.png"),
+                walk_attack_path=str(source / "walk_attack.png"),
                 out_dir=str(output),
                 bg_mode="magenta",
                 row_order="fbrl",
             )
 
-            for state in ("idle", "walk", "attack"):
+            for state in ("idle", "walk", "attack", "idle_attack", "walk_attack"):
                 with Image.open(output / f"hero_test_hero_{state}.png") as result:
                     self.assertEqual(result.size, (576, 384))
                     self.assertEqual(result.mode, "RGBA")
             with Image.open(output / "hero_test_hero_portrait.png") as portrait:
                 self.assertEqual(portrait.size, (96, 96))
-            self.assertFalse((output / "hero_test_hero_walk_attack.png").exists())
 
 
 if __name__ == "__main__":

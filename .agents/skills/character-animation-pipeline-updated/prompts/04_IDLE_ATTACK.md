@@ -1,6 +1,8 @@
-# ATTACK Animation Prompt Guide (6-Frame One-Shot Weapon Strike)
+# IDLE_ATTACK Animation Prompt Guide (6-Frame One-Shot Weapon Strike — Состояние атаки в покое)
 
-This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_attack.png`**.
+This instruction defines the exact prompt structure and frame-by-frame progression for generating **`hero_[name]_idle_attack.png`** (также сохраняется как `hero_[name]_attack.png` для обратной совместимости).
+
+**IDLE_ATTACK — это состояние атаки в покое**: персонаж совершает удар, выстрел или применение оружия, оставаясь на месте (в покое, без перемещения). Ноги прочно зафиксированы в боевой стойке на базовой линии (`y ≈ 88`), всё тело отрабатывает силовой замах, удар и возврат в боевой покой.
 
 ---
 
@@ -18,17 +20,18 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 
 ## 2. Mandatory Directional Profile Rule
 
-* **Row 2 (3rd row — RIGHT)**: The character strikes to the RIGHT. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
-* **Row 3 (4th row — LEFT)**: The character strikes to the LEFT. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 2 (3rd row — RIGHT)**: The character strikes to the RIGHT while stationary. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 3 (4th row — LEFT)**: The character strikes to the LEFT while stationary. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
 
 ---
 
 ## 3. Frame-by-Frame Progression (Columns 1 to 6)
 
-Every directional row depicts a forceful, physical one-shot weapon strike (not a loop, not an attack-while-walking):
+Every directional row depicts a forceful, physical one-shot weapon strike from a stationary stance (not a loop, not moving):
 
 * **Column 1 (Ready / Pre-strike Stance)**:
-  - Combat-ready posture, eyes locked onto the target plane.
+  - Stationary combat-ready posture, eyes locked onto the target plane.
+  - Feet planted firmly on the baseline (`y ≈ 88`).
   - Weapon held firmly in standard combat grip.
   - **Eyes are open, grim, and vigilant**.
 * **Column 2 (Preparation / Weight Shift)**:

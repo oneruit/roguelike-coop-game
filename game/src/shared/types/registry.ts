@@ -10,7 +10,7 @@ export type SlotId = typeof SLOTS[number];
 
 export const DIRECTIONS: readonly SpriteDirection[] = ['front', 'back', 'left', 'right'] as const;
 
-export const ANIM_STATES: readonly HeroAnimState[] = ['IDLE', 'WALK', 'ATTACK'] as const;
+export const ANIM_STATES: readonly HeroAnimState[] = ['IDLE', 'WALK', 'IDLE_ATTACK', 'WALK_ATTACK'] as const;
 
 export const CHARACTERS: readonly CharacterType[] = [
   'ronin',

@@ -161,7 +161,7 @@ export class RemotePlayer {
       depthTest: false
     });
     this.overheadSprite = new Sprite(spriteMat);
-    this.overheadSprite.position.set(0, 3.85, 0);
+    this.overheadSprite.position.set(0, 2.95, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
     this.mesh.add(this.overheadSprite);
@@ -253,14 +253,19 @@ export class RemotePlayer {
         : TextureManager.loadRoninTextures();
 
     // Clone textures so UV repeat and offset mutations never collide with player 1
+    const idleAttack = (raw.idle_attack || raw.attack).clone();
+    const walkAttack = (raw.walk_attack || raw.idle_attack || raw.attack).clone();
     this.animatedTextures = {
       idle: raw.idle.clone(),
       walk: raw.walk.clone(),
-      attack: raw.attack.clone()
+      idle_attack: idleAttack,
+      walk_attack: walkAttack,
+      attack: idleAttack
     };
     this.animatedTextures.idle.needsUpdate = true;
     this.animatedTextures.walk.needsUpdate = true;
-    this.animatedTextures.attack.needsUpdate = true;
+    this.animatedTextures.idle_attack.needsUpdate = true;
+    this.animatedTextures.walk_attack.needsUpdate = true;
 
     this.animator = new CharacterAnimator(
       this.animatedTextures,
@@ -272,6 +277,7 @@ export class RemotePlayer {
   public setCharacter(charType: CharacterType) {
     if (this.charType === charType) return;
     this.charType = charType;
+    this.spriteMesh.geometry = Player.getCharacterGeometry(charType);
     this.loadCharacterTextures(charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
     if (this.customDepthMaterial) {

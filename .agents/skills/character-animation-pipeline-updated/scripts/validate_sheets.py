@@ -100,7 +100,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--idle", required=True, help="Path to hero_<name>_idle.png")
     parser.add_argument("--walk", required=True, help="Path to hero_<name>_walk.png")
-    parser.add_argument("--attack", required=True, help="Path to hero_<name>_attack.png")
+    parser.add_argument("--attack", help="Path to hero_<name>_attack.png (or hero_<name>_idle_attack.png)")
+    parser.add_argument("--idle-attack", help="Alias for --attack")
+    parser.add_argument("--walk-attack", help="Optional path to hero_<name>_walk_attack.png")
     parser.add_argument(
         "--row-order",
         choices=("fbrl", "fblr"),
@@ -110,23 +112,30 @@ def main() -> int:
     parser.add_argument("--skip-facing", action="store_true", help="Skip facing direction analysis")
     args = parser.parse_args()
 
-    dim_results = [
-        check_dimensions("IDLE", args.idle),
-        check_dimensions("WALK", args.walk),
-        check_dimensions("ATTACK", args.attack),
-    ]
+    attack_path = args.idle_attack or args.attack
+    if not attack_path:
+        parser.error("one of --idle-attack or --attack is required")
 
-    facing_results = [True, True, True]
+    targets: list[tuple[str, str]] = [
+        ("IDLE", args.idle),
+        ("WALK", args.walk),
+        ("IDLE_ATTACK", attack_path),
+    ]
+    if args.walk_attack:
+        targets.append(("WALK_ATTACK", args.walk_attack))
+
+    dim_results = [check_dimensions(label, path) for label, path in targets]
+
+    facing_results = [True] * len(targets)
     if not args.skip_facing and all(dim_results):
         print("\nVerifying profile facing directions (Row 2: RIGHT, Row 3: LEFT, body sideways, face in profile)...")
         facing_results = [
-            check_facing("IDLE", args.idle, row_order=args.row_order),
-            check_facing("WALK", args.walk, row_order=args.row_order),
-            check_facing("ATTACK", args.attack, row_order=args.row_order),
+            check_facing(label, path, row_order=args.row_order)
+            for label, path in targets
         ]
 
     if all(dim_results) and all(facing_results):
-        print("\nAll sheets passed validation! Dimensions 768x512 and facing directions are correct.")
+        print("\nAll sheets passed validation! Dimensions 576x384 and facing directions are correct.")
         return 0
 
     print("\nValidation failed. Correct the files before integrating them into the game.")
