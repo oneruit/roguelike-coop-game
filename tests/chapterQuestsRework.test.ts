@@ -228,4 +228,46 @@ describe('Chapter Quests Rework & Zero State', () => {
     assert.ok(finalRes);
     assert.equal(finalRes.coins, 5000);
   });
+
+  test('version 1 saves with cheat-progressed quests are reset to zero upon load', () => {
+    const v1Save = {
+      accountLevel: 5,
+      walletCoins: 1200,
+      chapterQuestsReworkVersion: 1,
+      chapterQuestsProgress: {
+        ch1_deadly_debut: { current: 50, isComplete: true, isClaimed: true },
+        ch1_essence_collection: { current: 100, isComplete: true, isClaimed: true },
+        ch2_trail_of_beasts: { current: 75, isComplete: true, isClaimed: true }
+      },
+      claimedChapterRewards: { 1: true }
+    };
+    localStorage.setItem('rift_progression_save_v2', JSON.stringify(v1Save));
+
+    const prog = ProgressionManager.getInstance();
+    (prog as any).data = (prog as any).loadFromStorage();
+
+    assert.equal(prog.data.accountLevel, 5);
+    assert.equal(prog.data.walletCoins, 1200);
+    assert.equal(prog.data.chapterQuestsReworkVersion, 2);
+    assert.equal(prog.getChapterQuestProgress('ch1_deadly_debut').current, 0);
+    assert.equal(prog.getChapterQuestProgress('ch1_deadly_debut').isComplete, false);
+    assert.equal(prog.isChapterRewardClaimed(1), false);
+  });
+
+  test('chapter gating: chapters 2, 3, 4 require previous chapter completion', () => {
+    const prog = ProgressionManager.getInstance();
+    prog.resetAllTasksToZero();
+
+    assert.equal(prog.isChapterComplete(1), false);
+    assert.equal(prog.isChapterComplete(2), false);
+    assert.equal(prog.isChapterComplete(3), false);
+    assert.equal(prog.isChapterComplete(4), false);
+
+    // Complete chapter 1
+    prog.recordMeleeOrSpellKill(50);
+    prog.recordXpGemCollected(100);
+    prog.recordAltarCaptured();
+    prog.recordTeleporterBossKilled();
+    assert.equal(prog.isChapterComplete(1), true);
+  });
 });

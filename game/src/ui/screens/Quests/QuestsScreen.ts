@@ -72,6 +72,11 @@ export class QuestsScreen extends Screen {
     chapterTabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         const ch = parseInt(tab.getAttribute('data-chapter') || '1', 10);
+        if (!this.isChapterUnlocked(ch)) {
+          SoundManager.playButtonClick();
+          this.ctx.triggerAltarNotification('Глава заблокирована', `Сначала завершите все задания Главы ${ch - 1}!`, '🔒', '#f59e0b');
+          return;
+        }
         SoundManager.playButtonClick();
         this.selectQuestChapter(ch);
       });
@@ -96,6 +101,12 @@ export class QuestsScreen extends Screen {
     });
   }
 
+  public isChapterUnlocked(chapter: number): boolean {
+    if (chapter <= 1) return true;
+    const prog = ProgressionManager.getInstance();
+    return prog.isChapterComplete(chapter - 1);
+  }
+
   public toggleQuestsInMainMenu(): void {
     if (this.isQuestsOpenInMenu && !this.container.classList.contains('hidden')) {
       this.hideQuestsModal();
@@ -105,6 +116,9 @@ export class QuestsScreen extends Screen {
   }
 
   public selectQuestChapter(chapter: number): void {
+    if (!this.isChapterUnlocked(chapter)) {
+      chapter = 1;
+    }
     this.activeQuestChapter = chapter;
     const quests = this.getChapterQuests(chapter);
     const defaultQuest = quests[0]?.id || 'ch1_deadly_debut';
@@ -117,6 +131,9 @@ export class QuestsScreen extends Screen {
     chapter: number = 1,
     fromCharSelect: boolean = false
   ): void {
+    if (!this.isChapterUnlocked(chapter)) {
+      chapter = 1;
+    }
     this.activeQuestChapter = chapter;
     const quests = this.getChapterQuests(chapter);
     const targetQuest = quests.some((q) => q.id === selectedQuestId)
@@ -216,6 +233,12 @@ export class QuestsScreen extends Screen {
     const chapterTabs = SafeDOM.queryAll<HTMLElement>(this.container, '.quest-chapter-tab[data-chapter]');
     chapterTabs.forEach((tab) => {
       const ch = parseInt(tab.getAttribute('data-chapter') || '1', 10);
+      const isUnlocked = this.isChapterUnlocked(ch);
+      if (isUnlocked) {
+        tab.classList.remove('locked');
+      } else {
+        tab.classList.add('locked');
+      }
       if (ch === this.activeQuestChapter) {
         tab.classList.add('active');
       } else {
@@ -379,17 +402,10 @@ export class QuestsScreen extends Screen {
         actionsEl.appendChild(claimBtn);
       } else {
         statusEl.textContent = `Прогресс задания: ${activeQuest.progressVal.label}. Завершите условия в Разломе.`;
-        const testBtn = document.createElement('button');
-        testBtn.className = 'quest-btn-step';
-        testBtn.type = 'button';
-        testBtn.innerText = 'ПОДТВЕРДИТЬ ЭТАП';
-        testBtn.title = 'Тестовое завершение задания';
-        testBtn.addEventListener('click', () => {
-          prog.advanceChapterQuestForTest(activeQuest.id);
-          SoundManager.playChestOpen();
-          this.renderQuestsModal(activeQuest.id, this.activeQuestChapter);
-        });
-        actionsEl.appendChild(testBtn);
+        const lockedBadge = document.createElement('div');
+        lockedBadge.className = 'quest-btn-locked-badge';
+        lockedBadge.innerHTML = '<span>🔒</span> <span>В ПРОЦЕССЕ</span>';
+        actionsEl.appendChild(lockedBadge);
       }
     }
   }
@@ -507,4 +523,16 @@ export class QuestsScreen extends Screen {
       });
     }
   }
+}
+
+// Dev console helpers
+if (typeof window !== 'undefined') {
+  (window as any).debugAdvanceQuest = (questId: string) => {
+    ProgressionManager.getInstance().advanceChapterQuestForTest(questId);
+    console.log(`[Quests Debug] Quest ${questId} completed.`);
+  };
+  (window as any).debugResetQuests = () => {
+    ProgressionManager.getInstance().resetAllTasksToZero();
+    console.log('[Quests Debug] All quests reset to zero.');
+  };
 }
