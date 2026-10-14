@@ -22,8 +22,8 @@ export function renderWeapons(
     const cdB = b.cooldown > 0 ? b.cooldown : 0.4;
     const baseDpsA = (a.damage * (a.count || 1)) / cdA;
     const baseDpsB = (b.damage * (b.count || 1)) / cdB;
-    const l20DpsA = ((a.damage + 19 * a.damagePerLevel) * (a.count || 1)) / cdA;
-    const l20DpsB = ((b.damage + 19 * b.damagePerLevel) * (b.count || 1)) / cdB;
+    const l12DpsA = ((a.damage + 11 * a.damagePerLevel) * (a.count || 1)) / cdA;
+    const l12DpsB = ((b.damage + 11 * b.damagePerLevel) * (b.count || 1)) / cdB;
     const isModA = Array.from(state.modifiedPaths).some((p) => p.startsWith(`weapons.${a.id}.`)) ? 1 : 0;
     const isModB = Array.from(state.modifiedPaths).some((p) => p.startsWith(`weapons.${b.id}.`)) ? 1 : 0;
 
@@ -40,8 +40,9 @@ export function renderWeapons(
       case 'dps1':
         val = baseDpsA - baseDpsB;
         break;
+      case 'dps12':
       case 'dps20':
-        val = l20DpsA - l20DpsB;
+        val = l12DpsA - l12DpsB;
         break;
       case 'status':
         val = isModA - isModB;
@@ -68,8 +69,8 @@ export function renderWeapons(
     const cd = w.cooldown > 0 ? w.cooldown : 0.4;
     const count = w.count || 1;
     const baseDps = ((w.damage * count) / cd).toFixed(1);
-    const l20Dmg = w.damage + 19 * w.damagePerLevel;
-    const l20Dps = ((l20Dmg * count) / cd).toFixed(1);
+    const l12Dmg = w.damage + 11 * w.damagePerLevel;
+    const l12Dps = ((l12Dmg * count) / cd).toFixed(1);
     const textureUrl = getEntityTexture('weapons', w.id);
 
     const rowItem = document.createElement('div');
@@ -98,7 +99,7 @@ export function renderWeapons(
           <span class="stat-highlight" id="row-stat-dps1-${w.id}">${baseDps}</span>
         </div>
         <div class="accordion-col-stat">
-          <span class="stat-highlight-gold" id="row-stat-dps20-${w.id}">${l20Dps}</span>
+          <span class="stat-highlight-gold" id="row-stat-dps12-${w.id}">${l12Dps}</span>
         </div>
         <div class="accordion-col-status">
           ${
@@ -117,7 +118,7 @@ export function renderWeapons(
         <div class="drawer-content">
           <div class="drawer-header-info">
             <div class="drawer-desc">${w.notes || 'Боевое оружие персонажа.'}</div>
-            <div class="drawer-scaling-badge">L20: ${w.damage} + 19×${w.damagePerLevel} = ${l20Dmg} dmg</div>
+            <div class="drawer-scaling-badge">L12: ${w.damage} + 11×${w.damagePerLevel} = ${l12Dmg} dmg</div>
           </div>
 
           <div class="drawer-controls-grid">
@@ -145,8 +146,8 @@ export function renderWeapons(
                 <span class="dps-value" id="dps-${w.id}-base">${baseDps}</span>
               </div>
               <div class="dps-metric">
-                <span class="dps-label">Max DPS (L20)</span>
-                <span class="dps-value" id="dps-${w.id}-l20">${l20Dps}</span>
+                <span class="dps-label">Max DPS (L12)</span>
+                <span class="dps-value" id="dps-${w.id}-l12">${l12Dps}</span>
               </div>
             </div>
             <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}">

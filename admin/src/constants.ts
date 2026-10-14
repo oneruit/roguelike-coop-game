@@ -45,8 +45,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   // Bosses
   'boss-boss': '/textures/bosses/boss_demon_front.png',
   'boss-demon': '/textures/bosses/boss_demon_front.png',
-  'boss-hydra': '/textures/bosses/boss_hydra_front.png',
-  'boss-sheriff': '/textures/bosses/boss_sheriff_front.png'
+  'boss-hydra': '/textures/bosses/boss_hydra_front.png'
 };
 
 export const WEAPON_COLORS: Record<string, string> = {
@@ -78,8 +77,7 @@ export const MONSTER_COLORS: Record<string, string> = {
   brute: '#b45309',
   bison: '#ef4444',
   boss: '#dc2626',
-  hydra: '#7c3aed',
-  sheriff: '#eab308'
+  hydra: '#7c3aed'
 };
 
 export function getWeaponColor(id: string): string {

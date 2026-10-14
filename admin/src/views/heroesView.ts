@@ -104,7 +104,7 @@ export function renderHeroes(
       <div class="accordion-row-body">
         <div class="drawer-content">
           <div class="drawer-header-info">
-            <div class="drawer-desc">${h.role || 'Ковбой Дикого Запада.'}</div>
+            <div class="drawer-desc">${h.role || 'Герой Разлома.'}</div>
             <div class="drawer-scaling-badge">Стартовое снаряжение: ${h.startingWeapon}</div>
           </div>
 

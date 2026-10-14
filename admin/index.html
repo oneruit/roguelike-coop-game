@@ -62,7 +62,7 @@
                 </svg>
               </span>
               <span class="tab-text">Герои</span>
-              <span id="sidebar-heroes-count" class="tab-pill">8</span>
+              <span id="sidebar-heroes-count" class="tab-pill">10</span>
             </button>
 
             <button class="nav-tab" data-tab="monsters">
@@ -106,6 +106,17 @@
               </span>
               <span class="tab-text">Предметы</span>
               <span id="sidebar-items-count" class="tab-pill" style="background:#22c55e; color:#fff;">21</span>
+            </button>
+
+            <button class="nav-tab" data-tab="merchant">
+              <span class="tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v10M9 9h6a2 2 0 0 1 0 4H9a2 2 0 0 0 0 4h6"/>
+                </svg>
+              </span>
+              <span class="tab-text">Торговец</span>
+              <span class="tab-pill" style="background:#f59e0b; color:#18181b;">SHOP</span>
             </button>
 
             <button class="nav-tab" data-tab="progression">
@@ -206,10 +217,6 @@
             <h1 class="page-title">Главная панель</h1>
             <p class="page-subtitle">Обзор ключевых показателей игры, быстрый переход к разделам и статус синхронизации</p>
           </div>
-          <div class="header-quick-tools hidden">
-            <button id="btn-expand-all" class="btn btn-sm btn-outline">Развернуть всё</button>
-            <button id="btn-collapse-all" class="btn btn-sm btn-outline">Свернуть всё</button>
-          </div>
         </div>
 
         <!-- Alert Banner for Unsaved Changes -->
@@ -242,7 +249,7 @@
                   <div class="metric-number" id="kpi-weapons-count">25</div>
                   <div class="metric-trend-row">
                     <span class="trend-neutral">100% охват</span>
-                    <span class="trend-period">от L1 до L20</span>
+                    <span class="trend-period">от L1 до L12</span>
                   </div>
                 </div>
               </div>
@@ -260,7 +267,7 @@
                 </div>
                 <div class="metric-data-wrap">
                   <span class="metric-label">Всего героев</span>
-                  <div class="metric-number" id="kpi-heroes-count">8</div>
+                  <div class="metric-number" id="kpi-heroes-count">10</div>
                   <div class="metric-trend-row">
                     <span class="trend-neutral">Все классы</span>
                     <span class="trend-period">уникальные билды</span>
@@ -283,7 +290,7 @@
                   <div class="metric-number" id="kpi-avg-dps">41.8</div>
                   <div class="metric-trend-row">
                     <span class="trend-up">↑ +8%</span>
-                    <span class="trend-period" id="kpi-dps-trend">скейл урона к L20</span>
+                    <span class="trend-period" id="kpi-dps-trend">скейл урона к L12</span>
                   </div>
                 </div>
               </div>
@@ -338,17 +345,17 @@
                 <span id="qnav-weapons-count" class="quick-nav-count-badge">25 видов</span>
               </div>
               <div class="quick-nav-title">Арсенал оружия</div>
-              <div class="quick-nav-desc">Урон за удар, кулдауны, скейлинг L1-L20 и сортировка характеристик</div>
+              <div class="quick-nav-desc">Урон за удар, кулдауны, скейлинг L1-L12 и сортировка характеристик</div>
               <span class="quick-nav-action-text">Перейти в оружие →</span>
             </div>
 
             <div class="quick-nav-card" data-jump-tab="heroes">
               <div class="quick-nav-header">
-                <div class="quick-nav-icon-wrap">🤠</div>
-                <span id="qnav-heroes-count" class="quick-nav-count-badge">8 героев</span>
+                <div class="quick-nav-icon-wrap">⚔️</div>
+                <span id="qnav-heroes-count" class="quick-nav-count-badge">10 героев</span>
               </div>
               <div class="quick-nav-title">Характеристики героев</div>
-              <div class="quick-nav-desc">Базовое здоровье, скорость перемещения и множители урона ковбоев</div>
+              <div class="quick-nav-desc">Базовое здоровье, скорость перемещения и множители урона героев Разлома</div>
               <span class="quick-nav-action-text">Перейти в героев →</span>
             </div>
 
@@ -392,13 +399,23 @@
               <span class="quick-nav-action-text">Перейти в предметы →</span>
             </div>
 
+            <div class="quick-nav-card" data-jump-tab="merchant">
+              <div class="quick-nav-header">
+                <div class="quick-nav-icon-wrap">🪙</div>
+                <span class="quick-nav-count-badge">Торговец</span>
+              </div>
+              <div class="quick-nav-title">Торговец Разлома</div>
+              <div class="quick-nav-desc">Интервалы появления, длительность стоянки, базовые цены и эскалация стоимости</div>
+              <span class="quick-nav-action-text">Настроить торговца →</span>
+            </div>
+
             <div class="quick-nav-card" data-jump-tab="progression">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">📈</div>
                 <span class="quick-nav-count-badge">Графики</span>
               </div>
               <div class="quick-nav-title">Графики прогрессии</div>
-              <div class="quick-nav-desc">Векторные графики кривых урона оружия от L1 до L20 и характеристик монстров 0-60 мин</div>
+              <div class="quick-nav-desc">Векторные графики кривых урона оружия от L1 до L12 и характеристик монстров 0-60 мин</div>
               <span class="quick-nav-action-text">Смотреть графики →</span>
             </div>
 
@@ -433,12 +450,12 @@
             </div>
           </div>
 
-          <!-- Highlights: Top Weapons by L20 DPS & System Status -->
+          <!-- Highlights: Top Weapons by L12 DPS & System Status -->
           <div class="dashboard-sections-split">
             <div class="card-surface">
               <div class="chart-card-header">
                 <div>
-                  <h3 class="chart-card-title">Топ-5 оружия по DPS на L20</h3>
+                  <h3 class="chart-card-title">Топ-5 оружия по DPS на L12</h3>
                   <span class="chart-card-subtitle">Рейтинг максимальной боевой эффективности оружия при прокачке</span>
                 </div>
                 <button class="btn btn-xs btn-outline" data-jump-tab="weapons">Все виды оружия →</button>
@@ -468,7 +485,7 @@
         <section id="tab-weapons" class="tab-pane">
           <div class="section-toolbar">
             <div class="toolbar-info">
-              <h2>Арсенал оружия (13 видов)</h2>
+              <h2>Арсенал оружия (25 видов)</h2>
               <span class="toolbar-hint">Кликните на заголовок колонки для сортировки. Нажмите на строку, чтобы изменить параметры</span>
             </div>
             <div class="toolbar-actions">
@@ -494,8 +511,8 @@
               <span>DPS (L1)</span>
               <span class="sort-icon">⇅</span>
             </span>
-            <span class="col-stat sortable-col" data-table="weapons" data-sort="dps20">
-              <span>DPS (L20)</span>
+            <span class="col-stat sortable-col" data-table="weapons" data-sort="dps12">
+              <span>DPS (L12)</span>
               <span class="sort-icon">⇅</span>
             </span>
             <span class="col-status sortable-col" data-table="weapons" data-sort="status">
@@ -517,7 +534,7 @@
         <section id="tab-heroes" class="tab-pane">
           <div class="section-toolbar">
             <div class="toolbar-info">
-              <h2>Характеристики героев (6 ковбоев)</h2>
+              <h2>Характеристики героев (10 героев)</h2>
               <span class="toolbar-hint">Кликните на заголовок колонки для сортировки по здоровью, скорости или множителю урона</span>
             </div>
             <div class="toolbar-actions">
@@ -751,12 +768,31 @@
         </section>
 
         <!-- ================================================================= -->
+        <!-- TAB: MERCHANT (Торговец Разлома)                                  -->
+        <!-- ================================================================= -->
+        <section id="tab-merchant" class="tab-pane">
+          <div class="section-toolbar">
+            <div class="toolbar-info">
+              <h2>Настройки Торговца Разлома</h2>
+              <span class="toolbar-hint">Настройка интервалов появления, времени стоянки и базовых цен на товары и заточку оружия</span>
+            </div>
+            <div class="toolbar-actions">
+              <button id="btn-reset-merchant-all" class="btn btn-sm btn-outline-danger">Сбросить настройки торговца</button>
+            </div>
+          </div>
+
+          <div id="merchant-form-container">
+            <!-- Dynamically populated via renderMerchant() -->
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
         <!-- TAB: PROGRESSION (Векторные графики прогрессии)                   -->
         <!-- ================================================================= -->
         <section id="tab-progression" class="tab-pane">
           <div class="segmented-control-bar">
             <div class="segmented-group" id="progression-view-switcher">
-              <button class="segmented-btn active" data-prog-view="weapons">Оружие (L1 → L20)</button>
+              <button class="segmented-btn active" data-prog-view="weapons">Оружие (L1 → L12)</button>
               <button class="segmented-btn" data-prog-view="monsters">Монстры (0 → 60 мин)</button>
               <button class="segmented-btn" data-prog-view="heroes">Герои (Сравнение статов)</button>
             </div>
@@ -769,9 +805,18 @@
           <!-- Section: Weapons Progression -->
           <div id="prog-view-weapons">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-              <div class="segmented-group" id="prog-weapon-metric-toggle">
-                <button class="segmented-btn active" data-metric="damage">Урон за выстрел (Damage)</button>
-                <button class="segmented-btn" data-metric="dps">Боевой DPS (Damage / Cooldown)</button>
+              <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                <div class="segmented-group" id="prog-weapon-metric-toggle">
+                  <button class="segmented-btn active" data-metric="damage">Урон за выстрел (Damage)</button>
+                  <button class="segmented-btn" data-metric="dps">Боевой DPS (Damage / Cooldown)</button>
+                </div>
+
+                <div class="segmented-group" id="prog-weapon-grade-toggle" title="Редкость улучшений оружия">
+                  <button class="segmented-btn active" data-grade="common" style="color:#94a3b8;">Обычный (1.0x)</button>
+                  <button class="segmented-btn" data-grade="uncommon" style="color:#10b981;">Необычный (1.5x)</button>
+                  <button class="segmented-btn" data-grade="rare" style="color:#38bdf8;">Редкий (2.2x)</button>
+                  <button class="segmented-btn" data-grade="legendary" style="color:#fbbf24;">Легендарный (3.5x)</button>
+                </div>
               </div>
 
               <div style="display:flex; gap:8px;">
@@ -781,14 +826,14 @@
             </div>
 
             <div id="prog-weapons-chips" class="filter-chips-grid">
-              <!-- Filter chips for 13 weapons injected dynamically -->
+              <!-- Filter chips for weapons injected dynamically -->
             </div>
 
             <div class="chart-card">
               <div class="chart-card-header">
                 <div>
-                  <h3 class="chart-card-title" id="prog-weapons-chart-title">Прогрессия урона оружия от Уровня 1 до Уровня 20</h3>
-                  <span class="chart-card-subtitle">Формула: Базовый урон + (Уровень - 1) × Прирост за уровень</span>
+                  <h3 class="chart-card-title" id="prog-weapons-chart-title">Прогрессия урона оружия от Уровня 1 до Уровня 12 (с учетом редкости)</h3>
+                  <span class="chart-card-subtitle">Формула: Базовый урон + (Уровень - 1) × Прирост × Множитель редкости; Кулдаун снижается с качеством улучшений</span>
                 </div>
               </div>
               <div class="chart-horizontal-scroll-wrap">
@@ -1066,9 +1111,9 @@
                 </div>
               </div>
 
-              <!-- Level Curve Chart (L1 to L20) -->
+              <!-- Level Curve Chart (L1 to L12) -->
               <div class="card-surface" style="padding:16px 20px;">
-                <h3 style="font-size:14px; font-weight:700; color:var(--text-heading); margin-bottom:4px;">Кривая скейлинга DPS билда (L1 → L20)</h3>
+                <h3 style="font-size:14px; font-weight:700; color:var(--text-heading); margin-bottom:4px;">Кривая скейлинга DPS билда (L1 → L12)</h3>
                 <span style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:10px;">Рост DPS всей комбинации оружия по мере прокачки уровней</span>
                 <div id="sim-level-curve-container">
                   <!-- SVG Chart injected via renderSimulation() -->
