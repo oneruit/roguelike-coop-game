@@ -20,10 +20,10 @@
 }
 
 .upgrade-card {
-  background: rgba(10, 20, 36, 0.85);
+  background: rgba(22, 16, 32, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(0, 132, 255, 0.35);
+  border: 1.5px solid rgba(168, 85, 247, 0.35);
   border-radius: 18px;
   padding: 20px 14px 16px !important;
   min-height: 290px;
@@ -39,8 +39,8 @@
 
 .upgrade-card:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: #38bdf8;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(56, 189, 248, 0.4);
+  border-color: #c084fc;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(168, 85, 247, 0.4);
 }
 
 /* Weapon Grades Cards */

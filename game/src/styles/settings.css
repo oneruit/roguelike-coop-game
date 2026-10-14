@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SETTINGS MODAL (Modern Amber Glass Style)
+   SETTINGS MODAL (Modern Amethyst / Purple Glass Style)
    ========================================================================== */
 .settings-card {
   max-width: 640px !important;
@@ -8,8 +8,8 @@
   overflow-y: auto !important;
   overflow-x: hidden !important;
   padding: 28px 24px !important;
-  border-color: rgba(245, 158, 11, 0.35) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(245, 158, 11, 0.2) !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(168, 85, 247, 0.2) !important;
   box-sizing: border-box !important;
 }
 
@@ -21,11 +21,11 @@
   border-radius: 4px;
 }
 .settings-card::-webkit-scrollbar-thumb {
-  background: rgba(245, 158, 11, 0.35);
+  background: rgba(168, 85, 247, 0.35);
   border-radius: 4px;
 }
 .settings-card::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.6);
+  background: rgba(168, 85, 247, 0.6);
 }
 
 .settings-content {
@@ -51,7 +51,7 @@
   font-size: 13px !important;
   font-weight: 800 !important;
   letter-spacing: 1px !important;
-  color: #fbbf24 !important;
+  color: #c084fc !important;
   text-transform: uppercase !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   padding-bottom: 8px !important;
@@ -94,16 +94,16 @@
   width: 18px !important;
   height: 18px !important;
   border-radius: 50% !important;
-  background: #f59e0b !important;
+  background: #9333ea !important;
   border: 2px solid #ffffff !important;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8) !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8) !important;
   cursor: pointer;
 }
 
 .settings-val-badge {
-  background: rgba(245, 158, 11, 0.15) !important;
-  border: 1px solid rgba(245, 158, 11, 0.35) !important;
-  color: #fbbf24 !important;
+  background: rgba(168, 85, 247, 0.15) !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  color: #c084fc !important;
   font-family: 'Montserrat', monospace !important;
   font-size: 12px !important;
   font-weight: 800 !important;
@@ -127,9 +127,9 @@
 }
 
 .settings-mini-btn:hover {
-  background: rgba(245, 158, 11, 0.2) !important;
-  border-color: #fbbf24 !important;
-  color: #fbbf24 !important;
+  background: rgba(168, 85, 247, 0.2) !important;
+  border-color: #c084fc !important;
+  color: #c084fc !important;
 }
 
 .toggle-switch {
@@ -173,9 +173,9 @@
 }
 
 .toggle-switch input:checked + .slider.round {
-  background-color: #10b981 !important;
-  border-color: #34d399 !important;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.6) !important;
+  background-color: #9333ea !important;
+  border-color: #c084fc !important;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.6) !important;
 }
 
 .toggle-switch input:checked + .slider.round:before {
@@ -241,10 +241,10 @@
 }
 
 .settings-tab-btn.active {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.15));
-  border-color: rgba(245, 158, 11, 0.5);
-  color: #fbbf24;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.22), rgba(126, 34, 206, 0.15));
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #c084fc;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .settings-tab-btn .tab-icon {
@@ -289,7 +289,7 @@
 
 .settings-select:hover,
 .settings-select:focus {
-  border-color: rgba(245, 158, 11, 0.6);
+  border-color: rgba(168, 85, 247, 0.6);
 }
 
 /* ==========================================================================
