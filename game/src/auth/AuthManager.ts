@@ -1,11 +1,12 @@
 import { getAuthSupabaseClient } from '../balance/supabaseClient';
 
-export type AuthType = 'guest' | 'email';
+export type AuthType = 'guest' | 'google' | 'email';
 
 export interface AuthUser {
   id: string;
   email?: string;
   name: string;
+  avatarUrl?: string;
   authType: AuthType;
   isGuest: boolean;
   sessionExpiresAt?: number;
@@ -20,7 +21,7 @@ export const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000; // 30 days session duratio
 
 /**
  * Authentication Manager for The Rift.
- * Handles local Guest mode and Supabase Email OTP with 1-month session persistence.
+ * Handles local Guest mode and Supabase Google OAuth / Email OTP with 1-month session persistence.
  */
 export class AuthManager {
   private static instance: AuthManager;
@@ -45,10 +46,10 @@ export class AuthManager {
     const savedState = this.loadSavedAuthState();
     const now = Date.now();
 
-    if (savedState && savedState.authType === 'email') {
+    if (savedState && !savedState.isGuest) {
       const expiresAt = savedState.sessionExpiresAt || now;
       if (now > expiresAt) {
-        console.info('[AuthManager] Email session expired after 1 month. Cleaning up...');
+        console.info('[AuthManager] Session expired after 1 month. Cleaning up...');
         this.clearSavedAuthState();
         const client = getAuthSupabaseClient();
         if (client) {
@@ -62,6 +63,9 @@ export class AuthManager {
         this.notify();
         return;
       }
+      this.currentUser = savedState;
+    } else {
+      this.currentUser = this.getOrCreateGuestProfile();
     }
 
     const supabase = getAuthSupabaseClient();
@@ -77,45 +81,59 @@ export class AuthManager {
           }
 
           if (now > expiresAt) {
-            console.info('[AuthManager] Email session expired after 1 month. Signing out...');
+            console.info('[AuthManager] Session expired after 1 month. Signing out...');
             await supabase.auth.signOut();
             this.clearSavedAuthState();
             this.currentUser = this.getOrCreateGuestProfile();
           } else {
             const email = session.user.email || '';
-            const defaultName = email.split('@')[0] || 'Игрок';
+            const metadata = (session.user.user_metadata || {}) as Record<string, any>;
+            const displayName = metadata.full_name || metadata.name || email.split('@')[0] || 'Игрок';
+            const avatarUrl = metadata.avatar_url || metadata.picture || undefined;
+            const provider = session.user.app_metadata?.provider;
+            const authType: AuthType = provider === 'google' ? 'google' : (savedState?.authType || 'google');
+
             this.currentUser = {
               id: session.user.id,
               email,
-              name: defaultName,
-              authType: 'email',
+              name: displayName,
+              avatarUrl,
+              authType,
               isGuest: false,
               sessionExpiresAt: expiresAt,
               createdAt: session.user.created_at || new Date().toISOString()
             };
             this.saveAuthState(this.currentUser);
+            this.cleanUrlAfterOAuth();
           }
         } else {
-          // No active email session, use guest
+          // No active session, use guest
           this.currentUser = this.getOrCreateGuestProfile();
         }
 
-        // Listen for session changes (magic links, refresh, logout)
+        // Listen for session changes (OAuth redirect, magic links, refresh, logout)
         supabase.auth.onAuthStateChange(async (event, newSession) => {
           if (newSession && newSession.user) {
             const email = newSession.user.email || '';
-            const defaultName = email.split('@')[0] || 'Игрок';
+            const metadata = (newSession.user.user_metadata || {}) as Record<string, any>;
+            const displayName = metadata.full_name || metadata.name || email.split('@')[0] || 'Игрок';
+            const avatarUrl = metadata.avatar_url || metadata.picture || undefined;
+            const provider = newSession.user.app_metadata?.provider;
+            const authType: AuthType = provider === 'google' ? 'google' : 'google';
             const expiresAt = Date.now() + ONE_MONTH_MS;
+
             this.currentUser = {
               id: newSession.user.id,
               email,
-              name: defaultName,
-              authType: 'email',
+              name: displayName,
+              avatarUrl,
+              authType,
               isGuest: false,
               sessionExpiresAt: expiresAt,
               createdAt: newSession.user.created_at || new Date().toISOString()
             };
             this.saveAuthState(this.currentUser);
+            this.cleanUrlAfterOAuth();
             this.notify();
           } else if (event === 'SIGNED_OUT') {
             this.clearSavedAuthState();
@@ -125,11 +143,15 @@ export class AuthManager {
         });
       } catch (err) {
         console.warn('[AuthManager] Supabase auth check failed:', err);
-        this.currentUser = this.getOrCreateGuestProfile();
+        if (!this.currentUser) {
+          this.currentUser = this.getOrCreateGuestProfile();
+        }
       }
     } else {
-      // Supabase is not configured yet or offline, guest mode
-      this.currentUser = this.getOrCreateGuestProfile();
+      // Supabase is not configured yet or offline, use saved state or guest mode
+      if (!this.currentUser) {
+        this.currentUser = this.getOrCreateGuestProfile();
+      }
     }
 
     this.notify();
@@ -148,6 +170,50 @@ export class AuthManager {
 
   public isAuthenticated(): boolean {
     return !this.isGuest();
+  }
+
+  /**
+   * Initiates Google OAuth sign-in via Supabase.
+   * Redirects the player to the Google account consent screen.
+   */
+  public async signInWithGoogle(): Promise<{ success: boolean; error?: string }> {
+    const supabase = getAuthSupabaseClient();
+    if (!supabase) {
+      return {
+        success: false,
+        error: 'Supabase не подключен. Укажите VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY.'
+      };
+    }
+
+    try {
+      const redirectTo = typeof window !== 'undefined' && window.location
+        ? window.location.origin + window.location.pathname
+        : undefined;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'select_account'
+          }
+        }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (data && data.url && typeof window !== 'undefined') {
+        window.location.href = data.url;
+      }
+
+      return { success: true };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
+    }
   }
 
   /**
@@ -377,6 +443,26 @@ export class AuthManager {
       localStorage.removeItem(AUTH_STATE_KEY);
     } catch {
       // ignore
+    }
+  }
+
+  private cleanUrlAfterOAuth(): void {
+    if (typeof window !== 'undefined' && window.history && window.location) {
+      try {
+        if (window.location.hash && (window.location.hash.includes('access_token=') || window.location.hash.includes('error='))) {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        if (window.location.search && (window.location.search.includes('code=') || window.location.search.includes('error='))) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('code');
+          url.searchParams.delete('error');
+          url.searchParams.delete('error_description');
+          url.searchParams.delete('error_code');
+          window.history.replaceState(null, '', url.pathname + (url.search || '') + url.hash);
+        }
+      } catch {
+        // ignore history errors in tests or restricted sandboxes
+      }
     }
   }
 }

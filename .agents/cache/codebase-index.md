@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, and constants.
-> **Generated:** 2026-10-14T21:22:59.209Z | **Source Files:** 147 | **Total Symbols:** 454
+> **Generated:** 2026-10-14T21:53:41.067Z | **Source Files:** 147 | **Total Symbols:** 454
 
 Run `npm run index` to refresh this cache.
 
@@ -37,8 +37,8 @@ Run `npm run index` to refresh this cache.
 | `AssetResolver` | `class` | [`game/src/utils/AssetResolver.ts:10`](../../game/src/utils/AssetResolver.ts#L10) |
 | `AstralStaffWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:268`](../../game/src/combat/weapons/MagicWeapons.ts#L268) |
 | `attachInputListeners` | `function` | [`admin/src/views/controlHelpers.ts:35`](../../admin/src/views/controlHelpers.ts#L35) |
-| `AuthListener` | `type` | [`game/src/auth/AuthManager.ts:15`](../../game/src/auth/AuthManager.ts#L15) |
-| `AuthManager` | `class` | [`game/src/auth/AuthManager.ts:25`](../../game/src/auth/AuthManager.ts#L25) |
+| `AuthListener` | `type` | [`game/src/auth/AuthManager.ts:16`](../../game/src/auth/AuthManager.ts#L16) |
+| `AuthManager` | `class` | [`game/src/auth/AuthManager.ts:26`](../../game/src/auth/AuthManager.ts#L26) |
 | `AuthModalScreen` | `class` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:15`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L15) |
 | `AuthModalScreenOptions` | `interface` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:6`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L6) |
 | `AuthType` | `type` | [`game/src/auth/AuthManager.ts:3`](../../game/src/auth/AuthManager.ts#L3) |
@@ -293,7 +293,7 @@ Run `npm run index` to refresh this cache.
 | `ObstacleManager` | `class` | [`game/src/world/ObstacleManager.ts:15`](../../game/src/world/ObstacleManager.ts#L15) |
 | `ObstacleType` | `type` | [`game/src/world/ObstacleManager.ts:1`](../../game/src/world/ObstacleManager.ts#L1) |
 | `OccupiedArea` | `interface` | [`game/src/world/ChunkManager.ts:22`](../../game/src/world/ChunkManager.ts#L22) |
-| `ONE_MONTH_MS` | `const` | [`game/src/auth/AuthManager.ts:19`](../../game/src/auth/AuthManager.ts#L19) |
+| `ONE_MONTH_MS` | `const` | [`game/src/auth/AuthManager.ts:20`](../../game/src/auth/AuthManager.ts#L20) |
 | `packHostSnapshot` | `function` | [`game/src/net/BinarySnapshot.ts:47`](../../game/src/net/BinarySnapshot.ts#L47) |
 | `PASSIVE_BUFF_IDS` | `const` | [`game/src/drops/PassiveBuffs.ts:62`](../../game/src/drops/PassiveBuffs.ts#L62) |
 | `PASSIVE_BUFFS` | `const` | [`game/src/drops/PassiveBuffs.ts:17`](../../game/src/drops/PassiveBuffs.ts#L17) |

@@ -154,3 +154,44 @@ test('AuthManager - onAuthStateChanged listener notification', () => {
 
   unsubscribe();
 });
+
+test('AuthManager - Google OAuth signInWithGoogle error handling without Supabase config', async () => {
+  const auth = AuthManager.getInstance();
+  const res = await auth.signInWithGoogle();
+  assert.equal(res.success, false);
+  assert.ok(res.error, 'Error message should be returned when Supabase is unconfigured');
+});
+
+test('AuthManager - Google authenticated user restoration and persistence', async () => {
+  const auth = AuthManager.getInstance();
+  const expiresAt = Date.now() + ONE_MONTH_MS;
+  const mockGoogleUser: AuthUser = {
+    id: 'google_user_sub_9988',
+    email: 'gamer@gmail.com',
+    name: 'ProGamer',
+    avatarUrl: 'https://lh3.googleusercontent.com/a/mock',
+    authType: 'google',
+    isGuest: false,
+    sessionExpiresAt: expiresAt,
+    createdAt: new Date().toISOString()
+  };
+
+  localStorage.setItem('rift_auth_state_v1', JSON.stringify(mockGoogleUser));
+
+  (auth as any).isInitialized = false;
+  await auth.init();
+
+  const user = auth.getUser();
+  assert.equal(user.isGuest, false, 'User must not be guest');
+  assert.equal(user.authType, 'google', 'authType must be google');
+  assert.equal(user.email, 'gamer@gmail.com');
+  assert.equal(user.name, 'ProGamer');
+  assert.equal(user.avatarUrl, 'https://lh3.googleusercontent.com/a/mock');
+  assert.equal(auth.isAuthenticated(), true, 'auth.isAuthenticated() must be true');
+
+  // Sign out reverts to guest
+  await auth.signOut();
+  assert.equal(auth.isGuest(), true, 'Reverts to guest upon signout');
+  assert.equal(localStorage.getItem('rift_auth_state_v1'), null);
+});
+

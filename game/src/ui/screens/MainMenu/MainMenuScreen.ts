@@ -104,7 +104,11 @@ export class MainMenuScreen extends Screen {
     const badgeEl = SafeDOM.query(this.container, '#main-menu-auth-badge');
 
     if (avatarEl) {
-      avatarEl.textContent = activeUser.isGuest ? '👤' : '📧';
+      if (activeUser.avatarUrl) {
+        avatarEl.innerHTML = `<img src="${activeUser.avatarUrl}" class="auth-pill-avatar-img" alt="avatar" />`;
+      } else {
+        avatarEl.textContent = activeUser.isGuest ? '👤' : (activeUser.authType === 'google' ? '🌐' : '📧');
+      }
     }
     if (nameEl) {
       nameEl.textContent = activeUser.name;
@@ -113,6 +117,9 @@ export class MainMenuScreen extends Screen {
       if (activeUser.isGuest) {
         badgeEl.textContent = 'ГОСТЬ';
         badgeEl.className = 'auth-pill-badge';
+      } else if (activeUser.authType === 'google') {
+        badgeEl.textContent = 'GOOGLE';
+        badgeEl.className = 'auth-pill-badge auth-pill-badge--google';
       } else {
         badgeEl.textContent = 'АККАУНТ';
         badgeEl.className = 'auth-pill-badge auth-pill-badge--email';

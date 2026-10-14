@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T21:22:59.209Z",
+  "generatedAt": "2026-10-14T21:53:41.067Z",
   "totalFiles": 147,
   "totalSymbols": 454,
   "symbols": [
@@ -115,13 +115,13 @@
       "name": "AuthListener",
       "kind": "type",
       "file": "game/src/auth/AuthManager.ts",
-      "line": 15
+      "line": 16
     },
     {
       "name": "AuthManager",
       "kind": "class",
       "file": "game/src/auth/AuthManager.ts",
-      "line": 25
+      "line": 26
     },
     {
       "name": "AuthModalScreen",
@@ -1651,7 +1651,7 @@
       "name": "ONE_MONTH_MS",
       "kind": "const",
       "file": "game/src/auth/AuthManager.ts",
-      "line": 19
+      "line": 20
     },
     {
       "name": "packHostSnapshot",
