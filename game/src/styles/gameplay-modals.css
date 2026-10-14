@@ -98,9 +98,9 @@ body.is-in-game .menu-scenic-backdrop::after {
 
 /* Stat Display Mode Toggle Button */
 .stat-mode-toggle-btn {
-  background: rgba(14, 165, 233, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #38bdf8;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: #c084fc;
   padding: 6px 14px;
   border-radius: 6px;
   font-family: 'Montserrat', sans-serif;
@@ -114,11 +114,11 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .stat-mode-toggle-btn:hover {
-  background: rgba(14, 165, 233, 0.32);
-  border-color: #38bdf8;
+  background: rgba(168, 85, 247, 0.32);
+  border-color: #c084fc;
   color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
 }
 
 /* ==========================================================================
@@ -254,7 +254,7 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .coop-time-banner strong {
-  color: #38bdf8;
+  color: #c084fc;
   font-weight: 800;
 }
 
@@ -277,7 +277,7 @@ body.is-in-game .menu-scenic-backdrop::after {
   letter-spacing: 1px;
   text-transform: uppercase;
   border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
-  color: #38bdf8;
+  color: #c084fc;
 }
 
 .coop-stats-table td {
@@ -296,8 +296,8 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .game-over-arsenal-box {
-  background: rgba(12, 24, 44, 0.75);
-  border: 1.5px solid rgba(0, 132, 255, 0.2);
+  background: rgba(22, 16, 32, 0.75);
+  border: 1.5px solid rgba(168, 85, 247, 0.25);
   border-radius: 16px;
   padding: 14px 18px;
   margin-bottom: 20px;
@@ -324,8 +324,8 @@ body.is-in-game .menu-scenic-backdrop::after {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(10, 20, 36, 0.9);
-  border: 1.5px solid rgba(0, 132, 255, 0.3);
+  background: rgba(18, 12, 26, 0.9);
+  border: 1.5px solid rgba(168, 85, 247, 0.3);
   border-radius: 12px;
   padding: 5px 10px;
   font-family: 'Montserrat', sans-serif;
@@ -341,9 +341,9 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .arsenal-tag .tag-lvl {
-  color: #38bdf8;
+  color: #c084fc;
   font-weight: 800;
-  background: rgba(0, 132, 255, 0.15);
+  background: rgba(168, 85, 247, 0.2);
   border-radius: 999px;
   padding: 1px 6px;
   font-size: 10px;
@@ -356,8 +356,8 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .weapon-damage-item {
-  background: rgba(10, 20, 36, 0.9);
-  border: 1.5px solid rgba(0, 132, 255, 0.25);
+  background: rgba(18, 12, 26, 0.9);
+  border: 1.5px solid rgba(168, 85, 247, 0.25);
   border-radius: 12px;
   padding: 8px 12px;
   display: flex;
@@ -428,7 +428,7 @@ body.is-in-game .menu-scenic-backdrop::after {
 .weapon-damage-val {
   font-size: 13px;
   font-weight: 800;
-  color: #38bdf8;
+  color: #c084fc;
   white-space: nowrap;
 }
 
@@ -455,7 +455,7 @@ body.is-in-game .menu-scenic-backdrop::after {
 
 .weapon-damage-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  background: linear-gradient(90deg, #7e22ce, #c084fc);
   border-radius: 999px;
   transition: width 0.3s ease;
 }
@@ -687,8 +687,8 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .inventory-card-section {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(22, 16, 32, 0.7);
+  border: 1px solid rgba(168, 85, 247, 0.2);
   border-radius: 14px;
   padding: 16px 18px;
   display: flex;
@@ -710,6 +710,7 @@ body.is-in-game .menu-scenic-backdrop::after {
 
 .inventory-heading-icon {
   font-size: 16px;
+  color: #c084fc;
 }
 
 /* Stats table */
@@ -744,7 +745,7 @@ body.is-in-game .menu-scenic-backdrop::after {
 }
 
 .inv-stat-value.text-accent {
-  color: #38bdf8;
+  color: #c084fc;
 }
 
 .inv-stat-value.text-crit {
@@ -850,8 +851,8 @@ body.is-in-game .menu-scenic-backdrop::after {
   justify-content: center;
   flex-shrink: 0;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 16, 32, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.25);
   overflow: hidden;
   font-size: 24px;
 }
@@ -885,9 +886,9 @@ body.is-in-game .menu-scenic-backdrop::after {
 .inv-tag-start {
   font-size: 10px;
   font-weight: 800;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.35);
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -1326,15 +1327,15 @@ body.is-in-game .menu-scenic-backdrop::after {
 .action-btn.select-btn {
   width: 100% !important;
   padding: 10px 16px !important;
-  background: rgba(0, 119, 255, 0.85) !important;
-  border: 1.5px solid #38bdf8 !important;
+  background: linear-gradient(135deg, #7e22ce, #9333ea) !important;
+  border: 1.5px solid #c084fc !important;
   border-radius: 12px !important;
   color: #ffffff !important;
   font-family: 'Montserrat', sans-serif !important;
   font-size: 13px !important;
   font-weight: 800 !important;
   letter-spacing: 1.5px !important;
-  box-shadow: 0 0 16px rgba(0, 132, 255, 0.35) !important;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.45) !important;
   cursor: pointer !important;
   transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
   display: flex;
@@ -1346,9 +1347,9 @@ body.is-in-game .menu-scenic-backdrop::after {
 
 .select-btn:hover,
 .action-btn.select-btn:hover {
-  background: #0084ff !important;
+  background: #9333ea !important;
   border-color: #ffffff !important;
-  box-shadow: 0 0 26px rgba(0, 168, 255, 0.75) !important;
+  box-shadow: 0 0 26px rgba(168, 85, 247, 0.75) !important;
   transform: translateY(-2px) scale(1.02) !important;
 }
 
@@ -1379,10 +1380,10 @@ body.is-in-game .menu-scenic-backdrop::after {
 
 .modern-back-btn:hover,
 .action-btn.modern-back-btn:hover {
-  border-color: #38bdf8 !important;
+  border-color: #c084fc !important;
   color: #ffffff !important;
-  background: rgba(14, 165, 233, 0.15) !important;
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.25) !important;
+  background: rgba(168, 85, 247, 0.15) !important;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.3) !important;
   transform: translateY(-1px) !important;
 }
 

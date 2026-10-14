@@ -62,13 +62,7 @@
   }
 }
 
-/* Corner HUD styling */
-.auth-hud-corner {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  pointer-events: none;
-}
+
 
 .auth-header {
   display: flex;

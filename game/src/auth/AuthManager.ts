@@ -168,10 +168,15 @@ export class AuthManager {
     }
 
     try {
+      const emailRedirectTo = typeof window !== 'undefined' && window.location
+        ? window.location.origin + window.location.pathname
+        : undefined;
+
       const { error } = await supabase.auth.signInWithOtp({
         email: trimmed,
         options: {
-          shouldCreateUser: true
+          shouldCreateUser: true,
+          emailRedirectTo
         }
       });
 

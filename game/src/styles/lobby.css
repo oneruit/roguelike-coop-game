@@ -126,15 +126,15 @@
 }
 
 .lobby-hero-opt:hover {
-  border-color: #34d399 !important;
-  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: #c084fc !important;
+  background: rgba(168, 85, 247, 0.12) !important;
   transform: translateY(-2px);
 }
 
 .lobby-hero-opt.active {
-  border-color: #10b981 !important;
-  background: rgba(16, 185, 129, 0.2) !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35) !important;
+  border-color: #a855f7 !important;
+  background: rgba(168, 85, 247, 0.22) !important;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4) !important;
 }
 
 .lobby-hero-opt.active::after {
@@ -145,12 +145,12 @@
   font-family: 'Montserrat', sans-serif !important;
   font-size: 9px !important;
   font-weight: 900 !important;
-  background: #10b981 !important;
+  background: #9333ea !important;
   color: #ffffff !important;
   border: none !important;
   padding: 2px 6px !important;
   border-radius: 6px !important;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6) !important;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6) !important;
 }
 
 .hero-opt-img {
@@ -172,7 +172,7 @@
 .hero-opt-perk {
   font-family: 'Montserrat', sans-serif !important;
   font-size: 9.5px !important;
-  color: #38bdf8 !important;
+  color: #c084fc !important;
   font-weight: 600 !important;
   text-align: center;
 }
@@ -193,9 +193,9 @@
   font-family: 'Montserrat', sans-serif !important;
   font-size: 11px !important;
   font-weight: 800 !important;
-  color: #34d399 !important;
-  background: rgba(16, 185, 129, 0.15) !important;
-  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  color: #c084fc !important;
+  background: rgba(168, 85, 247, 0.15) !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
   padding: 3px 10px !important;
   border-radius: 999px !important;
 }
@@ -225,9 +225,9 @@
 }
 
 .roster-slot-card.occupied {
-  background: rgba(16, 185, 129, 0.08) !important;
-  border-color: #10b981 !important;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.2) !important;
+  background: rgba(168, 85, 247, 0.1) !important;
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.25) !important;
 }
 
 .roster-slot-card.empty {
@@ -280,7 +280,7 @@
 .slot-hero-name {
   font-family: 'Montserrat', sans-serif !important;
   font-size: 10px !important;
-  color: #38bdf8 !important;
+  color: #c084fc !important;
   font-weight: 600 !important;
   margin-top: 2px;
 }
@@ -295,10 +295,10 @@
 }
 
 .slot-status.ready {
-  background: #10b981 !important;
+  background: #9333ea !important;
   color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5) !important;
 }
 
 .slot-status.not-ready {
@@ -327,15 +327,15 @@
 }
 
 .partner-status-box.connected {
-  background: rgba(16, 185, 129, 0.12) !important;
-  border: 1.5px solid #10b981 !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25) !important;
+  background: rgba(168, 85, 247, 0.12) !important;
+  border: 1.5px solid #a855f7 !important;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.25) !important;
 }
 
 .partner-status-spinner {
   font-size: 16px;
   font-family: monospace;
-  color: #34d399 !important;
+  color: #c084fc !important;
 }
 
 .partner-status-title {
@@ -353,8 +353,8 @@
 }
 
 .start-expedition-btn {
-  background: rgba(16, 185, 129, 0.9) !important;
-  border: 1.5px solid #34d399 !important;
+  background: linear-gradient(135deg, #7e22ce, #9333ea) !important;
+  border: 1.5px solid #c084fc !important;
   border-radius: 14px !important;
   color: #ffffff !important;
   font-family: 'Montserrat', sans-serif !important;
@@ -362,14 +362,14 @@
   letter-spacing: 1.5px !important;
   font-size: 14px !important;
   padding: 12px 24px !important;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
   cursor: pointer;
   transition: all 0.2s ease !important;
 }
 
 .start-expedition-btn:hover {
-  background: #10b981 !important;
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.75) !important;
+  background: #9333ea !important;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.8) !important;
   transform: translateY(-2px) scale(1.02);
 }
 
@@ -377,7 +377,7 @@
   width: 100%;
   padding: 14px 20px !important;
   background: rgba(0, 0, 0, 0.45) !important;
-  border: 1.5px solid rgba(0, 132, 255, 0.4) !important;
+  border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
   border-radius: 14px !important;
   color: #ffffff !important;
   font-family: 'Montserrat', monospace !important;
@@ -391,8 +391,8 @@
 }
 
 .room-code-input:focus {
-  border-color: #38bdf8 !important;
-  box-shadow: 0 0 24px rgba(0, 168, 255, 0.45) !important;
+  border-color: #c084fc !important;
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.5) !important;
 }
 
 .join-status-box {
@@ -477,7 +477,7 @@
 
 .pwd-visibility-btn:hover {
   background: rgba(255, 255, 255, 0.18) !important;
-  border-color: #38bdf8 !important;
+  border-color: #c084fc !important;
 }
 
 /* Join Modal Tabs & Browser */
@@ -508,16 +508,16 @@
 }
 
 .join-tab-btn:hover {
-  background: rgba(56, 189, 248, 0.1);
-  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.35);
   color: #ffffff;
 }
 
 .join-tab-btn.active {
-  background: rgba(56, 189, 248, 0.2);
-  border-color: #38bdf8;
-  color: #38bdf8;
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+  background: rgba(168, 85, 247, 0.22);
+  border-color: #c084fc;
+  color: #c084fc;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
 }
 
 .join-tab-content {
@@ -541,7 +541,7 @@
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.5px;
-  color: #38bdf8;
+  color: #c084fc;
   text-transform: uppercase;
 }
 
@@ -562,8 +562,8 @@
 }
 
 .refresh-rooms-btn:hover {
-  background: rgba(56, 189, 248, 0.15);
-  border-color: #38bdf8;
+  background: rgba(168, 85, 247, 0.18);
+  border-color: #c084fc;
   color: #ffffff;
 }
 
@@ -588,11 +588,11 @@
   border-radius: 4px;
 }
 .available-rooms-list::-webkit-scrollbar-thumb {
-  background: rgba(56, 189, 248, 0.35);
+  background: rgba(168, 85, 247, 0.4);
   border-radius: 4px;
 }
 .available-rooms-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(56, 189, 248, 0.6);
+  background: rgba(168, 85, 247, 0.7);
 }
 
 .room-browser-card {
@@ -609,7 +609,7 @@
 
 .room-browser-card:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(56, 189, 248, 0.4);
+  border-color: rgba(168, 85, 247, 0.45);
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
@@ -704,9 +704,9 @@
 }
 
 .room-status-badge.lobby {
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.35);
 }
 
 .room-status-badge.playing {
@@ -727,8 +727,8 @@
 }
 
 .room-join-btn {
-  background: linear-gradient(135deg, #0284c7, #0369a1);
-  border: 1.5px solid #38bdf8;
+  background: linear-gradient(135deg, #7e22ce, #9333ea);
+  border: 1.5px solid #c084fc;
   border-radius: 10px;
   color: #ffffff;
   font-family: 'Montserrat', sans-serif;
@@ -741,8 +741,8 @@
 }
 
 .room-join-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0369a1, #0284c7);
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+  background: linear-gradient(135deg, #9333ea, #7e22ce);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
   transform: translateY(-1px);
 }
 
