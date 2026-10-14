@@ -72,7 +72,7 @@ export class SimulationView {
 
     bindSyncInput('sim-slider-amplifier', 'sim-num-amplifier', (val) => {
       this.sim.amplifierStacks = val;
-      const badge = document.getElementById('sim-val-amplifier') || document.getElementById('sim-val-sheriff');
+      const badge = document.getElementById('sim-val-amplifier');
       if (badge) badge.innerText = `${val} стаков (+${val * 2}%)`;
     });
 
@@ -80,12 +80,6 @@ export class SimulationView {
       this.sim.mightElixirStacks = val;
       const badge = document.getElementById('sim-val-mightelixir');
       if (badge) badge.innerText = `${val} стаков (+${val * 5}%)`;
-    });
-
-    bindSyncInput('sim-slider-sheriff', 'sim-num-sheriff', (val) => {
-      this.sim.amplifierStacks = val;
-      const badge = document.getElementById('sim-val-sheriff') || document.getElementById('sim-val-amplifier');
-      if (badge) badge.innerText = `${val} стаков (+${val * 2}%)`;
     });
 
     bindSyncInput('sim-slider-watch', 'sim-num-watch', (val) => {
@@ -146,7 +140,7 @@ export class SimulationView {
         ) {
           const idx = parseInt((target as HTMLInputElement).dataset.slot || '0');
           if (this.sim.slots[idx]) {
-            const val = Math.max(1, Math.min(20, parseInt((target as HTMLInputElement).value) || 1));
+            const val = Math.max(1, Math.min(12, parseInt((target as HTMLInputElement).value) || 1));
             this.sim.slots[idx].level = val;
             const card = target.closest('.weapon-slot-card');
             const slider = card?.querySelector('.sim-slot-level-slider') as HTMLInputElement;
@@ -165,7 +159,7 @@ export class SimulationView {
     if (preset === 'sniper') {
       this.sim.hero = 'archer';
       this.sim.slots = [
-        { enabled: true, weaponId: 'bow', level: 15 },
+        { enabled: true, weaponId: 'bow', level: 12 },
         { enabled: true, weaponId: 'chakram', level: 12 },
         { enabled: true, weaponId: 'ice_spike', level: 10 },
         { enabled: false, weaponId: 'astral_staff', level: 8 },
@@ -182,8 +176,8 @@ export class SimulationView {
     } else if (preset === 'melee') {
       this.sim.hero = 'ronin';
       this.sim.slots = [
-        { enabled: true, weaponId: 'katana_slash', level: 18 },
-        { enabled: true, weaponId: 'whirlwind_slash', level: 15 },
+        { enabled: true, weaponId: 'katana_slash', level: 12 },
+        { enabled: true, weaponId: 'whirlwind_slash', level: 12 },
         { enabled: true, weaponId: 'greatsword', level: 12 },
         { enabled: true, weaponId: 'reaper_scythe', level: 10 },
         { enabled: false, weaponId: 'flail', level: 8 }
@@ -199,9 +193,9 @@ export class SimulationView {
     } else if (preset === 'elemental') {
       this.sim.hero = 'sorceress';
       this.sim.slots = [
-        { enabled: true, weaponId: 'fireball', level: 20 },
-        { enabled: true, weaponId: 'lightning_strike', level: 16 },
-        { enabled: true, weaponId: 'fire_ring', level: 14 },
+        { enabled: true, weaponId: 'fireball', level: 12 },
+        { enabled: true, weaponId: 'lightning_strike', level: 12 },
+        { enabled: true, weaponId: 'fire_ring', level: 12 },
         { enabled: true, weaponId: 'ice_spike', level: 12 },
         { enabled: false, weaponId: 'astral_staff', level: 10 }
       ];
@@ -216,9 +210,9 @@ export class SimulationView {
     } else if (preset === 'crit') {
       this.sim.hero = 'archer';
       this.sim.slots = [
-        { enabled: true, weaponId: 'bow', level: 18 },
-        { enabled: true, weaponId: 'chakram', level: 16 },
-        { enabled: true, weaponId: 'katana_slash', level: 14 },
+        { enabled: true, weaponId: 'bow', level: 12 },
+        { enabled: true, weaponId: 'chakram', level: 12 },
+        { enabled: true, weaponId: 'katana_slash', level: 12 },
         { enabled: true, weaponId: 'kukri', level: 12 },
         { enabled: false, weaponId: 'fireball', level: 10 }
       ];
@@ -233,8 +227,8 @@ export class SimulationView {
     } else if (preset === 'rocket') {
       this.sim.hero = 'rocket';
       this.sim.slots = [
-        { enabled: true, weaponId: 'assault_rifle', level: 18 },
-        { enabled: true, weaponId: 'bow', level: 14 },
+        { enabled: true, weaponId: 'assault_rifle', level: 12 },
+        { enabled: true, weaponId: 'bow', level: 12 },
         { enabled: true, weaponId: 'kukri', level: 12 },
         { enabled: true, weaponId: 'lightning_strike', level: 10 },
         { enabled: true, weaponId: 'fireball', level: 8 }
@@ -250,9 +244,9 @@ export class SimulationView {
     } else if (preset === 'invoker') {
       this.sim.hero = 'invoker';
       this.sim.slots = [
-        { enabled: true, weaponId: 'invoker_invoke', level: 18 },
-        { enabled: true, weaponId: 'invoker_chaos_meteor', level: 16 },
-        { enabled: true, weaponId: 'invoker_sun_strike', level: 14 },
+        { enabled: true, weaponId: 'invoker_invoke', level: 12 },
+        { enabled: true, weaponId: 'invoker_chaos_meteor', level: 12 },
+        { enabled: true, weaponId: 'invoker_sun_strike', level: 12 },
         { enabled: true, weaponId: 'invoker_emp', level: 12 },
         { enabled: true, weaponId: 'invoker_ice_wall', level: 10 }
       ];
@@ -345,13 +339,6 @@ export class SimulationView {
       'sim-slider-amplifier',
       'sim-num-amplifier',
       'sim-val-amplifier',
-      ampVal,
-      `${ampVal} стаков (+${ampVal * 2}%)`
-    );
-    setInputPair(
-      'sim-slider-sheriff',
-      'sim-num-sheriff',
-      'sim-val-sheriff',
       ampVal,
       `${ampVal} стаков (+${ampVal * 2}%)`
     );
@@ -555,7 +542,7 @@ export class SimulationView {
 
     const levelCurveContainer = document.getElementById('sim-level-curve-container');
     if (levelCurveContainer) {
-      const levels = Array.from({ length: 20 }, (_, i) => i + 1);
+      const levels = Array.from({ length: 12 }, (_, i) => i + 1);
       const xLabels = levels.map((l) => `L${l}`);
 
       const seriesList: ChartSeries[] = [];
@@ -587,7 +574,7 @@ export class SimulationView {
 
         seriesList.push({
           id: 'total-build-level',
-          name: 'Суммарный DPS билда (L1-L20)',
+          name: 'Суммарный DPS билда (L1-L12)',
           color: '#1e293b',
           dashed: true,
           values: totalBuildValues,
@@ -648,8 +635,8 @@ export class SimulationView {
           </select>
           <div style="display:flex; align-items:center; gap:6px;">
             <span style="font-size:12px; font-weight:600; color:var(--text-muted); white-space:nowrap;">Ур.</span>
-            <input type="range" class="stat-slider sim-slot-level-slider" data-slot="${idx}" min="1" max="20" step="1" value="${slot.level}" ${slot.enabled ? '' : 'disabled'}>
-            <input type="number" class="stat-input sim-slot-level-input" data-slot="${idx}" min="1" max="20" step="1" value="${slot.level}" style="width:48px;" ${slot.enabled ? '' : 'disabled'}>
+            <input type="range" class="stat-slider sim-slot-level-slider" data-slot="${idx}" min="1" max="12" step="1" value="${slot.level}" ${slot.enabled ? '' : 'disabled'}>
+            <input type="number" class="stat-input sim-slot-level-input" data-slot="${idx}" min="1" max="12" step="1" value="${slot.level}" style="width:48px;" ${slot.enabled ? '' : 'disabled'}>
           </div>
         </div>
         <div class="slot-stats-preview">

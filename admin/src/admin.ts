@@ -11,6 +11,7 @@ import { renderMonsters } from './views/monstersView';
 import { renderBosses } from './views/bossesView';
 import { renderPassives } from './views/passivesView';
 import { renderItems } from './views/itemsView';
+import { renderMerchant } from './views/merchantView';
 import { renderGlobal } from './views/globalView';
 import { DEFAULT_BALANCE } from '../../game/src/balance/defaultBalance';
 
@@ -147,14 +148,6 @@ export class AdminController {
       }
     });
 
-    // Expand All / Collapse All buttons
-    document.getElementById('btn-expand-all')?.addEventListener('click', () => {
-      this.expandAllCurrentTab();
-    });
-    document.getElementById('btn-collapse-all')?.addEventListener('click', () => {
-      this.collapseAllCurrentTab();
-    });
-
     // Top action buttons
     document.getElementById('btn-save')?.addEventListener('click', () => {
       this.modal.openReviewModal(Boolean(this.supabase.config.adminKey));
@@ -243,6 +236,23 @@ export class AdminController {
       }
     });
 
+    document.getElementById('btn-reset-merchant-all')?.addEventListener('click', () => {
+      if (confirm('Сбросить параметры торговца к значениям по умолчанию?')) {
+        const def = DEFAULT_BALANCE.global;
+        this.state.draftBalance.global.merchantSpawnInterval = def.merchantSpawnInterval;
+        this.state.draftBalance.global.merchantStayDuration = def.merchantStayDuration;
+        this.state.draftBalance.global.merchantPriceCommon = def.merchantPriceCommon;
+        this.state.draftBalance.global.merchantPriceUncommon = def.merchantPriceUncommon;
+        this.state.draftBalance.global.merchantPriceRare = def.merchantPriceRare;
+        this.state.draftBalance.global.merchantPriceLegendary = def.merchantPriceLegendary;
+        this.state.draftBalance.global.merchantPriceBoss = def.merchantPriceBoss;
+        this.state.draftBalance.global.merchantPriceWeaponUpgrade = def.merchantPriceWeaponUpgrade;
+        this.state.checkAllCategoryChanges('global');
+        this.renderMerchant();
+        updateOverviewStats(this.state);
+      }
+    });
+
     // Connection Form & buttons
     document.getElementById('btn-save-conn')?.addEventListener('click', () => {
       this.supabase.saveConnectionSettings();
@@ -287,12 +297,6 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       p.classList.toggle('active', p.id === `tab-${target}`);
     });
 
-    const accordionTabs = ['weapons', 'heroes', 'monsters', 'bosses', 'passives', 'items'];
-    const quickTools = document.querySelector('.header-quick-tools');
-    if (quickTools) {
-      quickTools.classList.toggle('hidden', !accordionTabs.includes(target));
-    }
-
     const pageTitleEl = document.querySelector('.page-title') as HTMLElement | null;
     const pageSubtitleEl = document.querySelector('.page-subtitle') as HTMLElement | null;
     const tabHeaders: Record<string, { title: string; subtitle: string }> = {
@@ -324,6 +328,10 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         title: 'Предметы Разлома',
         subtitle: 'Артефакты, свитки и экипируемые предметы'
       },
+      merchant: {
+        title: 'Торговец Разлома',
+        subtitle: 'Настройка интервалов визита, времени стоянки и ценовой политики товаров'
+      },
       progression: {
         title: 'Скейлинг волн',
         subtitle: 'Динамика сложности, множители характеристик и тайминги волн'
@@ -346,16 +354,21 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       if (pageSubtitleEl) pageSubtitleEl.innerText = tabHeaders[target].subtitle;
     }
 
-    if (target === 'dashboard') renderDashboard(this.state);
-    else if (target === 'progression') this.progression.render();
-    else if (target === 'simulation') this.simulation.render();
-    else if (target === 'weapons') this.renderWeapons();
-    else if (target === 'heroes') this.renderHeroes();
-    else if (target === 'monsters') this.renderMonsters();
-    else if (target === 'bosses') this.renderBosses();
-    else if (target === 'passives') this.renderPassives();
-    else if (target === 'items') this.renderItems();
-    else if (target === 'global') this.renderGlobal();
+    try {
+      if (target === 'dashboard') renderDashboard(this.state);
+      else if (target === 'progression') this.progression.render();
+      else if (target === 'simulation') this.simulation.render();
+      else if (target === 'weapons') this.renderWeapons();
+      else if (target === 'heroes') this.renderHeroes();
+      else if (target === 'monsters') this.renderMonsters();
+      else if (target === 'bosses') this.renderBosses();
+      else if (target === 'passives') this.renderPassives();
+      else if (target === 'items') this.renderItems();
+      else if (target === 'merchant') this.renderMerchant();
+      else if (target === 'global') this.renderGlobal();
+    } catch (err) {
+      console.error(`Ошибка при отрисовке раздела ${target}:`, err);
+    }
   }
 
   public applyFilter(): void {
@@ -365,6 +378,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     else if (this.state.activeTab === 'bosses') this.renderBosses();
     else if (this.state.activeTab === 'passives') this.renderPassives();
     else if (this.state.activeTab === 'items') this.renderItems();
+    else if (this.state.activeTab === 'merchant') this.renderMerchant();
     else if (this.state.activeTab === 'dashboard') {
       // If user is searching on dashboard, jump to weapons to show results
       if (this.state.searchFilter) {
@@ -463,20 +477,20 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       const weapon = this.state.draftBalance.weapons[wid];
       if (weapon) {
         const baseDps = weapon.cooldown > 0 ? (weapon.damage / weapon.cooldown).toFixed(1) : (weapon.damage * 60).toFixed(1);
-        const l20Dmg = weapon.damage + 19 * weapon.damagePerLevel;
-        const l20Dps = weapon.cooldown > 0 ? (l20Dmg / weapon.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+        const l12Dmg = weapon.damage + 11 * weapon.damagePerLevel;
+        const l12Dps = weapon.cooldown > 0 ? (l12Dmg / weapon.cooldown).toFixed(1) : (l12Dmg * 60).toFixed(1);
 
         const elBase = document.getElementById(`dps-${wid}-base`);
-        const elL20 = document.getElementById(`dps-${wid}-l20`);
+        const elL12 = document.getElementById(`dps-${wid}-l12`);
         const elRowDps1 = document.getElementById(`row-stat-dps1-${wid}`);
-        const elRowDps20 = document.getElementById(`row-stat-dps20-${wid}`);
+        const elRowDps12 = document.getElementById(`row-stat-dps12-${wid}`);
         const elRowDmg = document.getElementById(`row-stat-damage-${wid}`);
         const elRowCd = document.getElementById(`row-stat-cooldown-${wid}`);
 
         if (elBase) elBase.innerText = baseDps;
-        if (elL20) elL20.innerText = l20Dps;
+        if (elL12) elL12.innerText = l12Dps;
         if (elRowDps1) elRowDps1.innerText = baseDps;
-        if (elRowDps20) elRowDps20.innerText = l20Dps;
+        if (elRowDps12) elRowDps12.innerText = l12Dps;
         if (elRowDmg) elRowDmg.innerHTML = `<span>${weapon.damage}</span>`;
         if (elRowCd) elRowCd.innerHTML = `<span>${weapon.cooldown}с</span>`;
       }
@@ -577,6 +591,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     );
   }
 
+  public renderMerchant(): void {
+    try {
+      renderMerchant(this.state, (path, val) => this.handleFieldChange(path, val));
+    } catch (err) {
+      console.error('Error rendering merchant view:', err);
+    }
+  }
+
   public renderGlobal(): void {
     renderGlobal(this.state, (path, val) => this.handleFieldChange(path, val));
   }
@@ -589,6 +611,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.renderBosses();
     this.renderPassives();
     this.renderItems();
+    this.renderMerchant();
     this.renderGlobal();
     this.progression.render();
     this.simulation.render();

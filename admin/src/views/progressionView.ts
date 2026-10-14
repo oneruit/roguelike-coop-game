@@ -8,6 +8,7 @@ export class ProgressionView {
   public chartState: ProgressionChartState = {
     view: 'weapons',
     weaponMetric: 'damage',
+    weaponGrade: 'common',
     selectedWeapons: new Set(['fireball', 'bow', 'greatsword', 'lightning_strike', 'katana_slash']),
     monsterCategory: 'monsters',
     monsterMetric: 'hp',
@@ -59,9 +60,27 @@ export class ProgressionView {
         if (title) {
           title.textContent =
             metric === 'damage'
-              ? 'Прогрессия урона оружия от Уровня 1 до Уровня 20'
-              : 'Прогрессия боевого DPS оружия от Уровня 1 до Уровня 20';
+              ? 'Прогрессия урона оружия от Уровня 1 до Уровня 12 (с учетом редкости)'
+              : 'Прогрессия боевого DPS оружия от Уровня 1 до Уровня 12 (с учетом редкости)';
         }
+
+        this.renderWeaponsProgression();
+      });
+    });
+
+    const gradeButtons = document.querySelectorAll('#prog-weapon-grade-toggle .segmented-btn');
+    gradeButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const grade = (e.currentTarget as HTMLElement).dataset.grade as
+          | 'common'
+          | 'uncommon'
+          | 'rare'
+          | 'legendary'
+          | undefined;
+        if (!grade) return;
+        this.chartState.weaponGrade = grade;
+        gradeButtons.forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
 
         this.renderWeaponsProgression();
       });
@@ -188,9 +207,18 @@ export class ProgressionView {
     const chartContainer = document.getElementById('chart-weapons-progression');
     if (!chartContainer) return;
 
-    const levels = Array.from({ length: 20 }, (_, i) => i + 1);
+    const levels = Array.from({ length: 12 }, (_, i) => i + 1);
     const xLabels = levels.map((lvl) => `L${lvl}`);
     const isDps = this.chartState.weaponMetric === 'dps';
+
+    const gradeKey = this.chartState.weaponGrade || 'common';
+    const gradeConfigs: Record<string, { damageMult: number; cdRed: number }> = {
+      common: { damageMult: 1.0, cdRed: 0.0 },
+      uncommon: { damageMult: 1.5, cdRed: 0.04 },
+      rare: { damageMult: 2.2, cdRed: 0.08 },
+      legendary: { damageMult: 3.5, cdRed: 0.15 }
+    };
+    const gradeCfg = gradeConfigs[gradeKey] || gradeConfigs.common;
 
     const seriesList: ChartSeries[] = [];
     for (const wid of this.chartState.selectedWeapons) {
@@ -198,10 +226,13 @@ export class ProgressionView {
       if (!w) continue;
 
       const values = levels.map((lvl) => {
-        const dmg = w.damage + (lvl - 1) * w.damagePerLevel;
+        const bonusSteps = lvl - 1;
+        const dmg = Math.round(w.damage + bonusSteps * w.damagePerLevel * gradeCfg.damageMult);
         if (isDps) {
-          const cd = w.cooldown > 0 ? w.cooldown : 1 / 60;
-          return Number((dmg / cd).toFixed(1));
+          const baseCd = w.cooldown > 0 ? w.cooldown : 1 / 60;
+          const cd = Math.max(0.08, baseCd * Math.pow(1 - gradeCfg.cdRed, bonusSteps));
+          const count = w.count && w.count > 0 ? w.count : 1;
+          return Number(((dmg * count) / cd).toFixed(1));
         }
         return dmg;
       });

@@ -2,7 +2,7 @@ import { BalanceState } from '../state/balanceState';
 import { getEntityTexture } from '../constants';
 
 export function renderDashboard(state: BalanceState): void {
-  // 1. Top 5 Weapons by L20 DPS
+  // 1. Top 5 Weapons by L12 DPS
   const topContainer = document.getElementById('dashboard-top-weapons-container');
   if (topContainer) {
     // Only standalone selectable weapons (exclude internal invoker sub-spells)
@@ -17,7 +17,7 @@ export function renderDashboard(state: BalanceState): void {
       return (dmg * count) / cd;
     };
 
-    weapons.sort((a, b) => getWeaponDps(b, 20) - getWeaponDps(a, 20));
+    weapons.sort((a, b) => getWeaponDps(b, 12) - getWeaponDps(a, 12));
 
     const top5 = weapons.slice(0, 5);
     let html = `
@@ -29,7 +29,7 @@ export function renderDashboard(state: BalanceState): void {
             <th>Базовый урон</th>
             <th>Кулдаун</th>
             <th>DPS (L1)</th>
-            <th>DPS (L20)</th>
+            <th>DPS (L12)</th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@ export function renderDashboard(state: BalanceState): void {
 
     top5.forEach((w, idx) => {
       const baseDps = getWeaponDps(w, 1).toFixed(1);
-      const l20Dps = getWeaponDps(w, 20).toFixed(1);
+      const l12Dps = getWeaponDps(w, 12).toFixed(1);
       const cdStr = w.cooldown > 0 ? `${w.cooldown}с` : '0.4с';
       const texture = getEntityTexture('weapons', w.id);
       const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
@@ -54,7 +54,7 @@ export function renderDashboard(state: BalanceState): void {
           <td>${w.damage}${w.count && w.count > 1 ? ` (x${w.count})` : ''}</td>
           <td>${cdStr}</td>
           <td><span class="stat-highlight">${baseDps}</span></td>
-          <td><span class="stat-highlight-gold" style="font-weight:700;">${l20Dps}</span></td>
+          <td><span class="stat-highlight-gold" style="font-weight:700;">${l12Dps}</span></td>
         </tr>
       `;
     });
