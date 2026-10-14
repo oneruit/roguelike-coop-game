@@ -9,7 +9,7 @@
     "dev": "concurrently -n \"GAME,ADMIN\" -c \"cyan,yellow\" \"npm run dev:game\" \"npm run dev:admin\"",
     "dev:game": "vite --port 5173",
     "dev:admin": "vite --config vite.config.admin.ts",
-    "build": "tsc && vite build",
+    "build": "npm run index && tsc && vite build",
     "build:prod": "npm run build",
     "build:admin": "vite build --config vite.config.admin.ts",
     "prod": "npm run build && npm run preview",
