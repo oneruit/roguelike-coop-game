@@ -63,3 +63,35 @@ After generating an image, the agent **MUST**:
 * **PROHIBITED**: Automatically accepting a generated image and committing/integrating it into the game without explicit human approval.
 * **PROHIBITED**: Generating full animation sheets for characters or bosses before the concept sheet (`concept.png` / turnaround) has been approved.
 * **PROHIBITED**: Proceeding without giving the user the choice between "Approved", "Redo / Revise", and "Custom variant".
+
+---
+
+## 5. API Quota Exhaustion & Graceful Suspension (HTTP 429)
+
+If an image generation tool or subagent fails due to rate limiting or quota exhaustion (`HTTP 429 RESOURCE_EXHAUSTED` / `QUOTA_EXHAUSTED`):
+
+1. **Stop Immediately**:
+   - Do **NOT** retry image generation in loops or poll repeatedly.
+   - Immediately abort any pending generation subagents.
+
+2. **Preserve Current Progress**:
+   - Save all approved artifacts, concept art, turnaround sheets, reference images, and partial crops into the character's or asset's folder (e.g. `raw_assets/<asset_id>/`).
+   - Create or update a resumption checkpoint file: `raw_assets/<asset_id>/TASK_STATE.json` (or `TASK_STATE.md`).
+   - The checkpoint MUST record:
+     - `task_id` / `character_id` / `asset_name`.
+     - User specifications and requirements (prompt, visual details, references).
+     - Completed and approved steps (e.g., Turnaround approved, concept locked).
+     - Remaining unfinished steps (e.g., pending animation sheets: IDLE, WALK, ATTACK, WALK_ATTACK; script post-processing; engine integration).
+     - Quota reset time and duration provided by the API error message.
+     - Resumption instructions for the next session.
+
+3. **Commit Progress to Task Branch**:
+   - Commit all saved assets and the checkpoint file to the active task branch (`feature/*`) following Conventional Commits (e.g. `feat(character): save approved turnaround and task checkpoint`).
+   - Ensure the git working tree is clean.
+
+4. **Report to User**:
+   - Clearly report that generation was paused due to HTTP 429 quota exhaustion.
+   - State the exact remaining cooldown duration and estimated reset time.
+   - List what was completed, approved, and saved.
+   - Provide a clear prompt the user can invoke when the quota resets to seamlessly resume the remaining steps without repeating already completed work.
+

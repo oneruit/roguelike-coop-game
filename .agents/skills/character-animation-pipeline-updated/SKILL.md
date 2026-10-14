@@ -196,7 +196,19 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 
 ---
 
-## 7. Acceptance Checklist
+## 7. Handling API Quota Exhaustion (HTTP 429) & State Checkpointing
+
+If image generation returns an HTTP 429 quota exhaustion error (`RESOURCE_EXHAUSTED` / `QUOTA_EXHAUSTED`):
+1. **Halt Work Immediately**: Do not loop or retry calls.
+2. **Save Progress**:
+   - Save all approved assets, turnaround references, and cropped frames in `raw_assets/<name>/`.
+   - Write a `raw_assets/<name>/TASK_STATE.json` checkpoint file detailing completed steps, remaining animation sheets, API reset duration, and exact resumption parameters.
+3. **Commit to Task Branch**: Commit the saved assets and checkpoint to the dedicated task branch to keep the workspace clean and trackable.
+4. **Report Cooldown & Resume Command**: Report the remaining cooldown duration, estimated reset time, and the exact instructions/prompt to resume the task in the next session without repeating already completed steps.
+
+---
+
+## 8. Acceptance Checklist
 
 - [ ] Dual input respected: direct prompt/image executed directly, brief descriptions auto-enriched via defaults.
 - [ ] Four animation sheets exist: IDLE (rest), WALK (movement), IDLE_ATTACK (stationary attack / attack), WALK_ATTACK (attack while moving) (6×4 grid, 96×96 cells, 576×384 px).
@@ -212,5 +224,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 - [ ] Weapon continuity maintained across all frames and rows.
 - [ ] Attacks have no visual effects (no slash arcs, sparks, magic trails).
 - [ ] Approval gateway respected: Generated images are presented to the user with "Approved", "Redo / Revise", or "Custom variant" before proceeding.
+- [ ] Quota handling respected: On HTTP 429 error, halt work, save progress and checkpoint file in `raw_assets/<name>/TASK_STATE.json`, commit to task branch, and report cooldown timer and resume instructions.
 - [ ] Scripts pass: `process_character_sheets.py` and `validate_sheets.py` exit with code 0 and facing directions verified.
 - [ ] `npm run typecheck`, `npm run build`, and `npm run build:admin` succeed.
+

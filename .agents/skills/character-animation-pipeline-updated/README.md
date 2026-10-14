@@ -55,3 +55,5 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
 5. Process raw assets via `scripts/process_character_sheets.py --bg-mode magenta --row-order fbrl`.
 6. Verify dimensions and directions via `scripts/validate_sheets.py --row-order fbrl`.
 7. Verify Three.js rendering with appropriate row mapping (`CharacterAnimator.ts`).
+8. If API returns HTTP 429 quota exhaustion: halt immediately, save approved assets and checkpoint in `raw_assets/<name>/TASK_STATE.json`, commit to task branch, and report cooldown duration and resumption instructions.
+
