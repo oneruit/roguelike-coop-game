@@ -69,6 +69,71 @@ function refreshIndex() {
   return { totalSymbols: 0, totalFiles: 0, elapsedMs: Date.now() - startTime };
 }
 
+function levenshteinDistance(s1, s2) {
+  if (s1 === s2) return 0;
+  if (!s1.length) return s2.length;
+  if (!s2.length) return s1.length;
+  const d = [];
+  for (let i = 0; i <= s1.length; i++) d[i] = [i];
+  for (let j = 0; j <= s2.length; j++) d[0][j] = j;
+  for (let i = 1; i <= s1.length; i++) {
+    for (let j = 1; j <= s2.length; j++) {
+      const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+    }
+  }
+  return d[s1.length][s2.length];
+}
+
+function calculateFuzzyScore(query, target) {
+  if (!query || !target) return 0;
+  const q = query.toLowerCase();
+  const t = target.toLowerCase();
+
+  // 1. Exact match
+  if (t === q) return 1000;
+
+  // 2. Exact word/prefix match
+  if (t.startsWith(q)) return 800 + Math.max(0, 50 - t.length);
+
+  // 3. Substring match
+  if (t.includes(q)) return 600 + Math.max(0, 50 - t.length);
+
+  // 4. CamelCase / Acronym match (e.g. CSS for CharacterSelectScreen)
+  const initials = (target.match(/[A-Z]/g) || []).join('').toLowerCase();
+  if (initials === q || initials.startsWith(q)) return 700;
+
+  // 5. Subsequence fuzzy match (fzf style)
+  let qIdx = 0;
+  let score = 0;
+  let prevMatch = -2;
+  for (let i = 0; i < t.length && qIdx < q.length; i++) {
+    if (t[i] === q[qIdx]) {
+      score += 15;
+      if (i === prevMatch + 1) score += 25; // consecutive bonus
+      if (i === 0 || /[^a-zA-Z0-9]/.test(target[i - 1]) || target[i] === target[i].toUpperCase()) score += 20; // boundary
+      prevMatch = i;
+      qIdx++;
+    }
+  }
+  if (qIdx === q.length) {
+    return Math.max(150, score - (t.length - q.length) * 2);
+  }
+
+  // 6. Typo tolerance (Levenshtein) for queries >= 4 chars
+  if (q.length >= 4) {
+    const dist = levenshteinDistance(q, t);
+    if (dist <= 2) return 350 - dist * 60;
+
+    const words = target.split(/[^a-zA-Z0-9]+|(?=[A-Z])/).map((w) => w.toLowerCase()).filter((w) => w.length >= 3);
+    for (const w of words) {
+      if (levenshteinDistance(q, w) <= 1) return 320;
+    }
+  }
+
+  return 0;
+}
+
 function handleFindSymbol(args) {
   const query = (args?.name || '').trim();
   const exact = !!args?.exact;
@@ -80,11 +145,26 @@ function handleFindSymbol(args) {
     loadSymbolCache();
   }
 
-  const queryLower = query.toLowerCase();
-  const matches = symbolCache.filter((s) => {
-    if (exact) return s.name === query || s.methodName === query;
-    return s.name.toLowerCase().includes(queryLower);
-  });
+  let matches = [];
+  if (exact) {
+    matches = symbolCache
+      .filter((s) => s.name === query || s.methodName === query)
+      .map((item) => ({ item, score: 1000 }));
+  } else {
+    for (const s of symbolCache) {
+      const nameScore = calculateFuzzyScore(query, s.name);
+      const methodScore = s.methodName ? calculateFuzzyScore(query, s.methodName) : 0;
+      let docScore = 0;
+      if (s.doc && s.doc.toLowerCase().includes(query.toLowerCase())) {
+        docScore = 200;
+      }
+      const bestScore = Math.max(nameScore, methodScore, docScore);
+      if (bestScore > 120) {
+        matches.push({ item: s, score: bestScore });
+      }
+    }
+    matches.sort((a, b) => b.score - a.score);
+  }
 
   if (matches.length === 0) {
     return {
@@ -94,12 +174,15 @@ function handleFindSymbol(args) {
 
   // Cap to top 15 matches to keep response fast and clean
   const limited = matches.slice(0, 15);
-  let output = `Found ${matches.length} match(es)${matches.length > 15 ? ' (showing top 15)' : ''}:\n\n`;
+  let output = `Found ${matches.length} match(es)${matches.length > 15 ? ' (showing top 15 by relevance)' : ''}:\n\n`;
 
-  for (const item of limited) {
-    const isMethod = item.kind === 'method';
-    output += `### \`${item.name}\` (${item.kind})\n`;
+  for (const { item, score } of limited) {
+    const scoreBadge = exact ? '' : ` [Score: ${score}]`;
+    output += `### \`${item.name}\` (${item.kind})${scoreBadge}\n`;
     output += `**File:** \`${item.file}:${item.line}\`\n`;
+    if (item.doc) {
+      output += `> **Description:** ${item.doc}\n`;
+    }
 
     // Try reading surrounding code snippet (up to 7 lines)
     try {

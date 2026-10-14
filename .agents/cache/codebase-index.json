@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T23:10:21.912Z",
+  "generatedAt": "2026-10-14T23:15:49.091Z",
   "totalFiles": 148,
   "totalSymbols": 1508,
   "topLevelCount": 457,
@@ -787,7 +787,8 @@
       "file": "game/src/world/Altar.ts",
       "line": 485,
       "className": "Altar",
-      "methodName": "applyRemoteCapture"
+      "methodName": "applyRemoteCapture",
+      "doc": "Apply a capture decided by the host without replaying the local capture logic."
     },
     {
       "name": "Altar.destroy",
@@ -811,7 +812,8 @@
       "file": "game/src/world/Altar.ts",
       "line": 431,
       "className": "Altar",
-      "methodName": "updateVisuals"
+      "methodName": "updateVisuals",
+      "doc": "Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh animations. If inFrustum is false, sets mesh.visible = false and skips all canvas redraws."
     },
     {
       "name": "AltarConfig",
@@ -875,19 +877,22 @@
       "name": "ANIM_LAYOUT_LEGACY",
       "kind": "const",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 60
+      "line": 60,
+      "doc": "Legacy 4x4 / Ronin Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK"
     },
     {
       "name": "ANIM_LAYOUT_NECROMANCER",
       "kind": "const",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 45
+      "line": 45,
+      "doc": "Necromancer / Transition Layout: Row 0: FRONT, Row 1: BACK, Row 2: LEFT, Row 3: RIGHT"
     },
     {
       "name": "ANIM_LAYOUT_V2",
       "kind": "const",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 30
+      "line": 30,
+      "doc": "V2 Pipeline Standard Layout: Row 0: FRONT (Лицо) Row 1: BACK (Спина) Row 2: RIGHT (Правая сторона) Row 3: LEFT (Левая сторона) 6 frames per row."
     },
     {
       "name": "ANIM_STATES",
@@ -905,7 +910,8 @@
       "name": "AssaultRifleWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/RangedWeapons.ts",
-      "line": 242
+      "line": 242,
+      "doc": "Assault Rifle (Штурмовая Винтовка) Rapid automatic bursts of bullets"
     },
     {
       "name": "AssaultRifleWeapon.getNextUpgradeDescription",
@@ -957,7 +963,8 @@
       "name": "AssetResolver",
       "kind": "class",
       "file": "game/src/utils/AssetResolver.ts",
-      "line": 10
+      "line": 10,
+      "doc": "Centralized Asset Resolver Handles structured and legacy asset URLs with transparent fallback and base path handling."
     },
     {
       "name": "AssetResolver.getBiomeTexture",
@@ -965,7 +972,8 @@
       "file": "game/src/utils/AssetResolver.ts",
       "line": 24,
       "className": "AssetResolver",
-      "methodName": "getBiomeTexture"
+      "methodName": "getBiomeTexture",
+      "doc": "Get biome texture URL. Path: /textures/biomes/<biomeId>/surface.jpg or tree.png"
     },
     {
       "name": "AssetResolver.getHeroTexture",
@@ -973,7 +981,8 @@
       "file": "game/src/utils/AssetResolver.ts",
       "line": 15,
       "className": "AssetResolver",
-      "methodName": "getHeroTexture"
+      "methodName": "getHeroTexture",
+      "doc": "Get hero texture URL for a given action. Path: /textures/heroes/<heroId>/<action>.png"
     },
     {
       "name": "AssetResolver.getWeaponIcon",
@@ -981,7 +990,8 @@
       "file": "game/src/utils/AssetResolver.ts",
       "line": 34,
       "className": "AssetResolver",
-      "methodName": "getWeaponIcon"
+      "methodName": "getWeaponIcon",
+      "doc": "Get weapon icon URL. Path: /textures/weapons/weapon_<weaponId>.png"
     },
     {
       "name": "AssetResolver.normalizeTextureUrl",
@@ -989,13 +999,15 @@
       "file": "game/src/utils/AssetResolver.ts",
       "line": 42,
       "className": "AssetResolver",
-      "methodName": "normalizeTextureUrl"
+      "methodName": "normalizeTextureUrl",
+      "doc": "Normalizes legacy URLs to modular structure if applicable."
     },
     {
       "name": "AstralStaffWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 268
+      "line": 268,
+      "doc": "Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high-speed astral energy bolts and starlight orbs that pierce through foes at long range."
     },
     {
       "name": "AstralStaffWeapon.getNextUpgradeDescription",
@@ -1037,7 +1049,8 @@
       "name": "AuthManager",
       "kind": "class",
       "file": "game/src/auth/AuthManager.ts",
-      "line": 26
+      "line": 26,
+      "doc": "Authentication Manager for The Rift. Handles local Guest mode and Supabase Google OAuth / Email OTP with 1-month session persistence."
     },
     {
       "name": "AuthManager.cleanUrlAfterOAuth",
@@ -1117,7 +1130,8 @@
       "file": "game/src/auth/AuthManager.ts",
       "line": 315,
       "className": "AuthManager",
-      "methodName": "loginAsGuest"
+      "methodName": "loginAsGuest",
+      "doc": "Log in / switch to Guest mode. All data is saved locally on device."
     },
     {
       "name": "AuthManager.notify",
@@ -1157,7 +1171,8 @@
       "file": "game/src/auth/AuthManager.ts",
       "line": 222,
       "className": "AuthManager",
-      "methodName": "sendOtp"
+      "methodName": "sendOtp",
+      "doc": "Request a one-time OTP code or magic link to be sent to the player's email."
     },
     {
       "name": "AuthManager.setGuestName",
@@ -1165,7 +1180,8 @@
       "file": "game/src/auth/AuthManager.ts",
       "line": 330,
       "className": "AuthManager",
-      "methodName": "setGuestName"
+      "methodName": "setGuestName",
+      "doc": "Update the display name for the guest user."
     },
     {
       "name": "AuthManager.signInWithGoogle",
@@ -1173,7 +1189,8 @@
       "file": "game/src/auth/AuthManager.ts",
       "line": 179,
       "className": "AuthManager",
-      "methodName": "signInWithGoogle"
+      "methodName": "signInWithGoogle",
+      "doc": "Initiates Google OAuth sign-in via Supabase. Redirects the player to the Google account consent screen."
     },
     {
       "name": "AuthManager.signOut",
@@ -1181,7 +1198,8 @@
       "file": "game/src/auth/AuthManager.ts",
       "line": 345,
       "className": "AuthManager",
-      "methodName": "signOut"
+      "methodName": "signOut",
+      "doc": "Sign out from the current account. Automatically reverts to Guest mode."
     },
     {
       "name": "AuthManager.verifyOtp",
@@ -1189,13 +1207,15 @@
       "file": "game/src/auth/AuthManager.ts",
       "line": 264,
       "className": "AuthManager",
-      "methodName": "verifyOtp"
+      "methodName": "verifyOtp",
+      "doc": "Verify the 6-digit OTP code received by the player via email. On success, establishes a session persisted for 1 month."
     },
     {
       "name": "AuthModalScreen",
       "kind": "class",
       "file": "game/src/ui/screens/Auth/AuthModalScreen.ts",
-      "line": 16
+      "line": 16,
+      "doc": "Modular Auth Modal Screen. Provides local Guest authorization and Google OAuth login via Supabase."
     },
     {
       "name": "AuthModalScreen.bindElements",
@@ -1663,7 +1683,8 @@
       "file": "game/src/world/BiomeManager.ts",
       "line": 363,
       "className": "BiomeManager",
-      "methodName": "advanceStage"
+      "methodName": "advanceStage",
+      "doc": "Advances to the next stage/biome. Caps at stage 4 (final stage)."
     },
     {
       "name": "BiomeManager.applyBiomeToScene",
@@ -1671,7 +1692,8 @@
       "file": "game/src/world/BiomeManager.ts",
       "line": 290,
       "className": "BiomeManager",
-      "methodName": "applyBiomeToScene"
+      "methodName": "applyBiomeToScene",
+      "doc": "Applies the current biome's atmosphere, lighting, fog, textures and materials to the Three.js scene."
     },
     {
       "name": "BiomeManager.getBiomeTexture",
@@ -1711,7 +1733,8 @@
       "file": "game/src/world/BiomeManager.ts",
       "line": 351,
       "className": "BiomeManager",
-      "methodName": "setStage"
+      "methodName": "setStage",
+      "doc": "Sets the current stage explicitly (1-based index, up to 4 stages)."
     },
     {
       "name": "BIOMES",
@@ -1771,7 +1794,8 @@
       "name": "BowWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/RangedWeapons.ts",
-      "line": 13
+      "line": 13,
+      "doc": "Hunting Bow (Охотничий Лук) Long-range sharp piercing arrows cutting through lines of enemies"
     },
     {
       "name": "BowWeapon.getNextUpgradeDescription",
@@ -1849,7 +1873,8 @@
       "name": "calculateBattlePassPoints",
       "kind": "function",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 30
+      "line": 30,
+      "doc": "Calculates Battle Pass experience points awarded for a run based on survival time: - < 5 minutes (0..299s): 20 points - < 10 minutes (300..599s): 50 points - < 15 minutes (600..899s): 100 points - < 20 minutes (900..1199s): 150 points - < 30 minutes (1200..1799s): 200 points - >= 30 minutes (Victory): 200 points"
     },
     {
       "name": "CalculatedPlayerStats",
@@ -1861,19 +1886,22 @@
       "name": "canAcquireInvokerWeapon",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 160
+      "line": 160,
+      "doc": "Separate spell weapons require Invoke in the same inventory, and hero must be allowed to acquire."
     },
     {
       "name": "canCharacterAcquireWeapon",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 122
+      "line": 122,
+      "doc": "The single source of truth for whether a hero is allowed to acquire or upgrade a weapon. Rules: 1. If weapon is exclusive to hero X, only hero X can acquire it. 2. If hero is a unique character (e.g. Invoker): - They can only acquire weapons from their exclusive list. - They CANNOT acquire generic weapons (bow, katana, etc.) unless allowGenericWeapons is explicitly true. - Sub-prerequisites (like having invoker_invoke) are evaluated. 3. If hero is a non-unique character (Ronin, Valkyrie, Archer, etc.): - They CANNOT acquire any exclusive weapon (like invoker_invoke or any invoker spell). - They can acquire any generic non-exclusive weapon."
     },
     {
       "name": "canRerollWeaponOptions",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 29
+      "line": 29,
+      "doc": "Determines whether the current weapon selection qualifies for a reroll. Per rule: reroll is allowed if and only if all three choices are new weapons."
     },
     {
       "name": "CenterSquareMapRenderContext",
@@ -1885,7 +1913,8 @@
       "name": "ChakramWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/RangedWeapons.ts",
-      "line": 126
+      "line": 126,
+      "doc": "Chakram (Танцующий Чакрам) Boomerang spinning blades returning to player"
     },
     {
       "name": "ChakramWeapon.getNextUpgradeDescription",
@@ -1945,7 +1974,8 @@
       "name": "CharacterAnimator",
       "kind": "class",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 102
+      "line": 102,
+      "doc": "Modular Character Animator Handles directional sprite state machines, UV repeat/offset calculations, and Three.js material bindings across 4 animation states: - IDLE: состояние покоя - WALK: состояние движения - IDLE_ATTACK: состояние атаки в покое - WALK_ATTACK: атака в движении"
     },
     {
       "name": "CharacterAnimator.getActiveTexture",
@@ -1983,19 +2013,22 @@
       "name": "CharacterAnimLayout",
       "kind": "interface",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 8
+      "line": 8,
+      "doc": "Grid layout specification for directional spritesheets."
     },
     {
       "name": "CharacterAnimStateConfig",
       "kind": "interface",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 17
+      "line": 17,
+      "doc": "State configuration for animation timing and playback."
     },
     {
       "name": "CharacterPreviewRenderer",
       "kind": "class",
       "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
-      "line": 8
+      "line": 8,
+      "doc": "Renders an animated 2.5D chibi hero preview on the character selection dais."
     },
     {
       "name": "CharacterPreviewRenderer.dispose",
@@ -2063,7 +2096,8 @@
       "name": "CharacterSelectScreen",
       "kind": "class",
       "file": "game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts",
-      "line": 39
+      "line": 39,
+      "doc": "Modular Character Selection Screen (Rift ARPG UI). Manages carousel track, inspector panel stats, character unlocks, and run launch."
     },
     {
       "name": "CharacterSelectScreen.attemptLaunch",
@@ -2207,7 +2241,8 @@
       "name": "CharacterType",
       "kind": "type",
       "file": "game/src/shared/types/entities.ts",
-      "line": 6
+      "line": 6,
+      "doc": "Shared Entity Types & Definitions Platform-agnostic core types used across client, server, and simulation layers."
     },
     {
       "name": "ChartOptions",
@@ -2219,7 +2254,8 @@
       "name": "ChartSeries",
       "kind": "interface",
       "file": "admin/src/chartUtils.ts",
-      "line": 6
+      "line": 6,
+      "doc": "Lightweight SVG Vector Chart Engine for Admin Panel Zero external dependencies, pure DOM & SVG rendering."
     },
     {
       "name": "CHEST_TIERS",
@@ -2277,7 +2313,8 @@
       "file": "game/src/world/ChestManager.ts",
       "line": 289,
       "className": "ChestManager",
-      "methodName": "update"
+      "methodName": "update",
+      "doc": "Updates floating chest hologram visuals, pulse aura, and opening animations."
     },
     {
       "name": "ChestSyncInfo",
@@ -2309,7 +2346,8 @@
       "file": "game/src/world/ChunkManager.ts",
       "line": 290,
       "className": "ChunkManager",
-      "methodName": "clear"
+      "methodName": "clear",
+      "doc": "Deep cleanup of all chunk geometries and entities."
     },
     {
       "name": "ChunkManager.cull",
@@ -2317,7 +2355,8 @@
       "file": "game/src/world/ChunkManager.ts",
       "line": 278,
       "className": "ChunkManager",
-      "methodName": "cull"
+      "methodName": "cull",
+      "doc": "Frustum Culling: Hides chunks that are completely outside the camera view. Keeps active rendering to only the 6-9 chunks in front of the camera."
     },
     {
       "name": "ChunkManager.getElevation",
@@ -2325,7 +2364,8 @@
       "file": "game/src/world/ChunkManager.ts",
       "line": 60,
       "className": "ChunkManager",
-      "methodName": "getElevation"
+      "methodName": "getElevation",
+      "doc": "Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5D pixel art consistency)."
     },
     {
       "name": "ChunkManager.getNormal",
@@ -2333,7 +2373,8 @@
       "file": "game/src/world/ChunkManager.ts",
       "line": 74,
       "className": "ChunkManager",
-      "methodName": "getNormal"
+      "methodName": "getNormal",
+      "doc": "Returns surface normal vector at world coordinate (x, z)."
     },
     {
       "name": "ChunkManager.getSlowFactor",
@@ -2341,7 +2382,8 @@
       "file": "game/src/world/ChunkManager.ts",
       "line": 67,
       "className": "ChunkManager",
-      "methodName": "getSlowFactor"
+      "methodName": "getSlowFactor",
+      "doc": "Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 normally)."
     },
     {
       "name": "ChunkManager.update",
@@ -2349,7 +2391,8 @@
       "file": "game/src/world/ChunkManager.ts",
       "line": 270,
       "className": "ChunkManager",
-      "methodName": "update"
+      "methodName": "update",
+      "doc": "With the fixed preloaded map, update does not need to stream or unload chunks. Runs in 0ms without runtime memory allocation."
     },
     {
       "name": "ClientSyncMessage",
@@ -2361,7 +2404,8 @@
       "name": "CloudSyncManager",
       "kind": "class",
       "file": "game/src/meta/CloudSyncManager.ts",
-      "line": 24
+      "line": 24,
+      "doc": "Cloud Synchronization Manager for The Rift. Bridges local client storage (MetaProgression & ProgressionManager) with the player_profiles table in Supabase."
     },
     {
       "name": "CloudSyncManager.deleteAccount",
@@ -2369,7 +2413,8 @@
       "file": "game/src/meta/CloudSyncManager.ts",
       "line": 312,
       "className": "CloudSyncManager",
-      "methodName": "deleteAccount"
+      "methodName": "deleteAccount",
+      "doc": "Permanently deletes user profile data and unlinks account."
     },
     {
       "name": "CloudSyncManager.getInstance",
@@ -2409,7 +2454,8 @@
       "file": "game/src/meta/CloudSyncManager.ts",
       "line": 269,
       "className": "CloudSyncManager",
-      "methodName": "resetCloudProgress"
+      "methodName": "resetCloudProgress",
+      "doc": "Resets all game progress in local memory and in the cloud for the current account."
     },
     {
       "name": "CloudSyncManager.saveToCloud",
@@ -2417,7 +2463,8 @@
       "file": "game/src/meta/CloudSyncManager.ts",
       "line": 222,
       "className": "CloudSyncManager",
-      "methodName": "saveToCloud"
+      "methodName": "saveToCloud",
+      "doc": "Directly uploads current local state to player_profiles in Supabase."
     },
     {
       "name": "CloudSyncManager.scheduleSave",
@@ -2425,7 +2472,8 @@
       "file": "game/src/meta/CloudSyncManager.ts",
       "line": 202,
       "className": "CloudSyncManager",
-      "methodName": "scheduleSave"
+      "methodName": "scheduleSave",
+      "doc": "Debounced cloud save after any local mutation."
     },
     {
       "name": "CloudSyncManager.setStatus",
@@ -2441,7 +2489,8 @@
       "file": "game/src/meta/CloudSyncManager.ts",
       "line": 98,
       "className": "CloudSyncManager",
-      "methodName": "syncOnLogin"
+      "methodName": "syncOnLogin",
+      "doc": "Called when a player logs in via Google/Email. Pulls existing cloud save or uploads guest progress if cloud row is empty."
     },
     {
       "name": "CombatDirector",
@@ -2529,13 +2578,15 @@
       "name": "createSimWeaponById",
       "kind": "function",
       "file": "game/src/sim/weapons/SimWeaponFactory.ts",
-      "line": 55
+      "line": 55,
+      "doc": "Creates weapon by ID"
     },
     {
       "name": "createSimWeaponForCharacter",
       "kind": "function",
       "file": "game/src/sim/weapons/SimWeaponFactory.ts",
-      "line": 27
+      "line": 27,
+      "doc": "Creates the starting weapon for character selection."
     },
     {
       "name": "DamageDealtEvent",
@@ -2669,7 +2720,8 @@
       "file": "server/dedicatedServer.ts",
       "line": 252,
       "className": "DedicatedGameServer",
-      "methodName": "broadcast"
+      "methodName": "broadcast",
+      "doc": "Broadcasts payload to all connected WebSocket clients"
     },
     {
       "name": "DedicatedGameServer.broadcastLobbyUpdate",
@@ -2701,7 +2753,8 @@
       "file": "server/dedicatedServer.ts",
       "line": 62,
       "className": "DedicatedGameServer",
-      "methodName": "listen"
+      "methodName": "listen",
+      "doc": "Starts listening for client WebSocket connections"
     },
     {
       "name": "DedicatedGameServer.onPlayerJoin",
@@ -2709,7 +2762,8 @@
       "file": "server/dedicatedServer.ts",
       "line": 245,
       "className": "DedicatedGameServer",
-      "methodName": "onPlayerJoin"
+      "methodName": "onPlayerJoin",
+      "doc": "Handles player connection (programmatic)"
     },
     {
       "name": "DedicatedGameServer.start",
@@ -2717,7 +2771,8 @@
       "file": "server/dedicatedServer.ts",
       "line": 186,
       "className": "DedicatedGameServer",
-      "methodName": "start"
+      "methodName": "start",
+      "doc": "Starts the authoritative 30Hz tick simulation loop"
     },
     {
       "name": "DedicatedGameServer.stop",
@@ -2725,7 +2780,8 @@
       "file": "server/dedicatedServer.ts",
       "line": 229,
       "className": "DedicatedGameServer",
-      "methodName": "stop"
+      "methodName": "stop",
+      "doc": "Stops simulation and socket server"
     },
     {
       "name": "DedicatedGameServer.tick",
@@ -2733,7 +2789,8 @@
       "file": "server/dedicatedServer.ts",
       "line": 201,
       "className": "DedicatedGameServer",
-      "methodName": "tick"
+      "methodName": "tick",
+      "doc": "Authoritative tick: updates mobs, bullets, collisions, drops, altars, revives"
     },
     {
       "name": "DedicatedServerOptions",
@@ -2781,7 +2838,8 @@
       "file": "game/src/ui/DevManager.ts",
       "line": 446,
       "className": "DevManager",
-      "methodName": "reset"
+      "methodName": "reset",
+      "doc": "Resets all dev mode cheats and restores default session state"
     },
     {
       "name": "DevManager.setCurrentSeed",
@@ -2789,7 +2847,8 @@
       "file": "game/src/ui/DevManager.ts",
       "line": 465,
       "className": "DevManager",
-      "methodName": "setCurrentSeed"
+      "methodName": "setCurrentSeed",
+      "doc": "Updates the seed input field with the current active world seed"
     },
     {
       "name": "DevManager.setPauseState",
@@ -2849,7 +2908,8 @@
       "file": "game/src/director/DifficultyDirector.ts",
       "line": 66,
       "className": "DifficultyDirector",
-      "methodName": "getBiomeOverstayMultiplier"
+      "methodName": "getBiomeOverstayMultiplier",
+      "doc": "Biome Overstay Multiplier: if players stay longer than 5 minutes (300s) on a non-final biome, monsters gain exponential +20% HP and +15% damage for every extra 10 seconds."
     },
     {
       "name": "DifficultyDirector.getCurrentTier",
@@ -2857,7 +2917,8 @@
       "file": "game/src/director/DifficultyDirector.ts",
       "line": 26,
       "className": "DifficultyDirector",
-      "methodName": "getCurrentTier"
+      "methodName": "getCurrentTier",
+      "doc": "Returns the current difficulty tier definition based on elapsed game time (in seconds)."
     },
     {
       "name": "DifficultyDirector.getDifficultyCoefficient",
@@ -2865,7 +2926,8 @@
       "file": "game/src/director/DifficultyDirector.ts",
       "line": 53,
       "className": "DifficultyDirector",
-      "methodName": "getDifficultyCoefficient"
+      "methodName": "getDifficultyCoefficient",
+      "doc": "Computes the global difficulty coefficient D(t, players, stage). Scales infinitely without flattening."
     },
     {
       "name": "DifficultyDirector.getEliteSpawnChance",
@@ -2873,7 +2935,8 @@
       "file": "game/src/director/DifficultyDirector.ts",
       "line": 97,
       "className": "DifficultyDirector",
-      "methodName": "getEliteSpawnChance"
+      "methodName": "getEliteSpawnChance",
+      "doc": "Probability of an enemy spawning as an Elite variant (0% up to 35% before 15m, ramping up to 70% at 35-40m+)."
     },
     {
       "name": "DifficultyDirector.getScaledChestCost",
@@ -2881,7 +2944,8 @@
       "file": "game/src/director/DifficultyDirector.ts",
       "line": 88,
       "className": "DifficultyDirector",
-      "methodName": "getScaledChestCost"
+      "methodName": "getScaledChestCost",
+      "doc": "Computes dynamic chest cost scaled by time and stage."
     },
     {
       "name": "DifficultyDirector.getTierProgress",
@@ -2889,7 +2953,8 @@
       "file": "game/src/director/DifficultyDirector.ts",
       "line": 38,
       "className": "DifficultyDirector",
-      "methodName": "getTierProgress"
+      "methodName": "getTierProgress",
+      "doc": "Returns progress fraction [0..1] towards the next difficulty tier."
     },
     {
       "name": "DifficultyTier",
@@ -2935,7 +3000,8 @@
       "file": "game/src/drops/DropManager.ts",
       "line": 90,
       "className": "DropManager",
-      "methodName": "attractAllGemsTo"
+      "methodName": "attractAllGemsTo",
+      "doc": "Attracts all gems and passive crystals across the map directly to the target position. Triggered upon opening chests or picking up rift magnets."
     },
     {
       "name": "DropManager.clear",
@@ -2951,7 +3017,8 @@
       "file": "game/src/drops/DropManager.ts",
       "line": 242,
       "className": "DropManager",
-      "methodName": "collectAllRemainingGems"
+      "methodName": "collectAllRemainingGems",
+      "doc": "Immediately sweeps and collects all remaining gems on the stage, awarding all their XP and passives. Invoked upon biome transitions so no experience is lost."
     },
     {
       "name": "DropManager.condenseXp",
@@ -2983,7 +3050,8 @@
       "file": "game/src/drops/DropManager.ts",
       "line": 224,
       "className": "DropManager",
-      "methodName": "updateVisuals"
+      "methodName": "updateVisuals",
+      "doc": "Rendering phase: Viewport/Frustum culling across all ground gems. Culled gems have mesh.visible = false and skip all bobbing/rotation calculations."
     },
     {
       "name": "DropManager.updateWithCollectors",
@@ -2991,7 +3059,8 @@
       "file": "game/src/drops/DropManager.ts",
       "line": 100,
       "className": "DropManager",
-      "methodName": "updateWithCollectors"
+      "methodName": "updateWithCollectors",
+      "doc": "Updates gem attraction and pickup with multi-player support. Dead/downed players are excluded: they cannot move, attract, or collect XP."
     },
     {
       "name": "DropManager.vacuumAll",
@@ -3011,7 +3080,8 @@
       "name": "DualRevolversWeapon",
       "kind": "const",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
-      "line": 110
+      "line": 110,
+      "doc": "Backwards compatibility alias"
     },
     {
       "name": "DualRevolversWeapon",
@@ -3157,7 +3227,8 @@
       "file": "game/src/entities/Enemy.ts",
       "line": 516,
       "className": "Enemy",
-      "methodName": "updateSimulation"
+      "methodName": "updateSimulation",
+      "doc": "Authoritative simulation update: handles movement, knockback, and AI logic. Completely decoupled from rendering and Three.js draw cycles."
     },
     {
       "name": "Enemy.updateVisuals",
@@ -3165,7 +3236,8 @@
       "file": "game/src/entities/Enemy.ts",
       "line": 683,
       "className": "Enemy",
-      "methodName": "updateVisuals"
+      "methodName": "updateVisuals",
+      "doc": "Rendering phase: Viewport/Frustum culling and visual animations. If inFrustum is false, skips all bobbing math, matrix copies, and sets mesh.visible = false."
     },
     {
       "name": "EnemyAnimState",
@@ -3215,7 +3287,8 @@
       "file": "game/src/entities/EnemyManager.ts",
       "line": 229,
       "className": "EnemyManager",
-      "methodName": "getHpMultiplier"
+      "methodName": "getHpMultiplier",
+      "doc": "Continuous progressive scaling multipliers with endless scaling and biome overstay penalties."
     },
     {
       "name": "EnemyManager.getLateGameCcResistance",
@@ -3239,7 +3312,8 @@
       "file": "game/src/entities/EnemyManager.ts",
       "line": 822,
       "className": "EnemyManager",
-      "methodName": "getNearbyEnemies"
+      "methodName": "getNearbyEnemies",
+      "doc": "Fast query for enemies within radius using the Spatial Grid."
     },
     {
       "name": "EnemyManager.getSnapshot",
@@ -3311,7 +3385,8 @@
       "file": "game/src/entities/EnemyManager.ts",
       "line": 642,
       "className": "EnemyManager",
-      "methodName": "spawnImmortalBoss"
+      "methodName": "spawnImmortalBoss",
+      "doc": "Spawns an endgame rift boss"
     },
     {
       "name": "EnemyManager.spawnImmortalBossNow",
@@ -3343,7 +3418,8 @@
       "file": "game/src/entities/EnemyManager.ts",
       "line": 586,
       "className": "EnemyManager",
-      "methodName": "spawnTeleporterBoss"
+      "methodName": "spawnTeleporterBoss",
+      "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
     },
     {
       "name": "EnemyManager.spawnTieredBoss",
@@ -3351,7 +3427,8 @@
       "file": "game/src/entities/EnemyManager.ts",
       "line": 525,
       "className": "EnemyManager",
-      "methodName": "spawnTieredBoss"
+      "methodName": "spawnTieredBoss",
+      "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
     },
     {
       "name": "EnemyManager.spawnWave",
@@ -3375,7 +3452,8 @@
       "file": "game/src/entities/EnemyManager.ts",
       "line": 1013,
       "className": "EnemyManager",
-      "methodName": "updateVisuals"
+      "methodName": "updateVisuals",
+      "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
     },
     {
       "name": "EnemySnapshot",
@@ -3417,7 +3495,8 @@
       "file": "game/src/core/Engine.ts",
       "line": 153,
       "className": "Engine",
-      "methodName": "setShadowQuality"
+      "methodName": "setShadowQuality",
+      "doc": "Configures shadow map resolution or disables shadows (0, 512, 1024, 2048)."
     },
     {
       "name": "Engine.setTimeOfDay",
@@ -3425,7 +3504,8 @@
       "file": "game/src/core/Engine.ts",
       "line": 110,
       "className": "Engine",
-      "methodName": "setTimeOfDay"
+      "methodName": "setTimeOfDay",
+      "doc": "Switches lighting between Day (Sun) and Night (Moon)."
     },
     {
       "name": "Engine.setupLighting",
@@ -3447,13 +3527,15 @@
       "name": "filterAndShuffleForReroll",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 40
+      "line": 40,
+      "doc": "Partitions and shuffles the pool for reroll: Options not in `excludedIds` are prioritized first (in random order), followed by options in `excludedIds` (in random order)."
     },
     {
       "name": "findClosestEnemies",
       "kind": "function",
       "file": "game/src/combat/WeaponBase.ts",
-      "line": 28
+      "line": 28,
+      "doc": "Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoids creating intermediate object wrappers or running O(N log N) Array.prototype.sort."
     },
     {
       "name": "findClosestSimEnemies",
@@ -3465,7 +3547,8 @@
       "name": "FireballWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 590
+      "line": 590,
+      "doc": "Fireball (Огненный Шар) Calls down flaming meteors from the sky that plummet and detonate on monsters with a fiery explosion."
     },
     {
       "name": "FireballWeapon.getNextUpgradeDescription",
@@ -3495,7 +3578,8 @@
       "name": "FireRingWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 123
+      "line": 123,
+      "doc": "Fire Ring (Огненное Кольцо) Fiery ring of blazing animated flames surrounding the hero, searing all monsters within its perimeter."
     },
     {
       "name": "FireRingWeapon.destroy",
@@ -3549,7 +3633,8 @@
       "name": "FlailWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
-      "line": 378
+      "line": 378,
+      "doc": "Steel Flail (Боевой Цеп) - Hero 3 Brigitta starting weapon Whirls a heavy barbed flail in sweeping arcs, crushing foes with staggering impact and medium-wide sweep."
     },
     {
       "name": "FlailWeapon.getNextUpgradeDescription",
@@ -3585,7 +3670,8 @@
       "name": "GameCore",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 363
+      "line": 363,
+      "doc": "Headless Deterministic GameCore Simulation Engine Manages all authoritative game state, math, collisions, spawns, and drops. Decoupled from WebGL / Three.js / DOM."
     },
     {
       "name": "GameCore.addPlayer",
@@ -3593,7 +3679,8 @@
       "file": "game/src/sim/GameCore.ts",
       "line": 427,
       "className": "GameCore",
-      "methodName": "addPlayer"
+      "methodName": "addPlayer",
+      "doc": "-------------------------------------------------------------"
     },
     {
       "name": "GameCore.collectDrop",
@@ -3625,7 +3712,8 @@
       "file": "game/src/sim/GameCore.ts",
       "line": 1218,
       "className": "GameCore",
-      "methodName": "getSnapshot"
+      "methodName": "getSnapshot",
+      "doc": "-------------------------------------------------------------"
     },
     {
       "name": "GameCore.grantTeamAltarBuff",
@@ -3697,7 +3785,8 @@
       "file": "game/src/sim/GameCore.ts",
       "line": 487,
       "className": "GameCore",
-      "methodName": "tick"
+      "methodName": "tick",
+      "doc": "-------------------------------------------------------------"
     },
     {
       "name": "GameCore.updateAltars",
@@ -3773,7 +3862,8 @@
       "name": "GameEventBus",
       "kind": "class",
       "file": "game/src/mechanics/events/GameEventBus.ts",
-      "line": 57
+      "line": 57,
+      "doc": "High-performance, decoupled event bus for gameplay systems and UI synchronization. Breaks tight coupling between game entities (Player, Enemies, World) and UI screens."
     },
     {
       "name": "GameEventBus.clear",
@@ -3989,7 +4079,8 @@
       "file": "game/src/drops/Gem.ts",
       "line": 207,
       "className": "Gem",
-      "methodName": "updateVisuals"
+      "methodName": "updateVisuals",
+      "doc": "Rendering phase: Viewport/Frustum culling and visual animations. If inFrustum is false, skips rotation and float bobbing, setting mesh.visible = false."
     },
     {
       "name": "GemCollector",
@@ -4019,19 +4110,22 @@
       "name": "getAdminSupabaseClient",
       "kind": "function",
       "file": "game/src/balance/supabaseClient.ts",
-      "line": 94
+      "line": 94,
+      "doc": "Returns read-write (service_role) Supabase client for the local admin panel. Protected: Should only be used locally."
     },
     {
       "name": "getAssetUrl",
       "kind": "function",
       "file": "game/src/utils/assetPath.ts",
-      "line": 5
+      "line": 5,
+      "doc": "Resolves a public asset path against Vite's base URL (e.g. for GitHub Pages). Ensures that both local dev ('/'), relative paths ('./'), and subpaths ('/roguelike-coop-game/') work seamlessly."
     },
     {
       "name": "getAuthSupabaseClient",
       "kind": "function",
       "file": "game/src/balance/supabaseClient.ts",
-      "line": 117
+      "line": 117,
+      "doc": "Returns Supabase client configured for user authentication with session persistence."
     },
     {
       "name": "getBiomeGradeChances",
@@ -4055,7 +4149,8 @@
       "name": "getCharacterAnimLayout",
       "kind": "function",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 74
+      "line": 74,
+      "doc": "Resolves standard row layouts for all playable characters."
     },
     {
       "name": "getEntityTexture",
@@ -4067,7 +4162,8 @@
       "name": "getExclusiveWeaponOwner",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 100
+      "line": 100,
+      "doc": "Returns the character type that owns the given weapon ID, or null if it's a generic weapon."
     },
     {
       "name": "getGradeColor",
@@ -4121,7 +4217,8 @@
       "name": "getInvokerScaling",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 172
+      "line": 172,
+      "doc": "Shared mastery curve for browser and deterministic simulation. Ghost duration stays fixed."
     },
     {
       "name": "getInvokerSpellDuration",
@@ -4145,7 +4242,8 @@
       "name": "getPassiveBuffId",
       "kind": "function",
       "file": "game/src/drops/PassiveBuffs.ts",
-      "line": 76
+      "line": 76,
+      "doc": "Deterministically pick a passive buff ID based on seed (or random if no seed provided). Optionally excludes passives that are already maxed out for the player."
     },
     {
       "name": "getPlayerSlotDisplayName",
@@ -4163,7 +4261,8 @@
       "name": "getPublicSupabaseClient",
       "kind": "function",
       "file": "game/src/balance/supabaseClient.ts",
-      "line": 65
+      "line": 65,
+      "doc": "Returns read-only (anon) Supabase client for game clients."
     },
     {
       "name": "getSupabaseAnonKey",
@@ -4187,7 +4286,8 @@
       "name": "getUniqueCharacterConfig",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 86
+      "line": 86,
+      "doc": "Returns configuration for a unique character, if registered."
     },
     {
       "name": "getWeaponColor",
@@ -4199,7 +4299,8 @@
       "name": "getWeaponEffectiveCap",
       "kind": "function",
       "file": "game/src/combat/WeaponBase.ts",
-      "line": 263
+      "line": 263,
+      "doc": "Calculates the level cap for a weapon based on tier rules: - Tier 3 (awakenedGrade === 0): cap is 12. - Tier 2 (awakenedGrade === 1): 1 weapon at Tier 2 -> cap 6 2 weapons at Tier 2 -> cap 8 3 weapons at Tier 2 -> cap 10 4 weapons at Tier 2 -> cap 12 - Tier 1 (awakenedGrade >= 2): 1 weapon at Tier 1 -> cap 6 2 weapons at Tier 1 -> cap 8 3 weapons at Tier 1 -> cap 10 4 weapons at Tier 1 -> cap 12"
     },
     {
       "name": "getWeaponIconUrl",
@@ -4223,7 +4324,8 @@
       "name": "GreatswordWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
-      "line": 290
+      "line": 290,
+      "doc": "Greatsword (Двуручный Меч) - Hero 2 Valkyrie starting weapon Massive sweeping two-handed cleave delivering high devastation over a wide radius."
     },
     {
       "name": "GreatswordWeapon.getNextUpgradeDescription",
@@ -4253,7 +4355,8 @@
       "name": "HeavyColtWeapon",
       "kind": "const",
       "file": "game/src/combat/weapons/RangedWeapons.ts",
-      "line": 119
+      "line": 119,
+      "doc": "Backwards compatibility alias"
     },
     {
       "name": "HeavyColtWeapon",
@@ -4337,7 +4440,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 484,
       "className": "HUD",
-      "methodName": "bindMainMenuListeners"
+      "methodName": "bindMainMenuListeners",
+      "doc": "--- Main Menu & Navigation Listeners ---"
     },
     {
       "name": "HUD.bindPauseListeners",
@@ -4377,7 +4481,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1370,
       "className": "HUD",
-      "methodName": "getHeroIcon"
+      "methodName": "getHeroIcon",
+      "doc": "--- Hero Info Static / Instance Helpers ---"
     },
     {
       "name": "HUD.getHeroName",
@@ -4585,7 +4690,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1164,
       "className": "HUD",
-      "methodName": "isInventoryOpen"
+      "methodName": "isInventoryOpen",
+      "doc": "--- Inventory Methods Forwarding ---"
     },
     {
       "name": "HUD.isMerchantOpen",
@@ -4593,7 +4699,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1186,
       "className": "HUD",
-      "methodName": "isMerchantOpen"
+      "methodName": "isMerchantOpen",
+      "doc": "--- Merchant & Chest Methods Forwarding ---"
     },
     {
       "name": "HUD.openBattlePassModal",
@@ -4705,7 +4812,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1247,
       "className": "HUD",
-      "methodName": "setCoopBadge"
+      "methodName": "setCoopBadge",
+      "doc": "--- In-Game Overlay & Overlays Methods Forwarding ---"
     },
     {
       "name": "HUD.setGuestConnectedMode",
@@ -4801,7 +4909,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1088,
       "className": "HUD",
-      "methodName": "showHostLobby"
+      "methodName": "showHostLobby",
+      "doc": "--- Lobby Methods Forwarding ---"
     },
     {
       "name": "HUD.showInteractionPrompt",
@@ -4833,7 +4942,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1150,
       "className": "HUD",
-      "methodName": "showLevelUp"
+      "methodName": "showLevelUp",
+      "doc": "--- Level Up Methods Forwarding ---"
     },
     {
       "name": "HUD.showMainMenu",
@@ -4841,7 +4951,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 694,
       "className": "HUD",
-      "methodName": "showMainMenu"
+      "methodName": "showMainMenu",
+      "doc": "--- Modal Navigation Methods ---"
     },
     {
       "name": "HUD.showMerchant",
@@ -4929,7 +5040,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1024,
       "className": "HUD",
-      "methodName": "toggleQuestsInMainMenu"
+      "methodName": "toggleQuestsInMainMenu",
+      "doc": "--- Quests Methods Forwarding ---"
     },
     {
       "name": "HUD.triggerAltarNotification",
@@ -5009,7 +5121,8 @@
       "file": "game/src/ui/HUD.ts",
       "line": 1066,
       "className": "HUD",
-      "methodName": "updateMainMenuBattlePass"
+      "methodName": "updateMainMenuBattlePass",
+      "doc": "--- Battle Pass Methods Forwarding ---"
     },
     {
       "name": "HUD.updateMainMenuQuests",
@@ -5071,7 +5184,8 @@
       "name": "IceSpikeWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 483
+      "line": 483,
+      "doc": "Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the earth under monsters, impaling them from below."
     },
     {
       "name": "IceSpikeWeapon.getNextUpgradeDescription",
@@ -5101,7 +5215,8 @@
       "name": "InGameHUDScreen",
       "kind": "class",
       "file": "game/src/ui/screens/InGameHUD/InGameHUDScreen.ts",
-      "line": 12
+      "line": 12,
+      "doc": "Base In-Game HUD Screen. Provides modular Screen lifecycle for the in-combat overlay."
     },
     {
       "name": "InGameHUDScreen.bindElements",
@@ -5465,7 +5580,8 @@
       "name": "INVOKER_EXCLUSIVE_WEAPONS",
       "kind": "const",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 6
+      "line": 6,
+      "doc": "All exclusive weapon IDs belonging to Invoker."
     },
     {
       "name": "INVOKER_SPELL_IDS",
@@ -5501,7 +5617,8 @@
       "name": "InvokerSpellEffects",
       "kind": "class",
       "file": "game/src/combat/InvokerSpellEffects.ts",
-      "line": 35
+      "line": 35,
+      "doc": "Purely visual, bounded effects for local casts and co-op replay."
     },
     {
       "name": "InvokerSpellEffects.animate",
@@ -5567,7 +5684,8 @@
       "name": "InvokerSpellRuntime",
       "kind": "class",
       "file": "game/src/shared/InvokerSpellRuntime.ts",
-      "line": 36
+      "line": 36,
+      "doc": "Spell rules are independent of rendering: remote visual events cannot deal damage."
     },
     {
       "name": "InvokerSpellRuntime.clear",
@@ -5595,7 +5713,8 @@
       "name": "InvokerWeapon",
       "kind": "class",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 25
+      "line": 25,
+      "doc": "Invoke powers random casts and any separately acquired spell weapons."
     },
     {
       "name": "InvokerWeapon.getNextUpgradeDescription",
@@ -5631,13 +5750,15 @@
       "name": "isBinarySnapshot",
       "kind": "function",
       "file": "game/src/net/BinarySnapshot.ts",
-      "line": 29
+      "line": 29,
+      "doc": "Checks if incoming data is a binary HostSnapshot packet"
     },
     {
       "name": "isExclusiveWeapon",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 93
+      "line": 93,
+      "doc": "Checks whether a given weapon ID is exclusive to any registered unique character."
     },
     {
       "name": "isInvokerSpellId",
@@ -5649,7 +5770,8 @@
       "name": "isUniqueCharacter",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 79
+      "line": 79,
+      "doc": "Checks if a character is defined as a unique character."
     },
     {
       "name": "ItemBalanceConfig",
@@ -5673,7 +5795,8 @@
       "name": "KatanaSlashWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
-      "line": 117
+      "line": 117,
+      "doc": "Katana Slash (Рассекающий Клинок) Swift katana slash in an arc hitting all enemies in melee range"
     },
     {
       "name": "KatanaSlashWeapon.getNextUpgradeDescription",
@@ -5703,7 +5826,8 @@
       "name": "KukriWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
-      "line": 13
+      "line": 13,
+      "doc": "Kukri Knife (Нож Кукри) Rapid throws of spinning curved Gurkha kukri blades"
     },
     {
       "name": "KukriWeapon.getNextUpgradeDescription",
@@ -5831,7 +5955,8 @@
       "name": "LightningStrikeWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 376
+      "line": 376,
+      "doc": "Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from the sky onto enemies, triggering vertical electric strikes with splash damage."
     },
     {
       "name": "LightningStrikeWeapon.getNextUpgradeDescription",
@@ -6163,7 +6288,8 @@
       "name": "MainMenuScreen",
       "kind": "class",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 22
+      "line": 22,
+      "doc": "Modular Main Menu Screen (Dark ARPG Rift UI). Coordinates singleplayer start, multiplayer lobby, quests toggle, talents shop, settings, and exit."
     },
     {
       "name": "MainMenuScreen.bindElements",
@@ -6287,7 +6413,8 @@
       "file": "game/src/ui/MapManager.ts",
       "line": 685,
       "className": "MapManager",
-      "methodName": "renderCenterSquareMap"
+      "methodName": "renderCenterSquareMap",
+      "doc": "Renders the square full-world interactive overlay map (Diablo / PoE TAB style). Displays all 10x10 chunks across the 500x500 world bounds without bezel or round border. Shrouds unexplored chunks in Fog of War (туман войны). Displays all discovered altars, teleporter, chests, bosses, teammates, and player."
     },
     {
       "name": "MapManager.renderFullMap",
@@ -6295,7 +6422,8 @@
       "file": "game/src/ui/MapManager.ts",
       "line": 708,
       "className": "MapManager",
-      "methodName": "renderFullMap"
+      "methodName": "renderFullMap",
+      "doc": "Renders the full-screen vintage parchment surveyor map (TAB)."
     },
     {
       "name": "MapManager.renderMinimap",
@@ -6303,7 +6431,8 @@
       "file": "game/src/ui/MapManager.ts",
       "line": 311,
       "className": "MapManager",
-      "methodName": "renderMinimap"
+      "methodName": "renderMinimap",
+      "doc": "Renders the real-time circular Minimap in the corner of the screen."
     },
     {
       "name": "MapManager.setChestManager",
@@ -6365,13 +6494,15 @@
       "name": "matchesSearch",
       "kind": "function",
       "file": "admin/src/ui/filter.ts",
-      "line": 9
+      "line": 9,
+      "doc": "Smart search filter for balance entities. Supports fuzzy matching across: - Entity Names & IDs (Russian and English) - Descriptions, Notes, Roles - Exact and partial numeric values (e.g. '2.5', '100', '0.4') - Property keys (e.g. 'cooldown', 'damage', 'hp', 'radius')"
     },
     {
       "name": "MeleeAttackEffects",
       "kind": "class",
       "file": "game/src/combat/MeleeAttackEffects.ts",
-      "line": 27
+      "line": 27,
+      "doc": "Bounded, reusable effects for both local attacks and relayed co-op attacks."
     },
     {
       "name": "MeleeAttackEffects.animate",
@@ -6457,7 +6588,8 @@
       "name": "MeleeAttackInfo",
       "kind": "interface",
       "file": "game/src/shared/types/combat.ts",
-      "line": 4
+      "line": 4,
+      "doc": "Cosmetic attack data; never participates in damage or collision checks."
     },
     {
       "name": "MeleeWeaponId",
@@ -6919,7 +7051,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 148,
       "className": "NetworkManager",
-      "methodName": "createRoom"
+      "methodName": "createRoom",
+      "doc": "Host creates a new multiplayer room for up to 5 players."
     },
     {
       "name": "NetworkManager.generateRoomCode",
@@ -6927,7 +7060,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 138,
       "className": "NetworkManager",
-      "methodName": "generateRoomCode"
+      "methodName": "generateRoomCode",
+      "doc": "Generates a 6-character memorable Western room code like \"WEST-48\" or \"COLT-72\""
     },
     {
       "name": "NetworkManager.getDebugStats",
@@ -6951,7 +7085,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 431,
       "className": "NetworkManager",
-      "methodName": "handleIncomingGuestConnection"
+      "methodName": "handleIncomingGuestConnection",
+      "doc": "Host handles a new guest connecting."
     },
     {
       "name": "NetworkManager.handleRawMessage",
@@ -6967,7 +7102,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 296,
       "className": "NetworkManager",
-      "methodName": "joinRoom"
+      "methodName": "joinRoom",
+      "doc": "Guest joins an existing room by code."
     },
     {
       "name": "NetworkManager.notifyAltarCaptured",
@@ -7023,7 +7159,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 896,
       "className": "NetworkManager",
-      "methodName": "send"
+      "methodName": "send",
+      "doc": "Broadcasts a network message across active channels (WebRTC and/or BroadcastChannel). Host snapshots are automatically packed into compact binary ArrayBuffers."
     },
     {
       "name": "NetworkManager.sendToPeer",
@@ -7031,7 +7168,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 957,
       "className": "NetworkManager",
-      "methodName": "sendToPeer"
+      "methodName": "sendToPeer",
+      "doc": "Sends a targeted message to a specific peer or host."
     },
     {
       "name": "NetworkManager.setHero",
@@ -7047,7 +7185,8 @@
       "file": "game/src/net/NetworkManager.ts",
       "line": 285,
       "className": "NetworkManager",
-      "methodName": "setPassword"
+      "methodName": "setPassword",
+      "doc": "Sets or clears room password on an active host."
     },
     {
       "name": "NetworkManager.setReady",
@@ -7099,7 +7238,8 @@
       "file": "game/src/world/ObstacleManager.ts",
       "line": 33,
       "className": "ObstacleManager",
-      "methodName": "addObstacle"
+      "methodName": "addObstacle",
+      "doc": "Registers an obstacle under a chunk key (spatially hashed by obstacle world position)."
     },
     {
       "name": "ObstacleManager.clear",
@@ -7107,7 +7247,8 @@
       "file": "game/src/world/ObstacleManager.ts",
       "line": 64,
       "className": "ObstacleManager",
-      "methodName": "clear"
+      "methodName": "clear",
+      "doc": "Clears all obstacles (for game restart)."
     },
     {
       "name": "ObstacleManager.getObstaclesForChunkKey",
@@ -7115,7 +7256,8 @@
       "file": "game/src/world/ObstacleManager.ts",
       "line": 56,
       "className": "ObstacleManager",
-      "methodName": "getObstaclesForChunkKey"
+      "methodName": "getObstaclesForChunkKey",
+      "doc": "Returns list of obstacles registered for a chunk key."
     },
     {
       "name": "ObstacleManager.parseKey",
@@ -7131,7 +7273,8 @@
       "file": "game/src/world/ObstacleManager.ts",
       "line": 48,
       "className": "ObstacleManager",
-      "methodName": "removeChunkObstacles"
+      "methodName": "removeChunkObstacles",
+      "doc": "Removes all obstacles belonging to an unloaded chunk."
     },
     {
       "name": "ObstacleManager.toHash",
@@ -7163,7 +7306,8 @@
       "name": "packHostSnapshot",
       "kind": "function",
       "file": "game/src/net/BinarySnapshot.ts",
-      "line": 47
+      "line": 47,
+      "doc": "Packs a HostSnapshotMessage into an ultra-compact binary ArrayBuffer. Reduces bandwidth from ~45 KB (JSON) down to ~2-3 KB!"
     },
     {
       "name": "PASSIVE_BUFF_IDS",
@@ -7389,7 +7533,8 @@
       "file": "game/src/entities/Player.ts",
       "line": 1170,
       "className": "Player",
-      "methodName": "gainXp"
+      "methodName": "gainXp",
+      "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
     },
     {
       "name": "Player.getAwakenedCap",
@@ -7421,7 +7566,8 @@
       "file": "game/src/entities/Player.ts",
       "line": 634,
       "className": "Player",
-      "methodName": "getDamageMultiplier"
+      "methodName": "getDamageMultiplier",
+      "doc": "Calculates effective damage multiplier for a given weapon. Per rule: initial hero damage bonus applies ONLY to their starting weapon! Other weapons receive 1.0  general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst)."
     },
     {
       "name": "Player.getItemStacks",
@@ -7437,7 +7583,8 @@
       "file": "game/src/entities/Player.ts",
       "line": 687,
       "className": "Player",
-      "methodName": "getNaniteDamageReduction"
+      "methodName": "getNaniteDamageReduction",
+      "doc": "Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level 1 gives 5%, diminishing returns up to 60% at level 20, capped at 60%."
     },
     {
       "name": "Player.getWeaponsNetState",
@@ -7643,7 +7790,8 @@
       "name": "PlayerAnimation",
       "kind": "class",
       "file": "game/src/mechanics/player/PlayerAnimation.ts",
-      "line": 21
+      "line": 21,
+      "doc": "Handles sprite direction, sheet animations (IDLE, WALK, ATTACK), texture loading, and damage/status color tints for players. Uses unified CharacterAnimator for all character types."
     },
     {
       "name": "PlayerAnimation.isAnimatedCharacter",
@@ -7727,7 +7875,8 @@
       "name": "PlayerMotor",
       "kind": "class",
       "file": "game/src/mechanics/player/PlayerMotor.ts",
-      "line": 16
+      "line": 16,
+      "doc": "Handles physics, movement calculations, terrain interactions, tactical dash mechanics, and map boundary constraints for the Player."
     },
     {
       "name": "PlayerMotor.reset",
@@ -7765,7 +7914,8 @@
       "name": "PlayerStats",
       "kind": "class",
       "file": "game/src/mechanics/player/PlayerStats.ts",
-      "line": 31
+      "line": 31,
+      "doc": "Encapsulates RPG stat computation, passive bonus scaling, dimishing returns, Rift item multipliers, and XP level progression."
     },
     {
       "name": "PlayerStats",
@@ -8149,7 +8299,8 @@
       "file": "game/src/core/ProgressionManager.ts",
       "line": 584,
       "className": "ProgressionManager",
-      "methodName": "recordMeleeOrSpellKill"
+      "methodName": "recordMeleeOrSpellKill",
+      "doc": "--- Chapter Quests Tracking & Claiming ---"
     },
     {
       "name": "ProgressionManager.recordMerchantPurchaseInRun",
@@ -8511,7 +8662,8 @@
       "name": "ReaperScytheWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 23
+      "line": 23,
+      "doc": "Reaper's Scythe (Коса Жнеца) Rotating scythes circle the hero, cutting through monsters to deal base damage and apply stacking bleed DoT."
     },
     {
       "name": "ReaperScytheWeapon.getBleedDps",
@@ -8541,7 +8693,8 @@
       "name": "registerUniqueCharacter",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 72
+      "line": 72,
+      "doc": "Register a new unique character into the system (for future character additions/mods)."
     },
     {
       "name": "RemotePlayer",
@@ -8631,7 +8784,8 @@
       "name": "renderCenterSquareMap",
       "kind": "function",
       "file": "game/src/ui/MapCenterSquareRenderer.ts",
-      "line": 34
+      "line": 34,
+      "doc": "Renders the square full-world interactive overlay map (Diablo / PoE TAB style). Displays all 10x10 chunks across the 500x500 world bounds without bezel or round border. Shrouds unexplored chunks in Fog of War (туман войны). Displays all discovered altars, teleporter, chests, bosses, teammates, and player."
     },
     {
       "name": "renderDashboard",
@@ -8745,7 +8899,8 @@
       "name": "RiftTeleporter",
       "kind": "class",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 32
+      "line": 32,
+      "doc": "2.5D Dimensional Rift (Разлом) for biome transitions. - Closed state: Dark ominous cosmic tear in reality, pulsating with dark eldritch veins. - On touch or interaction [E]: The boss emerges from the rift and the portal opens. - Open state: Radiant glowing interdimensional gateway with swirling celestial vortex. - Sized 8.0 units with contact shadow and directional shadow casting. - Warp transition to next biome triggers ONLY via interaction prompt [E]."
     },
     {
       "name": "RiftTeleporter.activate",
@@ -8777,7 +8932,8 @@
       "file": "game/src/world/RiftTeleporter.ts",
       "line": 239,
       "className": "RiftTeleporter",
-      "methodName": "disableForFinalStage"
+      "methodName": "disableForFinalStage",
+      "doc": "Disables the teleporter for the final stage (Rift Core) where no transitions occur."
     },
     {
       "name": "RiftTeleporter.getInteraction",
@@ -8801,7 +8957,8 @@
       "file": "game/src/world/RiftTeleporter.ts",
       "line": 212,
       "className": "RiftTeleporter",
-      "methodName": "resetForStage"
+      "methodName": "resetForStage",
+      "doc": "Resets teleporter for a new stage at new random location."
     },
     {
       "name": "RiftTeleporter.stabilizeVoluntaryPortal",
@@ -8809,7 +8966,8 @@
       "file": "game/src/world/RiftTeleporter.ts",
       "line": 251,
       "className": "RiftTeleporter",
-      "methodName": "stabilizeVoluntaryPortal"
+      "methodName": "stabilizeVoluntaryPortal",
+      "doc": "Automatically stabilizes the teleporter when 5 minutes on the biome have elapsed."
     },
     {
       "name": "RiftTeleporter.update",
@@ -8829,19 +8987,22 @@
       "name": "rollChestDropPair",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 311
+      "line": 311,
+      "doc": "Rolls two distinct item drops from a chest (no duplicates allowed). Filters out items whose parameters are already maxed out for the player."
     },
     {
       "name": "rollRiftItem",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 348
+      "line": 348,
+      "doc": "Legacy weights roller kept for backwards compatibility."
     },
     {
       "name": "rollRiftItemByStage",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 288
+      "line": 288,
+      "doc": "Rolls an item drop based on stage/biome probabilities. Filters out items whose parameters are already maxed out for the player."
     },
     {
       "name": "rollWeaponGrade",
@@ -8963,7 +9124,8 @@
       "file": "game/src/world/RoughTerrainManager.ts",
       "line": 291,
       "className": "RoughTerrainManager",
-      "methodName": "clear"
+      "methodName": "clear",
+      "doc": "Cleans up all zones and materials."
     },
     {
       "name": "RoughTerrainManager.getSlowFactor",
@@ -8971,7 +9133,8 @@
       "file": "game/src/world/RoughTerrainManager.ts",
       "line": 258,
       "className": "RoughTerrainManager",
-      "methodName": "getSlowFactor"
+      "methodName": "getSlowFactor",
+      "doc": "Fast O(1) query returning speed multiplier (0.65 if in rough terrain/dune, 1.0 otherwise)."
     },
     {
       "name": "RoughTerrainManager.getTexture",
@@ -8987,7 +9150,8 @@
       "file": "game/src/world/RoughTerrainManager.ts",
       "line": 284,
       "className": "RoughTerrainManager",
-      "methodName": "isSlowed"
+      "methodName": "isSlowed",
+      "doc": "Returns true if given world coordinate is inside any dune / rough zone."
     },
     {
       "name": "RoughTerrainManager.toHash",
@@ -9007,7 +9171,8 @@
       "name": "SafeDOM",
       "kind": "class",
       "file": "game/src/ui/core/SafeDOM.ts",
-      "line": 5
+      "line": 5,
+      "doc": "SafeDOM utility for resilient UI interaction. Prevents application-wide crashes when elements are renamed, removed, or missing in HTML templates."
     },
     {
       "name": "SafeDOM.setText",
@@ -9029,7 +9194,8 @@
       "name": "Screen",
       "kind": "class",
       "file": "game/src/ui/core/Screen.ts",
-      "line": 5
+      "line": 5,
+      "doc": "Base abstract class for modular UI screens. Implements standard lifecycle: mount, show, hide, destroy."
     },
     {
       "name": "Screen.destroy",
@@ -9099,7 +9265,8 @@
       "name": "ScreenManager",
       "kind": "class",
       "file": "game/src/ui/core/ScreenManager.ts",
-      "line": 6
+      "line": 6,
+      "doc": "ScreenManager coordinates navigation, modal transitions, and UI screen state."
     },
     {
       "name": "ScreenManager.back",
@@ -9169,7 +9336,8 @@
       "name": "SeededRNG",
       "kind": "class",
       "file": "game/src/core/SeededRNG.ts",
-      "line": 5
+      "line": 5,
+      "doc": "Deterministic PRNG using the Mulberry32 algorithm with string hashing support. Guarantees 100% reproducible world generation across all clients and game sessions."
     },
     {
       "name": "SeededRNG.getState",
@@ -9185,7 +9353,8 @@
       "file": "game/src/core/SeededRNG.ts",
       "line": 16,
       "className": "SeededRNG",
-      "methodName": "hashString"
+      "methodName": "hashString",
+      "doc": "Fast, reliable FNV-1a 32-bit hash function for string seeds."
     },
     {
       "name": "SeededRNG.next",
@@ -9193,7 +9362,8 @@
       "file": "game/src/core/SeededRNG.ts",
       "line": 28,
       "className": "SeededRNG",
-      "methodName": "next"
+      "methodName": "next",
+      "doc": "Generates a deterministic float in range [0, 1)"
     },
     {
       "name": "SeededRNG.range",
@@ -9201,7 +9371,8 @@
       "file": "game/src/core/SeededRNG.ts",
       "line": 38,
       "className": "SeededRNG",
-      "methodName": "range"
+      "methodName": "range",
+      "doc": "Generates a deterministic float in range [min, max)"
     },
     {
       "name": "SeededRNG.rangeInt",
@@ -9209,13 +9380,15 @@
       "file": "game/src/core/SeededRNG.ts",
       "line": 45,
       "className": "SeededRNG",
-      "methodName": "rangeInt"
+      "methodName": "rangeInt",
+      "doc": "Generates a deterministic integer in range [min, max] inclusive"
     },
     {
       "name": "selectWeaponUpgradeOptions",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 5
+      "line": 5,
+      "doc": "The pool is already shuffled and filtered for ownership, prerequisites and weapon slots."
     },
     {
       "name": "SessionDirector",
@@ -9229,7 +9402,8 @@
       "file": "game/src/core/SessionDirector.ts",
       "line": 679,
       "className": "SessionDirector",
-      "methodName": "activateRift"
+      "methodName": "activateRift",
+      "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
     },
     {
       "name": "SessionDirector.applyStageTransition",
@@ -9347,7 +9521,8 @@
       "name": "SettingsScreen",
       "kind": "class",
       "file": "game/src/ui/screens/Settings/SettingsScreen.ts",
-      "line": 29
+      "line": 29,
+      "doc": "Modular Settings Screen. Manages Graphics, Audio, HUD preferences, Controls, and Stored game data."
     },
     {
       "name": "SettingsScreen.activateSettingsTab",
@@ -9419,7 +9594,8 @@
       "name": "ShopScreen",
       "kind": "class",
       "file": "game/src/ui/screens/Shop/ShopScreen.ts",
-      "line": 20
+      "line": 20,
+      "doc": "Modular Shop / Meta Progression Screen. Displays 3 branches of 10 persistent upgrades (up to 5 ranks each) for Rift Crystals, shared across all characters."
     },
     {
       "name": "ShopScreen.bindElements",
@@ -9551,7 +9727,8 @@
       "name": "SimAssaultRifleWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimRangedWeapons.ts",
-      "line": 197
+      "line": 197,
+      "doc": "Assault Rifle (Штурмовая Винтовка)"
     },
     {
       "name": "SimAssaultRifleWeapon.getNextUpgradeDescription",
@@ -9573,7 +9750,8 @@
       "name": "SimAstralStaffWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMagicWeapons.ts",
-      "line": 13
+      "line": 13,
+      "doc": "Astral Staff (Звездный Посох) - Sorceress"
     },
     {
       "name": "SimAstralStaffWeapon.getNextUpgradeDescription",
@@ -9595,7 +9773,8 @@
       "name": "SimBowWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimRangedWeapons.ts",
-      "line": 13
+      "line": 13,
+      "doc": "Hunting Bow (Охотничий Лук)"
     },
     {
       "name": "SimBowWeapon.getNextUpgradeDescription",
@@ -9617,7 +9796,8 @@
       "name": "SimChakramWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMagicWeapons.ts",
-      "line": 147
+      "line": 147,
+      "doc": "Boomerang Chakram simulation weapon"
     },
     {
       "name": "SimChakramWeapon.getNextUpgradeDescription",
@@ -9717,7 +9897,8 @@
       "name": "SimFireballWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMagicWeapons.ts",
-      "line": 407
+      "line": 407,
+      "doc": "Fireball (Огненный Шар) simulation weapon"
     },
     {
       "name": "SimFireballWeapon.getNextUpgradeDescription",
@@ -9739,7 +9920,8 @@
       "name": "SimFireRingWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMagicWeapons.ts",
-      "line": 101
+      "line": 101,
+      "doc": "Fire Ring (Огненное Кольцо)"
     },
     {
       "name": "SimFireRingWeapon.getNextUpgradeDescription",
@@ -9761,7 +9943,8 @@
       "name": "SimFlailWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
-      "line": 130
+      "line": 130,
+      "doc": "Steel Flail (Боевой Цеп) - Brigitta"
     },
     {
       "name": "SimFlailWeapon.getNextUpgradeDescription",
@@ -9783,7 +9966,8 @@
       "name": "SimGreatswordWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
-      "line": 71
+      "line": 71,
+      "doc": "Greatsword (Двуручный Меч) - Valkyrie"
     },
     {
       "name": "SimGreatswordWeapon.getNextUpgradeDescription",
@@ -9817,7 +10001,8 @@
       "name": "SimIceSpikeWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMagicWeapons.ts",
-      "line": 329
+      "line": 329,
+      "doc": "Ice Spike (Ледяной Шип) simulation weapon"
     },
     {
       "name": "SimIceSpikeWeapon.getNextUpgradeDescription",
@@ -9869,7 +10054,8 @@
       "name": "SimKatanaSlashWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
-      "line": 259
+      "line": 259,
+      "doc": "Katana Slash (Рассекающий Клинок)"
     },
     {
       "name": "SimKatanaSlashWeapon.getNextUpgradeDescription",
@@ -9891,7 +10077,8 @@
       "name": "SimKukriWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimRangedWeapons.ts",
-      "line": 107
+      "line": 107,
+      "doc": "Kukri Knife (Нож Кукри)"
     },
     {
       "name": "SimKukriWeapon.getNextUpgradeDescription",
@@ -9913,7 +10100,8 @@
       "name": "SimLightningStrikeWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMagicWeapons.ts",
-      "line": 251
+      "line": 251,
+      "doc": "Lightning Strike (Удар Молнии) simulation weapon"
     },
     {
       "name": "SimLightningStrikeWeapon.getNextUpgradeDescription",
@@ -10005,7 +10193,8 @@
       "name": "SimReaperScytheWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
-      "line": 189
+      "line": 189,
+      "doc": "Reaper's Scythe (Коса Жнеца)"
     },
     {
       "name": "SimReaperScytheWeapon.getNextUpgradeDescription",
@@ -10027,7 +10216,8 @@
       "name": "SimRNG",
       "kind": "class",
       "file": "game/src/sim/SimRNG.ts",
-      "line": 5
+      "line": 5,
+      "doc": "Deterministic PRNG using Mulberry32 algorithm. Guarantees exact reproducible simulation results across Node.js and browser environments."
     },
     {
       "name": "SimRNG.getState",
@@ -10043,7 +10233,8 @@
       "file": "game/src/sim/SimRNG.ts",
       "line": 16,
       "className": "SimRNG",
-      "methodName": "nextFloat"
+      "methodName": "nextFloat",
+      "doc": "Generates a deterministic float in range [0, 1)"
     },
     {
       "name": "SimRNG.nextInt",
@@ -10051,7 +10242,8 @@
       "file": "game/src/sim/SimRNG.ts",
       "line": 26,
       "className": "SimRNG",
-      "methodName": "nextInt"
+      "methodName": "nextInt",
+      "doc": "Generates a deterministic integer in range [min, max] inclusive"
     },
     {
       "name": "SimRNG.nextRange",
@@ -10059,7 +10251,8 @@
       "file": "game/src/sim/SimRNG.ts",
       "line": 34,
       "className": "SimRNG",
-      "methodName": "nextRange"
+      "methodName": "nextRange",
+      "doc": "Generates a deterministic float in range [min, max)"
     },
     {
       "name": "SimRNG.setState",
@@ -10145,7 +10338,8 @@
       "name": "SimVec3",
       "kind": "class",
       "file": "game/src/sim/math/SimVector.ts",
-      "line": 5
+      "line": 5,
+      "doc": "Lightweight, zero-dependency 3D vector for headless deterministic simulation. Safe for execution in Node.js, Bun, Web Workers, or browser threads."
     },
     {
       "name": "SimVec3.clone",
@@ -10219,7 +10413,8 @@
       "name": "SimWhirlwindSlashWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimMeleeWeapons.ts",
-      "line": 12
+      "line": 12,
+      "doc": "Crimson Whirlwind (Багровый Вихрь) - Ronin"
     },
     {
       "name": "SimWhirlwindSlashWeapon.getNextUpgradeDescription",
@@ -10253,7 +10448,8 @@
       "name": "SoundManager",
       "kind": "class",
       "file": "game/src/core/SoundManager.ts",
-      "line": 5
+      "line": 5,
+      "doc": "SoundManager handles lightweight procedural audio synthesis via Web Audio API. No external audio files needed; sounds play instantly with zero latency."
     },
     {
       "name": "SoundManager.getMasterGain",
@@ -10293,7 +10489,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 376,
       "className": "SoundManager",
-      "methodName": "playAltarCaptured"
+      "methodName": "playAltarCaptured",
+      "doc": "Grand triumphant chord on altar capture completion"
     },
     {
       "name": "SoundManager.playAltarCapturing",
@@ -10309,7 +10506,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 124,
       "className": "SoundManager",
-      "methodName": "playBowShoot"
+      "methodName": "playBowShoot",
+      "doc": "Sound when bow releases an arrow (bowstring twang + swift aerodynamic whoosh)"
     },
     {
       "name": "SoundManager.playBuffExpire",
@@ -10317,7 +10515,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 404,
       "className": "SoundManager",
-      "methodName": "playBuffExpire"
+      "methodName": "playBuffExpire",
+      "doc": "Soft chime when buff expires"
     },
     {
       "name": "SoundManager.playButtonClick",
@@ -10325,7 +10524,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 819,
       "className": "SoundManager",
-      "methodName": "playButtonClick"
+      "methodName": "playButtonClick",
+      "doc": "Sound when clicking UI buttons/cards"
     },
     {
       "name": "SoundManager.playChainLightning",
@@ -10333,7 +10533,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 629,
       "className": "SoundManager",
-      "methodName": "playChainLightning"
+      "methodName": "playChainLightning",
+      "doc": "Sound when chain lightning procs"
     },
     {
       "name": "SoundManager.playChakram",
@@ -10341,7 +10542,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 214,
       "className": "SoundManager",
-      "methodName": "playChakram"
+      "methodName": "playChakram",
+      "doc": "Whistling spinning sound for returning chakram"
     },
     {
       "name": "SoundManager.playChestOpen",
@@ -10349,7 +10551,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 529,
       "className": "SoundManager",
-      "methodName": "playChestOpen"
+      "methodName": "playChestOpen",
+      "doc": "Sound when opening a loot chest/capsule"
     },
     {
       "name": "SoundManager.playCrit",
@@ -10357,7 +10560,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 776,
       "className": "SoundManager",
-      "methodName": "playCrit"
+      "methodName": "playCrit",
+      "doc": "Sound when critical strike hits"
     },
     {
       "name": "SoundManager.playDash",
@@ -10365,7 +10569,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 608,
       "className": "SoundManager",
-      "methodName": "playDash"
+      "methodName": "playDash",
+      "doc": "Sound when player dashes"
     },
     {
       "name": "SoundManager.playFireballImpact",
@@ -10373,7 +10578,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 741,
       "className": "SoundManager",
-      "methodName": "playFireballImpact"
+      "methodName": "playFireballImpact",
+      "doc": "Sound when falling fireball impacts ground and explodes"
     },
     {
       "name": "SoundManager.playFireballLaunch",
@@ -10381,7 +10587,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 720,
       "className": "SoundManager",
-      "methodName": "playFireballLaunch"
+      "methodName": "playFireballLaunch",
+      "doc": "Sound when fireball descends from the sky (whistling fiery fall whoosh)"
     },
     {
       "name": "SoundManager.playGameOver",
@@ -10389,7 +10596,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 429,
       "className": "SoundManager",
-      "methodName": "playGameOver"
+      "methodName": "playGameOver",
+      "doc": "Game Over sound"
     },
     {
       "name": "SoundManager.playGem",
@@ -10397,7 +10605,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 265,
       "className": "SoundManager",
-      "methodName": "playGem"
+      "methodName": "playGem",
+      "doc": "Crystal / XP Gem pickup chime"
     },
     {
       "name": "SoundManager.playHit",
@@ -10405,7 +10614,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 240,
       "className": "SoundManager",
-      "methodName": "playHit"
+      "methodName": "playHit",
+      "doc": "Sound when enemy gets hit"
     },
     {
       "name": "SoundManager.playIceSpike",
@@ -10413,7 +10623,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 685,
       "className": "SoundManager",
-      "methodName": "playIceSpike"
+      "methodName": "playIceSpike",
+      "doc": "Sound when ice spike bursts from beneath the ground (sharp frost crack + crystalline chime)"
     },
     {
       "name": "SoundManager.playItemPickup",
@@ -10421,7 +10632,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 797,
       "className": "SoundManager",
-      "methodName": "playItemPickup"
+      "methodName": "playItemPickup",
+      "doc": "Sound when collecting an item"
     },
     {
       "name": "SoundManager.playLevelUp",
@@ -10429,7 +10641,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 318,
       "className": "SoundManager",
-      "methodName": "playLevelUp"
+      "methodName": "playLevelUp",
+      "doc": "Level up fanfare"
     },
     {
       "name": "SoundManager.playLightning",
@@ -10437,7 +10650,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 650,
       "className": "SoundManager",
-      "methodName": "playLightning"
+      "methodName": "playLightning",
+      "doc": "Sound when lightning strikes from above (electric discharge snap + thunder boom)"
     },
     {
       "name": "SoundManager.playMachineGunShoot",
@@ -10445,7 +10659,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 83,
       "className": "SoundManager",
-      "methodName": "playMachineGunShoot"
+      "methodName": "playMachineGunShoot",
+      "doc": "Sound when automatic rifle / machine gun fires a round"
     },
     {
       "name": "SoundManager.playMagic",
@@ -10453,7 +10668,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 188,
       "className": "SoundManager",
-      "methodName": "playMagic"
+      "methodName": "playMagic",
+      "doc": "Sound when magical spell or staff projectile casts"
     },
     {
       "name": "SoundManager.playPlayerHurt",
@@ -10461,7 +10677,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 293,
       "className": "SoundManager",
-      "methodName": "playPlayerHurt"
+      "methodName": "playPlayerHurt",
+      "doc": "Player damaged sound"
     },
     {
       "name": "SoundManager.playReaperSpawn",
@@ -10469,7 +10686,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 504,
       "className": "SoundManager",
-      "methodName": "playReaperSpawn"
+      "methodName": "playReaperSpawn",
+      "doc": "Ominous death drone when Immortal Reaper spawns at 30 minutes"
     },
     {
       "name": "SoundManager.playReroll",
@@ -10477,7 +10695,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 839,
       "className": "SoundManager",
-      "methodName": "playReroll"
+      "methodName": "playReroll",
+      "doc": "Sound when rerolling weapon selection"
     },
     {
       "name": "SoundManager.playShoot",
@@ -10485,7 +10704,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 58,
       "className": "SoundManager",
-      "methodName": "playShoot"
+      "methodName": "playShoot",
+      "doc": "Sound when projectile shoots"
     },
     {
       "name": "SoundManager.playSlash",
@@ -10493,7 +10713,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 163,
       "className": "SoundManager",
-      "methodName": "playSlash"
+      "methodName": "playSlash",
+      "doc": "Sound when sword slashes"
     },
     {
       "name": "SoundManager.playTeleporterActivate",
@@ -10501,7 +10722,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 565,
       "className": "SoundManager",
-      "methodName": "playTeleporterActivate"
+      "methodName": "playTeleporterActivate",
+      "doc": "Sound when activating the teleporter event"
     },
     {
       "name": "SoundManager.playTeleporterComplete",
@@ -10509,7 +10731,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 586,
       "className": "SoundManager",
-      "methodName": "playTeleporterComplete"
+      "methodName": "playTeleporterComplete",
+      "doc": "Sound when teleporter charge reaches 100% and rift stabilizes"
     },
     {
       "name": "SoundManager.playTimeFreeze",
@@ -10517,7 +10740,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 860,
       "className": "SoundManager",
-      "methodName": "playTimeFreeze"
+      "methodName": "playTimeFreeze",
+      "doc": "Sound when Time Crystal activates (temporal freeze + deep shockwave)"
     },
     {
       "name": "SoundManager.playVictory",
@@ -10525,7 +10749,8 @@
       "file": "game/src/core/SoundManager.ts",
       "line": 454,
       "className": "SoundManager",
-      "methodName": "playVictory"
+      "methodName": "playVictory",
+      "doc": "Triumphant victory fanfare (30 minutes survived!)"
     },
     {
       "name": "SoundManager.setMuted",
@@ -10547,7 +10772,8 @@
       "name": "SpatialGrid",
       "kind": "class",
       "file": "game/src/entities/SpatialGrid.ts",
-      "line": 10
+      "line": 10,
+      "doc": "High-performance 2D Spatial Hash Grid for entity collisions, separation, and projectile hit-testing. Replaces O(N^2) double-loops with O(N) localized neighborhood searches, eliminating CPU stutter when monster counts scale up to hundreds of entities."
     },
     {
       "name": "SpatialGrid.clear",
@@ -10587,7 +10813,8 @@
       "file": "game/src/entities/SpatialGrid.ts",
       "line": 145,
       "className": "SpatialGrid",
-      "methodName": "queryRadius"
+      "methodName": "queryRadius",
+      "doc": "Fast query for nearby enemies within a circular radius. Reuses an output array to eliminate GC pressure."
     },
     {
       "name": "SpatialGrid.resolveSeparation",
@@ -10595,7 +10822,8 @@
       "file": "game/src/entities/SpatialGrid.ts",
       "line": 69,
       "className": "SpatialGrid",
-      "methodName": "resolveSeparation"
+      "methodName": "resolveSeparation",
+      "doc": "O(N) soft separation using cell neighborhood pairs. Every potentially overlapping pair is evaluated exactly once without allocations."
     },
     {
       "name": "SpatialGrid.separateCellPair",
@@ -10643,7 +10871,8 @@
       "name": "SpellControlState",
       "kind": "class",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 223
+      "line": 223,
+      "doc": "Countdown state shared by the browser and dedicated simulation."
     },
     {
       "name": "SpellControlState.update",
@@ -10675,7 +10904,8 @@
       "name": "SulfurSmokeManager",
       "kind": "class",
       "file": "game/src/vfx/SulfurSmokeVfx.ts",
-      "line": 131
+      "line": 131,
+      "doc": "Global manager for Brimstone / Sulfur Smoke teleport and disappearance effects."
     },
     {
       "name": "SulfurSmokeManager.clear",
@@ -10703,7 +10933,8 @@
       "name": "SulfurSmokeVfxInstance",
       "kind": "class",
       "file": "game/src/vfx/SulfurSmokeVfx.ts",
-      "line": 25
+      "line": 25,
+      "doc": "Individual instance of the Brimstone Smoke cloud VFX. Plays sequential 6-frame animation with initial bright light burst followed by expanding and dissipating violet-black / dark blue sulfur smoke."
     },
     {
       "name": "SulfurSmokeVfxInstance.dispose",
@@ -10837,7 +11068,8 @@
       "name": "TerrainElevation",
       "kind": "class",
       "file": "game/src/world/TerrainElevation.ts",
-      "line": 8
+      "line": 8,
+      "doc": "Procedural Terrain Elevation Generator. Provides deterministic, continuous, multi-octave height and analytical normals for the 500x500 meter game world."
     },
     {
       "name": "TerrainElevation.getElevation",
@@ -10845,7 +11077,8 @@
       "file": "game/src/world/TerrainElevation.ts",
       "line": 21,
       "className": "TerrainElevation",
-      "methodName": "getElevation"
+      "methodName": "getElevation",
+      "doc": "Returns flat ground elevation Y = 0 to preserve 2D/2.5D pixel-art plane consistency."
     },
     {
       "name": "TerrainElevation.getNormal",
@@ -10853,7 +11086,8 @@
       "file": "game/src/world/TerrainElevation.ts",
       "line": 28,
       "className": "TerrainElevation",
-      "methodName": "getNormal"
+      "methodName": "getNormal",
+      "doc": "Returns flat ground normal (0, 1, 0)."
     },
     {
       "name": "TerrainElevation.setSeed",
@@ -10861,13 +11095,15 @@
       "file": "game/src/world/TerrainElevation.ts",
       "line": 14,
       "className": "TerrainElevation",
-      "methodName": "setSeed"
+      "methodName": "setSeed",
+      "doc": "Reconfigures harmonic parameters based on seed for varied topography per stage."
     },
     {
       "name": "TerrainMaterials",
       "kind": "class",
       "file": "game/src/world/TerrainProps.ts",
-      "line": 21
+      "line": 21,
+      "doc": "Reusable shared materials for high performance and low draw overhead"
     },
     {
       "name": "TerrainMaterials.init",
@@ -10889,7 +11125,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 414,
       "className": "TerrainProps",
-      "methodName": "createBoulder"
+      "methodName": "createBoulder",
+      "doc": "Builds an earthy sandstone boulder formation."
     },
     {
       "name": "TerrainProps.createCactus",
@@ -10897,7 +11134,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 221,
       "className": "TerrainProps",
-      "methodName": "createCactus"
+      "methodName": "createCactus",
+      "doc": "Builds an authentic 3D Saguaro Cactus with fluting and 0-2 curved arms."
     },
     {
       "name": "TerrainProps.createOasis",
@@ -10905,7 +11143,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 680,
       "className": "TerrainProps",
-      "methodName": "createOasis"
+      "methodName": "createOasis",
+      "doc": "Builds an expansive desert oasis landmark with turquoise pool, wet sand shoreline, perimeter palm trees, smooth river stones and reeds. Player and enemies cannot enter the water (solid collision registered via ObstacleManager)."
     },
     {
       "name": "TerrainProps.createPalmTree",
@@ -10913,7 +11152,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 602,
       "className": "TerrainProps",
-      "methodName": "createPalmTree"
+      "methodName": "createPalmTree",
+      "doc": "Builds an authentic desert palm tree with curved segmented trunk, radiating fronds and coconuts."
     },
     {
       "name": "TerrainProps.createScrub",
@@ -10921,7 +11161,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 454,
       "className": "TerrainProps",
-      "methodName": "createScrub"
+      "methodName": "createScrub",
+      "doc": "Builds dry desert grass / sagebrush tuft."
     },
     {
       "name": "TerrainProps.createSteerSkull",
@@ -10929,7 +11170,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 479,
       "className": "TerrainProps",
-      "methodName": "createSteerSkull"
+      "methodName": "createSteerSkull",
+      "doc": "Builds a steer skull landmark (western desert cow skull with horns)."
     },
     {
       "name": "TerrainProps.createTrailPost",
@@ -10937,7 +11179,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 576,
       "className": "TerrainProps",
-      "methodName": "createTrailPost"
+      "methodName": "createTrailPost",
+      "doc": "Builds a weathered wooden trail marker post."
     },
     {
       "name": "TerrainProps.createTree",
@@ -10945,7 +11188,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 331,
       "className": "TerrainProps",
-      "methodName": "createTree"
+      "methodName": "createTree",
+      "doc": "Builds a twisted desert deadwood tree or dry desert acacia."
     },
     {
       "name": "TerrainProps.createWagonWheel",
@@ -10953,7 +11197,8 @@
       "file": "game/src/world/TerrainProps.ts",
       "line": 529,
       "className": "TerrainProps",
-      "methodName": "createWagonWheel"
+      "methodName": "createWagonWheel",
+      "doc": "Builds an abandoned wooden wagon wheel half-buried in the sand."
     },
     {
       "name": "TEXTURE_MAP",
@@ -10973,7 +11218,8 @@
       "file": "game/src/core/TextureManager.ts",
       "line": 743,
       "className": "TextureManager",
-      "methodName": "createShadowMesh"
+      "methodName": "createShadowMesh",
+      "doc": "High-performance contact shadow mesh sharing a single texture and material."
     },
     {
       "name": "TextureManager.getArrowTexture",
@@ -11253,7 +11499,8 @@
       "file": "game/src/core/TextureManager.ts",
       "line": 478,
       "className": "TextureManager",
-      "methodName": "preloadAll"
+      "methodName": "preloadAll",
+      "doc": "Preloads all entity sprite sheets upfront to eliminate mid-game texture loading hitch."
     },
     {
       "name": "toggleRow",
@@ -11285,7 +11532,8 @@
       "file": "game/src/world/TreeManager.ts",
       "line": 163,
       "className": "TreeManager",
-      "methodName": "createTreeMesh"
+      "methodName": "createTreeMesh",
+      "doc": "Creates a pseudo-3D tree mesh with directional silhouette shadow matching monsters and heroes."
     },
     {
       "name": "TreeManager.getDepthMaterial",
@@ -11329,7 +11577,8 @@
       "name": "UIEventBus",
       "kind": "class",
       "file": "game/src/ui/core/UIEventBus.ts",
-      "line": 6
+      "line": 6,
+      "doc": "Lightweight, zero-dependency UI Event Bus for decoupled cross-module communication."
     },
     {
       "name": "UIEventBus.clear",
@@ -11355,19 +11604,22 @@
       "name": "UNIQUE_CHARACTERS",
       "kind": "const",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 54
+      "line": 54,
+      "doc": "Registry of unique characters. Easily extensible for future unique characters."
     },
     {
       "name": "UniqueCharacterConfig",
       "kind": "interface",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 24
+      "line": 24,
+      "doc": "Unique Character Specification. Defines exclusive weapons, restriction rules, and future expansion properties."
     },
     {
       "name": "unpackHostSnapshot",
       "kind": "function",
       "file": "game/src/net/BinarySnapshot.ts",
-      "line": 240
+      "line": 240,
+      "doc": "Unpacks an ArrayBuffer back into a complete HostSnapshotMessage object."
     },
     {
       "name": "UpdateListener",
@@ -11379,7 +11631,8 @@
       "name": "UpdateNotificationUI",
       "kind": "class",
       "file": "game/src/ui/UpdateNotificationUI.ts",
-      "line": 8
+      "line": 8,
+      "doc": "Handles the visual presentation of the game update notification. Designed to be non-intrusive (never pauses the game, doesn't capture gameplay keystrokes, auto-collapses during combat, and re-expands when the run finishes)."
     },
     {
       "name": "UpdateNotificationUI.bindEvents",
@@ -11451,7 +11704,8 @@
       "file": "game/src/ui/UpdateNotificationUI.ts",
       "line": 155,
       "className": "UpdateNotificationUI",
-      "methodName": "onRunEnded"
+      "methodName": "onRunEnded",
+      "doc": "Called when player dies, wins, or returns to main menu (peaceful phase). Re-expands the banner with a run-completion reminder."
     },
     {
       "name": "UpdateNotificationUI.preventFocusLoss",
@@ -11459,7 +11713,8 @@
       "file": "game/src/ui/UpdateNotificationUI.ts",
       "line": 105,
       "className": "UpdateNotificationUI",
-      "methodName": "preventFocusLoss"
+      "methodName": "preventFocusLoss",
+      "doc": "Prevents UI buttons from capturing keyboard focus (e.g. Space to dash, WASD to move)."
     },
     {
       "name": "UpdateNotificationUI.scheduleAutoMinimize",
@@ -11475,7 +11730,8 @@
       "file": "game/src/ui/UpdateNotificationUI.ts",
       "line": 143,
       "className": "UpdateNotificationUI",
-      "methodName": "setCombatActive"
+      "methodName": "setCombatActive",
+      "doc": "Called by Game / HUD when entering gameplay."
     },
     {
       "name": "UpdateNotificationUI.triggerUpdate",
@@ -11489,7 +11745,8 @@
       "name": "UpdateNotifier",
       "kind": "class",
       "file": "game/src/core/UpdateNotifier.ts",
-      "line": 14
+      "line": 14,
+      "doc": "UpdateNotifier checks for new client builds/patches deployed to the host. Emits non-intrusive notifications when an update is available without disrupting active gameplay."
     },
     {
       "name": "UpdateNotifier.addListener",
@@ -11505,7 +11762,8 @@
       "file": "game/src/core/UpdateNotifier.ts",
       "line": 197,
       "className": "UpdateNotifier",
-      "methodName": "applyUpdate"
+      "methodName": "applyUpdate",
+      "doc": "Applies update by clearing caches and reloading page."
     },
     {
       "name": "UpdateNotifier.checkForUpdate",
@@ -11561,7 +11819,8 @@
       "file": "game/src/core/UpdateNotifier.ts",
       "line": 49,
       "className": "UpdateNotifier",
-      "methodName": "init"
+      "methodName": "init",
+      "doc": "Initializes polling and listeners."
     },
     {
       "name": "UpdateNotifier.isNewerVersion",
@@ -11585,7 +11844,8 @@
       "file": "game/src/core/UpdateNotifier.ts",
       "line": 184,
       "className": "UpdateNotifier",
-      "methodName": "simulateUpdate"
+      "methodName": "simulateUpdate",
+      "doc": "Simulates an update event (useful for UI testing and verification in Dev mode)."
     },
     {
       "name": "updateOverviewStats",
@@ -11723,7 +11983,8 @@
       "name": "WhirlwindSlashWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
-      "line": 204
+      "line": 204,
+      "doc": "Crimson Whirlwind (Багровый Вихрь) - Hero 4 Ronin starting weapon Rapid fury twin-slash storm unleashing crimson blade whirlwinds at extreme attack speed."
     },
     {
       "name": "WhirlwindSlashWeapon.getNextUpgradeDescription",

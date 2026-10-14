@@ -9,6 +9,7 @@ interface SymbolEntry {
   line: number;
   className?: string;
   methodName?: string;
+  doc?: string;
 }
 
 const TARGET_DIRS = ['game/src', 'admin/src', 'server'];
@@ -20,6 +21,34 @@ const OUTPUT_REGISTRY_MD = path.join(OUTPUT_DIR, 'game-registry.md');
 const EXPORT_REGEX = /^\s*export\s+(?:declare\s+)?(?:default\s+)?(interface|type|class|enum|function|const|async\s+function|abstract\s+class)\s+([A-Za-z0-9_$]+)/;
 const METHOD_REGEX = /^\s*(?:(?:public|protected|private|static|async)\s+)*([A-Za-z0-9_$]+)\s*\([^{;]*\)\s*(?::\s*[^{;]+)?\s*\{/;
 const IGNORED_METHOD_NAMES = new Set(['if', 'for', 'while', 'switch', 'catch', 'constructor', 'with', 'return']);
+
+function extractPrecedingDoc(lines: string[], targetIndex: number): string | undefined {
+  let idx = targetIndex - 1;
+  while (idx >= 0 && lines[idx].trim() === '') {
+    idx--;
+  }
+  if (idx < 0) return undefined;
+
+  const trimmed = lines[idx].trim();
+  if (trimmed.startsWith('//')) {
+    const c = trimmed.replace(/^\/\/\s*/, '').trim();
+    return c.length > 2 ? c : undefined;
+  }
+
+  if (trimmed.endsWith('*/')) {
+    const docParts: string[] = [];
+    while (idx >= 0) {
+      const l = lines[idx].trim();
+      const cleaned = l.replace(/^\/\*\*|\*\/|\*/g, '').trim();
+      if (cleaned && !cleaned.startsWith('@')) docParts.unshift(cleaned);
+      if (l.startsWith('/**')) break;
+      idx--;
+    }
+    return docParts.length > 0 ? docParts.join(' ') : undefined;
+  }
+
+  return undefined;
+}
 
 function getSourceFiles(dir: string): string[] {
   const fullDir = path.resolve(dir);
@@ -79,11 +108,13 @@ function parseFileSymbols(filePath: string, repoRoot: string): SymbolEntry[] {
       else if (rawKind.includes('function')) kind = 'function';
       else if (rawKind.includes('const')) kind = 'const';
 
+      const doc = extractPrecedingDoc(lines, i);
       entries.push({
         name,
         kind,
         file: relPath,
         line: i + 1,
+        ...(doc ? { doc } : {}),
       });
 
       if (kind === 'class') {
@@ -98,6 +129,7 @@ function parseFileSymbols(filePath: string, repoRoot: string): SymbolEntry[] {
       if (methodMatch && !line.includes('export ')) {
         const methodName = methodMatch[1];
         if (!IGNORED_METHOD_NAMES.has(methodName) && !methodName.startsWith('_')) {
+          const methodDoc = extractPrecedingDoc(lines, i);
           entries.push({
             name: `${currentClass}.${methodName}`,
             kind: 'method',
@@ -105,6 +137,7 @@ function parseFileSymbols(filePath: string, repoRoot: string): SymbolEntry[] {
             line: i + 1,
             className: currentClass,
             methodName,
+            ...(methodDoc ? { doc: methodDoc } : {}),
           });
         }
       }
@@ -290,10 +323,11 @@ function run() {
   md += `\n---\n\n`;
 
   md += `## Alphabetical Symbol & Member Registry\n\n`;
-  md += `| Symbol / Member | Kind | File & Line |\n`;
-  md += `| :--- | :--- | :--- |\n`;
+  md += `| Symbol / Member | Kind | File & Line | Description |\n`;
+  md += `| :--- | :--- | :--- | :--- |\n`;
   for (const s of allSymbols) {
-    md += `| \`${s.name}\` | \`${s.kind}\` | [\`${s.file}:${s.line}\`](../../${s.file}#L${s.line}) |\n`;
+    const docText = s.doc ? s.doc.replace(/\|/g, '\\|').slice(0, 75) + (s.doc.length > 75 ? '...' : '') : '-';
+    md += `| \`${s.name}\` | \`${s.kind}\` | [\`${s.file}:${s.line}\`](../../${s.file}#L${s.line}) | ${docText} |\n`;
   }
 
   fs.writeFileSync(OUTPUT_MD, md, 'utf-8');
