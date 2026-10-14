@@ -108,6 +108,16 @@
               <span id="sidebar-items-count" class="tab-pill" style="background:#22c55e; color:#fff;">21</span>
             </button>
 
+            <button class="nav-tab" data-tab="talents">
+              <span class="tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </span>
+              <span class="tab-text">Таланты</span>
+              <span id="sidebar-talents-count" class="tab-pill" style="background:#a855f7; color:#fff;">30</span>
+            </button>
+
             <button class="nav-tab" data-tab="merchant">
               <span class="tab-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -397,6 +407,16 @@
               <div class="quick-nav-title">Предметы Разлома</div>
               <div class="quick-nav-desc">Био-пипетка (исцеление при убийстве), нано-броня, тесла-катушка и легендарные ядра</div>
               <span class="quick-nav-action-text">Перейти в предметы →</span>
+            </div>
+
+            <div class="quick-nav-card" data-jump-tab="talents">
+              <div class="quick-nav-header">
+                <div class="quick-nav-icon-wrap">🔮</div>
+                <span id="qnav-talents-count" class="quick-nav-count-badge">30 талантов</span>
+              </div>
+              <div class="quick-nav-title">Мета-таланты</div>
+              <div class="quick-nav-desc">3 ветки (Могущество, Стойкость, Мастерство) по 10 талантов до 5 рангов за кристаллы</div>
+              <span class="quick-nav-action-text">Перейти в таланты →</span>
             </div>
 
             <div class="quick-nav-card" data-jump-tab="merchant">
@@ -764,6 +784,59 @@
 
           <div id="items-list" class="accordion-list">
             <!-- Dynamically populated item rows -->
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- TAB: TALENTS (Мета-прокачка за Кристаллы Разлома)                 -->
+        <!-- ================================================================= -->
+        <section id="tab-talents" class="tab-pane">
+          <div class="section-toolbar">
+            <div class="toolbar-info">
+              <h2>Мета-таланты (30 уникальных улучшений)</h2>
+              <span class="toolbar-hint">3 ветки развития по 10 талантов (до 5 рангов каждый), действующих на всех героев</span>
+            </div>
+            <div class="toolbar-actions" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <div class="segmented-group" id="talents-branch-filter-group">
+                <button class="segmented-btn active" data-talent-branch="all">Все (30)</button>
+                <button class="segmented-btn" data-talent-branch="offense" style="color:#f59e0b;">⚔️ Могущество (10)</button>
+                <button class="segmented-btn" data-talent-branch="defense" style="color:#10b981;">🛡️ Стойкость (10)</button>
+                <button class="segmented-btn" data-talent-branch="utility" style="color:#a855f7;">🔮 Мастерство (10)</button>
+              </div>
+              <button id="btn-reset-talents-all" class="btn btn-sm btn-outline-danger">Сбросить таланты к defaults</button>
+            </div>
+          </div>
+
+          <div class="accordion-table-header talents-table-cols" data-table="talents">
+            <span class="col-exp"></span>
+            <span class="col-name sortable-col is-sorted" data-table="talents" data-sort="name">
+              <span>Иконка / Талант / ID</span>
+              <span class="sort-icon">▲</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="talents" data-sort="branch">
+              <span>Ветка развития</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="talents" data-sort="bonus">
+              <span>Бонус / ранг</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="talents" data-sort="maxLevel">
+              <span>Макс. ранг</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat">
+              <span>Стоимость [L1..L5]</span>
+            </span>
+            <span class="col-status sortable-col" data-table="talents" data-sort="status">
+              <span>Статус</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-actions">Действия</span>
+          </div>
+
+          <div id="talents-list" class="accordion-list">
+            <!-- Dynamically populated talent rows -->
           </div>
         </section>
 

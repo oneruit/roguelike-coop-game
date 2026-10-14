@@ -100,7 +100,7 @@ export function getMonsterColor(id: string): string {
   return `hsl(${hue}, 65%, 45%)`;
 }
 
-export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item' {
+export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item' | 'talent' {
   switch (category) {
     case 'weapons':
     case 'weapon':
@@ -120,6 +120,9 @@ export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monst
     case 'items':
     case 'item':
       return 'item';
+    case 'talents':
+    case 'talent':
+      return 'talent';
     case 'global':
     default:
       return 'global';
@@ -146,6 +149,9 @@ export function toPluralCategory(category: string): keyof GameBalanceState {
     case 'item':
     case 'items':
       return 'items';
+    case 'talent':
+    case 'talents':
+      return 'talents';
     case 'global':
     default:
       return 'global';

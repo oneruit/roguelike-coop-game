@@ -6,6 +6,7 @@ import {
   BossBalanceConfig,
   PassiveBalanceConfig,
   ItemBalanceConfig,
+  TalentBalanceConfig,
   GlobalBalanceConfig,
   BalanceRow,
   BalanceChangeEvent
@@ -158,6 +159,14 @@ class BalanceManagerService {
         desc = `Предмет «${updated.name || name || key}» обновлен`;
         break;
       }
+      case 'talent': {
+        const existing = this.currentBalance.talents?.[key] || DEFAULT_BALANCE.talents[key];
+        const updated = { ...existing, ...data } as TalentBalanceConfig;
+        if (!this.currentBalance.talents) this.currentBalance.talents = {};
+        this.currentBalance.talents[key] = updated;
+        desc = `Талант «${updated.name || name || key}» обновлен`;
+        break;
+      }
       case 'global': {
         this.currentBalance.global = { ...this.currentBalance.global, ...data } as GlobalBalanceConfig;
         desc = 'Глобальные боевые параметры обновлены';
@@ -264,6 +273,14 @@ class BalanceManagerService {
 
   public getItemConfig(id: string): ItemBalanceConfig | undefined {
     return this.currentBalance.items?.[id] || DEFAULT_BALANCE.items[id];
+  }
+
+  public getTalentConfig(id: string): TalentBalanceConfig | undefined {
+    return this.currentBalance.talents?.[id] || DEFAULT_BALANCE.talents[id];
+  }
+
+  public getAllTalents(): Record<string, TalentBalanceConfig> {
+    return { ...DEFAULT_BALANCE.talents, ...(this.currentBalance.talents || {}) };
   }
 
   public getAllBalance(): GameBalanceState {

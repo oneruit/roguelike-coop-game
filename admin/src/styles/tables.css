@@ -54,6 +54,11 @@
   gap: 12px;
 }
 
+.talents-table-cols {
+  grid-template-columns: 28px 240px 140px 130px 80px 180px 110px 1fr;
+  gap: 12px;
+}
+
 .accordion-list {
   display: flex;
   flex-direction: column;

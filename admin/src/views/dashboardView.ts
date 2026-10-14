@@ -164,6 +164,7 @@ export function updateOverviewStats(state: BalanceState): void {
   const bossCount = Object.keys(state.draftBalance.bosses).length;
   const passiveCount = Object.keys(state.draftBalance.passives || {}).length;
   const itemCount = Object.keys(state.draftBalance.items || {}).length;
+  const talentCount = Object.keys(state.draftBalance.talents || {}).length;
   const opponentsCount = monsterCount + bossCount;
 
   const kpiCount = document.getElementById('kpi-weapons-count');
@@ -191,6 +192,8 @@ export function updateOverviewStats(state: BalanceState): void {
   if (sideP) sideP.innerText = `${passiveCount}`;
   const sideI = document.getElementById('sidebar-items-count');
   if (sideI) sideI.innerText = `${itemCount}`;
+  const sideT = document.getElementById('sidebar-talents-count');
+  if (sideT) sideT.innerText = `${talentCount}`;
 
   // Quick navigation count badges
   const qnavW = document.getElementById('qnav-weapons-count');
@@ -205,6 +208,8 @@ export function updateOverviewStats(state: BalanceState): void {
   if (qnavP) qnavP.innerText = `${passiveCount} пассивок`;
   const qnavI = document.getElementById('qnav-items-count');
   if (qnavI) qnavI.innerText = `${itemCount} предметов`;
+  const qnavT = document.getElementById('qnav-talents-count');
+  if (qnavT) qnavT.innerText = `${talentCount} талантов`;
 
   const kpiAvgDps = document.getElementById('kpi-avg-dps');
   if (kpiAvgDps) {

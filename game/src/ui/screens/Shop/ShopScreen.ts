@@ -14,11 +14,13 @@ export interface ShopScreenOptions {
 
 /**
  * Modular Shop / Meta Progression Screen.
- * Displays 3 branches of 10 persistent upgrades for Rift Crystals, shared across all characters.
+ * Displays 3 branches of 10 persistent upgrades (up to 5 ranks each) for Rift Crystals,
+ * shared across all characters.
  */
 export class ShopScreen extends Screen {
   private options: ShopScreenOptions;
   private unsubscribeMeta?: () => void;
+  private activeBranch: MetaBranchId = 'offense';
 
   constructor(options: ShopScreenOptions = {}) {
     const existingModal = options.container || SafeDOM.getElementById('shop-modal');
@@ -53,13 +55,17 @@ export class ShopScreen extends Screen {
       this.close();
     });
 
-    // Upgrade buttons
-    const branches: MetaBranchId[] = ['offense', 'defense', 'utility'];
-    for (const b of branches) {
-      SafeDOM.query(this.container, `#btn-upgrade-${b}`)?.addEventListener('click', () => {
-        this.handleUpgrade(b);
+    // Branch navigation tabs
+    const tabButtons = SafeDOM.queryAll(this.container, '.shop-tab-btn');
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const branch = (e.currentTarget as HTMLElement).dataset.branch as MetaBranchId;
+        if (branch && branch !== this.activeBranch) {
+          SoundManager.playButtonClick();
+          this.switchBranch(branch);
+        }
       });
-    }
+    });
 
     // Respec button
     SafeDOM.query(this.container, '#shop-btn-respec')?.addEventListener('click', () => {
@@ -67,14 +73,31 @@ export class ShopScreen extends Screen {
     });
   }
 
+  private switchBranch(branch: MetaBranchId): void {
+    this.activeBranch = branch;
+    const tabButtons = SafeDOM.queryAll(this.container, '.shop-tab-btn');
+    tabButtons.forEach((btn) => {
+      btn.classList.toggle('active', (btn as HTMLElement).dataset.branch === branch);
+    });
+
+    // Update banner description
+    const def = META_BRANCHES[branch];
+    const bannerDesc = SafeDOM.query(this.container, '#shop-branch-banner-desc');
+    if (bannerDesc && def) {
+      bannerDesc.textContent = def.description;
+    }
+
+    this.renderTalentsList();
+  }
+
   private close(): void {
     this.hide();
     this.options.onClose?.();
   }
 
-  private handleUpgrade(branch: MetaBranchId): void {
+  private handleUpgradeTalent(talentId: string): void {
     const meta = MetaProgression.getInstance();
-    const success = meta.upgradeBranch(branch);
+    const success = meta.upgradeTalent(talentId);
     if (success) {
       SoundManager.playLevelUp();
       this.updateUI();
@@ -104,6 +127,7 @@ export class ShopScreen extends Screen {
     const meta = MetaProgression.getInstance();
     const crystals = meta.getCrystals();
     const spent = meta.getTotalSpentCrystals();
+    const totalPts = meta.getTotalTalentPoints();
 
     // 1. Crystal Wallet & Total Spent
     const balanceEl = SafeDOM.query(this.container, '#shop-crystal-balance');
@@ -112,74 +136,112 @@ export class ShopScreen extends Screen {
     const spentEl = SafeDOM.query(this.container, '#shop-total-invested');
     if (spentEl) spentEl.textContent = spent.toLocaleString();
 
-    // 2. Update each branch
-    const branches: MetaBranchId[] = ['offense', 'defense', 'utility'];
-    for (const b of branches) {
-      const def = META_BRANCHES[b];
-      const level = meta.getUpgradeLevel(b);
-      const nextCost = meta.getNextTierCost(b);
-      const isMax = level >= 10;
+    const ptsEl = SafeDOM.query(this.container, '#shop-total-pts');
+    if (ptsEl) ptsEl.textContent = `${totalPts} / 150 очков`;
 
-      // Level text
-      const levelText = SafeDOM.query(this.container, `#${b}-level-text`);
-      if (levelText) levelText.textContent = `${level}`;
+    // 2. Branch points badges
+    for (const b of ['offense', 'defense', 'utility'] as MetaBranchId[]) {
+      const talents = meta.getBranchTalents(b);
+      let branchPts = 0;
+      for (const t of talents) {
+        branchPts += meta.getTalentLevel(t.id);
+      }
+      const badge = SafeDOM.query(this.container, `#${b}-branch-pts`);
+      if (badge) {
+        badge.textContent = `${branchPts} / 50`;
+      }
+    }
 
-      // Pips (10 pips)
-      const pipsContainer = SafeDOM.query(this.container, `#${b}-pips`);
-      if (pipsContainer) {
-        let pipsHtml = '';
-        for (let i = 1; i <= 10; i++) {
-          const isActive = i <= level;
-          pipsHtml += `<div class="shop-pip ${isActive ? 'is-active' : ''}"></div>`;
-        }
-        pipsContainer.innerHTML = pipsHtml;
+    // 3. Render active branch talents
+    this.renderTalentsList();
+  }
+
+  private renderTalentsList(): void {
+    const container = SafeDOM.query(this.container, '#shop-talents-grid');
+    if (!container) return;
+
+    const meta = MetaProgression.getInstance();
+    const talents = meta.getBranchTalents(this.activeBranch);
+    const crystals = meta.getCrystals();
+
+    container.innerHTML = '';
+
+    for (const t of talents) {
+      const level = meta.getTalentLevel(t.id);
+      const isMax = level >= t.maxLevel;
+      const nextCost = meta.getTalentNextCost(t.id);
+      const canAfford = crystals >= (nextCost ?? Infinity);
+
+      const card = document.createElement('div');
+      card.className = `shop-talent-card branch-${t.branch} ${isMax ? 'is-maxed' : ''}`;
+      card.dataset.talentId = t.id;
+
+      // Pips
+      let pipsHtml = '';
+      for (let i = 1; i <= t.maxLevel; i++) {
+        pipsHtml += `<div class="talent-pip ${i <= level ? 'is-active' : ''}"></div>`;
       }
 
-      // Current Bonus text
-      const curBonusEl = SafeDOM.query(this.container, `#${b}-cur-bonus`);
-      if (curBonusEl) {
-        if (level === 0) {
-          curBonusEl.textContent = 'Нет активных бонусов';
-          curBonusEl.style.color = '#64748b';
-        } else {
-          const curTierInfo = def.tiers[level - 1];
-          curBonusEl.textContent = curTierInfo ? curTierInfo.description : 'Максимальный эффект';
-          curBonusEl.style.color = '#f1f5f9';
-        }
-      }
+      // Format bonus descriptions
+      const formatVal = (multiplier: number) => {
+        const val = multiplier * t.bonusPerLevel;
+        if (t.unit === '%') return `+${(val * 100).toFixed(1)}%`;
+        return `+${val.toFixed(val % 1 === 0 ? 0 : 1)} ${t.unit || ''}`;
+      };
 
-      // Next Bonus preview text
-      const nextBonusEl = SafeDOM.query(this.container, `#${b}-next-bonus`);
-      if (nextBonusEl) {
-        if (isMax) {
-          nextBonusEl.textContent = '✓ Достигнут максимум';
-          nextBonusEl.style.color = '#10b981';
-        } else {
-          const nextTierInfo = def.tiers[level];
-          nextBonusEl.textContent = nextTierInfo ? `${nextTierInfo.title}: ${nextTierInfo.description}` : '—';
-          nextBonusEl.style.color = '#38bdf8';
-        }
-      }
+      const curBonusText = level === 0 ? 'Нет активного бонуса' : `${formatVal(level)} эффекта`;
+      const nextBonusText = isMax
+        ? '✓ МАКСИМАЛЬНЫЙ РАНГ'
+        : `Ранг ${level + 1}: ${formatVal(level + 1)}`;
 
-      // Upgrade Button
-      const btn = SafeDOM.query<HTMLButtonElement>(this.container, `#btn-upgrade-${b}`);
-      const costWrap = SafeDOM.query(this.container, `#${b}-cost-wrap`);
-      const costText = SafeDOM.query(this.container, `#${b}-cost-text`);
-      const btnText = btn?.querySelector('.btn-text');
+      card.innerHTML = `
+        <div class="talent-card-top">
+          <span class="talent-icon-box">${t.icon || '⭐'}</span>
+          <div class="talent-title-wrap">
+            <h4 class="talent-title">${t.name}</h4>
+            <span class="talent-level-tag ${isMax ? 'tag-max' : ''}">РАНГ ${level} / ${t.maxLevel}</span>
+          </div>
+        </div>
 
-      if (btn) {
-        if (isMax) {
-          btn.disabled = true;
-          if (btnText) btnText.textContent = 'МАКСИМУМ (10/10)';
-          if (costWrap) (costWrap as HTMLElement).style.display = 'none';
-        } else {
-          const canAfford = crystals >= (nextCost ?? Infinity);
-          btn.disabled = !canAfford;
-          if (btnText) btnText.textContent = 'УЛУЧШИТЬ';
-          if (costWrap) (costWrap as HTMLElement).style.display = 'flex';
-          if (costText) costText.textContent = `${nextCost ?? 0}`;
-        }
-      }
+        <div class="talent-pips-row">
+          ${pipsHtml}
+        </div>
+
+        <p class="talent-desc">${t.description}</p>
+
+        <div class="talent-stats-row">
+          <div class="talent-stat-box">
+            <span class="talent-stat-label">Текущий:</span>
+            <span class="talent-stat-val ${level > 0 ? 'is-active' : ''}">${curBonusText}</span>
+          </div>
+          <div class="talent-stat-box">
+            <span class="talent-stat-label">${isMax ? 'Статус:' : 'Следующий:'}</span>
+            <span class="talent-stat-val ${isMax ? 'is-max' : 'is-next'}">${nextBonusText}</span>
+          </div>
+        </div>
+
+        <button class="talent-buy-btn ${isMax ? 'is-max' : ''}" type="button" ${isMax || !canAfford ? 'disabled' : ''}>
+          ${
+            isMax
+              ? '<span class="buy-btn-text">МАКСИМУМ (5/5)</span>'
+              : `
+                <span class="buy-btn-text">УЛУЧШИТЬ</span>
+                <span class="buy-btn-cost">
+                  <img src="/textures/ui/bp_crystal.png" class="btn-crystal-icon" alt="🔮" />
+                  <span>${nextCost}</span>
+                </span>
+              `
+          }
+        </button>
+      `;
+
+      const buyBtn = card.querySelector('.talent-buy-btn');
+      buyBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.handleUpgradeTalent(t.id);
+      });
+
+      container.appendChild(card);
     }
   }
 
