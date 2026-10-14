@@ -53,3 +53,15 @@ git ls-files "*<pattern>*"
 ### D. Targeted File Viewing
 - After locating the target line via `git grep` or `codebase-index.md`, use `view_file` with precise `StartLine` and `EndLine` (e.g. range of 50–100 lines).
 - Avoid loading full 800-line files when only inspecting a single class, method, or config block.
+
+---
+
+## 3. Native MCP Tools (Fastest Option)
+
+When the `codebase-indexer` MCP server is available, prefer using native MCP tools over running terminal commands:
+
+- **`find_symbol(name)`**: Instant lookup of classes, interfaces, types, functions, or constants from in-memory index; returns exact file path, line number, and declaration code snippet.
+- **`search_code(query, directory, caseSensitive, maxResults)`**: High-speed git-indexed search (<50ms).
+- **`get_file_outline(file)`**: Lists all exported symbols for a file without reading the whole file.
+- **`refresh_index()`**: Re-indexes the project on demand.
+
