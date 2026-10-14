@@ -25,9 +25,10 @@ function findWorkspaceRoot() {
 const WORKSPACE_ROOT = findWorkspaceRoot();
 const CACHE_DIR = path.join(WORKSPACE_ROOT, '.agents/cache');
 const INDEX_JSON_PATH = path.join(CACHE_DIR, 'codebase-index.json');
-const INDEX_MD_PATH = path.join(CACHE_DIR, 'codebase-index.md');
+const REGISTRY_MD_PATH = path.join(CACHE_DIR, 'game-registry.md');
 
 let symbolCache = [];
+let entitiesCache = null;
 
 function log(...args) {
   process.stderr.write(`[codebase-indexer-mcp] ${args.join(' ')}\n`);
@@ -38,9 +39,10 @@ function loadSymbolCache() {
     if (fs.existsSync(INDEX_JSON_PATH)) {
       const data = JSON.parse(fs.readFileSync(INDEX_JSON_PATH, 'utf-8'));
       symbolCache = data.symbols || [];
-      log(`Loaded ${symbolCache.length} symbols from cache.`);
+      entitiesCache = data.entities || null;
+      log(`Loaded ${symbolCache.length} symbols/methods and entities from cache.`);
     } else {
-      log('Cache not found. Generating fresh index...');
+      log('Cache not found. Running index generator...');
       refreshIndex();
     }
   } catch (err) {
@@ -51,105 +53,20 @@ function loadSymbolCache() {
 
 function refreshIndex() {
   const startTime = Date.now();
-  const targetDirs = ['game/src', 'admin/src', 'server'];
-  const exportRegex = /^\s*export\s+(?:declare\s+)?(?:default\s+)?(interface|type|class|enum|function|const|async\s+function|abstract\s+class)\s+([A-Za-z0-9_$]+)/;
-
-  function walk(current, files) {
-    if (!fs.existsSync(current)) return;
-    const entries = fs.readdirSync(current, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '.git') continue;
-        walk(fullPath, files);
-      } else if (entry.isFile()) {
-        if ((entry.name.endsWith('.ts') || entry.name.endsWith('.tsx')) && !entry.name.endsWith('.d.ts')) {
-          files.push(fullPath);
-        }
-      }
+  try {
+    execSync('npm run index', { cwd: WORKSPACE_ROOT, stdio: 'pipe' });
+    if (fs.existsSync(INDEX_JSON_PATH)) {
+      const data = JSON.parse(fs.readFileSync(INDEX_JSON_PATH, 'utf-8'));
+      symbolCache = data.symbols || [];
+      entitiesCache = data.entities || null;
+      const elapsed = Date.now() - startTime;
+      log(`Refreshed index in ${elapsed}ms: ${symbolCache.length} symbols/methods.`);
+      return { totalSymbols: symbolCache.length, totalFiles: data.totalFiles || 0, elapsedMs: elapsed };
     }
+  } catch (err) {
+    log('Error refreshing index:', err?.message || err);
   }
-
-  const allFiles = [];
-  for (const d of targetDirs) {
-    walk(path.join(WORKSPACE_ROOT, d), allFiles);
-  }
-
-  const newSymbols = [];
-  for (const file of allFiles) {
-    try {
-      const content = fs.readFileSync(file, 'utf-8');
-      const lines = content.split(/\r?\n/);
-      const relPath = path.relative(WORKSPACE_ROOT, file).replace(/\\/g, '/');
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const match = line.match(exportRegex);
-        if (match) {
-          const rawKind = match[1];
-          const name = match[2];
-          let kind = 'const';
-          if (rawKind.includes('interface')) kind = 'interface';
-          else if (rawKind.includes('type')) kind = 'type';
-          else if (rawKind.includes('class')) kind = 'class';
-          else if (rawKind.includes('enum')) kind = 'enum';
-          else if (rawKind.includes('function')) kind = 'function';
-          else if (rawKind.includes('const')) kind = 'const';
-
-          newSymbols.push({
-            name,
-            kind,
-            file: relPath,
-            line: i + 1,
-          });
-        }
-      }
-    } catch {
-      // ignore individual read errors
-    }
-  }
-
-  newSymbols.sort((a, b) => a.name.localeCompare(b.name));
-  symbolCache = newSymbols;
-
-  if (!fs.existsSync(CACHE_DIR)) {
-    fs.mkdirSync(CACHE_DIR, { recursive: true });
-  }
-
-  const jsonPayload = {
-    generatedAt: new Date().toISOString(),
-    totalFiles: allFiles.length,
-    totalSymbols: newSymbols.length,
-    symbols: newSymbols,
-  };
-  fs.writeFileSync(INDEX_JSON_PATH, JSON.stringify(jsonPayload, null, 2), 'utf-8');
-
-  // Also write MD
-  const byModule = {};
-  for (const s of newSymbols) {
-    const parts = s.file.split('/');
-    const mod = parts.length > 2 ? `${parts[0]}/${parts[1]}` : parts[0];
-    if (!byModule[mod]) byModule[mod] = [];
-    byModule[mod].push(s);
-  }
-
-  let md = `# Codebase Symbol Index\n\n`;
-  md += `> Automatically generated index of all exported classes, interfaces, types, functions, and constants.\n`;
-  md += `> **Generated:** ${jsonPayload.generatedAt} | **Source Files:** ${allFiles.length} | **Total Symbols:** ${newSymbols.length}\n\n`;
-  md += `Run \`npm run index\` to refresh this cache.\n\n`;
-  md += `## Modules Overview\n\n| Module | Symbols Count |\n| :--- | :--- |\n`;
-  for (const [mod, syms] of Object.entries(byModule)) {
-    md += `| \`${mod}\` | ${syms.length} |\n`;
-  }
-  md += `\n---\n\n## Alphabetical Symbol Registry\n\n| Symbol | Kind | File & Line |\n| :--- | :--- | :--- |\n`;
-  for (const s of newSymbols) {
-    md += `| \`${s.name}\` | \`${s.kind}\` | [\`${s.file}:${s.line}\`](../../${s.file}#L${s.line}) |\n`;
-  }
-  fs.writeFileSync(INDEX_MD_PATH, md, 'utf-8');
-
-  const elapsed = Date.now() - startTime;
-  log(`Refreshed index in ${elapsed}ms: ${newSymbols.length} symbols across ${allFiles.length} files.`);
-  return { totalSymbols: newSymbols.length, totalFiles: allFiles.length, elapsedMs: elapsed };
+  return { totalSymbols: 0, totalFiles: 0, elapsedMs: Date.now() - startTime };
 }
 
 function handleFindSymbol(args) {
@@ -165,21 +82,22 @@ function handleFindSymbol(args) {
 
   const queryLower = query.toLowerCase();
   const matches = symbolCache.filter((s) => {
-    if (exact) return s.name === query;
+    if (exact) return s.name === query || s.methodName === query;
     return s.name.toLowerCase().includes(queryLower);
   });
 
   if (matches.length === 0) {
     return {
-      content: [{ type: 'text', text: `No symbols found matching "${query}".` }],
+      content: [{ type: 'text', text: `No symbols or methods found matching "${query}".` }],
     };
   }
 
   // Cap to top 15 matches to keep response fast and clean
   const limited = matches.slice(0, 15);
-  let output = `Found ${matches.length} matching symbol(s)${matches.length > 15 ? ' (showing top 15)' : ''}:\n\n`;
+  let output = `Found ${matches.length} match(es)${matches.length > 15 ? ' (showing top 15)' : ''}:\n\n`;
 
   for (const item of limited) {
+    const isMethod = item.kind === 'method';
     output += `### \`${item.name}\` (${item.kind})\n`;
     output += `**File:** \`${item.file}:${item.line}\`\n`;
 
@@ -203,6 +121,72 @@ function handleFindSymbol(args) {
   };
 }
 
+function handleGetGameEntities(args) {
+  const category = (args?.category || 'all').toLowerCase();
+  if (!entitiesCache) {
+    loadSymbolCache();
+  }
+  if (!entitiesCache) {
+    return { isError: true, content: [{ type: 'text', text: 'Error: Game entities cache not available.' }] };
+  }
+
+  if (category === 'all' && fs.existsSync(REGISTRY_MD_PATH)) {
+    return { content: [{ type: 'text', text: fs.readFileSync(REGISTRY_MD_PATH, 'utf-8') }] };
+  }
+
+  if (category === 'heroes' && entitiesCache.heroes) {
+    let md = `## Heroes (${entitiesCache.heroes.length})\n\n| ID | Name | Role | Starting Weapon | HP | Speed | Dmg Multiplier |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    for (const h of entitiesCache.heroes) {
+      md += `| \`${h.id}\` | **${h.name}** | ${h.role} | \`${h.startingWeapon}\` | ${h.maxHp} | ${h.baseSpeed} | ${h.damageMultiplier}x |\n`;
+    }
+    return { content: [{ type: 'text', text: md.trim() }] };
+  }
+
+  if (category === 'weapons' && entitiesCache.weapons) {
+    let md = `## Weapons (${entitiesCache.weapons.length})\n\n| ID | Name | Icon | Damage | Cooldown | Max Lvl | Notes |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    for (const w of entitiesCache.weapons) {
+      md += `| \`${w.id}\` | **${w.name}** | ${w.icon} | ${w.damage} | ${w.cooldown}s | ${w.maxLevel} | ${w.notes} |\n`;
+    }
+    return { content: [{ type: 'text', text: md.trim() }] };
+  }
+
+  if (category === 'bosses' && entitiesCache.bosses) {
+    let md = `## Bosses (${entitiesCache.bosses.length})\n\n| ID | Name | HP | Speed | Damage | Description |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    for (const b of entitiesCache.bosses) {
+      md += `| \`${b.id}\` | **${b.name}** | ${b.hp} | ${b.speed} | ${b.damage} | ${b.description} |\n`;
+    }
+    return { content: [{ type: 'text', text: md.trim() }] };
+  }
+
+  if (category === 'monsters' && entitiesCache.monsters) {
+    let md = `## Common Monsters (${entitiesCache.monsters.length})\n\n| ID | Name | HP | Speed | Damage | EXP |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    for (const m of entitiesCache.monsters) {
+      md += `| \`${m.id}\` | **${m.name}** | ${m.hp} | ${m.speed} | ${m.damage} | ${m.exp} |\n`;
+    }
+    return { content: [{ type: 'text', text: md.trim() }] };
+  }
+
+  if (category === 'items' && entitiesCache.items) {
+    let md = `## Items (${entitiesCache.items.length})\n\n| ID | Name | Icon | Description |\n| :--- | :--- | :--- | :--- |\n`;
+    for (const i of entitiesCache.items) {
+      md += `| \`${i.id}\` | **${i.name}** | ${i.icon} | ${i.description} |\n`;
+    }
+    return { content: [{ type: 'text', text: md.trim() }] };
+  }
+
+  if (category === 'passives' && entitiesCache.passives) {
+    let md = `## Passives (${entitiesCache.passives.length})\n\n| ID | Name | Icon | Description |\n| :--- | :--- | :--- | :--- |\n`;
+    for (const p of entitiesCache.passives) {
+      md += `| \`${p.id}\` | **${p.name}** | ${p.icon} | ${p.description} |\n`;
+    }
+    return { content: [{ type: 'text', text: md.trim() }] };
+  }
+
+  return {
+    content: [{ type: 'text', text: JSON.stringify(entitiesCache[category] || entitiesCache, null, 2) }],
+  };
+}
+
 function handleSearchCode(args) {
   const query = (args?.query || '').trim();
   const directory = (args?.directory || '').trim();
@@ -216,7 +200,6 @@ function handleSearchCode(args) {
   try {
     const flags = caseSensitive ? '-n' : '-n -i';
     const targetDir = directory ? `"${directory}"` : '"game/src" "admin/src" "server"';
-    // Run git grep which takes < 50ms and avoids scanning node_modules/dist/assets
     const cmd = `git grep ${flags} -m ${maxResults} -- "${query.replace(/"/g, '\\"')}" -- ${targetDir}`;
     const rawResult = execSync(cmd, {
       cwd: WORKSPACE_ROOT,
@@ -233,7 +216,6 @@ function handleSearchCode(args) {
     const output = `Found ${lines.length} match(es):\n\`\`\`text\n${lines.slice(0, maxResults).join('\n')}\n\`\`\``;
     return { content: [{ type: 'text', text: output }] };
   } catch (err) {
-    // git grep exits with 1 when no matches found
     return { content: [{ type: 'text', text: `No occurrences found for "${query}".` }] };
   }
 }
@@ -252,17 +234,26 @@ function handleGetOutline(args) {
 
   if (fileSymbols.length === 0) {
     return {
-      content: [{ type: 'text', text: `No exported symbols found in "${targetFile}".` }],
+      content: [{ type: 'text', text: `No exported symbols or methods found in "${targetFile}".` }],
     };
   }
 
-  let output = `Outline for \`${targetFile}\` (${fileSymbols.length} exported symbols):\n\n`;
-  output += `| Symbol | Kind | Line |\n| :--- | :--- | :--- |\n`;
-  for (const s of fileSymbols) {
+  const topLevel = fileSymbols.filter((s) => s.kind !== 'method');
+  const methods = fileSymbols.filter((s) => s.kind === 'method');
+
+  let output = `Outline for \`${targetFile}\` (${topLevel.length} declarations, ${methods.length} methods):\n\n`;
+  output += `### Declarations\n| Symbol | Kind | Line |\n| :--- | :--- | :--- |\n`;
+  for (const s of topLevel) {
     output += `| \`${s.name}\` | \`${s.kind}\` | line ${s.line} |\n`;
   }
+  if (methods.length > 0) {
+    output += `\n### Class Methods\n| Method | Class | Line |\n| :--- | :--- | :--- |\n`;
+    for (const m of methods) {
+      output += `| \`${m.methodName || m.name}\` | \`${m.className || ''}\` | line ${m.line} |\n`;
+    }
+  }
 
-  return { content: [{ type: 'text', text: output }] };
+  return { content: [{ type: 'text', text: output.trim() }] };
 }
 
 function handleRefreshIndex() {
@@ -271,7 +262,7 @@ function handleRefreshIndex() {
     content: [
       {
         type: 'text',
-        text: `Successfully re-indexed ${res.totalSymbols} symbols across ${res.totalFiles} files in ${res.elapsedMs}ms.`,
+        text: `Successfully re-indexed ${res.totalSymbols} symbols and methods across ${res.totalFiles} files in ${res.elapsedMs}ms.`,
       },
     ],
   };
@@ -280,13 +271,13 @@ function handleRefreshIndex() {
 const TOOLS = [
   {
     name: 'find_symbol',
-    description: 'Instantly find classes, interfaces, types, functions, or constants from the in-memory codebase index. Returns exact file path, line number, and declaration code snippet.',
+    description: 'Instantly find classes, interfaces, types, functions, constants, or class methods from in-memory codebase index. Returns exact file path, line number, and code snippet.',
     inputSchema: {
       type: 'object',
       properties: {
         name: {
           type: 'string',
-          description: 'Symbol name to search for (e.g. "DEFAULT_BALANCE", "CharacterSelectScreen", "HeroData")',
+          description: 'Symbol or method name (e.g. "DEFAULT_BALANCE", "CharacterSelectScreen", "freezeAndKnockbackAll", "signInWithOtp")',
         },
         exact: {
           type: 'boolean',
@@ -294,6 +285,20 @@ const TOOLS = [
         },
       },
       required: ['name'],
+    },
+  },
+  {
+    name: 'get_game_entities',
+    description: 'Instantly get live game design & balance data from DEFAULT_BALANCE (heroes, weapons, bosses, monsters, items, passives) without reading large files.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        category: {
+          type: 'string',
+          enum: ['all', 'heroes', 'weapons', 'bosses', 'monsters', 'items', 'passives'],
+          description: 'Category of entities to inspect (default: "all")',
+        },
+      },
     },
   },
   {
@@ -324,13 +329,13 @@ const TOOLS = [
   },
   {
     name: 'get_file_outline',
-    description: 'Get all exported symbols, interfaces, and classes defined in a specific file without reading the entire file.',
+    description: 'Get all exported symbols, interfaces, and class methods defined in a specific file without reading the entire file.',
     inputSchema: {
       type: 'object',
       properties: {
         file: {
           type: 'string',
-          description: 'Relative file path (e.g. "game/src/balance/BalanceManager.ts")',
+          description: 'Relative file path (e.g. "game/src/entities/EnemyManager.ts")',
         },
       },
       required: ['file'],
@@ -369,7 +374,6 @@ function processMessage(line) {
 
   const { id, method, params } = msg;
 
-  // Notifications (no id)
   if (id === undefined || id === null) {
     if (method === 'notifications/initialized') {
       log('Client initialized.');
@@ -387,7 +391,7 @@ function processMessage(line) {
         },
         serverInfo: {
           name: 'codebase-indexer',
-          version: '1.0.0',
+          version: '1.1.0',
         },
       });
       break;
@@ -412,6 +416,8 @@ function processMessage(line) {
       try {
         if (toolName === 'find_symbol') {
           toolResult = handleFindSymbol(toolArgs);
+        } else if (toolName === 'get_game_entities') {
+          toolResult = handleGetGameEntities(toolArgs);
         } else if (toolName === 'search_code') {
           toolResult = handleSearchCode(toolArgs);
         } else if (toolName === 'get_file_outline') {
@@ -447,7 +453,7 @@ function processMessage(line) {
 }
 
 function main() {
-  log('Starting Codebase Indexer MCP Server...');
+  log('Starting Codebase Indexer MCP Server v1.1.0...');
   loadSymbolCache();
 
   const rl = readline.createInterface({

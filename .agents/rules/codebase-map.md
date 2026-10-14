@@ -66,7 +66,16 @@ my-lovely-game/
 
 ---
 
-## 3. Common Extension Workflows (Recipes)
+## 3. Instant Game Entity & Balance Registry
+
+To inspect game balance, characters, weapons, or monsters, **do not read `defaultBalance.ts` directly**. Use the pre-computed registry:
+
+- **Markdown Reference:** [`.agents/cache/game-registry.md`](.agents/cache/game-registry.md) (complete tables of heroes, weapons, stats, cooldowns, bosses, and passives).
+- **Native MCP Tool:** Call `get_game_entities({ category: "heroes" | "weapons" | "bosses" | "monsters" | "items" | "all" })` to get structured balance tables instantly without file reads.
+
+---
+
+## 4. Common Extension Workflows (Recipes)
 
 ### A. Adding / Modifying a Playable Hero
 1. Define hero ID in `CharacterType` in [game/src/entities/Character.ts](file:///d:/projects/Git/my-lovely-game/game/src/entities/Character.ts).
@@ -94,7 +103,7 @@ my-lovely-game/
 
 ---
 
-## 4. Verification Commands
+## 5. Verification Commands
 
 Before completing any task, execute:
 ```powershell
