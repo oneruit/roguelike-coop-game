@@ -4,6 +4,7 @@ import { SoundManager } from '../../../core/SoundManager';
 import { Projectile } from '../../../combat/Projectile';
 import { FireRingWeapon } from '../../../combat/Weapon';
 import { DamageNumberManager } from '../../../combat/DamageNumberManager';
+import { ProgressionManager } from '../../../core/ProgressionManager';
 
 export interface SettingsScreenOptions {
   container?: HTMLElement | null;
@@ -251,6 +252,7 @@ export class SettingsScreen extends Screen {
         );
         if (confirmClear) {
           try {
+            ProgressionManager.getInstance().resetAllProgress();
             localStorage.clear();
             sessionStorage.clear();
           } catch (e) {
