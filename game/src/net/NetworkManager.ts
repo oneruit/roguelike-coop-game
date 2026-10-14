@@ -1,6 +1,7 @@
 import { Peer, type DataConnection } from 'peerjs';
 import { packHostSnapshot, unpackHostSnapshot, isBinarySnapshot } from './BinarySnapshot';
 import { RoomDirectory } from './RoomDirectory';
+import { AuthManager } from '../auth/AuthManager';
 import {
   type CharacterType,
   type BuffType,
@@ -155,10 +156,12 @@ export class NetworkManager {
     this.hasPassword = !!this.roomPassword;
     this.isGameStarted = false;
 
+    const authName = AuthManager.getInstance().getUser().name;
+
     this.lobbyPlayers = [
       {
         id: 'p1',
-        name: 'Игрок 1',
+        name: authName || 'Игрок 1',
         hero: this.myHero,
         charType: this.myHero,
         isHost: true,
@@ -175,7 +178,7 @@ export class NetworkManager {
         {
           roomCode: this.roomCode,
           hostHero: this.myHero,
-          hostName: 'Игрок 1',
+          hostName: authName || 'Игрок 1',
           playerCount: this.lobbyPlayers.length,
           maxPlayers: NetworkManager.MAX_PLAYERS,
           hasPassword: this.hasPassword,
@@ -315,7 +318,8 @@ export class NetworkManager {
       };
       // Send HELLO ping on local channel
       setTimeout(() => {
-        this.send({ type: 'HELLO', hero: this.myHero, name: 'Игрок', password: this.joinPassword });
+        const myName = AuthManager.getInstance().getUser().name || 'Игрок';
+        this.send({ type: 'HELLO', hero: this.myHero, name: myName, password: this.joinPassword });
       }, 120);
     } catch {
       // ignore
@@ -386,7 +390,8 @@ export class NetworkManager {
             this.isConnected = true;
             this.notifyStatus(`Подключено к комнате ${this.roomCode}! Ожидание ответа хоста...`, true);
             this.startPingLoop();
-            this.send({ type: 'HELLO', hero: this.myHero, name: 'Игрок', password: this.joinPassword });
+            const myName = AuthManager.getInstance().getUser().name || 'Игрок';
+            this.send({ type: 'HELLO', hero: this.myHero, name: myName, password: this.joinPassword });
             doResolve(true);
           });
 
@@ -666,14 +671,15 @@ export class NetworkManager {
 
           // Add or update guest in lobby
           const existing = this.lobbyPlayers.find((p) => p.id === guestId);
+          const guestDisplayName = (msg.name && msg.name.trim()) ? msg.name.trim() : `Игрок ${slotNum}`;
           if (existing) {
             existing.hero = msg.hero;
             existing.charType = msg.hero;
-            existing.name = `Игрок ${slotNum}`;
+            existing.name = guestDisplayName;
           } else {
             this.lobbyPlayers.push({
               id: guestId,
-              name: `Игрок ${slotNum}`,
+              name: guestDisplayName,
               hero: msg.hero,
               charType: msg.hero,
               isHost: false,

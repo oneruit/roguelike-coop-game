@@ -5,6 +5,7 @@ import { Projectile } from '../../../combat/Projectile';
 import { FireRingWeapon } from '../../../combat/Weapon';
 import { DamageNumberManager } from '../../../combat/DamageNumberManager';
 import { ProgressionManager } from '../../../core/ProgressionManager';
+import { AuthManager } from '../../../auth/AuthManager';
 
 export interface SettingsScreenOptions {
   container?: HTMLElement | null;
@@ -34,6 +35,7 @@ export class SettingsScreen extends Screen {
   public onResolutionScaleChanged?: (scale: number) => void;
   public onShadowQualityChanged?: (quality: number) => void;
   public onTimeOfDayChanged?: (mode: 'day' | 'night') => void;
+  public onOpenAuth?: () => void;
 
   constructor(options: SettingsScreenOptions) {
     const existingModal = options.container || options.settingsModal || SafeDOM.getElementById('settings-modal');
@@ -263,6 +265,12 @@ export class SettingsScreen extends Screen {
       });
     }
 
+    // 14b. Open Auth Modal button
+    SafeDOM.query(this.container, '#settings-btn-open-auth')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.onOpenAuth?.();
+    });
+
     // 15. Back button
     settingsBackBtn?.addEventListener('click', () => {
       this.hideSettings();
@@ -293,6 +301,16 @@ export class SettingsScreen extends Screen {
     const backBtn = SafeDOM.query(this.container, '#settings-btn-back');
     if (backBtn) {
       backBtn.textContent = this.settingsFromPause ? '← Назад в меню паузы' : '← Назад в главное меню';
+    }
+
+    const authDesc = SafeDOM.query(this.container, '#settings-auth-status-desc');
+    if (authDesc) {
+      const user = AuthManager.getInstance().getUser();
+      if (user.isGuest) {
+        authDesc.textContent = `Текущий режим: Гость (${user.name}) — данные сохраняются локально.`;
+      } else {
+        authDesc.textContent = `Текущий режим: Email (${user.email}) — сессия активна на 1 месяц.`;
+      }
     }
 
     this.activateSettingsTab('video');

@@ -2,6 +2,7 @@ import { Screen } from '../../core/Screen';
 import { SafeDOM } from '../../core/SafeDOM';
 import { SoundManager } from '../../../core/SoundManager';
 import { MetaProgression } from '../../../meta/MetaProgression';
+import { AuthManager, AuthUser } from '../../../auth/AuthManager';
 
 export interface MainMenuScreenOptions {
   container?: HTMLElement | null;
@@ -10,6 +11,7 @@ export interface MainMenuScreenOptions {
   onShop?: () => void;
   onQuests?: () => void;
   onSettings?: () => void;
+  onAuth?: () => void;
   onExit?: () => void;
 }
 
@@ -20,6 +22,7 @@ export interface MainMenuScreenOptions {
 export class MainMenuScreen extends Screen {
   private options: MainMenuScreenOptions;
   private unsubscribeMeta?: () => void;
+  private unsubscribeAuth?: () => void;
 
   constructor(options: MainMenuScreenOptions = {}) {
     const existingModal = options.container || SafeDOM.getElementById('main-menu-modal');
@@ -31,6 +34,10 @@ export class MainMenuScreen extends Screen {
 
     this.unsubscribeMeta = MetaProgression.getInstance().onChange(() => {
       this.updateCrystalsDisplay();
+    });
+
+    this.unsubscribeAuth = AuthManager.getInstance().onAuthStateChanged((user) => {
+      this.updateAuthDisplay(user);
     });
   }
 
@@ -61,6 +68,11 @@ export class MainMenuScreen extends Screen {
       this.options.onShop?.();
     });
 
+    SafeDOM.query(this.container, '#main-menu-auth-pill')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onAuth?.();
+    });
+
     SafeDOM.query(this.container, '#menu-btn-quests')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onQuests?.();
@@ -85,10 +97,34 @@ export class MainMenuScreen extends Screen {
     }
   }
 
+  public updateAuthDisplay(user?: AuthUser): void {
+    const activeUser = user || AuthManager.getInstance().getUser();
+    const avatarEl = SafeDOM.query(this.container, '#main-menu-auth-avatar');
+    const nameEl = SafeDOM.query(this.container, '#main-menu-auth-name');
+    const badgeEl = SafeDOM.query(this.container, '#main-menu-auth-badge');
+
+    if (avatarEl) {
+      avatarEl.textContent = activeUser.isGuest ? '👤' : '📧';
+    }
+    if (nameEl) {
+      nameEl.textContent = activeUser.name;
+    }
+    if (badgeEl) {
+      if (activeUser.isGuest) {
+        badgeEl.textContent = 'ГОСТЬ';
+        badgeEl.className = 'auth-pill-badge';
+      } else {
+        badgeEl.textContent = 'АККАУНТ';
+        badgeEl.className = 'auth-pill-badge auth-pill-badge--email';
+      }
+    }
+  }
+
   protected onShow(): void {
     document.body.classList.add('is-main-menu');
     document.body.classList.remove('is-in-game');
     this.updateCrystalsDisplay();
+    this.updateAuthDisplay();
   }
 
   protected onHide(): void {
@@ -98,6 +134,9 @@ export class MainMenuScreen extends Screen {
   public destroy(): void {
     if (this.unsubscribeMeta) {
       this.unsubscribeMeta();
+    }
+    if (this.unsubscribeAuth) {
+      this.unsubscribeAuth();
     }
   }
 }
