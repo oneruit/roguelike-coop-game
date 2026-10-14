@@ -32,6 +32,8 @@ import { SafeDOM } from './core/SafeDOM';
 import { MainMenuScreen } from './screens/MainMenu/MainMenuScreen';
 import { CharacterSelectScreen } from './screens/CharacterSelect/CharacterSelectScreen';
 import { ShopScreen } from './screens/Shop/ShopScreen';
+import { AuthModalScreen } from './screens/Auth/AuthModalScreen';
+import { AuthManager } from '../auth/AuthManager';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -70,6 +72,7 @@ export class HUD {
   private mainMenuScreen?: MainMenuScreen;
   private shopScreen?: ShopScreen;
   private characterSelectScreen?: CharacterSelectScreen;
+  private authModalScreen?: AuthModalScreen;
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
@@ -300,6 +303,22 @@ export class HUD {
       this.showMainMenu();
     };
 
+    AuthManager.getInstance().init().catch((err) => {
+      console.warn('[HUD] AuthManager initialization error:', err);
+    });
+
+    this.authModalScreen = new AuthModalScreen({
+      container: SafeDOM.getElementById('auth-modal'),
+      onClose: () => {
+        this.menuStack = this.menuStack.filter((s) => s !== 'auth');
+      }
+    });
+    ScreenManager.getInstance().register(this.authModalScreen);
+
+    this.settingsUI.onOpenAuth = () => {
+      this.showAuthModal();
+    };
+
     this.bindMainMenuListeners();
     this.bindPauseListeners(onResume, onRestart);
     this.bindCharacterSelectListeners(onSelectHero);
@@ -492,6 +511,9 @@ export class HUD {
         this.hideQuestsModal();
         this.hideMainMenu();
         this.showSettings('main');
+      },
+      onAuth: () => {
+        this.showAuthModal();
       },
       onExit: () => {
         this.hideQuestsModal();
@@ -831,11 +853,36 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'char_select');
   }
 
+  public showAuthModal(): void {
+    if (!this.menuStack.includes('auth')) {
+      this.menuStack.push('auth');
+    }
+    this.authModalScreen?.show();
+  }
+
+  public hideAuthModal(): void {
+    this.authModalScreen?.hide();
+    this.menuStack = this.menuStack.filter((s) => s !== 'auth');
+  }
+
+  public isAuthModalOpen(): boolean {
+    return Boolean(this.authModalScreen?.isVisible());
+  }
+
   public isAnyMenuOpen(): boolean {
-    return this.menuStack.length > 0 || !this.mainMenuModal.classList.contains('hidden');
+    return (
+      this.menuStack.length > 0 ||
+      !this.mainMenuModal.classList.contains('hidden') ||
+      Boolean(this.authModalScreen?.isVisible())
+    );
   }
 
   public handleEscape(): 'resume' | 'handled' | 'noop' {
+    if (this.authModalScreen?.isVisible()) {
+      this.hideAuthModal();
+      return 'handled';
+    }
+
     if (this.menuStack.length === 0) {
       return 'noop';
     }
@@ -843,6 +890,11 @@ export class HUD {
     const current = this.menuStack.pop();
 
     switch (current) {
+      case 'auth': {
+        this.hideAuthModal();
+        return 'handled';
+      }
+
       case 'change_hero_confirm': {
         document.getElementById('change-hero-confirm-modal')?.classList.add('hidden');
         this.pauseModal.classList.remove('hidden');

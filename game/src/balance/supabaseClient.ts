@@ -3,41 +3,60 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 let publicClient: SupabaseClient | null = null;
 let adminClient: SupabaseClient | null = null;
 
+function getEnvVar(key: string): string {
+  try {
+    if (typeof import.meta !== 'undefined' && (import.meta as any)?.env?.[key]) {
+      return String((import.meta as any).env[key]);
+    }
+  } catch {
+    // ignore
+  }
+  try {
+    if (typeof process !== 'undefined' && process.env?.[key]) {
+      return String(process.env[key]);
+    }
+  } catch {
+    // ignore
+  }
+  return '';
+}
+
 export function getSupabaseUrl(): string {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage) {
     const stored = window.localStorage.getItem('outlaw_supabase_url');
     if (stored) return stored.trim();
   }
-  return (import.meta.env.VITE_SUPABASE_URL || '').trim();
+  return getEnvVar('VITE_SUPABASE_URL').trim();
 }
 
 export function getSupabaseAnonKey(): string {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage) {
     const stored = window.localStorage.getItem('outlaw_supabase_anon_key');
     if (stored) return stored.trim();
   }
-  return (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  return getEnvVar('VITE_SUPABASE_ANON_KEY').trim();
 }
 
 export function getSupabaseServiceRoleKey(): string {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage) {
     const stored = window.localStorage.getItem('outlaw_supabase_service_role_key');
     if (stored) return stored.trim();
   }
-  // Optional environment fallback if injected by Vite
   return (
-    import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
-    import.meta.env.SUPABASE_SERVICE_ROLE_KEY ||
-    ''
+    getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY') ||
+    getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
   ).trim();
 }
 
 export function getAdminPasscode(): string {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.localStorage) {
     const stored = window.localStorage.getItem('outlaw_admin_passcode');
     if (stored) return stored.trim();
   }
-  return (import.meta.env.VITE_ADMIN_SECRET_KEY || import.meta.env.ADMIN_SECRET_KEY || '').trim();
+  return (
+    getEnvVar('VITE_ADMIN_SECRET_KEY') ||
+    getEnvVar('ADMIN_SECRET_KEY')
+  ).trim();
 }
 
 /**
@@ -90,7 +109,36 @@ export function getAdminSupabaseClient(explicitServiceKey?: string): SupabaseCli
   return adminClient;
 }
 
+let authClient: SupabaseClient | null = null;
+
+/**
+ * Returns Supabase client configured for user authentication with session persistence.
+ */
+export function getAuthSupabaseClient(): SupabaseClient | null {
+  const url = getSupabaseUrl();
+  const anonKey = getSupabaseAnonKey();
+
+  if (!url || !anonKey || url.includes('YOUR_SUPABASE') || anonKey.includes('YOUR_KEY')) {
+    return null;
+  }
+
+  if (!authClient) {
+    authClient = createClient(url, anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        storageKey: 'rift_auth_token'
+      }
+    });
+  }
+
+  return authClient;
+}
+
 export function resetSupabaseClients(): void {
   publicClient = null;
   adminClient = null;
+  authClient = null;
 }
