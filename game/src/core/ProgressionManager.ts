@@ -85,6 +85,7 @@ export class ProgressionManager {
   public onProgressionChanged?: () => void;
   public onProgressionReset?: () => void;
   public isTrainingMode: boolean = false;
+  private saveListeners: Set<() => void> = new Set();
 
   // Runtime in-expedition trackers (reset to 0 at the start of each expedition)
   public runCritsCount: number = 0;
@@ -243,6 +244,64 @@ export class ProgressionManager {
     if (this.onProgressionChanged) {
       this.onProgressionChanged();
     }
+    for (const listener of this.saveListeners) {
+      try {
+        listener();
+      } catch (err) {
+        console.error('[ProgressionManager] Error in save listener:', err);
+      }
+    }
+  }
+
+  public onSave(listener: () => void): () => void {
+    this.saveListeners.add(listener);
+    return () => {
+      this.saveListeners.delete(listener);
+    };
+  }
+
+  public getDefaultProgressionData(): ProgressionData {
+    return this.getDefaultData();
+  }
+
+  public loadExternalData(cloudProg: Partial<ProgressionData>): void {
+    if (!cloudProg || typeof cloudProg !== 'object') return;
+
+    if (typeof cloudProg.accountLevel === 'number') {
+      this.data.accountLevel = Math.max(cloudProg.accountLevel, this.data.accountLevel);
+    }
+    if (typeof cloudProg.accountXp === 'number') {
+      this.data.accountXp = Math.max(cloudProg.accountXp, this.data.accountXp);
+    }
+    if (typeof cloudProg.walletCoins === 'number') {
+      this.data.walletCoins = Math.max(cloudProg.walletCoins, this.data.walletCoins);
+    }
+    if (typeof cloudProg.totalCoinsEarned === 'number') {
+      this.data.totalCoinsEarned = Math.max(cloudProg.totalCoinsEarned, this.data.totalCoinsEarned);
+    }
+    if (typeof cloudProg.bossesKilled === 'number') {
+      this.data.bossesKilled = Math.max(cloudProg.bossesKilled, this.data.bossesKilled);
+    }
+    if (typeof cloudProg.enemiesKilled === 'number') {
+      this.data.enemiesKilled = Math.max(cloudProg.enemiesKilled, this.data.enemiesKilled);
+    }
+    if (typeof cloudProg.resourcesGathered === 'number') {
+      this.data.resourcesGathered = Math.max(cloudProg.resourcesGathered, this.data.resourcesGathered);
+    }
+    if (cloudProg.unlockedHeroes && typeof cloudProg.unlockedHeroes === 'object') {
+      for (const [k, v] of Object.entries(cloudProg.unlockedHeroes)) {
+        if (v) {
+          (this.data.unlockedHeroes as any)[k] = true;
+        }
+      }
+    }
+    if (cloudProg.battlePass && typeof cloudProg.battlePass === 'object') {
+      const bp = this.data.battlePass || { seasonId: 'season_1', points: 0, claimedLevels: [] };
+      bp.points = Math.max(cloudProg.battlePass.points || 0, bp.points);
+      bp.claimedLevels = Array.from(new Set([...bp.claimedLevels, ...(cloudProg.battlePass.claimedLevels || [])]));
+      this.data.battlePass = bp;
+    }
+    this.save();
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {

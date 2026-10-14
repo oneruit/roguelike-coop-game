@@ -2,6 +2,7 @@ import { Screen } from '../../core/Screen';
 import { SafeDOM } from '../../core/SafeDOM';
 import { SoundManager } from '../../../core/SoundManager';
 import { AuthManager, AuthUser } from '../../../auth/AuthManager';
+import { CloudSyncManager } from '../../../meta/CloudSyncManager';
 
 export interface AuthModalScreenOptions {
   container?: HTMLElement | null;
@@ -52,6 +53,32 @@ export class AuthModalScreen extends Screen {
       this.setStatus('Выход из учетной записи...', 'info');
       await AuthManager.getInstance().signOut();
       this.setStatus('Вы вошли как гость. Данные сохраняются локально.', 'success');
+    });
+
+    // Reset cloud progress button
+    SafeDOM.query(this.container, '#auth-btn-reset-cloud')?.addEventListener('click', async () => {
+      SoundManager.playButtonClick();
+      const confirmed = window.confirm(
+        'ВНИМАНИЕ: Вы действительно хотите сбросить весь прогресс (кристаллы, таланты и квесты)? Все сохранения будут очищены как на устройстве, так и в облаке.'
+      );
+      if (!confirmed) return;
+
+      this.setStatus('Сброс игрового прогресса в облаке...', 'info');
+      await CloudSyncManager.getInstance().resetCloudProgress();
+      this.setStatus('Игровой прогресс успешно сброшен.', 'success');
+    });
+
+    // Delete account button
+    SafeDOM.query(this.container, '#auth-btn-delete-account')?.addEventListener('click', async () => {
+      SoundManager.playButtonClick();
+      const confirmed = window.confirm(
+        'ВНИМАНИЕ: Вы действительно хотите удалить аккаунт и отвязать профиль? Все сохраненные данные в облаке будут удалены.'
+      );
+      if (!confirmed) return;
+
+      this.setStatus('Удаление аккаунта и профиля...', 'info');
+      await CloudSyncManager.getInstance().deleteAccount();
+      this.setStatus('Аккаунт удален. Вы переведены в гостевой режим.', 'success');
     });
 
     // Guest name edit save
@@ -129,6 +156,7 @@ export class AuthModalScreen extends Screen {
     const googleDivider = SafeDOM.query(this.container, '#auth-divider-google');
     const googleSection = SafeDOM.query(this.container, '#auth-section-google');
     const guestFooter = SafeDOM.query(this.container, '#auth-guest-footer');
+    const dangerZone = SafeDOM.query(this.container, '#auth-danger-zone');
 
     if (user.isGuest) {
       if (avatarEl) avatarEl.textContent = '👤';
@@ -147,6 +175,7 @@ export class AuthModalScreen extends Screen {
       if (googleDivider) googleDivider.classList.remove('hidden');
       if (googleSection) googleSection.classList.remove('hidden');
       if (guestFooter) guestFooter.classList.add('hidden');
+      if (dangerZone) dangerZone.classList.add('hidden');
     } else {
       if (avatarEl) {
         if (user.avatarUrl) {
@@ -175,6 +204,7 @@ export class AuthModalScreen extends Screen {
       if (googleDivider) googleDivider.classList.add('hidden');
       if (googleSection) googleSection.classList.add('hidden');
       if (guestFooter) guestFooter.classList.remove('hidden');
+      if (dangerZone) dangerZone.classList.remove('hidden');
     }
   }
 

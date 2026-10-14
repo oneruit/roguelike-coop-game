@@ -220,6 +220,39 @@ export class MetaProgression {
     return this.state.lifetimeCrystals;
   }
 
+  public getUpgrades(): Record<string, number> {
+    return { ...this.state.upgrades };
+  }
+
+  public getState(): MetaProgressionSave {
+    return {
+      version: this.state.version,
+      crystals: this.state.crystals,
+      lifetimeCrystals: this.state.lifetimeCrystals,
+      upgrades: { ...this.state.upgrades }
+    };
+  }
+
+  public loadExternalState(newState: Partial<MetaProgressionSave>): void {
+    if (typeof newState.crystals === 'number') {
+      this.state.crystals = Math.max(0, newState.crystals);
+    }
+    if (typeof newState.lifetimeCrystals === 'number') {
+      this.state.lifetimeCrystals = Math.max(0, newState.lifetimeCrystals);
+    }
+    if (newState.upgrades && typeof newState.upgrades === 'object') {
+      this.state.upgrades = { ...newState.upgrades };
+    }
+    this.saveState();
+  }
+
+  public resetAllProgress(): void {
+    this.state.crystals = 0;
+    this.state.lifetimeCrystals = 0;
+    this.state.upgrades = {};
+    this.saveState();
+  }
+
   public addCrystals(amount: number): void {
     if (amount <= 0) return;
     this.state.crystals += amount;

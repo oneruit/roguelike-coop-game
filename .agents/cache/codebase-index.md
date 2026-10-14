@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, and constants.
-> **Generated:** 2026-10-14T21:53:41.067Z | **Source Files:** 147 | **Total Symbols:** 454
+> **Generated:** 2026-10-14T22:25:38.311Z | **Source Files:** 148 | **Total Symbols:** 457
 
 Run `npm run index` to refresh this cache.
 
@@ -9,7 +9,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Symbols Count |
 | :--- | :--- |
-| `game/src` | 413 |
+| `game/src` | 416 |
 | `admin/src` | 39 |
 | `server` | 2 |
 
@@ -39,8 +39,8 @@ Run `npm run index` to refresh this cache.
 | `attachInputListeners` | `function` | [`admin/src/views/controlHelpers.ts:35`](../../admin/src/views/controlHelpers.ts#L35) |
 | `AuthListener` | `type` | [`game/src/auth/AuthManager.ts:16`](../../game/src/auth/AuthManager.ts#L16) |
 | `AuthManager` | `class` | [`game/src/auth/AuthManager.ts:26`](../../game/src/auth/AuthManager.ts#L26) |
-| `AuthModalScreen` | `class` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:15`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L15) |
-| `AuthModalScreenOptions` | `interface` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:6`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L6) |
+| `AuthModalScreen` | `class` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:16`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L16) |
+| `AuthModalScreenOptions` | `interface` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:7`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L7) |
 | `AuthType` | `type` | [`game/src/auth/AuthManager.ts:3`](../../game/src/auth/AuthManager.ts#L3) |
 | `AuthUser` | `interface` | [`game/src/auth/AuthManager.ts:5`](../../game/src/auth/AuthManager.ts#L5) |
 | `AVAILABLE_SLOT_IDS` | `const` | [`game/src/shared/types/network.ts:171`](../../game/src/shared/types/network.ts#L171) |
@@ -112,6 +112,7 @@ Run `npm run index` to refresh this cache.
 | `ChestTier` | `type` | [`game/src/world/ChestManager.ts:25`](../../game/src/world/ChestManager.ts#L25) |
 | `ChunkManager` | `class` | [`game/src/world/ChunkManager.ts:28`](../../game/src/world/ChunkManager.ts#L28) |
 | `ClientSyncMessage` | `interface` | [`game/src/shared/types/network.ts:226`](../../game/src/shared/types/network.ts#L226) |
+| `CloudSyncManager` | `class` | [`game/src/meta/CloudSyncManager.ts:24`](../../game/src/meta/CloudSyncManager.ts#L24) |
 | `CombatDirector` | `class` | [`game/src/combat/CombatDirector.ts:18`](../../game/src/combat/CombatDirector.ts#L18) |
 | `COMMON_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:244`](../../game/src/items/RiftItemSystem.ts#L244) |
 | `createInvokerBuff` | `function` | [`game/src/shared/InvokerSpells.ts:273`](../../game/src/shared/InvokerSpells.ts#L273) |
@@ -211,7 +212,7 @@ Run `npm run index` to refresh this cache.
 | `HeroQuestDefinition` | `interface` | [`game/src/core/ProgressionManager.ts:60`](../../game/src/core/ProgressionManager.ts#L60) |
 | `HeroTextureAction` | `type` | [`game/src/utils/AssetResolver.ts:3`](../../game/src/utils/AssetResolver.ts#L3) |
 | `HostSnapshotMessage` | `interface` | [`game/src/shared/types/network.ts:206`](../../game/src/shared/types/network.ts#L206) |
-| `HUD` | `class` | [`game/src/ui/HUD.ts:41`](../../game/src/ui/HUD.ts#L41) |
+| `HUD` | `class` | [`game/src/ui/HUD.ts:42`](../../game/src/ui/HUD.ts#L42) |
 | `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:483`](../../game/src/combat/weapons/MagicWeapons.ts#L483) |
 | `InGameHUDScreen` | `class` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:12`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L12) |
 | `InGameHUDScreenOptions` | `interface` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:4`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L4) |
@@ -312,6 +313,7 @@ Run `npm run index` to refresh this cache.
 | `PlayerMotorOptions` | `interface` | [`game/src/mechanics/player/PlayerMotor.ts:5`](../../game/src/mechanics/player/PlayerMotor.ts#L5) |
 | `PlayerNetState` | `interface` | [`game/src/shared/types/network.ts:55`](../../game/src/shared/types/network.ts#L55) |
 | `PlayerOverheadData` | `interface` | [`game/src/entities/PlayerOverheadRenderer.ts:3`](../../game/src/entities/PlayerOverheadRenderer.ts#L3) |
+| `PlayerProfileRow` | `interface` | [`game/src/meta/CloudSyncManager.ts:8`](../../game/src/meta/CloudSyncManager.ts#L8) |
 | `PlayerStats` | `class` | [`game/src/mechanics/player/PlayerStats.ts:31`](../../game/src/mechanics/player/PlayerStats.ts#L31) |
 | `PlayerStats` | `interface` | [`game/src/shared/types/entities.ts:38`](../../game/src/shared/types/entities.ts#L38) |
 | `PlayerStatsConfig` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:6`](../../game/src/mechanics/player/PlayerStats.ts#L6) |
@@ -439,6 +441,7 @@ Run `npm run index` to refresh this cache.
 | `SupabaseService` | `class` | [`admin/src/api/supabaseService.ts:9`](../../admin/src/api/supabaseService.ts#L9) |
 | `SvgChartRenderer` | `class` | [`admin/src/chartUtils.ts:30`](../../admin/src/chartUtils.ts#L30) |
 | `SwordsmanTextures` | `type` | [`game/src/core/TextureManager.ts:44`](../../game/src/core/TextureManager.ts#L44) |
+| `SyncState` | `type` | [`game/src/meta/CloudSyncManager.ts:6`](../../game/src/meta/CloudSyncManager.ts#L6) |
 | `TableSort` | `interface` | [`admin/src/types.ts:1`](../../admin/src/types.ts#L1) |
 | `TalentBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:3`](../../game/src/balance/BalanceTypes.ts#L3) |
 | `TeleporterState` | `type` | [`game/src/world/RiftTeleporter.ts:17`](../../game/src/world/RiftTeleporter.ts#L17) |

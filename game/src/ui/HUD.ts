@@ -34,6 +34,7 @@ import { CharacterSelectScreen } from './screens/CharacterSelect/CharacterSelect
 import { ShopScreen } from './screens/Shop/ShopScreen';
 import { AuthModalScreen } from './screens/Auth/AuthModalScreen';
 import { AuthManager } from '../auth/AuthManager';
+import { CloudSyncManager } from '../meta/CloudSyncManager';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -303,7 +304,9 @@ export class HUD {
       this.showMainMenu();
     };
 
-    AuthManager.getInstance().init().catch((err) => {
+    AuthManager.getInstance().init().then(() => {
+      CloudSyncManager.getInstance().init();
+    }).catch((err) => {
       console.warn('[HUD] AuthManager initialization error:', err);
     });
 

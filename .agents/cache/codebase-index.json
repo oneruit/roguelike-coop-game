@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-14T21:53:41.067Z",
-  "totalFiles": 147,
-  "totalSymbols": 454,
+  "generatedAt": "2026-10-14T22:25:38.311Z",
+  "totalFiles": 148,
+  "totalSymbols": 457,
   "symbols": [
     {
       "name": "ActiveBuff",
@@ -127,13 +127,13 @@
       "name": "AuthModalScreen",
       "kind": "class",
       "file": "game/src/ui/screens/Auth/AuthModalScreen.ts",
-      "line": 15
+      "line": 16
     },
     {
       "name": "AuthModalScreenOptions",
       "kind": "interface",
       "file": "game/src/ui/screens/Auth/AuthModalScreen.ts",
-      "line": 6
+      "line": 7
     },
     {
       "name": "AuthType",
@@ -560,6 +560,12 @@
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
       "line": 226
+    },
+    {
+      "name": "CloudSyncManager",
+      "kind": "class",
+      "file": "game/src/meta/CloudSyncManager.ts",
+      "line": 24
     },
     {
       "name": "CombatDirector",
@@ -1159,7 +1165,7 @@
       "name": "HUD",
       "kind": "class",
       "file": "game/src/ui/HUD.ts",
-      "line": 41
+      "line": 42
     },
     {
       "name": "IceSpikeWeapon",
@@ -1760,6 +1766,12 @@
       "kind": "interface",
       "file": "game/src/entities/PlayerOverheadRenderer.ts",
       "line": 3
+    },
+    {
+      "name": "PlayerProfileRow",
+      "kind": "interface",
+      "file": "game/src/meta/CloudSyncManager.ts",
+      "line": 8
     },
     {
       "name": "PlayerStats",
@@ -2522,6 +2534,12 @@
       "kind": "type",
       "file": "game/src/core/TextureManager.ts",
       "line": 44
+    },
+    {
+      "name": "SyncState",
+      "kind": "type",
+      "file": "game/src/meta/CloudSyncManager.ts",
+      "line": 6
     },
     {
       "name": "TableSort",
