@@ -77,10 +77,10 @@ export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLa
       return ANIM_LAYOUT_NECROMANCER;
     case 'amazon':
     case 'valkyrie':
+    case 'sorceress':
       return ANIM_LAYOUT_V2;
     case 'ronin':
     case 'flail':
-    case 'sorceress':
     case 'chakram':
     case 'invoker':
     case 'archer':
