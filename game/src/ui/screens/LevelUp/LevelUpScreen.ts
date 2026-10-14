@@ -524,7 +524,9 @@ export class LevelUpScreen extends Screen {
           description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
           apply: () => {
             if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
-            const triggerAttack = () => player.triggerAttackAnim(0.5);
+            const triggerAttack = player.charType === 'invoker'
+              ? () => player.triggerAttackAnim(0.5, id)
+              : undefined;
             const w = spell
               ? new InvokerSpellWeapon(spell, triggerAttack)
               : new InvokerInvokeWeapon(triggerAttack);
@@ -560,7 +562,7 @@ export class LevelUpScreen extends Screen {
 
         const hasBow = player.weapons.some(w => w.id === 'bow');
         if (!hasBow) {
-          addGenericOption('bow', 'Охотничий Лук', '🏹', 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов', () => new BowWeapon(() => player.triggerAttackAnim(0.40)));
+          addGenericOption('bow', 'Охотничий Лук', '🏹', 'Острые дальнобойные стрелы с мощным пробитием нескольких врагов', () => new BowWeapon());
         }
 
         const hasKukri = player.weapons.some(w => w.id === 'kukri');
@@ -584,52 +586,52 @@ export class LevelUpScreen extends Screen {
 
         const hasKatana = player.weapons.some(w => w.id === 'katana_slash');
         if (!hasKatana) {
-          addGenericOption('katana_slash', 'Рассекающий Клинок', '🗡️', 'Рассекает окружающих врагов смертоносным круговым ударом', () => new KatanaSlashWeapon(() => player.triggerAttackAnim(0.48)));
+          addGenericOption('katana_slash', 'Рассекающий Клинок', '🗡️', 'Рассекает окружающих врагов смертоносным круговым ударом', () => new KatanaSlashWeapon());
         }
 
         const hasWhirlwind = player.weapons.some(w => w.id === 'whirlwind_slash');
         if (!hasWhirlwind) {
-          addGenericOption('whirlwind_slash', 'Багровый Вихрь', '🌪️', 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью', () => new WhirlwindSlashWeapon(() => player.triggerAttackAnim(0.42)));
+          addGenericOption('whirlwind_slash', 'Багровый Вихрь', '🌪️', 'Шквал стремительных багровых рассекающих ударов с повышенной скоростью', () => new WhirlwindSlashWeapon());
         }
 
         const hasGreatsword = player.weapons.some(w => w.id === 'greatsword');
         if (!hasGreatsword) {
-          addGenericOption('greatsword', 'Двуручный Меч', '⚔️', 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом', () => new GreatswordWeapon(() => player.triggerAttackAnim(0.5)));
+          addGenericOption('greatsword', 'Двуручный Меч', '⚔️', 'Тяжёлый круговой размах гигантского клинка с колоссальным уроном и радиусом', () => new GreatswordWeapon());
         }
 
         const hasFlail = player.weapons.some(w => w.id === 'flail');
         if (!hasFlail) {
-          addGenericOption('flail', 'Боевой Цеп', '⛓️', 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров', () => new FlailWeapon(() => player.triggerAttackAnim(0.45)));
+          addGenericOption('flail', 'Боевой Цеп', '⛓️', 'Сокрушительный вихрь тяжёлого шипастого цепа, отбрасывающего монстров', () => new FlailWeapon());
         }
 
         const hasStaff = player.weapons.some(w => w.id === 'astral_staff');
         if (!hasStaff) {
-          addGenericOption('astral_staff', 'Звёздный Посох', '🔮', 'Магический посох, запускающий скоростные пробивающие звёздные снаряды', () => new AstralStaffWeapon(() => player.triggerAttackAnim(0.48)));
+          addGenericOption('astral_staff', 'Звёздный Посох', '🔮', 'Магический посох, запускающий скоростные пробивающие звёздные снаряды', () => new AstralStaffWeapon());
         }
 
         const hasChakram = player.weapons.some(w => w.id === 'chakram');
         if (!hasChakram) {
-          addGenericOption('chakram', 'Танцующий Чакрам', '🪃', 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением', () => new ChakramWeapon(() => player.triggerAttackAnim(0.42)));
+          addGenericOption('chakram', 'Танцующий Чакрам', '🪃', 'Бросок вращающегося клинка по дуге с возвращением бумерангом и повторным рассечением', () => new ChakramWeapon());
         }
 
         const hasLightning = player.weapons.some(w => w.id === 'lightning_strike');
         if (!hasLightning) {
-          addGenericOption('lightning_strike', 'Удар Молнии', '⚡', 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху', () => new LightningStrikeWeapon(() => player.triggerAttackAnim(0.40)));
+          addGenericOption('lightning_strike', 'Удар Молнии', '⚡', 'Призывает сокрушительные грозовые молнии с небес, поражающие монстров электрическим взрывом сверху', () => new LightningStrikeWeapon());
         }
 
         const hasIceSpike = player.weapons.some(w => w.id === 'ice_spike');
         if (!hasIceSpike) {
-          addGenericOption('ice_spike', 'Ледяной Шип', '🧊', 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском', () => new IceSpikeWeapon(() => player.triggerAttackAnim(0.38)));
+          addGenericOption('ice_spike', 'Ледяной Шип', '🧊', 'Ледяной шип вырывается из-под земли и пронзает монстров снизу ледяным всплеском', () => new IceSpikeWeapon());
         }
 
         const hasFireball = player.weapons.some(w => w.id === 'fireball');
         if (!hasFireball) {
-          addGenericOption('fireball', 'Огненный Шар', '☄️', 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области', () => new FireballWeapon(() => player.triggerAttackAnim(0.42)));
+          addGenericOption('fireball', 'Огненный Шар', '☄️', 'Огненный шар падает сверху с небес и детонирует огненным взрывом по области', () => new FireballWeapon());
         }
 
         const hasRifle = player.weapons.some(w => w.id === 'assault_rifle');
         if (!hasRifle) {
-          addGenericOption('assault_rifle', 'Штурмовая Винтовка', '🔫', 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль', () => new AssaultRifleWeapon(() => player.triggerAttackAnim(0.20)));
+          addGenericOption('assault_rifle', 'Штурмовая Винтовка', '🔫', 'Скорострельная автоматическая винтовка, ведущая непрерывный огонь очередями пуль', () => new AssaultRifleWeapon());
         }
       }
     }

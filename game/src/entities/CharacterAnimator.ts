@@ -77,10 +77,10 @@ export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLa
       return ANIM_LAYOUT_NECROMANCER;
     case 'amazon':
     case 'valkyrie':
+    case 'sorceress':
       return ANIM_LAYOUT_V2;
     case 'ronin':
     case 'flail':
-    case 'sorceress':
     case 'chakram':
     case 'invoker':
     case 'archer':
@@ -127,7 +127,12 @@ export class CharacterAnimator {
   }
 
   public triggerAttack(duration: number = 0.5): void {
-    this.attackAnimTimer = Math.max(this.attackAnimTimer, duration);
+    this.attackAnimTimer = duration;
+    this.animFrameTimer = 0;
+    const cols = this.layout.cols || 6;
+    const targetFps = Math.max(8, cols / Math.max(0.05, duration));
+    this.stateConfigs.IDLE_ATTACK.fps = targetFps;
+    this.stateConfigs.WALK_ATTACK.fps = targetFps;
   }
 
   public setState(state: HeroAnimState): void {
