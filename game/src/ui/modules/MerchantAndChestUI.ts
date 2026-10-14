@@ -3,6 +3,7 @@ import { MerchantManager } from '../../world/MerchantManager';
 import { RiftItemDef } from '../../items/RiftItemSystem';
 import { SoundManager } from '../../core/SoundManager';
 import { SafeDOM } from '../core/SafeDOM';
+import { getAssetUrl } from '../../utils/assetPath';
 
 export class MerchantAndChestUI {
   // Merchant Modal Elements
@@ -152,6 +153,10 @@ export class MerchantAndChestUI {
     onChoose: (item: RiftItemDef) => void
   ): void {
     SoundManager.playLevelUp();
+    const modalImg = SafeDOM.getElementById('chest-modal-img') as HTMLImageElement | null;
+    if (modalImg) {
+      modalImg.src = getAssetUrl('/textures/chests/chest_open.gif') + `?v=${Date.now()}`;
+    }
     this.chestModal.classList.remove('hidden');
     this.chestItemCardsContainer.innerHTML = '';
     let chosen = false;
