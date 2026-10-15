@@ -38,6 +38,7 @@ export interface ProjectileOptions {
   isIceSpike?: boolean;
   isFireball?: boolean;
   isKineticBeam?: boolean;
+  isPoisonPuddle?: boolean;
   bleedDps?: number;
   sourceWeaponId?: string;
   critChance?: number;
@@ -61,6 +62,7 @@ export class Projectile {
   public isIceSpike = false;
   public isFireball = false;
   public isKineticBeam = false;
+  public isPoisonPuddle = false;
   public hasImpacted = false;
   public isCosmetic: boolean;
   public ownerId?: string;
@@ -105,6 +107,12 @@ export class Projectile {
   private fireballRingMat?: MeshBasicMaterial;
   private fireballDiscMat?: MeshBasicMaterial;
   private impactLifetime = 0.24;
+
+  // Poison Puddle specific visuals
+  private poisonDiscMat?: MeshBasicMaterial;
+  private poisonRingMat?: MeshBasicMaterial;
+  private poisonBubbleMats: MeshBasicMaterial[] = [];
+  private puddleTickTimer = 0;
 
   // Weapon VFX Opacity control
   public static vfxOpacity: number = 1.0;
@@ -178,6 +186,18 @@ export class Projectile {
         p.fireballDiscMat.opacity = 0.9 * clamped;
         p.fireballDiscMat.visible = clamped > 0.005;
       }
+      if (p.poisonDiscMat) {
+        p.poisonDiscMat.opacity = 0.78 * clamped;
+        p.poisonDiscMat.visible = clamped > 0.005;
+      }
+      if (p.poisonRingMat) {
+        p.poisonRingMat.opacity = 0.90 * clamped;
+        p.poisonRingMat.visible = clamped > 0.005;
+      }
+      for (const bMat of p.poisonBubbleMats) {
+        bMat.opacity = 0.85 * clamped;
+        bMat.visible = clamped > 0.005;
+      }
     }
   }
 
@@ -186,6 +206,11 @@ export class Projectile {
   private static orbCoreGeom = new SphereGeometry(0.5, 8, 8);
   private static orbCoreMat = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0 });
   private static orbMatCache = new Map<number, MeshStandardMaterial>();
+
+  // Shared assets for Poison Puddle
+  private static poisonPuddleDiscGeom: CircleGeometry | null = null;
+  private static poisonPuddleRingGeom: RingGeometry | null = null;
+  private static poisonBubbleGeom: CircleGeometry | null = null;
 
   // Shared assets for Reaper's Scythe
   private static scytheGeom: PlaneGeometry | null = null;
@@ -265,6 +290,7 @@ export class Projectile {
     this.isIceSpike = !!options.isIceSpike;
     this.isFireball = !!options.isFireball;
     this.isKineticBeam = !!options.isKineticBeam;
+    this.isPoisonPuddle = !!options.isPoisonPuddle;
     this.curveSign = options.curveSign ?? 1;
     this.bleedDps = options.bleedDps ?? 0;
     this.sourceWeaponId = options.sourceWeaponId;
@@ -545,6 +571,77 @@ export class Projectile {
       const angle = Math.atan2(this.direction.x, this.direction.z);
       this.mesh.rotation.y = angle;
       this.mesh.scale.setScalar(this.radius);
+    } else if (this.isPoisonPuddle) {
+      if (!Projectile.poisonPuddleDiscGeom || !Projectile.poisonPuddleRingGeom || !Projectile.poisonBubbleGeom) {
+        const disc = new CircleGeometry(1.0, 32);
+        disc.rotateX(-Math.PI / 2);
+        Projectile.poisonPuddleDiscGeom = disc;
+
+        const ring = new RingGeometry(0.82, 1.0, 32);
+        ring.rotateX(-Math.PI / 2);
+        Projectile.poisonPuddleRingGeom = ring;
+
+        const bubble = new CircleGeometry(0.12, 16);
+        bubble.rotateX(-Math.PI / 2);
+        Projectile.poisonBubbleGeom = bubble;
+      }
+
+      this.poisonDiscMat = new MeshBasicMaterial({
+        color: 0x15803d,
+        transparent: true,
+        opacity: 0.78 * Projectile.vfxOpacity,
+        side: DoubleSide,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -1.2,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      const discMesh = new Mesh(Projectile.poisonPuddleDiscGeom, this.poisonDiscMat);
+      discMesh.position.y = 0.03;
+      this.mesh.add(discMesh);
+
+      this.poisonRingMat = new MeshBasicMaterial({
+        color: 0x4ade80,
+        transparent: true,
+        opacity: 0.90 * Projectile.vfxOpacity,
+        blending: AdditiveBlending,
+        side: DoubleSide,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -1.5,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      const ringMesh = new Mesh(Projectile.poisonPuddleRingGeom, this.poisonRingMat);
+      ringMesh.position.y = 0.035;
+      this.mesh.add(ringMesh);
+
+      const bubbleOffsets = [
+        { x: 0.35, z: -0.22, r: 1.1 },
+        { x: -0.42, z: 0.31, r: 0.8 },
+        { x: 0.18, z: 0.44, r: 1.3 },
+        { x: -0.26, z: -0.38, r: 0.9 }
+      ];
+      this.poisonBubbleMats = [];
+      for (const b of bubbleOffsets) {
+        const bMat = new MeshBasicMaterial({
+          color: 0x86efac,
+          transparent: true,
+          opacity: 0.75 * Projectile.vfxOpacity,
+          blending: AdditiveBlending,
+          side: DoubleSide,
+          depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -1.6,
+          visible: Projectile.vfxOpacity > 0.005
+        });
+        this.poisonBubbleMats.push(bMat);
+        const bMesh = new Mesh(Projectile.poisonBubbleGeom, bMat);
+        bMesh.position.set(b.x, 0.04, b.z);
+        bMesh.scale.setScalar(b.r);
+        this.mesh.add(bMesh);
+      }
+
+      this.mesh.scale.set(this.radius, 1, this.radius);
     } else if (options.isMagic) {
       const sphere = new Mesh(Projectile.orbGeom, Projectile.getOrbMaterial(options.color));
       this.mesh.add(sphere);
@@ -692,6 +789,38 @@ export class Projectile {
         }
       }
       return;
+    } else if (this.isPoisonPuddle) {
+      this.mesh.position.copy(this.position);
+      this.mesh.rotation.y += dt * 0.25;
+
+      const pulse = 1.0 + Math.sin(this.elapsedTime * 5.0) * 0.04;
+      this.mesh.scale.set(this.radius * pulse, 1, this.radius * pulse);
+
+      const fadeIn = Math.min(1.0, (this.maxLifetime - this.lifetime) / 0.25);
+      const fadeOut = Math.min(1.0, this.lifetime / 0.6);
+      const alpha = Math.min(fadeIn, fadeOut);
+
+      if (this.poisonDiscMat) {
+        this.poisonDiscMat.opacity = 0.78 * alpha * Projectile.vfxOpacity;
+        this.poisonDiscMat.visible = Projectile.vfxOpacity > 0.005 && alpha > 0.01;
+      }
+      if (this.poisonRingMat) {
+        this.poisonRingMat.opacity = 0.90 * alpha * Projectile.vfxOpacity;
+        this.poisonRingMat.visible = Projectile.vfxOpacity > 0.005 && alpha > 0.01;
+      }
+      for (let bi = 0; bi < this.poisonBubbleMats.length; bi++) {
+        const mat = this.poisonBubbleMats[bi];
+        const bPulse = 0.5 + 0.5 * Math.sin(this.elapsedTime * 6.0 + bi * 1.5);
+        mat.opacity = 0.85 * alpha * bPulse * Projectile.vfxOpacity;
+        mat.visible = Projectile.vfxOpacity > 0.005 && alpha > 0.01;
+      }
+
+      this.puddleTickTimer += dt;
+      if (this.puddleTickTimer >= 0.40) {
+        this.puddleTickTimer = 0;
+        this.hitEnemies.clear();
+      }
+      return;
     } else if (this.isLightning) {
       const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
       const flicker = 0.8 + Math.random() * 0.2;
@@ -772,7 +901,7 @@ export class Projectile {
 
   public onHit(): boolean {
     this.pierce -= 1;
-    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning && !this.isIceSpike && !this.isFireball && !this.isKineticBeam) {
+    if (this.pierce <= 0 && !this.isOrbiting && !this.isChakram && !this.isLightning && !this.isIceSpike && !this.isFireball && !this.isKineticBeam && !this.isPoisonPuddle) {
       this.isAlive = false;
       return true;
     }
@@ -822,5 +951,17 @@ export class Projectile {
       this.fireballDiscMat.dispose();
       this.fireballDiscMat = undefined;
     }
+    if (this.poisonDiscMat) {
+      this.poisonDiscMat.dispose();
+      this.poisonDiscMat = undefined;
+    }
+    if (this.poisonRingMat) {
+      this.poisonRingMat.dispose();
+      this.poisonRingMat = undefined;
+    }
+    for (const bMat of this.poisonBubbleMats) {
+      bMat.dispose();
+    }
+    this.poisonBubbleMats = [];
   }
 }

@@ -93,6 +93,7 @@ All weapons in the game scale up to **Level 20**. There are **13 weapons** avail
 | **Ice Spike** | `ice_spike` | 🧊 | **36** | 1.10 s | 18 m (dist) / 2.0 m (splash) | 1 spike | Splash AOE | Piercing ice spikes erupting from the ground |
 | **Fireball** | `fireball` | ☄️ | **52** | 1.35 s | 22 m (dist) / 2.5 m (splash) | 1 ball | Splash AOE | Falling meteor detonating on impact (28 m/s) |
 | **Assault Rifle** | `assault_rifle` | 🔫 | **13** | 0.18 s | 32 m (dist) | 1 bullet | 1 enemy | Rapid automatic rifle fire |
+| **Poison Puddle** | `poison_puddle` | 🧪 | **18** | 2.00 s | 20 m (dist) / 2.2 m (splash) | 1 puddle | Continuous AOE | Toxic acid pools dealing periodic tick damage and slowing enemies |
 
 ---
 
@@ -184,6 +185,14 @@ All weapons in the game scale up to **Level 20**. There are **13 weapons** avail
 - **Blast radius milestones**: +0.35m at levels **[5, 10, 15]** *(up to 3.55m)*.
 - **Cooldown milestones**: -8% cooldown at levels **[3, 6, 9, 13, 17]** *(min 0.40s)*.
 - **Level 20 Stats**: **245 damage**, **6 fireballs**, **3.55m blast radius**, **0.89s CD**, **28 m/s impact speed**.
+
+#### 14. Poison Puddle (`poison_puddle`)
+- **Base**: 18 damage, 2.00s CD, 1 puddle, 2.2m puddle radius, 20m range, 4.0s duration, 35% slow.
+- **Growth per level**: +5 damage per level.
+- **Puddle milestones**: +1 puddle at levels **[3, 6, 9, 12]** *(up to 5 puddles)*.
+- **Splash radius milestones**: +0.25m at levels **[4, 8, 12]** *(up to 2.95m)*.
+- **Cooldown milestones**: -7% cooldown at levels **[2, 5, 8, 11]** *(min 0.65s)*.
+- **Level 12 Stats**: **73 damage**, **5 puddles**, **2.95m puddle radius**, **1.49s CD**, **4.0s duration**, **35% slow**.
 
 ---
 

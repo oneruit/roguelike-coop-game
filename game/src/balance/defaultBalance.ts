@@ -192,6 +192,19 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       pierce: 1,
       count: 1,
       notes: 'Скорострельная автоматическая винтовка с ураганным темпом стрельбы'
+    },
+    poison_puddle: {
+      id: 'poison_puddle',
+      name: 'Ядовитая лужа',
+      icon: '🧪',
+      damage: 18,
+      cooldown: 2.0,
+      damagePerLevel: 5,
+      maxLevel: 12,
+      range: 20,
+      splashRadius: 2.2,
+      count: 1,
+      notes: 'Токсичные пузырящиеся лужи кислоты, наносящие периодический урон и замедляющие врагов'
     }
   },
   heroes: {

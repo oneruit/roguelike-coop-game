@@ -281,6 +281,8 @@ export class SimProjectileInternal {
   public isLightning: boolean;
   public isIceSpike: boolean;
   public isFireball: boolean;
+  public isPoisonPuddle: boolean;
+  public puddleTickTimer: number = 0;
   public hasImpacted: boolean = false;
   public curveSign: number;
   public elapsedTime: number = 0;
@@ -313,6 +315,7 @@ export class SimProjectileInternal {
     this.isLightning = !!data.isLightning;
     this.isIceSpike = !!data.isIceSpike;
     this.isFireball = !!data.isFireball;
+    this.isPoisonPuddle = !!data.isPoisonPuddle;
     this.curveSign = data.curveSign || 1;
     this.isOrbiting = !!data.isOrbiting;
     this.orbitRadius = data.orbitRadius || 2.4;
@@ -914,6 +917,12 @@ export class GameCore {
             proj.lifetime = 0.24;
           }
         }
+      } else if (proj.isPoisonPuddle) {
+        proj.puddleTickTimer += dt;
+        if (proj.puddleTickTimer >= 0.40) {
+          proj.puddleTickTimer = 0;
+          proj.hitEnemies.clear();
+        }
       } else {
         proj.position.x += proj.direction.x * proj.speed * dt;
         proj.position.z += proj.direction.z * proj.speed * dt;
@@ -940,7 +949,7 @@ export class GameCore {
             enemy.addBleed(proj.bleedDps, 3.0, proj.ownerId);
           }
 
-          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning && !proj.isIceSpike && !proj.isFireball) {
+          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning && !proj.isIceSpike && !proj.isFireball && !proj.isPoisonPuddle) {
             proj.pierce--;
             if (proj.pierce <= 0) {
               proj.isAlive = false;

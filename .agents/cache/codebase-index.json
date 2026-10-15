@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-14T23:40:58.418Z",
+  "generatedAt": "2026-10-15T00:08:28.059Z",
   "totalFiles": 148,
-  "totalSymbols": 1508,
-  "topLevelCount": 457,
-  "methodsCount": 1051,
+  "totalSymbols": 1516,
+  "topLevelCount": 459,
+  "methodsCount": 1057,
   "entities": {
     "heroes": [
       {
@@ -347,6 +347,16 @@
         "maxLevel": 12,
         "range": 20,
         "notes": "Скорострельная автоматическая винтовка с ураганным темпом стрельбы"
+      },
+      {
+        "id": "poison_puddle",
+        "name": "Ядовитая лужа",
+        "icon": "🧪",
+        "damage": 18,
+        "cooldown": 2,
+        "maxLevel": 12,
+        "range": 20,
+        "notes": "Токсичные пузырящиеся лужи кислоты, наносящие периодический урон и замедляющие врагов"
       }
     ],
     "monsters": [
@@ -1311,7 +1321,7 @@
       "name": "AVAILABLE_SLOT_IDS",
       "kind": "const",
       "file": "game/src/shared/types/network.ts",
-      "line": 171
+      "line": 172
     },
     {
       "name": "BalanceCategory",
@@ -2320,7 +2330,7 @@
       "name": "ChestSyncInfo",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 188
+      "line": 189
     },
     {
       "name": "ChestTier",
@@ -2398,7 +2408,7 @@
       "name": "ClientSyncMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 226
+      "line": 227
     },
     {
       "name": "CloudSyncManager",
@@ -2502,7 +2512,7 @@
       "name": "CombatDirector.clear",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 780,
+      "line": 788,
       "className": "CombatDirector",
       "methodName": "clear"
     },
@@ -2510,7 +2520,7 @@
       "name": "CombatDirector.onLocalPlayerEnemyKill",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 304,
+      "line": 308,
       "className": "CombatDirector",
       "methodName": "onLocalPlayerEnemyKill"
     },
@@ -2518,7 +2528,7 @@
       "name": "CombatDirector.spawnChronosShockwave",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 394,
+      "line": 398,
       "className": "CombatDirector",
       "methodName": "spawnChronosShockwave"
     },
@@ -2534,7 +2544,7 @@
       "name": "CombatDirector.spawnFlameTrailPatch",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 419,
+      "line": 423,
       "className": "CombatDirector",
       "methodName": "spawnFlameTrailPatch"
     },
@@ -2542,7 +2552,7 @@
       "name": "CombatDirector.updateItemProcs",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 648,
+      "line": 656,
       "className": "CombatDirector",
       "methodName": "updateItemProcs"
     },
@@ -2550,7 +2560,7 @@
       "name": "CombatDirector.updateProjectiles",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 448,
+      "line": 452,
       "className": "CombatDirector",
       "methodName": "updateProjectiles"
     },
@@ -2558,7 +2568,7 @@
       "name": "CombatDirector.updateProjectileVisuals",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 637,
+      "line": 645,
       "className": "CombatDirector",
       "methodName": "updateProjectileVisuals"
     },
@@ -2578,14 +2588,14 @@
       "name": "createSimWeaponById",
       "kind": "function",
       "file": "game/src/sim/weapons/SimWeaponFactory.ts",
-      "line": 55,
+      "line": 56,
       "doc": "Creates weapon by ID"
     },
     {
       "name": "createSimWeaponForCharacter",
       "kind": "function",
       "file": "game/src/sim/weapons/SimWeaponFactory.ts",
-      "line": 27,
+      "line": 28,
       "doc": "Creates the starting weapon for character selection."
     },
     {
@@ -3541,7 +3551,7 @@
       "name": "findClosestSimEnemies",
       "kind": "function",
       "file": "game/src/sim/weapons/SimWeaponBase.ts",
-      "line": 54
+      "line": 55
     },
     {
       "name": "FireballWeapon",
@@ -3670,14 +3680,14 @@
       "name": "GameCore",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 363,
+      "line": 366,
       "doc": "Headless Deterministic GameCore Simulation Engine Manages all authoritative game state, math, collisions, spawns, and drops. Decoupled from WebGL / Three.js / DOM."
     },
     {
       "name": "GameCore.addPlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 427,
+      "line": 430,
       "className": "GameCore",
       "methodName": "addPlayer",
       "doc": "-------------------------------------------------------------"
@@ -3686,7 +3696,7 @@
       "name": "GameCore.collectDrop",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1095,
+      "line": 1104,
       "className": "GameCore",
       "methodName": "collectDrop"
     },
@@ -3694,7 +3704,7 @@
       "name": "GameCore.damagePlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 798,
+      "line": 801,
       "className": "GameCore",
       "methodName": "damagePlayer"
     },
@@ -3702,7 +3712,7 @@
       "name": "GameCore.freezeAndKnockbackAll",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 475,
+      "line": 478,
       "className": "GameCore",
       "methodName": "freezeAndKnockbackAll"
     },
@@ -3710,7 +3720,7 @@
       "name": "GameCore.getSnapshot",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1218,
+      "line": 1227,
       "className": "GameCore",
       "methodName": "getSnapshot",
       "doc": "-------------------------------------------------------------"
@@ -3719,7 +3729,7 @@
       "name": "GameCore.grantTeamAltarBuff",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1142,
+      "line": 1151,
       "className": "GameCore",
       "methodName": "grantTeamAltarBuff"
     },
@@ -3727,7 +3737,7 @@
       "name": "GameCore.isGameOver",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1201,
+      "line": 1210,
       "className": "GameCore",
       "methodName": "isGameOver"
     },
@@ -3735,7 +3745,7 @@
       "name": "GameCore.killEnemy",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1018,
+      "line": 1027,
       "className": "GameCore",
       "methodName": "killEnemy"
     },
@@ -3743,7 +3753,7 @@
       "name": "GameCore.removePlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 434,
+      "line": 437,
       "className": "GameCore",
       "methodName": "removePlayer"
     },
@@ -3751,7 +3761,7 @@
       "name": "GameCore.revivePlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 458,
+      "line": 461,
       "className": "GameCore",
       "methodName": "revivePlayer"
     },
@@ -3759,7 +3769,7 @@
       "name": "GameCore.setPlayerInput",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 438,
+      "line": 441,
       "className": "GameCore",
       "methodName": "setPlayerInput"
     },
@@ -3767,7 +3777,7 @@
       "name": "GameCore.spawnBoss",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 685,
+      "line": 688,
       "className": "GameCore",
       "methodName": "spawnBoss"
     },
@@ -3775,7 +3785,7 @@
       "name": "GameCore.spawnEnemyWave",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 650,
+      "line": 653,
       "className": "GameCore",
       "methodName": "spawnEnemyWave"
     },
@@ -3783,7 +3793,7 @@
       "name": "GameCore.tick",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 487,
+      "line": 490,
       "className": "GameCore",
       "methodName": "tick",
       "doc": "-------------------------------------------------------------"
@@ -3792,7 +3802,7 @@
       "name": "GameCore.updateAltars",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1125,
+      "line": 1134,
       "className": "GameCore",
       "methodName": "updateAltars"
     },
@@ -3800,7 +3810,7 @@
       "name": "GameCore.updateDrops",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1054,
+      "line": 1063,
       "className": "GameCore",
       "methodName": "updateDrops"
     },
@@ -3808,7 +3818,7 @@
       "name": "GameCore.updateEnemies",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 710,
+      "line": 713,
       "className": "GameCore",
       "methodName": "updateEnemies"
     },
@@ -3816,7 +3826,7 @@
       "name": "GameCore.updatePlayers",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 518,
+      "line": 521,
       "className": "GameCore",
       "methodName": "updatePlayers"
     },
@@ -3824,7 +3834,7 @@
       "name": "GameCore.updateProjectiles",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 829,
+      "line": 832,
       "className": "GameCore",
       "methodName": "updateProjectiles"
     },
@@ -3832,7 +3842,7 @@
       "name": "GameCore.updateRevives",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1166,
+      "line": 1175,
       "className": "GameCore",
       "methodName": "updateRevives"
     },
@@ -3840,7 +3850,7 @@
       "name": "GameCore.updateWaves",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 629,
+      "line": 632,
       "className": "GameCore",
       "methodName": "updateWaves"
     },
@@ -3848,7 +3858,7 @@
       "name": "GameCore.upgradePlayerWeapon",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 445,
+      "line": 448,
       "className": "GameCore",
       "methodName": "upgradePlayerWeapon"
     },
@@ -4027,7 +4037,7 @@
       "name": "GameStartMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 246
+      "line": 247
     },
     {
       "name": "GameState",
@@ -4156,7 +4166,7 @@
       "name": "getEntityTexture",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 161
+      "line": 163
     },
     {
       "name": "getExclusiveWeaponOwner",
@@ -4236,7 +4246,7 @@
       "name": "getMonsterColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 93
+      "line": 95
     },
     {
       "name": "getPassiveBuffId",
@@ -4249,13 +4259,13 @@
       "name": "getPlayerSlotDisplayName",
       "kind": "function",
       "file": "game/src/shared/types/network.ts",
-      "line": 183
+      "line": 184
     },
     {
       "name": "getPlayerSlotNumber",
       "kind": "function",
       "file": "game/src/shared/types/network.ts",
-      "line": 173
+      "line": 174
     },
     {
       "name": "getPublicSupabaseClient",
@@ -4293,7 +4303,7 @@
       "name": "getWeaponColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 83
+      "line": 85
     },
     {
       "name": "getWeaponEffectiveCap",
@@ -4312,7 +4322,7 @@
       "name": "getWeaponIconUrl",
       "kind": "function",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 42
+      "line": 43
     },
     {
       "name": "GlobalBalanceConfig",
@@ -4410,7 +4420,7 @@
       "name": "HostSnapshotMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 206
+      "line": 207
     },
     {
       "name": "HUD",
@@ -5855,13 +5865,13 @@
       "name": "LevelUpScreen",
       "kind": "class",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 84
+      "line": 86
     },
     {
       "name": "LevelUpScreen.bindElements",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 110,
+      "line": 112,
       "className": "LevelUpScreen",
       "methodName": "bindElements"
     },
@@ -5869,7 +5879,7 @@
       "name": "LevelUpScreen.bindEvents",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 118,
+      "line": 120,
       "className": "LevelUpScreen",
       "methodName": "bindEvents"
     },
@@ -5877,7 +5887,7 @@
       "name": "LevelUpScreen.generateWeaponOptions",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 361,
+      "line": 363,
       "className": "LevelUpScreen",
       "methodName": "generateWeaponOptions"
     },
@@ -5885,7 +5895,7 @@
       "name": "LevelUpScreen.getTemplate",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 106,
+      "line": 108,
       "className": "LevelUpScreen",
       "methodName": "getTemplate"
     },
@@ -5893,7 +5903,7 @@
       "name": "LevelUpScreen.hideLevelUp",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 349,
+      "line": 351,
       "className": "LevelUpScreen",
       "methodName": "hideLevelUp"
     },
@@ -5901,7 +5911,7 @@
       "name": "LevelUpScreen.resetLevelUpState",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 120,
+      "line": 122,
       "className": "LevelUpScreen",
       "methodName": "resetLevelUpState"
     },
@@ -5909,7 +5919,7 @@
       "name": "LevelUpScreen.selectAutoLevelUpOption",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 179,
+      "line": 181,
       "className": "LevelUpScreen",
       "methodName": "selectAutoLevelUpOption"
     },
@@ -5917,7 +5927,7 @@
       "name": "LevelUpScreen.showLevelUp",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 126,
+      "line": 128,
       "className": "LevelUpScreen",
       "methodName": "showLevelUp"
     },
@@ -5925,13 +5935,13 @@
       "name": "LevelUpScreenElements",
       "kind": "interface",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 64
+      "line": 66
     },
     {
       "name": "LevelUpScreenOptions",
       "kind": "interface",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 73
+      "line": 75
     },
     {
       "name": "LevelUpUI",
@@ -6040,7 +6050,7 @@
       "name": "LobbyPlayerInfo",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 151
+      "line": 152
     },
     {
       "name": "LobbyScreen",
@@ -6282,7 +6292,7 @@
       "name": "LobbyUpdateMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 241
+      "line": 242
     },
     {
       "name": "MainMenuScreen",
@@ -6981,7 +6991,7 @@
       "name": "MONSTER_COLORS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 70
+      "line": 72
     },
     {
       "name": "MonsterBalanceConfig",
@@ -7005,13 +7015,13 @@
       "name": "NetEvent",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 112
+      "line": 113
     },
     {
       "name": "NetMessage",
       "kind": "type",
       "file": "game/src/shared/types/network.ts",
-      "line": 260
+      "line": 261
     },
     {
       "name": "NetRole",
@@ -7349,7 +7359,7 @@
       "name": "PLAYER_COLORS",
       "kind": "const",
       "file": "game/src/shared/types/network.ts",
-      "line": 163
+      "line": 164
     },
     {
       "name": "Player.addAmplifierBonus",
@@ -7996,6 +8006,37 @@
       "line": 23
     },
     {
+      "name": "PoisonPuddleWeapon",
+      "kind": "class",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 707,
+      "doc": "Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on the ground that deal continuous acid damage and slow enemies within the mire."
+    },
+    {
+      "name": "PoisonPuddleWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 803,
+      "className": "PoisonPuddleWeapon",
+      "methodName": "getNextUpgradeDescription"
+    },
+    {
+      "name": "PoisonPuddleWeapon.setAttackCallback",
+      "kind": "method",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 735,
+      "className": "PoisonPuddleWeapon",
+      "methodName": "setAttackCallback"
+    },
+    {
+      "name": "PoisonPuddleWeapon.upgrade",
+      "kind": "method",
+      "file": "game/src/combat/weapons/MagicWeapons.ts",
+      "line": 796,
+      "className": "PoisonPuddleWeapon",
+      "methodName": "upgrade"
+    },
+    {
       "name": "ProgressionChartState",
       "kind": "interface",
       "file": "admin/src/types.ts",
@@ -8480,13 +8521,13 @@
       "name": "Projectile",
       "kind": "class",
       "file": "game/src/combat/Projectile.ts",
-      "line": 47
+      "line": 48
     },
     {
       "name": "Projectile.destroy",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 790,
+      "line": 919,
       "className": "Projectile",
       "methodName": "destroy"
     },
@@ -8494,7 +8535,7 @@
       "name": "Projectile.getOrbMaterial",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 228,
+      "line": 253,
       "className": "Projectile",
       "methodName": "getOrbMaterial"
     },
@@ -8502,7 +8543,7 @@
       "name": "Projectile.onHit",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 773,
+      "line": 902,
       "className": "Projectile",
       "methodName": "onHit"
     },
@@ -8510,7 +8551,7 @@
       "name": "Projectile.setVfxOpacity",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 113,
+      "line": 121,
       "className": "Projectile",
       "methodName": "setVfxOpacity"
     },
@@ -8518,7 +8559,7 @@
       "name": "Projectile.update",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 596,
+      "line": 693,
       "className": "Projectile",
       "methodName": "update"
     },
@@ -8526,7 +8567,7 @@
       "name": "Projectile.updateVisuals",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 782,
+      "line": 911,
       "className": "Projectile",
       "methodName": "updateVisuals"
     },
@@ -8869,7 +8910,7 @@
       "name": "ReviveActionMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 252
+      "line": 253
     },
     {
       "name": "RIFT_ITEMS",
@@ -9715,7 +9756,7 @@
       "name": "SimAltarInternal",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 339
+      "line": 342
     },
     {
       "name": "SimAltarState",
@@ -9819,7 +9860,7 @@
       "name": "SimDropInternal",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 324
+      "line": 327
     },
     {
       "name": "SimDropState",
@@ -9879,7 +9920,7 @@
       "name": "SimEnemyRef",
       "kind": "interface",
       "file": "game/src/sim/weapons/SimWeaponBase.ts",
-      "line": 39
+      "line": 40
     },
     {
       "name": "SimEnemyState",
@@ -10151,7 +10192,7 @@
       "name": "SimPlayerRef",
       "kind": "interface",
       "file": "game/src/sim/weapons/SimWeaponBase.ts",
-      "line": 46
+      "line": 47
     },
     {
       "name": "SimPlayerState",
@@ -10170,6 +10211,29 @@
       "kind": "interface",
       "file": "game/src/world/ObstacleManager.ts",
       "line": 10
+    },
+    {
+      "name": "SimPoisonPuddleWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 494,
+      "doc": "Poison Puddle (Ядовитая лужа) simulation weapon"
+    },
+    {
+      "name": "SimPoisonPuddleWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 562,
+      "className": "SimPoisonPuddleWeapon",
+      "methodName": "getNextUpgradeDescription"
+    },
+    {
+      "name": "SimPoisonPuddleWeapon.upgrade",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimMagicWeapons.ts",
+      "line": 547,
+      "className": "SimPoisonPuddleWeapon",
+      "methodName": "upgrade"
     },
     {
       "name": "SimProjectileData",
@@ -10393,13 +10457,13 @@
       "name": "SimWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimWeaponBase.ts",
-      "line": 117
+      "line": 118
     },
     {
       "name": "SimWeapon.getInfo",
       "kind": "method",
       "file": "game/src/sim/weapons/SimWeaponBase.ts",
-      "line": 155,
+      "line": 156,
       "className": "SimWeapon",
       "methodName": "getInfo"
     },
@@ -10522,7 +10586,7 @@
       "name": "SoundManager.playButtonClick",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 819,
+      "line": 859,
       "className": "SoundManager",
       "methodName": "playButtonClick",
       "doc": "Sound when clicking UI buttons/cards"
@@ -10558,7 +10622,7 @@
       "name": "SoundManager.playCrit",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 776,
+      "line": 816,
       "className": "SoundManager",
       "methodName": "playCrit",
       "doc": "Sound when critical strike hits"
@@ -10630,7 +10694,7 @@
       "name": "SoundManager.playItemPickup",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 797,
+      "line": 837,
       "className": "SoundManager",
       "methodName": "playItemPickup",
       "doc": "Sound when collecting an item"
@@ -10681,6 +10745,15 @@
       "doc": "Player damaged sound"
     },
     {
+      "name": "SoundManager.playPoisonPuddle",
+      "kind": "method",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 776,
+      "className": "SoundManager",
+      "methodName": "playPoisonPuddle",
+      "doc": "Sound when toxic poison puddle bubbles and splatters on the ground"
+    },
+    {
       "name": "SoundManager.playReaperSpawn",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
@@ -10693,7 +10766,7 @@
       "name": "SoundManager.playReroll",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 839,
+      "line": 879,
       "className": "SoundManager",
       "methodName": "playReroll",
       "doc": "Sound when rerolling weapon selection"
@@ -10738,7 +10811,7 @@
       "name": "SoundManager.playTimeFreeze",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 860,
+      "line": 900,
       "className": "SoundManager",
       "methodName": "playTimeFreeze",
       "doc": "Sound when Time Crystal activates (temporal freeze + deep shockwave)"
@@ -11062,7 +11135,7 @@
       "name": "TeleporterSyncInfo",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 197
+      "line": 198
     },
     {
       "name": "TerrainElevation",
@@ -11216,7 +11289,7 @@
       "name": "TextureManager.createShadowMesh",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 743,
+      "line": 746,
       "className": "TextureManager",
       "methodName": "createShadowMesh",
       "doc": "High-performance contact shadow mesh sharing a single texture and material."
@@ -11225,7 +11298,7 @@
       "name": "TextureManager.getArrowTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 591,
+      "line": 594,
       "className": "TextureManager",
       "methodName": "getArrowTexture"
     },
@@ -11241,7 +11314,7 @@
       "name": "TextureManager.getBulletTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 582,
+      "line": 585,
       "className": "TextureManager",
       "methodName": "getBulletTexture"
     },
@@ -11249,7 +11322,7 @@
       "name": "TextureManager.getChakramTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 677,
+      "line": 680,
       "className": "TextureManager",
       "methodName": "getChakramTexture"
     },
@@ -11257,7 +11330,7 @@
       "name": "TextureManager.getCharacterAnimatedTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 578,
+      "line": 581,
       "className": "TextureManager",
       "methodName": "getCharacterAnimatedTextures"
     },
@@ -11265,7 +11338,7 @@
       "name": "TextureManager.getFireballTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 698,
+      "line": 701,
       "className": "TextureManager",
       "methodName": "getFireballTexture"
     },
@@ -11273,7 +11346,7 @@
       "name": "TextureManager.getFireRingTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 712,
+      "line": 715,
       "className": "TextureManager",
       "methodName": "getFireRingTexture"
     },
@@ -11281,7 +11354,7 @@
       "name": "TextureManager.getIceSpikeTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 691,
+      "line": 694,
       "className": "TextureManager",
       "methodName": "getIceSpikeTexture"
     },
@@ -11289,7 +11362,7 @@
       "name": "TextureManager.getKukriTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 670,
+      "line": 673,
       "className": "TextureManager",
       "methodName": "getKukriTexture"
     },
@@ -11297,7 +11370,7 @@
       "name": "TextureManager.getLightningTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 684,
+      "line": 687,
       "className": "TextureManager",
       "methodName": "getLightningTexture"
     },
@@ -11305,7 +11378,7 @@
       "name": "TextureManager.getRiftClosedTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 719,
+      "line": 722,
       "className": "TextureManager",
       "methodName": "getRiftClosedTexture"
     },
@@ -11313,7 +11386,7 @@
       "name": "TextureManager.getRiftOpenTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 726,
+      "line": 729,
       "className": "TextureManager",
       "methodName": "getRiftOpenTexture"
     },
@@ -11321,7 +11394,7 @@
       "name": "TextureManager.getScytheTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 705,
+      "line": 708,
       "className": "TextureManager",
       "methodName": "getScytheTexture"
     },
@@ -11329,7 +11402,7 @@
       "name": "TextureManager.getSulfurSmokeTexture",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 733,
+      "line": 736,
       "className": "TextureManager",
       "methodName": "getSulfurSmokeTexture"
     },
@@ -11337,7 +11410,7 @@
       "name": "TextureManager.getWeaponBlobUrl",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 110,
+      "line": 111,
       "className": "TextureManager",
       "methodName": "getWeaponBlobUrl"
     },
@@ -11345,7 +11418,7 @@
       "name": "TextureManager.hasCharacterAnimations",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 574,
+      "line": 577,
       "className": "TextureManager",
       "methodName": "hasCharacterAnimations"
     },
@@ -11353,7 +11426,7 @@
       "name": "TextureManager.initWeaponBlobs",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 127,
+      "line": 128,
       "className": "TextureManager",
       "methodName": "initWeaponBlobs"
     },
@@ -11361,7 +11434,7 @@
       "name": "TextureManager.load",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 150,
+      "line": 151,
       "className": "TextureManager",
       "methodName": "load"
     },
@@ -11369,7 +11442,7 @@
       "name": "TextureManager.loadAmazonTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 570,
+      "line": 573,
       "className": "TextureManager",
       "methodName": "loadAmazonTextures"
     },
@@ -11377,7 +11450,7 @@
       "name": "TextureManager.loadAnimatedTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 510,
+      "line": 513,
       "className": "TextureManager",
       "methodName": "loadAnimatedTextures"
     },
@@ -11385,7 +11458,7 @@
       "name": "TextureManager.loadArcherTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 558,
+      "line": 561,
       "className": "TextureManager",
       "methodName": "loadArcherTextures"
     },
@@ -11393,7 +11466,7 @@
       "name": "TextureManager.loadBossTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 482,
+      "line": 485,
       "className": "TextureManager",
       "methodName": "loadBossTextures"
     },
@@ -11401,7 +11474,7 @@
       "name": "TextureManager.loadChakramTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 550,
+      "line": 553,
       "className": "TextureManager",
       "methodName": "loadChakramTextures"
     },
@@ -11409,7 +11482,7 @@
       "name": "TextureManager.loadDirectional",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 185,
+      "line": 186,
       "className": "TextureManager",
       "methodName": "loadDirectional"
     },
@@ -11417,7 +11490,7 @@
       "name": "TextureManager.loadFlailTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 542,
+      "line": 545,
       "className": "TextureManager",
       "methodName": "loadFlailTextures"
     },
@@ -11425,7 +11498,7 @@
       "name": "TextureManager.loadInvokerTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 554,
+      "line": 557,
       "className": "TextureManager",
       "methodName": "loadInvokerTextures"
     },
@@ -11433,7 +11506,7 @@
       "name": "TextureManager.loadMonsterTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 496,
+      "line": 499,
       "className": "TextureManager",
       "methodName": "loadMonsterTextures"
     },
@@ -11441,7 +11514,7 @@
       "name": "TextureManager.loadNecromancerTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 566,
+      "line": 569,
       "className": "TextureManager",
       "methodName": "loadNecromancerTextures"
     },
@@ -11449,7 +11522,7 @@
       "name": "TextureManager.loadRocketTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 562,
+      "line": 565,
       "className": "TextureManager",
       "methodName": "loadRocketTextures"
     },
@@ -11457,7 +11530,7 @@
       "name": "TextureManager.loadRoninTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 534,
+      "line": 537,
       "className": "TextureManager",
       "methodName": "loadRoninTextures"
     },
@@ -11465,7 +11538,7 @@
       "name": "TextureManager.loadSorceressTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 546,
+      "line": 549,
       "className": "TextureManager",
       "methodName": "loadSorceressTextures"
     },
@@ -11473,7 +11546,7 @@
       "name": "TextureManager.loadSwordsmanTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 530,
+      "line": 533,
       "className": "TextureManager",
       "methodName": "loadSwordsmanTextures"
     },
@@ -11481,7 +11554,7 @@
       "name": "TextureManager.loadValkyrieTextures",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 538,
+      "line": 541,
       "className": "TextureManager",
       "methodName": "loadValkyrieTextures"
     },
@@ -11497,7 +11570,7 @@
       "name": "TextureManager.preloadAll",
       "kind": "method",
       "file": "game/src/core/TextureManager.ts",
-      "line": 478,
+      "line": 481,
       "className": "TextureManager",
       "methodName": "preloadAll",
       "doc": "Preloads all entity sprite sheets upfront to eliminate mid-game texture loading hitch."
@@ -11512,13 +11585,13 @@
       "name": "toPluralCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 132
+      "line": 134
     },
     {
       "name": "toSingularCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 103
+      "line": 105
     },
     {
       "name": "TreeManager",
@@ -11857,7 +11930,7 @@
       "name": "UpgradeOption",
       "kind": "interface",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 31
+      "line": 32
     },
     {
       "name": "VersionInfo",
@@ -11875,7 +11948,7 @@
       "name": "WEAPON_COLORS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 51
+      "line": 52
     },
     {
       "name": "WEAPON_GRADES",

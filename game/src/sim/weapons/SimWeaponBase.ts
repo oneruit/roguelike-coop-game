@@ -33,6 +33,7 @@ export interface SimProjectileData {
   isLightning?: boolean;
   isIceSpike?: boolean;
   isFireball?: boolean;
+  isPoisonPuddle?: boolean;
   bleedDps?: number;
 }
 

@@ -19,7 +19,8 @@ import {
   SimChakramWeapon,
   SimLightningStrikeWeapon,
   SimIceSpikeWeapon,
-  SimFireballWeapon
+  SimFireballWeapon,
+  SimPoisonPuddleWeapon
 } from './SimMagicWeapons';
 import { SimInvokerWeapon } from './SimInvokerWeapon';
 
@@ -89,6 +90,8 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimFireRingWeapon();
     case 'katana_slash':
       return new SimKatanaSlashWeapon();
+    case 'poison_puddle':
+      return new SimPoisonPuddleWeapon();
     default:
       return null;
   }

@@ -104,7 +104,8 @@ export class TextureManager {
     '/textures/weapons/weapon_fireball.png',
     '/textures/weapons/weapon_reaper_scythe.png',
     '/textures/weapons/weapon_whirlwind_slash.png',
-    '/textures/weapons/weapon_assault_rifle.png'
+    '/textures/weapons/weapon_assault_rifle.png',
+    '/textures/weapons/weapon_poison_puddle.png'
   ];
 
   public static getWeaponBlobUrl(pathOrId: string): string {
@@ -217,6 +218,8 @@ export class TextureManager {
     '/textures/weapons/weapon_fireball.png',
     '/textures/weapons/weapon_whirlwind_slash.png',
     '/textures/weapons/weapon_reaper_scythe.png',
+    '/textures/weapons/weapon_assault_rifle.png',
+    '/textures/weapons/weapon_poison_puddle.png',
     '/textures/vfx/vfx_bullet.png',
     '/textures/vfx/vfx_lightning.png',
     '/textures/vfx/vfx_fire_ring.png',

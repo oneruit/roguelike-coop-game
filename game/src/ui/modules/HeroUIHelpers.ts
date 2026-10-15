@@ -203,7 +203,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     lightning_strike: '/textures/weapons/weapon_lightning_strike.png',
     ice_spike: '/textures/weapons/weapon_ice_spike.png',
     fireball: '/textures/weapons/weapon_fireball.png',
-    assault_rifle: '/textures/weapons/weapon_assault_rifle.png'
+    assault_rifle: '/textures/weapons/weapon_assault_rifle.png',
+    poison_puddle: '/textures/weapons/weapon_poison_puddle.png'
   };
   const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
   return TextureManager.getWeaponBlobUrl(path);

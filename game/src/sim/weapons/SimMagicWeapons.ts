@@ -487,3 +487,85 @@ export class SimFireballWeapon extends SimWeapon {
     return perks.join(', ');
   }
 }
+
+/**
+ * Poison Puddle (Ядовитая лужа) simulation weapon
+ */
+export class SimPoisonPuddleWeapon extends SimWeapon {
+  private puddleCount: number = 1;
+  private puddleRadius: number = 2.2;
+  private puddleDuration: number = 4.0;
+  private range: number = 20;
+
+  constructor() {
+    super('poison_puddle', 'Ядовитая лужа', '🧪', 2.0, 18);
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    spawnProjectile: (p: SimProjectileData) => void,
+    _onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      if (enemies.length === 0) return;
+
+      const targets = findClosestSimEnemies(enemies, player.position, this.puddleCount, this.range * this.range);
+      if (targets.length === 0) return;
+
+      this.timer = 0;
+      if (triggerAnim) triggerAnim(0.35);
+      if (emitSound) emitSound('magic');
+
+      for (let i = 0; i < this.puddleCount; i++) {
+        const targetCandidate = targets[i % targets.length];
+        const offsetX = i > 0 && targets.length < this.puddleCount ? (Math.random() - 0.5) * 1.5 : 0;
+        const offsetZ = i > 0 && targets.length < this.puddleCount ? (Math.random() - 0.5) * 1.5 : 0;
+
+        const proj: SimProjectileData = {
+          id: `sim_poisonpuddle_${Math.random().toString(36).substring(2, 9)}`,
+          ownerId: player.id,
+          position: targetCandidate.position.clone().add({ x: offsetX, y: 0.04, z: offsetZ }),
+          direction: new SimVec3(0, 0, 1),
+          speed: 0,
+          damage: this.damage * player.damageMultiplier,
+          pierce: 9999,
+          lifetime: this.puddleDuration,
+          radius: this.puddleRadius,
+          color: 0x22c55e,
+          isPoisonPuddle: true
+        };
+        spawnProjectile(proj);
+      }
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 5;
+    if ([3, 6, 9, 12].includes(this.level)) {
+      this.puddleCount++;
+    }
+    if ([2, 5, 8, 11].includes(this.level)) {
+      this.cooldown = Math.max(0.65, Number((this.cooldown * 0.93).toFixed(3)));
+    }
+    if ([4, 8, 12].includes(this.level)) {
+      this.puddleRadius = Number((this.puddleRadius + 0.25).toFixed(2));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+5 к урону'];
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 ядовитая лужа (всего ${this.puddleCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-7% перезарядки');
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.25м радиус лужи (всего ${(this.puddleRadius + 0.25).toFixed(2)}м)`);
+    return perks.join(', ');
+  }
+}

@@ -19,6 +19,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   'weapon-lightning_strike': '/textures/weapons/weapon_lightning_strike.png',
   'weapon-ice_spike': '/textures/weapons/weapon_ice_spike.png',
   'weapon-assault_rifle': '/textures/weapons/weapon_assault_rifle.png',
+  'weapon-poison_puddle': '/textures/weapons/weapon_poison_puddle.png',
 
   // Heroes
   'hero-ronin': '/textures/heroes/ronin/front.png',
@@ -64,7 +65,8 @@ export const WEAPON_COLORS: Record<string, string> = {
   chakram: '#06b6d4',
   lightning_strike: '#eab308',
   ice_spike: '#3b82f6',
-  assault_rifle: '#f97316'
+  assault_rifle: '#f97316',
+  poison_puddle: '#22c55e'
 };
 
 export const MONSTER_COLORS: Record<string, string> = {
