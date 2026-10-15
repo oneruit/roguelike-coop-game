@@ -28,6 +28,7 @@ import { selectWeaponUpgradeOptions, filterAndShuffleForReroll, canRerollWeaponO
 import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../../../combat/WeaponGrades';
 import { SoundManager } from '../../../core/SoundManager';
 import { TextureManager } from '../../../core/TextureManager';
+import { BalanceManager } from '../../../balance/BalanceManager';
 
 export interface UpgradeOption {
   id: string;
@@ -547,13 +548,17 @@ export class LevelUpScreen extends Screen {
           description: string,
           factory: () => Weapon
         ) => {
+          const cfg = BalanceManager.getWeaponConfig(id);
+          const finalTitle = cfg?.name || title;
+          const finalIcon = cfg?.icon || icon;
+          const finalDesc = cfg?.notes || description;
           pool.push({
             id: 'new_' + id,
-            title: 'Новое: ' + title,
-            icon,
+            title: 'Новое: ' + finalTitle,
+            icon: finalIcon,
             iconImage: getWeaponIconUrl(id),
             levelTag: 'НОВОЕ ОРУЖИЕ',
-            description,
+            description: finalDesc,
             apply: () => {
               const w = factory();
               player.weapons.push(w);

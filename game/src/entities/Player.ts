@@ -505,7 +505,7 @@ export class Player {
     this.vestCount = 0;
     this.watchCount = 0;
     this.mightElixirCount = 0;
-    this.pickupRadius = 10.0;
+    this.pickupRadius = BalanceManager.getGlobalConfig()?.basePickupRadius ?? 4.0;
     this.recalculateStats();
   }
 
@@ -514,8 +514,10 @@ export class Player {
     const metaBonuses = MetaProgression.getInstance().getBonuses();
     this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.baseSpeed = heroCfg.baseSpeed;
-    const titanBonus = this.getItemStacks('titan_heart') * 150;
-    const bonusHp = this.flaskCount * 30 + titanBonus + metaBonuses.maxHpBonus;
+    const titanPerStack = BalanceManager.getItemConfig('titan_heart')?.baseValue ?? 150;
+    const titanBonus = this.getItemStacks('titan_heart') * titanPerStack;
+    const flaskPerStack = BalanceManager.getPassiveConfig('stat_flask')?.perStackValue ?? 30;
+    const bonusHp = this.flaskCount * flaskPerStack + titanBonus + metaBonuses.maxHpBonus;
     const newMaxHp = heroCfg.maxHp + bonusHp;
     const hpRatio = this.maxHp > 0 ? this.hp / this.maxHp : 1.0;
     this.maxHp = newMaxHp;

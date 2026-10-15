@@ -452,8 +452,10 @@ export class EnemyManager {
               );
               this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
             }
-            // Boss drops gold passive crystal (40% chance, reduced 5x from 2 guaranteed)
-            if (Math.random() < 0.40) {
+            // Boss drops gold passive crystal from global balance config
+            const globalCfg = BalanceManager.getGlobalConfig();
+            const bossGoldChance = globalCfg?.goldGemChanceBoss ?? 0.40;
+            if (Math.random() < bossGoldChance) {
               const pOffset = new Vector3(
                 (Math.random() - 0.5) * 2.0,
                 0,
@@ -483,9 +485,11 @@ export class EnemyManager {
         } else {
           this.dropManager.spawnGem(enemy.position, enemy.gemType);
 
-          // Random chance for passive buff drop reduced 5x: 3% for tough mobs (was 15%), 1% for regular (was 5%)
+          // Random chance for passive buff drop from global balance config
+          const globalCfg = BalanceManager.getGlobalConfig();
+          const baseNormalGoldChance = globalCfg?.goldGemChanceNormal ?? 0.01;
           const isTough = enemy.type === 'bison' || enemy.type === 'brute' || enemy.type === 'scorpion';
-          const passiveChance = isTough ? 0.03 : 0.01;
+          const passiveChance = isTough ? baseNormalGoldChance * 3 : baseNormalGoldChance;
           if (Math.random() < passiveChance) {
             const pOffset = new Vector3(
               (Math.random() - 0.5),

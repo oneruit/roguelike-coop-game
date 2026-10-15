@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-15T00:27:43.076Z | **Files:** 148 | **Top-level:** 459 | **Class Methods:** 1057
+> **Generated:** 2026-10-15T00:46:59.364Z | **Files:** 148 | **Top-level:** 459 | **Class Methods:** 1057
 > **Entities Registered:** 10 Heroes, 26 Weapons, 2 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -192,7 +192,7 @@ Run `npm run index` to refresh this cache.
 | `BUFF_TYPES` | `const` | [`game/src/shared/types/registry.ts:46`](../../game/src/shared/types/registry.ts#L46) | - |
 | `BuffType` | `type` | [`game/src/shared/types/entities.ts:12`](../../game/src/shared/types/entities.ts#L12) | - |
 | `calculateBattlePassPoints` | `function` | [`game/src/core/BattlePassManager.ts:30`](../../game/src/core/BattlePassManager.ts#L30) | Calculates Battle Pass experience points awarded for a run based on surviva... |
-| `CalculatedPlayerStats` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:13`](../../game/src/mechanics/player/PlayerStats.ts#L13) | - |
+| `CalculatedPlayerStats` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:14`](../../game/src/mechanics/player/PlayerStats.ts#L14) | - |
 | `canAcquireInvokerWeapon` | `function` | [`game/src/shared/InvokerSpells.ts:160`](../../game/src/shared/InvokerSpells.ts#L160) | Separate spell weapons require Invoke in the same inventory, and hero must ... |
 | `canCharacterAcquireWeapon` | `function` | [`game/src/shared/UniqueCharacters.ts:122`](../../game/src/shared/UniqueCharacters.ts#L122) | The single source of truth for whether a hero is allowed to acquire or upgr... |
 | `canRerollWeaponOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:29`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L29) | Determines whether the current weapon selection qualifies for a reroll. Per... |
@@ -374,30 +374,30 @@ Run `npm run index` to refresh this cache.
 | `EnemyAnimState` | `type` | [`game/src/entities/Enemy.ts:18`](../../game/src/entities/Enemy.ts#L18) | - |
 | `EnemyConfig` | `interface` | [`game/src/entities/Enemy.ts:24`](../../game/src/entities/Enemy.ts#L24) | - |
 | `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:20`](../../game/src/entities/EnemyManager.ts#L20) | - |
-| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:933`](../../game/src/entities/EnemyManager.ts#L933) | - |
-| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1041`](../../game/src/entities/EnemyManager.ts#L1041) | - |
+| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:937`](../../game/src/entities/EnemyManager.ts#L937) | - |
+| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1045`](../../game/src/entities/EnemyManager.ts#L1045) | - |
 | `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:238`](../../game/src/entities/EnemyManager.ts#L238) | - |
 | `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:229`](../../game/src/entities/EnemyManager.ts#L229) | Continuous progressive scaling multipliers with endless scaling and biome o... |
 | `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:257`](../../game/src/entities/EnemyManager.ts#L257) | - |
 | `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:267`](../../game/src/entities/EnemyManager.ts#L267) | - |
-| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:822`](../../game/src/entities/EnemyManager.ts#L822) | Fast query for enemies within radius using the Spatial Grid. |
-| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:920`](../../game/src/entities/EnemyManager.ts#L920) | - |
+| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:826`](../../game/src/entities/EnemyManager.ts#L826) | Fast query for enemies within radius using the Spatial Grid. |
+| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:924`](../../game/src/entities/EnemyManager.ts#L924) | - |
 | `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:247`](../../game/src/entities/EnemyManager.ts#L247) | - |
-| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:847`](../../game/src/entities/EnemyManager.ts#L847) | - |
+| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:851`](../../game/src/entities/EnemyManager.ts#L851) | - |
 | `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:204`](../../game/src/entities/EnemyManager.ts#L204) | - |
 | `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:253`](../../game/src/entities/EnemyManager.ts#L253) | - |
-| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:904`](../../game/src/entities/EnemyManager.ts#L904) | - |
-| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:891`](../../game/src/entities/EnemyManager.ts#L891) | - |
-| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:896`](../../game/src/entities/EnemyManager.ts#L896) | - |
-| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:642`](../../game/src/entities/EnemyManager.ts#L642) | Spawns an endgame rift boss |
-| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:900`](../../game/src/entities/EnemyManager.ts#L900) | - |
-| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:783`](../../game/src/entities/EnemyManager.ts#L783) | - |
-| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:875`](../../game/src/entities/EnemyManager.ts#L875) | - |
-| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:586`](../../game/src/entities/EnemyManager.ts#L586) | Spawns a stage boss explicitly when the Teleporter event is activated. |
-| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:525`](../../game/src/entities/EnemyManager.ts#L525) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
-| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:676`](../../game/src/entities/EnemyManager.ts#L676) | - |
+| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:908`](../../game/src/entities/EnemyManager.ts#L908) | - |
+| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:895`](../../game/src/entities/EnemyManager.ts#L895) | - |
+| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:900`](../../game/src/entities/EnemyManager.ts#L900) | - |
+| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:646`](../../game/src/entities/EnemyManager.ts#L646) | Spawns an endgame rift boss |
+| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:904`](../../game/src/entities/EnemyManager.ts#L904) | - |
+| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:787`](../../game/src/entities/EnemyManager.ts#L787) | - |
+| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:879`](../../game/src/entities/EnemyManager.ts#L879) | - |
+| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:590`](../../game/src/entities/EnemyManager.ts#L590) | Spawns a stage boss explicitly when the Teleporter event is activated. |
+| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:529`](../../game/src/entities/EnemyManager.ts#L529) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
+| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:680`](../../game/src/entities/EnemyManager.ts#L680) | - |
 | `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:180`](../../game/src/entities/EnemyManager.ts#L180) | - |
-| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1013`](../../game/src/entities/EnemyManager.ts#L1013) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
+| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1017`](../../game/src/entities/EnemyManager.ts#L1017) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
@@ -409,7 +409,7 @@ Run `npm run index` to refresh this cache.
 | `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:179`](../../game/src/core/Engine.ts#L179) | - |
 | `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
-| `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:55`](../../game/src/sim/weapons/SimWeaponBase.ts#L55) | - |
+| `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
 | `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:590`](../../game/src/combat/weapons/MagicWeapons.ts#L590) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
 | `FireballWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:685`](../../game/src/combat/weapons/MagicWeapons.ts#L685) | - |
 | `FireballWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:618`](../../game/src/combat/weapons/MagicWeapons.ts#L618) | - |
@@ -426,30 +426,30 @@ Run `npm run index` to refresh this cache.
 | `FlailWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:399`](../../game/src/combat/weapons/MeleeWeapons.ts#L399) | - |
 | `FlailWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:450`](../../game/src/combat/weapons/MeleeWeapons.ts#L450) | - |
 | `GameBalanceState` | `interface` | [`game/src/balance/BalanceTypes.ts:113`](../../game/src/balance/BalanceTypes.ts#L113) | - |
-| `GameCore` | `class` | [`game/src/sim/GameCore.ts:366`](../../game/src/sim/GameCore.ts#L366) | Headless Deterministic GameCore Simulation Engine Manages all authoritative... |
-| `GameCore.addPlayer` | `method` | [`game/src/sim/GameCore.ts:430`](../../game/src/sim/GameCore.ts#L430) | ------------------------------------------------------------- |
-| `GameCore.collectDrop` | `method` | [`game/src/sim/GameCore.ts:1104`](../../game/src/sim/GameCore.ts#L1104) | - |
-| `GameCore.damagePlayer` | `method` | [`game/src/sim/GameCore.ts:801`](../../game/src/sim/GameCore.ts#L801) | - |
-| `GameCore.freezeAndKnockbackAll` | `method` | [`game/src/sim/GameCore.ts:478`](../../game/src/sim/GameCore.ts#L478) | - |
-| `GameCore.getSnapshot` | `method` | [`game/src/sim/GameCore.ts:1227`](../../game/src/sim/GameCore.ts#L1227) | ------------------------------------------------------------- |
-| `GameCore.grantTeamAltarBuff` | `method` | [`game/src/sim/GameCore.ts:1151`](../../game/src/sim/GameCore.ts#L1151) | - |
-| `GameCore.isGameOver` | `method` | [`game/src/sim/GameCore.ts:1210`](../../game/src/sim/GameCore.ts#L1210) | - |
-| `GameCore.killEnemy` | `method` | [`game/src/sim/GameCore.ts:1027`](../../game/src/sim/GameCore.ts#L1027) | - |
-| `GameCore.removePlayer` | `method` | [`game/src/sim/GameCore.ts:437`](../../game/src/sim/GameCore.ts#L437) | - |
-| `GameCore.revivePlayer` | `method` | [`game/src/sim/GameCore.ts:461`](../../game/src/sim/GameCore.ts#L461) | - |
-| `GameCore.setPlayerInput` | `method` | [`game/src/sim/GameCore.ts:441`](../../game/src/sim/GameCore.ts#L441) | - |
-| `GameCore.spawnBoss` | `method` | [`game/src/sim/GameCore.ts:688`](../../game/src/sim/GameCore.ts#L688) | - |
-| `GameCore.spawnEnemyWave` | `method` | [`game/src/sim/GameCore.ts:653`](../../game/src/sim/GameCore.ts#L653) | - |
-| `GameCore.tick` | `method` | [`game/src/sim/GameCore.ts:490`](../../game/src/sim/GameCore.ts#L490) | ------------------------------------------------------------- |
-| `GameCore.updateAltars` | `method` | [`game/src/sim/GameCore.ts:1134`](../../game/src/sim/GameCore.ts#L1134) | - |
-| `GameCore.updateDrops` | `method` | [`game/src/sim/GameCore.ts:1063`](../../game/src/sim/GameCore.ts#L1063) | - |
-| `GameCore.updateEnemies` | `method` | [`game/src/sim/GameCore.ts:713`](../../game/src/sim/GameCore.ts#L713) | - |
-| `GameCore.updatePlayers` | `method` | [`game/src/sim/GameCore.ts:521`](../../game/src/sim/GameCore.ts#L521) | - |
-| `GameCore.updateProjectiles` | `method` | [`game/src/sim/GameCore.ts:832`](../../game/src/sim/GameCore.ts#L832) | - |
-| `GameCore.updateRevives` | `method` | [`game/src/sim/GameCore.ts:1175`](../../game/src/sim/GameCore.ts#L1175) | - |
-| `GameCore.updateWaves` | `method` | [`game/src/sim/GameCore.ts:632`](../../game/src/sim/GameCore.ts#L632) | - |
-| `GameCore.upgradePlayerWeapon` | `method` | [`game/src/sim/GameCore.ts:448`](../../game/src/sim/GameCore.ts#L448) | - |
-| `GameCoreConfig` | `interface` | [`game/src/sim/GameCore.ts:32`](../../game/src/sim/GameCore.ts#L32) | - |
+| `GameCore` | `class` | [`game/src/sim/GameCore.ts:321`](../../game/src/sim/GameCore.ts#L321) | Headless Deterministic GameCore Simulation Engine Manages all authoritative... |
+| `GameCore.addPlayer` | `method` | [`game/src/sim/GameCore.ts:385`](../../game/src/sim/GameCore.ts#L385) | ------------------------------------------------------------- |
+| `GameCore.collectDrop` | `method` | [`game/src/sim/GameCore.ts:1059`](../../game/src/sim/GameCore.ts#L1059) | - |
+| `GameCore.damagePlayer` | `method` | [`game/src/sim/GameCore.ts:756`](../../game/src/sim/GameCore.ts#L756) | - |
+| `GameCore.freezeAndKnockbackAll` | `method` | [`game/src/sim/GameCore.ts:433`](../../game/src/sim/GameCore.ts#L433) | - |
+| `GameCore.getSnapshot` | `method` | [`game/src/sim/GameCore.ts:1182`](../../game/src/sim/GameCore.ts#L1182) | ------------------------------------------------------------- |
+| `GameCore.grantTeamAltarBuff` | `method` | [`game/src/sim/GameCore.ts:1106`](../../game/src/sim/GameCore.ts#L1106) | - |
+| `GameCore.isGameOver` | `method` | [`game/src/sim/GameCore.ts:1165`](../../game/src/sim/GameCore.ts#L1165) | - |
+| `GameCore.killEnemy` | `method` | [`game/src/sim/GameCore.ts:982`](../../game/src/sim/GameCore.ts#L982) | - |
+| `GameCore.removePlayer` | `method` | [`game/src/sim/GameCore.ts:392`](../../game/src/sim/GameCore.ts#L392) | - |
+| `GameCore.revivePlayer` | `method` | [`game/src/sim/GameCore.ts:416`](../../game/src/sim/GameCore.ts#L416) | - |
+| `GameCore.setPlayerInput` | `method` | [`game/src/sim/GameCore.ts:396`](../../game/src/sim/GameCore.ts#L396) | - |
+| `GameCore.spawnBoss` | `method` | [`game/src/sim/GameCore.ts:643`](../../game/src/sim/GameCore.ts#L643) | - |
+| `GameCore.spawnEnemyWave` | `method` | [`game/src/sim/GameCore.ts:608`](../../game/src/sim/GameCore.ts#L608) | - |
+| `GameCore.tick` | `method` | [`game/src/sim/GameCore.ts:445`](../../game/src/sim/GameCore.ts#L445) | ------------------------------------------------------------- |
+| `GameCore.updateAltars` | `method` | [`game/src/sim/GameCore.ts:1089`](../../game/src/sim/GameCore.ts#L1089) | - |
+| `GameCore.updateDrops` | `method` | [`game/src/sim/GameCore.ts:1018`](../../game/src/sim/GameCore.ts#L1018) | - |
+| `GameCore.updateEnemies` | `method` | [`game/src/sim/GameCore.ts:668`](../../game/src/sim/GameCore.ts#L668) | - |
+| `GameCore.updatePlayers` | `method` | [`game/src/sim/GameCore.ts:476`](../../game/src/sim/GameCore.ts#L476) | - |
+| `GameCore.updateProjectiles` | `method` | [`game/src/sim/GameCore.ts:787`](../../game/src/sim/GameCore.ts#L787) | - |
+| `GameCore.updateRevives` | `method` | [`game/src/sim/GameCore.ts:1130`](../../game/src/sim/GameCore.ts#L1130) | - |
+| `GameCore.updateWaves` | `method` | [`game/src/sim/GameCore.ts:587`](../../game/src/sim/GameCore.ts#L587) | - |
+| `GameCore.upgradePlayerWeapon` | `method` | [`game/src/sim/GameCore.ts:403`](../../game/src/sim/GameCore.ts#L403) | - |
+| `GameCoreConfig` | `interface` | [`game/src/sim/GameCore.ts:33`](../../game/src/sim/GameCore.ts#L33) | - |
 | `GameEventBus` | `class` | [`game/src/mechanics/events/GameEventBus.ts:57`](../../game/src/mechanics/events/GameEventBus.ts#L57) | High-performance, decoupled event bus for gameplay systems and UI synchroni... |
 | `GameEventBus.clear` | `method` | [`game/src/mechanics/events/GameEventBus.ts:90`](../../game/src/mechanics/events/GameEventBus.ts#L90) | - |
 | `GameEventListener` | `type` | [`game/src/mechanics/events/GameEventBus.ts:1`](../../game/src/mechanics/events/GameEventBus.ts#L1) | - |
@@ -516,7 +516,7 @@ Run `npm run index` to refresh this cache.
 | `getWeaponColor` | `function` | [`admin/src/constants.ts:85`](../../admin/src/constants.ts#L85) | - |
 | `getWeaponEffectiveCap` | `function` | [`game/src/combat/WeaponBase.ts:263`](../../game/src/combat/WeaponBase.ts#L263) | Calculates the level cap for a weapon based on tier rules: - Tier 3 (awaken... |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/modules/HeroUIHelpers.ts:191`](../../game/src/ui/modules/HeroUIHelpers.ts#L191) | - |
-| `getWeaponIconUrl` | `function` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:43`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L43) | - |
+| `getWeaponIconUrl` | `function` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:44`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L44) | - |
 | `GlobalBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:94`](../../game/src/balance/BalanceTypes.ts#L94) | - |
 | `GreatswordWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:290`](../../game/src/combat/weapons/MeleeWeapons.ts#L290) | Greatsword (Двуручный Меч) - Hero 2 Valkyrie starting weapon Massive sweepi... |
 | `GreatswordWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:360`](../../game/src/combat/weapons/MeleeWeapons.ts#L360) | - |
@@ -718,17 +718,17 @@ Run `npm run index` to refresh this cache.
 | `KukriWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:91`](../../game/src/combat/weapons/MeleeWeapons.ts#L91) | - |
 | `KukriWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:84`](../../game/src/combat/weapons/MeleeWeapons.ts#L84) | - |
 | `LEGENDARY_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:264`](../../game/src/items/RiftItemSystem.ts#L264) | - |
-| `LevelUpScreen` | `class` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:86`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L86) | - |
-| `LevelUpScreen.bindElements` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:112`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L112) | - |
-| `LevelUpScreen.bindEvents` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:120`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L120) | - |
-| `LevelUpScreen.generateWeaponOptions` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:363`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L363) | - |
-| `LevelUpScreen.getTemplate` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:108`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L108) | - |
-| `LevelUpScreen.hideLevelUp` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:351`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L351) | - |
-| `LevelUpScreen.resetLevelUpState` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:122`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L122) | - |
-| `LevelUpScreen.selectAutoLevelUpOption` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:181`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L181) | - |
-| `LevelUpScreen.showLevelUp` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:128`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L128) | - |
-| `LevelUpScreenElements` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:66`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L66) | - |
-| `LevelUpScreenOptions` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:75`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L75) | - |
+| `LevelUpScreen` | `class` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:87`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L87) | - |
+| `LevelUpScreen.bindElements` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:113`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L113) | - |
+| `LevelUpScreen.bindEvents` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:121`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L121) | - |
+| `LevelUpScreen.generateWeaponOptions` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:364`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L364) | - |
+| `LevelUpScreen.getTemplate` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:109`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L109) | - |
+| `LevelUpScreen.hideLevelUp` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:352`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L352) | - |
+| `LevelUpScreen.resetLevelUpState` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:123`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L123) | - |
+| `LevelUpScreen.selectAutoLevelUpOption` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:182`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L182) | - |
+| `LevelUpScreen.showLevelUp` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:129`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L129) | - |
+| `LevelUpScreenElements` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:67`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L67) | - |
+| `LevelUpScreenOptions` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:76`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L76) | - |
 | `LevelUpUI` | `class` | [`game/src/ui/modules/LevelUpUI.ts:18`](../../game/src/ui/modules/LevelUpUI.ts#L18) | - |
 | `LevelUpUIContext` | `type` | [`game/src/ui/modules/LevelUpUI.ts:13`](../../game/src/ui/modules/LevelUpUI.ts#L13) | - |
 | `LevelUpUIElements` | `type` | [`game/src/ui/modules/LevelUpUI.ts:12`](../../game/src/ui/modules/LevelUpUI.ts#L12) | - |
@@ -917,60 +917,60 @@ Run `npm run index` to refresh this cache.
 | `PassiveBuffId` | `type` | [`game/src/drops/PassiveBuffs.ts:1`](../../game/src/drops/PassiveBuffs.ts#L1) | - |
 | `Player` | `class` | [`game/src/entities/Player.ts:58`](../../game/src/entities/Player.ts#L58) | - |
 | `PLAYER_COLORS` | `const` | [`game/src/shared/types/network.ts:164`](../../game/src/shared/types/network.ts#L164) | - |
-| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:656`](../../game/src/entities/Player.ts#L656) | - |
-| `Player.addBuff` | `method` | [`game/src/entities/Player.ts:532`](../../game/src/entities/Player.ts#L532) | - |
-| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:675`](../../game/src/entities/Player.ts#L675) | - |
-| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:673`](../../game/src/entities/Player.ts#L673) | - |
-| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:682`](../../game/src/entities/Player.ts#L682) | - |
-| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:672`](../../game/src/entities/Player.ts#L672) | - |
-| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1171`](../../game/src/entities/Player.ts#L1171) | - |
-| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:689`](../../game/src/entities/Player.ts#L689) | - |
-| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:657`](../../game/src/entities/Player.ts#L657) | - |
-| `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:544`](../../game/src/entities/Player.ts#L544) | - |
-| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:671`](../../game/src/entities/Player.ts#L671) | - |
-| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:670`](../../game/src/entities/Player.ts#L670) | - |
+| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:658`](../../game/src/entities/Player.ts#L658) | - |
+| `Player.addBuff` | `method` | [`game/src/entities/Player.ts:534`](../../game/src/entities/Player.ts#L534) | - |
+| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:677`](../../game/src/entities/Player.ts#L677) | - |
+| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:675`](../../game/src/entities/Player.ts#L675) | - |
+| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:684`](../../game/src/entities/Player.ts#L684) | - |
+| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:674`](../../game/src/entities/Player.ts#L674) | - |
+| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1173`](../../game/src/entities/Player.ts#L1173) | - |
+| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:691`](../../game/src/entities/Player.ts#L691) | - |
+| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:659`](../../game/src/entities/Player.ts#L659) | - |
+| `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:546`](../../game/src/entities/Player.ts#L546) | - |
+| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:673`](../../game/src/entities/Player.ts#L673) | - |
+| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:672`](../../game/src/entities/Player.ts#L672) | - |
 | `Player.applyBurn` | `method` | [`game/src/entities/Player.ts:126`](../../game/src/entities/Player.ts#L126) | - |
 | `Player.applyCharacterPerks` | `method` | [`game/src/entities/Player.ts:465`](../../game/src/entities/Player.ts#L465) | - |
-| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:727`](../../game/src/entities/Player.ts#L727) | - |
+| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:729`](../../game/src/entities/Player.ts#L729) | - |
 | `Player.applyShock` | `method` | [`game/src/entities/Player.ts:131`](../../game/src/entities/Player.ts#L131) | - |
 | `Player.applySlow` | `method` | [`game/src/entities/Player.ts:136`](../../game/src/entities/Player.ts#L136) | - |
-| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1132`](../../game/src/entities/Player.ts#L1132) | - |
-| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1167`](../../game/src/entities/Player.ts#L1167) | - |
+| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1134`](../../game/src/entities/Player.ts#L1134) | - |
+| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1169`](../../game/src/entities/Player.ts#L1169) | - |
 | `Player.clearWeapons` | `method` | [`game/src/entities/Player.ts:452`](../../game/src/entities/Player.ts#L452) | - |
-| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1263`](../../game/src/entities/Player.ts#L1263) | - |
-| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1101`](../../game/src/entities/Player.ts#L1101) | - |
-| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1179`](../../game/src/entities/Player.ts#L1179) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
-| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1128`](../../game/src/entities/Player.ts#L1128) | - |
-| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1296`](../../game/src/entities/Player.ts#L1296) | - |
+| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1265`](../../game/src/entities/Player.ts#L1265) | - |
+| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1103`](../../game/src/entities/Player.ts#L1103) | - |
+| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1181`](../../game/src/entities/Player.ts#L1181) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
+| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1130`](../../game/src/entities/Player.ts#L1130) | - |
+| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1298`](../../game/src/entities/Player.ts#L1298) | - |
 | `Player.getCharacterGeometry` | `method` | [`game/src/entities/Player.ts:208`](../../game/src/entities/Player.ts#L208) | - |
-| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:643`](../../game/src/entities/Player.ts#L643) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
-| `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:540`](../../game/src/entities/Player.ts#L540) | - |
-| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:696`](../../game/src/entities/Player.ts#L696) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
-| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1287`](../../game/src/entities/Player.ts#L1287) | - |
-| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1137`](../../game/src/entities/Player.ts#L1137) | - |
-| `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:536`](../../game/src/entities/Player.ts#L536) | - |
-| `Player.heal` | `method` | [`game/src/entities/Player.ts:1096`](../../game/src/entities/Player.ts#L1096) | - |
+| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:645`](../../game/src/entities/Player.ts#L645) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
+| `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:542`](../../game/src/entities/Player.ts#L542) | - |
+| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:698`](../../game/src/entities/Player.ts#L698) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
+| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1289`](../../game/src/entities/Player.ts#L1289) | - |
+| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1139`](../../game/src/entities/Player.ts#L1139) | - |
+| `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:538`](../../game/src/entities/Player.ts#L538) | - |
+| `Player.heal` | `method` | [`game/src/entities/Player.ts:1098`](../../game/src/entities/Player.ts#L1098) | - |
 | `Player.isAnimatedCharacter` | `method` | [`game/src/entities/Player.ts:351`](../../game/src/entities/Player.ts#L351) | - |
-| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:702`](../../game/src/entities/Player.ts#L702) | - |
+| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:704`](../../game/src/entities/Player.ts#L704) | - |
 | `Player.loadCharacterTextures` | `method` | [`game/src/entities/Player.ts:355`](../../game/src/entities/Player.ts#L355) | - |
-| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1159`](../../game/src/entities/Player.ts#L1159) | - |
-| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:589`](../../game/src/entities/Player.ts#L589) | - |
-| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:659`](../../game/src/entities/Player.ts#L659) | - |
-| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1241`](../../game/src/entities/Player.ts#L1241) | - |
-| `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:555`](../../game/src/entities/Player.ts#L555) | - |
-| `Player.reset` | `method` | [`game/src/entities/Player.ts:1196`](../../game/src/entities/Player.ts#L1196) | - |
-| `Player.revive` | `method` | [`game/src/entities/Player.ts:1077`](../../game/src/entities/Player.ts#L1077) | - |
+| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1161`](../../game/src/entities/Player.ts#L1161) | - |
+| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:591`](../../game/src/entities/Player.ts#L591) | - |
+| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:661`](../../game/src/entities/Player.ts#L661) | - |
+| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1243`](../../game/src/entities/Player.ts#L1243) | - |
+| `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:557`](../../game/src/entities/Player.ts#L557) | - |
+| `Player.reset` | `method` | [`game/src/entities/Player.ts:1198`](../../game/src/entities/Player.ts#L1198) | - |
+| `Player.revive` | `method` | [`game/src/entities/Player.ts:1079`](../../game/src/entities/Player.ts#L1079) | - |
 | `Player.setCharacter` | `method` | [`game/src/entities/Player.ts:392`](../../game/src/entities/Player.ts#L392) | - |
 | `Player.setDirection` | `method` | [`game/src/entities/Player.ts:416`](../../game/src/entities/Player.ts#L416) | - |
 | `Player.setupAuras` | `method` | [`game/src/entities/Player.ts:295`](../../game/src/entities/Player.ts#L295) | - |
 | `Player.syncBalance` | `method` | [`game/src/entities/Player.ts:512`](../../game/src/entities/Player.ts#L512) | - |
-| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1005`](../../game/src/entities/Player.ts#L1005) | - |
-| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1105`](../../game/src/entities/Player.ts#L1105) | - |
-| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1120`](../../game/src/entities/Player.ts#L1120) | - |
-| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1114`](../../game/src/entities/Player.ts#L1114) | - |
+| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1007`](../../game/src/entities/Player.ts#L1007) | - |
+| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1107`](../../game/src/entities/Player.ts#L1107) | - |
+| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1122`](../../game/src/entities/Player.ts#L1122) | - |
+| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1116`](../../game/src/entities/Player.ts#L1116) | - |
 | `Player.triggerAttackAnim` | `method` | [`game/src/entities/Player.ts:428`](../../game/src/entities/Player.ts#L428) | - |
-| `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:571`](../../game/src/entities/Player.ts#L571) | - |
-| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:988`](../../game/src/entities/Player.ts#L988) | - |
+| `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:573`](../../game/src/entities/Player.ts#L573) | - |
+| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:990`](../../game/src/entities/Player.ts#L990) | - |
 | `PlayerAnimation` | `class` | [`game/src/mechanics/player/PlayerAnimation.ts:21`](../../game/src/mechanics/player/PlayerAnimation.ts#L21) | Handles sprite direction, sheet animations (IDLE, WALK, ATTACK), texture lo... |
 | `PlayerAnimation.isAnimatedCharacter` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:78`](../../game/src/mechanics/player/PlayerAnimation.ts#L78) | - |
 | `PlayerAnimation.loadCharacterTextures` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:82`](../../game/src/mechanics/player/PlayerAnimation.ts#L82) | - |
@@ -989,10 +989,10 @@ Run `npm run index` to refresh this cache.
 | `PlayerNetState` | `interface` | [`game/src/shared/types/network.ts:55`](../../game/src/shared/types/network.ts#L55) | - |
 | `PlayerOverheadData` | `interface` | [`game/src/entities/PlayerOverheadRenderer.ts:3`](../../game/src/entities/PlayerOverheadRenderer.ts#L3) | - |
 | `PlayerProfileRow` | `interface` | [`game/src/meta/CloudSyncManager.ts:8`](../../game/src/meta/CloudSyncManager.ts#L8) | - |
-| `PlayerStats` | `class` | [`game/src/mechanics/player/PlayerStats.ts:31`](../../game/src/mechanics/player/PlayerStats.ts#L31) | Encapsulates RPG stat computation, passive bonus scaling, dimishing returns... |
+| `PlayerStats` | `class` | [`game/src/mechanics/player/PlayerStats.ts:32`](../../game/src/mechanics/player/PlayerStats.ts#L32) | Encapsulates RPG stat computation, passive bonus scaling, dimishing returns... |
 | `PlayerStats` | `interface` | [`game/src/shared/types/entities.ts:38`](../../game/src/shared/types/entities.ts#L38) | - |
-| `PlayerStats.calculateXpToNextLevel` | `method` | [`game/src/mechanics/player/PlayerStats.ts:32`](../../game/src/mechanics/player/PlayerStats.ts#L32) | - |
-| `PlayerStatsConfig` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:6`](../../game/src/mechanics/player/PlayerStats.ts#L6) | - |
+| `PlayerStats.calculateXpToNextLevel` | `method` | [`game/src/mechanics/player/PlayerStats.ts:33`](../../game/src/mechanics/player/PlayerStats.ts#L33) | - |
+| `PlayerStatsConfig` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:7`](../../game/src/mechanics/player/PlayerStats.ts#L7) | - |
 | `PlayerStatusManager` | `class` | [`game/src/entities/PlayerStatusManager.ts:1`](../../game/src/entities/PlayerStatusManager.ts#L1) | - |
 | `PlayerStatusManager.applyBurn` | `method` | [`game/src/entities/PlayerStatusManager.ts:8`](../../game/src/entities/PlayerStatusManager.ts#L8) | - |
 | `PlayerStatusManager.applyShock` | `method` | [`game/src/entities/PlayerStatusManager.ts:12`](../../game/src/entities/PlayerStatusManager.ts#L12) | - |
@@ -1231,7 +1231,7 @@ Run `npm run index` to refresh this cache.
 | `ShopScreenOptions` | `interface` | [`game/src/ui/screens/Shop/ShopScreen.ts:10`](../../game/src/ui/screens/Shop/ShopScreen.ts#L10) | - |
 | `showToast` | `function` | [`admin/src/ui/toast.ts:1`](../../admin/src/ui/toast.ts#L1) | - |
 | `SidebarQuestItem` | `interface` | [`game/src/core/ProgressionManager.ts:6`](../../game/src/core/ProgressionManager.ts#L6) | - |
-| `SimAltarInternal` | `class` | [`game/src/sim/GameCore.ts:342`](../../game/src/sim/GameCore.ts#L342) | - |
+| `SimAltarInternal` | `class` | [`game/src/sim/GameCore.ts:297`](../../game/src/sim/GameCore.ts#L297) | - |
 | `SimAltarState` | `interface` | [`game/src/sim/types.ts:96`](../../game/src/sim/types.ts#L96) | - |
 | `SimAssaultRifleWeapon` | `class` | [`game/src/sim/weapons/SimRangedWeapons.ts:197`](../../game/src/sim/weapons/SimRangedWeapons.ts#L197) | Assault Rifle (Штурмовая Винтовка) |
 | `SimAssaultRifleWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimRangedWeapons.ts:273`](../../game/src/sim/weapons/SimRangedWeapons.ts#L273) | - |
@@ -1245,16 +1245,16 @@ Run `npm run index` to refresh this cache.
 | `SimChakramWeapon` | `class` | [`game/src/sim/weapons/SimMagicWeapons.ts:147`](../../game/src/sim/weapons/SimMagicWeapons.ts#L147) | Boomerang Chakram simulation weapon |
 | `SimChakramWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:237`](../../game/src/sim/weapons/SimMagicWeapons.ts#L237) | - |
 | `SimChakramWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:222`](../../game/src/sim/weapons/SimMagicWeapons.ts#L222) | - |
-| `SimDropInternal` | `class` | [`game/src/sim/GameCore.ts:327`](../../game/src/sim/GameCore.ts#L327) | - |
+| `SimDropInternal` | `class` | [`game/src/sim/GameCore.ts:282`](../../game/src/sim/GameCore.ts#L282) | - |
 | `SimDropState` | `interface` | [`game/src/sim/types.ts:89`](../../game/src/sim/types.ts#L89) | - |
 | `SimDualRevolversWeapon` | `const` | [`game/src/sim/weapons/SimRangedWeapons.ts:191`](../../game/src/sim/weapons/SimRangedWeapons.ts#L191) | - |
 | `SimDualRevolversWeapon` | `type` | [`game/src/sim/weapons/SimRangedWeapons.ts:192`](../../game/src/sim/weapons/SimRangedWeapons.ts#L192) | - |
-| `SimEnemyConfig` | `interface` | [`game/src/sim/GameCore.ts:39`](../../game/src/sim/GameCore.ts#L39) | - |
-| `SimEnemyInternal` | `class` | [`game/src/sim/GameCore.ts:193`](../../game/src/sim/GameCore.ts#L193) | - |
-| `SimEnemyInternal.addBleed` | `method` | [`game/src/sim/GameCore.ts:259`](../../game/src/sim/GameCore.ts#L259) | - |
-| `SimEnemyInternal.freeze` | `method` | [`game/src/sim/GameCore.ts:237`](../../game/src/sim/GameCore.ts#L237) | - |
-| `SimEnemyInternal.knockbackFrom` | `method` | [`game/src/sim/GameCore.ts:241`](../../game/src/sim/GameCore.ts#L241) | - |
-| `SimEnemyRef` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:40`](../../game/src/sim/weapons/SimWeaponBase.ts#L40) | - |
+| `SimEnemyConfig` | `interface` | [`game/src/sim/GameCore.ts:40`](../../game/src/sim/GameCore.ts#L40) | - |
+| `SimEnemyInternal` | `class` | [`game/src/sim/GameCore.ts:148`](../../game/src/sim/GameCore.ts#L148) | - |
+| `SimEnemyInternal.addBleed` | `method` | [`game/src/sim/GameCore.ts:214`](../../game/src/sim/GameCore.ts#L214) | - |
+| `SimEnemyInternal.freeze` | `method` | [`game/src/sim/GameCore.ts:192`](../../game/src/sim/GameCore.ts#L192) | - |
+| `SimEnemyInternal.knockbackFrom` | `method` | [`game/src/sim/GameCore.ts:196`](../../game/src/sim/GameCore.ts#L196) | - |
+| `SimEnemyRef` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:41`](../../game/src/sim/weapons/SimWeaponBase.ts#L41) | - |
 | `SimEnemyState` | `interface` | [`game/src/sim/types.ts:59`](../../game/src/sim/types.ts#L59) | - |
 | `SimEvent` | `type` | [`game/src/sim/types.ts:106`](../../game/src/sim/types.ts#L106) | - |
 | `SimFireballWeapon` | `class` | [`game/src/sim/weapons/SimMagicWeapons.ts:407`](../../game/src/sim/weapons/SimMagicWeapons.ts#L407) | Fireball (Огненный Шар) simulation weapon |
@@ -1288,18 +1288,18 @@ Run `npm run index` to refresh this cache.
 | `SimLightningStrikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:315`](../../game/src/sim/weapons/SimMagicWeapons.ts#L315) | - |
 | `SimLightningStrikeWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:300`](../../game/src/sim/weapons/SimMagicWeapons.ts#L300) | - |
 | `SimPlayerInput` | `interface` | [`game/src/sim/types.ts:24`](../../game/src/sim/types.ts#L24) | - |
-| `SimPlayerInternal` | `class` | [`game/src/sim/GameCore.ts:53`](../../game/src/sim/GameCore.ts#L53) | - |
-| `SimPlayerInternal.getDamageMultiplier` | `method` | [`game/src/sim/GameCore.ts:163`](../../game/src/sim/GameCore.ts#L163) | - |
-| `SimPlayerInternal.recalculateStats` | `method` | [`game/src/sim/GameCore.ts:173`](../../game/src/sim/GameCore.ts#L173) | - |
-| `SimPlayerRef` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:47`](../../game/src/sim/weapons/SimWeaponBase.ts#L47) | - |
+| `SimPlayerInternal` | `class` | [`game/src/sim/GameCore.ts:54`](../../game/src/sim/GameCore.ts#L54) | - |
+| `SimPlayerInternal.getDamageMultiplier` | `method` | [`game/src/sim/GameCore.ts:118`](../../game/src/sim/GameCore.ts#L118) | - |
+| `SimPlayerInternal.recalculateStats` | `method` | [`game/src/sim/GameCore.ts:128`](../../game/src/sim/GameCore.ts#L128) | - |
+| `SimPlayerRef` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:48`](../../game/src/sim/weapons/SimWeaponBase.ts#L48) | - |
 | `SimPlayerState` | `interface` | [`game/src/sim/types.ts:37`](../../game/src/sim/types.ts#L37) | - |
 | `SimPlayerStats` | `interface` | [`game/src/sim/types.ts:30`](../../game/src/sim/types.ts#L30) | - |
 | `SimPoint2D` | `interface` | [`game/src/world/ObstacleManager.ts:10`](../../game/src/world/ObstacleManager.ts#L10) | - |
 | `SimPoisonPuddleWeapon` | `class` | [`game/src/sim/weapons/SimMagicWeapons.ts:494`](../../game/src/sim/weapons/SimMagicWeapons.ts#L494) | Poison Puddle (Ядовитая лужа) simulation weapon |
 | `SimPoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:562`](../../game/src/sim/weapons/SimMagicWeapons.ts#L562) | - |
 | `SimPoisonPuddleWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:547`](../../game/src/sim/weapons/SimMagicWeapons.ts#L547) | - |
-| `SimProjectileData` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:13`](../../game/src/sim/weapons/SimWeaponBase.ts#L13) | - |
-| `SimProjectileInternal` | `class` | [`game/src/sim/GameCore.ts:264`](../../game/src/sim/GameCore.ts#L264) | - |
+| `SimProjectileData` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:14`](../../game/src/sim/weapons/SimWeaponBase.ts#L14) | - |
+| `SimProjectileInternal` | `class` | [`game/src/sim/GameCore.ts:219`](../../game/src/sim/GameCore.ts#L219) | - |
 | `SimProjectileState` | `interface` | [`game/src/sim/types.ts:73`](../../game/src/sim/types.ts#L73) | - |
 | `SimReaperScytheWeapon` | `class` | [`game/src/sim/weapons/SimMeleeWeapons.ts:189`](../../game/src/sim/weapons/SimMeleeWeapons.ts#L189) | Reaper's Scythe (Коса Жнеца) |
 | `SimReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimMeleeWeapons.ts:247`](../../game/src/sim/weapons/SimMeleeWeapons.ts#L247) | - |
@@ -1327,9 +1327,9 @@ Run `npm run index` to refresh this cache.
 | `SimVec3.multiplyScalar` | `method` | [`game/src/sim/math/SimVector.ts:55`](../../game/src/sim/math/SimVector.ts#L55) | - |
 | `SimVec3.normalize` | `method` | [`game/src/sim/math/SimVector.ts:81`](../../game/src/sim/math/SimVector.ts#L81) | - |
 | `SimVec3.set` | `method` | [`game/src/sim/math/SimVector.ts:16`](../../game/src/sim/math/SimVector.ts#L16) | - |
-| `SimWeapon` | `class` | [`game/src/sim/weapons/SimWeaponBase.ts:118`](../../game/src/sim/weapons/SimWeaponBase.ts#L118) | - |
-| `SimWeapon.getInfo` | `method` | [`game/src/sim/weapons/SimWeaponBase.ts:156`](../../game/src/sim/weapons/SimWeaponBase.ts#L156) | - |
-| `SimWeaponInfo` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:3`](../../game/src/sim/weapons/SimWeaponBase.ts#L3) | - |
+| `SimWeapon` | `class` | [`game/src/sim/weapons/SimWeaponBase.ts:119`](../../game/src/sim/weapons/SimWeaponBase.ts#L119) | - |
+| `SimWeapon.getInfo` | `method` | [`game/src/sim/weapons/SimWeaponBase.ts:159`](../../game/src/sim/weapons/SimWeaponBase.ts#L159) | - |
+| `SimWeaponInfo` | `interface` | [`game/src/sim/weapons/SimWeaponBase.ts:4`](../../game/src/sim/weapons/SimWeaponBase.ts#L4) | - |
 | `SimWhirlwindSlashWeapon` | `class` | [`game/src/sim/weapons/SimMeleeWeapons.ts:12`](../../game/src/sim/weapons/SimMeleeWeapons.ts#L12) | Crimson Whirlwind (Багровый Вихрь) - Ronin |
 | `SimWhirlwindSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimMeleeWeapons.ts:62`](../../game/src/sim/weapons/SimMeleeWeapons.ts#L62) | - |
 | `SimWhirlwindSlashWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimMeleeWeapons.ts:54`](../../game/src/sim/weapons/SimMeleeWeapons.ts#L54) | - |
@@ -1514,7 +1514,7 @@ Run `npm run index` to refresh this cache.
 | `UpdateNotifier.notifyUpdate` | `method` | [`game/src/core/UpdateNotifier.ts:161`](../../game/src/core/UpdateNotifier.ts#L161) | - |
 | `UpdateNotifier.simulateUpdate` | `method` | [`game/src/core/UpdateNotifier.ts:184`](../../game/src/core/UpdateNotifier.ts#L184) | Simulates an update event (useful for UI testing and verification in Dev mo... |
 | `updateOverviewStats` | `function` | [`admin/src/views/dashboardView.ts:160`](../../admin/src/views/dashboardView.ts#L160) | - |
-| `UpgradeOption` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:32`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L32) | - |
+| `UpgradeOption` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:33`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L33) | - |
 | `VersionInfo` | `interface` | [`game/src/core/UpdateNotifier.ts:1`](../../game/src/core/UpdateNotifier.ts#L1) | - |
 | `Weapon` | `class` | [`game/src/combat/WeaponBase.ts:91`](../../game/src/combat/WeaponBase.ts#L91) | - |
 | `WEAPON_COLORS` | `const` | [`admin/src/constants.ts:52`](../../admin/src/constants.ts#L52) | - |

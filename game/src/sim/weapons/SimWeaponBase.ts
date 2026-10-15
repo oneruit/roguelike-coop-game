@@ -1,4 +1,5 @@
 import { SimVec3 } from '../math/SimVector';
+import { DEFAULT_BALANCE } from '../../balance/defaultBalance';
 
 export interface SimWeaponInfo {
   id: string;
@@ -133,11 +134,13 @@ export abstract class SimWeapon {
 
   constructor(id: string, name: string, icon: string, cooldown: number, damage: number, iconImage?: string) {
     this.id = id;
-    this.name = name;
-    this.icon = icon;
+    const cfg = DEFAULT_BALANCE.weapons[id];
+    this.name = cfg?.name || name;
+    this.icon = cfg?.icon || icon;
     this.iconImage = iconImage || `/textures/weapons/weapon_${id}.png`;
-    this.cooldown = cooldown;
-    this.damage = damage;
+    this.cooldown = cfg?.cooldown !== undefined ? cfg.cooldown : cooldown;
+    this.damage = cfg?.damage !== undefined ? cfg.damage : damage;
+    this.maxLevel = cfg?.maxLevel || 12;
   }
 
   public abstract update(
