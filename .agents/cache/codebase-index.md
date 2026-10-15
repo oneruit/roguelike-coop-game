@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-15T00:46:59.364Z | **Files:** 148 | **Top-level:** 459 | **Class Methods:** 1057
+> **Generated:** 2026-10-15T00:51:38.971Z | **Files:** 148 | **Top-level:** 459 | **Class Methods:** 1057
 > **Entities Registered:** 10 Heroes, 26 Weapons, 2 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -667,7 +667,7 @@ Run `npm run index` to refresh this cache.
 | `InventoryScreen.bindElements` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:41`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L41) | - |
 | `InventoryScreen.bindEvents` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:54`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L54) | - |
 | `InventoryScreen.getTemplate` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:37`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L37) | - |
-| `InventoryScreen.getWeaponDetailedInventoryStats` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:440`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L440) | - |
+| `InventoryScreen.getWeaponDetailedInventoryStats` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:437`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L437) | - |
 | `InventoryScreen.hideInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:99`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L99) | - |
 | `InventoryScreen.isInventoryOpen` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:76`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L76) | - |
 | `InventoryScreen.renderInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:105`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L105) | - |

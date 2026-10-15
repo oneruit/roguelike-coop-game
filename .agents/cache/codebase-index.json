@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-15T00:46:59.364Z",
+  "generatedAt": "2026-10-15T00:51:38.971Z",
   "totalFiles": 148,
   "totalSymbols": 1516,
   "topLevelCount": 459,
@@ -5504,7 +5504,7 @@
       "name": "InventoryScreen.getWeaponDetailedInventoryStats",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 440,
+      "line": 437,
       "className": "InventoryScreen",
       "methodName": "getWeaponDetailedInventoryStats"
     },

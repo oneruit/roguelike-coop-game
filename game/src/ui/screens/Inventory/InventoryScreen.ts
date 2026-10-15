@@ -131,6 +131,7 @@ export class InventoryScreen extends Screen {
       const activeWeapons = player.weapons.length > 0 ? player.weapons : [];
       let totalBaseDamage = 0;
       let totalEffectiveDamage = 0;
+      let totalBaseDps = 0;
       let totalDps = 0;
 
       if (activeWeapons.length > 0) {
@@ -139,28 +140,28 @@ export class InventoryScreen extends Screen {
           const effDmg = w.damage * mult;
           totalBaseDamage += w.baseDamage;
           totalEffectiveDamage += effDmg;
-          const cd = w.effectiveCooldown || 1.0;
+          const cd = Math.max(0.08, w.effectiveCooldown || 1.0);
+          totalBaseDps += w.baseDamage / cd;
           totalDps += effDmg / cd;
         }
       } else {
         const mult = player.getDamageMultiplier(player.startingWeaponId);
         totalBaseDamage = 15;
         totalEffectiveDamage = 15 * mult;
+        totalBaseDps = 15;
         totalDps = totalEffectiveDamage;
       }
 
       const totalBonusDmg = Math.max(0, Math.round(totalEffectiveDamage - totalBaseDamage));
-      const avgDmg = Math.round(totalEffectiveDamage / Math.max(1, activeWeapons.length));
-      const avgBaseDmg = Math.round(totalBaseDamage / Math.max(1, activeWeapons.length));
-      const avgBonusDmg = Math.max(0, avgDmg - avgBaseDmg);
+      const totalBonusDps = Math.max(0, Math.round(totalDps - totalBaseDps));
+
+      const dpsValue = this.statDisplayMode === 'split' && totalBonusDps > 0
+        ? `<span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalBaseDps)} <span style="color: #22c55e;">(+${totalBonusDps})</span> DPS)</span>`
+        : `<span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalDps)} DPS)</span>`;
 
       const weaponsDmgValue = this.statDisplayMode === 'split' && totalBonusDmg > 0
-        ? `<span style="color: #f1f5f9;">${Math.round(totalBaseDamage)}</span> <span style="color: #22c55e;">(+${totalBonusDmg})</span>`
-        : `<span style="color: #f1f5f9;">${Math.round(totalEffectiveDamage)}</span>`;
-
-      const avgDmgValue = this.statDisplayMode === 'split' && avgBonusDmg > 0
-        ? `<span style="color: #f1f5f9;">${avgBaseDmg}</span> <span style="color: #22c55e;">(+${avgBonusDmg})</span> <span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalDps)} DPS)</span>`
-        : `<span style="color: #f1f5f9;">${avgDmg}</span> <span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalDps)} DPS)</span>`;
+        ? `<span style="color: #f1f5f9;">${Math.round(totalBaseDamage)}</span> <span style="color: #22c55e;">(+${totalBonusDmg})</span> ${dpsValue}`
+        : `<span style="color: #f1f5f9;">${Math.round(totalEffectiveDamage)}</span> ${dpsValue}`;
 
       // Speed display
       const spdBonus = Number((player.speed - player.baseSpeed).toFixed(1));
@@ -189,13 +190,9 @@ export class InventoryScreen extends Screen {
           <span class="inv-stat-label">🦺 Снижение урона (Броня)</span>
           <span class="inv-stat-value">-${totalArmorPct}%</span>
         </div>
-        <div class="inv-stat-row" title="Базовый урон всех оружий или базовый (+бонус) урон всех оружий">
-          <span class="inv-stat-label">🎯 Урон оружий</span>
+        <div class="inv-stat-row" title="Суммарный базовый или эффективный урон (+бонус) и общий DPS всех экипированных оружий">
+          <span class="inv-stat-label">⚔️ Урон оружий</span>
           <span class="inv-stat-value text-accent">${weaponsDmgValue}</span>
-        </div>
-        <div class="inv-stat-row" title="Средний урон за удар и общий DPS всех экипированных оружий">
-          <span class="inv-stat-label">⚔️ Средний урон оружий</span>
-          <span class="inv-stat-value">${avgDmgValue}</span>
         </div>
         ${player.mightElixirCount > 0 ? `
         <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+5% за каждый заряд)">
