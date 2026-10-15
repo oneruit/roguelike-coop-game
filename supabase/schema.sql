@@ -350,6 +350,7 @@ ALTER TABLE leaderboards ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow public read leaderboards" ON leaderboards;
 DROP POLICY IF EXISTS "Allow public insert leaderboards" ON leaderboards;
 DROP POLICY IF EXISTS "Allow public update leaderboards" ON leaderboards;
+DROP POLICY IF EXISTS "Allow public delete leaderboards" ON leaderboards;
 
 -- Policy: Anyone can view leaderboard entries
 CREATE POLICY "Allow public read leaderboards"
@@ -372,5 +373,13 @@ CREATE POLICY "Allow public update leaderboards"
   TO anon, authenticated
   USING (true)
   WITH CHECK (true);
+
+-- Policy: Admin panel and authorized operations can delete entries or reset leaderboards
+CREATE POLICY "Allow public delete leaderboards"
+  ON leaderboards
+  FOR DELETE
+  TO anon, authenticated
+  USING (true);
+
 
 

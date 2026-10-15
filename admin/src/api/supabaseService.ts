@@ -1,10 +1,10 @@
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import { BalanceRow } from '../../../game/src/balance/BalanceTypes';
 import { DEFAULT_BALANCE } from '../../../game/src/balance/defaultBalance';
-import { AdminConfig } from '../types';
+import { AdminConfig, LeaderboardEntry } from '../types';
 import { BalanceState } from '../state/balanceState';
 import { showToast } from '../ui/toast';
-import { toSingularCategory } from '../constants';
+import { toSingularCategory, DEFAULT_DEMO_LEADERBOARDS } from '../constants';
 
 export class SupabaseService {
   private client: SupabaseClient | null = null;
@@ -517,4 +517,225 @@ export class SupabaseService {
       }
     }
   }
+
+  // =========================================================================
+  // LEADERBOARDS MANAGEMENT API
+  // =========================================================================
+
+  public async fetchLeaderboards(limit: number = 100): Promise<LeaderboardEntry[]> {
+    const LOCAL_KEY = 'outlaw_local_leaderboards';
+    let entries: LeaderboardEntry[] = [];
+
+    if (this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('leaderboards')
+          .select('*')
+          .order('score', { ascending: false })
+          .limit(limit);
+
+        if (!error && data && data.length > 0) {
+          entries = data.map((d: any) => ({
+            id: d.id,
+            playerId: d.player_id,
+            playerName: d.player_name,
+            heroId: d.hero_id,
+            stage: d.stage,
+            survivalTimeSec: Number(d.survival_time_sec),
+            kills: d.kills,
+            credits: d.credits,
+            score: d.score,
+            isVictory: d.is_victory,
+            createdAt: d.created_at
+          }));
+        }
+      } catch (err) {
+        console.warn('[Admin] Failed to fetch leaderboards from Supabase:', err);
+      }
+    }
+
+    // Fallback to local storage if Supabase returned nothing or errored
+    if (entries.length === 0 && typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        if (raw) {
+          entries = JSON.parse(raw);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (entries.length === 0) {
+      entries = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADERBOARDS));
+    }
+
+    // Deduplicate by playerId keeping highest score
+    const map = new Map<string, LeaderboardEntry>();
+    for (const e of entries) {
+      const key = e.playerId || e.playerName;
+      const prev = map.get(key);
+      if (!prev || e.score > prev.score) {
+        map.set(key, e);
+      }
+    }
+
+    this.state.leaderboardEntries = Array.from(map.values()).sort((a, b) => b.score - a.score);
+    return this.state.leaderboardEntries;
+  }
+
+  public async deleteLeaderboardEntry(id?: string, playerId?: string): Promise<boolean> {
+    const LOCAL_KEY = 'outlaw_local_leaderboards';
+    let success = false;
+
+    if (this.client && (id || playerId)) {
+      try {
+        let query = this.client.from('leaderboards').delete();
+        if (id) {
+          query = query.eq('id', id);
+        } else if (playerId) {
+          query = query.eq('player_id', playerId);
+        }
+        const { error } = await query;
+        if (!error) {
+          success = true;
+        } else {
+          console.warn('[Admin] Supabase delete error:', error.message);
+        }
+      } catch (err) {
+        console.warn('[Admin] Delete leaderboard exception:', err);
+      }
+    }
+
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        if (raw) {
+          let list: LeaderboardEntry[] = JSON.parse(raw);
+          list = list.filter((e) => (id ? e.id !== id : true) && (playerId ? e.playerId !== playerId : true));
+          localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
+          success = true;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    this.state.leaderboardEntries = this.state.leaderboardEntries.filter(
+      (e) => (id ? e.id !== id : true) && (playerId ? e.playerId !== playerId : true)
+    );
+
+    return success;
+  }
+
+  public async resetAllLeaderboards(): Promise<boolean> {
+    const LOCAL_KEY = 'outlaw_local_leaderboards';
+    let success = false;
+
+    if (this.client) {
+      try {
+        const { error } = await this.client
+          .from('leaderboards')
+          .delete()
+          .gte('score', -1);
+
+        if (!error) {
+          success = true;
+        } else {
+          console.warn('[Admin] Supabase reset error:', error.message);
+        }
+      } catch (err) {
+        console.warn('[Admin] Reset leaderboards exception:', err);
+      }
+    }
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(LOCAL_KEY);
+      success = true;
+    }
+
+    this.state.leaderboardEntries = [];
+    return success;
+  }
+
+  public async seedDemoLeaderboards(): Promise<boolean> {
+    const LOCAL_KEY = 'outlaw_local_leaderboards';
+    const demo = JSON.parse(JSON.stringify(DEFAULT_DEMO_LEADERBOARDS)) as LeaderboardEntry[];
+
+    if (this.client) {
+      try {
+        const rows = demo.map((e) => ({
+          player_id: e.playerId,
+          player_name: e.playerName,
+          hero_id: e.heroId,
+          stage: e.stage,
+          survival_time_sec: e.survivalTimeSec,
+          kills: e.kills,
+          credits: e.credits,
+          score: e.score,
+          is_victory: e.isVictory
+        }));
+
+        const { error } = await this.client.from('leaderboards').upsert(rows, { onConflict: 'player_id' });
+        if (error) {
+          console.warn('[Admin] Supabase seed demo warning:', error.message);
+        }
+      } catch (err) {
+        console.warn('[Admin] Seed demo leaderboards exception:', err);
+      }
+    }
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(demo));
+    }
+
+    this.state.leaderboardEntries = demo;
+    return true;
+  }
+
+  public async updateLeaderboardEntry(id: string, updates: Partial<LeaderboardEntry>): Promise<boolean> {
+    const LOCAL_KEY = 'outlaw_local_leaderboards';
+    let success = false;
+
+    if (this.client && id) {
+      try {
+        const dbUpdates: any = {};
+        if (updates.playerName !== undefined) dbUpdates.player_name = updates.playerName;
+        if (updates.score !== undefined) dbUpdates.score = updates.score;
+        if (updates.stage !== undefined) dbUpdates.stage = updates.stage;
+        if (updates.kills !== undefined) dbUpdates.kills = updates.kills;
+        if (updates.isVictory !== undefined) dbUpdates.is_victory = updates.isVictory;
+
+        const { error } = await this.client.from('leaderboards').update(dbUpdates).eq('id', id);
+        if (!error) success = true;
+      } catch (err) {
+        console.warn('[Admin] Update entry error:', err);
+      }
+    }
+
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        if (raw) {
+          const list: LeaderboardEntry[] = JSON.parse(raw);
+          const idx = list.findIndex((e) => e.id === id || (updates.playerId && e.playerId === updates.playerId));
+          if (idx !== -1) {
+            list[idx] = { ...list[idx], ...updates };
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
+            success = true;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const inMemIdx = this.state.leaderboardEntries.findIndex((e) => e.id === id || (updates.playerId && e.playerId === updates.playerId));
+    if (inMemIdx !== -1) {
+      this.state.leaderboardEntries[inMemIdx] = { ...this.state.leaderboardEntries[inMemIdx], ...updates };
+    }
+
+    return success;
+  }
 }
+

@@ -163,6 +163,21 @@
               <span class="tab-text">Глобальные</span>
             </button>
 
+            <button class="nav-tab" data-tab="leaderboards">
+              <span class="tab-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"/>
+                  <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/>
+                  <path d="M4 22h16"/>
+                  <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"/>
+                  <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"/>
+                  <path d="M6 2v7a6 6 0 0 0 12 0V2H6z"/>
+                </svg>
+              </span>
+              <span class="tab-text">Лидерборд</span>
+              <span id="sidebar-leaderboards-count" class="tab-pill" style="background:#eab308; color:#18181b; font-weight:700;">0</span>
+            </button>
+
             <button class="nav-tab" data-tab="connection">
               <span class="tab-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -457,6 +472,16 @@
               <div class="quick-nav-title">Глобальные параметры</div>
               <div class="quick-nav-desc">Кулдаун и длительность рывка (Dash), множители критов и радиус магнита</div>
               <span class="quick-nav-action-text">Настроить механику →</span>
+            </div>
+
+            <div class="quick-nav-card" data-jump-tab="leaderboards">
+              <div class="quick-nav-header">
+                <div class="quick-nav-icon-wrap">🏆</div>
+                <span class="quick-nav-count-badge">Лидерборд</span>
+              </div>
+              <div class="quick-nav-title">Таблица лидеров</div>
+              <div class="quick-nav-desc">Рекорды игроков, лучший счет, этапы, очистка невалидных записей и сброс</div>
+              <span class="quick-nav-action-text">Смотреть рекорды →</span>
             </div>
 
             <div class="quick-nav-card" data-jump-tab="connection">
@@ -1217,7 +1242,157 @@
         </section>
 
         <!-- ================================================================= -->
-        <!-- TAB 6: CONNECTION & SECURITY                                      -->
+        <!-- TAB 6: LEADERBOARDS (Таблица лидеров и управление рекордами)         -->
+        <!-- ================================================================= -->
+        <section id="tab-leaderboards" class="tab-pane">
+          <!-- Summary Metrics Cards -->
+          <div class="metrics-grid" style="margin-bottom: 20px;">
+            <div class="metric-card">
+              <div class="metric-card-inner">
+                <div class="metric-icon-circle circle-blue">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <div class="metric-data-wrap">
+                  <span class="metric-label">Всего игроков в таблице</span>
+                  <div class="metric-number" id="kpi-lb-total-count">0</div>
+                  <div class="metric-trend-row">
+                    <span class="trend-neutral">1 игрок = 1 рекорд</span>
+                    <span class="trend-period">без дубликатов</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-card-inner">
+                <div class="metric-icon-circle circle-amber">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                </div>
+                <div class="metric-data-wrap">
+                  <span class="metric-label">Абсолютный рекорд очков</span>
+                  <div class="metric-number" id="kpi-lb-high-score">0</div>
+                  <div class="metric-trend-row">
+                    <span class="trend-up">🏆 Лидер рейтинга</span>
+                    <span class="trend-period">максимальный счет</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-card-inner">
+                <div class="metric-icon-circle circle-green">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                </div>
+                <div class="metric-data-wrap">
+                  <span class="metric-label">Победных забегов</span>
+                  <div class="metric-number" id="kpi-lb-victories">0 (0%)</div>
+                  <div class="metric-trend-row">
+                    <span class="trend-neutral">Победа над боссом</span>
+                    <span class="trend-period">завершение этапов</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Toolbar with Management Buttons & Filters -->
+          <div class="section-toolbar" style="flex-wrap: wrap; gap: 12px;">
+            <div class="toolbar-info">
+              <h2>Управление таблицей лидеров</h2>
+              <span class="toolbar-hint">Сортировка по колонкам, ручное редактирование, выгрузка резервных копий и сброс</span>
+            </div>
+
+            <div class="toolbar-actions" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <select id="filter-leaderboard-hero" class="form-select-sm" style="background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-default); border-radius:6px; padding:6px 10px; font-size:12px;">
+                <option value="all">Все герои</option>
+                <option value="ronin">Ронин</option>
+                <option value="valkyrie">Валькирия</option>
+                <option value="flail">Храмовник</option>
+                <option value="sorceress">Чародейка</option>
+                <option value="chakram">Танцор с Чакрамами</option>
+                <option value="archer">Следопыт</option>
+                <option value="rocket">Ракетчик</option>
+                <option value="necromancer">Некромант</option>
+                <option value="amazon">Амазонка</option>
+                <option value="invoker">Инвокер</option>
+              </select>
+
+              <select id="filter-leaderboard-victory" class="form-select-sm" style="background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-default); border-radius:6px; padding:6px 10px; font-size:12px;">
+                <option value="all">Любой исход</option>
+                <option value="victory">Только победы 👑</option>
+                <option value="defeat">Только поражения</option>
+              </select>
+
+              <button id="btn-refresh-leaderboards" class="btn btn-sm btn-secondary" title="Обновить таблицу из БД">🔄 Обновить</button>
+              <button id="btn-export-leaderboards" class="btn btn-sm btn-outline" title="Скачать JSON бэкап">📥 Экспорт JSON</button>
+              <button id="btn-seed-leaderboards" class="btn btn-sm btn-gold" title="Добавить стартовые демо-рекорды">🧪 Демо-записи</button>
+              <button id="btn-reset-leaderboards-all" class="btn btn-sm btn-outline-danger" title="Удалить все рекорды">🗑️ Сбросить всех лидеров</button>
+            </div>
+          </div>
+
+          <!-- Table Header with Sortable Columns -->
+          <div class="accordion-table-header leaderboards-table-cols" data-table="leaderboards">
+            <span class="col-stat sortable-col is-sorted" data-table="leaderboards" data-sort="score" style="text-align:center;">
+              <span>#</span>
+              <span class="sort-icon">▼</span>
+            </span>
+            <span class="col-name sortable-col" data-table="leaderboards" data-sort="player">
+              <span>Игрок / ID</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="hero">
+              <span>Герой</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="score">
+              <span>Счет</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="stage">
+              <span>Этап</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="time">
+              <span>Время</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="kills">
+              <span>Убийства</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="credits">
+              <span>Золото</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="victory">
+              <span>Исход</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-stat sortable-col" data-table="leaderboards" data-sort="date">
+              <span>Дата</span>
+              <span class="sort-icon">⇅</span>
+            </span>
+            <span class="col-actions" style="text-align:right;">Действия</span>
+          </div>
+
+          <div id="leaderboards-list" class="accordion-list">
+            <!-- Dynamically populated leaderboard rows via renderLeaderboards() -->
+          </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- TAB 7: CONNECTION & SECURITY                                      -->
         <!-- ================================================================= -->
         <section id="tab-connection" class="tab-pane">
           <div class="section-toolbar">

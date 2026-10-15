@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-15T12:24:29.458Z",
-  "totalFiles": 152,
-  "totalSymbols": 1552,
-  "topLevelCount": 468,
-  "methodsCount": 1084,
+  "generatedAt": "2026-10-15T12:59:01.071Z",
+  "totalFiles": 153,
+  "totalSymbols": 1563,
+  "topLevelCount": 473,
+  "methodsCount": 1090,
   "entities": {
     "heroes": [
       {
@@ -633,13 +633,13 @@
       "name": "AdminController",
       "kind": "class",
       "file": "admin/src/admin.ts",
-      "line": 19
+      "line": 20
     },
     {
       "name": "AdminController.applyFilter",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 399,
+      "line": 442,
       "className": "AdminController",
       "methodName": "applyFilter"
     },
@@ -647,7 +647,7 @@
       "name": "AdminController.bindDOM",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 47,
+      "line": 49,
       "className": "AdminController",
       "methodName": "bindDOM"
     },
@@ -655,7 +655,7 @@
       "name": "AdminController.clearSearch",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 416,
+      "line": 460,
       "className": "AdminController",
       "methodName": "clearSearch"
     },
@@ -663,7 +663,7 @@
       "name": "AdminController.collapseAllCurrentTab",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 447,
+      "line": 491,
       "className": "AdminController",
       "methodName": "collapseAllCurrentTab"
     },
@@ -671,7 +671,7 @@
       "name": "AdminController.expandAllCurrentTab",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 424,
+      "line": 468,
       "className": "AdminController",
       "methodName": "expandAllCurrentTab"
     },
@@ -679,7 +679,7 @@
       "name": "AdminController.handleFieldChange",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 485,
+      "line": 529,
       "className": "AdminController",
       "methodName": "handleFieldChange"
     },
@@ -687,7 +687,7 @@
       "name": "AdminController.init",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 40,
+      "line": 41,
       "className": "AdminController",
       "methodName": "init"
     },
@@ -695,7 +695,7 @@
       "name": "AdminController.renderAll",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 742,
+      "line": 794,
       "className": "AdminController",
       "methodName": "renderAll"
     },
@@ -703,7 +703,7 @@
       "name": "AdminController.renderBosses",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 677,
+      "line": 721,
       "className": "AdminController",
       "methodName": "renderBosses"
     },
@@ -711,7 +711,7 @@
       "name": "AdminController.renderGlobal",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 738,
+      "line": 782,
       "className": "AdminController",
       "methodName": "renderGlobal"
     },
@@ -719,7 +719,7 @@
       "name": "AdminController.renderHeroes",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 651,
+      "line": 695,
       "className": "AdminController",
       "methodName": "renderHeroes"
     },
@@ -727,15 +727,23 @@
       "name": "AdminController.renderItems",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 703,
+      "line": 747,
       "className": "AdminController",
       "methodName": "renderItems"
+    },
+    {
+      "name": "AdminController.renderLeaderboards",
+      "kind": "method",
+      "file": "admin/src/admin.ts",
+      "line": 786,
+      "className": "AdminController",
+      "methodName": "renderLeaderboards"
     },
     {
       "name": "AdminController.renderMerchant",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 730,
+      "line": 774,
       "className": "AdminController",
       "methodName": "renderMerchant"
     },
@@ -743,7 +751,7 @@
       "name": "AdminController.renderMonsters",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 664,
+      "line": 708,
       "className": "AdminController",
       "methodName": "renderMonsters"
     },
@@ -751,7 +759,7 @@
       "name": "AdminController.renderPassives",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 690,
+      "line": 734,
       "className": "AdminController",
       "methodName": "renderPassives"
     },
@@ -759,7 +767,7 @@
       "name": "AdminController.renderTalents",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 716,
+      "line": 760,
       "className": "AdminController",
       "methodName": "renderTalents"
     },
@@ -767,7 +775,7 @@
       "name": "AdminController.renderWeapons",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 638,
+      "line": 682,
       "className": "AdminController",
       "methodName": "renderWeapons"
     },
@@ -775,7 +783,7 @@
       "name": "AdminController.switchTab",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 310,
+      "line": 348,
       "className": "AdminController",
       "methodName": "switchTab"
     },
@@ -783,7 +791,7 @@
       "name": "AdminController.updateSortHeaderUI",
       "kind": "method",
       "file": "admin/src/admin.ts",
-      "line": 470,
+      "line": 514,
       "className": "AdminController",
       "methodName": "updateSortHeaderUI"
     },
@@ -1365,7 +1373,7 @@
       "name": "BalanceState.applyFieldChange",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 40,
+      "line": 44,
       "className": "BalanceState",
       "methodName": "applyFieldChange"
     },
@@ -1373,7 +1381,7 @@
       "name": "BalanceState.checkAllCategoryChanges",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 57,
+      "line": 61,
       "className": "BalanceState",
       "methodName": "checkAllCategoryChanges"
     },
@@ -1381,7 +1389,7 @@
       "name": "BalanceState.discardDraft",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 105,
+      "line": 109,
       "className": "BalanceState",
       "methodName": "discardDraft"
     },
@@ -1389,7 +1397,7 @@
       "name": "BalanceState.getDiffList",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 145,
+      "line": 149,
       "className": "BalanceState",
       "methodName": "getDiffList"
     },
@@ -1397,7 +1405,7 @@
       "name": "BalanceState.getModifiedCount",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 141,
+      "line": 145,
       "className": "BalanceState",
       "methodName": "getModifiedCount"
     },
@@ -1405,7 +1413,7 @@
       "name": "BalanceState.getOriginalValue",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 30,
+      "line": 34,
       "className": "BalanceState",
       "methodName": "getOriginalValue"
     },
@@ -1413,7 +1421,7 @@
       "name": "BalanceState.mergeRemoteRow",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 110,
+      "line": 114,
       "className": "BalanceState",
       "methodName": "mergeRemoteRow"
     },
@@ -1421,7 +1429,7 @@
       "name": "BalanceState.resetSingleItem",
       "kind": "method",
       "file": "admin/src/state/balanceState.ts",
-      "line": 87,
+      "line": 91,
       "className": "BalanceState",
       "methodName": "resetSingleItem"
     },
@@ -2829,6 +2837,12 @@
       "line": 4
     },
     {
+      "name": "DEFAULT_DEMO_LEADERBOARDS",
+      "kind": "const",
+      "file": "admin/src/constants.ts",
+      "line": 209
+    },
+    {
       "name": "DetailedPlayerResult",
       "kind": "interface",
       "file": "game/src/ui/screens/GameOver/GameOverScreen.ts",
@@ -3554,6 +3568,13 @@
       "line": 179,
       "className": "Engine",
       "methodName": "updateCamera"
+    },
+    {
+      "name": "exportLeaderboardJson",
+      "kind": "function",
+      "file": "admin/src/views/leaderboardsView.ts",
+      "line": 280,
+      "doc": "Exports current leaderboard entries as a formatted JSON file."
     },
     {
       "name": "filterAndShuffleForReroll",
@@ -4395,6 +4416,12 @@
       "kind": "type",
       "file": "game/src/combat/weapons/RangedWeapons.ts",
       "line": 120
+    },
+    {
+      "name": "HERO_NAMES",
+      "kind": "const",
+      "file": "admin/src/constants.ts",
+      "line": 196
     },
     {
       "name": "HERO_ORDER",
@@ -5915,6 +5942,12 @@
       "kind": "interface",
       "file": "game/src/core/LeaderboardManager.ts",
       "line": 4
+    },
+    {
+      "name": "LeaderboardEntry",
+      "kind": "interface",
+      "file": "admin/src/types.ts",
+      "line": 43
     },
     {
       "name": "LeaderboardManager",
@@ -9018,6 +9051,12 @@
       "line": 5
     },
     {
+      "name": "renderLeaderboards",
+      "kind": "function",
+      "file": "admin/src/views/leaderboardsView.ts",
+      "line": 7
+    },
+    {
       "name": "renderMerchant",
       "kind": "function",
       "file": "admin/src/views/merchantView.ts",
@@ -11299,12 +11338,29 @@
       "methodName": "connect"
     },
     {
+      "name": "SupabaseService.deleteLeaderboardEntry",
+      "kind": "method",
+      "file": "admin/src/api/supabaseService.ts",
+      "line": 587,
+      "className": "SupabaseService",
+      "methodName": "deleteLeaderboardEntry"
+    },
+    {
       "name": "SupabaseService.deploy",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
       "line": 397,
       "className": "SupabaseService",
       "methodName": "deploy"
+    },
+    {
+      "name": "SupabaseService.fetchLeaderboards",
+      "kind": "method",
+      "file": "admin/src/api/supabaseService.ts",
+      "line": 525,
+      "className": "SupabaseService",
+      "methodName": "fetchLeaderboards",
+      "doc": "========================================================================="
     },
     {
       "name": "SupabaseService.getClient",
@@ -11323,6 +11379,14 @@
       "methodName": "loadConfig"
     },
     {
+      "name": "SupabaseService.resetAllLeaderboards",
+      "kind": "method",
+      "file": "admin/src/api/supabaseService.ts",
+      "line": 631,
+      "className": "SupabaseService",
+      "methodName": "resetAllLeaderboards"
+    },
+    {
       "name": "SupabaseService.saveConnectionSettings",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
@@ -11339,6 +11403,14 @@
       "methodName": "seedDatabase"
     },
     {
+      "name": "SupabaseService.seedDemoLeaderboards",
+      "kind": "method",
+      "file": "admin/src/api/supabaseService.ts",
+      "line": 661,
+      "className": "SupabaseService",
+      "methodName": "seedDemoLeaderboards"
+    },
+    {
       "name": "SupabaseService.setupRealtime",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
@@ -11353,6 +11425,14 @@
       "line": 202,
       "className": "SupabaseService",
       "methodName": "testConnection"
+    },
+    {
+      "name": "SupabaseService.updateLeaderboardEntry",
+      "kind": "method",
+      "file": "admin/src/api/supabaseService.ts",
+      "line": 696,
+      "className": "SupabaseService",
+      "methodName": "updateLeaderboardEntry"
     },
     {
       "name": "SvgChartRenderer",

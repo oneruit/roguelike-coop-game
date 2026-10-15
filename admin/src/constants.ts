@@ -192,3 +192,26 @@ export function getEntityTexture(category: string, id: string): string {
   const cleanPath = rawPath.startsWith('/') ? rawPath.slice(1) : rawPath;
   return `${cleanBase}${cleanPath}`;
 }
+
+export const HERO_NAMES: Record<string, string> = {
+  ronin: 'Ронин',
+  valkyrie: 'Валькирия',
+  flail: 'Храмовник',
+  sorceress: 'Чародейка',
+  chakram: 'Танцор с Чакрамами',
+  archer: 'Следопыт',
+  rocket: 'Ракетчик',
+  necromancer: 'Некромант',
+  amazon: 'Амазонка',
+  invoker: 'Инвокер'
+};
+
+export const DEFAULT_DEMO_LEADERBOARDS = [
+  { playerId: 'p1', playerName: 'ShadowBlade', heroId: 'ronin', stage: 4, survivalTimeSec: 1845, kills: 1420, credits: 4800, score: 28450, isVictory: true },
+  { playerId: 'p2', playerName: 'StarCaller', heroId: 'invoker', stage: 4, survivalTimeSec: 1620, kills: 1250, credits: 3950, score: 23900, isVictory: true },
+  { playerId: 'p3', playerName: 'IronReaper', heroId: 'necromancer', stage: 3, survivalTimeSec: 1205, kills: 890, credits: 2400, score: 15300, isVictory: false },
+  { playerId: 'p4', playerName: 'CactusJack', heroId: 'archer', stage: 2, survivalTimeSec: 720, kills: 510, credits: 1100, score: 9800, isVictory: false },
+  { playerId: 'p5', playerName: 'ValkyrieQueen', heroId: 'valkyrie', stage: 3, survivalTimeSec: 1110, kills: 780, credits: 2150, score: 14200, isVictory: false },
+  { playerId: 'p6', playerName: 'RiftSurfer', heroId: 'chakram', stage: 2, survivalTimeSec: 640, kills: 420, credits: 890, score: 8100, isVictory: false }
+];
+

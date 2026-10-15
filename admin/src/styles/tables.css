@@ -59,6 +59,11 @@
   gap: 12px;
 }
 
+.leaderboards-table-cols {
+  grid-template-columns: 50px 220px 140px 110px 85px 90px 85px 85px 110px 110px 75px;
+  gap: 10px;
+}
+
 .accordion-list {
   display: flex;
   flex-direction: column;

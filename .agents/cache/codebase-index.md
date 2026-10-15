@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-15T12:24:29.458Z | **Files:** 152 | **Top-level:** 468 | **Class Methods:** 1084
+> **Generated:** 2026-10-15T12:59:01.071Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1090
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -11,7 +11,7 @@ Run `npm run index` to refresh this cache.
 | Module | Top-Level Symbols |
 | :--- | :--- |
 | `game/src` | 427 |
-| `admin/src` | 39 |
+| `admin/src` | 44 |
 | `server` | 2 |
 
 ---
@@ -22,26 +22,27 @@ Run `npm run index` to refresh this cache.
 | :--- | :--- | :--- | :--- |
 | `ActiveBuff` | `interface` | [`game/src/shared/types/entities.ts:29`](../../game/src/shared/types/entities.ts#L29) | - |
 | `AdminConfig` | `interface` | [`admin/src/types.ts:6`](../../admin/src/types.ts#L6) | - |
-| `AdminController` | `class` | [`admin/src/admin.ts:19`](../../admin/src/admin.ts#L19) | - |
-| `AdminController.applyFilter` | `method` | [`admin/src/admin.ts:399`](../../admin/src/admin.ts#L399) | - |
-| `AdminController.bindDOM` | `method` | [`admin/src/admin.ts:47`](../../admin/src/admin.ts#L47) | - |
-| `AdminController.clearSearch` | `method` | [`admin/src/admin.ts:416`](../../admin/src/admin.ts#L416) | - |
-| `AdminController.collapseAllCurrentTab` | `method` | [`admin/src/admin.ts:447`](../../admin/src/admin.ts#L447) | - |
-| `AdminController.expandAllCurrentTab` | `method` | [`admin/src/admin.ts:424`](../../admin/src/admin.ts#L424) | - |
-| `AdminController.handleFieldChange` | `method` | [`admin/src/admin.ts:485`](../../admin/src/admin.ts#L485) | - |
-| `AdminController.init` | `method` | [`admin/src/admin.ts:40`](../../admin/src/admin.ts#L40) | - |
-| `AdminController.renderAll` | `method` | [`admin/src/admin.ts:742`](../../admin/src/admin.ts#L742) | - |
-| `AdminController.renderBosses` | `method` | [`admin/src/admin.ts:677`](../../admin/src/admin.ts#L677) | - |
-| `AdminController.renderGlobal` | `method` | [`admin/src/admin.ts:738`](../../admin/src/admin.ts#L738) | - |
-| `AdminController.renderHeroes` | `method` | [`admin/src/admin.ts:651`](../../admin/src/admin.ts#L651) | - |
-| `AdminController.renderItems` | `method` | [`admin/src/admin.ts:703`](../../admin/src/admin.ts#L703) | - |
-| `AdminController.renderMerchant` | `method` | [`admin/src/admin.ts:730`](../../admin/src/admin.ts#L730) | - |
-| `AdminController.renderMonsters` | `method` | [`admin/src/admin.ts:664`](../../admin/src/admin.ts#L664) | - |
-| `AdminController.renderPassives` | `method` | [`admin/src/admin.ts:690`](../../admin/src/admin.ts#L690) | - |
-| `AdminController.renderTalents` | `method` | [`admin/src/admin.ts:716`](../../admin/src/admin.ts#L716) | - |
-| `AdminController.renderWeapons` | `method` | [`admin/src/admin.ts:638`](../../admin/src/admin.ts#L638) | - |
-| `AdminController.switchTab` | `method` | [`admin/src/admin.ts:310`](../../admin/src/admin.ts#L310) | - |
-| `AdminController.updateSortHeaderUI` | `method` | [`admin/src/admin.ts:470`](../../admin/src/admin.ts#L470) | - |
+| `AdminController` | `class` | [`admin/src/admin.ts:20`](../../admin/src/admin.ts#L20) | - |
+| `AdminController.applyFilter` | `method` | [`admin/src/admin.ts:442`](../../admin/src/admin.ts#L442) | - |
+| `AdminController.bindDOM` | `method` | [`admin/src/admin.ts:49`](../../admin/src/admin.ts#L49) | - |
+| `AdminController.clearSearch` | `method` | [`admin/src/admin.ts:460`](../../admin/src/admin.ts#L460) | - |
+| `AdminController.collapseAllCurrentTab` | `method` | [`admin/src/admin.ts:491`](../../admin/src/admin.ts#L491) | - |
+| `AdminController.expandAllCurrentTab` | `method` | [`admin/src/admin.ts:468`](../../admin/src/admin.ts#L468) | - |
+| `AdminController.handleFieldChange` | `method` | [`admin/src/admin.ts:529`](../../admin/src/admin.ts#L529) | - |
+| `AdminController.init` | `method` | [`admin/src/admin.ts:41`](../../admin/src/admin.ts#L41) | - |
+| `AdminController.renderAll` | `method` | [`admin/src/admin.ts:794`](../../admin/src/admin.ts#L794) | - |
+| `AdminController.renderBosses` | `method` | [`admin/src/admin.ts:721`](../../admin/src/admin.ts#L721) | - |
+| `AdminController.renderGlobal` | `method` | [`admin/src/admin.ts:782`](../../admin/src/admin.ts#L782) | - |
+| `AdminController.renderHeroes` | `method` | [`admin/src/admin.ts:695`](../../admin/src/admin.ts#L695) | - |
+| `AdminController.renderItems` | `method` | [`admin/src/admin.ts:747`](../../admin/src/admin.ts#L747) | - |
+| `AdminController.renderLeaderboards` | `method` | [`admin/src/admin.ts:786`](../../admin/src/admin.ts#L786) | - |
+| `AdminController.renderMerchant` | `method` | [`admin/src/admin.ts:774`](../../admin/src/admin.ts#L774) | - |
+| `AdminController.renderMonsters` | `method` | [`admin/src/admin.ts:708`](../../admin/src/admin.ts#L708) | - |
+| `AdminController.renderPassives` | `method` | [`admin/src/admin.ts:734`](../../admin/src/admin.ts#L734) | - |
+| `AdminController.renderTalents` | `method` | [`admin/src/admin.ts:760`](../../admin/src/admin.ts#L760) | - |
+| `AdminController.renderWeapons` | `method` | [`admin/src/admin.ts:682`](../../admin/src/admin.ts#L682) | - |
+| `AdminController.switchTab` | `method` | [`admin/src/admin.ts:348`](../../admin/src/admin.ts#L348) | - |
+| `AdminController.updateSortHeaderUI` | `method` | [`admin/src/admin.ts:514`](../../admin/src/admin.ts#L514) | - |
 | `Altar` | `class` | [`game/src/world/Altar.ts:108`](../../game/src/world/Altar.ts#L108) | - |
 | `ALTAR_CONFIGS` | `const` | [`game/src/world/Altar.ts:37`](../../game/src/world/Altar.ts#L37) | - |
 | `Altar.applyRemoteCapture` | `method` | [`game/src/world/Altar.ts:485`](../../game/src/world/Altar.ts#L485) | Apply a capture decided by the host without replaying the local capture log... |
@@ -118,14 +119,14 @@ Run `npm run index` to refresh this cache.
 | `BalanceManager` | `const` | [`game/src/balance/BalanceManager.ts:310`](../../game/src/balance/BalanceManager.ts#L310) | - |
 | `BalanceRow` | `interface` | [`game/src/balance/BalanceTypes.ts:124`](../../game/src/balance/BalanceTypes.ts#L124) | - |
 | `BalanceState` | `class` | [`admin/src/state/balanceState.ts:6`](../../admin/src/state/balanceState.ts#L6) | - |
-| `BalanceState.applyFieldChange` | `method` | [`admin/src/state/balanceState.ts:40`](../../admin/src/state/balanceState.ts#L40) | - |
-| `BalanceState.checkAllCategoryChanges` | `method` | [`admin/src/state/balanceState.ts:57`](../../admin/src/state/balanceState.ts#L57) | - |
-| `BalanceState.discardDraft` | `method` | [`admin/src/state/balanceState.ts:105`](../../admin/src/state/balanceState.ts#L105) | - |
-| `BalanceState.getDiffList` | `method` | [`admin/src/state/balanceState.ts:145`](../../admin/src/state/balanceState.ts#L145) | - |
-| `BalanceState.getModifiedCount` | `method` | [`admin/src/state/balanceState.ts:141`](../../admin/src/state/balanceState.ts#L141) | - |
-| `BalanceState.getOriginalValue` | `method` | [`admin/src/state/balanceState.ts:30`](../../admin/src/state/balanceState.ts#L30) | - |
-| `BalanceState.mergeRemoteRow` | `method` | [`admin/src/state/balanceState.ts:110`](../../admin/src/state/balanceState.ts#L110) | - |
-| `BalanceState.resetSingleItem` | `method` | [`admin/src/state/balanceState.ts:87`](../../admin/src/state/balanceState.ts#L87) | - |
+| `BalanceState.applyFieldChange` | `method` | [`admin/src/state/balanceState.ts:44`](../../admin/src/state/balanceState.ts#L44) | - |
+| `BalanceState.checkAllCategoryChanges` | `method` | [`admin/src/state/balanceState.ts:61`](../../admin/src/state/balanceState.ts#L61) | - |
+| `BalanceState.discardDraft` | `method` | [`admin/src/state/balanceState.ts:109`](../../admin/src/state/balanceState.ts#L109) | - |
+| `BalanceState.getDiffList` | `method` | [`admin/src/state/balanceState.ts:149`](../../admin/src/state/balanceState.ts#L149) | - |
+| `BalanceState.getModifiedCount` | `method` | [`admin/src/state/balanceState.ts:145`](../../admin/src/state/balanceState.ts#L145) | - |
+| `BalanceState.getOriginalValue` | `method` | [`admin/src/state/balanceState.ts:34`](../../admin/src/state/balanceState.ts#L34) | - |
+| `BalanceState.mergeRemoteRow` | `method` | [`admin/src/state/balanceState.ts:114`](../../admin/src/state/balanceState.ts#L114) | - |
+| `BalanceState.resetSingleItem` | `method` | [`admin/src/state/balanceState.ts:91`](../../admin/src/state/balanceState.ts#L91) | - |
 | `BATTLE_PASS_REWARDS` | `const` | [`game/src/core/BattlePassManager.ts:40`](../../game/src/core/BattlePassManager.ts#L40) | - |
 | `BattlePassData` | `interface` | [`game/src/core/ProgressionManager.ts:22`](../../game/src/core/ProgressionManager.ts#L22) | - |
 | `BattlePassGameOverResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:23`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L23) | - |
@@ -316,6 +317,7 @@ Run `npm run index` to refresh this cache.
 | `DedicatedGameServer.tick` | `method` | [`server/dedicatedServer.ts:201`](../../server/dedicatedServer.ts#L201) | Authoritative tick: updates mobs, bullets, collisions, drops, altars, reviv... |
 | `DedicatedServerOptions` | `interface` | [`server/dedicatedServer.ts:18`](../../server/dedicatedServer.ts#L18) | - |
 | `DEFAULT_BALANCE` | `const` | [`game/src/balance/defaultBalance.ts:4`](../../game/src/balance/defaultBalance.ts#L4) | - |
+| `DEFAULT_DEMO_LEADERBOARDS` | `const` | [`admin/src/constants.ts:209`](../../admin/src/constants.ts#L209) | - |
 | `DetailedPlayerResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:14`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L14) | - |
 | `DevManager` | `class` | [`game/src/ui/DevManager.ts:8`](../../game/src/ui/DevManager.ts#L8) | - |
 | `DevManager.bindEvents` | `method` | [`game/src/ui/DevManager.ts:83`](../../game/src/ui/DevManager.ts#L83) | - |
@@ -409,6 +411,7 @@ Run `npm run index` to refresh this cache.
 | `Engine.setTimeOfDay` | `method` | [`game/src/core/Engine.ts:110`](../../game/src/core/Engine.ts#L110) | Switches lighting between Day (Sun) and Night (Moon). |
 | `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:80`](../../game/src/core/Engine.ts#L80) | - |
 | `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:179`](../../game/src/core/Engine.ts#L179) | - |
+| `exportLeaderboardJson` | `function` | [`admin/src/views/leaderboardsView.ts:280`](../../admin/src/views/leaderboardsView.ts#L280) | Exports current leaderboard entries as a formatted JSON file. |
 | `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
@@ -526,6 +529,7 @@ Run `npm run index` to refresh this cache.
 | `GreatswordWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:353`](../../game/src/combat/weapons/MeleeWeapons.ts#L353) | - |
 | `HeavyColtWeapon` | `const` | [`game/src/combat/weapons/RangedWeapons.ts:119`](../../game/src/combat/weapons/RangedWeapons.ts#L119) | Backwards compatibility alias |
 | `HeavyColtWeapon` | `type` | [`game/src/combat/weapons/RangedWeapons.ts:120`](../../game/src/combat/weapons/RangedWeapons.ts#L120) | - |
+| `HERO_NAMES` | `const` | [`admin/src/constants.ts:196`](../../admin/src/constants.ts#L196) | - |
 | `HERO_ORDER` | `const` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:9`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L9) | - |
 | `HeroAbility` | `interface` | [`game/src/ui/modules/HeroUIHelpers.ts:37`](../../game/src/ui/modules/HeroUIHelpers.ts#L37) | - |
 | `HeroAnimState` | `type` | [`game/src/shared/types/entities.ts:8`](../../game/src/shared/types/entities.ts#L8) | - |
@@ -724,6 +728,7 @@ Run `npm run index` to refresh this cache.
 | `KukriWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:91`](../../game/src/combat/weapons/MeleeWeapons.ts#L91) | - |
 | `KukriWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:84`](../../game/src/combat/weapons/MeleeWeapons.ts#L84) | - |
 | `LeaderboardEntry` | `interface` | [`game/src/core/LeaderboardManager.ts:4`](../../game/src/core/LeaderboardManager.ts#L4) | - |
+| `LeaderboardEntry` | `interface` | [`admin/src/types.ts:43`](../../admin/src/types.ts#L43) | - |
 | `LeaderboardManager` | `class` | [`game/src/core/LeaderboardManager.ts:20`](../../game/src/core/LeaderboardManager.ts#L20) | - |
 | `LeaderboardManager.fetchTopScores` | `method` | [`game/src/core/LeaderboardManager.ts:145`](../../game/src/core/LeaderboardManager.ts#L145) | - |
 | `LeaderboardManager.getDefaultEntries` | `method` | [`game/src/core/LeaderboardManager.ts:253`](../../game/src/core/LeaderboardManager.ts#L253) | - |
@@ -1133,6 +1138,7 @@ Run `npm run index` to refresh this cache.
 | `renderGlobal` | `function` | [`admin/src/views/globalView.ts:4`](../../admin/src/views/globalView.ts#L4) | - |
 | `renderHeroes` | `function` | [`admin/src/views/heroesView.ts:6`](../../admin/src/views/heroesView.ts#L6) | - |
 | `renderItems` | `function` | [`admin/src/views/itemsView.ts:5`](../../admin/src/views/itemsView.ts#L5) | - |
+| `renderLeaderboards` | `function` | [`admin/src/views/leaderboardsView.ts:7`](../../admin/src/views/leaderboardsView.ts#L7) | - |
 | `renderMerchant` | `function` | [`admin/src/views/merchantView.ts:4`](../../admin/src/views/merchantView.ts#L4) | - |
 | `renderMonsters` | `function` | [`admin/src/views/monstersView.ts:6`](../../admin/src/views/monstersView.ts#L6) | - |
 | `renderPassives` | `function` | [`admin/src/views/passivesView.ts:5`](../../admin/src/views/passivesView.ts#L5) | - |
@@ -1433,13 +1439,18 @@ Run `npm run index` to refresh this cache.
 | `SulfurSmokeVfxInstance.update` | `method` | [`game/src/vfx/SulfurSmokeVfx.ts:76`](../../game/src/vfx/SulfurSmokeVfx.ts#L76) | - |
 | `SupabaseService` | `class` | [`admin/src/api/supabaseService.ts:9`](../../admin/src/api/supabaseService.ts#L9) | - |
 | `SupabaseService.connect` | `method` | [`admin/src/api/supabaseService.ts:60`](../../admin/src/api/supabaseService.ts#L60) | - |
+| `SupabaseService.deleteLeaderboardEntry` | `method` | [`admin/src/api/supabaseService.ts:587`](../../admin/src/api/supabaseService.ts#L587) | - |
 | `SupabaseService.deploy` | `method` | [`admin/src/api/supabaseService.ts:397`](../../admin/src/api/supabaseService.ts#L397) | - |
+| `SupabaseService.fetchLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:525`](../../admin/src/api/supabaseService.ts#L525) | ========================================================================= |
 | `SupabaseService.getClient` | `method` | [`admin/src/api/supabaseService.ts:27`](../../admin/src/api/supabaseService.ts#L27) | - |
 | `SupabaseService.loadConfig` | `method` | [`admin/src/api/supabaseService.ts:31`](../../admin/src/api/supabaseService.ts#L31) | - |
+| `SupabaseService.resetAllLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:631`](../../admin/src/api/supabaseService.ts#L631) | - |
 | `SupabaseService.saveConnectionSettings` | `method` | [`admin/src/api/supabaseService.ts:173`](../../admin/src/api/supabaseService.ts#L173) | - |
 | `SupabaseService.seedDatabase` | `method` | [`admin/src/api/supabaseService.ts:231`](../../admin/src/api/supabaseService.ts#L231) | - |
+| `SupabaseService.seedDemoLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:661`](../../admin/src/api/supabaseService.ts#L661) | - |
 | `SupabaseService.setupRealtime` | `method` | [`admin/src/api/supabaseService.ts:147`](../../admin/src/api/supabaseService.ts#L147) | - |
 | `SupabaseService.testConnection` | `method` | [`admin/src/api/supabaseService.ts:202`](../../admin/src/api/supabaseService.ts#L202) | - |
+| `SupabaseService.updateLeaderboardEntry` | `method` | [`admin/src/api/supabaseService.ts:696`](../../admin/src/api/supabaseService.ts#L696) | - |
 | `SvgChartRenderer` | `class` | [`admin/src/chartUtils.ts:30`](../../admin/src/chartUtils.ts#L30) | - |
 | `SwordsmanTextures` | `type` | [`game/src/core/TextureManager.ts:44`](../../game/src/core/TextureManager.ts#L44) | - |
 | `SyncState` | `type` | [`game/src/meta/CloudSyncManager.ts:6`](../../game/src/meta/CloudSyncManager.ts#L6) | - |

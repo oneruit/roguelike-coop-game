@@ -1,6 +1,6 @@
 import { GameBalanceState, BalanceRow } from '../../../game/src/balance/BalanceTypes';
 import { DEFAULT_BALANCE } from '../../../game/src/balance/defaultBalance';
-import { TableSort } from '../types';
+import { TableSort, LeaderboardEntry } from '../types';
 import { toPluralCategory } from '../constants';
 
 export class BalanceState {
@@ -11,6 +11,9 @@ export class BalanceState {
 
   public searchFilter: string = '';
   public activeTab: string = 'dashboard';
+  public leaderboardEntries: LeaderboardEntry[] = [];
+  public leaderboardHeroFilter: string = 'all';
+  public leaderboardVictoryFilter: string = 'all';
 
   public tableSorts: Record<string, TableSort> = {
     weapons: { col: 'name', dir: 'asc' },
@@ -19,7 +22,8 @@ export class BalanceState {
     bosses: { col: 'name', dir: 'asc' },
     passives: { col: 'name', dir: 'asc' },
     items: { col: 'name', dir: 'asc' },
-    talents: { col: 'name', dir: 'asc' }
+    talents: { col: 'name', dir: 'asc' },
+    leaderboards: { col: 'score', dir: 'desc' }
   };
 
   constructor() {
