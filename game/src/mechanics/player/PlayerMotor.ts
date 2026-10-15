@@ -18,7 +18,7 @@ export class PlayerMotor {
   public dashTimer: number = 0;
   public dashDuration: number = 0.22;
   public dashCooldown: number = 0;
-  public maxDashCooldown: number = 2.8;
+  public maxDashCooldown: number = 2.5;
   public dashDirection: Vector3 = new Vector3();
 
   public isMoving: boolean = false;

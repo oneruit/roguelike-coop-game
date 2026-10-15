@@ -49,7 +49,7 @@
                 </svg>
               </span>
               <span class="tab-text">Оружие</span>
-              <span id="sidebar-weapons-count" class="tab-pill">25</span>
+              <span id="sidebar-weapons-count" class="tab-pill">26</span>
             </button>
 
             <button class="nav-tab" data-tab="heroes">
@@ -256,7 +256,7 @@
                 </div>
                 <div class="metric-data-wrap">
                   <span class="metric-label">Всего оружия</span>
-                  <div class="metric-number" id="kpi-weapons-count">25</div>
+                  <div class="metric-number" id="kpi-weapons-count">26</div>
                   <div class="metric-trend-row">
                     <span class="trend-neutral">100% охват</span>
                     <span class="trend-period">от L1 до L12</span>
@@ -352,7 +352,7 @@
             <div class="quick-nav-card" data-jump-tab="weapons">
               <div class="quick-nav-header">
                 <div class="quick-nav-icon-wrap">🏹</div>
-                <span id="qnav-weapons-count" class="quick-nav-count-badge">25 видов</span>
+                <span id="qnav-weapons-count" class="quick-nav-count-badge">26 видов</span>
               </div>
               <div class="quick-nav-title">Арсенал оружия</div>
               <div class="quick-nav-desc">Урон за удар, кулдауны, скейлинг L1-L12 и сортировка характеристик</div>
@@ -505,7 +505,7 @@
         <section id="tab-weapons" class="tab-pane">
           <div class="section-toolbar">
             <div class="toolbar-info">
-              <h2>Арсенал оружия (25 видов)</h2>
+              <h2>Арсенал оружия (26 видов)</h2>
               <span class="toolbar-hint">Кликните на заголовок колонки для сортировки. Нажмите на строку, чтобы изменить параметры</span>
             </div>
             <div class="toolbar-actions">
@@ -771,7 +771,7 @@
               <span>Базовое значение</span>
               <span class="sort-icon">⇅</span>
             </span>
-            <span class="col-stat sortable-col" data-table="items" data-sort="name">
+            <span class="col-stat sortable-col" data-table="items" data-sort="scaling">
               <span>Скейлинг за стак</span>
               <span class="sort-icon">⇅</span>
             </span>
@@ -1057,7 +1057,7 @@
                     <span style="font-size:11px; color:var(--text-secondary);">Влияет на весь наносимый урон арсенала</span>
                   </div>
                   <select id="sim-hero-select" class="form-input" style="max-width:200px; font-weight:600;">
-                    <option value="invoker">Инвокер (1.20x урона)</option>
+                    <option value="invoker">Инвокер (1.40x урона)</option>
                     <option value="ronin">Рен (Ронин) (1.35x урона)</option>
                     <option value="valkyrie" selected>Каэла (Валькирия) (1.45x урона)</option>
                     <option value="flail">Бригитта (1.40x урона)</option>
@@ -1065,6 +1065,8 @@
                     <option value="chakram">Кира (1.35x урона)</option>
                     <option value="archer">Эльф лучник (1.35x урона)</option>
                     <option value="rocket">Ракета (Енот) (1.35x урона)</option>
+                    <option value="necromancer">Мортис (Некромант) (1.40x урона)</option>
+                    <option value="amazon">Амазонка (1.35x урона)</option>
                   </select>
                 </div>
               </div>
@@ -1114,7 +1116,7 @@
                 <!-- Pocket Watch (Cooldown) -->
                 <div class="stat-field" style="margin-bottom:12px;">
                   <div class="stat-field-header">
-                    <span class="stat-label">⏱️ Карманные часы (-8% CD за стак, кап -70%)</span>
+                    <span class="stat-label">⏱️ Карманные часы (-3% CD за стак, кап -30%)</span>
                     <span class="stat-val-badge" id="sim-val-watch">0 стаков (-0%)</span>
                   </div>
                   <div class="stat-controls">
@@ -1126,7 +1128,7 @@
                 <!-- Kinetic Injector -->
                 <div class="stat-field" style="margin-bottom:12px;">
                   <div class="stat-field-header">
-                    <span class="stat-label">💉 Кинетический инжектор (0.85^стак к CD)</span>
+                    <span class="stat-label">💉 Кинетический инжектор (0.90^стак к CD)</span>
                     <span class="stat-val-badge" id="sim-val-injector">0 стаков</span>
                   </div>
                   <div class="stat-controls">
@@ -1138,7 +1140,7 @@
                 <!-- Crit Visor -->
                 <div class="stat-field" style="margin-bottom:12px;">
                   <div class="stat-field-header">
-                    <span class="stat-label">🎯 Крит-визор (+12% крит-шанса за стак)</span>
+                    <span class="stat-label">🎯 Очки Снайпера (Крит-визор) (+3% крит-шанса за стак)</span>
                     <span class="stat-val-badge" id="sim-val-critvisor">0 стаков (5%)</span>
                   </div>
                   <div class="stat-controls">

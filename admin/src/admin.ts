@@ -176,9 +176,7 @@ export class AdminController {
     // Reset All Category buttons
     document.getElementById('btn-reset-weapons-all')?.addEventListener('click', () => {
       if (confirm('Сбросить параметры всех видов оружия к значениям по умолчанию?')) {
-        for (const key of Object.keys(DEFAULT_BALANCE.weapons)) {
-          this.state.draftBalance.weapons[key] = JSON.parse(JSON.stringify(DEFAULT_BALANCE.weapons[key]));
-        }
+        this.state.draftBalance.weapons = JSON.parse(JSON.stringify(DEFAULT_BALANCE.weapons));
         this.state.checkAllCategoryChanges('weapons');
         this.renderWeapons();
         updateOverviewStats(this.state);
@@ -496,24 +494,44 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         const origVal = this.state.getOriginalValue(path);
         el.classList.toggle('is-changed', origVal !== val);
       }
+      const statField = el.closest('.stat-field');
+      if (statField) {
+        const origVal = this.state.getOriginalValue(path);
+        const isChanged = origVal !== undefined && origVal !== val;
+        const currentBadge = statField.querySelector<HTMLElement>('.stat-val-current') || statField.querySelector<HTMLElement>('.stat-val-badge');
+        if (currentBadge) {
+          currentBadge.textContent = String(val);
+          currentBadge.classList.toggle('val-changed', isChanged);
+        }
+        const origBadge = statField.querySelector<HTMLElement>('.stat-val-orig');
+        if (origBadge) {
+          origBadge.style.display = isChanged ? '' : 'none';
+          if (origVal !== undefined) origBadge.textContent = String(origVal);
+        }
+      }
     });
 
     // Update weapon metrics live if applicable
     const parts = path.split('.');
-    if (parts[0] === 'weapons') {
-      const wid = parts[1];
-      const weapon = this.state.draftBalance.weapons[wid];
-      if (weapon) {
-        const baseDps = weapon.cooldown > 0 ? (weapon.damage / weapon.cooldown).toFixed(1) : (weapon.damage * 60).toFixed(1);
-        const l12Dmg = weapon.damage + 11 * weapon.damagePerLevel;
-        const l12Dps = weapon.cooldown > 0 ? (l12Dmg / weapon.cooldown).toFixed(1) : (l12Dmg * 60).toFixed(1);
+    const category = parts[0];
+    const entityId = parts[1];
+    const field = parts[2];
 
-        const elBase = document.getElementById(`dps-${wid}-base`);
-        const elL12 = document.getElementById(`dps-${wid}-l12`);
-        const elRowDps1 = document.getElementById(`row-stat-dps1-${wid}`);
-        const elRowDps12 = document.getElementById(`row-stat-dps12-${wid}`);
-        const elRowDmg = document.getElementById(`row-stat-damage-${wid}`);
-        const elRowCd = document.getElementById(`row-stat-cooldown-${wid}`);
+    if (category === 'weapons') {
+      const weapon = this.state.draftBalance.weapons[entityId];
+      if (weapon) {
+        const cd = weapon.cooldown > 0 ? weapon.cooldown : 0.4;
+        const count = weapon.count || 1;
+        const baseDps = ((weapon.damage * count) / cd).toFixed(1);
+        const l12Dmg = weapon.damage + 11 * weapon.damagePerLevel;
+        const l12Dps = ((l12Dmg * count) / cd).toFixed(1);
+
+        const elBase = document.getElementById(`dps-${entityId}-base`);
+        const elL12 = document.getElementById(`dps-${entityId}-l12`);
+        const elRowDps1 = document.getElementById(`row-stat-dps1-${entityId}`);
+        const elRowDps12 = document.getElementById(`row-stat-dps12-${entityId}`);
+        const elRowDmg = document.getElementById(`row-stat-damage-${entityId}`);
+        const elRowCd = document.getElementById(`row-stat-cooldown-${entityId}`);
 
         if (elBase) elBase.innerText = baseDps;
         if (elL12) elL12.innerText = l12Dps;
@@ -522,10 +540,86 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         if (elRowDmg) elRowDmg.innerHTML = `<span>${weapon.damage}</span>`;
         if (elRowCd) elRowCd.innerHTML = `<span>${weapon.cooldown}с</span>`;
       }
+    } else if (category === 'heroes') {
+      const hero = this.state.draftBalance.heroes[entityId];
+      if (hero) {
+        if (field === 'maxHp') {
+          const el = document.getElementById(`row-stat-hp-${entityId}`);
+          if (el) el.innerHTML = `<span>${hero.maxHp} HP</span>`;
+        } else if (field === 'baseSpeed') {
+          const el = document.getElementById(`row-stat-speed-${entityId}`);
+          if (el) el.innerHTML = `<span>${hero.baseSpeed} м/с</span>`;
+        } else if (field === 'damageMultiplier') {
+          const el = document.getElementById(`row-stat-dmgmult-${entityId}`);
+          if (el) el.innerText = `${hero.damageMultiplier}x`;
+        }
+      }
+    } else if (category === 'monsters') {
+      const monster = this.state.draftBalance.monsters[entityId];
+      if (monster) {
+        if (field === 'hp') {
+          const el = document.getElementById(`row-stat-hp-${entityId}`);
+          if (el) el.innerHTML = `<span>${monster.hp} HP</span>`;
+        } else if (field === 'speed') {
+          const el = document.getElementById(`row-stat-speed-${entityId}`);
+          if (el) el.innerHTML = `<span>${monster.speed} м/с</span>`;
+        } else if (field === 'damage') {
+          const el = document.getElementById(`row-stat-damage-${entityId}`);
+          if (el) el.innerText = `${monster.damage}`;
+        }
+      }
+    } else if (category === 'bosses') {
+      const boss = this.state.draftBalance.bosses[entityId];
+      if (boss) {
+        if (field === 'hp') {
+          const el = document.getElementById(`row-stat-hp-${entityId}`);
+          if (el) el.innerHTML = `<span>${boss.hp.toLocaleString()} HP</span>`;
+        } else if (field === 'speed') {
+          const el = document.getElementById(`row-stat-speed-${entityId}`);
+          if (el) el.innerHTML = `<span>${boss.speed} м/с</span>`;
+        } else if (field === 'damage') {
+          const el = document.getElementById(`row-stat-damage-${entityId}`);
+          if (el) el.innerText = `${boss.damage}`;
+        }
+      }
+    } else if (category === 'passives') {
+      const passive = this.state.draftBalance.passives[entityId];
+      if (passive) {
+        if (field === 'baseValue') {
+          const el = document.getElementById(`row-stat-base-${entityId}`);
+          if (el) el.innerHTML = `<span class="stat-highlight">${passive.baseValue}</span>`;
+        } else if (field === 'perStackValue') {
+          const el = document.getElementById(`row-stat-stack-${entityId}`);
+          if (el) el.innerHTML = `<span>+${passive.perStackValue} / стак</span>`;
+        } else if (field === 'maxValue') {
+          const el = document.getElementById(`row-stat-cap-${entityId}`);
+          if (el) el.innerHTML = `<span>${passive.maxValue !== undefined ? passive.maxValue : '∞'}</span>`;
+        }
+      }
+    } else if (category === 'items') {
+      const item = this.state.draftBalance.items[entityId];
+      if (item) {
+        if (field === 'baseValue') {
+          const el = document.getElementById(`row-stat-base-${entityId}`);
+          if (el) el.innerHTML = `<span class="stat-highlight">${item.baseValue !== undefined ? item.baseValue : '—'}</span>`;
+        }
+      }
+    } else if (category === 'talents') {
+      const talent = this.state.draftBalance.talents[entityId];
+      if (talent) {
+        if (field === 'bonusPerLevel') {
+          const el = document.getElementById(`row-stat-bonus-${entityId}`);
+          if (el) {
+            const bonusDisplay = talent.unit === '%' ? `+${(talent.bonusPerLevel * 100).toFixed(1)}%` : `+${talent.bonusPerLevel} ${talent.unit || ''}`;
+            el.innerHTML = `<span class="stat-highlight">${bonusDisplay}</span><span style="font-size:10px; color:var(--text-secondary); margin-left:4px;">/ ранг</span>`;
+          }
+        } else if (field === 'maxLevel') {
+          const el = document.getElementById(`row-stat-maxlevel-${entityId}`);
+          if (el) el.innerText = String(talent.maxLevel);
+        }
+      }
     }
 
-    const category = parts[0];
-    const entityId = parts[1];
     if (category && entityId) {
       const rowItem = document.querySelector(`[data-row-id="${category}-${entityId}"]`);
       if (rowItem) {

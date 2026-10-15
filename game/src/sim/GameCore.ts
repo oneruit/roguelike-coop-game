@@ -103,7 +103,7 @@ export class SimPlayerInternal {
       this.maxHp = 100;
       this.hp = 100;
       this.baseSpeed = 8.5;
-      this.baseDamageMultiplier = 1.2;
+      this.baseDamageMultiplier = 1.40;
     } else if (charType === 'valkyrie') {
       this.maxHp = 135;
       this.hp = 135;

@@ -85,7 +85,7 @@ export class SimulationView {
     bindSyncInput('sim-slider-watch', 'sim-num-watch', (val) => {
       this.sim.watchStacks = val;
       const badge = document.getElementById('sim-val-watch');
-      if (badge) badge.innerText = `${val} стаков (-${Math.min(70, val * 8)}%)`;
+      if (badge) badge.innerText = `${val} стаков (-${Math.min(30, val * 3)}%)`;
     });
 
     bindSyncInput('sim-slider-injector', 'sim-num-injector', (val) => {
@@ -97,7 +97,7 @@ export class SimulationView {
     bindSyncInput('sim-slider-critvisor', 'sim-num-critvisor', (val) => {
       this.sim.critVisorStacks = val;
       const badge = document.getElementById('sim-val-critvisor');
-      const pct = Math.round((0.05 + val * 0.12) * 100);
+      const pct = Math.round((0.05 + val * 0.03) * 100);
       if (badge) badge.innerText = `${val} стаков (${pct}%)`;
     });
 
@@ -354,7 +354,7 @@ export class SimulationView {
       'sim-num-watch',
       'sim-val-watch',
       this.sim.watchStacks,
-      `${this.sim.watchStacks} стаков (-${Math.min(70, this.sim.watchStacks * 8)}%)`
+      `${this.sim.watchStacks} стаков (-${Math.min(30, this.sim.watchStacks * 3)}%)`
     );
     setInputPair(
       'sim-slider-injector',
@@ -363,7 +363,7 @@ export class SimulationView {
       this.sim.injectorStacks,
       `${this.sim.injectorStacks} стаков`
     );
-    const critPct = Math.round((0.05 + this.sim.critVisorStacks * 0.12) * 100);
+    const critPct = Math.round((0.05 + this.sim.critVisorStacks * 0.03) * 100);
     setInputPair(
       'sim-slider-critvisor',
       'sim-num-critvisor',
@@ -407,21 +407,21 @@ export class SimulationView {
 
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.12);
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.03);
     const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
 
     const globalDmgMult = heroMult * damagePassiveMult * runeMult * expectedCritMult;
     const baseLvlDmg = w.damage + (slot.level - 1) * w.damagePerLevel;
     const hitDamage = baseLvlDmg * globalDmgMult;
 
-    const watchReduction = Math.max(0.3, 1 - this.sim.watchStacks * 0.08);
-    const injectorReduction = Math.pow(0.85, this.sim.injectorStacks);
-    const cdMult = Math.max(0.2, watchReduction * injectorReduction);
+    const watchReduction = Math.max(0.70, 1 - Math.min(0.30, this.sim.watchStacks * 0.03));
+    const injectorReduction = Math.pow(0.90, this.sim.injectorStacks);
+    const cdMult = Math.max(0.15, watchReduction * injectorReduction);
 
     const baseCd = w.cooldown > 0 ? w.cooldown : 1 / 60;
     const effectiveCooldown = Math.max(0.04, baseCd * cdMult);
-
-    const singleTargetDps = hitDamage / effectiveCooldown;
+    const count = w.count && w.count > 0 ? w.count : 1;
+    const singleTargetDps = (hitDamage * count) / effectiveCooldown;
 
     let cleaveFactor = 1;
     if (w.explosionRadius || w.splashRadius) {
@@ -491,7 +491,7 @@ export class SimulationView {
     const kpiCritSub = document.getElementById('sim-kpi-crit-sub');
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(10.0, baseCritChance + this.sim.critVisorStacks * 0.12);
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.03);
     const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
 
     if (kpiCrit) {

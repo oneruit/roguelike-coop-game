@@ -176,15 +176,20 @@ export class BalanceState {
       }
 
       const propName = parts[parts.length - 1];
-      const delta = draftVal - origVal;
-      const deltaSign = delta > 0 ? `+${delta}` : `${delta}`;
+      let diffStr = '';
+      if (typeof draftVal === 'number' && typeof origVal === 'number') {
+        const cleanDelta = Number((draftVal - origVal).toFixed(4));
+        diffStr = cleanDelta > 0 ? `+${cleanDelta}` : `${cleanDelta}`;
+      } else {
+        diffStr = `${origVal} → ${draftVal}`;
+      }
 
       list.push({
         entityName,
         propName,
         origVal,
         draftVal,
-        diff: deltaSign
+        diff: diffStr
       });
     }
 

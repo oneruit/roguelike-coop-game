@@ -97,7 +97,7 @@ export function renderTalents(
           <span style="font-size:10px; color:var(--text-secondary); margin-left:4px;">/ ранг</span>
         </div>
         <div class="accordion-col-stat">
-          <span class="stat-highlight-gold" style="font-weight:700;">${t.maxLevel}</span>
+          <span class="stat-highlight-gold" id="row-stat-maxlevel-${t.id}" style="font-weight:700;">${t.maxLevel}</span>
         </div>
         <div class="accordion-col-stat">
           <span style="font-size:11px; color:var(--text-secondary); font-family:monospace;" title="Стоимость каждого ранга в кристаллах">[${costsStr}]</span>

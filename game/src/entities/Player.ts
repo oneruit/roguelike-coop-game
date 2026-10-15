@@ -155,7 +155,7 @@ export class Player {
   public dashTimer: number = 0;
   public dashDuration: number = 0.22;
   public dashCooldown: number = 0;
-  public maxDashCooldown: number = 2.8;
+  public maxDashCooldown: number = 2.5;
   public dashDirection: Vector3 = new Vector3();
 
   // Active Shrine Buffs
@@ -624,6 +624,15 @@ export class Player {
     this.speed = stats.speed;
     this.passiveDamageMultiplier = stats.passiveDamageMultiplier;
     this.damageMultiplier = stats.damageMultiplier;
+
+    const globalCfg = BalanceManager.getGlobalConfig();
+    const dashReduction = metaBonuses.dashCooldownBonus || 0;
+    const baseDashCd = globalCfg?.dashCooldown ?? 2.5;
+    this.maxDashCooldown = Math.max(0.5, baseDashCd * (1 - dashReduction));
+    this.motor.maxDashCooldown = this.maxDashCooldown;
+    if (globalCfg?.dashDuration !== undefined) {
+      this.motor.dashDuration = globalCfg.dashDuration;
+    }
   }
 
   /**
