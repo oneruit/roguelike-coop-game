@@ -103,11 +103,11 @@ export class PlayerStats {
     // Crit Chance: baseCritChance from globalCfg + meta crit + 6% per Crit Lens + 3% per Crit Visor, cap at 1.0 (100%)
     const critLensStacks = getItemStacks('crit_lens');
     const baseCritChance = globalCfg?.baseCritChance ?? 0.05;
-    const critChance = Math.min(1.0, baseCritChance + (metaBonuses?.critChanceBonus ?? 0) + critLensStacks * 0.06 + critStacks * 0.03);
+    const critChance = Math.min(1.0, baseCritChance + (metaBonuses?.critChanceBonus ?? 0) + critLensStacks * 0.04 + critStacks * 0.03);
 
-    // Crit Damage: 50% base + meta crit dmg + 20% per Heavy Hollowpoint + 40% per Void Catalyst, cap at 10.0 (1000%)
+    // Crit Damage: 50% base + meta crit dmg + 20% per Heavy Hollowpoint + 25% per Void Catalyst, cap at 10.0 (1000%)
     const hollowStacks = getItemStacks('heavy_hollowpoint');
-    const critDamage = Math.min(10.0, 0.50 + (metaBonuses?.critDamageMultBonus ?? 0) + hollowStacks * 0.20 + voidCatalystStacks * 0.40);
+    const critDamage = Math.min(10.0, 0.50 + (metaBonuses?.critDamageMultBonus ?? 0) + hollowStacks * 0.20 + voidCatalystStacks * 0.25);
 
     // Leather Vest % damage reduction: 2% at level 1, diminishing returns up to cap at level 300, capped at maxArmorReduction (+ meta reduction)
     let damageReduction = metaBonuses?.damageReductionBonus ?? 0;
@@ -150,13 +150,13 @@ export class PlayerStats {
     const speed = baseSpd * (1 + speedBonus);
 
     // Amplifier additive scaling:
-    // Elixir of Might: +5% damage per stack (+0.05)
+    // Elixir of Might: +1% damage per stack (+0.01)
     // Meta progression Offense bonus
     const ampPercent = (ampCfg?.perStackValue ?? 2) / 100;
-    const passiveDamageMultiplier = 1.0 + (counts.amplifierCount * ampPercent) + (counts.mightElixirCount * 0.05) + (metaBonuses?.damageMultiplierBonus ?? 0);
+    const passiveDamageMultiplier = 1.0 + (counts.amplifierCount * ampPercent) + (counts.mightElixirCount * 0.01) + (metaBonuses?.damageMultiplierBonus ?? 0);
 
     // Apply 1-hit kill cheat or base damage * passive multiplier + damage buff
-    const ampMult = (1 + getItemStacks('energy_amplifier') * 0.18) * (1 + getItemStacks('void_catalyst') * 0.15);
+    const ampMult = (1 + getItemStacks('energy_amplifier') * 0.12) * (1 + getItemStacks('void_catalyst') * 0.10);
     const baseDmg = cheats.isOneHitKill ? 50.0 : (baseDamageMultiplier * passiveDamageMultiplier * ampMult);
     const damageMultiplier = baseDmg * (1 + dmgBonus);
 

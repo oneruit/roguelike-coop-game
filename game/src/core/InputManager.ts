@@ -15,6 +15,7 @@ export class InputManager {
   public onToggleInventory?: () => void;
   public onInteract?: () => void;
   public onDash?: () => void;
+  public onTeleportToRift?: () => void;
 
   constructor() {
     window.addEventListener('keydown', (e) => this.onKeyDown(e));
@@ -33,6 +34,12 @@ export class InputManager {
     if (e.code === 'KeyE' || e.code === 'KeyF') {
       if (this.onInteract) {
         this.onInteract();
+      }
+    }
+
+    if (e.code === 'KeyT') {
+      if (this.onTeleportToRift) {
+        this.onTeleportToRift();
       }
     }
 

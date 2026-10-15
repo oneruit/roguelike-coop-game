@@ -1,0 +1,43 @@
+      <!-- Leaderboard Modal -->
+      <div id="leaderboard-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop" id="leaderboard-backdrop"></div>
+        <div class="modal-card pause-card modern-glass-modal" style="max-width: 780px; width: 92%; padding: 24px;">
+          <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+              <div class="sub-title menu-badge-blue">ЗАЛ СЛАВЫ</div>
+              <h2 class="modern-menu-title" style="font-size: 24px; margin: 4px 0 0 0;">ТАБЛИЦА ЛИДЕРОВ</h2>
+            </div>
+            <button id="leaderboard-btn-close" class="action-btn modern-back-btn" style="min-width: 44px; padding: 6px 14px; font-size: 16px;">✕</button>
+          </div>
+
+          <div class="leaderboard-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div style="font-size: 13px; color: #94a3b8;">
+              Лучшие странники, покорившие Разлом
+            </div>
+            <button id="leaderboard-btn-refresh" class="action-btn select-btn" style="font-size: 13px; padding: 6px 14px;">↻ Обновить</button>
+          </div>
+
+          <div class="leaderboard-table-container" style="max-height: 420px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; background: rgba(15, 23, 42, 0.65);">
+            <table class="leaderboard-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+              <thead>
+                <tr style="background: rgba(30, 41, 59, 0.8); color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                  <th style="padding: 10px 14px; width: 50px;">#</th>
+                  <th style="padding: 10px 14px;">Игрок</th>
+                  <th style="padding: 10px 14px;">Герой</th>
+                  <th style="padding: 10px 14px;">Этап</th>
+                  <th style="padding: 10px 14px;">Время</th>
+                  <th style="padding: 10px 14px;">Убийства</th>
+                  <th style="padding: 10px 14px; text-align: right;">Очки</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody">
+                <!-- Dynamically populated via LeaderboardUI -->
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+            <button id="leaderboard-btn-back" class="action-btn modern-back-btn" style="min-width: 140px;">Назад</button>
+          </div>
+        </div>
+      </div>

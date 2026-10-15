@@ -180,14 +180,18 @@ export class Enemy {
       dirZ = Math.sin(angle);
     }
 
+    const effectiveDistance = this.isImmortal
+      ? 0
+      : distance * Math.max(0.05, 1 - this.knockbackResistance);
+
     if (duration <= 0) {
-      this.position.x += dirX * distance;
-      this.position.z += dirZ * distance;
+      this.position.x += dirX * effectiveDistance;
+      this.position.z += dirZ * effectiveDistance;
       this.forcedKnockbackTimer = 0;
       this.forcedKnockbackVelocity.set(0, 0, 0);
     } else {
       this.forcedKnockbackTimer = duration;
-      const speed = distance / duration;
+      const speed = effectiveDistance / duration;
       this.forcedKnockbackVelocity.set(dirX * speed, 0, dirZ * speed);
     }
   }
@@ -224,6 +228,7 @@ export class Enemy {
   private animTimer = Math.random() * Math.PI * 2;
   private flashTimer = 0;
   public knockbackVelocity = new Vector3();
+  public knockbackResistance: number = 0;
   private freezeAuraMesh?: Mesh;
   private freezeAuraMaterial?: MeshBasicMaterial;
 
@@ -603,7 +608,7 @@ export class Enemy {
     // Knockback handling (Immortal Reaper is completely immune to knockback)
     const kbSq = this.knockbackVelocity.lengthSq();
     if (kbSq > 0.01) {
-      const resistance = this.isImmortal ? 0 : (this.isBoss ? 0.05 : 1.0);
+      const resistance = this.isImmortal ? 0 : (this.isBoss ? 0.05 : Math.max(0.05, 1 - this.knockbackResistance));
       this.position.addScaledVector(this.knockbackVelocity, dt * resistance);
       this.knockbackVelocity.multiplyScalar(Math.pow(0.08, dt * 5));
     }
@@ -768,8 +773,9 @@ export class Enemy {
       const klenSq = kbx * kbx + kbz * kbz;
       if (klenSq > 0.0001) {
         const invLen = 1 / Math.sqrt(klenSq);
-        this.knockbackVelocity.x += kbx * invLen * 3.75;
-        this.knockbackVelocity.z += kbz * invLen * 3.75;
+        const impulse = 3.75 * Math.max(0.1, 1 - this.knockbackResistance);
+        this.knockbackVelocity.x += kbx * invLen * impulse;
+        this.knockbackVelocity.z += kbz * invLen * impulse;
       }
     }
 

@@ -84,17 +84,17 @@ test('Weapon grade definitions and biome probabilities', () => {
   // Biome probability distribution tests
   // Stage 1: mostly common
   const ch1 = BIOME_GRADE_CHANCES[1];
-  assert.equal(ch1.common, 0.65);
-  assert.equal(ch1.uncommon, 0.25);
-  assert.equal(ch1.rare, 0.09);
-  assert.equal(ch1.legendary, 0.01);
+  assert.equal(ch1.common, 0.75);
+  assert.equal(ch1.uncommon, 0.20);
+  assert.equal(ch1.rare, 0.045);
+  assert.equal(ch1.legendary, 0.005);
 
   // Stage 4+: rare and legendary are significantly higher
   const ch4 = BIOME_GRADE_CHANCES[4];
-  assert.equal(ch4.common, 0.10);
-  assert.equal(ch4.uncommon, 0.25);
-  assert.equal(ch4.rare, 0.40);
-  assert.equal(ch4.legendary, 0.25);
+  assert.equal(ch4.common, 0.15);
+  assert.equal(ch4.uncommon, 0.35);
+  assert.equal(ch4.rare, 0.35);
+  assert.equal(ch4.legendary, 0.15);
 
   // Probabilities sum to 1.0
   for (let stage = 1; stage <= 4; stage++) {
@@ -104,17 +104,17 @@ test('Weapon grade definitions and biome probabilities', () => {
   }
 
   // Deterministic roll checks using explicit rng parameter
-  // Stage 1: leg: 0.01, rare: 0.09 (0.10 total), unc: 0.25 (0.35 total), com: 0.65
-  assert.equal(rollWeaponGrade(1, () => 0.005), 'legendary'); // < 0.01
-  assert.equal(rollWeaponGrade(1, () => 0.05), 'rare');       // < 0.10
-  assert.equal(rollWeaponGrade(1, () => 0.20), 'uncommon');   // < 0.35
-  assert.equal(rollWeaponGrade(1, () => 0.50), 'common');     // >= 0.35
+  // Stage 1: leg: 0.005, rare: 0.045 (0.05 total), unc: 0.20 (0.25 total), com: 0.75
+  assert.equal(rollWeaponGrade(1, () => 0.002), 'legendary'); // < 0.005
+  assert.equal(rollWeaponGrade(1, () => 0.03), 'rare');       // < 0.05
+  assert.equal(rollWeaponGrade(1, () => 0.15), 'uncommon');   // < 0.25
+  assert.equal(rollWeaponGrade(1, () => 0.50), 'common');     // >= 0.25
 
-  // Stage 4: leg: 0.25, rare: 0.40 (0.65 total), unc: 0.25 (0.90 total), com: 0.10
-  assert.equal(rollWeaponGrade(4, () => 0.10), 'legendary');  // < 0.25
-  assert.equal(rollWeaponGrade(4, () => 0.40), 'rare');       // < 0.65
-  assert.equal(rollWeaponGrade(4, () => 0.80), 'uncommon');   // < 0.90
-  assert.equal(rollWeaponGrade(4, () => 0.95), 'common');     // >= 0.90
+  // Stage 4: leg: 0.15, rare: 0.35 (0.50 total), unc: 0.35 (0.85 total), com: 0.15
+  assert.equal(rollWeaponGrade(4, () => 0.08), 'legendary');  // < 0.15
+  assert.equal(rollWeaponGrade(4, () => 0.30), 'rare');       // < 0.50
+  assert.equal(rollWeaponGrade(4, () => 0.70), 'uncommon');   // < 0.85
+  assert.equal(rollWeaponGrade(4, () => 0.90), 'common');     // >= 0.85
 });
 
 test('Weapon grade upgrades apply stats cumulatively to weapon and record upgradeHistory', () => {

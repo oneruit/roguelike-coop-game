@@ -23,7 +23,8 @@ export type EnemyType =
   | 'brute'
   | 'bison'
   | 'boss'
-  | 'hydra';
+  | 'hydra'
+  | 'spore_queen';
 
 export interface ActiveBuff {
   type: BuffType;

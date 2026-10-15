@@ -104,34 +104,34 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
     const initialStartingDmg = player.getDamageMultiplier(player.startingWeaponId);
     const initialOtherDmg = player.getDamageMultiplier('other_weapon');
 
-    // Add 1 Elixir of Might (+5%)
+    // Add 1 Elixir of Might (+1%)
     player.addMightElixirBonus();
     assert.equal(player.mightElixirCount, 1);
-    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.05);
+    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.01);
 
-    // Starting weapon and other weapon damage should both scale up by 5%
+    // Starting weapon and other weapon damage should both scale up by 1%
     assert.equal(
       Number(player.getDamageMultiplier(player.startingWeaponId).toFixed(3)),
-      Number((initialStartingDmg * 1.05).toFixed(3))
+      Number((initialStartingDmg * 1.01).toFixed(3))
     );
     assert.equal(
       Number(player.getDamageMultiplier('other_weapon').toFixed(3)),
-      Number((initialOtherDmg * 1.05).toFixed(3))
+      Number((initialOtherDmg * 1.01).toFixed(3))
     );
 
     // Call recalculateStats multiple times (must NOT reset the might elixir bonus!)
     player.recalculateStats();
     player.recalculateStats();
     assert.equal(player.mightElixirCount, 1);
-    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.05);
+    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.01);
 
-    // Add 2nd Elixir of Might (+5%) and 1 Amplifier (+2%)
+    // Add 2nd Elixir of Might (+1%) and 1 Amplifier (+2%)
     player.addMightElixirBonus();
     player.addAmplifierBonus();
     assert.equal(player.mightElixirCount, 2);
     assert.equal(player.amplifierCount, 1);
-    // 1.0 + 1 * 0.02 + 2 * 0.05 = 1.12
-    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.12);
+    // 1.0 + 1 * 0.02 + 2 * 0.01 = 1.04
+    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.04);
   });
 
   await t.test('LevelUpUI bonus_damage_elixir correctly triggers addMightElixirBonus', () => {
@@ -173,14 +173,14 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
     mightOption.apply();
 
     assert.equal(player.mightElixirCount, prevCount + 1);
-    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.05);
+    assert.equal(Number(player.passiveDamageMultiplier.toFixed(2)), 1.01);
   });
 
   await t.test('InventoryUI accounts for and displays Elixir of Might in stats and passives', () => {
     const scene = new Scene();
     const player = new Player(scene, 'ronin');
     player.addMightElixirBonus();
-    player.addMightElixirBonus(); // 2 stacks (+10%)
+    player.addMightElixirBonus(); // 2 stacks (+2%)
 
     const invUI = new InventoryUI();
     invUI.renderInventory(player);
@@ -190,7 +190,7 @@ test('Elixir of Might (Эликсир Могущества) character stats inte
 
     // Should include Elixir of Might in the general stats table
     assert.ok(statsList.innerHTML.includes('Эликсир Могущества'), 'Stats table must display Elixir of Might');
-    assert.ok(statsList.innerHTML.includes('+10%'), 'Stats table must show +10% for 2 stacks');
+    assert.ok(statsList.innerHTML.includes('+2%'), 'Stats table must show +2% for 2 stacks');
 
     // Should include Elixir of Might in the passives list
     assert.ok(passivesList.innerHTML.includes('Эликсир Могущества'), 'Passives list must display Elixir of Might');

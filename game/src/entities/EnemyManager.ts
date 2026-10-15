@@ -154,6 +154,18 @@ export class EnemyManager {
       height: 10.0,
       gemType: 'red',
       isBoss: true
+    },
+    spore_queen: {
+      type: 'spore_queen',
+      name: 'Споровая Владычица Ксено-Леса',
+      texturePrefix: '/textures/bosses/boss_hydra',
+      hp: 85000,
+      speed: 2.7,
+      damage: 90,
+      width: 10.5,
+      height: 10.5,
+      gemType: 'red',
+      isBoss: true
     }
   };
 
@@ -199,6 +211,12 @@ export class EnemyManager {
       this.configs.hydra.speed = hydraCfg.speed;
       this.configs.hydra.damage = hydraCfg.damage;
     }
+    const sporeCfg = BalanceManager.getBossConfig('spore_queen');
+    if (this.configs.spore_queen && sporeCfg) {
+      this.configs.spore_queen.hp = sporeCfg.hp;
+      this.configs.spore_queen.speed = sporeCfg.speed;
+      this.configs.spore_queen.damage = sporeCfg.damage;
+    }
   }
 
   private registerEnemy(enemy: Enemy): Enemy {
@@ -224,7 +242,7 @@ export class EnemyManager {
   public stageTime: number = 0;
 
   /**
-   * Continuous progressive scaling multipliers with endless scaling and biome overstay penalties.
+   * Continuous progressive scaling multipliers with endless scaling, stage progression, and biome overstay penalties.
    */
   public getHpMultiplier(): number {
     const minute = this.gameTime / 60;
@@ -232,7 +250,8 @@ export class EnemyManager {
     const mPost = Math.max(0, minute - 15);
     const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
-    return (baseMult + hpPostSurge) * overstay.hpMult;
+    const stageMult = Math.pow(1.40, Math.max(0, this.currentStage - 1));
+    return (baseMult + hpPostSurge) * overstay.hpMult * stageMult;
   }
 
   public getDamageMultiplier(): number {
@@ -241,13 +260,15 @@ export class EnemyManager {
     const mPost = Math.max(0, minute - 15);
     const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
-    return (baseMult + dmgPostSurge) * overstay.dmgMult;
+    const stageMult = Math.pow(1.25, Math.max(0, this.currentStage - 1));
+    return (baseMult + dmgPostSurge) * overstay.dmgMult * stageMult;
   }
 
   public getSpeedMultiplier(): number {
     const minute = this.gameTime / 60;
     const mPost = Math.max(0, minute - 15);
-    return Math.min(1.65, 1 + (minute * 0.012) * 1.5 + mPost * 0.01);
+    const stageBonus = Math.max(0, this.currentStage - 1) * 0.04;
+    return Math.min(1.85, 1 + (minute * 0.015) * 1.5 + mPost * 0.01 + stageBonus);
   }
 
   public resetStageTime(): void {
@@ -256,12 +277,28 @@ export class EnemyManager {
 
   public getLateGameCcResistance(isBoss: boolean): number {
     const minute = this.gameTime / 60;
+    const stageBonus = Math.max(0, this.currentStage - 1) * 0.06;
     if (isBoss) {
-      // Bosses have 65% base CC resistance, scaling up to 90% at 60+ min
-      return Math.min(0.90, 0.65 + Math.max(0, minute - 15) * 0.006);
+      // Bosses have 65% base CC resistance, scaling up to 92%
+      return Math.min(0.92, 0.65 + Math.max(0, minute - 15) * 0.006 + stageBonus);
     }
-    // Normal mobs have 0% CC resistance before 15 min, scaling up to 65% at 60+ min
-    return Math.min(0.65, Math.max(0, minute - 15) * 0.015);
+    // Normal mobs have 0% CC resistance before 15 min on stage 1, scaling up to 70% in late game
+    return Math.min(0.70, Math.max(0, minute - 15) * 0.015 + stageBonus);
+  }
+
+  public getKnockbackResistance(isBoss: boolean, isTough: boolean = false): number {
+    const minute = this.gameTime / 60;
+    const stageBonus = Math.max(0, this.currentStage - 1) * 0.06;
+    if (isBoss) {
+      return 0.95; // Bosses barely flinch
+    }
+    const mPost = Math.max(0, minute - 15);
+    if (isTough) {
+      // Tough mobs (brute, bison) start at 25% resistance, scaling up to 85%
+      return Math.min(0.85, 0.25 + mPost * 0.02 + stageBonus);
+    }
+    // Normal mobs scale from 0% up to 75%
+    return Math.min(0.75, mPost * 0.02 + stageBonus);
   }
 
   public getLateGameDamageResistance(isBoss: boolean): number {
@@ -370,6 +407,8 @@ export class EnemyManager {
 
       enemy.ccResistance = this.getLateGameCcResistance(enemy.isBoss);
       enemy.damageResistance = this.getLateGameDamageResistance(enemy.isBoss);
+      const isTough = enemy.type === 'brute' || enemy.type === 'bison';
+      enemy.knockbackResistance = this.getKnockbackResistance(enemy.isBoss, isTough);
 
       enemy.updateSimulation(dt, closestTargetPos);
 
@@ -464,9 +503,9 @@ export class EnemyManager {
               this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
             }
 
-            // Boss drops Rift Crystals (10-15 crystals + meta bonus)
+            // Boss drops Rift Crystals (3-4 crystals + meta bonus)
             const metaBonus = MetaProgression.getInstance().getBonuses();
-            const crystalDropCount = Math.round((10 + Math.floor(Math.random() * 6)) * (1 + metaBonus.crystalDropBonus));
+            const crystalDropCount = Math.max(1, Math.round((3 + Math.floor(Math.random() * 2)) * (1 + metaBonus.crystalDropBonus)));
             for (let c = 0; c < crystalDropCount; c++) {
               const cOffset = new Vector3(
                 (Math.random() - 0.5) * 3.2,
@@ -499,9 +538,9 @@ export class EnemyManager {
             this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
           }
 
-          // Rift Crystals drop: 25% for regular creeps, 60% for tough mobs (scales with utility meta branch)
+          // Rift Crystals drop: reduced 50x (0.5% for regular creeps, 1.2% for tough mobs, scales with utility meta branch)
           const metaBonus = MetaProgression.getInstance().getBonuses();
-          const baseCrystalChance = isTough ? 0.60 : 0.25;
+          const baseCrystalChance = (isTough ? 0.60 : 0.25) / 50;
           const crystalChance = baseCrystalChance * (1 + metaBonus.crystalDropBonus);
           if (Math.random() < crystalChance) {
             const count = isTough ? (Math.random() < 0.4 ? 2 : 1) : 1;
@@ -599,13 +638,22 @@ export class EnemyManager {
       spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
     }
 
-    const baseHp = this.configs.boss.hp;
-    const baseDmg = this.configs.boss.damage;
-    const baseSpd = this.configs.boss.speed;
+    const isHydra = stage === 2;
+    const isSporeQueen = stage === 3;
+    const stageBaseConfig = isHydra
+      ? this.configs.hydra
+      : isSporeQueen
+        ? this.configs.spore_queen
+        : this.configs.boss;
+
+    const baseHp = stageBaseConfig.hp;
+    const baseDmg = stageBaseConfig.damage;
+    const baseSpd = stageBaseConfig.speed;
 
     const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
-    const tierHp = Math.round(baseHp * (1.2 + (stage - 1) * 1.5) * diffCoeff);
-    const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.3) * (1 + (diffCoeff - 1) * 0.2));
+    const hpStageMult = isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
+    const tierHp = Math.round(baseHp * hpStageMult * diffCoeff);
+    const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.35) * (1 + (diffCoeff - 1) * 0.25));
 
     const stageBossNames = [
       'Кровавый Страж Разлома',
@@ -617,18 +665,25 @@ export class EnemyManager {
     ];
 
     const bossName = stageBossNames[Math.min(stage - 1, stageBossNames.length - 1)];
-    const isHydra = stage === 2;
 
     const bossConfig: EnemyConfig = {
-      ...(isHydra ? this.configs.hydra : this.configs.boss),
+      ...stageBaseConfig,
       name: bossName,
       hp: tierHp,
       damage: tierDmg,
       speed: Math.min(3.8, Number((baseSpd + (stage - 1) * 0.15).toFixed(2))),
-      creditsValue: 120 + stage * 30
+      creditsValue: 150 + stage * 50
     };
 
     const boss = this.registerEnemy(new Enemy(bossConfig, spawnPos));
+    boss.ccResistance = Math.max(0.65, this.getLateGameCcResistance(true));
+    boss.damageResistance = Math.max(0.15, this.getLateGameDamageResistance(true));
+    boss.knockbackResistance = this.getKnockbackResistance(true);
+    if (isSporeQueen) {
+      boss.ccResistance = Math.max(0.75, boss.ccResistance);
+      boss.damageResistance = Math.max(0.35, boss.damageResistance);
+      boss.knockbackResistance = 0.95;
+    }
     this.enemies.push(boss);
     this.scene.add(boss.mesh);
     this.activeBoss = boss;
@@ -812,10 +867,15 @@ export class EnemyManager {
       hp: Math.max(1, Math.round(baseConfig.hp * hpMult)),
       damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
       speed: Number((baseConfig.speed * spdMult).toFixed(2)),
-      eliteAffix: chosenAffix
+      eliteAffix: chosenAffix,
+      creditsValue: (baseConfig.creditsValue || 1) + Math.max(0, this.currentStage - 1) * 2
     };
 
     const enemy = this.registerEnemy(new Enemy(scaledConfig, spawnPos));
+    const isTough = type === 'brute' || type === 'bison';
+    enemy.ccResistance = this.getLateGameCcResistance(false);
+    enemy.damageResistance = this.getLateGameDamageResistance(false);
+    enemy.knockbackResistance = this.getKnockbackResistance(false, isTough);
     this.enemies.push(enemy);
     this.scene.add(enemy.mesh);
   }

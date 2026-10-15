@@ -72,10 +72,10 @@ export interface BiomeGradeChances {
 }
 
 export const BIOME_GRADE_CHANCES: Record<number, BiomeGradeChances> = {
-  1: { common: 0.65, uncommon: 0.25, rare: 0.09, legendary: 0.01 }, // Stage 1: Ashen Wastes
-  2: { common: 0.40, uncommon: 0.35, rare: 0.20, legendary: 0.05 }, // Stage 2: Derelict Sector 7
-  3: { common: 0.20, uncommon: 0.35, rare: 0.32, legendary: 0.13 }, // Stage 3: Bioluminescent Wilds
-  4: { common: 0.10, uncommon: 0.25, rare: 0.40, legendary: 0.25 }  // Stage 4+: Volcanic Caldera
+  1: { common: 0.75, uncommon: 0.20, rare: 0.045, legendary: 0.005 }, // Stage 1: Ashen Wastes
+  2: { common: 0.50, uncommon: 0.35, rare: 0.13, legendary: 0.02 },  // Stage 2: Derelict Sector 7
+  3: { common: 0.30, uncommon: 0.40, rare: 0.24, legendary: 0.06 },  // Stage 3: Bioluminescent Wilds
+  4: { common: 0.15, uncommon: 0.35, rare: 0.35, legendary: 0.15 }   // Stage 4+: Volcanic Caldera
 };
 
 export function getBiomeGradeChances(stageNumber: number): BiomeGradeChances {

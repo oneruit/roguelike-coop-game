@@ -27,12 +27,15 @@ import { AssetPreloader } from './AssetPreloader';
 import { CombatDirector } from '../combat/CombatDirector';
 import { GameNetworkCoordinator } from '../net/GameNetworkCoordinator';
 import { LobbyCoordinator } from '../net/LobbyCoordinator';
-import type { RiftItemDef } from '../items/RiftItemSystem';
+import { RIFT_ITEMS, type RiftItemDef, type RiftItemId } from '../items/RiftItemSystem';
 import { getPassiveBuffId } from '../drops/PassiveBuffs';
 import { MerchantManager } from '../world/MerchantManager';
 import { FireRingWeapon } from '../combat/weapons/MagicWeapons';
 import { SulfurSmokeManager } from '../vfx/SulfurSmokeVfx';
 import { MetaProgression } from '../meta/MetaProgression';
+import { LeaderboardManager } from './LeaderboardManager';
+import { RunSaveManager, type SavedWeaponData, type SavedRunData } from './RunSaveManager';
+import { createWeaponInstanceById } from '../combat/WeaponFactory';
 
 export enum GameState {
   MAIN_MENU,
@@ -939,6 +942,218 @@ export class SessionDirector {
       });
     }
 
+    // Clear any saved run since this game session has concluded
+    RunSaveManager.clearSavedRun();
+
+    // Automatically submit score to Hall of Fame / Leaderboard & DB
+    LeaderboardManager.submitScore({
+      heroId: this.player.charType,
+      stage: this.biomeManager.stageNumber,
+      survivalTimeSec: this.gameTime,
+      kills: this.player.kills,
+      credits: this.player.credits,
+      isVictory
+    }).catch(err => console.warn('[SessionDirector] Leaderboard submit error:', err));
+
     this.hud.showGameOver(timeStr, myStats, null, this.player.isCoop, isVictory, this.player.weapons, allPlayersResults, bpResult);
+  }
+
+  /**
+   * Teleports player instantly to the Rift portal with sulfur smoke effects,
+   * granting a 1.5s invulnerability shield and advancing game & stage time by 20s.
+   */
+  public teleportPlayerToRift(): boolean {
+    if (!this.player || !this.player.isAlive || this.gameState !== GameState.PLAYING) {
+      return false;
+    }
+    if (!this.riftTeleporter) {
+      return false;
+    }
+
+    // 1. Sulfur smoke departure effect
+    const originPos = this.player.position.clone();
+    SulfurSmokeManager.spawn(this.engine.scene, originPos);
+
+    // 2. Teleport player near the rift (with 1.8m offset to prevent clipping)
+    const targetPos = this.riftTeleporter.position.clone();
+    targetPos.x += 1.8;
+    targetPos.z += 1.8;
+    const elevation = this.engine.chunkManager.getElevation(targetPos.x, targetPos.z);
+    targetPos.y = elevation;
+
+    this.player.position.copy(targetPos);
+    this.player.mesh.position.copy(targetPos);
+
+    // 3. Sulfur smoke arrival effect
+    SulfurSmokeManager.spawn(this.engine.scene, targetPos.clone());
+    SoundManager.playTeleporterActivate?.();
+
+    // 4. Fast forward time penalty (+20 seconds)
+    const timePenalty = 20;
+    this.gameTime += timePenalty;
+    if (this.enemyManager) {
+      this.enemyManager.gameTime += timePenalty;
+      this.enemyManager.stageTime += timePenalty;
+    }
+
+    // 5. Grant 1.5s invulnerability buffer
+    this.player.addBuff({
+      type: 'invulnerable',
+      name: 'Мерцание Разлома',
+      icon: '🛡️',
+      color: '#38bdf8',
+      duration: 1.5,
+      maxDuration: 1.5,
+      value: 1
+    });
+
+    // 6. Mark teleporter as discovered
+    this.riftTeleporter.isDiscovered = true;
+
+    // 7. Feedback banner
+    this.hud.triggerAltarNotification('ТЕЛЕПОРТАЦИЯ К РАЗЛОМУ', '+20 сек. штрафного времени', '🌀', '#38bdf8');
+
+    return true;
+  }
+
+  /**
+   * Serializes current run state and returns to Main Menu ("Доиграть позднее").
+   */
+  public saveCurrentRunAndExit(): boolean {
+    if (!this.player || !this.player.isAlive || this.gameState === GameState.GAME_OVER) {
+      return false;
+    }
+
+    const weaponsData: SavedWeaponData[] = this.player.weapons.map(w => ({
+      id: w.id,
+      level: w.level,
+      awakenedGrade: w.awakenedGrade,
+      bonusDamage: w.bonusDamage,
+      cooldownBonus: w.cooldownBonus,
+      upgradeHistory: [...w.upgradeHistory]
+    }));
+
+    const riftItemsRecord: Record<string, number> = {};
+    for (const [k, v] of this.player.riftItems.entries()) {
+      riftItemsRecord[k] = v;
+    }
+
+    const numSeed = typeof this.currentSeed === 'number'
+      ? this.currentSeed
+      : SeededRNG.hashString(String(this.currentSeed));
+
+    const runData: SavedRunData = {
+      version: 1,
+      timestamp: Date.now(),
+      heroId: this.player.charType,
+      stageNumber: this.biomeManager.stageNumber,
+      seed: numSeed,
+      gameTime: this.gameTime,
+      stageTime: this.enemyManager.stageTime,
+      kills: this.enemyManager.totalKills,
+      credits: this.player.credits,
+      playerHp: this.player.hp,
+      playerMaxHp: this.player.maxHp,
+      playerLevel: this.player.level,
+      playerXp: this.player.xp,
+      playerXpToNext: this.player.xpToNextLevel,
+      passives: {
+        mightElixirCount: this.player.mightElixirCount,
+        speedBootsCount: (this.player as any).speedBootsCount || 0,
+        flaskCount: (this.player as any).flaskCount || 0,
+        magnetCount: (this.player as any).magnetCount || 0,
+        amuletCount: (this.player as any).amuletCount || 0,
+        vestCount: (this.player as any).vestCount || 0,
+        watchCount: (this.player as any).watchCount || 0,
+        amplifierCount: (this.player as any).amplifierCount || 0
+      },
+      riftItems: riftItemsRecord,
+      weapons: weaponsData
+    };
+
+    const saved = RunSaveManager.saveRun(runData);
+    if (saved) {
+      this.returnToMainMenu();
+    }
+    return saved;
+  }
+
+  /**
+   * Resumes a previously saved run from localStorage.
+   */
+  public resumeSavedRun(): boolean {
+    const data = RunSaveManager.loadRun();
+    if (!data) return false;
+
+    try {
+      this.currentSeed = data.seed;
+      this.startSinglePlayerWithHero(data.heroId, String(data.seed), false, 'day');
+
+      this.gameTime = data.gameTime;
+      this.enemyManager.gameTime = data.gameTime;
+      this.enemyManager.stageTime = data.stageTime;
+      this.enemyManager.totalKills = data.kills;
+      this.enemyManager.currentStage = data.stageNumber;
+      this.biomeManager.currentStageIndex = Math.max(0, data.stageNumber - 1);
+
+      this.player.level = data.playerLevel;
+      this.player.xp = data.playerXp;
+      this.player.xpToNextLevel = data.playerXpToNext;
+      this.player.credits = data.credits;
+      this.player.mightElixirCount = data.passives.mightElixirCount;
+      (this.player as any).speedBootsCount = data.passives.speedBootsCount;
+      (this.player as any).flaskCount = data.passives.flaskCount;
+      (this.player as any).magnetCount = data.passives.magnetCount;
+      (this.player as any).amuletCount = data.passives.amuletCount;
+      (this.player as any).vestCount = data.passives.vestCount;
+      (this.player as any).watchCount = data.passives.watchCount;
+      (this.player as any).amplifierCount = data.passives.amplifierCount;
+
+      // Recreate weapons
+      this.player.weapons = [];
+      for (const wData of data.weapons) {
+        const weapon = createWeaponInstanceById(wData.id);
+        if (weapon) {
+          weapon.level = wData.level;
+          weapon.awakenedGrade = wData.awakenedGrade;
+          weapon.bonusDamage = wData.bonusDamage;
+          weapon.cooldownBonus = wData.cooldownBonus;
+          weapon.upgradeHistory = [...wData.upgradeHistory];
+          weapon.recalculateStats();
+          this.player.weapons.push(weapon);
+        }
+      }
+
+      // Recreate rift items
+      this.player.riftItems.clear();
+      for (const [id, count] of Object.entries(data.riftItems)) {
+        const def = RIFT_ITEMS[id as RiftItemId];
+        if (def) {
+          for (let c = 0; c < count; c++) {
+            this.player.addRiftItem(def);
+          }
+        }
+      }
+
+      this.player.recalculateStats();
+      this.player.hp = Math.min(this.player.maxHp, data.playerHp);
+
+      const currentBiome = this.biomeManager.currentBiome;
+      this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
+      this.hud.updateStageText(data.stageNumber, currentBiome.name);
+
+      const stageSeed = Number(data.seed) + data.stageNumber * 10007;
+      this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, data.stageNumber, currentBiome.id);
+      this.mapManager.setSeed(stageSeed);
+      this.mapManager.clear();
+
+      RunSaveManager.clearSavedRun();
+
+      this.hud.triggerAltarNotification('ЗАБЕГ ВОЗОБНОВЛЕН', `Этап ${data.stageNumber} • ${currentBiome.name}`, '💾', '#38bdf8');
+      return true;
+    } catch (err) {
+      console.error('[SessionDirector] Failed to resume run:', err);
+      return false;
+    }
   }
 }

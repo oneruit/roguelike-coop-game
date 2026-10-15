@@ -321,3 +321,45 @@ ON CONFLICT (id) DO UPDATE SET
   data = EXCLUDED.data,
   updated_at = NOW(),
   version = game_balance.version + 1;
+
+-- ============================================================================
+-- 5. LEADERBOARDS SCHEMA & POLICIES
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS leaderboards (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  player_id TEXT NOT NULL,
+  player_name TEXT NOT NULL,
+  hero_id TEXT NOT NULL,
+  stage INT NOT NULL DEFAULT 1,
+  survival_time_sec NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  kills INT NOT NULL DEFAULT 0,
+  credits INT NOT NULL DEFAULT 0,
+  score INT NOT NULL DEFAULT 0,
+  is_victory BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Indexes for lightning fast queries and top ranking
+CREATE INDEX IF NOT EXISTS idx_leaderboards_score ON leaderboards (score DESC);
+CREATE INDEX IF NOT EXISTS idx_leaderboards_created ON leaderboards (created_at DESC);
+
+-- Enable RLS
+ALTER TABLE leaderboards ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read leaderboards" ON leaderboards;
+DROP POLICY IF EXISTS "Allow public insert leaderboards" ON leaderboards;
+
+-- Policy: Anyone can view leaderboard entries
+CREATE POLICY "Allow public read leaderboards"
+  ON leaderboards
+  FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+-- Policy: Game clients can insert new game run results
+CREATE POLICY "Allow public insert leaderboards"
+  ON leaderboards
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+

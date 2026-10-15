@@ -79,7 +79,7 @@ export class SimulationView {
     bindSyncInput('sim-slider-mightelixir', 'sim-num-mightelixir', (val) => {
       this.sim.mightElixirStacks = val;
       const badge = document.getElementById('sim-val-mightelixir');
-      if (badge) badge.innerText = `${val} стаков (+${val * 5}%)`;
+      if (badge) badge.innerText = `${val} стаков (+${val * 1}%)`;
     });
 
     bindSyncInput('sim-slider-watch', 'sim-num-watch', (val) => {
@@ -347,7 +347,7 @@ export class SimulationView {
       'sim-num-mightelixir',
       'sim-val-mightelixir',
       this.sim.mightElixirStacks ?? 0,
-      `${this.sim.mightElixirStacks ?? 0} стаков (+${(this.sim.mightElixirStacks ?? 0) * 5}%)`
+      `${this.sim.mightElixirStacks ?? 0} стаков (+${(this.sim.mightElixirStacks ?? 0) * 1}%)`
     );
     setInputPair(
       'sim-slider-watch',
@@ -402,7 +402,7 @@ export class SimulationView {
     const heroMult = isStarting ? (heroCfg.damageMultiplier || 1.0) : 1.0;
     const ampStacks = this.sim.amplifierStacks ?? 0;
     const elixirStacks = this.sim.mightElixirStacks ?? 0;
-    const damagePassiveMult = 1 + ampStacks * 0.02 + elixirStacks * 0.05;
+    const damagePassiveMult = 1 + ampStacks * 0.02 + elixirStacks * 0.01;
     const runeMult = this.sim.damageRuneActive ? 1.3 : 1.0;
 
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
