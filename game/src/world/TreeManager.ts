@@ -13,6 +13,7 @@ import {
   Group
 } from 'three';
 import { getAssetUrl } from '../utils/assetPath';
+import { AssetResolver } from '../utils/AssetResolver';
 import { SeededRNG } from '../core/SeededRNG';
 import { OccupiedArea } from './ChunkManager';
 import { ObstacleManager } from './ObstacleManager';
@@ -30,7 +31,7 @@ export interface TreeTypeConfig {
 
 export const BIOME_TREE_CONFIGS: Record<string, TreeTypeConfig> = {
   ashen_wastes: {
-    texturePath: '/textures/trees/tree_desert.png',
+    texturePath: AssetResolver.getBiomeTexture('ashen_wastes', 'tree'),
     width: 3.4,
     height: 3.35,
     trunkRadius: 0.45,
@@ -40,7 +41,7 @@ export const BIOME_TREE_CONFIGS: Record<string, TreeTypeConfig> = {
     treesPerChunkMax: 3
   },
   derelict_sector: {
-    texturePath: '/textures/trees/tree_cyber.png',
+    texturePath: AssetResolver.getBiomeTexture('derelict_sector', 'tree'),
     width: 3.4,
     height: 4.38,
     trunkRadius: 0.5,
@@ -50,7 +51,7 @@ export const BIOME_TREE_CONFIGS: Record<string, TreeTypeConfig> = {
     treesPerChunkMax: 3
   },
   bioluminescent_wilds: {
-    texturePath: '/textures/trees/tree_bioluminescent.png',
+    texturePath: AssetResolver.getBiomeTexture('bioluminescent_wilds', 'tree'),
     width: 3.5,
     height: 5.16,
     trunkRadius: 0.55,
@@ -60,7 +61,7 @@ export const BIOME_TREE_CONFIGS: Record<string, TreeTypeConfig> = {
     treesPerChunkMax: 4
   },
   volcanic_caldera: {
-    texturePath: '/textures/trees/tree_volcanic.png',
+    texturePath: AssetResolver.getBiomeTexture('volcanic_caldera', 'tree'),
     width: 3.4,
     height: 4.43,
     trunkRadius: 0.5,
@@ -70,7 +71,7 @@ export const BIOME_TREE_CONFIGS: Record<string, TreeTypeConfig> = {
     treesPerChunkMax: 3
   },
   primordial_ruins: {
-    texturePath: '/textures/trees/tree_primordial.png',
+    texturePath: AssetResolver.getBiomeTexture('primordial_ruins', 'tree'),
     width: 3.6,
     height: 4.25,
     trunkRadius: 0.55,
@@ -80,7 +81,7 @@ export const BIOME_TREE_CONFIGS: Record<string, TreeTypeConfig> = {
     treesPerChunkMax: 3
   },
   rift_core: {
-    texturePath: '/textures/trees/tree_primordial.png',
+    texturePath: AssetResolver.getBiomeTexture('rift_core', 'tree'),
     width: 3.6,
     height: 4.25,
     trunkRadius: 0.55,

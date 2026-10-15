@@ -28,6 +28,7 @@ import {
   createSimWeaponById
 } from './SimWeapons';
 import { ObstacleManager } from '../world/ObstacleManager';
+import { DEFAULT_BALANCE } from '../balance/defaultBalance';
 
 export interface GameCoreConfig {
   seed?: number;
@@ -99,57 +100,11 @@ export class SimPlayerInternal {
     this.charType = charType;
     this.position = spawnPos.clone();
 
-    if (charType === 'invoker') {
-      this.maxHp = 100;
-      this.hp = 100;
-      this.baseSpeed = 8.5;
-      this.baseDamageMultiplier = 1.2;
-    } else if (charType === 'valkyrie') {
-      this.maxHp = 135;
-      this.hp = 135;
-      this.baseSpeed = 8.2;
-      this.baseDamageMultiplier = 1.45;
-    } else if (charType === 'flail') {
-      this.maxHp = 125;
-      this.hp = 125;
-      this.baseSpeed = 8.5;
-      this.baseDamageMultiplier = 1.40;
-    } else if (charType === 'sorceress') {
-      this.maxHp = 105;
-      this.hp = 105;
-      this.baseSpeed = 8.8;
-      this.baseDamageMultiplier = 1.30;
-    } else if (charType === 'chakram') {
-      this.maxHp = 115;
-      this.hp = 115;
-      this.baseSpeed = 8.7;
-      this.baseDamageMultiplier = 1.35;
-    } else if (charType === 'archer') {
-      this.maxHp = 110;
-      this.hp = 110;
-      this.baseSpeed = 8.9;
-      this.baseDamageMultiplier = 1.35;
-    } else if (charType === 'rocket') {
-      this.maxHp = 105;
-      this.hp = 105;
-      this.baseSpeed = 9.1;
-      this.baseDamageMultiplier = 1.35;
-    } else if (charType === 'necromancer') {
-      this.maxHp = 110;
-      this.hp = 110;
-      this.baseSpeed = 8.6;
-      this.baseDamageMultiplier = 1.40;
-    } else if (charType === 'amazon') {
-      this.maxHp = 120;
-      this.hp = 120;
-      this.baseSpeed = 9.0;
-      this.baseDamageMultiplier = 1.35;
-    } else {
-      this.maxHp = 115;
-      this.hp = 115;
-      this.baseSpeed = 8.6;
-      this.baseDamageMultiplier = 1.35;
-    }
+    const heroCfg = DEFAULT_BALANCE.heroes[charType] || DEFAULT_BALANCE.heroes.ronin;
+    this.maxHp = heroCfg.maxHp;
+    this.hp = heroCfg.maxHp;
+    this.baseSpeed = heroCfg.baseSpeed;
+    this.baseDamageMultiplier = heroCfg.damageMultiplier;
     this.speed = this.baseSpeed;
     this.damageMultiplier = this.baseDamageMultiplier;
     this.weapons.push(createSimWeaponForCharacter(charType));
@@ -281,6 +236,8 @@ export class SimProjectileInternal {
   public isLightning: boolean;
   public isIceSpike: boolean;
   public isFireball: boolean;
+  public isPoisonPuddle: boolean;
+  public puddleTickTimer: number = 0;
   public hasImpacted: boolean = false;
   public curveSign: number;
   public elapsedTime: number = 0;
@@ -313,6 +270,7 @@ export class SimProjectileInternal {
     this.isLightning = !!data.isLightning;
     this.isIceSpike = !!data.isIceSpike;
     this.isFireball = !!data.isFireball;
+    this.isPoisonPuddle = !!data.isPoisonPuddle;
     this.curveSign = data.curveSign || 1;
     this.isOrbiting = !!data.isOrbiting;
     this.orbitRadius = data.orbitRadius || 2.4;
@@ -332,7 +290,7 @@ export class SimDropInternal {
     this.id = id;
     this.type = type;
     this.position = position.clone();
-    this.xpValue = type === 'red' ? 25 : type === 'green' ? 8 : type === 'gold' ? 20 : 2;
+    this.xpValue = type === 'red' ? 25 : type === 'green' ? 8 : type === 'gold' ? 20 : type === 'crystal' ? 5 : 2;
   }
 }
 
@@ -384,18 +342,18 @@ export class GameCore {
   private spawnTimer: number = 0;
   private events: SimEvent[] = [];
 
-  // Enemy configuration table
+  // Enemy configuration table synced with DEFAULT_BALANCE
   private enemyConfigs: Record<EnemyType, SimEnemyConfig> = {
-    coyote: { type: 'coyote', name: 'Кровожадный койот', hp: 52, speed: 5.4, damage: 16, width: 2.1, height: 1.6, gemType: 'blue' },
-    crawler: { type: 'crawler', name: 'Ползучая тварь', hp: 45, speed: 6.0, damage: 20, width: 2.0, height: 1.2, gemType: 'blue' },
-    cactus: { type: 'cactus', name: 'Кактусовый зомби', hp: 95, speed: 3.5, damage: 28, width: 1.9, height: 2.3, gemType: 'blue' },
-    skeleton: { type: 'skeleton', name: 'Бандит-скелет', hp: 120, speed: 3.8, damage: 32, width: 1.9, height: 2.4, gemType: 'green' },
-    ghost: { type: 'ghost', name: 'Призрак ковбоя', hp: 150, speed: 4.0, damage: 36, width: 1.7, height: 2.5, gemType: 'green' },
-    scorpion: { type: 'scorpion', name: 'Скорпион-ползун', hp: 210, speed: 3.2, damage: 44, width: 2.3, height: 2.1, gemType: 'green' },
-    brute: { type: 'brute', name: 'Пустынный громила', hp: 380, speed: 2.6, damage: 64, width: 2.8, height: 3.2, gemType: 'red' },
-    bison: { type: 'bison', name: 'Бешеный бизон', hp: 800, speed: 4.4, damage: 76, width: 3.6, height: 3.0, gemType: 'red' },
-    boss: { type: 'boss', name: 'Повелитель Дюн', hp: 2600, speed: 2.8, damage: 90, width: 4.2, height: 4.5, gemType: 'red', isBoss: true },
-    hydra: { type: 'hydra', name: 'Трехглавая гидра', hp: 7500, speed: 2.3, damage: 130, width: 8.0, height: 8.0, gemType: 'red', isBoss: true }
+    coyote: { type: 'coyote', name: DEFAULT_BALANCE.monsters.coyote.name, hp: DEFAULT_BALANCE.monsters.coyote.hp, speed: DEFAULT_BALANCE.monsters.coyote.speed, damage: DEFAULT_BALANCE.monsters.coyote.damage, width: 2.1, height: 1.6, gemType: DEFAULT_BALANCE.monsters.coyote.gemType || 'blue' },
+    crawler: { type: 'crawler', name: DEFAULT_BALANCE.monsters.crawler.name, hp: DEFAULT_BALANCE.monsters.crawler.hp, speed: DEFAULT_BALANCE.monsters.crawler.speed, damage: DEFAULT_BALANCE.monsters.crawler.damage, width: 2.0, height: 1.2, gemType: DEFAULT_BALANCE.monsters.crawler.gemType || 'blue' },
+    cactus: { type: 'cactus', name: DEFAULT_BALANCE.monsters.cactus.name, hp: DEFAULT_BALANCE.monsters.cactus.hp, speed: DEFAULT_BALANCE.monsters.cactus.speed, damage: DEFAULT_BALANCE.monsters.cactus.damage, width: 1.9, height: 2.3, gemType: DEFAULT_BALANCE.monsters.cactus.gemType || 'blue' },
+    skeleton: { type: 'skeleton', name: DEFAULT_BALANCE.monsters.skeleton.name, hp: DEFAULT_BALANCE.monsters.skeleton.hp, speed: DEFAULT_BALANCE.monsters.skeleton.speed, damage: DEFAULT_BALANCE.monsters.skeleton.damage, width: 1.9, height: 2.4, gemType: DEFAULT_BALANCE.monsters.skeleton.gemType || 'green' },
+    ghost: { type: 'ghost', name: DEFAULT_BALANCE.monsters.ghost.name, hp: DEFAULT_BALANCE.monsters.ghost.hp, speed: DEFAULT_BALANCE.monsters.ghost.speed, damage: DEFAULT_BALANCE.monsters.ghost.damage, width: 1.7, height: 2.5, gemType: DEFAULT_BALANCE.monsters.ghost.gemType || 'green' },
+    scorpion: { type: 'scorpion', name: DEFAULT_BALANCE.monsters.scorpion.name, hp: DEFAULT_BALANCE.monsters.scorpion.hp, speed: DEFAULT_BALANCE.monsters.scorpion.speed, damage: DEFAULT_BALANCE.monsters.scorpion.damage, width: 2.3, height: 2.1, gemType: DEFAULT_BALANCE.monsters.scorpion.gemType || 'green' },
+    brute: { type: 'brute', name: DEFAULT_BALANCE.monsters.brute.name, hp: DEFAULT_BALANCE.monsters.brute.hp, speed: DEFAULT_BALANCE.monsters.brute.speed, damage: DEFAULT_BALANCE.monsters.brute.damage, width: 2.8, height: 3.2, gemType: DEFAULT_BALANCE.monsters.brute.gemType || 'red' },
+    bison: { type: 'bison', name: DEFAULT_BALANCE.monsters.bison.name, hp: DEFAULT_BALANCE.monsters.bison.hp, speed: DEFAULT_BALANCE.monsters.bison.speed, damage: DEFAULT_BALANCE.monsters.bison.damage, width: 3.6, height: 3.0, gemType: DEFAULT_BALANCE.monsters.bison.gemType || 'red' },
+    boss: { type: 'boss', name: DEFAULT_BALANCE.bosses.boss.name, hp: DEFAULT_BALANCE.bosses.boss.hp, speed: DEFAULT_BALANCE.bosses.boss.speed, damage: DEFAULT_BALANCE.bosses.boss.damage, width: 4.2, height: 4.5, gemType: 'red', isBoss: true },
+    hydra: { type: 'hydra', name: DEFAULT_BALANCE.bosses.hydra.name, hp: DEFAULT_BALANCE.bosses.hydra.hp, speed: DEFAULT_BALANCE.bosses.hydra.speed, damage: DEFAULT_BALANCE.bosses.hydra.damage, width: 8.0, height: 8.0, gemType: 'red', isBoss: true }
   };
 
   constructor(config: GameCoreConfig = {}) {
@@ -562,7 +520,7 @@ export class GameCore {
 
         player.anim = player.attackAnimTimer > 0 ? 'WALK_ATTACK' : 'WALK';
       } else {
-        player.anim = player.attackAnimTimer > 0 ? 'ATTACK' : 'IDLE';
+        player.anim = player.attackAnimTimer > 0 ? 'IDLE_ATTACK' : 'IDLE';
       }
 
       // Update Weapons
@@ -914,6 +872,12 @@ export class GameCore {
             proj.lifetime = 0.24;
           }
         }
+      } else if (proj.isPoisonPuddle) {
+        proj.puddleTickTimer += dt;
+        if (proj.puddleTickTimer >= 0.40) {
+          proj.puddleTickTimer = 0;
+          proj.hitEnemies.clear();
+        }
       } else {
         proj.position.x += proj.direction.x * proj.speed * dt;
         proj.position.z += proj.direction.z * proj.speed * dt;
@@ -940,7 +904,7 @@ export class GameCore {
             enemy.addBleed(proj.bleedDps, 3.0, proj.ownerId);
           }
 
-          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning && !proj.isIceSpike && !proj.isFireball) {
+          if (!proj.isOrbiting && !proj.isChakram && !proj.isLightning && !proj.isIceSpike && !proj.isFireball && !proj.isPoisonPuddle) {
             proj.pierce--;
             if (proj.pierce <= 0) {
               proj.isAlive = false;

@@ -771,6 +771,46 @@ export class SoundManager {
   }
 
   /**
+   * Sound when toxic poison puddle bubbles and splatters on the ground
+   */
+  public static playPoisonPuddle() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // 1. Acidic squelch / liquid splatter pop
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(420, now);
+    osc.frequency.exponentialRampToValueAtTime(110, now + 0.14);
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(now + 0.15);
+
+    // 2. High-frequency acidic fizz / bubble hiss
+    const hissOsc = ctx.createOscillator();
+    const hissGain = ctx.createGain();
+    hissOsc.type = 'triangle';
+    hissOsc.frequency.setValueAtTime(1400, now);
+    hissOsc.frequency.exponentialRampToValueAtTime(320, now + 0.22);
+
+    hissGain.gain.setValueAtTime(0.10, now);
+    hissGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+    hissOsc.connect(hissGain);
+    hissGain.connect(this.getMasterGain());
+    hissOsc.start();
+    hissOsc.stop(now + 0.23);
+  }
+
+  /**
    * Sound when critical strike hits
    */
   public static playCrit() {

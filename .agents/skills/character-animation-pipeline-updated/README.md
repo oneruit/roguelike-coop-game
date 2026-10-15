@@ -12,7 +12,7 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
 
 ## Art Style and Anatomy (Chibi Proportions Contract)
 
-- **Chibi Proportions (2.5–3 heads tall)**: Large expressive head (~30–35% of total height), compact solid torso, sturdy limbs, heavy boots, and readable stylized weapons for pixel-art clarity (128×128 cell, character height ~80–96 px).
+- **Chibi Proportions (2.5–3 heads tall)**: Large expressive head (~30–35% of total height), compact solid torso, sturdy limbs, heavy boots, and readable stylized weapons for pixel-art clarity (96×96 cell, character height ~64–72 px).
 - **Strict Prohibition on Realistic Proportions**: No 7–8 heads tall proportions.
 - **Gritty Mature Demeanor (Anti-Anime / Anti-Kawaii)**: Characters appear as hardened veterans, menacing warriors, or deadly undead. Sharp cheekbones, strong jawline, battle squint, scars, beards, stubble, firm mouth.
 - **Mandatory Negative Constraints**:
@@ -37,10 +37,10 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
 - `prompts/02_IDLE.md` — 6 idle frames (row 2 right, row 3 left, closed eyes on frame 3).
 - `prompts/03_WALK.md` — 6 walk cycle frames (row 2 right, row 3 left, closed eyes on frame 3).
 - `prompts/04_ATTACK.md` — 6 single physical weapon attack frames without VFX (row 2 right, row 3 left, closed eyes on frame 3).
-- `prompts/05_OPTIONAL_PORTRAIT.md` — optional 128×128 avatar.
+- `prompts/05_OPTIONAL_PORTRAIT.md` — optional 96×96 avatar.
 - `references/CHANGELOG.md` — pipeline revision history.
-- `scripts/process_character_sheets.py` — raw asset processor: global magenta removal, defringing, 1px black contour, feet alignment (`y=118`), row 2 and 3 direction verification.
-- `scripts/validate_sheets.py` — dimension validation (768×512) and direction checking (row 2 right, row 3 left, side profile).
+- `scripts/process_character_sheets.py` — raw asset processor: global magenta removal, defringing, 1px black contour, feet alignment (`y=88`), row 2 and 3 direction verification.
+- `scripts/validate_sheets.py` — dimension validation (576×384) and direction checking (row 2 right, row 3 left, side profile).
 - `scripts/requirements.txt` — processor dependencies (Pillow and NumPy).
 - `tests/test_process_character_sheets.py` — unit tests for global magenta removal, 1px contour, and direction validation.
 
@@ -49,9 +49,11 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
 1. On task receipt:
    - If a complete prompt / reference is given — use directly.
    - If description is brief — enrich with default values via master template `00_CHARACTER_LOCK.md`.
-2. Generate and approve turnaround reference from 4 views on magenta background `rgb(255,0,255)`.
+2. Generate and approve turnaround reference from 4 views on magenta background `rgb(255,0,255)` (ask user: fits, redo, or custom variant).
 3. For each state, compose prompt from `00_CHARACTER_LOCK.md` and the corresponding `02/03/04` file, enforcing closed eyes on frame 3, strict side profile in rows 2 and 3, and negative constraints.
-4. Save the three raw sprite sheets (768×512 or 1536×1024) separately from runtime textures.
+4. Save the three raw sprite sheets (576×384 or 1152×768) separately from runtime textures.
 5. Process raw assets via `scripts/process_character_sheets.py --bg-mode magenta --row-order fbrl`.
 6. Verify dimensions and directions via `scripts/validate_sheets.py --row-order fbrl`.
 7. Verify Three.js rendering with appropriate row mapping (`CharacterAnimator.ts`).
+8. If API returns HTTP 429 quota exhaustion: halt immediately, save approved assets and checkpoint in `raw_assets/<name>/TASK_STATE.json`, commit to task branch, and report cooldown duration and resumption instructions.
+

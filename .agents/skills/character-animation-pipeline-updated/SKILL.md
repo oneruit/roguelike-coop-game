@@ -1,13 +1,19 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, reviewing, validating, and integrating three 6x4 animation sprite sheets (IDLE, WALK, ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure magenta RGB(255,0,255) chromakey background with closed eyes on frame 3. Each cell is 128x128 px. Rows top to bottom are FRONT, BACK, RIGHT, LEFT. In RIGHT and LEFT rows, the body is strictly sideways and face in profile. Preserve character identity and weapon continuity; no visual attack effects by default.
+description: Standardized pipeline for creating, reviewing, validating, and integrating four 6x4 animation sprite sheets (IDLE, WALK, IDLE_ATTACK, WALK_ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure magenta RGB(255,0,255) chromakey background with closed eyes on frame 3. Each cell is 96x96 px. Rows top to bottom are FRONT, BACK, RIGHT, LEFT. In RIGHT and LEFT rows, the body is strictly sideways and face in profile. Preserve character identity and weapon continuity; no visual attack effects by default.
 ---
 
 # Character Animation Pipeline Skill
 
 ## Goal
 
-Produce **three separate animation sheets** for each playable character: `IDLE`, `WALK`, and `ATTACK`. Every sheet is a strict **6 columns × 4 rows** grid: 24 frames at **128 × 128 px per cell**, total **768 × 512 px**. The game uses 2D pixel-art sprites in a 2.5D world with a camera tilted approximately 30°.
+Produce **four separate animation sheets** for each playable character:
+1. `IDLE` — **stationary rest state**
+2. `WALK` — **locomotion / movement state**
+3. `IDLE_ATTACK` — **stationary attack state** (also retained as `ATTACK` for backwards compatibility)
+4. `WALK_ATTACK` — **attack while moving**
+
+Every sheet is a strict **6 columns × 4 rows** grid: 24 frames at **96 × 96 px per cell**, total **576 × 384 px**. The game uses 2D pixel-art sprites in a 2.5D world with a camera tilted approximately 30°.
 
 ---
 
@@ -45,7 +51,7 @@ The pipeline accepts two primary modes of user input:
 ## 2. Master Prompt Template
 
 ```text
-128x128 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
+96x96 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
 
 Chibi proportions with an intentionally oversized head and compact body, [body type], [limb description], [stance], strong readable silhouette.
 
@@ -100,7 +106,7 @@ The authoritative row mapping from top to bottom is:
 
 ### Columns 1–6 (Temporal Progression)
 Columns 1–6 are consecutive temporal frames from left to right.
-* **Mandatory Frame 3 Rule**: On **Column 3 across all rows** where eyes are visible, the character's **eyes are closed** (natural blink at peak inhale in IDLE, focus blink mid-stride in WALK, concentrated focus tension during backswing in ATTACK).
+* **Mandatory Frame 3 Rule**: On **Column 3 across all rows** where eyes are visible, the character's **eyes are closed** (natural blink at peak inhale in IDLE, focus blink mid-stride in WALK, concentrated focus tension during backswing in IDLE_ATTACK / WALK_ATTACK).
 
 ```text
 Row 0 FRONT: [F1][F2][F3 (closed eyes)][F4][F5][F6]
@@ -114,28 +120,38 @@ Row 3 LEFT:  [L1][L2][L3 (closed eyes)][L4][L5][L6]  <-- Body strictly sideways,
 ## 5. Animation State Requirements
 
 ### 5.1 IDLE — Six-Frame Seamless Loop (`prompts/02_IDLE.md`)
-- A stationary combat-ready stance. Feet stay firmly planted on the baseline (`y ≈ 118`).
-- Subtle breathing: torso rises 1–2 px on inhale, settles on exhale.
-- **Column 3 Closed Eyes**: At the peak of inhale (frame 3), the eyes close in a calm, focused blink across all rows.
-- Frame 4: Eyes snap open; frame 6 transitions smoothly back to frame 1.
-- Weapon stays in hands with consistent grip and length.
+- **Stationary rest state**: The character stands grounded in battle readiness, maintaining a stable posture. Feet remain motionless on the baseline (`y ≈ 88`).
+- Calm breathing: Torso subtly expands and rises 1–2 px on the inhale and lowers on the exhale.
+- **Column 3 Closed Eyes**: At peak inhale (frame 3), eyes close in a calm blink across all directions.
+- Frame 4: Eyes open; frame 6 loops seamlessly back into frame 1.
+- Weapon held steadily in ready combat stance.
 
 ### 5.2 WALK — Six-Frame Seamless Loop (`prompts/03_WALK.md`)
-- This is a measured **walk**, not a run, sprint, dodge, or slide.
-- Clear foot placement and alternating chunky boots on the baseline in all directions.
-- **Column 3 Closed Eyes**: Mid-stride passing pose (frame 3) features a momentary focus blink across all rows.
-- Torso bobs subtly (+1 px); root remains centered.
-- Frame 6 transitions smoothly to frame 1.
+- **Locomotion / movement state**: The character traverses (strides/moves) without executing an attack.
+- Crisp stride with rhythmic alternation of chunky boots along the baseline.
+- **Column 3 Closed Eyes**: During the leg passing phase (frame 3), eyes briefly close in a momentary blink of focus across all directions.
+- Torso sways subtly (+1 px); center of gravity remains stable.
+- Frame 6 loops seamlessly back into frame 1.
 
-### 5.3 ATTACK — Six-Frame One-Shot Action (`prompts/04_ATTACK.md`)
-1. Ready stance (eyes open).
+### 5.3 IDLE_ATTACK — Six-Frame One-Shot Action (`prompts/04_IDLE_ATTACK.md`)
+- **Stationary attack state**: The character executes a strike, shot, or weapon release while remaining stationary in place (no positional displacement).
+1. Initial resting combat stance (eyes open).
 2. Preparation / weight shift.
-3. Wind-up backswing (**eyes closed in grim battle concentration across all rows**).
-4. Main strike / peak weapon extension (eyes snap open wide).
-5. Follow-through.
-6. Recovery / reset to ready stance.
-- **Strictly No Attack VFX**: No slash arcs, no magic blades, no sparks, no particles, no speed lines. Physical weapon attack only.
-- Entire weapon and character stay inside each 128×128 cell.
+3. Wind-up / weapon cocked back (**frame 3: eyes closed in combat focus**).
+4. Main strike / maximum weapon release (eyes snap wide open).
+5. Weapon follow-through and recoil recovery.
+6. Return to resting combat stance.
+- **Strictly No Attack VFX**: No slash trails, sparks, or glowing streaks. Only authentic physical motion of body and weapon.
+
+### 5.4 WALK_ATTACK — Six-Frame Action Cycle (`prompts/05_WALK_ATTACK.md`)
+- **Attack while moving**: The character simultaneously moves (walking/running) and executes a weapon attack (firing on the run, slashing in stride, hurling projectiles or casting spells on the move).
+1. Strike foot plants on the baseline + weapon wind-up begins.
+2. Weight shifts forward in stride + attack chambers.
+3. Leg passing phase (**frame 3: eyes closed in combat focus mid-stride**).
+4. Opposite foot plants + strike release / projectile discharge (eyes snap wide open).
+5. Follow-through and momentum recovery while stride continues smoothly.
+6. Stride completes and returns to continuous moving-attack loop.
+- **Strictly No Attack VFX**: Physical motion of weapon and striding character body only.
 
 ---
 
@@ -147,7 +163,7 @@ The package includes two verified scripts:
 - Targets pure magenta chromakey `RGB(255, 0, 255)` (`#ff00ff`) globally by default (`--bg-mode magenta --bg-tolerance 65`).
 - Removes magenta both outside and inside the silhouette.
 - Defringes boundary pixels with a crisp 1px black outline, removing any magenta halo without painting over inner textures.
-- Aligns character baselines to `target_feet_y = 118` with consistent shared scale across IDLE/WALK/ATTACK.
+- Aligns character baselines to `target_feet_y = 88` with consistent shared scale across IDLE/WALK/IDLE_ATTACK/WALK_ATTACK.
 - Default row order: `--row-order fbrl` (Row 2 = RIGHT, Row 3 = LEFT).
 - Automatically runs facing direction verification on the processed sheets!
 
@@ -156,14 +172,15 @@ python .agents/skills/character-animation-pipeline-updated/scripts/process_chara
   --name <character_name> \
   --idle path/to/hero_<name>_idle_source.png \
   --walk path/to/hero_<name>_walk_source.png \
-  --attack path/to/hero_<name>_attack_source.png \
+  --idle-attack path/to/hero_<name>_attack_source.png \
+  --walk-attack path/to/hero_<name>_walk_attack_source.png \
   --out-dir public/textures/heroes \
   --bg-mode magenta \
   --row-order fbrl
 ```
 
 ### 2. `scripts/validate_sheets.py`
-Validates both exact dimensions (768×512) AND facing directions:
+Validates both exact dimensions (576×384) AND facing directions:
 - Verifies that Row 2 (3rd row) is facing RIGHT and Row 3 (4th row) is facing LEFT.
 - Verifies that in both profile rows, the body is turned sideways and face is in profile.
 - Checks horizontal flip alignment: `IoU(flip(Row2), Row3) > IoU(Row2, Row3)`.
@@ -173,15 +190,28 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
   --idle public/textures/heroes/hero_<name>_idle.png \
   --walk public/textures/heroes/hero_<name>_walk.png \
   --attack public/textures/heroes/hero_<name>_attack.png \
+  --walk-attack public/textures/heroes/hero_<name>_walk_attack.png \
   --row-order fbrl
 ```
 
 ---
 
-## 7. Acceptance Checklist
+## 7. Handling API Quota Exhaustion (HTTP 429) & State Checkpointing
+
+If image generation returns an HTTP 429 quota exhaustion error (`RESOURCE_EXHAUSTED` / `QUOTA_EXHAUSTED`):
+1. **Halt Work Immediately**: Do not loop or retry calls.
+2. **Save Progress**:
+   - Save all approved assets, turnaround references, and cropped frames in `raw_assets/<name>/`.
+   - Write a `raw_assets/<name>/TASK_STATE.json` checkpoint file detailing completed steps, remaining animation sheets, API reset duration, and exact resumption parameters.
+3. **Commit to Task Branch**: Commit the saved assets and checkpoint to the dedicated task branch to keep the workspace clean and trackable.
+4. **Report Cooldown & Resume Command**: Report the remaining cooldown duration, estimated reset time, and the exact instructions/prompt to resume the task in the next session without repeating already completed steps.
+
+---
+
+## 8. Acceptance Checklist
 
 - [ ] Dual input respected: direct prompt/image executed directly, brief descriptions auto-enriched via defaults.
-- [ ] Exactly three animation sheets exist: IDLE, WALK, ATTACK (6×4 grid, 128×128 cells, 768×512 px).
+- [ ] Four animation sheets exist: IDLE (rest), WALK (movement), IDLE_ATTACK (stationary attack / attack), WALK_ATTACK (attack while moving) (6×4 grid, 96×96 cells, 576×384 px).
 - [ ] Row mapping: Row 0 FRONT, Row 1 BACK, Row 2 (3rd row) RIGHT, Row 3 (4th row) LEFT.
 - [ ] **Strict Profile Checked**: In Row 2 and Row 3, character body is ALWAYS sideways and face in profile, no 3/4 turn.
 - [ ] Background is pure solid magenta `rgb(255,0,255)` (`#ff00ff`) in generation sources.
@@ -190,8 +220,11 @@ python .agents/skills/character-animation-pipeline-updated/scripts/validate_shee
 - [ ] No ground shadows, drop shadows, platforms, floor lines, or pedestals.
 - [ ] Heroic Chibi proportions (2.5–3 heads tall) maintained consistently across all frames.
 - [ ] Negative constraints verified: No anime, kawaii, pastel colors, or photorealism.
-- [ ] **Frame 3 closed eyes verified**: In IDLE, WALK, and ATTACK, column 3 has closed eyes across all rows.
+- [ ] **Frame 3 closed eyes verified**: In IDLE, WALK, IDLE_ATTACK, and WALK_ATTACK, column 3 has closed eyes across all rows.
 - [ ] Weapon continuity maintained across all frames and rows.
-- [ ] ATTACK has no visual effects (no slash arcs, sparks, magic trails).
+- [ ] Attacks have no visual effects (no slash arcs, sparks, magic trails).
+- [ ] Approval gateway respected: Generated images are presented to the user with "Approved", "Redo / Revise", or "Custom variant" before proceeding.
+- [ ] Quota handling respected: On HTTP 429 error, halt work, save progress and checkpoint file in `raw_assets/<name>/TASK_STATE.json`, commit to task branch, and report cooldown timer and resume instructions.
 - [ ] Scripts pass: `process_character_sheets.py` and `validate_sheets.py` exit with code 0 and facing directions verified.
 - [ ] `npm run typecheck`, `npm run build`, and `npm run build:admin` succeed.
+

@@ -17,11 +17,11 @@ Four full-body standing views arranged horizontally left-to-right on one canvas:
 
 ### Option B: 5-in-1 Character Reference Canvas
 A single reference canvas with 5 designated panels:
-1. `Portrait` (128×128 close-up crop of face and headgear).
-2. `Front Full-Body` (128×128 frontal chibi sprite).
-3. `Back Full-Body` (128×128 rear chibi sprite).
-4. `Right Profile Full-Body` (128×128 profile chibi sprite: body sideways, face in strict profile).
-5. `Weapon Preview` (isolated 128×128 preview of the held weapon/focus).
+1. `Portrait` (96×96 close-up crop of face and headgear).
+2. `Front Full-Body` (96×96 frontal chibi sprite).
+3. `Back Full-Body` (96×96 rear chibi sprite).
+4. `Right Profile Full-Body` (96×96 profile chibi sprite: body sideways, face in strict profile).
+5. `Weapon Preview` (isolated 96×96 preview of the held weapon/focus).
 
 ---
 
@@ -29,7 +29,7 @@ A single reference canvas with 5 designated panels:
 
 * **Chibi Ratio (2.5 to 3 heads tall)**: Large readable head (~30–35% of total height), compact torso, sturdy limbs, chunky boots.
 * **Proportion Equality**: Proportions, eye-level, and scale must be **100% identical across all views** so silhouettes align precisely.
-* **Grounded Baseline**: Lowest foot pixel anchored at consistent baseline (`y ≈ 118` in 128-px cell).
+* **Grounded Baseline**: Lowest foot pixel anchored at consistent baseline (`y ≈ 88` in 96-px cell).
 * **Equipment Continuity**: The character must hold the weapon / focus across **all views**. Unseen details (e.g. back of cloak, rear armor plates, side quivers) must be rendered logically and consistently.
 
 ---

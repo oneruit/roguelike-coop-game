@@ -21,6 +21,7 @@ export class Gem {
   public xpValue: number;
   public type: GemType;
   public passiveBuffId?: PassiveBuffId;
+  public crystalValue: number = 0;
   public isCollected = false;
   public isAttracted = false;
   public getElevation?: (x: number, z: number) => number;
@@ -35,14 +36,16 @@ export class Gem {
     blue: new OctahedronGeometry(0.28, 0),
     green: new OctahedronGeometry(0.36, 0),
     red: new OctahedronGeometry(0.45, 0),
-    gold: new OctahedronGeometry(0.42, 0)
+    gold: new OctahedronGeometry(0.42, 0),
+    crystal: new OctahedronGeometry(0.35, 0)
   };
 
   private static innerGeometries: Record<GemType, BufferGeometry> = {
     blue: new OctahedronGeometry(0.14, 0),
     green: new OctahedronGeometry(0.18, 0),
     red: new OctahedronGeometry(0.225, 0),
-    gold: new OctahedronGeometry(0.22, 0)
+    gold: new OctahedronGeometry(0.22, 0),
+    crystal: new OctahedronGeometry(0.18, 0)
   };
 
   private static materials: Record<GemType, MeshStandardMaterial> = {
@@ -73,15 +76,25 @@ export class Gem {
       emissiveIntensity: 0.85,
       roughness: 0.1,
       metalness: 0.9
+    }),
+    crystal: new MeshStandardMaterial({
+      color: 0xd946ef,
+      emissive: 0x9333ea,
+      emissiveIntensity: 0.9,
+      roughness: 0.15,
+      metalness: 0.85
     })
   };
 
   private static coreMaterial = new MeshBasicMaterial({ color: 0xffffff });
   private static goldRingGeometry = new TorusGeometry(0.48, 0.035, 6, 20);
   private static goldRingMaterial = new MeshBasicMaterial({ color: 0xffd700 });
+  private static crystalRingGeometry = new TorusGeometry(0.44, 0.03, 6, 20);
+  private static crystalRingMaterial = new MeshBasicMaterial({ color: 0xd946ef });
 
   static {
     Gem.goldRingGeometry.rotateX(Math.PI / 2);
+    Gem.crystalRingGeometry.rotateX(Math.PI / 2);
   }
 
   constructor(type: GemType, position: Vector3, id?: string) {
@@ -98,6 +111,9 @@ export class Gem {
     } else if (type === 'gold') {
       this.xpValue = 20;
       this.passiveBuffId = getPassiveBuffId(this.id);
+    } else if (type === 'crystal') {
+      this.xpValue = 5;
+      this.crystalValue = 1;
     } else {
       this.xpValue = 3;
     }
@@ -115,6 +131,9 @@ export class Gem {
     // Golden halo ring for passive crystals
     if (type === 'gold') {
       const ringMesh = new Mesh(Gem.goldRingGeometry, Gem.goldRingMaterial);
+      this.mesh.add(ringMesh);
+    } else if (type === 'crystal') {
+      const ringMesh = new Mesh(Gem.crystalRingGeometry, Gem.crystalRingMaterial);
       this.mesh.add(ringMesh);
     }
 
@@ -136,7 +155,7 @@ export class Gem {
 
   public addXp(amount: number): void {
     this.xpValue += amount;
-    if (this.type !== 'gold') {
+    if (this.type !== 'gold' && this.type !== 'crystal') {
       if (this.xpValue >= 75) {
         this.setType('red');
       } else if (this.xpValue >= 25) {

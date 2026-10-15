@@ -8,6 +8,7 @@ import { ObstacleManager } from '../world/ObstacleManager';
 import { EnemySnapshot } from '../net/NetworkManager';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { BalanceManager } from '../balance/BalanceManager';
+import { MetaProgression } from '../meta/MetaProgression';
 
 export interface PlayerTargetInfo {
   id: string; // 'p1', 'p2', 'p3', 'p4', 'p5'
@@ -41,8 +42,8 @@ export class EnemyManager {
       hp: 48,
       speed: 5.4,
       damage: 8,
-      width: 2.1,
-      height: 2.1,
+      width: 1.6,
+      height: 1.6,
       gemType: 'blue',
       animated: true
     },
@@ -53,8 +54,8 @@ export class EnemyManager {
       hp: 40,
       speed: 6.0,
       damage: 10,
-      width: 2.0,
-      height: 2.0,
+      width: 1.5,
+      height: 1.5,
       gemType: 'blue',
       animated: true
     },
@@ -65,8 +66,8 @@ export class EnemyManager {
       hp: 88,
       speed: 3.5,
       damage: 14,
-      width: 2.3,
-      height: 2.3,
+      width: 1.7,
+      height: 1.7,
       gemType: 'blue',
       animated: true
     },
@@ -77,8 +78,8 @@ export class EnemyManager {
       hp: 110,
       speed: 3.8,
       damage: 16,
-      width: 2.4,
-      height: 2.4,
+      width: 1.8,
+      height: 1.8,
       gemType: 'green',
       animated: true
     },
@@ -89,8 +90,8 @@ export class EnemyManager {
       hp: 140,
       speed: 4.0,
       damage: 18,
-      width: 2.4,
-      height: 2.4,
+      width: 1.8,
+      height: 1.8,
       gemType: 'green',
       animated: true
     },
@@ -101,8 +102,8 @@ export class EnemyManager {
       hp: 190,
       speed: 3.2,
       damage: 22,
-      width: 2.3,
-      height: 2.3,
+      width: 1.7,
+      height: 1.7,
       gemType: 'green',
       animated: true
     },
@@ -113,8 +114,8 @@ export class EnemyManager {
       hp: 350,
       speed: 2.6,
       damage: 28,
-      width: 2.7,
-      height: 2.7,
+      width: 2.0,
+      height: 2.0,
       gemType: 'green',
       animated: true
     },
@@ -125,8 +126,8 @@ export class EnemyManager {
       hp: 720,
       speed: 4.8,
       damage: 35,
-      width: 3.2,
-      height: 3.2,
+      width: 2.4,
+      height: 2.4,
       gemType: 'red',
       animated: true
     },
@@ -451,8 +452,10 @@ export class EnemyManager {
               );
               this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
             }
-            // Boss drops gold passive crystal (40% chance, reduced 5x from 2 guaranteed)
-            if (Math.random() < 0.40) {
+            // Boss drops gold passive crystal from global balance config
+            const globalCfg = BalanceManager.getGlobalConfig();
+            const bossGoldChance = globalCfg?.goldGemChanceBoss ?? 0.40;
+            if (Math.random() < bossGoldChance) {
               const pOffset = new Vector3(
                 (Math.random() - 0.5) * 2.0,
                 0,
@@ -460,6 +463,19 @@ export class EnemyManager {
               );
               this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
             }
+
+            // Boss drops Rift Crystals (10-15 crystals + meta bonus)
+            const metaBonus = MetaProgression.getInstance().getBonuses();
+            const crystalDropCount = Math.round((10 + Math.floor(Math.random() * 6)) * (1 + metaBonus.crystalDropBonus));
+            for (let c = 0; c < crystalDropCount; c++) {
+              const cOffset = new Vector3(
+                (Math.random() - 0.5) * 3.2,
+                0,
+                (Math.random() - 0.5) * 3.2
+              );
+              this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
+            }
+
             if (this.onBossDefeat) this.onBossDefeat();
           }
 
@@ -469,9 +485,11 @@ export class EnemyManager {
         } else {
           this.dropManager.spawnGem(enemy.position, enemy.gemType);
 
-          // Random chance for passive buff drop reduced 5x: 3% for tough mobs (was 15%), 1% for regular (was 5%)
+          // Random chance for passive buff drop from global balance config
+          const globalCfg = BalanceManager.getGlobalConfig();
+          const baseNormalGoldChance = globalCfg?.goldGemChanceNormal ?? 0.01;
           const isTough = enemy.type === 'bison' || enemy.type === 'brute' || enemy.type === 'scorpion';
-          const passiveChance = isTough ? 0.03 : 0.01;
+          const passiveChance = isTough ? baseNormalGoldChance * 3 : baseNormalGoldChance;
           if (Math.random() < passiveChance) {
             const pOffset = new Vector3(
               (Math.random() - 0.5),
@@ -479,6 +497,22 @@ export class EnemyManager {
               (Math.random() - 0.5)
             );
             this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
+          }
+
+          // Rift Crystals drop: 25% for regular creeps, 60% for tough mobs (scales with utility meta branch)
+          const metaBonus = MetaProgression.getInstance().getBonuses();
+          const baseCrystalChance = isTough ? 0.60 : 0.25;
+          const crystalChance = baseCrystalChance * (1 + metaBonus.crystalDropBonus);
+          if (Math.random() < crystalChance) {
+            const count = isTough ? (Math.random() < 0.4 ? 2 : 1) : 1;
+            for (let c = 0; c < count; c++) {
+              const cOffset = new Vector3(
+                (Math.random() - 0.5) * 1.2,
+                0,
+                (Math.random() - 0.5) * 1.2
+              );
+              this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
+            }
           }
         }
 

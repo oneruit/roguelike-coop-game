@@ -2,6 +2,8 @@ import { Player } from '../../entities/Player';
 import { MerchantManager } from '../../world/MerchantManager';
 import { RiftItemDef } from '../../items/RiftItemSystem';
 import { SoundManager } from '../../core/SoundManager';
+import { SafeDOM } from '../core/SafeDOM';
+import { getAssetUrl } from '../../utils/assetPath';
 
 export class MerchantAndChestUI {
   // Merchant Modal Elements
@@ -25,14 +27,14 @@ export class MerchantAndChestUI {
   public onItemPurchased?: (item: any, player: Player) => void;
 
   constructor() {
-    this.chestModal = document.getElementById('chest-modal')!;
-    this.chestItemCardsContainer = document.getElementById('chest-item-cards')!;
+    this.chestModal = SafeDOM.getElementById('chest-modal') || document.createElement('div');
+    this.chestItemCardsContainer = SafeDOM.getElementById('chest-item-cards') || document.createElement('div');
 
-    this.merchantModal = document.getElementById('merchant-modal');
-    this.merchantCloseBtn = document.getElementById('btn-close-merchant') || document.getElementById('merchant-close-btn');
-    this.merchantTimerBadge = document.getElementById('merchant-timer-badge');
-    this.merchantCreditsVal = document.getElementById('merchant-player-credits') || document.getElementById('merchant-credits-val');
-    this.merchantItemsContainer = document.getElementById('merchant-items-container');
+    this.merchantModal = SafeDOM.getElementById('merchant-modal');
+    this.merchantCloseBtn = SafeDOM.getElementById('btn-close-merchant') || SafeDOM.getElementById('merchant-close-btn');
+    this.merchantTimerBadge = SafeDOM.getElementById('merchant-timer-badge');
+    this.merchantCreditsVal = SafeDOM.getElementById('merchant-player-credits') || SafeDOM.getElementById('merchant-credits-val');
+    this.merchantItemsContainer = SafeDOM.getElementById('merchant-items-container');
 
     this.merchantCloseBtn?.addEventListener('click', () => this.hideMerchant());
     const merchantBackdrop = this.merchantModal?.querySelector('.modal-backdrop');
@@ -151,6 +153,10 @@ export class MerchantAndChestUI {
     onChoose: (item: RiftItemDef) => void
   ): void {
     SoundManager.playLevelUp();
+    const modalImg = SafeDOM.getElementById('chest-modal-img') as HTMLImageElement | null;
+    if (modalImg) {
+      modalImg.src = getAssetUrl('/textures/chests/chest_open.gif') + `?v=${Date.now()}`;
+    }
     this.chestModal.classList.remove('hidden');
     this.chestItemCardsContainer.innerHTML = '';
     let chosen = false;

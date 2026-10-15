@@ -11,6 +11,9 @@
 @import './styles/lobby.css';
 @import './styles/character-select.css';
 @import './styles/gameplay-modals.css';
+@import './styles/level-up.css';
 @import './styles/effects.css';
 @import './styles/quests.css';
+@import './styles/shop.css';
+@import './styles/auth-modal.css';
 @import './styles/responsive.css';

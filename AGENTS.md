@@ -1,158 +1,166 @@
 # Agent Git Workflow
 
-This document defines the mandatory Git workflow for AI agents contributing to this repository.
+This document defines the agile Git workflow for AI agents contributing to this repository, optimized for a fast-moving core team of up to 3 developers.
 
-## Branches
+---
 
-* `master` — stable/release branch. **Agents must never target or commit to `master`.**
-* `development` — active development and testing branch. **All agent PRs must target `development`.**
-* `feature/*` — new features and game systems.
-* `fix/*` — bug fixes.
-* `refactor/*` — refactoring without behavior changes.
-* `chore/*` — tooling, dependencies, configuration.
-* `docs/*` — documentation.
-* `test/*` — tests.
+## 1. Core Philosophy & Branches
 
-## Mandatory Rules
+To prevent unnecessary overhead, ceremony, and context switching for small teams, everyday tasks use **Trunk-Based Development** on the `development` branch with strict automated verification gates.
 
-1. One task = one dedicated branch.
-2. Never commit directly to `master` or `development`.
-3. Never force-push (`--force` / `--force-with-lease`).
-4. Always synchronize with `origin/development` before starting work.
-5. Agent PRs must always use `development` as the base branch.
-6. Never automatically merge `development` into `master`.
-7. `development → master` is a manual developer-controlled release.
-8. **Never enable auto-merge.** All PRs require manual review and approval by the developer before merging.
-9. If CI fails or a merge conflict occurs, stop and report the problem. Do not bypass checks or force a merge.
-10. **File size limit**: Files must not exceed 1500 lines of code. If a file approaches or exceeds 1500 lines, it must be split and modularized into smaller units. See [`.agents/rules/file-size-limit.md`](.agents/rules/file-size-limit.md).
-11. **Bug fixing and reporting**: In case a bug or unexpected error is found during development or testing, fix it immediately and report it clearly in the summary to the developer. See [`.agents/rules/bug-handling.md`](.agents/rules/bug-handling.md).
+* **`development`** — primary active development branch.
+  - **Routine tasks** (bug fixes, balance tuning, UI enhancements, component refactoring, standard features): agents commit and push **directly to `development`** once all verification gates pass. No pull request or manual web UI approval required for routine work.
+* **`master`** — production/release branch.
+  - **Agents must never commit or push directly to `master`.**
+  - Releases from `development` into `master` are strictly developer-controlled.
+* **`feature/*` or `spike/*`** — reserved exclusively for:
+  - Multi-day, high-risk architectural overhauls (e.g. replacing the network stack).
+  - Experimental spikes where the developer explicitly instructs: *"Create a separate feature branch and PR"*.
 
-## Workflow
+---
 
-### 1. Synchronize
+## 2. Mandatory Rules
 
+1. **Synchronize First**: Always pull the latest `origin/development` before writing code.
+2. **Never Touch `master` Directly**: Only developers perform release merges (`development → master`).
+3. **Never Force-Push**: `--force` and `--force-with-lease` are strictly forbidden on shared branches.
+4. **Mandatory Verification Gate**:
+   - Before committing or pushing, all verification commands must pass with zero errors:
+     1. `npm run index` (refresh symbol index & cache)
+     2. `npm run typecheck` (TypeScript compile check)
+     3. `npm run build` (game client production build)
+     4. `npm run build:admin` (admin panel production build)
+     5. `npm test` (automated test suite)
+   - If any check fails, do **NOT** push. Fix the issues immediately.
+5. **Conventional Commits**: Write clear, structured commit messages (`feat(...)`, `fix(...)`, `refactor(...)`, `chore(...)`, `test(...)`).
+6. **Rollback Protocol**: If a change needs to be reverted after pushing, always use `git revert`. Never rewrite pushed git history.
+7. **Bug Fixing & Reporting**: If a defect or unexpected error is encountered, fix it immediately and report it clearly. See [`.agents/rules/bug-handling.md`](.agents/rules/bug-handling.md).
+8. **Modular Architecture**: All code, UI, and assets must adhere to modularity standards. See [`.agents/rules/modular-architecture.md`](.agents/rules/modular-architecture.md).
+9. **Documentation Language**: All documentation, architecture specifications, skills, rules, prompts, guides, and markdown files must be written in English. See [`.agents/rules/documentation-language.md`](.agents/rules/documentation-language.md).
+10. **Image Generation Approval**: Mandatory human approval for generated visual assets. See [`.agents/rules/image-generation-approval.md`](.agents/rules/image-generation-approval.md).
+
+---
+
+## 3. Routine Workflow (Direct to `development`)
+
+### Step 1. Synchronize
 ```powershell
-git fetch origin
 git switch development
 git pull origin development
 ```
 
-### 2. Create task branch
+### Step 2. Implement
+Make only the changes required for the assigned task. Preserve unrelated code and existing comments.
 
+### Step 3. Verify
+Run the complete verification pipeline:
 ```powershell
-git switch -c feature/<name>
-```
-
-Use the appropriate prefix: `feature`, `fix`, `refactor`, `chore`, `docs`, or `test`.
-
-### 3. Implement
-
-Make only the changes required for the assigned task.
-
-Do not modify unrelated files or introduce unrelated changes.
-
-### 4. Verify
-
-Before committing, all verification commands must succeed:
-
-```powershell
+npm run index
 npm run typecheck
 npm run build
 npm run build:admin
+npm test
 ```
+All commands must exit with code `0`. Fix all errors before continuing.
 
-Fix all errors before continuing.
-
-### Entity & Admin Panel Synchronization Rule
-
+#### Entity & Admin Panel Synchronization Checklist
 When adding or modifying playable characters, weapons, enemies, or bosses:
 - **Default Balance**: Always register new entities in `game/src/balance/defaultBalance.ts` (`DEFAULT_BALANCE`).
-- **Admin Panel Assets**: Ensure textures and chart colors are registered or follow standard asset conventions in `admin/src/constants.ts`.
-- **Admin Build**: Verify that `npm run build:admin` succeeds and entities appear in the admin tables, charts, and simulator.
-- Full details and step-by-step checklist: see [`.agents/rules/entity-admin-sync.md`](.agents/rules/entity-admin-sync.md).
+- **Admin Panel Assets**: Ensure textures and chart colors are registered in `admin/src/constants.ts`.
+- **Symbol Index**: Refresh the symbol index via `npm run index`.
+- **Admin Build**: Verify `npm run build:admin` succeeds.
+- Full details: see [`.agents/rules/entity-admin-sync.md`](.agents/rules/entity-admin-sync.md).
 
-### 5. Commit
-
-Use Conventional Commits:
-
-```text
-feat(combat): add projectile piercing
-fix(net): resolve enemy desync
-refactor(world): simplify chunk manager
-perf(net): optimize snapshot serialization
-chore(ci): update build workflow
+### Step 4. Commit
+Stage and commit changes using Conventional Commits:
+```powershell
+git add -A
+git commit -m "feat(combat): implement projectile piercing"
 ```
 
-Keep commits focused on the current task.
+### Step 5. Push Directly
+```powershell
+git push origin development
+```
 
-### 6. Push
+### Step 6. Report Result
+Summarize the changes made, verification results, and any relevant notes to the developer.
+
+---
+
+## 4. Rollback & Revert Protocol
+
+When a change is undesirable or needs to be undone:
+
+### A. Local Changes (Not Yet Pushed)
+```powershell
+# Discard all unstaged and staged working tree modifications:
+git restore .
+
+# Discard the last local commit if already committed:
+git reset --hard HEAD~1
+```
+
+### B. Pushed Changes on `development` (Team-Safe Rollback)
+Never use `git push --force`. Create a clean revert commit:
+```powershell
+# 1. Identify the commit hash:
+git log -3 --oneline
+
+# 2. Revert the commit cleanly:
+git revert <commit-hash> --no-edit
+
+# 3. Verify and push the revert:
+npm run build
+git push origin development
+```
+
+### C. Asking the AI Agent to Rollback
+Developers can simply instruct the agent:
+> *"Revert the last change and push to development"*
+> or
+> *"Rollback commit `<hash>`"*
+
+The agent will locate the commit, execute `git revert`, run the verification gate, and push the rollback commit.
+
+---
+
+## 5. Large Feature / PR Workflow (Exception Case)
+
+For experimental spikes or multi-day disruptive refactors where isolated review is explicitly requested:
 
 ```powershell
-git push -u origin <branch-name>
+git switch development
+git pull origin development
+git switch -c feature/<feature-name>
+
+# Implement & Verify
+npm run index
+npm run typecheck
+npm run build
+npm run build:admin
+npm test
+
+# Commit & Push
+git add -A
+git commit -m "feat(module): description"
+git push -u origin feature/<feature-name>
+
+# Create PR
+gh pr create --base development --head feature/<feature-name> --title "feat(module): description" --body "Automated PR."
 ```
+Once approved, the developer or agent merges the PR into `development`.
 
-### 7. Create Pull Request
+---
 
-Immediately after pushing, create a PR targeting `development`.
+## 6. Release Workflow (`development → master`)
+
+Promotion from `development` to `master` represents a production release and is strictly performed manually by developers:
 
 ```powershell
-$BRANCH = git rev-parse --abbrev-ref HEAD
-$TITLE = git log -1 --pretty=%s
-
-$EXISTING = gh pr list `
-  --head $BRANCH `
-  --base development `
-  --json number `
-  --jq '.[0].number'
-
-if (-not $EXISTING) {
-    gh pr create `
-      --base development `
-      --head $BRANCH `
-      --title $TITLE `
-      --body "Automated PR created by AI agent."
-}
+git switch master
+git pull origin master
+git merge --no-ff development
+git push origin master
 ```
-
-> **Do NOT call `gh pr merge` or enable auto-merge in any form.**
-> The PR must remain open and await manual review by the developer.
-
-### 8. Report Result
-
-After the PR is created, report the following to the developer:
-
-* PR number and URL.
-* Summary of changes made.
-* Any caveats, limitations, or open questions.
-
-Then **stop and wait** for the developer to review, request changes, or approve the PR.
-
-### 9. If CI Fails or Conflicts Occur
-
-* Stop immediately.
-* Report the failing checks or conflicting files.
-* Include the relevant error messages.
-* Wait for developer instructions.
-
-## Review & Merge
-
-**All merging is done manually by the developer.**
-
-The developer will:
-1. Review the PR diff and CI results.
-2. Request changes if needed (the agent addresses them in the same branch).
-3. Approve and merge the PR into `development` when satisfied.
-
-Agents must never merge, close, or otherwise finalize a PR without explicit developer instruction.
-
-## Release
-
-Agents must **never** promote `development` to `master`.
-
-After developers have tested and approved the changes, they manually create and review:
-
-```text
-development → master
-```
-
-The release merge is controlled by the developers.
+Agents must **never** push or merge directly to `master`.

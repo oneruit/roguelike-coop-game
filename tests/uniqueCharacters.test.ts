@@ -63,7 +63,8 @@ test('Unique Character System - Invoker weapon acquisition rules', () => {
     'lightning_strike',
     'ice_spike',
     'fireball',
-    'assault_rifle'
+    'assault_rifle',
+    'poison_puddle'
   ];
 
   for (const wId of genericWeapons) {

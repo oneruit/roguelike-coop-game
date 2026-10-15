@@ -20,8 +20,8 @@ export function renderStatControl(
       <div class="stat-field-header">
         <span class="stat-label">${label}</span>
         <div class="stat-val-wrapper">
-          ${isChanged ? `<span class="stat-val-badge" style="text-decoration:line-through; opacity:0.6;">${origVal}</span>` : ''}
-          <span class="stat-val-badge ${isChanged ? 'val-changed' : ''}">${value}</span>
+          <span class="stat-val-orig" style="${isChanged ? '' : 'display:none;'} text-decoration:line-through; opacity:0.6;">${origVal !== undefined ? origVal : ''}</span>
+          <span class="stat-val-badge stat-val-current ${isChanged ? 'val-changed' : ''}">${value}</span>
         </div>
       </div>
       <div class="stat-controls">

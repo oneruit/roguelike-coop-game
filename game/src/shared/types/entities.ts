@@ -5,13 +5,13 @@
 
 export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer' | 'rocket' | 'invoker' | 'necromancer' | 'amazon';
 
-export type HeroAnimState = 'IDLE' | 'WALK' | 'ATTACK' | 'WALK_ATTACK';
+export type HeroAnimState = 'IDLE' | 'WALK' | 'IDLE_ATTACK' | 'WALK_ATTACK';
 
 export type SpriteDirection = 'front' | 'back' | 'left' | 'right';
 
 export type BuffType = 'damage' | 'speed' | 'regen' | 'invulnerable' | 'ghost' | 'alacrity';
 
-export type GemType = 'blue' | 'green' | 'red' | 'gold';
+export type GemType = 'blue' | 'green' | 'red' | 'gold' | 'crystal';
 
 export type EnemyType =
   | 'coyote'

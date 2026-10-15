@@ -4,6 +4,9 @@ import {
   HeroBalanceConfig,
   MonsterBalanceConfig,
   BossBalanceConfig,
+  PassiveBalanceConfig,
+  ItemBalanceConfig,
+  TalentBalanceConfig,
   GlobalBalanceConfig,
   BalanceRow,
   BalanceChangeEvent
@@ -140,6 +143,30 @@ class BalanceManagerService {
         desc = `Босс «${updated.name || name || key}»: HP ${updated.hp}, Урон ${updated.damage}`;
         break;
       }
+      case 'passive': {
+        const existing = this.currentBalance.passives?.[key] || DEFAULT_BALANCE.passives[key];
+        const updated = { ...existing, ...data } as PassiveBalanceConfig;
+        if (!this.currentBalance.passives) this.currentBalance.passives = {};
+        this.currentBalance.passives[key] = updated;
+        desc = `Пассивка «${updated.name || name || key}» обновлена`;
+        break;
+      }
+      case 'item': {
+        const existing = this.currentBalance.items?.[key] || DEFAULT_BALANCE.items[key];
+        const updated = { ...existing, ...data } as ItemBalanceConfig;
+        if (!this.currentBalance.items) this.currentBalance.items = {};
+        this.currentBalance.items[key] = updated;
+        desc = `Предмет «${updated.name || name || key}» обновлен`;
+        break;
+      }
+      case 'talent': {
+        const existing = this.currentBalance.talents?.[key] || DEFAULT_BALANCE.talents[key];
+        const updated = { ...existing, ...data } as TalentBalanceConfig;
+        if (!this.currentBalance.talents) this.currentBalance.talents = {};
+        this.currentBalance.talents[key] = updated;
+        desc = `Талант «${updated.name || name || key}» обновлен`;
+        break;
+      }
       case 'global': {
         this.currentBalance.global = { ...this.currentBalance.global, ...data } as GlobalBalanceConfig;
         desc = 'Глобальные боевые параметры обновлены';
@@ -238,6 +265,22 @@ class BalanceManagerService {
 
   public getGlobalConfig(): GlobalBalanceConfig {
     return this.currentBalance.global;
+  }
+
+  public getPassiveConfig(id: string): PassiveBalanceConfig | undefined {
+    return this.currentBalance.passives?.[id] || DEFAULT_BALANCE.passives[id];
+  }
+
+  public getItemConfig(id: string): ItemBalanceConfig | undefined {
+    return this.currentBalance.items?.[id] || DEFAULT_BALANCE.items[id];
+  }
+
+  public getTalentConfig(id: string): TalentBalanceConfig | undefined {
+    return this.currentBalance.talents?.[id] || DEFAULT_BALANCE.talents[id];
+  }
+
+  public getAllTalents(): Record<string, TalentBalanceConfig> {
+    return { ...DEFAULT_BALANCE.talents, ...(this.currentBalance.talents || {}) };
   }
 
   public getAllBalance(): GameBalanceState {

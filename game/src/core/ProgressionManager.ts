@@ -1,5 +1,6 @@
 import { CharacterType } from '../sim/types';
 import { getAssetUrl } from '../utils/assetPath';
+import { AssetResolver } from '../utils/AssetResolver';
 import { CHAPTERS_CONFIG, getChapterDef, getChapterQuestDef } from './ChapterQuestsConfig';
 
 export interface SidebarQuestItem {
@@ -82,7 +83,9 @@ export class ProgressionManager {
 
   public data: ProgressionData;
   public onProgressionChanged?: () => void;
+  public onProgressionReset?: () => void;
   public isTrainingMode: boolean = false;
+  private saveListeners: Set<() => void> = new Set();
 
   // Runtime in-expedition trackers (reset to 0 at the start of each expedition)
   public runCritsCount: number = 0;
@@ -160,7 +163,7 @@ export class ProgressionManager {
         3: false,
         4: false
       },
-      chapterQuestsReworkVersion: 1,
+      chapterQuestsReworkVersion: 2,
       battlePass: {
         seasonId: 'season_1',
         points: 0,
@@ -175,7 +178,7 @@ export class ProgressionManager {
       if (raw) {
         const parsed = JSON.parse(raw);
         const defaults = this.getDefaultData();
-        const isReworked = parsed.chapterQuestsReworkVersion === 1;
+        const isReworked = parsed.chapterQuestsReworkVersion === 2;
         return {
           accountLevel: Math.max(1, parsed.accountLevel ?? defaults.accountLevel),
           accountXp: Math.max(0, parsed.accountXp ?? defaults.accountXp),
@@ -213,7 +216,7 @@ export class ProgressionManager {
           claimedChapterRewards: isReworked && parsed.claimedChapterRewards && typeof parsed.claimedChapterRewards === 'object'
             ? { ...defaults.claimedChapterRewards, ...parsed.claimedChapterRewards }
             : defaults.claimedChapterRewards,
-          chapterQuestsReworkVersion: 1,
+          chapterQuestsReworkVersion: 2,
           battlePass: parsed.battlePass && typeof parsed.battlePass === 'object'
             ? {
                 seasonId: typeof parsed.battlePass.seasonId === 'string' ? parsed.battlePass.seasonId : 'season_1',
@@ -241,6 +244,64 @@ export class ProgressionManager {
     if (this.onProgressionChanged) {
       this.onProgressionChanged();
     }
+    for (const listener of this.saveListeners) {
+      try {
+        listener();
+      } catch (err) {
+        console.error('[ProgressionManager] Error in save listener:', err);
+      }
+    }
+  }
+
+  public onSave(listener: () => void): () => void {
+    this.saveListeners.add(listener);
+    return () => {
+      this.saveListeners.delete(listener);
+    };
+  }
+
+  public getDefaultProgressionData(): ProgressionData {
+    return this.getDefaultData();
+  }
+
+  public loadExternalData(cloudProg: Partial<ProgressionData>): void {
+    if (!cloudProg || typeof cloudProg !== 'object') return;
+
+    if (typeof cloudProg.accountLevel === 'number') {
+      this.data.accountLevel = Math.max(cloudProg.accountLevel, this.data.accountLevel);
+    }
+    if (typeof cloudProg.accountXp === 'number') {
+      this.data.accountXp = Math.max(cloudProg.accountXp, this.data.accountXp);
+    }
+    if (typeof cloudProg.walletCoins === 'number') {
+      this.data.walletCoins = Math.max(cloudProg.walletCoins, this.data.walletCoins);
+    }
+    if (typeof cloudProg.totalCoinsEarned === 'number') {
+      this.data.totalCoinsEarned = Math.max(cloudProg.totalCoinsEarned, this.data.totalCoinsEarned);
+    }
+    if (typeof cloudProg.bossesKilled === 'number') {
+      this.data.bossesKilled = Math.max(cloudProg.bossesKilled, this.data.bossesKilled);
+    }
+    if (typeof cloudProg.enemiesKilled === 'number') {
+      this.data.enemiesKilled = Math.max(cloudProg.enemiesKilled, this.data.enemiesKilled);
+    }
+    if (typeof cloudProg.resourcesGathered === 'number') {
+      this.data.resourcesGathered = Math.max(cloudProg.resourcesGathered, this.data.resourcesGathered);
+    }
+    if (cloudProg.unlockedHeroes && typeof cloudProg.unlockedHeroes === 'object') {
+      for (const [k, v] of Object.entries(cloudProg.unlockedHeroes)) {
+        if (v) {
+          (this.data.unlockedHeroes as any)[k] = true;
+        }
+      }
+    }
+    if (cloudProg.battlePass && typeof cloudProg.battlePass === 'object') {
+      const bp = this.data.battlePass || { seasonId: 'season_1', points: 0, claimedLevels: [] };
+      bp.points = Math.max(cloudProg.battlePass.points || 0, bp.points);
+      bp.claimedLevels = Array.from(new Set([...bp.claimedLevels, ...(cloudProg.battlePass.claimedLevels || [])]));
+      this.data.battlePass = bp;
+    }
+    this.save();
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
@@ -842,12 +903,13 @@ export class ProgressionManager {
     this.data = this.getDefaultData();
     this.resetRunSessionProgress();
     this.save();
+    this.onProgressionReset?.();
   }
 
   public getHeroQuestDefinition(hero: CharacterType): HeroQuestDefinition {
     if (hero === 'invoker') return { hero, heroName:'Инвокер', heroSubtitle:'«Маг стихий»',
       weaponIcon:getAssetUrl('/textures/weapons/weapon_invoker_invoke.png'), weaponName:'Invoke',
-      avatarIcon:getAssetUrl('/textures/heroes/hero_invoker_front.png'), questTitle:'Маг стихий',
+      avatarIcon:AssetResolver.getHeroTexture('invoker', 'front'), questTitle:'Маг стихий',
       questDesc:'Инвокер доступен сразу и использует десять случайных заклинаний.', steps:[],
       rewards:{potions:0,coins:0,rings:0,crystals:0}, unlockConditionHint:'Доступен сразу' };
     switch (hero) {
@@ -858,7 +920,7 @@ export class ProgressionManager {
           heroSubtitle: '«Стальной вихрь»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_greatsword.png'),
           weaponName: 'Двуручный меч',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_valkyrie_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('valkyrie', 'front'),
           questTitle: 'Испытание ветерана',
           questDesc: 'Каэла признаёт силу только опытных воинов Разлома. Повышайте боевой опыт в экспедициях и докажите своё мастерство.',
           steps: [
@@ -881,7 +943,7 @@ export class ProgressionManager {
           heroSubtitle: '«Громовой Цеп»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_flail.png'),
           weaponName: 'Громовой цеп',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_flail_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('flail', 'front'),
           questTitle: 'Золотая лихорадка',
           questDesc: 'Бригитта собирает редкие металлы и монеты для закалки цепей своего сокрушительного оружия. Соберите 100 монет в битвах.',
           steps: [
@@ -904,7 +966,7 @@ export class ProgressionManager {
           heroSubtitle: '«Звёздный Посох»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_astral_staff.png'),
           weaponName: 'Звёздный посох',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_sorceress_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('sorceress', 'front'),
           questTitle: 'Охота на Стража Разлома',
           questDesc: 'Звёздная магия подчиняется тем, кто способен сокрушить древних владык Разлома. Сразитесь с боссом и одержите победу.',
           steps: [
@@ -927,7 +989,7 @@ export class ProgressionManager {
           heroSubtitle: '«Танцующий Чакрам»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_chakram.png'),
           weaponName: 'Танцующий чакрам',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_chakram_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('chakram', 'front'),
           questTitle: 'Охота на Лешего',
           questDesc: 'Найти следы в чаще. Собрать 3 корня аконита. Победить Лешего.',
           steps: [
@@ -951,7 +1013,7 @@ export class ProgressionManager {
           heroSubtitle: '«Страж Галактики»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_assault_rifle.png'),
           weaponName: 'Штурмовая винтовка',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_rocket_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('rocket', 'front'),
           questTitle: 'Арсенал Енота',
           questDesc: 'Гениальный енот-коммандос из Стражей Галактики с тяжелой штурмовой винтовкой и бешеным темпом стрельбы.',
           steps: [
@@ -973,7 +1035,7 @@ export class ProgressionManager {
           heroSubtitle: '«Повелитель Нежити»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_astral_staff.png'),
           weaponName: 'Астральный посох',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_necromancer_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('necromancer', 'front'),
           questTitle: 'Зов Тёмных Душ',
           questDesc: 'Могущественный маг смерти с посохом душ, поражающий врагов тёмной магией.',
           steps: [
@@ -995,7 +1057,7 @@ export class ProgressionManager {
           heroSubtitle: '«Мистическая Воительница»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_reaper_scythe.png'),
           weaponName: 'Сферы Защиты',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_amazon_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('amazon', 'front'),
           questTitle: 'Танец Стихий',
           questDesc: 'Грозная воительница джунглей, повелевающая защитными и атакующими магическими сферами.',
           steps: [
@@ -1018,7 +1080,7 @@ export class ProgressionManager {
           heroSubtitle: '«Охотничий Лук»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_bow.png'),
           weaponName: 'Охотничий лук',
-          avatarIcon: getAssetUrl('/textures/heroes/hero_archer_front.png'),
+          avatarIcon: AssetResolver.getHeroTexture('archer', 'front'),
           questTitle: 'Контракт Следопыта',
           questDesc: 'Эльфийский мастер стрельбы готов присоединиться к отряду по контракту за 100 монет либо за выдающееся достижение охотника.',
           steps: [

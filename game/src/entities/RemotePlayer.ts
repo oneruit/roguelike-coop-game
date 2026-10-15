@@ -17,10 +17,10 @@ import {
   IcosahedronGeometry,
   MeshStandardMaterial,
   TorusGeometry,
-  Texture,
   type Material
 } from 'three';
 import { Player, CharacterType, HeroAnimState, BuffType, ActiveBuff } from './Player';
+import { CharacterAnimator, getCharacterAnimLayout } from './CharacterAnimator';
 import { SpriteDirection, TextureManager, AnimatedCharacterTextures } from '../core/TextureManager';
 import { PlayerNetState, NetWeaponInfo } from '../net/NetworkManager';
 
@@ -39,6 +39,7 @@ export class RemotePlayer {
   public charType: CharacterType = 'ronin';
   public currentDir: SpriteDirection = 'front';
   public animState: HeroAnimState = 'IDLE';
+  public animator?: CharacterAnimator;
   public hp: number = 100;
   public maxHp: number = 100;
   public level: number = 1;
@@ -61,7 +62,7 @@ export class RemotePlayer {
   public getElevation?: (x: number, z: number) => number;
 
   private animatedTextures!: AnimatedCharacterTextures;
-  private animFrameTimer: number = 0;
+  public animFrameTimer: number = 0;
   private roninGeom: PlaneGeometry;
 
   // Overhead 3D Canvas Billboard (Name, HP Bar, Revive Status)
@@ -160,7 +161,7 @@ export class RemotePlayer {
       depthTest: false
     });
     this.overheadSprite = new Sprite(spriteMat);
-    this.overheadSprite.position.set(0, 3.85, 0);
+    this.overheadSprite.position.set(0, 2.95, 0);
     this.overheadSprite.scale.set(2.4, 0.9, 1);
     this.overheadSprite.renderOrder = 999;
     this.mesh.add(this.overheadSprite);
@@ -252,21 +253,31 @@ export class RemotePlayer {
         : TextureManager.loadRoninTextures();
 
     // Clone textures so UV repeat and offset mutations never collide with player 1
+    const idleAttack = (raw.idle_attack || raw.attack).clone();
+    const walkAttack = (raw.walk_attack || raw.idle_attack || raw.attack).clone();
     this.animatedTextures = {
       idle: raw.idle.clone(),
       walk: raw.walk.clone(),
-      attack: raw.attack.clone(),
-      walk_attack: raw.walk_attack.clone()
+      idle_attack: idleAttack,
+      walk_attack: walkAttack,
+      attack: idleAttack
     };
     this.animatedTextures.idle.needsUpdate = true;
     this.animatedTextures.walk.needsUpdate = true;
-    this.animatedTextures.attack.needsUpdate = true;
+    this.animatedTextures.idle_attack.needsUpdate = true;
     this.animatedTextures.walk_attack.needsUpdate = true;
+
+    this.animator = new CharacterAnimator(
+      this.animatedTextures,
+      getCharacterAnimLayout(charType)
+    );
+    this.animator.setDirection(this.currentDir);
   }
 
   public setCharacter(charType: CharacterType) {
     if (this.charType === charType) return;
     this.charType = charType;
+    this.spriteMesh.geometry = Player.getCharacterGeometry(charType);
     this.loadCharacterTextures(charType);
     this.spriteMaterial.map = this.animatedTextures.idle;
     if (this.customDepthMaterial) {
@@ -410,45 +421,11 @@ export class RemotePlayer {
   }
 
   private updateAnimation(dt: number) {
-    if (!this.animatedTextures) return;
+    if (!this.animatedTextures || !this.animator) return;
 
-    const STATE_CONFIG: Record<HeroAnimState, { texture: Texture; cols: number; fps: number }> = {
-      IDLE: { texture: this.animatedTextures.idle, cols: 6, fps: 8 },
-      WALK: { texture: this.animatedTextures.walk, cols: 6, fps: 12 },
-      ATTACK: { texture: this.animatedTextures.attack, cols: 6, fps: 16 },
-      WALK_ATTACK: { texture: this.animatedTextures.walk_attack, cols: 6, fps: 14 }
-    };
-
-    const cfg = STATE_CONFIG[this.animState] || STATE_CONFIG.IDLE;
-    const tex = cfg.texture;
-
-    const img = (tex as any).image as { width?: number; height?: number } | undefined;
-    const dynamicCols = (img && img.width && img.height && img.height > 0)
-      ? Math.round((img.width / img.height) * 4)
-      : cfg.cols;
-
-    this.animFrameTimer += dt * cfg.fps;
-    const frameCol = Math.floor(this.animFrameTimer) % dynamicCols;
-
-    const isV2Standard = this.charType === 'amazon';
-    const isNewStandard = this.charType === 'necromancer';
-    const DIR_ROW_MAP: Record<SpriteDirection, number> = isV2Standard
-      ? { front: 0, back: 1, right: 2, left: 3 }
-      : isNewStandard
-      ? { front: 0, back: 1, left: 2, right: 3 }
-      : { front: 0, left: 1, right: 2, back: 3 };
-    const row = DIR_ROW_MAP[this.currentDir] ?? 0;
-
-    if (this.spriteMaterial.map !== tex) {
-      this.spriteMaterial.map = tex;
-      if (this.customDepthMaterial) {
-        this.customDepthMaterial.map = tex;
-        this.customDepthMaterial.needsUpdate = true;
-      }
-    }
-
-    tex.repeat.set(1 / dynamicCols, 1 / 4);
-    tex.offset.set(frameCol / dynamicCols, (3 - row) / 4);
+    this.animator.setDirection(this.currentDir);
+    this.animator.update(dt, false, this.spriteMaterial, this.customDepthMaterial, this.animState);
+    this.animFrameTimer = this.animator.animFrameTimer;
   }
 
   public redrawOverhead() {

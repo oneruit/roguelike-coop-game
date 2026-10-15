@@ -2,7 +2,6 @@ import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../game/s
 import { GameBalanceState } from '../../game/src/balance/BalanceTypes';
 
 export const TEXTURE_MAP: Record<string, string> = {
-  'hero-invoker':'/textures/heroes/hero_invoker_front.png',
   'weapon-invoker_invoke':'/textures/weapons/weapon_invoker_invoke.png',
   ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => ['weapon-'+invokerWeaponId(spell),'/textures/weapons/weapon_'+invokerWeaponId(spell)+'.png'])),
   // Weapons
@@ -20,17 +19,19 @@ export const TEXTURE_MAP: Record<string, string> = {
   'weapon-lightning_strike': '/textures/weapons/weapon_lightning_strike.png',
   'weapon-ice_spike': '/textures/weapons/weapon_ice_spike.png',
   'weapon-assault_rifle': '/textures/weapons/weapon_assault_rifle.png',
+  'weapon-poison_puddle': '/textures/weapons/weapon_poison_puddle.png',
 
   // Heroes
-  'hero-ronin': '/textures/heroes/hero_ronin_front.png',
-  'hero-valkyrie': '/textures/heroes/hero_valkyrie_front.png',
-  'hero-flail': '/textures/heroes/hero_flail_front.png',
-  'hero-sorceress': '/textures/heroes/hero_sorceress_front.png',
-  'hero-chakram': '/textures/heroes/hero_chakram_front.png',
-  'hero-archer': '/textures/heroes/hero_archer_front.png',
-  'hero-rocket': '/textures/heroes/hero_rocket_front.png',
-  'hero-necromancer': '/textures/heroes/hero_necromancer_front.png',
-  'hero-amazon': '/textures/heroes/hero_amazon_front.png',
+  'hero-ronin': '/textures/heroes/ronin/front.png',
+  'hero-valkyrie': '/textures/heroes/valkyrie/front.png',
+  'hero-flail': '/textures/heroes/flail/front.png',
+  'hero-sorceress': '/textures/heroes/sorceress/front.png',
+  'hero-chakram': '/textures/heroes/chakram/front.png',
+  'hero-archer': '/textures/heroes/archer/front.png',
+  'hero-rocket': '/textures/heroes/rocket/front.png',
+  'hero-necromancer': '/textures/heroes/necromancer/front.png',
+  'hero-amazon': '/textures/heroes/amazon/front.png',
+  'hero-invoker': '/textures/heroes/invoker/front.png',
 
   // Monsters
   'monster-coyote': '/textures/monsters/monster_coyote_front.png',
@@ -45,8 +46,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   // Bosses
   'boss-boss': '/textures/bosses/boss_demon_front.png',
   'boss-demon': '/textures/bosses/boss_demon_front.png',
-  'boss-hydra': '/textures/bosses/boss_hydra_front.png',
-  'boss-sheriff': '/textures/bosses/boss_sheriff_front.png'
+  'boss-hydra': '/textures/bosses/boss_hydra_front.png'
 };
 
 export const WEAPON_COLORS: Record<string, string> = {
@@ -65,7 +65,8 @@ export const WEAPON_COLORS: Record<string, string> = {
   chakram: '#06b6d4',
   lightning_strike: '#eab308',
   ice_spike: '#3b82f6',
-  assault_rifle: '#f97316'
+  assault_rifle: '#f97316',
+  poison_puddle: '#22c55e'
 };
 
 export const MONSTER_COLORS: Record<string, string> = {
@@ -78,8 +79,7 @@ export const MONSTER_COLORS: Record<string, string> = {
   brute: '#b45309',
   bison: '#ef4444',
   boss: '#dc2626',
-  hydra: '#7c3aed',
-  sheriff: '#eab308'
+  hydra: '#7c3aed'
 };
 
 export function getWeaponColor(id: string): string {
@@ -102,7 +102,7 @@ export function getMonsterColor(id: string): string {
   return `hsl(${hue}, 65%, 45%)`;
 }
 
-export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item' {
+export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monster' | 'boss' | 'global' | 'passive' | 'item' | 'talent' {
   switch (category) {
     case 'weapons':
     case 'weapon':
@@ -122,6 +122,9 @@ export function toSingularCategory(category: string): 'weapon' | 'hero' | 'monst
     case 'items':
     case 'item':
       return 'item';
+    case 'talents':
+    case 'talent':
+      return 'talent';
     case 'global':
     default:
       return 'global';
@@ -148,6 +151,9 @@ export function toPluralCategory(category: string): keyof GameBalanceState {
     case 'item':
     case 'items':
       return 'items';
+    case 'talent':
+    case 'talents':
+      return 'talents';
     case 'global':
     default:
       return 'global';
@@ -162,7 +168,7 @@ export function getEntityTexture(category: string, id: string): string {
   if (!rawPath) {
     switch (singular) {
       case 'hero':
-        rawPath = `/textures/heroes/hero_${cleanId}_front.png`;
+        rawPath = `/textures/heroes/${cleanId}/front.png`;
         break;
       case 'weapon':
         rawPath = `/textures/weapons/weapon_${cleanId}.png`;

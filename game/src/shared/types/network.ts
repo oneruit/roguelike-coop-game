@@ -105,6 +105,7 @@ export interface NetShotInfo {
   ltg?: boolean;
   ice?: boolean;
   fb?: boolean;
+  psn?: boolean;
   melee?: MeleeWeaponId;
   spell?: InvokerSpellCast;
 }

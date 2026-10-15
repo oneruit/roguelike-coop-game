@@ -700,5 +700,123 @@ export class FireballWeapon extends Weapon {
   }
 }
 
+/**
+ * Poison Puddle (Ядовитая лужа)
+ * Spawns caustic bubbling toxic sludge pools on the ground that deal continuous acid damage and slow enemies within the mire.
+ */
+export class PoisonPuddleWeapon extends Weapon {
+  private puddleCount: number = 1;
+  private puddleRadius: number = 2.2;
+  private puddleDuration: number = 4.0;
+  private range: number = 20;
+  private onTriggerAttack?: () => void;
+
+  constructor(onTriggerAttack?: () => void) {
+    super('poison_puddle', 'Ядовитая лужа', '🧪', 2.0, 18, 5);
+    this.iconImage = '/textures/weapons/weapon_poison_puddle.png';
+    this.onTriggerAttack = onTriggerAttack;
+    this.recalculateStats();
+  }
+
+  public override recalculateStats(): void {
+    super.recalculateStats();
+    const cfg = BalanceManager.getWeaponConfig('poison_puddle');
+    const baseCount = cfg?.count ?? 1;
+    const baseRadius = cfg?.splashRadius ?? 2.2;
+    this.range = cfg?.range ?? 20;
+    const countSteps = [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
+    this.puddleCount = baseCount + countSteps;
+    const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
+    this.cooldown = Math.max(0.65, Number((this.baseCooldown * Math.pow(0.93, cdSteps)).toFixed(3)));
+    const radSteps = [4, 8, 12].filter(lvl => this.level >= lvl).length;
+    this.puddleRadius = Number((baseRadius + radSteps * 0.25).toFixed(2));
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
+  }
+
+  public update(
+    dt: number,
+    playerPos: Vector3,
+    enemies: Enemy[],
+    spawnProjectile: (p: Projectile) => void
+  ) {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      if (enemies.length === 0) return;
+
+      const candidates = findClosestEnemies(enemies, playerPos, this.puddleCount, this.range * this.range);
+      if (candidates.length === 0) return;
+
+      this.timer = 0;
+      if (this.onTriggerAttack) {
+        this.onTriggerAttack();
+      }
+
+      const spawnTargets: { x: number; z: number }[] = [];
+      for (let i = 0; i < this.puddleCount; i++) {
+        const candidate = candidates[i % candidates.length];
+        const offsetX = i > 0 && candidates.length < this.puddleCount ? (Math.random() - 0.5) * 1.5 : 0;
+        const offsetZ = i > 0 && candidates.length < this.puddleCount ? (Math.random() - 0.5) * 1.5 : 0;
+        spawnTargets.push({
+          x: candidate.position.x + offsetX,
+          z: candidate.position.z + offsetZ
+        });
+      }
+
+      spawnTargets.forEach((pos, idx) => {
+        const spawn = () => {
+          const proj = new Projectile({
+            position: new Vector3(pos.x, 0.04, pos.z),
+            direction: new Vector3(0, 0, 1),
+            speed: 0,
+            damage: this.damage,
+            pierce: 9999,
+            lifetime: this.puddleDuration,
+            radius: this.puddleRadius,
+            color: 0x22c55e,
+            isPoisonPuddle: true,
+            sourceWeaponId: this.id
+          });
+
+          spawnProjectile(proj);
+          SoundManager.playPoisonPuddle();
+        };
+
+        if (idx === 0) {
+          spawn();
+        } else {
+          setTimeout(spawn, idx * 60);
+        }
+      });
+    }
+  }
+
+  public upgrade(grade: WeaponGrade = 'common') {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.applyGradeUpgrade(grade);
+    this.recalculateStats();
+  }
+
+  public getNextUpgradeDescription(grade: WeaponGrade = 'common'): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
+    const cfg = WEAPON_GRADES[grade];
+    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
+    const nextLvl = this.level + 1;
+    const perks: string[] = [`+${dmg} к урону`];
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 ядовитая лужа (всего ${this.puddleCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) {
+      const nextCd = Math.max(0.65, Number((this.cooldown * 0.93).toFixed(3)));
+      if (nextCd < this.cooldown) perks.push('-7% перезарядки');
+    }
+    if ([4, 8, 12].includes(nextLvl)) perks.push(`+0.25м радиус лужи (всего ${(this.puddleRadius + 0.25).toFixed(2)}м)`);
+    if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
+    const prefix = this.getGradePrefix();
+    return `${prefix}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
+  }
+}
+
 export { ReaperScytheWeapon as OrbitingBarrierWeapon, FireRingWeapon as HolyAuraWeapon };
 

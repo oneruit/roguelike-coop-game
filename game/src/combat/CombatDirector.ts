@@ -170,6 +170,7 @@ export class CombatDirector {
       isLightning: shot.ltg,
       isIceSpike: shot.ice,
       isFireball: shot.fb,
+      isPoisonPuddle: shot.psn,
       orbitRadius: shot.orad,
       orbitSpeed: shot.ospd,
       isCosmetic: true,
@@ -183,6 +184,8 @@ export class CombatDirector {
         SoundManager.playIceSpike();
       } else if (shot.fb) {
         SoundManager.playFireballLaunch();
+      } else if (shot.psn) {
+        SoundManager.playPoisonPuddle();
       } else if (shot.arr) {
         SoundManager.playBowShoot();
       } else if (shot.kkr) {
@@ -219,6 +222,7 @@ export class CombatDirector {
         ltg: proj.isLightning,
         ice: proj.isIceSpike,
         fb: proj.isFireball,
+        psn: proj.isPoisonPuddle,
         ownerId: myId
       });
     }
@@ -589,6 +593,10 @@ export class CombatDirector {
 
           if (proj.isKineticBeam) {
             enemy.stun(1.8);
+          }
+
+          if (proj.isPoisonPuddle) {
+            enemy.applySlow(0.35, 1.0);
           }
 
           if (this.net.role === 'client') {

@@ -38,6 +38,9 @@ export function renderItems(
       case 'base':
         val = (a.baseValue ?? 0) - (b.baseValue ?? 0);
         break;
+      case 'scaling':
+        val = (a.stackText || a.scaling || '').localeCompare(b.stackText || b.scaling || '', 'ru');
+        break;
       case 'status':
         val = isModA - isModB;
         break;

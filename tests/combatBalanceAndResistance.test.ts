@@ -372,7 +372,7 @@ test('Weapon tier effective caps (Tier 3 = 12, Tier 2 = 6/8/10/12, Tier 1 = 6/8/
   assert.equal(getWeaponEffectiveCap(w1, all), 12, '4 Tier 1 weapons -> cap 12');
 });
 
-test('Diminishing returns on spurs, lasso, and pocket watch', () => {
+test('Diminishing returns on speed boots, magnet, and pocket watch', () => {
   const scene = new Scene();
   const player = new Player(scene, 'ronin');
 
@@ -387,15 +387,15 @@ test('Diminishing returns on spurs, lasso, and pocket watch', () => {
 
   player.speedBootsCount = 100;
   player.recalculateStats();
-  const spurs100 = player.passiveSpeedMultiplier;
-  assert.ok(spurs100 > 1.03 && spurs100 < 3.0, 'Speed Boots scales with level');
-  assert.ok(spurs100 > 1.5, 'Speed Boots curve is concave');
+  const speed100 = player.passiveSpeedMultiplier;
+  assert.ok(speed100 > 1.03 && speed100 < 3.0, 'Speed Boots scales with level');
+  assert.ok(speed100 > 1.5, 'Speed Boots curve is concave');
 
   player.speedBootsCount = 300;
   player.recalculateStats();
   assert.ok(Math.abs(player.passiveSpeedMultiplier - 3.0) < 1e-3, 'Speed Boots at lvl 300 gives x3 total speed mult');
 
-  // Magnet (stat_magnet / stat_lasso): Base 4m. Level 1 -> 4.4m (+10%). Level 300 -> 50m.
+  // Magnet (stat_magnet): Base 4m. Level 1 -> 4.4m (+10%). Level 300 -> 50m.
   player.magnetCount = 0;
   player.recalculateStats();
   assert.equal(player.pickupRadius, 4.0, 'Base pickup radius is 4m');

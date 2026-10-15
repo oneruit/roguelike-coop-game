@@ -248,7 +248,7 @@ export class SupabaseService {
 
     if (
       !confirm(
-        'Инициализировать / перезаписать все записи таблицы game_balance эталонными значениями из BALANCE_REFERENCE.md?'
+        'Сбросить все записи таблицы game_balance к значениям по умолчанию?'
       )
     ) {
       return;
@@ -340,6 +340,20 @@ export class SupabaseService {
       });
     }
 
+    // 30 Talents
+    for (const [key, talent] of Object.entries(DEFAULT_BALANCE.talents)) {
+      rows.push({
+        id: `talent:${key}`,
+        category: 'talent',
+        key,
+        name: talent.name,
+        description: talent.description,
+        data: talent,
+        version: 1,
+        updated_at: new Date().toISOString()
+      });
+    }
+
     // Global
     rows.push({
       id: 'global:combat',
@@ -364,7 +378,7 @@ export class SupabaseService {
       this.onDataChanged();
 
       showToast(
-        `🌱 База данных Supabase успешно инициализирована (${rows.length} записей)!`,
+        `🌱 База данных Supabase успешно сброшена к значениям по умолчанию (${rows.length} записей)!`,
         'success'
       );
     } catch (err: unknown) {
@@ -446,6 +460,9 @@ export class SupabaseService {
           name = dataPayload.name || key;
         } else if (cat === 'items') {
           dataPayload = this.state.draftBalance.items[key];
+          name = dataPayload.name || key;
+        } else if (cat === 'talents') {
+          dataPayload = this.state.draftBalance.talents[key];
           name = dataPayload.name || key;
         } else if (cat === 'global') {
           dataPayload = this.state.draftBalance.global;

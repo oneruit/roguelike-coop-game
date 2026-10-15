@@ -1,0 +1,62 @@
+{
+  "task": "Kira (chakram) character appearance redesign",
+  "branch": "feature/redesign-kira-character",
+  "character_id": "chakram",
+  "character_name": "Кира",
+  "created_at": "2026-10-14T18:46:02+03:00",
+  "completed_at": "2026-10-14T21:22:00+03:00",
+  "status": "completed",
+  "visual_spec": {
+    "gender_role": "Female Assassin (Девушка, Ассасин)",
+    "eyes": "Glowing bright orange eyes with dark contour (Глаза оранжевые)",
+    "attire": "Form-fitting black assassin outfit with hooded cowl, face mask covering mouth and nose, dark mantle with ring clasp, studded shoulder armor, black boots (Обтягивающая чёрная одежда в капюшоне и с маской на лице)",
+    "weapon": "Dancing Chakram, black colored circular bladed disc (Оружие: Чакрам чёрного цвета)",
+    "proportions": "Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact body, sturdy boots)",
+    "reference_image": "raw_assets/chakram/reference.png"
+  },
+  "completed_steps": [
+    {
+      "step": "turnaround_generation",
+      "status": "approved",
+      "file": "raw_assets/chakram/turnaround.png",
+      "notes": "5-in-1 Character Reference Turnaround sheet approved by user. Contains Portrait, Front View, Back View, Right Profile View (strict 90 deg profile), Weapon Preview (black chakram). Pure magenta rgb(255,0,255) background."
+    },
+    {
+      "step": "generate_animation_sheets",
+      "status": "completed",
+      "files": [
+        "raw_assets/chakram/source_idle.png",
+        "raw_assets/chakram/source_walk.png",
+        "raw_assets/chakram/source_attack.png",
+        "raw_assets/chakram/source_walk_attack.png"
+      ]
+    },
+    {
+      "step": "process_sheets",
+      "status": "completed",
+      "output_files": [
+        "public/textures/heroes/chakram/idle.png",
+        "public/textures/heroes/chakram/walk.png",
+        "public/textures/heroes/chakram/attack.png",
+        "public/textures/heroes/chakram/walk_attack.png",
+        "public/textures/heroes/chakram/front.png"
+      ]
+    },
+    {
+      "step": "portrait_recolor",
+      "status": "completed",
+      "file": "public/textures/heroes/chakram/portrait.png",
+      "notes": "Recolored glowing eyes and energy wisps in portrait card to fiery radiant orange."
+    },
+    {
+      "step": "engine_integration",
+      "status": "completed",
+      "notes": "In game/src/entities/CharacterAnimator.ts, mapped 'chakram' to ANIM_LAYOUT_V2."
+    },
+    {
+      "step": "validate_sheets",
+      "status": "passed",
+      "notes": "Dimensions 576x384 and strict profile facing directions verified."
+    }
+  ]
+}

@@ -7,4 +7,5 @@ node_modules
 !.env.example
 __pycache__/
 *.py[cod]
+raw_assets/
 

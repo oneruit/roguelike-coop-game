@@ -39,7 +39,7 @@ The game features **6 unique heroes**. Character selection determines base healt
 | **Tactical Dash** | CD: **2.5 s**, dur: **0.22 s** | Dash speed: **x2.5** current movement speed | Full collision invulnerability |
 | **Critical Strike Chance** | **5% (0.05)** | +12% per stack of Sniper Visor (`crit_visor`) | 100% |
 | **Critical Strike Damage** | **200% (x2.0)** | Fixed | x2.0 |
-| **Pickup Radius (Magnet)** | **3.5 m** | x1.35 per stack of Magnetic Lasso (`stat_lasso`) | **25.0 m** |
+| **Pickup Radius (Magnet)** | **3.5 m** | x1.35 per stack of Magnet (`stat_magnet`) | **25.0 m** |
 | **Health Regeneration** | **0 HP/s** | +1.5 HP/s (Hunter's Amulet), +2.5 HP/s (Bio-Injector) | **30.0 HP/s** |
 | **Damage Reduction (Armor)** | **0%** | +10% (Leather Vest), diminishing returns (Nano-Plating) | **75% (0.75)** |
 | **Cooldown Reduction (CDR)** | **0%** | -8% (Pocket Watch), x0.85 (Kinetic Accelerator) | **70-80%** (CD min 0.12–0.30s) |
@@ -93,6 +93,7 @@ All weapons in the game scale up to **Level 20**. There are **13 weapons** avail
 | **Ice Spike** | `ice_spike` | 🧊 | **36** | 1.10 s | 18 m (dist) / 2.0 m (splash) | 1 spike | Splash AOE | Piercing ice spikes erupting from the ground |
 | **Fireball** | `fireball` | ☄️ | **52** | 1.35 s | 22 m (dist) / 2.5 m (splash) | 1 ball | Splash AOE | Falling meteor detonating on impact (28 m/s) |
 | **Assault Rifle** | `assault_rifle` | 🔫 | **13** | 0.18 s | 32 m (dist) | 1 bullet | 1 enemy | Rapid automatic rifle fire |
+| **Poison Puddle** | `poison_puddle` | 🧪 | **18** | 2.00 s | 20 m (dist) / 2.2 m (splash) | 1 puddle | Continuous AOE | Toxic acid pools dealing periodic tick damage and slowing enemies |
 
 ---
 
@@ -185,6 +186,14 @@ All weapons in the game scale up to **Level 20**. There are **13 weapons** avail
 - **Cooldown milestones**: -8% cooldown at levels **[3, 6, 9, 13, 17]** *(min 0.40s)*.
 - **Level 20 Stats**: **245 damage**, **6 fireballs**, **3.55m blast radius**, **0.89s CD**, **28 m/s impact speed**.
 
+#### 14. Poison Puddle (`poison_puddle`)
+- **Base**: 18 damage, 2.00s CD, 1 puddle, 2.2m puddle radius, 20m range, 4.0s duration, 35% slow.
+- **Growth per level**: +5 damage per level.
+- **Puddle milestones**: +1 puddle at levels **[3, 6, 9, 12]** *(up to 5 puddles)*.
+- **Splash radius milestones**: +0.25m at levels **[4, 8, 12]** *(up to 2.95m)*.
+- **Cooldown milestones**: -7% cooldown at levels **[2, 5, 8, 11]** *(min 0.65s)*.
+- **Level 12 Stats**: **73 damage**, **5 puddles**, **2.95m puddle radius**, **1.49s CD**, **4.0s duration**, **35% slow**.
+
 ---
 
 ## 3. Passives & Relics from Chests (Rift Items)
@@ -257,13 +266,13 @@ Picking up a gold gem awards one of 7 passives:
 
 | Passive | ID | Icon | Effect per Gem | Maximum Cap | Balance Impact |
 | :--- | :--- | :---: | :--- | :---: | :--- |
-| **Sheriff Star** | `stat_sheriff_star` | ⭐ | **+2%** global damage multiplier | No cap (multiplicative) | Adds +20–40% total DPS by minute 20 |
-| **Fleet Spurs** | `stat_spurs` | 👢 | **+3%** movement speed | **x2.5** (max 20–22 m/s) | Allows comfortable kiting of bisons and bosses |
+| **Amplifier** | `stat_amplifier` | ⭐ | **+2%** global damage multiplier | No cap (multiplicative) | Adds +20–40% total DPS by minute 20 |
+| **Speed Boots** | `stat_speed_boots` | 🥾 | **+3%** movement speed | **x3.0** (diminishing returns) | Allows comfortable kiting of bisons and bosses |
 | **Whiskey Flask** | `stat_flask` | 🍶 | **+30 Max HP** + full instant heal | No cap | Emergency rescue and health pool scaling |
-| **Magnetic Lasso** | `stat_lasso` | ➰ | **+35%** XP pickup radius | **25.0 meters** | Vacuums XP without entering monster packs |
-| **Hunter's Amulet** | `stat_amulet` | 🧿 | **+1.5 HP/s** health regeneration | **30.0 HP/s** | Core passive sustain |
-| **Leather Vest** | `stat_vest` | 🦺 | **-10%** damage taken | **70% (0.70)** | Crucial defensive stat against high-tier attacks |
-| **Pocket Watch** | `stat_watch` | ⏱️ | **+8%** weapon attack speed (-8% CD) | **70% (0.30 multiplier)** | Amplifies fire rate across all weapons |
+| **Magnet** | `stat_magnet` | 🧲 | **+10%** XP pickup radius | **50.0 meters** | Vacuums XP without entering monster packs |
+| **Hunter's Amulet** | `stat_amulet` | 🧿 | **+1.0 HP/s** health regeneration | No cap | Core passive sustain |
+| **Leather Vest** | `stat_vest` | 🦺 | **-2%** damage taken | **70% (0.70)** | Crucial defensive stat against high-tier attacks |
+| **Pocket Watch** | `stat_watch` | ⏱️ | **-1%** weapon cooldown | **30% (0.70 multiplier)** | Amplifies fire rate across all weapons |
 
 ---
 

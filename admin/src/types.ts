@@ -31,6 +31,7 @@ export interface SimulationState {
 export interface ProgressionChartState {
   view: 'weapons' | 'monsters' | 'heroes';
   weaponMetric: 'damage' | 'dps';
+  weaponGrade?: 'common' | 'uncommon' | 'rare' | 'legendary';
   selectedWeapons: Set<string>;
   monsterCategory: 'monsters' | 'bosses';
   monsterMetric: 'hp' | 'damage' | 'speed';

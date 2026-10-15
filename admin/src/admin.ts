@@ -11,6 +11,8 @@ import { renderMonsters } from './views/monstersView';
 import { renderBosses } from './views/bossesView';
 import { renderPassives } from './views/passivesView';
 import { renderItems } from './views/itemsView';
+import { renderTalents } from './views/talentsView';
+import { renderMerchant } from './views/merchantView';
 import { renderGlobal } from './views/globalView';
 import { DEFAULT_BALANCE } from '../../game/src/balance/defaultBalance';
 
@@ -20,6 +22,7 @@ export class AdminController {
   public modal: ModalManager;
   public progression: ProgressionView;
   public simulation: SimulationView;
+  public selectedTalentsBranchFilter: string = 'all';
 
   constructor() {
     this.state = new BalanceState();
@@ -83,6 +86,7 @@ export class AdminController {
         else if (table === 'bosses') this.renderBosses();
         else if (table === 'passives') this.renderPassives();
         else if (table === 'items') this.renderItems();
+        else if (table === 'talents') this.renderTalents();
       });
     });
 
@@ -147,14 +151,6 @@ export class AdminController {
       }
     });
 
-    // Expand All / Collapse All buttons
-    document.getElementById('btn-expand-all')?.addEventListener('click', () => {
-      this.expandAllCurrentTab();
-    });
-    document.getElementById('btn-collapse-all')?.addEventListener('click', () => {
-      this.collapseAllCurrentTab();
-    });
-
     // Top action buttons
     document.getElementById('btn-save')?.addEventListener('click', () => {
       this.modal.openReviewModal(Boolean(this.supabase.config.adminKey));
@@ -179,10 +175,8 @@ export class AdminController {
 
     // Reset All Category buttons
     document.getElementById('btn-reset-weapons-all')?.addEventListener('click', () => {
-      if (confirm('Сбросить параметры всех 13 видов оружия к значениям из BALANCE_REFERENCE.md?')) {
-        for (const key of Object.keys(DEFAULT_BALANCE.weapons)) {
-          this.state.draftBalance.weapons[key] = JSON.parse(JSON.stringify(DEFAULT_BALANCE.weapons[key]));
-        }
+      if (confirm('Сбросить параметры всех видов оружия к значениям по умолчанию?')) {
+        this.state.draftBalance.weapons = JSON.parse(JSON.stringify(DEFAULT_BALANCE.weapons));
         this.state.checkAllCategoryChanges('weapons');
         this.renderWeapons();
         updateOverviewStats(this.state);
@@ -234,11 +228,47 @@ export class AdminController {
       }
     });
 
+    document.getElementById('btn-reset-talents-all')?.addEventListener('click', () => {
+      if (confirm('Сбросить все таланты к значениям по умолчанию?')) {
+        this.state.draftBalance.talents = JSON.parse(JSON.stringify(DEFAULT_BALANCE.talents));
+        this.state.checkAllCategoryChanges('talents');
+        this.renderTalents();
+        updateOverviewStats(this.state);
+      }
+    });
+
+    document.querySelectorAll('[data-talent-branch]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const branch = (e.currentTarget as HTMLElement).dataset.talentBranch || 'all';
+        this.selectedTalentsBranchFilter = branch;
+        document.querySelectorAll('[data-talent-branch]').forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+        this.renderTalents();
+      });
+    });
+
     document.getElementById('btn-reset-global-all')?.addEventListener('click', () => {
       if (confirm('Сбросить глобальные настройки к defaults?')) {
         this.state.draftBalance.global = JSON.parse(JSON.stringify(DEFAULT_BALANCE.global));
         this.state.checkAllCategoryChanges('global');
         this.renderGlobal();
+        updateOverviewStats(this.state);
+      }
+    });
+
+    document.getElementById('btn-reset-merchant-all')?.addEventListener('click', () => {
+      if (confirm('Сбросить параметры торговца к значениям по умолчанию?')) {
+        const def = DEFAULT_BALANCE.global;
+        this.state.draftBalance.global.merchantSpawnInterval = def.merchantSpawnInterval;
+        this.state.draftBalance.global.merchantStayDuration = def.merchantStayDuration;
+        this.state.draftBalance.global.merchantPriceCommon = def.merchantPriceCommon;
+        this.state.draftBalance.global.merchantPriceUncommon = def.merchantPriceUncommon;
+        this.state.draftBalance.global.merchantPriceRare = def.merchantPriceRare;
+        this.state.draftBalance.global.merchantPriceLegendary = def.merchantPriceLegendary;
+        this.state.draftBalance.global.merchantPriceBoss = def.merchantPriceBoss;
+        this.state.draftBalance.global.merchantPriceWeaponUpgrade = def.merchantPriceWeaponUpgrade;
+        this.state.checkAllCategoryChanges('global');
+        this.renderMerchant();
         updateOverviewStats(this.state);
       }
     });
@@ -287,12 +317,6 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       p.classList.toggle('active', p.id === `tab-${target}`);
     });
 
-    const accordionTabs = ['weapons', 'heroes', 'monsters', 'bosses', 'passives', 'items'];
-    const quickTools = document.querySelector('.header-quick-tools');
-    if (quickTools) {
-      quickTools.classList.toggle('hidden', !accordionTabs.includes(target));
-    }
-
     const pageTitleEl = document.querySelector('.page-title') as HTMLElement | null;
     const pageSubtitleEl = document.querySelector('.page-subtitle') as HTMLElement | null;
     const tabHeaders: Record<string, { title: string; subtitle: string }> = {
@@ -324,6 +348,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         title: 'Предметы Разлома',
         subtitle: 'Артефакты, свитки и экипируемые предметы'
       },
+      talents: {
+        title: 'Мета-прокачка (Таланты)',
+        subtitle: 'Улучшения за Кристаллы Разлома: 3 ветки по 10 талантов (до 5 рангов)'
+      },
+      merchant: {
+        title: 'Торговец Разлома',
+        subtitle: 'Настройка интервалов визита, времени стоянки и ценовой политики товаров'
+      },
       progression: {
         title: 'Скейлинг волн',
         subtitle: 'Динамика сложности, множители характеристик и тайминги волн'
@@ -346,16 +378,22 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       if (pageSubtitleEl) pageSubtitleEl.innerText = tabHeaders[target].subtitle;
     }
 
-    if (target === 'dashboard') renderDashboard(this.state);
-    else if (target === 'progression') this.progression.render();
-    else if (target === 'simulation') this.simulation.render();
-    else if (target === 'weapons') this.renderWeapons();
-    else if (target === 'heroes') this.renderHeroes();
-    else if (target === 'monsters') this.renderMonsters();
-    else if (target === 'bosses') this.renderBosses();
-    else if (target === 'passives') this.renderPassives();
-    else if (target === 'items') this.renderItems();
-    else if (target === 'global') this.renderGlobal();
+    try {
+      if (target === 'dashboard') renderDashboard(this.state);
+      else if (target === 'progression') this.progression.render();
+      else if (target === 'simulation') this.simulation.render();
+      else if (target === 'weapons') this.renderWeapons();
+      else if (target === 'heroes') this.renderHeroes();
+      else if (target === 'monsters') this.renderMonsters();
+      else if (target === 'bosses') this.renderBosses();
+      else if (target === 'passives') this.renderPassives();
+      else if (target === 'items') this.renderItems();
+      else if (target === 'talents') this.renderTalents();
+      else if (target === 'merchant') this.renderMerchant();
+      else if (target === 'global') this.renderGlobal();
+    } catch (err) {
+      console.error(`Ошибка при отрисовке раздела ${target}:`, err);
+    }
   }
 
   public applyFilter(): void {
@@ -365,6 +403,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     else if (this.state.activeTab === 'bosses') this.renderBosses();
     else if (this.state.activeTab === 'passives') this.renderPassives();
     else if (this.state.activeTab === 'items') this.renderItems();
+    else if (this.state.activeTab === 'talents') this.renderTalents();
+    else if (this.state.activeTab === 'merchant') this.renderMerchant();
     else if (this.state.activeTab === 'dashboard') {
       // If user is searching on dashboard, jump to weapons to show results
       if (this.state.searchFilter) {
@@ -454,36 +494,132 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         const origVal = this.state.getOriginalValue(path);
         el.classList.toggle('is-changed', origVal !== val);
       }
+      const statField = el.closest('.stat-field');
+      if (statField) {
+        const origVal = this.state.getOriginalValue(path);
+        const isChanged = origVal !== undefined && origVal !== val;
+        const currentBadge = statField.querySelector<HTMLElement>('.stat-val-current') || statField.querySelector<HTMLElement>('.stat-val-badge');
+        if (currentBadge) {
+          currentBadge.textContent = String(val);
+          currentBadge.classList.toggle('val-changed', isChanged);
+        }
+        const origBadge = statField.querySelector<HTMLElement>('.stat-val-orig');
+        if (origBadge) {
+          origBadge.style.display = isChanged ? '' : 'none';
+          if (origVal !== undefined) origBadge.textContent = String(origVal);
+        }
+      }
     });
 
     // Update weapon metrics live if applicable
     const parts = path.split('.');
-    if (parts[0] === 'weapons') {
-      const wid = parts[1];
-      const weapon = this.state.draftBalance.weapons[wid];
-      if (weapon) {
-        const baseDps = weapon.cooldown > 0 ? (weapon.damage / weapon.cooldown).toFixed(1) : (weapon.damage * 60).toFixed(1);
-        const l20Dmg = weapon.damage + 19 * weapon.damagePerLevel;
-        const l20Dps = weapon.cooldown > 0 ? (l20Dmg / weapon.cooldown).toFixed(1) : (l20Dmg * 60).toFixed(1);
+    const category = parts[0];
+    const entityId = parts[1];
+    const field = parts[2];
 
-        const elBase = document.getElementById(`dps-${wid}-base`);
-        const elL20 = document.getElementById(`dps-${wid}-l20`);
-        const elRowDps1 = document.getElementById(`row-stat-dps1-${wid}`);
-        const elRowDps20 = document.getElementById(`row-stat-dps20-${wid}`);
-        const elRowDmg = document.getElementById(`row-stat-damage-${wid}`);
-        const elRowCd = document.getElementById(`row-stat-cooldown-${wid}`);
+    if (category === 'weapons') {
+      const weapon = this.state.draftBalance.weapons[entityId];
+      if (weapon) {
+        const cd = weapon.cooldown > 0 ? weapon.cooldown : 0.4;
+        const count = weapon.count || 1;
+        const baseDps = ((weapon.damage * count) / cd).toFixed(1);
+        const l12Dmg = weapon.damage + 11 * weapon.damagePerLevel;
+        const l12Dps = ((l12Dmg * count) / cd).toFixed(1);
+
+        const elBase = document.getElementById(`dps-${entityId}-base`);
+        const elL12 = document.getElementById(`dps-${entityId}-l12`);
+        const elRowDps1 = document.getElementById(`row-stat-dps1-${entityId}`);
+        const elRowDps12 = document.getElementById(`row-stat-dps12-${entityId}`);
+        const elRowDmg = document.getElementById(`row-stat-damage-${entityId}`);
+        const elRowCd = document.getElementById(`row-stat-cooldown-${entityId}`);
 
         if (elBase) elBase.innerText = baseDps;
-        if (elL20) elL20.innerText = l20Dps;
+        if (elL12) elL12.innerText = l12Dps;
         if (elRowDps1) elRowDps1.innerText = baseDps;
-        if (elRowDps20) elRowDps20.innerText = l20Dps;
+        if (elRowDps12) elRowDps12.innerText = l12Dps;
         if (elRowDmg) elRowDmg.innerHTML = `<span>${weapon.damage}</span>`;
         if (elRowCd) elRowCd.innerHTML = `<span>${weapon.cooldown}с</span>`;
       }
+    } else if (category === 'heroes') {
+      const hero = this.state.draftBalance.heroes[entityId];
+      if (hero) {
+        if (field === 'maxHp') {
+          const el = document.getElementById(`row-stat-hp-${entityId}`);
+          if (el) el.innerHTML = `<span>${hero.maxHp} HP</span>`;
+        } else if (field === 'baseSpeed') {
+          const el = document.getElementById(`row-stat-speed-${entityId}`);
+          if (el) el.innerHTML = `<span>${hero.baseSpeed} м/с</span>`;
+        } else if (field === 'damageMultiplier') {
+          const el = document.getElementById(`row-stat-dmgmult-${entityId}`);
+          if (el) el.innerText = `${hero.damageMultiplier}x`;
+        }
+      }
+    } else if (category === 'monsters') {
+      const monster = this.state.draftBalance.monsters[entityId];
+      if (monster) {
+        if (field === 'hp') {
+          const el = document.getElementById(`row-stat-hp-${entityId}`);
+          if (el) el.innerHTML = `<span>${monster.hp} HP</span>`;
+        } else if (field === 'speed') {
+          const el = document.getElementById(`row-stat-speed-${entityId}`);
+          if (el) el.innerHTML = `<span>${monster.speed} м/с</span>`;
+        } else if (field === 'damage') {
+          const el = document.getElementById(`row-stat-damage-${entityId}`);
+          if (el) el.innerText = `${monster.damage}`;
+        }
+      }
+    } else if (category === 'bosses') {
+      const boss = this.state.draftBalance.bosses[entityId];
+      if (boss) {
+        if (field === 'hp') {
+          const el = document.getElementById(`row-stat-hp-${entityId}`);
+          if (el) el.innerHTML = `<span>${boss.hp.toLocaleString()} HP</span>`;
+        } else if (field === 'speed') {
+          const el = document.getElementById(`row-stat-speed-${entityId}`);
+          if (el) el.innerHTML = `<span>${boss.speed} м/с</span>`;
+        } else if (field === 'damage') {
+          const el = document.getElementById(`row-stat-damage-${entityId}`);
+          if (el) el.innerText = `${boss.damage}`;
+        }
+      }
+    } else if (category === 'passives') {
+      const passive = this.state.draftBalance.passives[entityId];
+      if (passive) {
+        if (field === 'baseValue') {
+          const el = document.getElementById(`row-stat-base-${entityId}`);
+          if (el) el.innerHTML = `<span class="stat-highlight">${passive.baseValue}</span>`;
+        } else if (field === 'perStackValue') {
+          const el = document.getElementById(`row-stat-stack-${entityId}`);
+          if (el) el.innerHTML = `<span>+${passive.perStackValue} / стак</span>`;
+        } else if (field === 'maxValue') {
+          const el = document.getElementById(`row-stat-cap-${entityId}`);
+          if (el) el.innerHTML = `<span>${passive.maxValue !== undefined ? passive.maxValue : '∞'}</span>`;
+        }
+      }
+    } else if (category === 'items') {
+      const item = this.state.draftBalance.items[entityId];
+      if (item) {
+        if (field === 'baseValue') {
+          const el = document.getElementById(`row-stat-base-${entityId}`);
+          if (el) el.innerHTML = `<span class="stat-highlight">${item.baseValue !== undefined ? item.baseValue : '—'}</span>`;
+        }
+      }
+    } else if (category === 'talents') {
+      const talent = this.state.draftBalance.talents[entityId];
+      if (talent) {
+        if (field === 'bonusPerLevel') {
+          const el = document.getElementById(`row-stat-bonus-${entityId}`);
+          if (el) {
+            const bonusDisplay = talent.unit === '%' ? `+${(talent.bonusPerLevel * 100).toFixed(1)}%` : `+${talent.bonusPerLevel} ${talent.unit || ''}`;
+            el.innerHTML = `<span class="stat-highlight">${bonusDisplay}</span><span style="font-size:10px; color:var(--text-secondary); margin-left:4px;">/ ранг</span>`;
+          }
+        } else if (field === 'maxLevel') {
+          const el = document.getElementById(`row-stat-maxlevel-${entityId}`);
+          if (el) el.innerText = String(talent.maxLevel);
+        }
+      }
     }
 
-    const category = parts[0];
-    const entityId = parts[1];
     if (category && entityId) {
       const rowItem = document.querySelector(`[data-row-id="${category}-${entityId}"]`);
       if (rowItem) {
@@ -577,6 +713,28 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     );
   }
 
+  public renderTalents(): void {
+    renderTalents(
+      this.state,
+      (cat, id) => {
+        this.state.resetSingleItem(cat, id);
+        this.renderTalents();
+        updateOverviewStats(this.state);
+      },
+      (path, val) => this.handleFieldChange(path, val),
+      () => this.clearSearch(),
+      this.selectedTalentsBranchFilter
+    );
+  }
+
+  public renderMerchant(): void {
+    try {
+      renderMerchant(this.state, (path, val) => this.handleFieldChange(path, val));
+    } catch (err) {
+      console.error('Error rendering merchant view:', err);
+    }
+  }
+
   public renderGlobal(): void {
     renderGlobal(this.state, (path, val) => this.handleFieldChange(path, val));
   }
@@ -589,6 +747,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.renderBosses();
     this.renderPassives();
     this.renderItems();
+    this.renderTalents();
+    this.renderMerchant();
     this.renderGlobal();
     this.progression.render();
     this.simulation.render();

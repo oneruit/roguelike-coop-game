@@ -1,0 +1,79 @@
+<div id="shop-modal" class="modal shop-modal hidden" aria-label="Магазин Разлома">
+  <div class="modal-backdrop shop-backdrop"></div>
+
+  <div class="modal-card shop-card">
+    <!-- Header -->
+    <header class="shop-header">
+      <div class="shop-header-title-wrap">
+        <div class="shop-header-badge">META PROGRESSION • 30 ТАЛАНТОВ</div>
+        <h2 class="shop-title">ТАЛАНТЫ РАЗЛОМА</h2>
+        <p class="shop-subtitle">3 ветки по 10 улучшений (до 5 рангов). Бонусы действуют на всех героев и сохраняются навсегда</p>
+      </div>
+
+      <div class="shop-header-right">
+        <!-- Crystal Balance Wallet -->
+        <div class="shop-wallet" id="shop-wallet-badge" title="Кристаллы Разлома в наличии">
+          <img src="/textures/ui/bp_crystal.png" class="shop-wallet-icon" alt="Кристалл Разлома" />
+          <div class="shop-wallet-info">
+            <span class="shop-wallet-label">КРИСТАЛЛЫ РАЗЛОМА</span>
+            <span class="shop-wallet-val" id="shop-crystal-balance">0</span>
+          </div>
+        </div>
+
+        <button id="shop-btn-close" class="shop-close-btn" type="button" aria-label="Закрыть">&times;</button>
+      </div>
+    </header>
+
+    <!-- Branch Navigation Tabs -->
+    <div class="shop-tabs-bar">
+      <button class="shop-tab-btn active" data-branch="offense" id="shop-tab-offense" type="button">
+        <span class="shop-tab-icon">⚔️</span>
+        <span class="shop-tab-text">Ветка Могущества</span>
+        <span class="shop-tab-badge" id="offense-branch-pts">0 / 50</span>
+      </button>
+
+      <button class="shop-tab-btn" data-branch="defense" id="shop-tab-defense" type="button">
+        <span class="shop-tab-icon">🛡️</span>
+        <span class="shop-tab-text">Ветка Стойкости</span>
+        <span class="shop-tab-badge" id="defense-branch-pts">0 / 50</span>
+      </button>
+
+      <button class="shop-tab-btn" data-branch="utility" id="shop-tab-utility" type="button">
+        <span class="shop-tab-icon">🔮</span>
+        <span class="shop-tab-text">Ветка Мастерства</span>
+        <span class="shop-tab-badge" id="utility-branch-pts">0 / 50</span>
+      </button>
+    </div>
+
+    <!-- Branch Description Banner -->
+    <div class="shop-branch-banner" id="shop-branch-banner">
+      <div class="branch-banner-text" id="shop-branch-banner-desc">
+        Усиливает общий урон всего арсенала, критические удары, баллистику, радиус поражения и урон по боссам.
+      </div>
+    </div>
+
+    <!-- Talents Grid (10 cards for active branch) -->
+    <main class="shop-talents-scroll">
+      <div class="shop-talents-grid" id="shop-talents-grid">
+        <!-- Dynamically rendered talent cards via ShopScreen.ts -->
+      </div>
+    </main>
+
+    <!-- Footer Controls -->
+    <footer class="shop-footer">
+      <div class="shop-footer-left">
+        <button id="shop-btn-respec" class="shop-respec-btn" type="button" title="Вернуть 100% кристаллов">
+          🔄 Сбросить таланты (100% возврат)
+        </button>
+        <span class="shop-invested-info">
+          Вложено: <strong id="shop-total-invested">0</strong> <img src="/textures/ui/bp_crystal.png" class="mini-crystal" alt="🔮" />
+          <span class="shop-total-pts-badge" id="shop-total-pts">0 / 150 очков</span>
+        </span>
+      </div>
+
+      <button id="shop-btn-back" class="shop-back-btn" type="button">
+        ВЕРНУТЬСЯ В МЕНЮ
+      </button>
+    </footer>
+  </div>
+</div>

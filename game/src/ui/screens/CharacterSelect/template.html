@@ -1,0 +1,206 @@
+      <div id="character-select-modal" class="modal character-select-modal hidden">
+        <div class="modal-backdrop char-select-backdrop"></div>
+        <div class="char-select-container">
+          
+          <!-- Top Discreet Options Bar (Training mode & Time of day) -->
+          <div class="char-select-options-bar">
+            <div class="training-mode-control" title="В тренировочном режиме статистика и прохождение заданий не учитываются, но доступен Dev-режим">
+              <label class="toggle-switch">
+                <input type="checkbox" id="training-mode-toggle" />
+                <span class="slider round"></span>
+              </label>
+              <span class="training-mode-title">DEV РЕЖИМ</span>
+            </div>
+
+            <div class="time-of-day-control">
+              <label for="select-time-of-day" class="time-of-day-label">ОСВЕЩЕНИЕ:</label>
+              <select id="select-time-of-day" class="time-of-day-select">
+                <option value="random" selected>🎲 Случайно</option>
+                <option value="day">☀️ День</option>
+                <option value="night">🌙 Ночь</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Middle Stage & Inspector Layout -->
+          <div class="char-select-center-layout">
+            
+            <!-- Hero Stage with Pedestal & Animated Sprite Canvas -->
+            <div class="char-stage-viewport" id="char-stage-viewport">
+              <canvas id="char-hero-preview-canvas" width="340" height="340" class="char-hero-canvas"></canvas>
+            </div>
+
+            <!-- Right Inspector Panel (Ornate Dark ARPG Frame) -->
+            <aside class="char-inspect-panel" id="char-inspect-panel">
+              <div class="char-inspect-crest-ornament"></div>
+              <div class="char-inspect-inner">
+                <header class="inspect-header-block">
+                  <h2 id="inspect-hero-name" class="inspect-hero-name">РЕН — КЛИНОК ПУСТОТЫ</h2>
+                  <div id="inspect-hero-role" class="inspect-hero-role">Класс: Воин / Маг</div>
+                </header>
+
+                <div class="inspect-divider-flourish"></div>
+
+                <!-- Weapon (Оружие) -->
+                <section class="inspect-section inspect-weapon-box">
+                  <div class="inspect-section-caption">
+                    <span class="caption-line"></span>
+                    <span class="caption-text">ОРУЖИЕ</span>
+                    <span class="caption-line"></span>
+                  </div>
+                  <div class="inspect-weapon-content">
+                    <div class="inspect-weapon-socket">
+                      <img id="inspect-weapon-icon" class="inspect-weapon-icon-img" src="/textures/weapons/weapon_whirlwind_slash.png" alt="Оружие" />
+                    </div>
+                    <div id="inspect-weapon-name" class="inspect-weapon-title">Круговой Взмах</div>
+                  </div>
+                </section>
+
+                <div class="inspect-divider-flourish"></div>
+
+                <!-- Attributes / Stats -->
+                <section class="inspect-section inspect-stats-box">
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">Health</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-hp-bar" class="stat-progress-fill bar-hp" style="width: 77%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">Damage</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-dmg-bar" class="stat-progress-fill bar-dmg" style="width: 70%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="inspect-stat-entry">
+                    <span class="stat-caption">Mobility</span>
+                    <div class="stat-progress-track">
+                      <div id="inspect-stat-spd-bar" class="stat-progress-fill bar-spd" style="width: 86%;"></div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Bottom Scrollable Roster Carousel -->
+          <div class="char-roster-carousel-zone">
+            <button id="char-carousel-prev" class="carousel-nav-arrow arrow-left" type="button" aria-label="Предыдущий герой">
+              <span class="arrow-chevron">&#x276E;</span>
+            </button>
+
+            <div class="char-roster-viewport" id="char-roster-viewport">
+              <div class="character-grid char-roster-track" id="char-carousel-track">
+                
+                <!-- 1. Ronin -->
+                <div class="character-card char-roster-card" data-hero="ronin" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/ronin/portrait.png" class="char-card-portrait-img" alt="Рен" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">РЕН</div>
+                  </div>
+                </div>
+
+                <!-- 2. Valkyrie -->
+                <div class="character-card char-roster-card" data-hero="valkyrie" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/valkyrie/portrait.png" class="char-card-portrait-img" alt="Валькирия" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ВАЛЬКИРИЯ</div>
+                  </div>
+                </div>
+
+                <!-- 3. Sorceress -->
+                <div class="character-card char-roster-card" data-hero="sorceress" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/sorceress/portrait.png" class="char-card-portrait-img" alt="Чародейка" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ЧАРОДЕЙКА</div>
+                  </div>
+                </div>
+
+                <!-- 4. Archer -->
+                <div class="character-card char-roster-card" data-hero="archer" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/archer/portrait.png" class="char-card-portrait-img" alt="Лучник" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ЛУЧНИК</div>
+                  </div>
+                </div>
+
+                <!-- 5. Necromancer -->
+                <div class="character-card char-roster-card" data-hero="necromancer" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/necromancer/portrait.png" class="char-card-portrait-img" alt="Некромант" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">НЕКРОМАНТ</div>
+                  </div>
+                </div>
+
+                <!-- 6. Invoker -->
+                <div class="character-card char-roster-card" data-hero="invoker" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/invoker/portrait.png" class="char-card-portrait-img" alt="Инвокер" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">ИНВОКЕР</div>
+                  </div>
+                </div>
+
+                <!-- 7. Flail -->
+                <div class="character-card char-roster-card" data-hero="flail" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/flail/portrait.png" class="char-card-portrait-img" alt="Бригитта" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">БРИГИТТА</div>
+                  </div>
+                </div>
+
+                <!-- 8. Chakram -->
+                <div class="character-card char-roster-card" data-hero="chakram" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/chakram/portrait.png" class="char-card-portrait-img" alt="Кира" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">КИРА</div>
+                  </div>
+                </div>
+
+                <!-- 9. Rocket -->
+                <div class="character-card char-roster-card" data-hero="rocket" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/rocket/portrait.png" class="char-card-portrait-img" alt="Ракета" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">РАКЕТА</div>
+                  </div>
+                </div>
+
+                <!-- 10. Amazon -->
+                <div class="character-card char-roster-card" data-hero="amazon" tabindex="0">
+                  <div class="char-card-frame-container">
+                    <img src="/textures/heroes/amazon/portrait.png" class="char-card-portrait-img" alt="Амазонка" />
+                    <div class="char-card-frame-overlay"></div>
+                    <div class="char-roster-card-name">АМАЗОНКА</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <button id="char-carousel-next" class="carousel-nav-arrow arrow-right" type="button" aria-label="Следующий герой">
+              <span class="arrow-chevron">&#x276F;</span>
+            </button>
+          </div>
+
+          <!-- Footer Action Bar -->
+          <footer class="char-select-bottom-actions">
+            <button id="btn-char-select-back" class="char-action-btn-back" type="button">
+              <span>BACK</span>
+            </button>
+            <button id="btn-char-select-play" class="char-action-btn-play" type="button">
+              <span class="btn-primary-text">ENTER RIFT</span>
+            </button>
+          </footer>
+
+        </div>
+      </div>

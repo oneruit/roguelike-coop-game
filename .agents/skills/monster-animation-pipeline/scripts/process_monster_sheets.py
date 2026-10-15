@@ -6,14 +6,14 @@ for regular enemies/monsters into production-ready sprite sheets.
 
 Standard Specifications:
 - 4 columns x 4 rows (16 frames total per sheet)
-- Default cell size: 128 x 128 pixels (total resolution: 512 x 512 pixels, clean Power-of-Two)
+- Default cell size: 96 x 96 pixels (total resolution: 384 x 384 pixels)
 - Directional row mapping:
   * Row 0 (Top): Front / Forward-facing view (moving down towards player)
   * Row 1: Left-facing view (mirrored from Row 2)
   * Row 2: Right-facing view
   * Row 3 (Bottom): Back / Upward-facing view (moving up away from player)
-- 10px bottom margin: target_feet_y = 118 in 128px cell (prevents claw swipes & feet clipping)
-- Character height limit: <= 96 pixels inside 128px cell
+- 8px bottom margin: target_feet_y = 88 in 96px cell (prevents claw swipes & feet clipping)
+- Character height limit: <= 72 pixels inside 96px cell
 - Symmetrical lateral mirroring (--mirror-left): mirrors Row 2 (Right) into Row 1 (Left)
   to guarantee zero directional drift and identical movement cadence.
 - Auto-exports directional fallbacks: monster_<name>_{front,back,left,right}.png
@@ -77,19 +77,19 @@ def detect_and_clean_background(img_arr, bg_mode='auto'):
 
 def align_and_pack_monster_sheet(
     rgba_arr,
-    cell_size=128,
+    cell_size=96,
     cols=4,
     rows=4,
-    target_feet_y=118,
-    target_char_h=92.0,
-    max_char_h=96.0,
+    target_feet_y=88,
+    target_char_h=68.0,
+    max_char_h=72.0,
     mirror_left=False,
     mirror_right=False
 ):
     """
-    Standardizes a 4x4 animation image into cell_size x cell_size frames (512x512).
-    Leaves a 10px margin at bottom (target_feet_y = 118).
-    Caps height to <= 96px.
+    Standardizes a 4x4 animation image into cell_size x cell_size frames (384x384).
+    Leaves an 8px margin at bottom (target_feet_y = 88).
+    Caps height to <= 72px.
     """
     h, w = rgba_arr.shape[:2]
     row_h = h / float(rows)
@@ -275,12 +275,12 @@ def process_monster(
     idle_path=None,
     portrait_path=None,
     out_dir='public/textures/monsters',
-    cell_size=128,
+    cell_size=96,
     cols=4,
     rows=4,
-    target_feet_y=118,
-    target_char_h=92.0,
-    max_char_h=96.0,
+    target_feet_y=88,
+    target_char_h=68.0,
+    max_char_h=72.0,
     mirror_left=True,
     mirror_right=False
 ):
@@ -354,12 +354,12 @@ if __name__ == '__main__':
     parser.add_argument('--idle', help='Optional path to 4x4 IDLE image')
     parser.add_argument('--portrait', help='Optional path to portrait image')
     parser.add_argument('--out-dir', '-o', default='public/textures/monsters', help='Output directory')
-    parser.add_argument('--cell-size', type=int, default=128, help='Frame cell size (default: 128)')
+    parser.add_argument('--cell-size', type=int, default=96, help='Frame cell size (default: 96)')
     parser.add_argument('--cols', type=int, default=4, help='Columns per row (default: 4)')
     parser.add_argument('--rows', type=int, default=4, help='Rows (default: 4)')
-    parser.add_argument('--feet-y', type=int, default=118, help='Feet anchor Y coordinate (default: 118, 10px margin from bottom)')
-    parser.add_argument('--char-h', type=float, default=92.0, help='Target monster height (default: 92.0)')
-    parser.add_argument('--max-h', type=float, default=96.0, help='Max allowed monster height (default: 96.0)')
+    parser.add_argument('--feet-y', type=int, default=88, help='Feet anchor Y coordinate (default: 88, 8px margin from bottom)')
+    parser.add_argument('--char-h', type=float, default=68.0, help='Target monster height (default: 68.0)')
+    parser.add_argument('--max-h', type=float, default=72.0, help='Max allowed monster height (default: 72.0)')
     parser.add_argument('--mirror-left', action='store_true', default=True, help='Mirror Row 2 (Right) into Row 1 (Left)')
     parser.add_argument('--no-mirror-left', dest='mirror_left', action='store_false', help='Disable automatic left mirroring')
     parser.add_argument('--mirror-right', action='store_true', help='Mirror Row 1 (Left) into Row 2 (Right)')

@@ -1,3 +1,5 @@
+import { AssetResolver } from '../utils/AssetResolver';
+
 export interface ChapterQuestDef {
   id: string;
   chapter: 1 | 2 | 3 | 4;
@@ -36,7 +38,7 @@ export const CHAPTERS_CONFIG: ChapterDef[] = [
         steps: ['Уничтожить 50 мобов оружием ближнего боя или заклинанием.'],
         max: 50,
         icon: '/textures/weapons/weapon_greatsword.png',
-        targetAvatar: '/textures/heroes/hero_valkyrie_front.png',
+        targetAvatar: AssetResolver.getHeroTexture('valkyrie', 'front'),
         barColor: 'purple',
         rewards: { potions: 1, coins: 200, chest: 1 }
       },
@@ -159,7 +161,7 @@ export const CHAPTERS_CONFIG: ChapterDef[] = [
         steps: ['Нанести 50 критических ударов за одну экспедицию.'],
         max: 50,
         icon: '/textures/weapons/weapon_assault_rifle.png',
-        targetAvatar: '/textures/heroes/hero_rocket_front.png',
+        targetAvatar: AssetResolver.getHeroTexture('rocket', 'front'),
         barColor: 'purple',
         rewards: { potions: 1, coins: 400, chest: 1 }
       },
@@ -172,7 +174,7 @@ export const CHAPTERS_CONFIG: ChapterDef[] = [
         steps: ['Собрать 4 уникальных пассивных предмета одновременно в инвентаре.'],
         max: 4,
         icon: '/textures/quests/reward_potion.png',
-        targetAvatar: '/textures/heroes/hero_sorceress_front.png',
+        targetAvatar: AssetResolver.getHeroTexture('sorceress', 'front'),
         barColor: 'cyan',
         rewards: { potions: 2, coins: 400, chest: 1 }
       },
@@ -185,7 +187,7 @@ export const CHAPTERS_CONFIG: ChapterDef[] = [
         steps: ['Совершить 3 покупки у Торговца за один забег.'],
         max: 3,
         icon: '/textures/quests/reward_pouch.png',
-        targetAvatar: '/textures/heroes/hero_flail_front.png',
+        targetAvatar: AssetResolver.getHeroTexture('flail', 'front'),
         barColor: 'green',
         rewards: { potions: 2, coins: 500, chest: 1 }
       },
@@ -219,7 +221,7 @@ export const CHAPTERS_CONFIG: ChapterDef[] = [
         steps: ['Уничтожить 200 монстров дальнобойным оружием (Лук / Ракеты).'],
         max: 200,
         icon: '/textures/weapons/weapon_bow.png',
-        targetAvatar: '/textures/heroes/hero_archer_front.png',
+        targetAvatar: AssetResolver.getHeroTexture('archer', 'front'),
         barColor: 'purple',
         rewards: { potions: 2, coins: 800, chest: 1 }
       },
@@ -232,7 +234,7 @@ export const CHAPTERS_CONFIG: ChapterDef[] = [
         steps: ['Достичь 5-го уровня аккаунта.'],
         max: 5,
         icon: '/textures/quests/quest_icon_chapter1.png',
-        targetAvatar: '/textures/heroes/hero_valkyrie_front.png',
+        targetAvatar: AssetResolver.getHeroTexture('valkyrie', 'front'),
         barColor: 'cyan',
         rewards: { potions: 2, coins: 800, chest: 1 }
       },

@@ -477,6 +477,20 @@
     padding: 18px 12px !important;
   }
 
+  .chest-modal-header-with-icon {
+    gap: 10px !important;
+  }
+
+  .chest-modal-badge-icon {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .chest-modal-anim-img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
   .chest-items-grid {
     grid-template-columns: 1fr !important;
   }
