@@ -402,3 +402,60 @@ test('returnToMainMenu comprehensively resets session, training mode, and gameTi
   assert.equal(f.session.devPausedGame, false);
 });
 
+test('SessionDirector.canTeleportToRift enforces open state and minimum 2 squares (100m) distance', () => {
+  const f = fixture(false);
+  f.session.gameState = GameState.PLAYING;
+  f.player.isAlive = true;
+  f.player.position.set(0, 0, 0);
+
+  const riftTeleporter = {
+    position: new Vector3(0, 0, 0),
+    mesh: { visible: true },
+    state: 'IDLE',
+    get isOpened() { return this.state !== 'IDLE'; }
+  };
+  (f.session as any).riftTeleporter = riftTeleporter;
+
+  // 1. Teleporter is IDLE (closed): canTeleport must be false
+  f.player.position.set(200, 0, 0); // 200m away
+  riftTeleporter.state = 'IDLE';
+  let check = f.session.canTeleportToRift();
+  assert.equal(check.canTeleport, false);
+  assert.ok(check.reason?.includes('еще не открыт'), 'Must indicate rift is not yet opened');
+  assert.equal(f.session.teleportPlayerToRift(), false, 'teleportPlayerToRift must return false without teleporting');
+
+  // 2. Teleporter is opened ('CHARGING'), but player is too close (< 100m, chunkDist < 2)
+  riftTeleporter.state = 'CHARGING';
+  f.player.position.set(50, 0, 0); // 50m away (< 100m, chunk 1 vs chunk 0 -> chunkDist 1 < 2)
+  check = f.session.canTeleportToRift();
+  assert.equal(check.canTeleport, false);
+  assert.ok(check.reason?.includes('Слишком близко'), 'Must indicate player is too close');
+  assert.equal(f.session.teleportPlayerToRift(), false);
+
+  // 3. Player is at 99m away (still < 100m, chunkDist < 2)
+  f.player.position.set(49, 0, 0);
+  riftTeleporter.position.set(0, 0, 0);
+  check = f.session.canTeleportToRift();
+  assert.equal(check.canTeleport, false);
+
+  // 4. Player is at least 2 squares away (>= 100m, chunkDist >= 2) and teleporter is opened ('CHARGING')
+  f.player.position.set(100, 0, 0); // pChunkX = 2, rChunkX = 0 -> chunkDist = 2, dist = 100m
+  check = f.session.canTeleportToRift();
+  assert.equal(check.canTeleport, true, 'Must allow teleportation when opened and >= 2 squares away');
+
+  // 5. Teleporter in 'WARP_READY' state at >= 100m distance
+  riftTeleporter.state = 'WARP_READY';
+  f.player.position.set(0, 0, 150); // z distance 150m, chunkDist = 3
+  check = f.session.canTeleportToRift();
+  assert.equal(check.canTeleport, true);
+
+  // 6. Game paused or player dead: cannot teleport
+  f.session.gameState = GameState.PAUSED;
+  assert.equal(f.session.canTeleportToRift().canTeleport, false);
+
+  f.session.gameState = GameState.PLAYING;
+  f.player.isAlive = false;
+  assert.equal(f.session.canTeleportToRift().canTeleport, false);
+});
+
+

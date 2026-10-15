@@ -85,23 +85,58 @@ export class LeaderboardManager {
     try {
       const supabase = getAuthSupabaseClient();
       if (supabase) {
-        const { error } = await supabase.from('leaderboards').insert([{
-          player_id: entry.playerId,
-          player_name: entry.playerName,
-          hero_id: entry.heroId,
-          stage: entry.stage,
-          survival_time_sec: entry.survivalTimeSec,
-          kills: entry.kills,
-          credits: entry.credits,
-          score: entry.score,
-          is_victory: entry.isVictory
-        }]);
-        if (error) {
-          console.warn('[LeaderboardManager] Supabase insert warning:', error.message);
+        // Query existing entry to prevent duplicates and update record on higher score
+        const { data: existingRows } = await supabase
+          .from('leaderboards')
+          .select('id, score')
+          .eq('player_id', entry.playerId)
+          .limit(1);
+
+        const existing = existingRows && existingRows.length > 0 ? existingRows[0] : null;
+
+        if (existing) {
+          // Player already exists in leaderboard: only update if new record is higher!
+          if (entry.score > existing.score) {
+            const { error: updateError } = await supabase
+              .from('leaderboards')
+              .update({
+                player_name: entry.playerName,
+                hero_id: entry.heroId,
+                stage: entry.stage,
+                survival_time_sec: entry.survivalTimeSec,
+                kills: entry.kills,
+                credits: entry.credits,
+                score: entry.score,
+                is_victory: entry.isVictory,
+                created_at: new Date().toISOString()
+              })
+              .eq('id', existing.id);
+
+            if (updateError) {
+              console.warn('[LeaderboardManager] Supabase update warning:', updateError.message);
+            }
+          }
+        } else {
+          // New player: insert initial record
+          const { error: insertError } = await supabase.from('leaderboards').insert([{
+            player_id: entry.playerId,
+            player_name: entry.playerName,
+            hero_id: entry.heroId,
+            stage: entry.stage,
+            survival_time_sec: entry.survivalTimeSec,
+            kills: entry.kills,
+            credits: entry.credits,
+            score: entry.score,
+            is_victory: entry.isVictory
+          }]);
+
+          if (insertError) {
+            console.warn('[LeaderboardManager] Supabase insert warning:', insertError.message);
+          }
         }
       }
     } catch (err) {
-      console.warn('[LeaderboardManager] Supabase insert error:', err);
+      console.warn('[LeaderboardManager] Supabase sync error:', err);
     }
 
     return { success: true, score };
@@ -115,22 +150,34 @@ export class LeaderboardManager {
           .from('leaderboards')
           .select('*')
           .order('score', { ascending: false })
-          .limit(limit);
+          .limit(limit * 2);
 
         if (!error && data && data.length > 0) {
-          return data.map((d: any) => ({
-            id: d.id,
-            playerId: d.player_id,
-            playerName: d.player_name,
-            heroId: d.hero_id,
-            stage: d.stage,
-            survivalTimeSec: Number(d.survival_time_sec),
-            kills: d.kills,
-            credits: d.credits,
-            score: d.score,
-            isVictory: d.is_victory,
-            createdAt: d.created_at
-          }));
+          // Client-side deduplication ensuring each player only appears once
+          const map = new Map<string, LeaderboardEntry>();
+          for (const d of data) {
+            const item: LeaderboardEntry = {
+              id: d.id,
+              playerId: d.player_id,
+              playerName: d.player_name,
+              heroId: d.hero_id,
+              stage: d.stage,
+              survivalTimeSec: Number(d.survival_time_sec),
+              kills: d.kills,
+              credits: d.credits,
+              score: d.score,
+              isVictory: d.is_victory,
+              createdAt: d.created_at
+            };
+            const prev = map.get(item.playerId);
+            if (!prev || item.score > prev.score) {
+              map.set(item.playerId, item);
+            }
+          }
+
+          return Array.from(map.values())
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
         }
       }
     } catch (err) {
@@ -150,7 +197,20 @@ export class LeaderboardManager {
       if (entries.length === 0) {
         return this.getDefaultEntries();
       }
-      return entries.sort((a, b) => b.score - a.score).slice(0, limit);
+
+      // Ensure deduplication by playerId, keeping highest score
+      const map = new Map<string, LeaderboardEntry>();
+      for (const e of entries) {
+        const key = e.playerId || e.playerName;
+        const prev = map.get(key);
+        if (!prev || e.score > prev.score) {
+          map.set(key, e);
+        }
+      }
+
+      return Array.from(map.values())
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit);
     } catch {
       return this.getDefaultEntries();
     }
@@ -160,8 +220,29 @@ export class LeaderboardManager {
     if (typeof window === 'undefined' || !window.localStorage) return;
     try {
       const raw = window.localStorage.getItem(LOCAL_LEADERBOARD_KEY);
-      const entries: LeaderboardEntry[] = raw ? JSON.parse(raw) : [];
-      entries.push(entry);
+      let entries: LeaderboardEntry[] = raw ? JSON.parse(raw) : [];
+
+      // A player cannot appear twice in the leaderboard.
+      // If the player set a new record, update their entry; otherwise keep their highest score.
+      const existingIdx = entries.findIndex(e => e.playerId === entry.playerId || (e.playerName === entry.playerName && entry.playerId.startsWith('guest_')));
+      if (existingIdx !== -1) {
+        if (entry.score > entries[existingIdx].score) {
+          entries[existingIdx] = {
+            ...entries[existingIdx],
+            heroId: entry.heroId,
+            stage: entry.stage,
+            survivalTimeSec: entry.survivalTimeSec,
+            kills: entry.kills,
+            credits: entry.credits,
+            score: entry.score,
+            isVictory: entry.isVictory,
+            createdAt: entry.createdAt || new Date().toISOString()
+          };
+        }
+      } else {
+        entries.push(entry);
+      }
+
       entries.sort((a, b) => b.score - a.score);
       window.localStorage.setItem(LOCAL_LEADERBOARD_KEY, JSON.stringify(entries.slice(0, 50)));
     } catch {

@@ -944,6 +944,8 @@ class Game {
         this.enemyManager.activeBoss,
         teammatesKills
       );
+      const tpCheck = this.sessionDirector.canTeleportToRift();
+      this.hud.updateTeleportButton(tpCheck.canTeleport, tpCheck.reason);
       this.hud.updatePoeParty(
         this.player,
         this.remotePlayers,

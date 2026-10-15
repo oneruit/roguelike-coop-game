@@ -959,14 +959,45 @@ export class SessionDirector {
   }
 
   /**
+   * Checks whether the player is allowed to teleport to the dimensional rift.
+   * Teleport is available only after the teleporter is opened (state !== 'IDLE')
+   * and provided the player is at least two squares (100 meters) away from it.
+   */
+  public canTeleportToRift(): { canTeleport: boolean; reason?: string } {
+    if (!this.player || !this.player.isAlive || this.gameState !== GameState.PLAYING) {
+      return { canTeleport: false, reason: 'Забег не активен' };
+    }
+    if (!this.riftTeleporter || !this.riftTeleporter.mesh.visible) {
+      return { canTeleport: false, reason: 'Разлом недоступен на этом этапе' };
+    }
+    if (!this.riftTeleporter.isOpened) {
+      return { canTeleport: false, reason: 'Разлом еще не открыт (активируйте [E])' };
+    }
+
+    const dist = this.player.position.distanceTo(this.riftTeleporter.position);
+    const pChunkX = Math.floor(this.player.position.x / 50);
+    const pChunkZ = Math.floor(this.player.position.z / 50);
+    const rChunkX = Math.floor(this.riftTeleporter.position.x / 50);
+    const rChunkZ = Math.floor(this.riftTeleporter.position.z / 50);
+    const chunkDist = Math.max(Math.abs(pChunkX - rChunkX), Math.abs(pChunkZ - rChunkZ));
+
+    if (dist < 100 && chunkDist < 2) {
+      return { canTeleport: false, reason: `Слишком близко к Разлому (${Math.round(dist)}м / нужно минимум 2 квадрата — 100м)` };
+    }
+
+    return { canTeleport: true };
+  }
+
+  /**
    * Teleports player instantly to the Rift portal with sulfur smoke effects,
    * granting a 1.5s invulnerability shield and advancing game & stage time by 20s.
+   * Available strictly after the rift is opened and when at least 2 squares away.
    */
   public teleportPlayerToRift(): boolean {
-    if (!this.player || !this.player.isAlive || this.gameState !== GameState.PLAYING) {
-      return false;
-    }
-    if (!this.riftTeleporter) {
+    const check = this.canTeleportToRift();
+    if (!check.canTeleport) {
+      this.hud.triggerAltarNotification('ТЕЛЕПОРТ НЕДОСТУПЕН', check.reason || '', '🔒', '#f87171');
+      SoundManager.playHit?.();
       return false;
     }
 
@@ -1007,10 +1038,7 @@ export class SessionDirector {
       value: 1
     });
 
-    // 6. Mark teleporter as discovered
-    this.riftTeleporter.isDiscovered = true;
-
-    // 7. Feedback banner
+    // 6. Feedback banner
     this.hud.triggerAltarNotification('ТЕЛЕПОРТАЦИЯ К РАЗЛОМУ', '+20 сек. штрафного времени', '🌀', '#38bdf8');
 
     return true;

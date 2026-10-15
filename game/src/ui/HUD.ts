@@ -1348,6 +1348,10 @@ export class HUD {
     this.inGameOverlayUI.updateStageText(stageNum, biomeName);
   }
 
+  public updateTeleportButton(canTeleport: boolean, reason?: string) {
+    this.inGameOverlayUI.updateTeleportButton(canTeleport, reason);
+  }
+
   public showInteractionPrompt(text: string) {
     this.inGameOverlayUI.showInteractionPrompt(text);
   }

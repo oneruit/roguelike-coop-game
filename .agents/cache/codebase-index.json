@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-15T11:42:37.138Z",
+  "generatedAt": "2026-10-15T12:24:29.458Z",
   "totalFiles": 152,
-  "totalSymbols": 1549,
+  "totalSymbols": 1552,
   "topLevelCount": 468,
-  "methodsCount": 1081,
+  "methodsCount": 1084,
   "entities": {
     "heroes": [
       {
@@ -4503,7 +4503,7 @@
       "name": "HUD.getHeroAvatar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1430,
+      "line": 1434,
       "className": "HUD",
       "methodName": "getHeroAvatar"
     },
@@ -4511,7 +4511,7 @@
       "name": "HUD.getHeroIcon",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1422,
+      "line": 1426,
       "className": "HUD",
       "methodName": "getHeroIcon",
       "doc": "--- Hero Info Static / Instance Helpers ---"
@@ -4520,7 +4520,7 @@
       "name": "HUD.getHeroName",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1426,
+      "line": 1430,
       "className": "HUD",
       "methodName": "getHeroName"
     },
@@ -4608,7 +4608,7 @@
       "name": "HUD.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1355,
+      "line": 1359,
       "className": "HUD",
       "methodName": "hideInteractionPrompt"
     },
@@ -4786,7 +4786,7 @@
       "name": "HUD.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1359,
+      "line": 1363,
       "className": "HUD",
       "methodName": "renderItemInventory"
     },
@@ -4810,7 +4810,7 @@
       "name": "HUD.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1387,
+      "line": 1391,
       "className": "HUD",
       "methodName": "resetBossUI"
     },
@@ -4834,7 +4834,7 @@
       "name": "HUD.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1391,
+      "line": 1395,
       "className": "HUD",
       "methodName": "resetSessionHUD"
     },
@@ -4891,7 +4891,7 @@
       "name": "HUD.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1407,
+      "line": 1411,
       "className": "HUD",
       "methodName": "setTrainingModeActive"
     },
@@ -4915,7 +4915,7 @@
       "name": "HUD.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1367,
+      "line": 1371,
       "className": "HUD",
       "methodName": "showBalanceToast"
     },
@@ -4956,7 +4956,7 @@
       "name": "HUD.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1351,
+      "line": 1355,
       "className": "HUD",
       "methodName": "showInteractionPrompt"
     },
@@ -5096,7 +5096,7 @@
       "name": "HUD.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1363,
+      "line": 1367,
       "className": "HUD",
       "methodName": "triggerAltarNotification"
     },
@@ -5104,7 +5104,7 @@
       "name": "HUD.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1379,
+      "line": 1383,
       "className": "HUD",
       "methodName": "triggerBossWarning"
     },
@@ -5112,7 +5112,7 @@
       "name": "HUD.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1375,
+      "line": 1379,
       "className": "HUD",
       "methodName": "triggerDamageFlash"
     },
@@ -5120,7 +5120,7 @@
       "name": "HUD.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1383,
+      "line": 1387,
       "className": "HUD",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -5128,7 +5128,7 @@
       "name": "HUD.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1371,
+      "line": 1375,
       "className": "HUD",
       "methodName": "updateBuffsTray"
     },
@@ -5201,7 +5201,7 @@
       "name": "HUD.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1399,
+      "line": 1403,
       "className": "HUD",
       "methodName": "updatePassivesBar"
     },
@@ -5209,7 +5209,7 @@
       "name": "HUD.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1403,
+      "line": 1407,
       "className": "HUD",
       "methodName": "updatePerformance"
     },
@@ -5222,10 +5222,18 @@
       "methodName": "updateStageText"
     },
     {
+      "name": "HUD.updateTeleportButton",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1351,
+      "className": "HUD",
+      "methodName": "updateTeleportButton"
+    },
+    {
       "name": "HUD.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1395,
+      "line": 1399,
       "className": "HUD",
       "methodName": "updateWeaponsBar"
     },
@@ -5315,7 +5323,7 @@
       "name": "InGameOverlayUI.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 607,
+      "line": 624,
       "className": "InGameOverlayUI",
       "methodName": "hideInteractionPrompt"
     },
@@ -5331,7 +5339,7 @@
       "name": "InGameOverlayUI.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 613,
+      "line": 630,
       "className": "InGameOverlayUI",
       "methodName": "renderItemInventory"
     },
@@ -5339,7 +5347,7 @@
       "name": "InGameOverlayUI.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 826,
+      "line": 843,
       "className": "InGameOverlayUI",
       "methodName": "resetBossUI"
     },
@@ -5347,7 +5355,7 @@
       "name": "InGameOverlayUI.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 922,
+      "line": 939,
       "className": "InGameOverlayUI",
       "methodName": "resetSessionHUD"
     },
@@ -5371,7 +5379,7 @@
       "name": "InGameOverlayUI.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 953,
+      "line": 970,
       "className": "InGameOverlayUI",
       "methodName": "setTrainingModeActive"
     },
@@ -5379,7 +5387,7 @@
       "name": "InGameOverlayUI.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 657,
+      "line": 674,
       "className": "InGameOverlayUI",
       "methodName": "showBalanceToast"
     },
@@ -5387,7 +5395,7 @@
       "name": "InGameOverlayUI.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 600,
+      "line": 617,
       "className": "InGameOverlayUI",
       "methodName": "showInteractionPrompt"
     },
@@ -5395,7 +5403,7 @@
       "name": "InGameOverlayUI.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 639,
+      "line": 656,
       "className": "InGameOverlayUI",
       "methodName": "triggerAltarNotification"
     },
@@ -5403,7 +5411,7 @@
       "name": "InGameOverlayUI.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 786,
+      "line": 803,
       "className": "InGameOverlayUI",
       "methodName": "triggerBossWarning"
     },
@@ -5411,7 +5419,7 @@
       "name": "InGameOverlayUI.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 771,
+      "line": 788,
       "className": "InGameOverlayUI",
       "methodName": "triggerDamageFlash"
     },
@@ -5419,7 +5427,7 @@
       "name": "InGameOverlayUI.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 806,
+      "line": 823,
       "className": "InGameOverlayUI",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -5427,7 +5435,7 @@
       "name": "InGameOverlayUI.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 704,
+      "line": 721,
       "className": "InGameOverlayUI",
       "methodName": "updateBuffsTray"
     },
@@ -5443,7 +5451,7 @@
       "name": "InGameOverlayUI.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 880,
+      "line": 897,
       "className": "InGameOverlayUI",
       "methodName": "updatePassivesBar"
     },
@@ -5451,7 +5459,7 @@
       "name": "InGameOverlayUI.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 885,
+      "line": 902,
       "className": "InGameOverlayUI",
       "methodName": "updatePerformance"
     },
@@ -5464,10 +5472,18 @@
       "methodName": "updateStageText"
     },
     {
+      "name": "InGameOverlayUI.updateTeleportButton",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 600,
+      "className": "InGameOverlayUI",
+      "methodName": "updateTeleportButton"
+    },
+    {
       "name": "InGameOverlayUI.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 845,
+      "line": 862,
       "className": "InGameOverlayUI",
       "methodName": "updateWeaponsBar"
     },
@@ -5910,7 +5926,7 @@
       "name": "LeaderboardManager.fetchTopScores",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 110,
+      "line": 145,
       "className": "LeaderboardManager",
       "methodName": "fetchTopScores"
     },
@@ -5918,7 +5934,7 @@
       "name": "LeaderboardManager.getDefaultEntries",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 172,
+      "line": 253,
       "className": "LeaderboardManager",
       "methodName": "getDefaultEntries"
     },
@@ -5926,7 +5942,7 @@
       "name": "LeaderboardManager.getLocalEntries",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 143,
+      "line": 190,
       "className": "LeaderboardManager",
       "methodName": "getLocalEntries"
     },
@@ -5934,7 +5950,7 @@
       "name": "LeaderboardManager.saveLocalEntry",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 159,
+      "line": 219,
       "className": "LeaderboardManager",
       "methodName": "saveLocalEntry"
     },
@@ -9090,7 +9106,7 @@
       "name": "RiftTeleporter.activate",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 124,
+      "line": 127,
       "className": "RiftTeleporter",
       "methodName": "activate"
     },
@@ -9098,7 +9114,7 @@
       "name": "RiftTeleporter.createTeleporterVisuals",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 68,
+      "line": 71,
       "className": "RiftTeleporter",
       "methodName": "createTeleporterVisuals"
     },
@@ -9106,7 +9122,7 @@
       "name": "RiftTeleporter.destroy",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 302,
+      "line": 305,
       "className": "RiftTeleporter",
       "methodName": "destroy"
     },
@@ -9114,7 +9130,7 @@
       "name": "RiftTeleporter.disableForFinalStage",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 239,
+      "line": 242,
       "className": "RiftTeleporter",
       "methodName": "disableForFinalStage",
       "doc": "Disables the teleporter for the final stage (Rift Core) where no transitions occur."
@@ -9123,7 +9139,7 @@
       "name": "RiftTeleporter.getInteraction",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 272,
+      "line": 275,
       "className": "RiftTeleporter",
       "methodName": "getInteraction"
     },
@@ -9131,7 +9147,7 @@
       "name": "RiftTeleporter.getSnapshot",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 310,
+      "line": 313,
       "className": "RiftTeleporter",
       "methodName": "getSnapshot"
     },
@@ -9139,7 +9155,7 @@
       "name": "RiftTeleporter.resetForStage",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 212,
+      "line": 215,
       "className": "RiftTeleporter",
       "methodName": "resetForStage",
       "doc": "Resets teleporter for a new stage at new random location."
@@ -9148,7 +9164,7 @@
       "name": "RiftTeleporter.stabilizeVoluntaryPortal",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 251,
+      "line": 254,
       "className": "RiftTeleporter",
       "methodName": "stabilizeVoluntaryPortal",
       "doc": "Automatically stabilizes the teleporter when 5 minutes on the biome have elapsed."
@@ -9157,7 +9173,7 @@
       "name": "RiftTeleporter.update",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 147,
+      "line": 150,
       "className": "RiftTeleporter",
       "methodName": "update"
     },
@@ -9662,6 +9678,15 @@
       "methodName": "applyStageTransition"
     },
     {
+      "name": "SessionDirector.canTeleportToRift",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 966,
+      "className": "SessionDirector",
+      "methodName": "canTeleportToRift",
+      "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
+    },
+    {
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
@@ -9705,7 +9730,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1084,
+      "line": 1112,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -9722,7 +9747,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1022,
+      "line": 1050,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -9747,10 +9772,10 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 965,
+      "line": 996,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
-      "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s."
+      "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
     },
     {
       "name": "SessionDirector.toggleDevMode",

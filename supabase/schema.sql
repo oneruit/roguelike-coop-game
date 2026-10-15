@@ -342,12 +342,14 @@ CREATE TABLE IF NOT EXISTS leaderboards (
 -- Indexes for lightning fast queries and top ranking
 CREATE INDEX IF NOT EXISTS idx_leaderboards_score ON leaderboards (score DESC);
 CREATE INDEX IF NOT EXISTS idx_leaderboards_created ON leaderboards (created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_leaderboards_player_id ON leaderboards (player_id);
 
 -- Enable RLS
 ALTER TABLE leaderboards ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Allow public read leaderboards" ON leaderboards;
 DROP POLICY IF EXISTS "Allow public insert leaderboards" ON leaderboards;
+DROP POLICY IF EXISTS "Allow public update leaderboards" ON leaderboards;
 
 -- Policy: Anyone can view leaderboard entries
 CREATE POLICY "Allow public read leaderboards"
@@ -362,4 +364,13 @@ CREATE POLICY "Allow public insert leaderboards"
   FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
+
+-- Policy: Game clients can update their existing personal best record
+CREATE POLICY "Allow public update leaderboards"
+  ON leaderboards
+  FOR UPDATE
+  TO anon, authenticated
+  USING (true)
+  WITH CHECK (true);
+
 
