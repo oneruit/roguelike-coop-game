@@ -287,12 +287,6 @@ export class AdminController {
       exportLeaderboardJson(this.state.leaderboardEntries);
     });
 
-    document.getElementById('btn-seed-leaderboards')?.addEventListener('click', async () => {
-      await this.supabase.seedDemoLeaderboards();
-      this.renderLeaderboards();
-      showToast('Демо-рекорды успешно добавлены в таблицу лидеров!', 'success');
-    });
-
     document.getElementById('btn-reset-leaderboards-all')?.addEventListener('click', async () => {
       if (confirm('Вы уверены, что хотите сбросить ВСЮ таблицу лидеров? Все рекорды будут удалены безвозвратно!')) {
         await this.supabase.resetAllLeaderboards();

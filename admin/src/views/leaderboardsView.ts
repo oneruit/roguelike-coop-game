@@ -93,17 +93,17 @@ export function renderLeaderboards(
         <div style="font-size:36px; margin-bottom:12px;">🏆</div>
         <h3 style="font-size:16px; font-weight:700; color:var(--text-heading); margin-bottom:6px;">Записи лидеров не найдены</h3>
         <p style="font-size:13px; color:var(--text-muted); max-width:440px; margin:0 auto 16px;">
-          ${total === 0 ? 'Таблица лидеров пуста. Вы можете сгенерировать стартовые демо-рекорды для тестирования.' : 'По заданным параметрам поиска и фильтров нет подходящих результатов.'}
+          ${total === 0 ? 'Таблица лидеров пуста. Ожидаются результаты игровых сессий из базы данных.' : 'По заданным параметрам поиска и фильтров нет подходящих результатов.'}
         </p>
         <div style="display:flex; justify-content:center; gap:8px;">
-          ${total === 0 ? '<button id="btn-empty-seed" class="btn btn-sm btn-primary">🧪 Заполнить демо-рекордами</button>' : '<button id="btn-reset-filters" class="btn btn-sm btn-outline">Сбросить фильтры</button>'}
+          ${total === 0 ? '<button id="btn-empty-refresh" class="btn btn-sm btn-primary">🔄 Синхронизировать с БД</button>' : '<button id="btn-reset-filters" class="btn btn-sm btn-outline">Сбросить фильтры</button>'}
         </div>
       </div>
     `;
 
-    document.getElementById('btn-empty-seed')?.addEventListener('click', async () => {
-      await supabase.seedDemoLeaderboards();
-      showToast('Демо-рекорды успешно добавлены!', 'success');
+    document.getElementById('btn-empty-refresh')?.addEventListener('click', async () => {
+      await supabase.fetchLeaderboards();
+      showToast('Синхронизация с базой данных завершена.', 'success');
       onRefresh();
     });
 

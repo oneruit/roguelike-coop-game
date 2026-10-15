@@ -361,7 +361,25 @@ export class SessionDirector {
     this.restartGame(new Vector3(myOffset[0], 0, myOffset[1]), true);
   }
 
+  public surrenderGame(): void {
+    if (this.gameState !== GameState.PLAYING && this.gameState !== GameState.PAUSED && this.gameState !== GameState.LEVEL_UP) {
+      return;
+    }
+    this.hud.hidePause();
+    this.triggerGameOver(false);
+  }
+
   public returnToMainMenu(): void {
+    if ((this.gameState === GameState.PLAYING || this.gameState === GameState.PAUSED || this.gameState === GameState.LEVEL_UP) && this.gameTime > 5) {
+      LeaderboardManager.submitScore({
+        heroId: this.player.charType,
+        stage: this.biomeManager.stageNumber,
+        survivalTimeSec: this.gameTime,
+        kills: this.player.kills,
+        credits: this.player.credits,
+        isVictory: false
+      }).catch(err => console.warn('[SessionDirector] Leaderboard submit on exit error:', err));
+    }
     this.lobbyCoordinator?.stopRoomPolling();
     this.net.reset();
     for (const rp of this.remotePlayers.values()) {

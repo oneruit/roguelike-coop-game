@@ -86,6 +86,7 @@ export class HUD {
   public onJoinRoomClicked?: () => void;
   public onRestartSameSeed?: () => void;
   public onReturnToMenu?: () => void;
+  public onSurrender?: () => void;
   public onToggleDevMode?: () => void;
   public isTrainingModeActive: boolean = false;
 
@@ -607,6 +608,32 @@ export class HUD {
       this.showSettings('pause');
     });
 
+    const surrenderConfirmModal = document.getElementById('surrender-confirm-modal');
+    const btnPauseSurrender = document.getElementById('btn-pause-surrender');
+    const btnConfirmSurrender = document.getElementById('btn-confirm-surrender');
+    const btnCancelSurrender = document.getElementById('btn-cancel-surrender');
+
+    btnPauseSurrender?.addEventListener('click', () => {
+      this.hidePause();
+      surrenderConfirmModal?.classList.remove('hidden');
+      if (!this.menuStack.includes('surrender_confirm')) {
+        this.menuStack.push('surrender_confirm');
+      }
+    });
+
+    btnCancelSurrender?.addEventListener('click', () => {
+      surrenderConfirmModal?.classList.add('hidden');
+      this.menuStack = this.menuStack.filter((s) => s !== 'surrender_confirm');
+      this.showPause();
+    });
+
+    btnConfirmSurrender?.addEventListener('click', () => {
+      surrenderConfirmModal?.classList.add('hidden');
+      this.menuStack = this.menuStack.filter((s) => s !== 'surrender_confirm');
+      this.hidePause();
+      this.onSurrender?.();
+    });
+
     const confirmChangeHeroModal = document.getElementById('change-hero-confirm-modal');
     const btnConfirmChangeHero = document.getElementById('btn-confirm-change-hero');
     const btnCancelChangeHero = document.getElementById('btn-cancel-change-hero');
@@ -933,6 +960,15 @@ export class HUD {
 
       case 'leaderboard': {
         this.hideLeaderboard();
+        return 'handled';
+      }
+
+      case 'surrender_confirm': {
+        document.getElementById('surrender-confirm-modal')?.classList.add('hidden');
+        this.pauseModal.classList.remove('hidden');
+        if (!this.menuStack.includes('pause')) {
+          this.menuStack.push('pause');
+        }
         return 'handled';
       }
 

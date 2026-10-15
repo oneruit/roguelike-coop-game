@@ -26,18 +26,14 @@ if (typeof (globalThis as any).localStorage === 'undefined') {
   (globalThis as any).localStorage = new LocalStorageMock();
 }
 
-test('Admin SupabaseService - fetchLeaderboards falls back to default demo entries when offline', async () => {
+test('Admin SupabaseService - fetchLeaderboards returns empty array when no records exist and offline', async () => {
   localStorage.clear();
   const state = new BalanceState();
   const service = new SupabaseService(state, () => {});
 
   const entries = await service.fetchLeaderboards();
-  assert.ok(entries.length > 0, 'Should load default demo records when local and cloud are empty');
-  assert.equal(entries.length, DEFAULT_DEMO_LEADERBOARDS.length);
-  assert.equal(state.leaderboardEntries.length, DEFAULT_DEMO_LEADERBOARDS.length);
-
-  // Highest score should be first
-  assert.ok(entries[0].score >= entries[1].score, 'Entries must be sorted by score descending');
+  assert.equal(entries.length, 0, 'Should return empty array when local and cloud are empty without demo fallback');
+  assert.equal(state.leaderboardEntries.length, 0);
 });
 
 test('Admin SupabaseService - seedDemoLeaderboards populates demo records in state and storage', async () => {
@@ -115,4 +111,50 @@ test('Admin SupabaseService - resetAllLeaderboards wipes all entries from state 
 
   const raw = localStorage.getItem('outlaw_local_leaderboards');
   assert.equal(raw, null, 'outlaw_local_leaderboards must be removed from localStorage');
+});
+
+test('LeaderboardManager - submitScore records run on surrender or death without demo fallback', async () => {
+  localStorage.clear();
+  const { LeaderboardManager } = await import('../game/src/core/LeaderboardManager');
+
+  // Empty initially - must not return mock demo records
+  const initial = LeaderboardManager.getLocalEntries();
+  assert.equal(initial.length, 0, 'Initial local entries must be empty');
+
+  // Submit surrender run
+  const surrenderRes = await LeaderboardManager.submitScore({
+    heroId: 'ronin',
+    stage: 2,
+    survivalTimeSec: 150.5,
+    kills: 45,
+    credits: 200,
+    isVictory: false,
+    playerId: 'surrender_hero_1',
+    playerName: 'SurrenderedRonin'
+  });
+
+  assert.equal(surrenderRes.success, true);
+  assert.ok(surrenderRes.score > 0);
+
+  const localAfterSurrender = LeaderboardManager.getLocalEntries();
+  assert.equal(localAfterSurrender.length, 1);
+  assert.equal(localAfterSurrender[0].playerId, 'surrender_hero_1');
+  assert.equal(localAfterSurrender[0].isVictory, false);
+
+  // Submit death run
+  const deathRes = await LeaderboardManager.submitScore({
+    heroId: 'valkyrie',
+    stage: 3,
+    survivalTimeSec: 420.0,
+    kills: 110,
+    credits: 850,
+    isVictory: false,
+    playerId: 'died_hero_2',
+    playerName: 'FallenValkyrie'
+  });
+
+  assert.equal(deathRes.success, true);
+  const localAfterDeath = LeaderboardManager.getLocalEntries();
+  assert.equal(localAfterDeath.length, 2);
+  assert.equal(localAfterDeath[0].playerId, 'died_hero_2', 'Higher score run should rank first');
 });

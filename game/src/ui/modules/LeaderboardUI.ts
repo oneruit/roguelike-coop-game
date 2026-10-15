@@ -90,7 +90,7 @@ export class LeaderboardUI extends Screen {
       const entries = await LeaderboardManager.fetchTopScores(25);
       this.renderTable(entries);
     } catch {
-      this.renderTable(LeaderboardManager.getDefaultEntries());
+      this.renderTable([]);
     }
   }
 

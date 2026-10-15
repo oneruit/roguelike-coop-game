@@ -187,6 +187,7 @@ class Game {
     this.hud.onTeleportToRift = () => this.sessionDirector.teleportPlayerToRift();
     this.hud.onSaveRunLater = () => this.sessionDirector.saveCurrentRunAndExit();
     this.hud.onResumeSavedRun = () => this.sessionDirector.resumeSavedRun();
+    this.hud.onSurrender = () => this.sessionDirector.surrenderGame();
     this.hud.onResolutionScaleChanged = (scale: number) => {
       this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     };
