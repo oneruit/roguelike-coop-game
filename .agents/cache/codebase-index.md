@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-16T14:42:16.273Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1095
+> **Generated:** 2026-10-16T15:10:53.037Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1097
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -1036,55 +1036,57 @@ Run `npm run index` to refresh this cache.
 | `ProgressionChartState` | `interface` | [`admin/src/types.ts:31`](../../admin/src/types.ts#L31) | - |
 | `ProgressionData` | `interface` | [`game/src/core/ProgressionManager.ts:34`](../../game/src/core/ProgressionManager.ts#L34) | - |
 | `ProgressionManager` | `class` | [`game/src/core/ProgressionManager.ts:81`](../../game/src/core/ProgressionManager.ts#L81) | - |
-| `ProgressionManager.addAccountXp` | `method` | [`game/src/core/ProgressionManager.ts:355`](../../game/src/core/ProgressionManager.ts#L355) | - |
-| `ProgressionManager.addCoins` | `method` | [`game/src/core/ProgressionManager.ts:369`](../../game/src/core/ProgressionManager.ts#L369) | - |
-| `ProgressionManager.advanceChapterQuestForTest` | `method` | [`game/src/core/ProgressionManager.ts:872`](../../game/src/core/ProgressionManager.ts#L872) | - |
-| `ProgressionManager.buyElf` | `method` | [`game/src/core/ProgressionManager.ts:557`](../../game/src/core/ProgressionManager.ts#L557) | - |
-| `ProgressionManager.canUnlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:578`](../../game/src/core/ProgressionManager.ts#L578) | - |
-| `ProgressionManager.checkAutoUnlocks` | `method` | [`game/src/core/ProgressionManager.ts:329`](../../game/src/core/ProgressionManager.ts#L329) | - |
-| `ProgressionManager.claimChapterFinalReward` | `method` | [`game/src/core/ProgressionManager.ts:858`](../../game/src/core/ProgressionManager.ts#L858) | - |
-| `ProgressionManager.claimChapterQuest` | `method` | [`game/src/core/ProgressionManager.ts:828`](../../game/src/core/ProgressionManager.ts#L828) | - |
-| `ProgressionManager.claimSidebarQuest` | `method` | [`game/src/core/ProgressionManager.ts:505`](../../game/src/core/ProgressionManager.ts#L505) | - |
-| `ProgressionManager.completeLeshyQuest` | `method` | [`game/src/core/ProgressionManager.ts:548`](../../game/src/core/ProgressionManager.ts#L548) | - |
-| `ProgressionManager.getChapterQuestProgress` | `method` | [`game/src/core/ProgressionManager.ts:745`](../../game/src/core/ProgressionManager.ts#L745) | - |
-| `ProgressionManager.getDailySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:423`](../../game/src/core/ProgressionManager.ts#L423) | - |
-| `ProgressionManager.getDefaultChapterQuestsProgress` | `method` | [`game/src/core/ProgressionManager.ts:117`](../../game/src/core/ProgressionManager.ts#L117) | - |
-| `ProgressionManager.getDefaultData` | `method` | [`game/src/core/ProgressionManager.ts:127`](../../game/src/core/ProgressionManager.ts#L127) | - |
-| `ProgressionManager.getDefaultProgressionData` | `method` | [`game/src/core/ProgressionManager.ts:263`](../../game/src/core/ProgressionManager.ts#L263) | - |
-| `ProgressionManager.getHeroProgress` | `method` | [`game/src/core/ProgressionManager.ts:1101`](../../game/src/core/ProgressionManager.ts#L1101) | - |
-| `ProgressionManager.getHeroQuestDefinition` | `method` | [`game/src/core/ProgressionManager.ts:909`](../../game/src/core/ProgressionManager.ts#L909) | - |
-| `ProgressionManager.getInstance` | `method` | [`game/src/core/ProgressionManager.ts:102`](../../game/src/core/ProgressionManager.ts#L102) | - |
-| `ProgressionManager.getWeeklySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:464`](../../game/src/core/ProgressionManager.ts#L464) | - |
-| `ProgressionManager.isChapterComplete` | `method` | [`game/src/core/ProgressionManager.ts:848`](../../game/src/core/ProgressionManager.ts#L848) | - |
-| `ProgressionManager.isChapterRewardClaimed` | `method` | [`game/src/core/ProgressionManager.ts:854`](../../game/src/core/ProgressionManager.ts#L854) | - |
-| `ProgressionManager.isHeroUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:307`](../../game/src/core/ProgressionManager.ts#L307) | - |
-| `ProgressionManager.loadExternalData` | `method` | [`game/src/core/ProgressionManager.ts:267`](../../game/src/core/ProgressionManager.ts#L267) | - |
-| `ProgressionManager.loadFromStorage` | `method` | [`game/src/core/ProgressionManager.ts:175`](../../game/src/core/ProgressionManager.ts#L175) | - |
-| `ProgressionManager.onSave` | `method` | [`game/src/core/ProgressionManager.ts:256`](../../game/src/core/ProgressionManager.ts#L256) | - |
-| `ProgressionManager.progressLeshyStep` | `method` | [`game/src/core/ProgressionManager.ts:537`](../../game/src/core/ProgressionManager.ts#L537) | - |
-| `ProgressionManager.recordAltarCaptured` | `method` | [`game/src/core/ProgressionManager.ts:604`](../../game/src/core/ProgressionManager.ts#L604) | - |
-| `ProgressionManager.recordBossDefeat` | `method` | [`game/src/core/ProgressionManager.ts:723`](../../game/src/core/ProgressionManager.ts#L723) | - |
-| `ProgressionManager.recordBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:377`](../../game/src/core/ProgressionManager.ts#L377) | - |
-| `ProgressionManager.recordBossSpawn` | `method` | [`game/src/core/ProgressionManager.ts:719`](../../game/src/core/ProgressionManager.ts#L719) | - |
-| `ProgressionManager.recordCrawlerOrCoyoteKilled` | `method` | [`game/src/core/ProgressionManager.ts:632`](../../game/src/core/ProgressionManager.ts#L632) | - |
-| `ProgressionManager.recordEnemyKilled` | `method` | [`game/src/core/ProgressionManager.ts:393`](../../game/src/core/ProgressionManager.ts#L393) | - |
-| `ProgressionManager.recordForestGoldenChestOpened` | `method` | [`game/src/core/ProgressionManager.ts:642`](../../game/src/core/ProgressionManager.ts#L642) | - |
-| `ProgressionManager.recordForestSurvivalTime` | `method` | [`game/src/core/ProgressionManager.ts:652`](../../game/src/core/ProgressionManager.ts#L652) | - |
-| `ProgressionManager.recordLeshyDefeated` | `method` | [`game/src/core/ProgressionManager.ts:667`](../../game/src/core/ProgressionManager.ts#L667) | - |
-| `ProgressionManager.recordMeleeOrSpellKill` | `method` | [`game/src/core/ProgressionManager.ts:584`](../../game/src/core/ProgressionManager.ts#L584) | --- Chapter Quests Tracking & Claiming --- |
-| `ProgressionManager.recordMerchantPurchaseInRun` | `method` | [`game/src/core/ProgressionManager.ts:705`](../../game/src/core/ProgressionManager.ts#L705) | - |
-| `ProgressionManager.recordRangedKill` | `method` | [`game/src/core/ProgressionManager.ts:735`](../../game/src/core/ProgressionManager.ts#L735) | - |
-| `ProgressionManager.recordResourceGather` | `method` | [`game/src/core/ProgressionManager.ts:414`](../../game/src/core/ProgressionManager.ts#L414) | - |
-| `ProgressionManager.recordRunCrit` | `method` | [`game/src/core/ProgressionManager.ts:677`](../../game/src/core/ProgressionManager.ts#L677) | - |
-| `ProgressionManager.recordSimultaneousPassives` | `method` | [`game/src/core/ProgressionManager.ts:691`](../../game/src/core/ProgressionManager.ts#L691) | - |
-| `ProgressionManager.recordTeleporterBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:614`](../../game/src/core/ProgressionManager.ts#L614) | - |
-| `ProgressionManager.recordXpGemCollected` | `method` | [`game/src/core/ProgressionManager.ts:594`](../../game/src/core/ProgressionManager.ts#L594) | - |
-| `ProgressionManager.resetAllProgress` | `method` | [`game/src/core/ProgressionManager.ts:902`](../../game/src/core/ProgressionManager.ts#L902) | - |
-| `ProgressionManager.resetAllTasksToZero` | `method` | [`game/src/core/ProgressionManager.ts:884`](../../game/src/core/ProgressionManager.ts#L884) | - |
-| `ProgressionManager.resetRunSessionProgress` | `method` | [`game/src/core/ProgressionManager.ts:109`](../../game/src/core/ProgressionManager.ts#L109) | - |
-| `ProgressionManager.save` | `method` | [`game/src/core/ProgressionManager.ts:237`](../../game/src/core/ProgressionManager.ts#L237) | - |
-| `ProgressionManager.unlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:568`](../../game/src/core/ProgressionManager.ts#L568) | - |
-| `ProgressionManager.unlockHero` | `method` | [`game/src/core/ProgressionManager.ts:320`](../../game/src/core/ProgressionManager.ts#L320) | - |
+| `ProgressionManager.addAccountXp` | `method` | [`game/src/core/ProgressionManager.ts:357`](../../game/src/core/ProgressionManager.ts#L357) | - |
+| `ProgressionManager.addCoins` | `method` | [`game/src/core/ProgressionManager.ts:371`](../../game/src/core/ProgressionManager.ts#L371) | - |
+| `ProgressionManager.advanceChapterQuestForTest` | `method` | [`game/src/core/ProgressionManager.ts:936`](../../game/src/core/ProgressionManager.ts#L936) | - |
+| `ProgressionManager.buyElf` | `method` | [`game/src/core/ProgressionManager.ts:559`](../../game/src/core/ProgressionManager.ts#L559) | - |
+| `ProgressionManager.canUnlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:580`](../../game/src/core/ProgressionManager.ts#L580) | - |
+| `ProgressionManager.checkAutoUnlocks` | `method` | [`game/src/core/ProgressionManager.ts:327`](../../game/src/core/ProgressionManager.ts#L327) | - |
+| `ProgressionManager.claimChapterFinalReward` | `method` | [`game/src/core/ProgressionManager.ts:922`](../../game/src/core/ProgressionManager.ts#L922) | - |
+| `ProgressionManager.claimChapterQuest` | `method` | [`game/src/core/ProgressionManager.ts:881`](../../game/src/core/ProgressionManager.ts#L881) | - |
+| `ProgressionManager.claimSidebarQuest` | `method` | [`game/src/core/ProgressionManager.ts:507`](../../game/src/core/ProgressionManager.ts#L507) | - |
+| `ProgressionManager.completeLeshyQuest` | `method` | [`game/src/core/ProgressionManager.ts:550`](../../game/src/core/ProgressionManager.ts#L550) | - |
+| `ProgressionManager.getChapterQuestProgress` | `method` | [`game/src/core/ProgressionManager.ts:784`](../../game/src/core/ProgressionManager.ts#L784) | - |
+| `ProgressionManager.getDailySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:425`](../../game/src/core/ProgressionManager.ts#L425) | - |
+| `ProgressionManager.getDefaultChapterQuestsProgress` | `method` | [`game/src/core/ProgressionManager.ts:118`](../../game/src/core/ProgressionManager.ts#L118) | - |
+| `ProgressionManager.getDefaultData` | `method` | [`game/src/core/ProgressionManager.ts:128`](../../game/src/core/ProgressionManager.ts#L128) | - |
+| `ProgressionManager.getDefaultProgressionData` | `method` | [`game/src/core/ProgressionManager.ts:264`](../../game/src/core/ProgressionManager.ts#L264) | - |
+| `ProgressionManager.getHeroProgress` | `method` | [`game/src/core/ProgressionManager.ts:1164`](../../game/src/core/ProgressionManager.ts#L1164) | - |
+| `ProgressionManager.getHeroQuestDefinition` | `method` | [`game/src/core/ProgressionManager.ts:973`](../../game/src/core/ProgressionManager.ts#L973) | - |
+| `ProgressionManager.getInstance` | `method` | [`game/src/core/ProgressionManager.ts:103`](../../game/src/core/ProgressionManager.ts#L103) | - |
+| `ProgressionManager.getWeeklySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:466`](../../game/src/core/ProgressionManager.ts#L466) | - |
+| `ProgressionManager.isChapterComplete` | `method` | [`game/src/core/ProgressionManager.ts:902`](../../game/src/core/ProgressionManager.ts#L902) | - |
+| `ProgressionManager.isChapterRewardClaimed` | `method` | [`game/src/core/ProgressionManager.ts:918`](../../game/src/core/ProgressionManager.ts#L918) | - |
+| `ProgressionManager.isChapterUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:586`](../../game/src/core/ProgressionManager.ts#L586) | --- Chapter Quests Tracking & Claiming --- |
+| `ProgressionManager.isHeroUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:308`](../../game/src/core/ProgressionManager.ts#L308) | - |
+| `ProgressionManager.loadExternalData` | `method` | [`game/src/core/ProgressionManager.ts:268`](../../game/src/core/ProgressionManager.ts#L268) | - |
+| `ProgressionManager.loadFromStorage` | `method` | [`game/src/core/ProgressionManager.ts:176`](../../game/src/core/ProgressionManager.ts#L176) | - |
+| `ProgressionManager.onSave` | `method` | [`game/src/core/ProgressionManager.ts:257`](../../game/src/core/ProgressionManager.ts#L257) | - |
+| `ProgressionManager.progressLeshyStep` | `method` | [`game/src/core/ProgressionManager.ts:539`](../../game/src/core/ProgressionManager.ts#L539) | - |
+| `ProgressionManager.recordAltarCaptured` | `method` | [`game/src/core/ProgressionManager.ts:640`](../../game/src/core/ProgressionManager.ts#L640) | - |
+| `ProgressionManager.recordBossDefeat` | `method` | [`game/src/core/ProgressionManager.ts:760`](../../game/src/core/ProgressionManager.ts#L760) | - |
+| `ProgressionManager.recordBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:379`](../../game/src/core/ProgressionManager.ts#L379) | - |
+| `ProgressionManager.recordBossSpawn` | `method` | [`game/src/core/ProgressionManager.ts:756`](../../game/src/core/ProgressionManager.ts#L756) | - |
+| `ProgressionManager.recordCrawlerOrCoyoteKilled` | `method` | [`game/src/core/ProgressionManager.ts:662`](../../game/src/core/ProgressionManager.ts#L662) | - |
+| `ProgressionManager.recordEnemyKilled` | `method` | [`game/src/core/ProgressionManager.ts:395`](../../game/src/core/ProgressionManager.ts#L395) | - |
+| `ProgressionManager.recordForestGoldenChestOpened` | `method` | [`game/src/core/ProgressionManager.ts:673`](../../game/src/core/ProgressionManager.ts#L673) | - |
+| `ProgressionManager.recordForestSurvivalTime` | `method` | [`game/src/core/ProgressionManager.ts:684`](../../game/src/core/ProgressionManager.ts#L684) | - |
+| `ProgressionManager.recordLeshyDefeated` | `method` | [`game/src/core/ProgressionManager.ts:700`](../../game/src/core/ProgressionManager.ts#L700) | - |
+| `ProgressionManager.recordMeleeOrSpellKill` | `method` | [`game/src/core/ProgressionManager.ts:618`](../../game/src/core/ProgressionManager.ts#L618) | - |
+| `ProgressionManager.recordMerchantPurchaseInRun` | `method` | [`game/src/core/ProgressionManager.ts:741`](../../game/src/core/ProgressionManager.ts#L741) | - |
+| `ProgressionManager.recordRangedKill` | `method` | [`game/src/core/ProgressionManager.ts:773`](../../game/src/core/ProgressionManager.ts#L773) | - |
+| `ProgressionManager.recordResourceGather` | `method` | [`game/src/core/ProgressionManager.ts:416`](../../game/src/core/ProgressionManager.ts#L416) | - |
+| `ProgressionManager.recordRunCrit` | `method` | [`game/src/core/ProgressionManager.ts:711`](../../game/src/core/ProgressionManager.ts#L711) | - |
+| `ProgressionManager.recordSimultaneousPassives` | `method` | [`game/src/core/ProgressionManager.ts:726`](../../game/src/core/ProgressionManager.ts#L726) | - |
+| `ProgressionManager.recordTeleporterBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:651`](../../game/src/core/ProgressionManager.ts#L651) | - |
+| `ProgressionManager.recordXpGemCollected` | `method` | [`game/src/core/ProgressionManager.ts:629`](../../game/src/core/ProgressionManager.ts#L629) | - |
+| `ProgressionManager.resetAllProgress` | `method` | [`game/src/core/ProgressionManager.ts:966`](../../game/src/core/ProgressionManager.ts#L966) | - |
+| `ProgressionManager.resetAllTasksToZero` | `method` | [`game/src/core/ProgressionManager.ts:948`](../../game/src/core/ProgressionManager.ts#L948) | - |
+| `ProgressionManager.resetRunSessionProgress` | `method` | [`game/src/core/ProgressionManager.ts:110`](../../game/src/core/ProgressionManager.ts#L110) | - |
+| `ProgressionManager.sanitizeLockedChapters` | `method` | [`game/src/core/ProgressionManager.ts:596`](../../game/src/core/ProgressionManager.ts#L596) | - |
+| `ProgressionManager.save` | `method` | [`game/src/core/ProgressionManager.ts:238`](../../game/src/core/ProgressionManager.ts#L238) | - |
+| `ProgressionManager.unlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:570`](../../game/src/core/ProgressionManager.ts#L570) | - |
+| `ProgressionManager.unlockHero` | `method` | [`game/src/core/ProgressionManager.ts:318`](../../game/src/core/ProgressionManager.ts#L318) | - |
 | `ProgressionView` | `class` | [`admin/src/views/progressionView.ts:6`](../../admin/src/views/progressionView.ts#L6) | - |
 | `ProgressionView.bindEvents` | `method` | [`admin/src/views/progressionView.ts:25`](../../admin/src/views/progressionView.ts#L25) | - |
 | `ProgressionView.render` | `method` | [`admin/src/views/progressionView.ts:194`](../../admin/src/views/progressionView.ts#L194) | - |
@@ -1106,14 +1108,14 @@ Run `npm run index` to refresh this cache.
 | `QuestsScreen` | `class` | [`game/src/ui/screens/Quests/QuestsScreen.ts:38`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L38) | - |
 | `QuestsScreen.bindElements` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:60`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L60) | - |
 | `QuestsScreen.bindEvents` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:62`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L62) | - |
-| `QuestsScreen.getChapterQuests` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:182`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L182) | - |
+| `QuestsScreen.getChapterQuests` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:180`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L180) | - |
 | `QuestsScreen.getTemplate` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:56`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L56) | - |
-| `QuestsScreen.hideQuestsModal` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:170`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L170) | - |
+| `QuestsScreen.hideQuestsModal` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:168`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L168) | - |
 | `QuestsScreen.isChapterUnlocked` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:109`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L109) | - |
-| `QuestsScreen.selectQuestChapter` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:123`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L123) | - |
-| `QuestsScreen.toggleQuestsInMainMenu` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:115`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L115) | - |
-| `QuestsScreen.updateCharacterSelectLockStatus` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:404`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L404) | - |
-| `QuestsScreen.updateMainMenuQuests` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:431`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L431) | - |
+| `QuestsScreen.selectQuestChapter` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:121`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L121) | - |
+| `QuestsScreen.toggleQuestsInMainMenu` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:113`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L113) | - |
+| `QuestsScreen.updateCharacterSelectLockStatus` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:410`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L410) | - |
+| `QuestsScreen.updateMainMenuQuests` | `method` | [`game/src/ui/screens/Quests/QuestsScreen.ts:437`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L437) | - |
 | `QuestsScreenOptions` | `interface` | [`game/src/ui/screens/Quests/QuestsScreen.ts:24`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L24) | - |
 | `QuestStepItem` | `interface` | [`game/src/core/ProgressionManager.ts:54`](../../game/src/core/ProgressionManager.ts#L54) | - |
 | `QuestsUI` | `class` | [`game/src/ui/modules/QuestsUI.ts:13`](../../game/src/ui/modules/QuestsUI.ts#L13) | - |

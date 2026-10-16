@@ -80,8 +80,8 @@ export function getHeroDetails(charType: CharacterType): HeroDetails {
       difficultyPercent: 65
     },
     archer: {
-      title: 'ЛУЧНИК — ЭЛЬФ-СЛЕДОПЫТ',
-      role: 'Класс: Лучник / Следопыт',
+      title: 'ЛУЧНИЦА — ЭЛЬФ-СЛЕДОПЫТ',
+      role: 'Класс: Лучница / Следопыт',
       passiveTrait: { name: 'Орлиный Взор', icon: 'eagle_eye' },
       activeAbilities: [
         { name: 'Пронзающая Стрела' },

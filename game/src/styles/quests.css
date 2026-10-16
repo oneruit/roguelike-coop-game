@@ -164,6 +164,7 @@
 }
 
 .quest-chapter-tab {
+  position: relative;
   width: 58px;
   height: 52px;
   border-radius: 12px 0 0 12px;
@@ -205,6 +206,17 @@
   opacity: 0.6;
   cursor: not-allowed !important;
   border-color: #3f2312 !important;
+}
+
+.quest-chapter-tab.locked::after {
+  content: '🔒';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
 }
 
 .quest-chapter-tab.locked:hover {

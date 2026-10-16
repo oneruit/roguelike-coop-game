@@ -257,7 +257,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     },
     archer: {
       id: 'archer',
-      name: 'Эльф лучник',
+      name: 'Лучница',
       maxHp: 110,
       baseSpeed: 8.9,
       damageMultiplier: 1.35,

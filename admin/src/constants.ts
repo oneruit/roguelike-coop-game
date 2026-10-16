@@ -199,7 +199,7 @@ export const HERO_NAMES: Record<string, string> = {
   flail: 'Храмовник',
   sorceress: 'Чародейка',
   chakram: 'Танцор с Чакрамами',
-  archer: 'Следопыт',
+  archer: 'Лучница',
   rocket: 'Ракетчик',
   necromancer: 'Некромант',
   amazon: 'Амазонка',

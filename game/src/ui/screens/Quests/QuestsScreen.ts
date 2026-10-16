@@ -107,9 +107,7 @@ export class QuestsScreen extends Screen {
   }
 
   public isChapterUnlocked(chapter: number): boolean {
-    if (chapter <= 1) return true;
-    const prog = ProgressionManager.getInstance();
-    return prog.isChapterComplete(chapter - 1);
+    return ProgressionManager.getInstance().isChapterUnlocked(chapter);
   }
 
   public toggleQuestsInMainMenu(): void {
@@ -210,6 +208,9 @@ export class QuestsScreen extends Screen {
     selectedQuestId: string = this.activeQuestId,
     chapter: number = this.activeQuestChapter
   ): void {
+    if (!this.isChapterUnlocked(chapter)) {
+      chapter = 1;
+    }
     this.activeQuestChapter = chapter;
     this.activeQuestId = selectedQuestId;
     const prog = ProgressionManager.getInstance();
@@ -225,10 +226,15 @@ export class QuestsScreen extends Screen {
     chapterTabs.forEach((tab) => {
       const ch = parseInt(tab.getAttribute('data-chapter') || '1', 10);
       const isUnlocked = this.isChapterUnlocked(ch);
+      const tabDef = getChapterDef(ch);
       if (isUnlocked) {
         tab.classList.remove('locked');
+        tab.removeAttribute('aria-disabled');
+        if (tabDef) tab.title = `${tabDef.title} ${tabDef.subtitle}`;
       } else {
         tab.classList.add('locked');
+        tab.setAttribute('aria-disabled', 'true');
+        tab.title = `Глава ${ch} (Заблокирована: сначала завершите Главу ${ch - 1})`;
       }
       if (ch === this.activeQuestChapter) {
         tab.classList.add('active');
