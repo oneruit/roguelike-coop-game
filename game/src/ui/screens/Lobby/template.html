@@ -1,79 +1,90 @@
+<!-- Host Lobby Modal (Up to 5 players) -->
 <div id="host-lobby-modal" class="modal hidden">
   <div class="modal-backdrop menu-scenic-backdrop"></div>
-  <div class="modal-card host-lobby-card modern-glass-modal">
-    <div class="modal-header">
-      <div class="sub-title menu-badge-green">КООПЕРАТИВ • ОТРЯД ДО 5 ИГРОКОВ</div>
-      <h2 class="modern-menu-title">КОМНАТА ЭКСПЕДИЦИИ (ХОСТ)</h2>
+  <div class="modal-card host-lobby-card arpg-gothic-panel">
+    <div class="modal-header coop-gothic-header">
+      <div class="gothic-ribbon-badge">
+        <span class="ribbon-text">⚔️ КООПЕРАТИВ • ОТРЯД ДО 5 ИГРОКОВ</span>
+      </div>
+      <h2 class="gothic-cinzel-title">КОМНАТА ЭКСПЕДИЦИИ (ХОСТ)</h2>
+      <div class="gothic-filigree-divider">
+        <img src="/textures/ui/divider_filigree_diamond.png" alt="" />
+      </div>
     </div>
 
-    <div class="room-code-section">
-      <span class="code-label">КОД ДЛЯ ПОДКЛЮЧЕНИЯ ИГРОКОВ (ДО 4 ЧЕЛОВЕК):</span>
+    <div class="room-code-section gothic-inset-box">
+      <span class="code-label">КОД ДЛЯ ПОДКЛЮЧЕНИЯ В ОТРЯД (ДО 4 СОЮЗНИКОВ):</span>
       <div class="code-display-row">
         <span id="host-room-code" class="room-code-tag">WEST-42</span>
-        <button id="btn-copy-code" class="copy-code-btn" title="Скопировать код в буфер обмена">Скопировать</button>
+        <button id="btn-copy-code" class="gothic-pill-btn copy-code-btn" type="button" title="Скопировать код в буфер обмена">📋 Скопировать</button>
       </div>
-      <p class="code-hint">Отправьте этот код друзьям. В одной экспедиции могут участвовать до 5 игроков одновременно!</p>
+      <p class="code-hint">Отправьте этот код союзникам. В одной экспедиции могут участвовать до 5 бойцов одновременно!</p>
     </div>
 
-    <div class="room-password-section">
+    <div class="room-password-section gothic-inset-box">
       <div class="password-label-row">
         <span class="code-label">ПАРОЛЬ КОМНАТЫ:</span>
         <span id="host-password-badge" class="password-badge open">🔓 БЕЗ ПАРОЛЯ</span>
       </div>
       <div class="password-input-row">
-        <input id="host-password-input" type="password" class="room-code-input" placeholder="Оставьте пустым для открытого входа" maxlength="32" autocomplete="off" />
+        <input id="host-password-input" type="password" class="room-code-input gothic-text-input" placeholder="Оставьте пустым для открытого входа" maxlength="32" autocomplete="off" />
         <button id="btn-toggle-host-pwd" class="pwd-visibility-btn" title="Показать/скрыть пароль" type="button">👁️</button>
       </div>
-      <p class="code-hint">Оставьте пустым, чтобы любой игрок мог присоединиться из списка, либо задайте пароль.</p>
+      <p class="code-hint">Оставьте пустым для открытого входа из списка, либо задайте секретный пароль отряда.</p>
     </div>
 
     <div class="lobby-heroes-section">
-      <div class="section-label">ВАШ ГЕРОЙ:</div>
+      <div class="section-label">ВАШ ГЕРОЙ ЭКСПЕДИЦИИ:</div>
       <div class="lobby-hero-picker">
-        <div class="lobby-hero-opt" data-host-hero="invoker">
-          <img src="/textures/heroes/invoker/front.png" class="hero-opt-img" alt="Инвокер" />
-          <div class="hero-opt-name">Инвокер «Маг стихий»</div>
-          <div class="hero-opt-perk">10 стихий • +200% урона • 100 HP</div>
-        </div>
         <div class="lobby-hero-opt active" data-host-hero="ronin">
           <img src="/textures/heroes/ronin/front.png" class="hero-opt-img" alt="Рен" />
-          <div class="hero-opt-name">Рен «Багровый вихрь»</div>
+          <div class="hero-opt-name">Рен «Ронин»</div>
           <div class="hero-opt-perk">Вихревой клинок (+35% урона)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="valkyrie">
           <img src="/textures/heroes/valkyrie/front.png" class="hero-opt-img" alt="Каэла" />
-          <div class="hero-opt-name">Каэла «Стальной вихрь»</div>
+          <div class="hero-opt-name">Каэла «Мечница»</div>
           <div class="hero-opt-perk">Двуручный меч (+45% урона, 135 HP)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="flail">
           <img src="/textures/heroes/flail/front.png" class="hero-opt-img" alt="Бригитта" />
-          <div class="hero-opt-name">Бригитта «Стальной цеп»</div>
+          <div class="hero-opt-name">Бригитта «Цеп»</div>
           <div class="hero-opt-perk">Боевой цеп (+40% урона, 125 HP)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="sorceress">
           <img src="/textures/heroes/sorceress/front.png" class="hero-opt-img" alt="Ария" />
-          <div class="hero-opt-name">Ария «Звёздный посох»</div>
+          <div class="hero-opt-name">Ария «Волшебница»</div>
           <div class="hero-opt-perk">Дальняя магия (+30% урона, 8.8 скор.)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="chakram">
           <img src="/textures/heroes/chakram/front.png" class="hero-opt-img" alt="Кира" />
           <div class="hero-opt-name">Кира «Чакрам»</div>
-          <div class="hero-opt-perk">Бумеранг-чакрам (+35% урона, дуга)</div>
+          <div class="hero-opt-perk">Бумеранг (+35% урона, рикошет)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="archer">
-          <img src="/textures/heroes/archer/front.png" class="hero-opt-img" alt="Эльф лучник" />
-          <div class="hero-opt-name">Эльф лучник «Лук»</div>
+          <img src="/textures/heroes/archer/front.png" class="hero-opt-img" alt="Лучник" />
+          <div class="hero-opt-name">Эльф «Лучник»</div>
           <div class="hero-opt-perk">Охотничий лук (+35% урона, 8.9 скор.)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="rocket">
           <img src="/textures/heroes/rocket/front.png" class="hero-opt-img" alt="Ракета" />
-          <div class="hero-opt-name">Ракета «Страж Галактики»</div>
-          <div class="hero-opt-perk">Штурмовая винтовка (0.18 сек, 9.1 скор.)</div>
+          <div class="hero-opt-name">Ракета «Енот»</div>
+          <div class="hero-opt-perk">Штурмовая винтовка (скорострел)</div>
         </div>
         <div class="lobby-hero-opt" data-host-hero="necromancer">
           <img src="/textures/heroes/necromancer/front.png" class="hero-opt-img" alt="Мортис" />
           <div class="hero-opt-name">Мортис «Некромант»</div>
-          <div class="hero-opt-perk">Астральный посох (+40% урона, 110 HP)</div>
+          <div class="hero-opt-perk">Астральный посох (+40% урона)</div>
+        </div>
+        <div class="lobby-hero-opt" data-host-hero="amazon">
+          <img src="/textures/heroes/amazon/front.png" class="hero-opt-img" alt="Амазонка" />
+          <div class="hero-opt-name">Амазонка</div>
+          <div class="hero-opt-perk">Копьё и ловкость (+40% урона)</div>
+        </div>
+        <div class="lobby-hero-opt" data-host-hero="invoker">
+          <img src="/textures/heroes/invoker/front.png" class="hero-opt-img" alt="Инвокер" />
+          <div class="hero-opt-name">Инвокер «Маг»</div>
+          <div class="hero-opt-perk">10 стихий • +200% урона</div>
         </div>
       </div>
     </div>
@@ -81,7 +92,7 @@
     <!-- Squad Roster (5 slots) -->
     <div class="lobby-roster-section">
       <div class="section-label-row">
-        <span class="section-label">СОСТАВ ЭКСПЕДИЦИИ:</span>
+        <span class="section-label">СОСТАВ ОТРЯДА ЭКСПЕДИЦИИ:</span>
         <span id="host-player-count-badge" class="roster-count-badge"><span id="host-player-count">1</span> / 5 ИГРОКОВ</span>
       </div>
       <div id="host-players-roster" class="lobby-roster-grid">
@@ -90,16 +101,16 @@
     </div>
 
     <div id="host-partner-box" class="partner-status-box waiting">
-      <div class="partner-status-spinner">...</div>
+      <div class="partner-status-spinner">⏳</div>
       <div class="partner-status-content">
-        <div class="partner-status-title" id="host-partner-title">Ожидание игроков отряда...</div>
-        <div class="partner-status-desc" id="host-partner-desc">Как только игроки введут код комнаты, их слоты займутся. Вы можете начать поход в любой момент!</div>
+        <div class="partner-status-title" id="host-partner-title">Ожидание союзников...</div>
+        <div class="partner-status-desc" id="host-partner-desc">Как только союзники введут код комнаты, их слоты займутся. Вы можете начать поход в любой момент!</div>
       </div>
     </div>
 
     <div class="lobby-actions">
-      <button id="btn-host-start" class="action-btn start-expedition-btn">НАЧАТЬ ЭКСПЕДИЦИЮ</button>
-      <button id="btn-host-back" class="modern-back-btn">← Назад в меню</button>
+      <button id="btn-host-start" class="action-btn start-expedition-btn" type="button">НАЧАТЬ ЭКСПЕДИЦИЮ</button>
+      <button id="btn-host-back" class="gothic-back-btn" type="button">← Назад в меню</button>
     </div>
   </div>
 </div>
@@ -107,10 +118,15 @@
 <!-- Join Lobby Modal (Up to 5 players) -->
 <div id="join-lobby-modal" class="modal hidden">
   <div class="modal-backdrop menu-scenic-backdrop"></div>
-  <div class="modal-card join-lobby-card modern-glass-modal">
-    <div class="modal-header">
-      <div class="sub-title menu-badge-blue">КООПЕРАТИВ • ПОДКЛЮЧЕНИЕ</div>
-      <h2 class="modern-menu-title">ВОЙТИ В ЭКСПЕДИЦИЮ</h2>
+  <div class="modal-card join-lobby-card arpg-gothic-panel">
+    <div class="modal-header coop-gothic-header">
+      <div class="gothic-ribbon-badge">
+        <span class="ribbon-text">⚔️ КООПЕРАТИВ • ПОДКЛЮЧЕНИЕ</span>
+      </div>
+      <h2 class="gothic-cinzel-title">ВОЙТИ В ЭКСПЕДИЦИЮ</h2>
+      <div class="gothic-filigree-divider">
+        <img src="/textures/ui/divider_filigree_diamond.png" alt="" />
+      </div>
     </div>
 
     <div class="join-nav-tabs">
@@ -126,7 +142,7 @@
     <div id="tab-content-browser" class="join-tab-content active">
       <div class="rooms-browser-header">
         <span class="browser-header-title">ОТКРЫТЫЕ И ЗАЩИЩЁННЫЕ ЭКСПЕДИЦИИ:</span>
-        <button id="btn-refresh-rooms" class="refresh-rooms-btn" type="button" title="Обновить список комнат">
+        <button id="btn-refresh-rooms" class="refresh-rooms-btn gothic-pill-btn" type="button" title="Обновить список комнат">
           <span class="refresh-icon">🔄</span> Обновить
         </button>
       </div>
@@ -137,16 +153,16 @@
 
     <!-- Tab 2: Direct Code and Password -->
     <div id="tab-content-direct" class="join-tab-content hidden">
-      <div class="join-input-section">
+      <div class="join-input-section gothic-inset-box">
         <label for="join-room-input" class="code-label">ВВЕДИТЕ КОД КОМНАТЫ ХОСТА:</label>
         <div class="input-row">
-          <input id="join-room-input" type="text" class="room-code-input" placeholder="НАПРИМЕР: WEST-42" maxlength="16" autocomplete="off" />
+          <input id="join-room-input" type="text" class="room-code-input gothic-text-input" placeholder="НАПРИМЕР: WEST-42" maxlength="16" autocomplete="off" />
         </div>
       </div>
-      <div class="join-input-section" style="margin-top: 10px;">
+      <div class="join-input-section gothic-inset-box" style="margin-top: 10px;">
         <label for="join-password-input" class="code-label">ПАРОЛЬ КОМНАТЫ (ЕСЛИ УСТАНОВЛЕН):</label>
         <div class="input-row">
-          <input id="join-password-input" type="password" class="room-code-input" placeholder="Оставьте пустым для открытой комнаты" maxlength="32" autocomplete="off" />
+          <input id="join-password-input" type="password" class="room-code-input gothic-text-input" placeholder="Оставьте пустым для открытой комнаты" maxlength="32" autocomplete="off" />
         </div>
       </div>
     </div>
@@ -154,50 +170,55 @@
     <div class="lobby-heroes-section">
       <div class="section-label">ВАШ ГЕРОЙ:</div>
       <div class="lobby-hero-picker">
+        <div class="lobby-hero-opt" data-guest-hero="ronin">
+          <img src="/textures/heroes/ronin/front.png" class="hero-opt-img" alt="Рен" />
+          <div class="hero-opt-name">Рен «Ронин»</div>
+          <div class="hero-opt-perk">Вихревой клинок (+35% урона)</div>
+        </div>
         <div class="lobby-hero-opt active" data-guest-hero="valkyrie">
           <img src="/textures/heroes/valkyrie/front.png" class="hero-opt-img" alt="Каэла" />
-          <div class="hero-opt-name">Каэла «Стальной вихрь»</div>
+          <div class="hero-opt-name">Каэла «Мечница»</div>
           <div class="hero-opt-perk">Двуручный меч (+45% урона, 135 HP)</div>
         </div>
         <div class="lobby-hero-opt" data-guest-hero="flail">
           <img src="/textures/heroes/flail/front.png" class="hero-opt-img" alt="Бригитта" />
-          <div class="hero-opt-name">Бригитта «Стальной цеп»</div>
+          <div class="hero-opt-name">Бригитта «Цеп»</div>
           <div class="hero-opt-perk">Боевой цеп (+40% урона, 125 HP)</div>
         </div>
         <div class="lobby-hero-opt" data-guest-hero="sorceress">
           <img src="/textures/heroes/sorceress/front.png" class="hero-opt-img" alt="Ария" />
-          <div class="hero-opt-name">Ария «Звёздный посох»</div>
+          <div class="hero-opt-name">Ария «Волшебница»</div>
           <div class="hero-opt-perk">Дальняя магия (+30% урона, 8.8 скор.)</div>
-        </div>
-        <div class="lobby-hero-opt" data-guest-hero="invoker">
-          <img src="/textures/heroes/invoker/front.png" class="hero-opt-img" alt="Инвокер" />
-          <div class="hero-opt-name">Инвокер «Маг стихий»</div>
-          <div class="hero-opt-perk">10 стихий • +200% урона • 100 HP</div>
-        </div>
-        <div class="lobby-hero-opt" data-guest-hero="ronin">
-          <img src="/textures/heroes/ronin/front.png" class="hero-opt-img" alt="Рен" />
-          <div class="hero-opt-name">Рен «Багровый вихрь»</div>
-          <div class="hero-opt-perk">Вихревой клинок (+35% урона)</div>
         </div>
         <div class="lobby-hero-opt" data-guest-hero="chakram">
           <img src="/textures/heroes/chakram/front.png" class="hero-opt-img" alt="Кира" />
           <div class="hero-opt-name">Кира «Чакрам»</div>
-          <div class="hero-opt-perk">Бумеранг-чакрам (+35% урона, дуга)</div>
+          <div class="hero-opt-perk">Бумеранг (+35% урона, рикошет)</div>
         </div>
         <div class="lobby-hero-opt" data-guest-hero="archer">
-          <img src="/textures/heroes/archer/front.png" class="hero-opt-img" alt="Эльф лучник" />
-          <div class="hero-opt-name">Эльф лучник «Лук»</div>
+          <img src="/textures/heroes/archer/front.png" class="hero-opt-img" alt="Лучник" />
+          <div class="hero-opt-name">Эльф «Лучник»</div>
           <div class="hero-opt-perk">Охотничий лук (+35% урона, 8.9 скор.)</div>
         </div>
         <div class="lobby-hero-opt" data-guest-hero="rocket">
           <img src="/textures/heroes/rocket/front.png" class="hero-opt-img" alt="Ракета" />
-          <div class="hero-opt-name">Ракета «Страж Галактики»</div>
-          <div class="hero-opt-perk">Штурмовая винтовка (0.18 сек, 9.1 скор.)</div>
+          <div class="hero-opt-name">Ракета «Енот»</div>
+          <div class="hero-opt-perk">Штурмовая винтовка (скорострел)</div>
         </div>
         <div class="lobby-hero-opt" data-guest-hero="necromancer">
           <img src="/textures/heroes/necromancer/front.png" class="hero-opt-img" alt="Мортис" />
           <div class="hero-opt-name">Мортис «Некромант»</div>
-          <div class="hero-opt-perk">Астральный посох (+40% урона, 110 HP)</div>
+          <div class="hero-opt-perk">Астральный посох (+40% урона)</div>
+        </div>
+        <div class="lobby-hero-opt" data-guest-hero="amazon">
+          <img src="/textures/heroes/amazon/front.png" class="hero-opt-img" alt="Амазонка" />
+          <div class="hero-opt-name">Амазонка</div>
+          <div class="hero-opt-perk">Копьё и ловкость (+40% урона)</div>
+        </div>
+        <div class="lobby-hero-opt" data-guest-hero="invoker">
+          <img src="/textures/heroes/invoker/front.png" class="hero-opt-img" alt="Инвокер" />
+          <div class="hero-opt-name">Инвокер «Маг»</div>
+          <div class="hero-opt-perk">10 стихий • +200% урона</div>
         </div>
       </div>
     </div>
@@ -213,14 +234,14 @@
       </div>
     </div>
 
-    <div id="join-status-box" class="join-status-box">
+    <div id="join-status-box" class="join-status-box gothic-inset-box">
       <span id="join-status-text">Выберите комнату из списка или введите код хоста</span>
     </div>
 
     <div class="lobby-actions">
-      <button id="btn-join-connect" class="action-btn">ПОДКЛЮЧИТЬСЯ</button>
-      <button id="btn-guest-ready" class="action-btn ready-toggle-btn hidden">НАЖМИТЕ «ГОТОВ»</button>
-      <button id="btn-join-back" class="modern-back-btn">← Назад в меню</button>
+      <button id="btn-join-connect" class="action-btn join-connect-btn" type="button">ПОДКЛЮЧИТЬСЯ</button>
+      <button id="btn-guest-ready" class="action-btn ready-toggle-btn hidden" type="button">НАЖМИТЕ «ГОТОВ»</button>
+      <button id="btn-join-back" class="gothic-back-btn" type="button">← Назад в меню</button>
     </div>
   </div>
 </div>
@@ -228,22 +249,27 @@
 <!-- Password Prompt Modal -->
 <div id="password-prompt-modal" class="modal hidden">
   <div class="modal-backdrop"></div>
-  <div class="modal-card password-prompt-card modern-glass-modal">
-    <div class="modal-header">
-      <div class="sub-title menu-badge-amber">🔒 ТРЕБУЕТСЯ ПАРОЛЬ</div>
-      <h3 id="pwd-prompt-room-title" class="modern-menu-title">ВХОД В КОМНАТУ</h3>
+  <div class="modal-card password-prompt-card arpg-gothic-panel">
+    <div class="modal-header coop-gothic-header">
+      <div class="gothic-ribbon-badge">
+        <span class="ribbon-text">🔒 ТРЕБУЕТСЯ ПАРОЛЬ</span>
+      </div>
+      <h3 id="pwd-prompt-room-title" class="gothic-cinzel-title" style="font-size: 20px;">ВХОД В КОМНАТУ</h3>
+      <div class="gothic-filigree-divider">
+        <img src="/textures/ui/divider_filigree_diamond.png" alt="" />
+      </div>
     </div>
     <div class="password-prompt-body">
-      <p class="code-hint">Хост установил пароль для защиты этой экспедиции. Введите пароль для входа:</p>
+      <p class="code-hint">Хост установил пароль для защиты экспедиции. Введите пароль для входа в отряд:</p>
       <div class="password-input-row" style="margin-top: 12px;">
-        <input id="pwd-prompt-input" type="password" class="room-code-input" placeholder="Введите пароль" maxlength="32" autocomplete="off" />
+        <input id="pwd-prompt-input" type="password" class="room-code-input gothic-text-input" placeholder="Введите пароль" maxlength="32" autocomplete="off" />
         <button id="btn-toggle-prompt-pwd" class="pwd-visibility-btn" title="Показать/скрыть пароль" type="button">👁️</button>
       </div>
       <div id="pwd-prompt-error" class="password-error-text hidden">Неверный пароль. Попробуйте снова.</div>
     </div>
     <div class="lobby-actions" style="margin-top: 16px;">
-      <button id="btn-pwd-prompt-submit" class="action-btn">ПОДТВЕРДИТЬ И ВОЙТИ</button>
-      <button id="btn-pwd-prompt-cancel" class="modern-back-btn">Отмена</button>
+      <button id="btn-pwd-prompt-submit" class="action-btn" type="button">ПОДТВЕРДИТЬ И ВОЙТИ</button>
+      <button id="btn-pwd-prompt-cancel" class="gothic-back-btn" type="button">Отмена</button>
     </div>
   </div>
 </div>

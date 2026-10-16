@@ -886,16 +886,8 @@
   transform: translateY(1px);
 }
 
-/* ==========================================================================
-   CO-OP MODE MODAL
-   ========================================================================== */
-.coop-menu-card {
-  max-width: 480px !important;
-  width: 90vw !important;
-  padding: 34px 28px !important;
-  border-color: rgba(168, 85, 247, 0.4) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(168, 85, 247, 0.22) !important;
-}
+/* Co-op mode styles are located in lobby.css */
+
 
 .pause-card {
   max-width: 480px !important;

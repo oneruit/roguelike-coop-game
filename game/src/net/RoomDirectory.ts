@@ -124,6 +124,19 @@ export class RoomDirectory {
     }
   }
 
+  public static cleanup() {
+    this.stopHosting();
+    if (this.localChannel) {
+      try {
+        this.localChannel.close();
+      } catch {}
+      this.localChannel = null;
+    }
+    this.isInitialized = false;
+    this.cachedRooms.clear();
+    this.onRoomsUpdatedCallbacks.clear();
+  }
+
   private static announce(room: PublicRoomInfo) {
     this.cachedRooms.set(room.roomCode, { ...room });
 

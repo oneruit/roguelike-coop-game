@@ -17,6 +17,9 @@ export interface LobbyScreenElements {
   hostPartnerTitle?: HTMLElement | null;
   hostPartnerDesc?: HTMLElement | null;
   btnHostStart?: HTMLButtonElement | null;
+  btnHostBack?: HTMLElement | null;
+  btnCopyCode?: HTMLElement | null;
+  btnToggleHostPwd?: HTMLElement | null;
 
   joinLobbyModal?: HTMLElement | null;
   joinRoomInput?: HTMLInputElement | null;
@@ -24,10 +27,12 @@ export interface LobbyScreenElements {
   joinStatusText?: HTMLElement | null;
   btnJoinConnect?: HTMLButtonElement | null;
   btnGuestReady?: HTMLElement | null;
+  btnJoinBack?: HTMLElement | null;
   tabBtnBrowser?: HTMLElement | null;
   tabBtnDirect?: HTMLElement | null;
   tabContentBrowser?: HTMLElement | null;
   tabContentDirect?: HTMLElement | null;
+  btnRefreshRooms?: HTMLElement | null;
   availableRoomsList?: HTMLElement | null;
   joinRosterSection?: HTMLElement | null;
   joinPlayersRoster?: HTMLElement | null;
@@ -37,6 +42,9 @@ export interface LobbyScreenElements {
   pwdPromptRoomTitle?: HTMLElement | null;
   pwdPromptInput?: HTMLInputElement | null;
   pwdPromptError?: HTMLElement | null;
+  btnPwdPromptSubmit?: HTMLElement | null;
+  btnPwdPromptCancel?: HTMLElement | null;
+  btnTogglePromptPwd?: HTMLElement | null;
 
   settingsModal?: HTMLElement | null;
   pauseModal?: HTMLElement | null;
@@ -49,10 +57,13 @@ export interface LobbyScreenOptions {
   container?: HTMLElement | null;
   hideCoopMenu: () => void;
   hideMainMenu: () => void;
+  showCoopMenu?: () => void;
+  showMainMenu?: () => void;
   getMenuStack: () => string[];
   setMenuStack: (stack: string[]) => void;
   pushMenu: (menu: string) => void;
   removeMenu: (menu: string) => void;
+  onReturnToMenu?: () => void;
 }
 
 export class LobbyScreen extends Screen {
@@ -71,6 +82,7 @@ export class LobbyScreen extends Screen {
   public onGuestHeroChanged?: (hero: CharacterType) => void;
   public onHostStartExpedition?: (seedInput?: string) => void;
   public onHostPasswordChanged?: (pwd: string) => void;
+  public onReturnToMenu?: () => void;
 
   constructor(options: LobbyScreenOptions) {
     const existingModal = options.container || options.elements?.hostLobbyModal || SafeDOM.getElementById('host-lobby-modal');
@@ -85,9 +97,222 @@ export class LobbyScreen extends Screen {
     return '';
   }
 
-  protected bindElements(): void {}
+  protected bindElements(): void {
+    const el = this.ctx.elements || {};
 
-  protected bindEvents(): void {}
+    el.hostLobbyModal = el.hostLobbyModal || SafeDOM.getElementById('host-lobby-modal');
+    el.hostRoomCodeText = el.hostRoomCodeText || SafeDOM.getElementById('host-room-code');
+    el.hostPasswordInput = el.hostPasswordInput || SafeDOM.getElementById<HTMLInputElement>('host-password-input');
+    el.hostPasswordBadge = el.hostPasswordBadge || SafeDOM.getElementById('host-password-badge');
+    el.hostPlayersRoster = el.hostPlayersRoster || SafeDOM.getElementById('host-players-roster');
+    el.hostPlayerCount = el.hostPlayerCount || SafeDOM.getElementById('host-player-count');
+    el.hostPartnerBox = el.hostPartnerBox || SafeDOM.getElementById('host-partner-box');
+    el.hostPartnerTitle = el.hostPartnerTitle || SafeDOM.getElementById('host-partner-title');
+    el.hostPartnerDesc = el.hostPartnerDesc || SafeDOM.getElementById('host-partner-desc');
+    el.btnHostStart = el.btnHostStart || SafeDOM.getElementById<HTMLButtonElement>('btn-host-start');
+    el.btnHostBack = el.btnHostBack || SafeDOM.getElementById('btn-host-back');
+    el.btnCopyCode = el.btnCopyCode || SafeDOM.getElementById('btn-copy-code');
+    el.btnToggleHostPwd = el.btnToggleHostPwd || SafeDOM.getElementById('btn-toggle-host-pwd');
+
+    el.joinLobbyModal = el.joinLobbyModal || SafeDOM.getElementById('join-lobby-modal');
+    el.joinRoomInput = el.joinRoomInput || SafeDOM.getElementById<HTMLInputElement>('join-room-input');
+    el.joinPasswordInput = el.joinPasswordInput || SafeDOM.getElementById<HTMLInputElement>('join-password-input');
+    el.joinStatusText = el.joinStatusText || SafeDOM.getElementById('join-status-text');
+    el.btnJoinConnect = el.btnJoinConnect || SafeDOM.getElementById<HTMLButtonElement>('btn-join-connect');
+    el.btnGuestReady = el.btnGuestReady || SafeDOM.getElementById('btn-guest-ready');
+    el.btnJoinBack = el.btnJoinBack || SafeDOM.getElementById('btn-join-back');
+    el.tabBtnBrowser = el.tabBtnBrowser || SafeDOM.getElementById('tab-btn-browser');
+    el.tabBtnDirect = el.tabBtnDirect || SafeDOM.getElementById('tab-btn-direct');
+    el.tabContentBrowser = el.tabContentBrowser || SafeDOM.getElementById('tab-content-browser');
+    el.tabContentDirect = el.tabContentDirect || SafeDOM.getElementById('tab-content-direct');
+    el.btnRefreshRooms = el.btnRefreshRooms || SafeDOM.getElementById('btn-refresh-rooms');
+    el.availableRoomsList = el.availableRoomsList || SafeDOM.getElementById('available-rooms-list');
+    el.joinRosterSection = el.joinRosterSection || SafeDOM.getElementById('join-roster-section');
+    el.joinPlayersRoster = el.joinPlayersRoster || SafeDOM.getElementById('join-players-roster');
+    el.joinPlayerCount = el.joinPlayerCount || SafeDOM.getElementById('join-player-count');
+
+    el.passwordPromptModal = el.passwordPromptModal || SafeDOM.getElementById('password-prompt-modal');
+    el.pwdPromptRoomTitle = el.pwdPromptRoomTitle || SafeDOM.getElementById('pwd-prompt-room-title');
+    el.pwdPromptInput = el.pwdPromptInput || SafeDOM.getElementById<HTMLInputElement>('pwd-prompt-input');
+    el.pwdPromptError = el.pwdPromptError || SafeDOM.getElementById('pwd-prompt-error');
+    el.btnPwdPromptSubmit = el.btnPwdPromptSubmit || SafeDOM.getElementById('btn-pwd-prompt-submit');
+    el.btnPwdPromptCancel = el.btnPwdPromptCancel || SafeDOM.getElementById('btn-pwd-prompt-cancel');
+    el.btnTogglePromptPwd = el.btnTogglePromptPwd || SafeDOM.getElementById('btn-toggle-prompt-pwd');
+
+    el.coopBadge = el.coopBadge || SafeDOM.getElementById('coop-badge');
+    el.coopRoomName = el.coopRoomName || SafeDOM.getElementById('coop-room-name');
+
+    this.ctx.elements = el;
+  }
+
+  protected bindEvents(): void {
+    // 1. Copy Room Code
+    this.el.btnCopyCode?.addEventListener('click', () => {
+      const code = this.el.hostRoomCodeText?.textContent?.trim() || '';
+      if (code && navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          const btn = this.el.btnCopyCode;
+          if (btn) {
+            const originalText = btn.textContent || 'Скопировать';
+            btn.textContent = '✓ Скопировано!';
+            setTimeout(() => {
+              if (btn) btn.textContent = originalText;
+            }, 2000);
+          }
+        });
+      }
+    });
+
+    // 2. Host Start Expedition
+    this.el.btnHostStart?.addEventListener('click', () => {
+      if (this.onHostStartExpedition) {
+        this.onHostStartExpedition();
+      }
+    });
+
+    // 3. Host Return to Menu
+    this.el.btnHostBack?.addEventListener('click', () => {
+      this.hideHostLobby();
+      if (this.ctx.showCoopMenu) {
+        this.ctx.showCoopMenu();
+      }
+      this.ctx.onReturnToMenu?.();
+      this.onReturnToMenu?.();
+    });
+
+    // 4. Host Password Input & Visibility
+    this.el.hostPasswordInput?.addEventListener('input', () => {
+      const val = this.el.hostPasswordInput?.value?.trim() || '';
+      if (this.el.hostPasswordBadge) {
+        if (val) {
+          this.el.hostPasswordBadge.textContent = '🔒 ЗАЩИЩЕНА';
+          this.el.hostPasswordBadge.className = 'password-badge protected';
+        } else {
+          this.el.hostPasswordBadge.textContent = '🔓 БЕЗ ПАРОЛЯ';
+          this.el.hostPasswordBadge.className = 'password-badge open';
+        }
+      }
+      this.onHostPasswordChanged?.(val);
+    });
+
+    this.el.btnToggleHostPwd?.addEventListener('click', () => {
+      if (this.el.hostPasswordInput) {
+        const isPwd = this.el.hostPasswordInput.type === 'password';
+        this.el.hostPasswordInput.type = isPwd ? 'text' : 'password';
+      }
+    });
+
+    // 5. Host Hero Selector
+    const hostHeroOpts = this.queryHeroOptions('.lobby-hero-opt[data-host-hero]');
+    hostHeroOpts.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const hero = opt.getAttribute('data-host-hero') as CharacterType;
+        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
+          return;
+        }
+        hostHeroOpts.forEach((o) => o.classList.remove('active'));
+        opt.classList.add('active');
+        this.hostSelectedHero = hero;
+        this.onHostHeroChanged?.(hero);
+      });
+    });
+
+    // 6. Guest Navigation Tabs
+    this.el.tabBtnBrowser?.addEventListener('click', () => {
+      this.switchJoinTab('browser');
+    });
+
+    this.el.tabBtnDirect?.addEventListener('click', () => {
+      this.switchJoinTab('direct');
+    });
+
+    // 7. Refresh Rooms
+    this.el.btnRefreshRooms?.addEventListener('click', () => {
+      this.onRefreshRoomsClicked?.();
+    });
+
+    // 8. Guest Connect Action
+    const handleGuestConnect = () => {
+      const code = this.el.joinRoomInput?.value?.trim().toUpperCase() || '';
+      const pwd = this.el.joinPasswordInput?.value?.trim() || '';
+      if (!code) {
+        this.setJoinStatus('Пожалуйста, введите код комнаты!', true);
+        return;
+      }
+      if (this.el.btnJoinConnect) {
+        this.el.btnJoinConnect.disabled = true;
+        this.el.btnJoinConnect.textContent = '⏳ Подключение...';
+      }
+      this.onGuestConnectClicked?.(code, this.guestSelectedHero, pwd);
+    };
+
+    this.el.btnJoinConnect?.addEventListener('click', handleGuestConnect);
+    this.el.joinRoomInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleGuestConnect();
+    });
+    this.el.joinPasswordInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleGuestConnect();
+    });
+
+    // 9. Guest Ready Button
+    this.el.btnGuestReady?.addEventListener('click', () => {
+      this.isGuestReady = !this.isGuestReady;
+      this.updateGuestReadyButtonUI();
+      this.onGuestReadyToggle?.(this.isGuestReady);
+      if (this.isGuestReady) {
+        this.setJoinStatus('Вы готовы к походу! Ожидание старта хостом...', false);
+      } else {
+        this.setJoinStatus('Нажмите «ГОТОВ» для подтверждения готовности к походу.', false);
+      }
+    });
+
+    // 10. Guest Return to Menu
+    this.el.btnJoinBack?.addEventListener('click', () => {
+      this.hideJoinLobby();
+      if (this.ctx.showCoopMenu) {
+        this.ctx.showCoopMenu();
+      }
+      this.ctx.onReturnToMenu?.();
+      this.onReturnToMenu?.();
+    });
+
+    // 11. Guest Hero Selector
+    const guestHeroOpts = this.queryHeroOptions('.lobby-hero-opt[data-guest-hero]');
+    guestHeroOpts.forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const hero = opt.getAttribute('data-guest-hero') as CharacterType;
+        if (!ProgressionManager.getInstance().isHeroUnlocked(hero)) {
+          return;
+        }
+        guestHeroOpts.forEach((o) => o.classList.remove('active'));
+        opt.classList.add('active');
+        this.guestSelectedHero = hero;
+        this.onGuestHeroChanged?.(hero);
+      });
+    });
+
+    // 12. Password Prompt Modal
+    this.el.btnPwdPromptSubmit?.addEventListener('click', () => {
+      this.submitPasswordPrompt();
+    });
+
+    this.el.btnPwdPromptCancel?.addEventListener('click', () => {
+      this.hidePasswordPrompt();
+    });
+
+    this.el.pwdPromptInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        this.submitPasswordPrompt();
+      }
+    });
+
+    this.el.btnTogglePromptPwd?.addEventListener('click', () => {
+      if (this.el.pwdPromptInput) {
+        const isPwd = this.el.pwdPromptInput.type === 'password';
+        this.el.pwdPromptInput.type = isPwd ? 'text' : 'password';
+      }
+    });
+  }
 
   public get el(): LobbyScreenElements {
     return this.ctx.elements || {};
@@ -104,7 +329,7 @@ export class LobbyScreen extends Screen {
     }
     this.hostSelectedHero = hero;
     this.updateLobbyHeroesLockStatus();
-    const hostHeroOpts = SafeDOM.queryAll<HTMLElement>(document.body, '.lobby-hero-opt[data-host-hero]');
+    const hostHeroOpts = this.queryHeroOptions('.lobby-hero-opt[data-host-hero]');
     hostHeroOpts.forEach((opt) => {
       if (opt.getAttribute('data-host-hero') === hero) {
         opt.classList.add('active');
@@ -254,6 +479,7 @@ export class LobbyScreen extends Screen {
     container.innerHTML = '';
 
     const slotKeys = ['p1', 'p2', 'p3', 'p4', 'p5'];
+    if (typeof document === 'undefined') return;
 
     for (let i = 0; i < 5; i++) {
       const slotKey = slotKeys[i];
@@ -494,6 +720,8 @@ export class LobbyScreen extends Screen {
       chakram: 'Кира (Чакрам)'
     };
 
+    if (typeof document === 'undefined') return;
+
     for (const r of rooms) {
       const card = document.createElement('div');
       card.className = 'room-browser-card';
@@ -577,7 +805,7 @@ export class LobbyScreen extends Screen {
     }
     this.guestSelectedHero = defaultHero;
     this.updateLobbyHeroesLockStatus();
-    const guestHeroOpts = SafeDOM.queryAll<HTMLElement>(document.body, '.lobby-hero-opt[data-guest-hero]');
+    const guestHeroOpts = this.queryHeroOptions('.lobby-hero-opt[data-guest-hero]');
     guestHeroOpts.forEach((opt) => {
       if (opt.getAttribute('data-guest-hero') === defaultHero) {
         opt.classList.add('active');
@@ -621,7 +849,7 @@ export class LobbyScreen extends Screen {
 
   public updateLobbyHeroesLockStatus(): void {
     const prog = ProgressionManager.getInstance();
-    const hostOpts = SafeDOM.queryAll<HTMLElement>(document.body, '.lobby-hero-opt[data-host-hero]');
+    const hostOpts = this.queryHeroOptions('.lobby-hero-opt[data-host-hero]');
     hostOpts.forEach((opt) => {
       const hero = opt.getAttribute('data-host-hero') as CharacterType;
       const isUnlocked = prog.isHeroUnlocked(hero);
@@ -635,7 +863,7 @@ export class LobbyScreen extends Screen {
       }
     });
 
-    const guestOpts = SafeDOM.queryAll<HTMLElement>(document.body, '.lobby-hero-opt[data-guest-hero]');
+    const guestOpts = this.queryHeroOptions('.lobby-hero-opt[data-guest-hero]');
     guestOpts.forEach((opt) => {
       const hero = opt.getAttribute('data-guest-hero') as CharacterType;
       const isUnlocked = prog.isHeroUnlocked(hero);
@@ -648,5 +876,10 @@ export class LobbyScreen extends Screen {
         opt.title = `🔒 ${def.unlockConditionHint}`;
       }
     });
+  }
+
+  private queryHeroOptions(selector: string): HTMLElement[] {
+    if (typeof document === 'undefined' || !document.body) return [];
+    return SafeDOM.queryAll<HTMLElement>(document.body, selector);
   }
 }

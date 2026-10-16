@@ -243,6 +243,8 @@ export class HUD {
       },
       hideCoopMenu: () => this.hideCoopMenu(),
       hideMainMenu: () => this.hideMainMenu(),
+      showCoopMenu: () => this.showCoopMenu(),
+      showMainMenu: () => this.showMainMenu(),
       getMenuStack: () => this.menuStack,
       setMenuStack: (stack) => {
         this.menuStack = stack;
@@ -252,6 +254,9 @@ export class HUD {
       },
       removeMenu: (menu) => {
         this.menuStack = this.menuStack.filter((m) => m !== menu);
+      },
+      onReturnToMenu: () => {
+        this.onReturnToMenu?.();
       }
     });
     ScreenManager.getInstance().register(this.lobbyUI);

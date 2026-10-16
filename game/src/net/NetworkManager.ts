@@ -1,4 +1,7 @@
-import { Peer, type DataConnection } from 'peerjs';
+import type { DataConnection, Peer } from 'peerjs';
+import * as PeerModule from 'peerjs';
+const PeerClass: { new (...args: any[]): Peer } =
+  ((PeerModule as any).Peer || (PeerModule as any).default?.Peer || (PeerModule as any).default || PeerModule) as any;
 import { packHostSnapshot, unpackHostSnapshot, isBinarySnapshot } from './BinarySnapshot';
 import { RoomDirectory } from './RoomDirectory';
 import { AuthManager } from '../auth/AuthManager';
@@ -58,14 +61,14 @@ export {
   getPlayerSlotDisplayName
 };
 
-const PEERJS_HOST = import.meta.env.VITE_PEERJS_HOST || undefined;
-const PEERJS_PORT = import.meta.env.VITE_PEERJS_PORT ? Number(import.meta.env.VITE_PEERJS_PORT) : undefined;
-const PEERJS_PATH = import.meta.env.VITE_PEERJS_PATH || undefined;
-const PEERJS_KEY = import.meta.env.VITE_PEERJS_KEY || undefined;
+const PEERJS_HOST = import.meta.env?.VITE_PEERJS_HOST || undefined;
+const PEERJS_PORT = import.meta.env?.VITE_PEERJS_PORT ? Number(import.meta.env.VITE_PEERJS_PORT) : undefined;
+const PEERJS_PATH = import.meta.env?.VITE_PEERJS_PATH || undefined;
+const PEERJS_KEY = import.meta.env?.VITE_PEERJS_KEY || undefined;
 
-const TURN_HOST = import.meta.env.VITE_TURN_HOST || '';
-const TURN_USERNAME = import.meta.env.VITE_TURN_USERNAME || '';
-const TURN_PASSWORD = import.meta.env.VITE_TURN_PASSWORD || '';
+const TURN_HOST = import.meta.env?.VITE_TURN_HOST || '';
+const TURN_USERNAME = import.meta.env?.VITE_TURN_USERNAME || '';
+const TURN_PASSWORD = import.meta.env?.VITE_TURN_PASSWORD || '';
 
 export class NetworkManager {
   public static readonly MAX_PLAYERS = 5;
@@ -215,7 +218,7 @@ export class NetworkManager {
     const peerId = `wws-coop-${this.roomCode.toLowerCase()}`;
     return new Promise((resolve) => {
       try {
-        this.peer = new Peer(peerId, {
+        this.peer = new PeerClass(peerId, {
           host: PEERJS_HOST,
           port: PEERJS_PORT,
           path: PEERJS_PATH,
@@ -339,7 +342,7 @@ export class NetworkManager {
 
       try {
         const guestPeerId = `wws-guest-${Math.random().toString(36).substring(2, 8)}`;
-        this.peer = new Peer(guestPeerId, {
+        this.peer = new PeerClass(guestPeerId, {
           host: PEERJS_HOST,
           port: PEERJS_PORT,
           path: PEERJS_PATH,
@@ -1227,6 +1230,11 @@ export class NetworkManager {
     if (this.role === 'host') {
       try {
         this.send({ type: 'DISCONNECT', playerId: 'p1' });
+      } catch {
+        // ignore
+      }
+      try {
+        RoomDirectory.stopHosting();
       } catch {
         // ignore
       }
