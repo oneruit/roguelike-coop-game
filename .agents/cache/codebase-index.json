@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-16T14:24:42.110Z",
+  "generatedAt": "2026-10-16T14:42:16.273Z",
   "totalFiles": 153,
-  "totalSymbols": 1566,
+  "totalSymbols": 1568,
   "topLevelCount": 473,
-  "methodsCount": 1093,
+  "methodsCount": 1095,
   "entities": {
     "heroes": [
       {
@@ -4481,7 +4481,7 @@
       "name": "HUD.activateSettingsTab",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 842,
+      "line": 860,
       "className": "HUD",
       "methodName": "activateSettingsTab"
     },
@@ -4511,18 +4511,34 @@
       "methodName": "bindPauseListeners"
     },
     {
+      "name": "HUD.clearMenuStack",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 796,
+      "className": "HUD",
+      "methodName": "clearMenuStack"
+    },
+    {
       "name": "HUD.clearTeammates",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1364,
+      "line": 1394,
       "className": "HUD",
       "methodName": "clearTeammates"
+    },
+    {
+      "name": "HUD.closeAllPreGameModals",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 800,
+      "className": "HUD",
+      "methodName": "closeAllPreGameModals"
     },
     {
       "name": "HUD.getChapterQuests",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1123,
+      "line": 1153,
       "className": "HUD",
       "methodName": "getChapterQuests"
     },
@@ -4530,7 +4546,7 @@
       "name": "HUD.getHeroAvatar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1475,
+      "line": 1505,
       "className": "HUD",
       "methodName": "getHeroAvatar"
     },
@@ -4538,7 +4554,7 @@
       "name": "HUD.getHeroIcon",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1467,
+      "line": 1497,
       "className": "HUD",
       "methodName": "getHeroIcon",
       "doc": "--- Hero Info Static / Instance Helpers ---"
@@ -4547,7 +4563,7 @@
       "name": "HUD.getHeroName",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1471,
+      "line": 1501,
       "className": "HUD",
       "methodName": "getHeroName"
     },
@@ -4555,7 +4571,7 @@
       "name": "HUD.handleClaimAllBattlePass",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1161,
+      "line": 1191,
       "className": "HUD",
       "methodName": "handleClaimAllBattlePass"
     },
@@ -4563,7 +4579,7 @@
       "name": "HUD.handleEscape",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 948,
+      "line": 966,
       "className": "HUD",
       "methodName": "handleEscape"
     },
@@ -4571,7 +4587,7 @@
       "name": "HUD.hideAuthModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 931,
+      "line": 949,
       "className": "HUD",
       "methodName": "hideAuthModal"
     },
@@ -4579,7 +4595,7 @@
       "name": "HUD.hideBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1157,
+      "line": 1187,
       "className": "HUD",
       "methodName": "hideBattlePassModal"
     },
@@ -4587,7 +4603,7 @@
       "name": "HUD.hideCharacterSelect",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 914,
+      "line": 932,
       "className": "HUD",
       "methodName": "hideCharacterSelect"
     },
@@ -4595,7 +4611,7 @@
       "name": "HUD.hideChestChoice",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1289,
+      "line": 1319,
       "className": "HUD",
       "methodName": "hideChestChoice"
     },
@@ -4603,7 +4619,7 @@
       "name": "HUD.hideCoopMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 829,
+      "line": 847,
       "className": "HUD",
       "methodName": "hideCoopMenu"
     },
@@ -4611,7 +4627,7 @@
       "name": "HUD.hideExitModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 854,
+      "line": 872,
       "className": "HUD",
       "methodName": "hideExitModal"
     },
@@ -4619,7 +4635,7 @@
       "name": "HUD.hideGameOver",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1319,
+      "line": 1349,
       "className": "HUD",
       "methodName": "hideGameOver"
     },
@@ -4627,7 +4643,7 @@
       "name": "HUD.hideHostLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1171,
+      "line": 1201,
       "className": "HUD",
       "methodName": "hideHostLobby"
     },
@@ -4635,7 +4651,7 @@
       "name": "HUD.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1400,
+      "line": 1430,
       "className": "HUD",
       "methodName": "hideInteractionPrompt"
     },
@@ -4643,7 +4659,7 @@
       "name": "HUD.hideInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1255,
+      "line": 1285,
       "className": "HUD",
       "methodName": "hideInventory"
     },
@@ -4651,7 +4667,7 @@
       "name": "HUD.hideJoinLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1207,
+      "line": 1237,
       "className": "HUD",
       "methodName": "hideJoinLobby"
     },
@@ -4659,7 +4675,7 @@
       "name": "HUD.hideLeaderboard",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1333,
+      "line": 1363,
       "className": "HUD",
       "methodName": "hideLeaderboard"
     },
@@ -4667,7 +4683,7 @@
       "name": "HUD.hideLevelUp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1237,
+      "line": 1267,
       "className": "HUD",
       "methodName": "hideLevelUp"
     },
@@ -4683,7 +4699,7 @@
       "name": "HUD.hideMerchant",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1273,
+      "line": 1303,
       "className": "HUD",
       "methodName": "hideMerchant"
     },
@@ -4691,7 +4707,7 @@
       "name": "HUD.hidePartnerHp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1372,
+      "line": 1402,
       "className": "HUD",
       "methodName": "hidePartnerHp"
     },
@@ -4699,7 +4715,7 @@
       "name": "HUD.hidePasswordPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1191,
+      "line": 1221,
       "className": "HUD",
       "methodName": "hidePasswordPrompt"
     },
@@ -4707,7 +4723,7 @@
       "name": "HUD.hidePause",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 879,
+      "line": 897,
       "className": "HUD",
       "methodName": "hidePause"
     },
@@ -4715,7 +4731,7 @@
       "name": "HUD.hideQuestsModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1119,
+      "line": 1149,
       "className": "HUD",
       "methodName": "hideQuestsModal"
     },
@@ -4723,7 +4739,7 @@
       "name": "HUD.hideSettings",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 838,
+      "line": 856,
       "className": "HUD",
       "methodName": "hideSettings"
     },
@@ -4731,7 +4747,7 @@
       "name": "HUD.hideShopModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 807,
+      "line": 825,
       "className": "HUD",
       "methodName": "hideShopModal"
     },
@@ -4739,7 +4755,7 @@
       "name": "HUD.isAnyMenuOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 940,
+      "line": 958,
       "className": "HUD",
       "methodName": "isAnyMenuOpen"
     },
@@ -4747,7 +4763,7 @@
       "name": "HUD.isAuthModalOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 936,
+      "line": 954,
       "className": "HUD",
       "methodName": "isAuthModalOpen"
     },
@@ -4755,7 +4771,7 @@
       "name": "HUD.isInventoryOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1243,
+      "line": 1273,
       "className": "HUD",
       "methodName": "isInventoryOpen",
       "doc": "--- Inventory Methods Forwarding ---"
@@ -4764,7 +4780,7 @@
       "name": "HUD.isMerchantOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1265,
+      "line": 1295,
       "className": "HUD",
       "methodName": "isMerchantOpen",
       "doc": "--- Merchant & Chest Methods Forwarding ---"
@@ -4773,7 +4789,7 @@
       "name": "HUD.openBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1153,
+      "line": 1183,
       "className": "HUD",
       "methodName": "openBattlePassModal"
     },
@@ -4781,7 +4797,7 @@
       "name": "HUD.renderAvailableRooms",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1199,
+      "line": 1229,
       "className": "HUD",
       "methodName": "renderAvailableRooms"
     },
@@ -4789,7 +4805,7 @@
       "name": "HUD.renderBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1149,
+      "line": 1179,
       "className": "HUD",
       "methodName": "renderBattlePassModal"
     },
@@ -4797,7 +4813,7 @@
       "name": "HUD.renderHostRoster",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1179,
+      "line": 1209,
       "className": "HUD",
       "methodName": "renderHostRoster"
     },
@@ -4805,7 +4821,7 @@
       "name": "HUD.renderInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1259,
+      "line": 1289,
       "className": "HUD",
       "methodName": "renderInventory"
     },
@@ -4813,7 +4829,7 @@
       "name": "HUD.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1404,
+      "line": 1434,
       "className": "HUD",
       "methodName": "renderItemInventory"
     },
@@ -4821,7 +4837,7 @@
       "name": "HUD.renderJoinRoster",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1183,
+      "line": 1213,
       "className": "HUD",
       "methodName": "renderJoinRoster"
     },
@@ -4829,7 +4845,7 @@
       "name": "HUD.renderQuestsModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1127,
+      "line": 1157,
       "className": "HUD",
       "methodName": "renderQuestsModal"
     },
@@ -4837,7 +4853,7 @@
       "name": "HUD.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1432,
+      "line": 1462,
       "className": "HUD",
       "methodName": "resetBossUI"
     },
@@ -4853,7 +4869,7 @@
       "name": "HUD.resetLevelUpState",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1233,
+      "line": 1263,
       "className": "HUD",
       "methodName": "resetLevelUpState"
     },
@@ -4861,7 +4877,7 @@
       "name": "HUD.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1436,
+      "line": 1466,
       "className": "HUD",
       "methodName": "resetSessionHUD"
     },
@@ -4869,7 +4885,7 @@
       "name": "HUD.selectQuestChapter",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1107,
+      "line": 1137,
       "className": "HUD",
       "methodName": "selectQuestChapter"
     },
@@ -4877,7 +4893,7 @@
       "name": "HUD.setCoopBadge",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1340,
+      "line": 1370,
       "className": "HUD",
       "methodName": "setCoopBadge",
       "doc": "--- In-Game Overlay & Overlays Methods Forwarding ---"
@@ -4886,7 +4902,7 @@
       "name": "HUD.setGuestConnectedMode",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1215,
+      "line": 1245,
       "className": "HUD",
       "methodName": "setGuestConnectedMode"
     },
@@ -4894,7 +4910,7 @@
       "name": "HUD.setHostPartnerConnected",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1175,
+      "line": 1205,
       "className": "HUD",
       "methodName": "setHostPartnerConnected"
     },
@@ -4902,7 +4918,7 @@
       "name": "HUD.setInGameHUDVisible",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1115,
+      "line": 1145,
       "className": "HUD",
       "methodName": "setInGameHUDVisible"
     },
@@ -4910,7 +4926,7 @@
       "name": "HUD.setJoinStatus",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1211,
+      "line": 1241,
       "className": "HUD",
       "methodName": "setJoinStatus"
     },
@@ -4918,7 +4934,7 @@
       "name": "HUD.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1452,
+      "line": 1482,
       "className": "HUD",
       "methodName": "setTrainingModeActive"
     },
@@ -4934,7 +4950,7 @@
       "name": "HUD.showAuthModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 924,
+      "line": 942,
       "className": "HUD",
       "methodName": "showAuthModal"
     },
@@ -4942,7 +4958,7 @@
       "name": "HUD.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1412,
+      "line": 1442,
       "className": "HUD",
       "methodName": "showBalanceToast"
     },
@@ -4950,7 +4966,7 @@
       "name": "HUD.showCharacterSelect",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 895,
+      "line": 913,
       "className": "HUD",
       "methodName": "showCharacterSelect"
     },
@@ -4958,7 +4974,7 @@
       "name": "HUD.showCoopMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 823,
+      "line": 841,
       "className": "HUD",
       "methodName": "showCoopMenu"
     },
@@ -4966,7 +4982,7 @@
       "name": "HUD.showExitModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 846,
+      "line": 864,
       "className": "HUD",
       "methodName": "showExitModal"
     },
@@ -4974,7 +4990,7 @@
       "name": "HUD.showHostLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1167,
+      "line": 1197,
       "className": "HUD",
       "methodName": "showHostLobby",
       "doc": "--- Lobby Methods Forwarding ---"
@@ -4983,7 +4999,7 @@
       "name": "HUD.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1396,
+      "line": 1426,
       "className": "HUD",
       "methodName": "showInteractionPrompt"
     },
@@ -4991,7 +5007,7 @@
       "name": "HUD.showInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1251,
+      "line": 1281,
       "className": "HUD",
       "methodName": "showInventory"
     },
@@ -4999,7 +5015,7 @@
       "name": "HUD.showJoinLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1203,
+      "line": 1233,
       "className": "HUD",
       "methodName": "showJoinLobby"
     },
@@ -5007,7 +5023,7 @@
       "name": "HUD.showLeaderboard",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1326,
+      "line": 1356,
       "className": "HUD",
       "methodName": "showLeaderboard",
       "doc": "--- Leaderboard Methods Forwarding ---"
@@ -5016,7 +5032,7 @@
       "name": "HUD.showLevelUp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1229,
+      "line": 1259,
       "className": "HUD",
       "methodName": "showLevelUp",
       "doc": "--- Level Up Methods Forwarding ---"
@@ -5034,7 +5050,7 @@
       "name": "HUD.showMerchant",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1269,
+      "line": 1299,
       "className": "HUD",
       "methodName": "showMerchant"
     },
@@ -5042,7 +5058,7 @@
       "name": "HUD.showPasswordPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1187,
+      "line": 1217,
       "className": "HUD",
       "methodName": "showPasswordPrompt"
     },
@@ -5050,7 +5066,7 @@
       "name": "HUD.showPasswordPromptError",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1195,
+      "line": 1225,
       "className": "HUD",
       "methodName": "showPasswordPromptError"
     },
@@ -5058,7 +5074,7 @@
       "name": "HUD.showPause",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 859,
+      "line": 877,
       "className": "HUD",
       "methodName": "showPause"
     },
@@ -5066,7 +5082,7 @@
       "name": "HUD.showQuestsModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1111,
+      "line": 1141,
       "className": "HUD",
       "methodName": "showQuestsModal"
     },
@@ -5074,7 +5090,7 @@
       "name": "HUD.showSettings",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 834,
+      "line": 852,
       "className": "HUD",
       "methodName": "showSettings"
     },
@@ -5082,7 +5098,7 @@
       "name": "HUD.showShopModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 796,
+      "line": 814,
       "className": "HUD",
       "methodName": "showShopModal"
     },
@@ -5090,7 +5106,7 @@
       "name": "HUD.switchJoinTab",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1223,
+      "line": 1253,
       "className": "HUD",
       "methodName": "switchJoinTab"
     },
@@ -5098,7 +5114,7 @@
       "name": "HUD.toggleInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1247,
+      "line": 1277,
       "className": "HUD",
       "methodName": "toggleInventory"
     },
@@ -5106,7 +5122,7 @@
       "name": "HUD.togglePause",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 885,
+      "line": 903,
       "className": "HUD",
       "methodName": "togglePause"
     },
@@ -5114,7 +5130,7 @@
       "name": "HUD.toggleQuestsInMainMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1103,
+      "line": 1133,
       "className": "HUD",
       "methodName": "toggleQuestsInMainMenu",
       "doc": "--- Quests Methods Forwarding ---"
@@ -5123,7 +5139,7 @@
       "name": "HUD.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1408,
+      "line": 1438,
       "className": "HUD",
       "methodName": "triggerAltarNotification"
     },
@@ -5131,7 +5147,7 @@
       "name": "HUD.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1424,
+      "line": 1454,
       "className": "HUD",
       "methodName": "triggerBossWarning"
     },
@@ -5139,7 +5155,7 @@
       "name": "HUD.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1420,
+      "line": 1450,
       "className": "HUD",
       "methodName": "triggerDamageFlash"
     },
@@ -5147,7 +5163,7 @@
       "name": "HUD.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1428,
+      "line": 1458,
       "className": "HUD",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -5155,7 +5171,7 @@
       "name": "HUD.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1416,
+      "line": 1446,
       "className": "HUD",
       "methodName": "updateBuffsTray"
     },
@@ -5163,7 +5179,7 @@
       "name": "HUD.updateCharacterSelectLockStatus",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1131,
+      "line": 1161,
       "className": "HUD",
       "methodName": "updateCharacterSelectLockStatus"
     },
@@ -5171,7 +5187,7 @@
       "name": "HUD.updateCrystalsCounter",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 816,
+      "line": 834,
       "className": "HUD",
       "methodName": "updateCrystalsCounter"
     },
@@ -5179,7 +5195,7 @@
       "name": "HUD.updateGuestReadyButtonUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1219,
+      "line": 1249,
       "className": "HUD",
       "methodName": "updateGuestReadyButtonUI"
     },
@@ -5187,7 +5203,7 @@
       "name": "HUD.updateLobbyHeroesLockStatus",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1135,
+      "line": 1165,
       "className": "HUD",
       "methodName": "updateLobbyHeroesLockStatus"
     },
@@ -5195,7 +5211,7 @@
       "name": "HUD.updateMainMenuBattlePass",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1145,
+      "line": 1175,
       "className": "HUD",
       "methodName": "updateMainMenuBattlePass",
       "doc": "--- Battle Pass Methods Forwarding ---"
@@ -5204,7 +5220,7 @@
       "name": "HUD.updateMainMenuQuests",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1139,
+      "line": 1169,
       "className": "HUD",
       "methodName": "updateMainMenuQuests"
     },
@@ -5212,7 +5228,7 @@
       "name": "HUD.updateMerchantTimer",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1277,
+      "line": 1307,
       "className": "HUD",
       "methodName": "updateMerchantTimer"
     },
@@ -5220,7 +5236,7 @@
       "name": "HUD.updatePartnerHp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1368,
+      "line": 1398,
       "className": "HUD",
       "methodName": "updatePartnerHp"
     },
@@ -5228,7 +5244,7 @@
       "name": "HUD.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1444,
+      "line": 1474,
       "className": "HUD",
       "methodName": "updatePassivesBar"
     },
@@ -5236,7 +5252,7 @@
       "name": "HUD.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1448,
+      "line": 1478,
       "className": "HUD",
       "methodName": "updatePerformance"
     },
@@ -5244,7 +5260,7 @@
       "name": "HUD.updateStageText",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1387,
+      "line": 1417,
       "className": "HUD",
       "methodName": "updateStageText"
     },
@@ -5252,7 +5268,7 @@
       "name": "HUD.updateTeleportButton",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1392,
+      "line": 1422,
       "className": "HUD",
       "methodName": "updateTeleportButton"
     },
@@ -5260,7 +5276,7 @@
       "name": "HUD.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1440,
+      "line": 1470,
       "className": "HUD",
       "methodName": "updateWeaponsBar"
     },
@@ -9719,7 +9735,7 @@
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 700,
+      "line": 702,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -9728,7 +9744,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 835,
+      "line": 837,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -9736,7 +9752,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 984,
+      "line": 986,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -9745,7 +9761,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 443,
+      "line": 444,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -9753,7 +9769,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 558,
+      "line": 560,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -9761,7 +9777,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 434,
+      "line": 435,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -9769,7 +9785,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 485,
+      "line": 486,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -9777,7 +9793,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 426,
+      "line": 427,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -9785,7 +9801,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1130,
+      "line": 1132,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -9794,7 +9810,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 372,
+      "line": 373,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -9802,7 +9818,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1068,
+      "line": 1070,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -9811,7 +9827,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 316,
+      "line": 317,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -9819,7 +9835,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 261,
+      "line": 262,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -9827,7 +9843,7 @@
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 364,
+      "line": 365,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -9835,7 +9851,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1014,
+      "line": 1016,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -9852,7 +9868,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 913,
+      "line": 915,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -9860,7 +9876,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 453,
+      "line": 454,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -9868,7 +9884,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 719,
+      "line": 721,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },

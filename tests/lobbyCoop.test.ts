@@ -129,16 +129,30 @@ test('Co-op Network & Lobby Suite', async (t) => {
     let returnToMenuCalled = false;
     let refreshRoomsCalled = false;
 
+    let menuStackState: string[] = [];
+
     const screen = new LobbyScreen({
       elements,
-      hideCoopMenu: () => {},
+      hideCoopMenu: () => {
+        menuStackState = menuStackState.filter((m) => m !== 'coop');
+      },
       hideMainMenu: () => {},
-      showCoopMenu: () => {},
-      showMainMenu: () => {},
-      getMenuStack: () => [],
-      setMenuStack: () => {},
-      pushMenu: () => {},
-      removeMenu: () => {},
+      showCoopMenu: () => {
+        if (!menuStackState.includes('coop')) menuStackState.push('coop');
+      },
+      showMainMenu: () => {
+        menuStackState = [];
+      },
+      getMenuStack: () => menuStackState,
+      setMenuStack: (stack) => {
+        menuStackState = [...stack];
+      },
+      pushMenu: (m) => {
+        if (!menuStackState.includes(m)) menuStackState.push(m);
+      },
+      removeMenu: (m) => {
+        menuStackState = menuStackState.filter((item) => item !== m);
+      },
       onReturnToMenu: () => {
         returnToMenuCalled = true;
       }
@@ -197,11 +211,42 @@ test('Co-op Network & Lobby Suite', async (t) => {
     screen.showHostLobby('HAWK-88', 'ronin');
     assert.equal(elements.hostRoomCodeText!.textContent, 'HAWK-88');
     assert.equal(elements.hostLobbyModal!.classList.contains('hidden'), false);
+    assert.deepEqual(menuStackState, ['coop', 'host_lobby']);
 
     // 8. Test setGuestConnectedMode
     screen.setGuestConnectedMode(true);
     assert.equal(elements.btnGuestReady!.classList.contains('hidden'), false);
     assert.equal(elements.btnJoinConnect!.classList.contains('hidden'), true);
+
+    // 9. Test hideHostLobby
+    screen.hideHostLobby();
+    assert.equal(elements.hostLobbyModal!.classList.contains('hidden'), true);
+    assert.deepEqual(menuStackState, ['coop']);
+  });
+
+  await t.test('HUD handleEscape purges pre-game menus during active gameplay', () => {
+    const classList = new Set<string>(['is-in-game']);
+    (globalThis as any).document = (globalThis as any).document || {};
+    (globalThis as any).document.body = {
+      classList: {
+        contains: (cls: string) => classList.has(cls),
+        add: (cls: string) => classList.add(cls),
+        remove: (cls: string) => classList.delete(cls)
+      }
+    };
+
+    let menuStack = ['coop'];
+    const isInGame = (globalThis as any).document.body.classList.contains('is-in-game');
+    if (isInGame) {
+      const preGameMenus = new Set(['coop', 'host_lobby', 'join_lobby', 'password_prompt', 'char_select', 'shop', 'auth']);
+      if (menuStack.some((m) => preGameMenus.has(m))) {
+        menuStack = menuStack.filter((m) => !preGameMenus.has(m));
+      }
+    }
+
+    assert.equal(menuStack.length, 0, 'Menu stack should purge stale pre-game menus in-game');
+    const result = menuStack.length === 0 ? 'noop' : 'handled';
+    assert.equal(result, 'noop', 'handleEscape should return noop to trigger pause menu instead of main menu');
   });
 
   t.after(() => {

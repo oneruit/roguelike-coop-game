@@ -209,6 +209,7 @@ export class SessionDirector {
     try {
       document.body.classList.remove('is-main-menu');
       document.body.classList.add('is-in-game');
+      this.hud.closeAllPreGameModals();
       this.isTrainingMode = isTrainingMode;
       ProgressionManager.getInstance().isTrainingMode = isTrainingMode;
       this.hud.setTrainingModeActive(isTrainingMode);
@@ -262,7 +263,7 @@ export class SessionDirector {
     if (this.net.role !== 'host') return;
     document.body.classList.remove('is-main-menu');
     document.body.classList.add('is-in-game');
-    this.hud.hideHostLobby();
+    this.hud.closeAllPreGameModals();
 
     for (const rp of this.remotePlayers.values()) {
       rp.destroy(this.engine.scene);
@@ -316,7 +317,7 @@ export class SessionDirector {
   public startCoopGameAsClient(seed?: number): void {
     document.body.classList.remove('is-main-menu');
     document.body.classList.add('is-in-game');
-    this.hud.hideJoinLobby();
+    this.hud.closeAllPreGameModals();
 
     for (const rp of this.remotePlayers.values()) {
       rp.destroy(this.engine.scene);
@@ -547,6 +548,7 @@ export class SessionDirector {
       this.gameTime = 0;
       ProgressionManager.getInstance()?.resetRunSessionProgress?.();
       this.gameState = GameState.PLAYING;
+      this.hud?.clearMenuStack?.();
       this.hud?.setInGameHUDVisible?.(true);
       this.updateUI.setCombatActive(true);
       this.lastTime = performance.now();
