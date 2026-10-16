@@ -170,9 +170,9 @@ export class MerchantManager {
   }
 
   public spawn(getElevation?: (x: number, z: number) => number) {
-    // Random position within 120m radius, avoiding extreme borders
+    // Random position across the map (35m to 155m radius), avoiding map edge
     const angle = Math.random() * Math.PI * 2;
-    const dist = 30 + Math.random() * 90;
+    const dist = 35 + Math.random() * 120;
     const x = Math.round(Math.cos(angle) * dist);
     const z = Math.round(Math.sin(angle) * dist);
     const y = getElevation ? getElevation(x, z) : 0;
@@ -220,15 +220,15 @@ export class MerchantManager {
 
     const calcPrice = (base: number) => Math.round(base * Math.pow(1.4, this.purchaseCount));
 
-    // Special item: Upgrade Weapon (can purchase up to 5 times per visit)
+    // Special item: Upgrade Weapon Upgrade Rarity (can purchase up to 5 times per visit)
     items.push({
       id: 'merchant_upgrade_weapon',
       type: 'weapon_upgrade',
-      name: 'Улучшить оружие',
+      name: 'Повысить редкость улучшения',
       rarity: 'rare',
-      icon: '⚔️',
-      color: '#38bdf8',
-      description: `Повышает уровень случайного оружия на +1 (куплено ${this.weaponUpgradePurchases}/5).`,
+      icon: '⚡',
+      color: '#a855f7',
+      description: `Повышает редкость улучшения случайного оружия (куплено ${this.weaponUpgradePurchases}/5).`,
       price: calcPrice(weaponUpgradeBasePrice),
       basePrice: weaponUpgradeBasePrice
     });
@@ -308,9 +308,10 @@ export class MerchantManager {
       basePrice: prices[r1.rarity]
     });
 
-    // 4. One Legendary or Boss item
-    const highPool = ['titan_heart', 'void_catalyst', 'chronos_phylactery', 'singularity_core', 'orbital_strike', 'golem_core'] as RiftItemId[];
-    const h1 = pickRandomDef(highPool);
+    // 4. One Legendary or Boss item (Time Crystal is very rare: ~3.5% chance)
+    const isChronosRoll = Math.random() < 0.035;
+    const highPool = ['titan_heart', 'void_catalyst', 'singularity_core', 'orbital_strike', 'golem_core'] as RiftItemId[];
+    const h1 = isChronosRoll ? RIFT_ITEMS['chronos_phylactery'] : pickRandomDef(highPool);
     items.push({
       id: h1.id,
       type: 'rift_item',
@@ -346,7 +347,7 @@ export class MerchantManager {
   public isSold(item: MerchantItemStock, player: Player): boolean {
     if (item.id === 'merchant_upgrade_weapon') {
       if (this.weaponUpgradePurchases >= 5) return true;
-      const upgradeable = player.weapons.filter(w => w.level < getWeaponEffectiveCap(w, player.weapons));
+      const upgradeable = player.weapons.filter(w => (w as any).canUpgradeUpgradeRarity ? (w as any).canUpgradeUpgradeRarity() : w.level < getWeaponEffectiveCap(w, player.weapons));
       if (upgradeable.length === 0) return true;
       return false;
     }
@@ -361,11 +362,11 @@ export class MerchantManager {
     }
     if (item.id === 'merchant_upgrade_weapon') {
       if (this.weaponUpgradePurchases >= 5) {
-        return { success: false, error: 'Лимит улучшений оружия у торговца исчерпан (макс. 5 за приход)' };
+        return { success: false, error: 'Лимит улучшений у торговца исчерпан (макс. 5 за приход)' };
       }
-      const upgradeable = player.weapons.filter(w => w.level < getWeaponEffectiveCap(w, player.weapons));
+      const upgradeable = player.weapons.filter(w => (w as any).canUpgradeUpgradeRarity ? (w as any).canUpgradeUpgradeRarity() : w.level < getWeaponEffectiveCap(w, player.weapons));
       if (upgradeable.length === 0) {
-        return { success: false, error: 'Все оружия уже улучшены до текущего предела' };
+        return { success: false, error: 'Все улучшения оружия уже максимальной редкости' };
       }
     } else {
       if (this.boughtItemIds.has(item.id)) {
@@ -384,10 +385,14 @@ export class MerchantManager {
 
     if (item.id === 'merchant_upgrade_weapon') {
       this.weaponUpgradePurchases++;
-      const upgradeable = player.weapons.filter(w => w.level < getWeaponEffectiveCap(w, player.weapons));
+      const upgradeable = player.weapons.filter(w => (w as any).canUpgradeUpgradeRarity ? (w as any).canUpgradeUpgradeRarity() : w.level < getWeaponEffectiveCap(w, player.weapons));
       if (upgradeable.length > 0) {
         const target = upgradeable[Math.floor(Math.random() * upgradeable.length)];
-        target.upgrade('common');
+        if ((target as any).upgradeUpgradeRarity) {
+          (target as any).upgradeUpgradeRarity();
+        } else {
+          target.upgrade('common');
+        }
       }
       if (this.weaponUpgradePurchases >= 5) {
         this.boughtItemIds.add(item.id);
@@ -411,7 +416,7 @@ export class MerchantManager {
     for (const stockItem of this.stock) {
       stockItem.price = Math.round(stockItem.basePrice * Math.pow(1.4, this.purchaseCount));
       if (stockItem.id === 'merchant_upgrade_weapon') {
-        stockItem.description = `Повышает уровень случайного оружия на +1 (куплено ${this.weaponUpgradePurchases}/5).`;
+        stockItem.description = `Повышает редкость улучшения случайного оружия (куплено ${this.weaponUpgradePurchases}/5).`;
       }
     }
 

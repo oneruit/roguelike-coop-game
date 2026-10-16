@@ -382,6 +382,14 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       speed: 2.3,
       damage: 75,
       description: 'Древняя трехглавая гидра 2 тира'
+    },
+    spore_queen: {
+      id: 'spore_queen',
+      name: 'Споровая Владычица Ксено-Леса',
+      hp: 85000,
+      speed: 2.7,
+      damage: 90,
+      description: 'Древняя споровая владычица ксено-леса 3 тира'
     }
   },
   passives: {

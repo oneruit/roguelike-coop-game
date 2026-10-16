@@ -383,10 +383,10 @@ export class LevelUpScreen extends Screen {
 
     const damageOption: UpgradeOption = {
       id: 'bonus_damage_elixir',
-      title: 'Эликсир Могущества (+5% урона)',
+      title: 'Эликсир Могущества (+1% урона)',
       icon: '⚡',
       levelTag: 'БОНУС УРОНА',
-      description: 'Увеличивает весь наносимый урон героя на +5%.',
+      description: 'Увеличивает весь наносимый урон героя на +1%.',
       grade: 'legendary',
       apply: () => {
         player.addMightElixirBonus();

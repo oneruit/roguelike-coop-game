@@ -60,6 +60,7 @@ export class GameOverScreen extends Screen {
   private coopStatsTbody: HTMLElement | null = null;
   private btnRestart: HTMLElement | null = null;
   private btnGameOverMenu: HTMLElement | null = null;
+  private btnLeaderboard: HTMLElement | null = null;
 
   // Battle Pass elements
   private gameOverBpBox: HTMLElement | null = null;
@@ -72,6 +73,7 @@ export class GameOverScreen extends Screen {
 
   public onRestartClicked?: () => void;
   public onMenuClicked?: () => void;
+  public onLeaderboardClicked?: () => void;
 
   constructor(options?: GameOverScreenOptions) {
     const existingModal = options?.container || SafeDOM.getElementById('game-over-modal');
@@ -112,6 +114,7 @@ export class GameOverScreen extends Screen {
     this.coopStatsTbody = SafeDOM.query(this.container, '#coop-stats-tbody');
     this.btnRestart = SafeDOM.query(this.container, '#btn-restart');
     this.btnGameOverMenu = SafeDOM.query(this.container, '#btn-gameover-menu');
+    this.btnLeaderboard = SafeDOM.query(this.container, '#btn-gameover-leaderboard');
 
     this.gameOverBpBox = SafeDOM.query(this.container, '#game-over-battle-pass');
     this.gameOverBpPointsGained = SafeDOM.query(this.container, '#game-over-bp-points-gained');
@@ -125,6 +128,7 @@ export class GameOverScreen extends Screen {
   protected bindEvents(): void {
     this.btnRestart?.addEventListener('click', () => this.onRestartClicked?.());
     this.btnGameOverMenu?.addEventListener('click', () => this.onMenuClicked?.());
+    this.btnLeaderboard?.addEventListener('click', () => this.onLeaderboardClicked?.());
   }
 
   public showGameOver(

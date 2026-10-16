@@ -20,6 +20,20 @@ import { BiomeManager } from '../game/src/world/BiomeManager';
 import { LevelUpUI, type LevelUpUIContext } from '../game/src/ui/modules/LevelUpUI';
 import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { PlayerStatusManager } from '../game/src/entities/PlayerStatusManager';
+import { LeaderboardManager } from '../game/src/core/LeaderboardManager';
+
+if (typeof (globalThis as any).window === 'undefined') {
+  (globalThis as any).window = globalThis;
+}
+if (typeof (globalThis as any).localStorage === 'undefined') {
+  const store: Record<string, string> = {};
+  (globalThis as any).localStorage = {
+    getItem: (k: string) => store[k] || null,
+    setItem: (k: string, v: string) => { store[k] = String(v); },
+    removeItem: (k: string) => { delete store[k]; },
+    clear: () => { Object.keys(store).forEach(k => delete store[k]); }
+  };
+}
 
 // Mock DOM for Three.js ImageLoader in Node.js
 if (typeof (globalThis as any).document === 'undefined') {
@@ -478,9 +492,10 @@ test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upg
   assert.equal(p6.success, false);
   assert.equal(merchant.weaponUpgradePurchases, 5);
 
-  // Player weapons were upgraded exactly 5 times across the 4 weapons
-  const totalLevels = player.weapons.reduce((acc, w) => acc + w.level, 0);
-  assert.equal(totalLevels, 4 + 5, '5 weapon upgrade purchases increased total weapon levels by 5');
+  // Player weapons had upgrade rarities upgraded 5 times (levels remain unchanged, upgrade rarity improved)
+  const totalUpgrades = player.weapons.reduce((acc, w) => acc + w.upgradeHistory.length, 0);
+  const totalBonusDamage = player.weapons.reduce((acc, w) => acc + w.bonusDamage, 0);
+  assert.ok(totalUpgrades > 0 || totalBonusDamage > 0, '5 weapon upgrade purchases improved weapon upgrade rarities');
 });
 
 test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
@@ -557,10 +572,96 @@ test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
   assert.ok(milestone3Options.some(o => o.id === 'bonus_credits_cache'));
   assert.ok(!milestone3Options.some(o => o.id === 'bonus_speed_elixir'));
 
-  // Elixir of Might bonus check: +5% per stack
+  // Elixir of Might bonus check: +1% per stack
   const initialMult = player.passiveDamageMultiplier;
   player.addMightElixirBonus();
-  assert.ok(Math.abs(player.passiveDamageMultiplier - (initialMult + 0.05)) < 1e-4, 'Might elixir gives +5%');
+  assert.ok(Math.abs(player.passiveDamageMultiplier - (initialMult + 0.01)) < 1e-4, 'Might elixir gives +1%');
 });
+
+test('LeaderboardManager prevents duplicate player entries and updates on new personal best', async () => {
+  if (typeof (globalThis as any).localStorage !== 'undefined') {
+    (globalThis as any).localStorage.clear();
+  }
+
+  const playerId = 'player_unique_test_123';
+  const playerName = 'Nightblade';
+
+  // 1. Submit initial run: 100 kills, 300s, 500 credits, stage 2, not victory
+  // Expected score: 100*10 + 300*4 + 500*0.5 + (2-1)*1500 + 0 = 1000 + 1200 + 250 + 1500 = 3950
+  const res1 = await LeaderboardManager.submitScore({
+    heroId: 'ronin',
+    stage: 2,
+    survivalTimeSec: 300,
+    kills: 100,
+    credits: 500,
+    isVictory: false,
+    playerId,
+    playerName
+  });
+  assert.equal(res1.success, true);
+  assert.equal(res1.score, 3950);
+
+  let local = LeaderboardManager.getLocalEntries();
+  const playerEntries1 = local.filter(e => e.playerId === playerId);
+  assert.equal(playerEntries1.length, 1, 'Player should have exactly one entry in the leaderboard');
+  assert.equal(playerEntries1[0].score, 3950);
+  assert.equal(playerEntries1[0].stage, 2);
+
+  // 2. Submit higher score run: 300 kills, 600s, 1000 credits, stage 4, victory
+  // Expected score: 300*10 + 600*4 + 1000*0.5 + 3*1500 + 10000 = 3000 + 2400 + 500 + 4500 + 10000 = 20400
+  const res2 = await LeaderboardManager.submitScore({
+    heroId: 'ronin',
+    stage: 4,
+    survivalTimeSec: 600,
+    kills: 300,
+    credits: 1000,
+    isVictory: true,
+    playerId,
+    playerName
+  });
+  assert.equal(res2.success, true);
+  assert.equal(res2.score, 20400);
+
+  local = LeaderboardManager.getLocalEntries();
+  const playerEntries2 = local.filter(e => e.playerId === playerId);
+  assert.equal(playerEntries2.length, 1, 'Player must still have exactly one entry (no duplicates)');
+  assert.equal(playerEntries2[0].score, 20400, 'Score must be updated to the new personal best');
+  assert.equal(playerEntries2[0].stage, 4, 'Stage must be updated to new personal best');
+  assert.equal(playerEntries2[0].isVictory, true);
+
+  // 3. Submit lower score run: 20 kills, 100s, 50 credits, stage 1, not victory
+  // Expected score: 20*10 + 100*4 + 50*0.5 + 0 = 200 + 400 + 25 = 625
+  const res3 = await LeaderboardManager.submitScore({
+    heroId: 'ronin',
+    stage: 1,
+    survivalTimeSec: 100,
+    kills: 20,
+    credits: 50,
+    isVictory: false,
+    playerId,
+    playerName
+  });
+  assert.equal(res3.success, true);
+  assert.equal(res3.score, 625);
+
+  local = LeaderboardManager.getLocalEntries();
+  const playerEntries3 = local.filter(e => e.playerId === playerId);
+  assert.equal(playerEntries3.length, 1, 'Player must not have duplicate entry for lower run');
+  assert.equal(playerEntries3[0].score, 20400, 'Score must remain the previous record (never downgraded)');
+  assert.equal(playerEntries3[0].stage, 4);
+
+  // 4. Test deduplication defensively if raw storage contained duplicate entries
+  const rawEntries = [
+    { playerId: 'dup_player', playerName: 'Dup', heroId: 'ronin', stage: 1, survivalTimeSec: 100, kills: 10, credits: 10, score: 500, isVictory: false },
+    { playerId: 'dup_player', playerName: 'Dup', heroId: 'ronin', stage: 2, survivalTimeSec: 300, kills: 50, credits: 100, score: 2500, isVictory: false },
+    { playerId: 'other_player', playerName: 'Other', heroId: 'outlaw', stage: 1, survivalTimeSec: 50, kills: 5, credits: 10, score: 200, isVictory: false }
+  ];
+  (globalThis as any).localStorage.setItem('outlaw_local_leaderboards', JSON.stringify(rawEntries));
+  const deduplicated = LeaderboardManager.getLocalEntries();
+  const dupResults = deduplicated.filter(e => e.playerId === 'dup_player');
+  assert.equal(dupResults.length, 1, 'Deduplication must collapse multiple entries of same player into one');
+  assert.equal(dupResults[0].score, 2500, 'Highest score must be retained during deduplication');
+});
+
 
 

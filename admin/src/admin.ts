@@ -14,6 +14,7 @@ import { renderItems } from './views/itemsView';
 import { renderTalents } from './views/talentsView';
 import { renderMerchant } from './views/merchantView';
 import { renderGlobal } from './views/globalView';
+import { renderLeaderboards, exportLeaderboardJson } from './views/leaderboardsView';
 import { DEFAULT_BALANCE } from '../../game/src/balance/defaultBalance';
 
 export class AdminController {
@@ -40,6 +41,7 @@ export class AdminController {
   public async init(): Promise<void> {
     await this.supabase.loadConfig();
     await this.supabase.connect();
+    await this.supabase.fetchLeaderboards();
     this.renderAll();
     updateOverviewStats(this.state);
   }
@@ -87,6 +89,7 @@ export class AdminController {
         else if (table === 'passives') this.renderPassives();
         else if (table === 'items') this.renderItems();
         else if (table === 'talents') this.renderTalents();
+        else if (table === 'leaderboards') this.renderLeaderboards();
       });
     });
 
@@ -273,6 +276,35 @@ export class AdminController {
       }
     });
 
+    // Leaderboard Toolbar buttons & filters
+    document.getElementById('btn-refresh-leaderboards')?.addEventListener('click', async () => {
+      await this.supabase.fetchLeaderboards();
+      this.renderLeaderboards();
+      showToast('Таблица лидеров успешно обновлена.', 'success');
+    });
+
+    document.getElementById('btn-export-leaderboards')?.addEventListener('click', () => {
+      exportLeaderboardJson(this.state.leaderboardEntries);
+    });
+
+    document.getElementById('btn-reset-leaderboards-all')?.addEventListener('click', async () => {
+      if (confirm('Вы уверены, что хотите сбросить ВСЮ таблицу лидеров? Все рекорды будут удалены безвозвратно!')) {
+        await this.supabase.resetAllLeaderboards();
+        this.renderLeaderboards();
+        showToast('Таблица лидеров полностью очищена.', 'info');
+      }
+    });
+
+    document.getElementById('filter-leaderboard-hero')?.addEventListener('change', (e) => {
+      this.state.leaderboardHeroFilter = (e.target as HTMLSelectElement).value;
+      this.renderLeaderboards();
+    });
+
+    document.getElementById('filter-leaderboard-victory')?.addEventListener('change', (e) => {
+      this.state.leaderboardVictoryFilter = (e.target as HTMLSelectElement).value;
+      this.renderLeaderboards();
+    });
+
     // Connection Form & buttons
     document.getElementById('btn-save-conn')?.addEventListener('click', () => {
       this.supabase.saveConnectionSettings();
@@ -368,6 +400,10 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
         title: 'Глобальные настройки',
         subtitle: 'Общие коэффициенты и системные константы'
       },
+      leaderboards: {
+        title: 'Таблица лидеров',
+        subtitle: 'Рейтинг выживших игроков, персональные рекорды и управление базой'
+      },
       connection: {
         title: 'Подключение к Supabase',
         subtitle: 'Настройки доступа и статус синхронизации базы данных'
@@ -391,6 +427,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
       else if (target === 'talents') this.renderTalents();
       else if (target === 'merchant') this.renderMerchant();
       else if (target === 'global') this.renderGlobal();
+      else if (target === 'leaderboards') this.renderLeaderboards();
     } catch (err) {
       console.error(`Ошибка при отрисовке раздела ${target}:`, err);
     }
@@ -405,6 +442,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     else if (this.state.activeTab === 'items') this.renderItems();
     else if (this.state.activeTab === 'talents') this.renderTalents();
     else if (this.state.activeTab === 'merchant') this.renderMerchant();
+    else if (this.state.activeTab === 'leaderboards') this.renderLeaderboards();
     else if (this.state.activeTab === 'dashboard') {
       // If user is searching on dashboard, jump to weapons to show results
       if (this.state.searchFilter) {
@@ -739,6 +777,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     renderGlobal(this.state, (path, val) => this.handleFieldChange(path, val));
   }
 
+  public renderLeaderboards(): void {
+    try {
+      renderLeaderboards(this.state, this.supabase, () => this.renderLeaderboards());
+    } catch (err) {
+      console.error('Error rendering leaderboards view:', err);
+    }
+  }
+
   public renderAll(): void {
     renderDashboard(this.state);
     this.renderWeapons();
@@ -750,6 +796,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE game_balance;`;
     this.renderTalents();
     this.renderMerchant();
     this.renderGlobal();
+    this.renderLeaderboards();
     this.progression.render();
     this.simulation.render();
   }

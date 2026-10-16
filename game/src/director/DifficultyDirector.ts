@@ -86,9 +86,9 @@ export class DifficultyDirector {
    * Computes dynamic chest cost scaled by time and stage.
    */
   public static getScaledChestCost(baseCost: number, gameTime: number, stage: number = 1): number {
-    const timeScale = Math.pow(1 + gameTime / 300, 0.75);
-    const stageScale = Math.pow(1.1, Math.max(0, stage - 1));
-    return Math.round(baseCost * timeScale * stageScale);
+    const timeScale = Math.pow(1 + Math.min(gameTime, 2400) / 400, 0.55);
+    const stageCostFactor = stage >= 2 ? 1.30 * Math.pow(1.12, stage - 2) : 1.0;
+    return Math.round(baseCost * timeScale * stageCostFactor);
   }
 
   /**

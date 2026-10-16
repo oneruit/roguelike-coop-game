@@ -164,6 +164,49 @@ export abstract class Weapon {
     }
   }
 
+  public recomputeGradeBonuses(): void {
+    this.bonusDamage = 0;
+    this.cooldownBonus = 0;
+    this.cooldown = this.baseCooldown;
+
+    for (const grade of this.upgradeHistory) {
+      const cfg = WEAPON_GRADES[grade];
+      if (!cfg) continue;
+      const extraDamage = Math.round(this.damagePerLevel * (cfg.damageMultiplierBonus - 1.0) * this.gradeStatMultiplier);
+      this.bonusDamage += extraDamage;
+      this.cooldownBonus = Math.min(0.60, this.cooldownBonus + cfg.cooldownReductionBonus);
+      if (cfg.cooldownReductionBonus > 0) {
+        this.cooldown = Math.max(0.08, Number((this.cooldown * (1 - cfg.cooldownReductionBonus)).toFixed(3)));
+      }
+    }
+    this.recalculateStats();
+  }
+
+  public canUpgradeUpgradeRarity(): boolean {
+    if (this.upgradeHistory.length === 0) return true;
+    return this.upgradeHistory.some(grade => grade !== 'legendary');
+  }
+
+  public upgradeUpgradeRarity(): boolean {
+    const order: WeaponGrade[] = ['common', 'uncommon', 'rare', 'legendary'];
+    for (let o = 0; o < order.length - 1; o++) {
+      const currentGrade = order[o];
+      const nextGrade = order[o + 1];
+      const index = this.upgradeHistory.indexOf(currentGrade);
+      if (index !== -1) {
+        this.upgradeHistory[index] = nextGrade;
+        this.recomputeGradeBonuses();
+        return true;
+      }
+    }
+    if (this.upgradeHistory.length === 0) {
+      this.upgradeHistory.push('uncommon');
+      this.recomputeGradeBonuses();
+      return true;
+    }
+    return false;
+  }
+
   public awakenGrade(): void {
     this.awakenedGrade++;
     this.gradeStatMultiplier = this.awakenedGrade === 1 ? 2.0 : this.awakenedGrade >= 2 ? 3.0 : 1.0;

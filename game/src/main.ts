@@ -184,6 +184,10 @@ class Game {
     this.player.onDamageTaken = (amount) => this.hud.triggerDamageFlash(amount);
     this.hud.onRestartSameSeed = () => this.sessionDirector.restartGame(undefined, true);
     this.hud.onToggleDevMode = () => this.sessionDirector.toggleDevMode();
+    this.hud.onTeleportToRift = () => this.sessionDirector.teleportPlayerToRift();
+    this.hud.onSaveRunLater = () => this.sessionDirector.saveCurrentRunAndExit();
+    this.hud.onResumeSavedRun = () => this.sessionDirector.resumeSavedRun();
+    this.hud.onSurrender = () => this.sessionDirector.surrenderGame();
     this.hud.onResolutionScaleChanged = (scale: number) => {
       this.engine.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2) * scale);
     };
@@ -324,6 +328,10 @@ class Game {
     // Input actions
     this.input.onInteract = () => {
       this.sessionDirector.handleInteract();
+    };
+
+    this.input.onTeleportToRift = () => {
+      this.sessionDirector.teleportPlayerToRift();
     };
 
     this.input.onDash = () => {
@@ -937,6 +945,8 @@ class Game {
         this.enemyManager.activeBoss,
         teammatesKills
       );
+      const tpCheck = this.sessionDirector.canTeleportToRift();
+      this.hud.updateTeleportButton(tpCheck.canTeleport, tpCheck.reason);
       this.hud.updatePoeParty(
         this.player,
         this.remotePlayers,

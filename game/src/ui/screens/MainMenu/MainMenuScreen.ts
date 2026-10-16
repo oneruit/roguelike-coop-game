@@ -3,13 +3,16 @@ import { SafeDOM } from '../../core/SafeDOM';
 import { SoundManager } from '../../../core/SoundManager';
 import { MetaProgression } from '../../../meta/MetaProgression';
 import { AuthManager, AuthUser } from '../../../auth/AuthManager';
+import { RunSaveManager } from '../../../core/RunSaveManager';
 
 export interface MainMenuScreenOptions {
   container?: HTMLElement | null;
   onSinglePlayer?: () => void;
+  onResumeRun?: () => void;
   onCoop?: () => void;
   onShop?: () => void;
   onQuests?: () => void;
+  onLeaderboard?: () => void;
   onSettings?: () => void;
   onAuth?: () => void;
   onExit?: () => void;
@@ -48,6 +51,11 @@ export class MainMenuScreen extends Screen {
   protected bindElements(): void {}
 
   protected bindEvents(): void {
+    SafeDOM.query(this.container, '#menu-btn-resume-run')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onResumeRun?.();
+    });
+
     SafeDOM.query(this.container, '#menu-btn-single')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onSinglePlayer?.();
@@ -78,6 +86,11 @@ export class MainMenuScreen extends Screen {
       this.options.onQuests?.();
     });
 
+    SafeDOM.query(this.container, '#menu-btn-leaderboard')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onLeaderboard?.();
+    });
+
     SafeDOM.query(this.container, '#menu-btn-settings')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onSettings?.();
@@ -87,6 +100,25 @@ export class MainMenuScreen extends Screen {
       SoundManager.playButtonClick();
       this.options.onExit?.();
     });
+  }
+
+  public updateResumeRunButton(): void {
+    const resumeBtn = SafeDOM.query(this.container, '#menu-btn-resume-run');
+    const titleEl = SafeDOM.query(this.container, '#menu-btn-resume-title');
+    if (!resumeBtn) return;
+
+    const runInfo = RunSaveManager.getSavedRunInfo();
+    if (runInfo) {
+      resumeBtn.classList.remove('hidden');
+      const minutes = Math.floor(runInfo.gameTime / 60);
+      const seconds = Math.floor(runInfo.gameTime % 60);
+      const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (titleEl) {
+        titleEl.textContent = `ДОИГРАТЬ ЗАБЕГ (Этап ${runInfo.stageNumber}, ${timeStr})`;
+      }
+    } else {
+      resumeBtn.classList.add('hidden');
+    }
   }
 
   public updateCrystalsDisplay(): void {
@@ -130,6 +162,7 @@ export class MainMenuScreen extends Screen {
   protected onShow(): void {
     document.body.classList.add('is-main-menu');
     document.body.classList.remove('is-in-game');
+    this.updateResumeRunButton();
     this.updateCrystalsDisplay();
     this.updateAuthDisplay();
   }

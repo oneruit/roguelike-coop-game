@@ -151,8 +151,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'rare',
     icon: '🎯',
     color: '#38bdf8',
-    description: '+6.0% к шансу критического удара (суммируется вплоть до 100%).',
-    stackText: '+6.0% крит. шанс за стак'
+    description: '+4.0% к шансу критического удара (суммируется вплоть до 100%).',
+    stackText: '+4.0% крит. шанс за стак'
   },
   heavy_hollowpoint: {
     id: 'heavy_hollowpoint',
@@ -169,8 +169,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'rare',
     icon: '⚡',
     color: '#38bdf8',
-    description: '+18% к общему урону всех видов оружия героя.',
-    stackText: '+18% урон за стак'
+    description: '+12% к общему урону всех видов оружия героя.',
+    stackText: '+12% урон за стак'
   },
 
   // --- Legendary (Легендарные) ---
@@ -216,8 +216,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'legendary',
     icon: '🔮',
     color: '#f59e0b',
-    description: '+40% к критическому урону и +15% к общему урону героя.',
-    stackText: '+40% крит. урон и +15% урон за стак'
+    description: '+25% к критическому урону и +10% к общему урону героя.',
+    stackText: '+25% крит. урон и +10% урон за стак'
   },
 
   // --- Boss (Жёлтые) ---

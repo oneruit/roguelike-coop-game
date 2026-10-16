@@ -117,7 +117,7 @@ export class SimPlayerInternal {
 
   public getDamageMultiplier(weaponId?: string): number {
     const dmgBonus = (this.activeBuffs.get('damage')?.value ?? 0) + (this.activeBuffs.get('alacrity')?.value ?? 0);
-    const generalBonus = (this.passiveDamageMultiplier + this.mightElixirCount * 0.10) * (1 + dmgBonus);
+    const generalBonus = (this.passiveDamageMultiplier + this.mightElixirCount * 0.01) * (1 + dmgBonus);
     const isStarting = !weaponId ||
       weaponId === this.startingWeapon ||
       (this.charType === 'invoker' && (weaponId === 'invoker_invoke' || weaponId.startsWith('invoker_')));
@@ -141,7 +141,7 @@ export class SimPlayerInternal {
       weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
     this.speed = this.baseSpeed * this.passiveSpeedMultiplier * (1 + speedBonus);
-    this.damageMultiplier = this.baseDamageMultiplier * (this.passiveDamageMultiplier + this.mightElixirCount * 0.05) * (1 + dmgBonus);
+    this.damageMultiplier = this.baseDamageMultiplier * (this.passiveDamageMultiplier + this.mightElixirCount * 0.01) * (1 + dmgBonus);
   }
 }
 
@@ -353,7 +353,8 @@ export class GameCore {
     brute: { type: 'brute', name: DEFAULT_BALANCE.monsters.brute.name, hp: DEFAULT_BALANCE.monsters.brute.hp, speed: DEFAULT_BALANCE.monsters.brute.speed, damage: DEFAULT_BALANCE.monsters.brute.damage, width: 2.8, height: 3.2, gemType: DEFAULT_BALANCE.monsters.brute.gemType || 'red' },
     bison: { type: 'bison', name: DEFAULT_BALANCE.monsters.bison.name, hp: DEFAULT_BALANCE.monsters.bison.hp, speed: DEFAULT_BALANCE.monsters.bison.speed, damage: DEFAULT_BALANCE.monsters.bison.damage, width: 3.6, height: 3.0, gemType: DEFAULT_BALANCE.monsters.bison.gemType || 'red' },
     boss: { type: 'boss', name: DEFAULT_BALANCE.bosses.boss.name, hp: DEFAULT_BALANCE.bosses.boss.hp, speed: DEFAULT_BALANCE.bosses.boss.speed, damage: DEFAULT_BALANCE.bosses.boss.damage, width: 4.2, height: 4.5, gemType: 'red', isBoss: true },
-    hydra: { type: 'hydra', name: DEFAULT_BALANCE.bosses.hydra.name, hp: DEFAULT_BALANCE.bosses.hydra.hp, speed: DEFAULT_BALANCE.bosses.hydra.speed, damage: DEFAULT_BALANCE.bosses.hydra.damage, width: 8.0, height: 8.0, gemType: 'red', isBoss: true }
+    hydra: { type: 'hydra', name: DEFAULT_BALANCE.bosses.hydra.name, hp: DEFAULT_BALANCE.bosses.hydra.hp, speed: DEFAULT_BALANCE.bosses.hydra.speed, damage: DEFAULT_BALANCE.bosses.hydra.damage, width: 8.0, height: 8.0, gemType: 'red', isBoss: true },
+    spore_queen: { type: 'spore_queen', name: DEFAULT_BALANCE.bosses.spore_queen.name, hp: DEFAULT_BALANCE.bosses.spore_queen.hp, speed: DEFAULT_BALANCE.bosses.spore_queen.speed, damage: DEFAULT_BALANCE.bosses.spore_queen.damage, width: 8.5, height: 8.5, gemType: 'red', isBoss: true }
   };
 
   constructor(config: GameCoreConfig = {}) {

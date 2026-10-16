@@ -39,3 +39,18 @@ export interface ProgressionChartState {
   selectedBosses: Set<string>;
   monsterTimeLimit?: number;
 }
+
+export interface LeaderboardEntry {
+  id?: string;
+  playerId: string;
+  playerName: string;
+  heroId: string;
+  stage: number;
+  survivalTimeSec: number;
+  kills: number;
+  credits: number;
+  score: number;
+  isVictory: boolean;
+  createdAt?: string;
+}
+

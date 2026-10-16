@@ -597,6 +597,23 @@ export class InGameOverlayUI extends InGameHUDScreen {
     }
   }
 
+  public updateTeleportButton(canTeleport: boolean, reason?: string): void {
+    const btn = SafeDOM.getElementById('btn-teleport-to-rift');
+    if (!btn) return;
+
+    if (canTeleport) {
+      btn.style.opacity = '1';
+      btn.style.filter = 'none';
+      btn.style.cursor = 'pointer';
+      btn.title = 'Телепортация к разлому [T] (+20 сек времени)';
+    } else {
+      btn.style.opacity = '0.45';
+      btn.style.filter = 'grayscale(0.8)';
+      btn.style.cursor = 'not-allowed';
+      btn.title = reason ? `Телепорт недоступен: ${reason}` : 'Телепортация к разлому недоступна';
+    }
+  }
+
   public showInteractionPrompt(text: string) {
     if (this.interactionPrompt && this.interactionPromptText) {
       this.interactionPromptText.innerText = text;

@@ -12,11 +12,31 @@
           </div>
           <div class="pause-actions">
             <button id="btn-resume" class="action-btn select-btn">Продолжить</button>
+            <button id="btn-pause-save-later" class="action-btn select-btn" style="background: rgba(56, 189, 248, 0.25); border-color: #38bdf8; color: #bae6fd;">💾 Доиграть позднее</button>
             <button id="btn-pause-dev" class="action-btn modern-back-btn hidden" style="border-color: #38bdf8; color: #38bdf8;">Консоль разработчика [P]</button>
             <button id="btn-pause-restart-same" class="action-btn select-btn hidden" style="background: rgba(245, 158, 11, 0.25); border-color: #f59e0b;">Заново (тот же seed)</button>
             <button id="btn-pause-settings" class="action-btn modern-back-btn">Настройки</button>
+            <button id="btn-pause-surrender" class="action-btn modern-back-btn" style="border-color: #ef4444; color: #fca5a5;">🏳️ Сдаться</button>
             <button id="btn-pause-restart" class="action-btn modern-back-btn">Выбрать героя</button>
             <button id="btn-pause-menu" class="action-btn modern-back-btn">В главное меню</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Surrender Confirmation Modal -->
+      <div id="surrender-confirm-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop"></div>
+        <div class="modal-card pause-card modern-glass-modal" style="max-width: 440px; text-align: center;">
+          <div class="modal-header">
+            <div class="sub-title menu-badge-red" style="background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #fca5a5;">КАПИТУЛЯЦИЯ</div>
+            <h2 class="wild-west-title modern-menu-title" style="font-size: 22px;">СДАТЬСЯ?</h2>
+          </div>
+          <p class="pause-hint menu-tagline-modern" style="font-size: 15px; margin: 20px 0; color: #f1f5f9;">
+            Вы уверены, что хотите сдаться и завершить экспедицию? Текущий результат будет зафиксирован в таблице лидеров.
+          </p>
+          <div class="pause-actions" style="display: flex; gap: 12px; justify-content: center;">
+            <button id="btn-confirm-surrender" class="action-btn select-btn" style="min-width: 120px; background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fca5a5;">Сдаться</button>
+            <button id="btn-cancel-surrender" class="action-btn modern-back-btn" style="min-width: 120px;">Отмена</button>
           </div>
         </div>
       </div>
@@ -310,6 +330,7 @@
 
           <div class="pause-actions" style="margin-top: 20px;">
             <button id="btn-restart" class="action-btn select-btn">Возродиться</button>
+            <button id="btn-gameover-leaderboard" class="action-btn select-btn" style="background: rgba(245, 158, 11, 0.25); border-color: #f59e0b; color: #fde68a;">🏆 Зал Славы</button>
             <button id="btn-gameover-menu" class="action-btn modern-back-btn">В главное меню</button>
           </div>
         </div>

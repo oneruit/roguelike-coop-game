@@ -195,9 +195,9 @@ export class InventoryScreen extends Screen {
           <span class="inv-stat-value text-accent">${weaponsDmgValue}</span>
         </div>
         ${player.mightElixirCount > 0 ? `
-        <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+5% за каждый заряд)">
+        <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+1% за каждый заряд)">
           <span class="inv-stat-label">⚡ Эликсир Могущества</span>
-          <span class="inv-stat-value text-accent">+${player.mightElixirCount * 5}% <span style="color: #94a3b8; font-size: 11px;">(x${player.mightElixirCount})</span></span>
+          <span class="inv-stat-value text-accent">+${player.mightElixirCount * 1}% <span style="color: #94a3b8; font-size: 11px;">(x${player.mightElixirCount})</span></span>
         </div>` : ''}
         <div class="inv-stat-row" title="Шанс критического удара (максимум 100%)">
           <span class="inv-stat-label">🎯 Шанс крит. урона</span>
@@ -283,7 +283,7 @@ export class InventoryScreen extends Screen {
           icon: '⚡',
           count: player.mightElixirCount,
           title: 'Эликсир Могущества',
-          desc: `+${player.mightElixirCount * 5}% к общему урону героя (складывается)`
+          desc: `+${player.mightElixirCount * 1}% к общему урону героя (складывается)`
         }
       ];
 

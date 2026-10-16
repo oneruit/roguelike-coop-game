@@ -41,6 +41,9 @@ export class RiftTeleporter {
   public isPlayerInsideZone: boolean = false;
   public isBossDefeated: boolean = false;
   public isDiscovered: boolean = false;
+  public get isOpened(): boolean {
+    return this.state !== 'IDLE';
+  }
 
   public mesh: Group;
   private riftSprite!: Mesh;

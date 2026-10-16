@@ -35,6 +35,7 @@ import { ShopScreen } from './screens/Shop/ShopScreen';
 import { AuthModalScreen } from './screens/Auth/AuthModalScreen';
 import { AuthManager } from '../auth/AuthManager';
 import { CloudSyncManager } from '../meta/CloudSyncManager';
+import { LeaderboardUI } from './modules/LeaderboardUI';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -74,13 +75,18 @@ export class HUD {
   private shopScreen?: ShopScreen;
   private characterSelectScreen?: CharacterSelectScreen;
   private authModalScreen?: AuthModalScreen;
+  private leaderboardUI: LeaderboardUI;
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
+  public onSaveRunLater?: () => void;
+  public onResumeSavedRun?: () => void;
+  public onTeleportToRift?: () => void;
   public onCreateRoomClicked?: () => void;
   public onJoinRoomClicked?: () => void;
   public onRestartSameSeed?: () => void;
   public onReturnToMenu?: () => void;
+  public onSurrender?: () => void;
   public onToggleDevMode?: () => void;
   public isTrainingModeActive: boolean = false;
 
@@ -303,6 +309,20 @@ export class HUD {
       this.onReturnToMenu?.();
       this.showMainMenu();
     };
+    this.gameOverUI.onLeaderboardClicked = () => {
+      this.showLeaderboard();
+    };
+
+    this.leaderboardUI = new LeaderboardUI({
+      onClose: () => {
+        this.menuStack = this.menuStack.filter((s) => s !== 'leaderboard');
+      }
+    });
+    ScreenManager.getInstance().register(this.leaderboardUI);
+
+    document.getElementById('btn-teleport-to-rift')?.addEventListener('click', () => {
+      this.onTeleportToRift?.();
+    });
 
     AuthManager.getInstance().init().then(() => {
       CloudSyncManager.getInstance().init();
@@ -492,6 +512,11 @@ export class HUD {
 
     this.mainMenuScreen = new MainMenuScreen({
       container: this.mainMenuModal,
+      onResumeRun: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.onResumeSavedRun?.();
+      },
       onSinglePlayer: () => {
         this.hideQuestsModal();
         this.hideMainMenu();
@@ -509,6 +534,9 @@ export class HUD {
       },
       onQuests: () => {
         this.toggleQuestsInMainMenu();
+      },
+      onLeaderboard: () => {
+        this.showLeaderboard();
       },
       onSettings: () => {
         this.hideQuestsModal();
@@ -546,6 +574,11 @@ export class HUD {
       onResume();
     });
 
+    document.getElementById('btn-pause-save-later')?.addEventListener('click', () => {
+      this.hidePause();
+      this.onSaveRunLater?.();
+    });
+
     document.getElementById('btn-pause-restart-same')?.addEventListener('click', () => {
       if (!this.isTrainingModeActive) return;
       this.hidePause();
@@ -573,6 +606,32 @@ export class HUD {
 
     document.getElementById('btn-pause-settings')?.addEventListener('click', () => {
       this.showSettings('pause');
+    });
+
+    const surrenderConfirmModal = document.getElementById('surrender-confirm-modal');
+    const btnPauseSurrender = document.getElementById('btn-pause-surrender');
+    const btnConfirmSurrender = document.getElementById('btn-confirm-surrender');
+    const btnCancelSurrender = document.getElementById('btn-cancel-surrender');
+
+    btnPauseSurrender?.addEventListener('click', () => {
+      this.hidePause();
+      surrenderConfirmModal?.classList.remove('hidden');
+      if (!this.menuStack.includes('surrender_confirm')) {
+        this.menuStack.push('surrender_confirm');
+      }
+    });
+
+    btnCancelSurrender?.addEventListener('click', () => {
+      surrenderConfirmModal?.classList.add('hidden');
+      this.menuStack = this.menuStack.filter((s) => s !== 'surrender_confirm');
+      this.showPause();
+    });
+
+    btnConfirmSurrender?.addEventListener('click', () => {
+      surrenderConfirmModal?.classList.add('hidden');
+      this.menuStack = this.menuStack.filter((s) => s !== 'surrender_confirm');
+      this.hidePause();
+      this.onSurrender?.();
     });
 
     const confirmChangeHeroModal = document.getElementById('change-hero-confirm-modal');
@@ -709,6 +768,7 @@ export class HUD {
     this.hideBattlePassModal();
     this.hideMerchant();
     this.hideShopModal();
+    this.hideLeaderboard();
     this.updateMainMenuQuests();
     this.updateMainMenuBattlePass();
     this.mainMenuScreen?.updateCrystalsDisplay();
@@ -895,6 +955,20 @@ export class HUD {
     switch (current) {
       case 'auth': {
         this.hideAuthModal();
+        return 'handled';
+      }
+
+      case 'leaderboard': {
+        this.hideLeaderboard();
+        return 'handled';
+      }
+
+      case 'surrender_confirm': {
+        document.getElementById('surrender-confirm-modal')?.classList.add('hidden');
+        this.pauseModal.classList.remove('hidden');
+        if (!this.menuStack.includes('pause')) {
+          this.menuStack.push('pause');
+        }
         return 'handled';
       }
 
@@ -1242,6 +1316,20 @@ export class HUD {
     this.updateMainMenuBattlePass();
   }
 
+  // --- Leaderboard Methods Forwarding ---
+
+  public showLeaderboard(): void {
+    if (!this.menuStack.includes('leaderboard')) {
+      this.menuStack.push('leaderboard');
+    }
+    this.leaderboardUI.show();
+  }
+
+  public hideLeaderboard(): void {
+    this.leaderboardUI.hide();
+    this.menuStack = this.menuStack.filter((s) => s !== 'leaderboard');
+  }
+
   // --- In-Game Overlay & Overlays Methods Forwarding ---
 
   public setCoopBadge(roomCode: string | null) {
@@ -1294,6 +1382,10 @@ export class HUD {
   public updateStageText(stageNum: number, biomeName: string) {
     this.currentStageNumber = stageNum;
     this.inGameOverlayUI.updateStageText(stageNum, biomeName);
+  }
+
+  public updateTeleportButton(canTeleport: boolean, reason?: string) {
+    this.inGameOverlayUI.updateTeleportButton(canTeleport, reason);
   }
 
   public showInteractionPrompt(text: string) {
