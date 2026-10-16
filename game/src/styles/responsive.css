@@ -503,8 +503,21 @@
     padding: 18px 10px !important;
   }
 
-  .upgrade-grid {
-    grid-template-columns: 1fr !important;
+  /* Leaderboard Modal */
+  .leaderboard-card {
+    max-width: 96vw !important;
+    width: 96vw !important;
+    padding: 16px 12px !important;
+  }
+
+  .leaderboard-table-container {
+    overflow-x: auto !important;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
   }
 }
 

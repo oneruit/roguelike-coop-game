@@ -140,15 +140,15 @@ export class LeaderboardUI extends Screen {
 
       html += `
         <tr style="background: ${rowBg}; border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
-          <td style="padding: 10px 14px; font-weight: bold; color: ${rankColor};">${rankDisplay}</td>
-          <td style="padding: 10px 14px; font-weight: 500; color: #f8fafc;">
+          <td style="padding: 10px 14px; font-weight: bold; color: ${rankColor}; white-space: nowrap;">${rankDisplay}</td>
+          <td style="padding: 10px 14px; font-weight: 500; color: #f8fafc; white-space: nowrap;">
             ${escapeHtml(entry.playerName)} ${outcomeBadge}
           </td>
-          <td style="padding: 10px 14px; color: #cbd5e1;">${heroStr}</td>
-          <td style="padding: 10px 14px; color: #38bdf8;">Этап ${entry.stage}</td>
-          <td style="padding: 10px 14px; color: #e2e8f0;">${timeStr}</td>
-          <td style="padding: 10px 14px; color: #f43f5e;">${entry.kills}</td>
-          <td style="padding: 10px 14px; text-align: right; font-weight: bold; color: #facc15;">${entry.score.toLocaleString()}</td>
+          <td style="padding: 10px 14px; color: #cbd5e1; white-space: nowrap;">${heroStr}</td>
+          <td style="padding: 10px 14px; color: #38bdf8; white-space: nowrap;">Этап ${entry.stage}</td>
+          <td style="padding: 10px 14px; color: #e2e8f0; white-space: nowrap;">${timeStr}</td>
+          <td style="padding: 10px 14px; color: #f43f5e; font-weight: 600; white-space: nowrap;">${entry.kills}</td>
+          <td style="padding: 10px 14px; text-align: right; font-weight: bold; color: #facc15; white-space: nowrap;">${entry.score.toLocaleString()}</td>
         </tr>
       `;
     });
