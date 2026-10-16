@@ -130,7 +130,6 @@ export class BattlePassUI {
           <img src="${bp.getRewardIconUrl(reward.icon)}" class="bp-slot-img" alt="${reward.name}" onerror="this.style.opacity='0.2'" />
           ${statusBadge}
         </div>
-        <span class="bp-slot-lvl">${reward.level}</span>
       `;
 
       slot.addEventListener('click', () => {

@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-16T07:18:33.746Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1091
+> **Generated:** 2026-10-16T09:26:49.503Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1091
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -152,10 +152,10 @@ Run `npm run index` to refresh this cache.
 | `BattlePassReward` | `interface` | [`game/src/core/BattlePassManager.ts:4`](../../game/src/core/BattlePassManager.ts#L4) | - |
 | `BattlePassUI` | `class` | [`game/src/ui/modules/BattlePassUI.ts:29`](../../game/src/ui/modules/BattlePassUI.ts#L29) | - |
 | `BattlePassUI.bindListeners` | `method` | [`game/src/ui/modules/BattlePassUI.ts:37`](../../game/src/ui/modules/BattlePassUI.ts#L37) | - |
-| `BattlePassUI.handleClaimAllBattlePass` | `method` | [`game/src/ui/modules/BattlePassUI.ts:258`](../../game/src/ui/modules/BattlePassUI.ts#L258) | - |
-| `BattlePassUI.hideBattlePassModal` | `method` | [`game/src/ui/modules/BattlePassUI.ts:253`](../../game/src/ui/modules/BattlePassUI.ts#L253) | - |
-| `BattlePassUI.openBattlePassModal` | `method` | [`game/src/ui/modules/BattlePassUI.ts:244`](../../game/src/ui/modules/BattlePassUI.ts#L244) | - |
-| `BattlePassUI.renderBattlePassModal` | `method` | [`game/src/ui/modules/BattlePassUI.ts:154`](../../game/src/ui/modules/BattlePassUI.ts#L154) | - |
+| `BattlePassUI.handleClaimAllBattlePass` | `method` | [`game/src/ui/modules/BattlePassUI.ts:257`](../../game/src/ui/modules/BattlePassUI.ts#L257) | - |
+| `BattlePassUI.hideBattlePassModal` | `method` | [`game/src/ui/modules/BattlePassUI.ts:252`](../../game/src/ui/modules/BattlePassUI.ts#L252) | - |
+| `BattlePassUI.openBattlePassModal` | `method` | [`game/src/ui/modules/BattlePassUI.ts:243`](../../game/src/ui/modules/BattlePassUI.ts#L243) | - |
+| `BattlePassUI.renderBattlePassModal` | `method` | [`game/src/ui/modules/BattlePassUI.ts:153`](../../game/src/ui/modules/BattlePassUI.ts#L153) | - |
 | `BattlePassUI.updateMainMenuBattlePass` | `method` | [`game/src/ui/modules/BattlePassUI.ts:61`](../../game/src/ui/modules/BattlePassUI.ts#L61) | - |
 | `BattlePassUIContext` | `interface` | [`game/src/ui/modules/BattlePassUI.ts:10`](../../game/src/ui/modules/BattlePassUI.ts#L10) | - |
 | `BIOME_GRADE_CHANCES` | `const` | [`game/src/combat/WeaponGrades.ts:74`](../../game/src/combat/WeaponGrades.ts#L74) | - |

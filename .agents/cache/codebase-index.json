@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T07:18:33.746Z",
+  "generatedAt": "2026-10-16T09:26:49.503Z",
   "totalFiles": 153,
   "totalSymbols": 1564,
   "topLevelCount": 473,
@@ -1625,7 +1625,7 @@
       "name": "BattlePassUI.handleClaimAllBattlePass",
       "kind": "method",
       "file": "game/src/ui/modules/BattlePassUI.ts",
-      "line": 258,
+      "line": 257,
       "className": "BattlePassUI",
       "methodName": "handleClaimAllBattlePass"
     },
@@ -1633,7 +1633,7 @@
       "name": "BattlePassUI.hideBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/modules/BattlePassUI.ts",
-      "line": 253,
+      "line": 252,
       "className": "BattlePassUI",
       "methodName": "hideBattlePassModal"
     },
@@ -1641,7 +1641,7 @@
       "name": "BattlePassUI.openBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/modules/BattlePassUI.ts",
-      "line": 244,
+      "line": 243,
       "className": "BattlePassUI",
       "methodName": "openBattlePassModal"
     },
@@ -1649,7 +1649,7 @@
       "name": "BattlePassUI.renderBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/modules/BattlePassUI.ts",
-      "line": 154,
+      "line": 153,
       "className": "BattlePassUI",
       "methodName": "renderBattlePassModal"
     },

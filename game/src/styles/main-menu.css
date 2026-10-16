@@ -460,10 +460,10 @@
 /* Track Section */
 .bp-track-section {
   position: absolute;
-  top: 45%;
+  top: 48.37%;
   left: 0;
   width: 100%;
-  height: 12%;
+  height: 0;
   pointer-events: none;
   z-index: 2;
 }
@@ -476,9 +476,9 @@
 .bp-progress-bar-container {
   position: absolute;
   top: 0;
-  left: 15.6%;
+  left: 15.4%;
   width: 75%;
-  height: 100%;
+  height: 0;
 }
 
 .bp-milestones {
@@ -486,31 +486,31 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 0;
   pointer-events: none;
 }
 
 .bp-milestone {
   position: absolute;
+  top: -26px;
   display: flex;
   flex-direction: column;
   align-items: center;
   transform: translateX(-50%);
   pointer-events: auto;
   cursor: pointer;
-  opacity: 0.85;
+  opacity: 0.9;
   white-space: nowrap;
   transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
+  z-index: 3;
 }
 
 .bp-m-lvl10 {
   left: 64.3%;
-  top: -16px;
 }
 
 .bp-m-lvl15 {
   left: 96%;
-  top: -16px;
 }
 
 .bp-m-label {
@@ -522,21 +522,21 @@
   text-shadow: 0 1px 2px #000;
   line-height: 1;
   white-space: nowrap;
+  margin-bottom: 2px;
 }
 
 .bp-m-chest {
-  width: clamp(18px, 1.35vw, 22px);
-  height: clamp(18px, 1.35vw, 22px);
+  width: clamp(26px, 2vw, 32px);
+  height: clamp(26px, 2vw, 32px);
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.85));
   transition: transform 0.16s ease, filter 0.16s ease;
-  margin-top: 1px;
 }
 
 .bp-milestone:hover .bp-m-chest {
-  transform: scale(1.2);
-  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.9));
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.95)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.9));
 }
 
 .bp-milestone.reached {
@@ -549,27 +549,31 @@
 }
 
 .bp-milestone.reached .bp-m-chest {
-  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.95)) drop-shadow(0 2px 4px #000);
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.95)) drop-shadow(0 2px 5px #000);
 }
 
 .bp-bar-track {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
   left: 0;
+  transform: translateY(-50%);
   width: 100%;
-  height: 5px;
+  height: clamp(16px, 1.25vw, 20px);
   background: transparent;
   border: none;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .bp-bar-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(180deg, #f0abfc 0%, #c084fc 35%, #9333ea 70%, #6b21a8 100%);
-  box-shadow: 0 0 8px rgba(192, 132, 252, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
+  background-image: url('/textures/ui/bp_bar_gem_tile.png');
+  background-repeat: repeat-x;
+  background-position: left center;
+  background-size: auto 100%;
+  image-rendering: auto;
+  filter: drop-shadow(0 0 6px rgba(216, 70, 239, 0.9));
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -657,17 +661,7 @@
 }
 
 .bp-slot-lvl {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(8px, 0.62vw, 9.5px);
-  font-weight: 800;
-  color: #cbd5e1;
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 2px #000;
-  line-height: 1;
-  margin-top: 1px;
-  pointer-events: none;
-  white-space: nowrap;
-  transition: color 0.16s ease, text-shadow 0.16s ease;
+  display: none !important;
 }
 
 .bp-slot-card:hover .bp-slot-lvl {
