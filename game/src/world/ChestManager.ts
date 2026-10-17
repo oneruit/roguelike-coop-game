@@ -15,7 +15,8 @@ import {
   LinearFilter,
   PointLight,
   MeshDepthMaterial,
-  RGBADepthPacking
+  RGBADepthPacking,
+  Color
 } from 'three';
 import { rollChestDropPair, RiftItemDef } from '../items/RiftItemSystem';
 import { DifficultyDirector } from '../director/DifficultyDirector';
@@ -35,7 +36,10 @@ export interface ChestInstance {
   hologramMesh: Mesh;
   glowMesh: Mesh;
   spriteMesh?: Mesh;
+  depthMesh?: Mesh;
+  contactShadowMesh?: Mesh;
   spriteTexture?: Texture;
+  depthTexture?: Texture;
   openProgress?: number;
   isAnimating?: boolean;
   flashLight?: PointLight;
@@ -52,7 +56,9 @@ export class ChestManager {
   private static sheetSmall: Texture | null = null;
   private static sheetLarge: Texture | null = null;
   private static sheetLegendary: Texture | null = null;
+  private static shadowTexture: Texture | null = null;
   private static sharedPlaneGeom: PlaneGeometry | null = null;
+  private static sharedShadowGeom: PlaneGeometry | null = null;
 
   private static getChestGeometry(): PlaneGeometry {
     if (!ChestManager.sharedPlaneGeom) {
@@ -62,6 +68,29 @@ export class ChestManager {
       ChestManager.sharedPlaneGeom = geom;
     }
     return ChestManager.sharedPlaneGeom;
+  }
+
+  private static getShadowGeometry(): PlaneGeometry {
+    if (!ChestManager.sharedShadowGeom) {
+      const geom = new PlaneGeometry(1.65, 0.85);
+      geom.rotateX(-Math.PI / 2);
+      ChestManager.sharedShadowGeom = geom;
+    }
+    return ChestManager.sharedShadowGeom;
+  }
+
+  private static getShadowTexture(): Texture {
+    if (!ChestManager.shadowTexture) {
+      let tex: Texture;
+      if (typeof document === 'undefined') {
+        tex = new Texture();
+      } else {
+        tex = ChestManager.textureLoader.load(getAssetUrl('/textures/chests/chest_contact_shadow.png'));
+      }
+      tex.colorSpace = SRGBColorSpace;
+      ChestManager.shadowTexture = tex;
+    }
+    return ChestManager.shadowTexture;
   }
 
   private static getSheetTexture(tier: ChestTier): Texture {
@@ -79,7 +108,12 @@ export class ChestManager {
     }
 
     if (!cached) {
-      const tex = ChestManager.textureLoader.load(getAssetUrl(url));
+      let tex: Texture;
+      if (typeof document === 'undefined') {
+        tex = new Texture();
+      } else {
+        tex = ChestManager.textureLoader.load(getAssetUrl(url));
+      }
       tex.colorSpace = SRGBColorSpace;
       tex.minFilter = LinearFilter;
       tex.magFilter = LinearFilter;
@@ -123,11 +157,44 @@ export class ChestManager {
       glowColor = 0xf43f5e; // Legendary tier: crimson rose
     }
 
+    // 0. Soft Ground Contact AO Shadow (firmly plants the chest onto terrain)
+    const shadowMat = new MeshBasicMaterial({
+      map: ChestManager.getShadowTexture(),
+      transparent: true,
+      opacity: 0.85,
+      side: DoubleSide,
+      depthWrite: false,
+      depthTest: true
+    });
+    const contactShadowMesh = new Mesh(ChestManager.getShadowGeometry(), shadowMat);
+    contactShadowMesh.position.set(0, 0.02, -0.03);
+    group.add(contactShadowMesh);
+
     // 1. Cloned UV-offset texture for independent 6-frame animation
     const sheet = ChestManager.getSheetTexture(tier);
     const spriteTex = sheet.clone();
     spriteTex.repeat.set(1 / 6, 1);
     spriteTex.offset.set(0, 0); // Frame 1: closed
+
+    // 1b. Volumetric depth layer (Option B: gives physical thickness and parallax in isometric view)
+    const depthTex = sheet.clone();
+    depthTex.repeat.set(1 / 6, 1);
+    depthTex.offset.set(0, 0);
+
+    const depthMat = new MeshBasicMaterial({
+      map: depthTex,
+      color: new Color(0.28, 0.22, 0.18), // Darkened ambient tone for back/side rim
+      transparent: true,
+      alphaTest: 0.15,
+      side: DoubleSide,
+      depthWrite: false,
+      depthTest: true
+    });
+
+    const depthMesh = new Mesh(ChestManager.getChestGeometry(), depthMat);
+    depthMesh.rotation.x = -Math.PI / 4.8;
+    depthMesh.position.set(0, 0.08, -0.07);
+    group.add(depthMesh);
 
     const spriteMat = new MeshBasicMaterial({
       map: spriteTex,
@@ -188,7 +255,10 @@ export class ChestManager {
       hologramMesh,
       glowMesh,
       spriteMesh,
+      depthMesh,
+      contactShadowMesh,
       spriteTexture: spriteTex,
+      depthTexture: depthTex,
       openProgress: 0,
       isAnimating: false
     };
@@ -215,6 +285,19 @@ export class ChestManager {
     this.chronosDroppedInCurrentBiome = false;
     const prng = rng || new SeededRNG(stage * 7919);
     const placedZones: { x: number; z: number; radius: number }[] = [];
+
+    // Deterministic tier distribution
+    // On stage 1: exactly 4 large chests and remaining (11) small chests
+    const largeIndices = new Set<number>();
+    if (stage === 1) {
+      const targetLarge = Math.min(4, count);
+      const available = Array.from({ length: count }, (_, idx) => idx);
+      for (let k = 0; k < targetLarge; k++) {
+        const pickIdx = Math.floor(prng.next() * available.length);
+        largeIndices.add(available[pickIdx]);
+        available.splice(pickIdx, 1);
+      }
+    }
 
     // Attempt to scatter chests across the 450x450 map (-195 to +195)
     for (let i = 0; i < count; i++) {
@@ -267,12 +350,16 @@ export class ChestManager {
       }
 
       // Deterministic tier weights
-      const roll = prng.next();
       let tier: ChestTier = 'small';
-      if (stage >= 2 && roll < 0.15) {
-        tier = 'legendary';
-      } else if (roll < 0.45) {
-        tier = 'large';
+      if (stage === 1) {
+        tier = largeIndices.has(i) ? 'large' : 'small';
+      } else {
+        const roll = prng.next();
+        if (roll < 0.15) {
+          tier = 'legendary';
+        } else if (roll < 0.45) {
+          tier = 'large';
+        }
       }
 
       const chosenY = getElevation ? getElevation(chosenX, chosenZ) : 0;
@@ -305,6 +392,9 @@ export class ChestManager {
           }
           const frameIndex = Math.min(5, Math.floor(chest.openProgress * 6));
           chest.spriteTexture.offset.x = frameIndex / 6;
+          if (chest.depthTexture) {
+            chest.depthTexture.offset.x = frameIndex / 6;
+          }
         }
 
         // Fade out opening burst light if present
@@ -421,6 +511,9 @@ export class ChestManager {
           chest.glowMesh.visible = false;
           if (chest.spriteTexture) {
             chest.spriteTexture.offset.x = 5 / 6; // Stay on frame 6 (opened)
+          }
+          if (chest.depthTexture) {
+            chest.depthTexture.offset.x = 5 / 6;
           }
         }
       }

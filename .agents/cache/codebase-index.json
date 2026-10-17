@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-17T02:13:59.391Z",
+  "generatedAt": "2026-10-17T02:43:54.789Z",
   "totalFiles": 153,
-  "totalSymbols": 1570,
+  "totalSymbols": 1572,
   "topLevelCount": 473,
-  "methodsCount": 1097,
+  "methodsCount": 1099,
   "entities": {
     "heroes": [
       {
@@ -2293,19 +2293,19 @@
       "name": "ChestInstance",
       "kind": "interface",
       "file": "game/src/world/ChestManager.ts",
-      "line": 27
+      "line": 28
     },
     {
       "name": "ChestManager",
       "kind": "class",
       "file": "game/src/world/ChestManager.ts",
-      "line": 44
+      "line": 48
     },
     {
       "name": "ChestManager.clear",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 383,
+      "line": 473,
       "className": "ChestManager",
       "methodName": "clear"
     },
@@ -2313,15 +2313,31 @@
       "name": "ChestManager.getChestGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 57,
+      "line": 63,
       "className": "ChestManager",
       "methodName": "getChestGeometry"
+    },
+    {
+      "name": "ChestManager.getShadowGeometry",
+      "kind": "method",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 73,
+      "className": "ChestManager",
+      "methodName": "getShadowGeometry"
+    },
+    {
+      "name": "ChestManager.getShadowTexture",
+      "kind": "method",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 82,
+      "className": "ChestManager",
+      "methodName": "getShadowTexture"
     },
     {
       "name": "ChestManager.getSheetTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 67,
+      "line": 96,
       "className": "ChestManager",
       "methodName": "getSheetTexture"
     },
@@ -2329,7 +2345,7 @@
       "name": "ChestManager.getSnapshot",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 391,
+      "line": 481,
       "className": "ChestManager",
       "methodName": "getSnapshot"
     },
@@ -2337,7 +2353,7 @@
       "name": "ChestManager.update",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 289,
+      "line": 376,
       "className": "ChestManager",
       "methodName": "update",
       "doc": "Updates floating chest hologram visuals, pulse aura, and opening animations."
@@ -2358,7 +2374,7 @@
       "name": "ChestTier",
       "kind": "type",
       "file": "game/src/world/ChestManager.ts",
-      "line": 25
+      "line": 26
     },
     {
       "name": "ChunkManager",

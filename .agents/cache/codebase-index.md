@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T02:13:59.391Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1097
+> **Generated:** 2026-10-17T02:43:54.789Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1099
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -246,16 +246,18 @@ Run `npm run index` to refresh this cache.
 | `ChartOptions` | `interface` | [`admin/src/chartUtils.ts:15`](../../admin/src/chartUtils.ts#L15) | - |
 | `ChartSeries` | `interface` | [`admin/src/chartUtils.ts:6`](../../admin/src/chartUtils.ts#L6) | Lightweight SVG Vector Chart Engine for Admin Panel Zero external dependenc... |
 | `CHEST_TIERS` | `const` | [`game/src/shared/types/registry.ts:28`](../../game/src/shared/types/registry.ts#L28) | - |
-| `ChestInstance` | `interface` | [`game/src/world/ChestManager.ts:27`](../../game/src/world/ChestManager.ts#L27) | - |
-| `ChestManager` | `class` | [`game/src/world/ChestManager.ts:44`](../../game/src/world/ChestManager.ts#L44) | - |
-| `ChestManager.clear` | `method` | [`game/src/world/ChestManager.ts:383`](../../game/src/world/ChestManager.ts#L383) | - |
-| `ChestManager.getChestGeometry` | `method` | [`game/src/world/ChestManager.ts:57`](../../game/src/world/ChestManager.ts#L57) | - |
-| `ChestManager.getSheetTexture` | `method` | [`game/src/world/ChestManager.ts:67`](../../game/src/world/ChestManager.ts#L67) | - |
-| `ChestManager.getSnapshot` | `method` | [`game/src/world/ChestManager.ts:391`](../../game/src/world/ChestManager.ts#L391) | - |
-| `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:289`](../../game/src/world/ChestManager.ts#L289) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
+| `ChestInstance` | `interface` | [`game/src/world/ChestManager.ts:28`](../../game/src/world/ChestManager.ts#L28) | - |
+| `ChestManager` | `class` | [`game/src/world/ChestManager.ts:48`](../../game/src/world/ChestManager.ts#L48) | - |
+| `ChestManager.clear` | `method` | [`game/src/world/ChestManager.ts:473`](../../game/src/world/ChestManager.ts#L473) | - |
+| `ChestManager.getChestGeometry` | `method` | [`game/src/world/ChestManager.ts:63`](../../game/src/world/ChestManager.ts#L63) | - |
+| `ChestManager.getShadowGeometry` | `method` | [`game/src/world/ChestManager.ts:73`](../../game/src/world/ChestManager.ts#L73) | - |
+| `ChestManager.getShadowTexture` | `method` | [`game/src/world/ChestManager.ts:82`](../../game/src/world/ChestManager.ts#L82) | - |
+| `ChestManager.getSheetTexture` | `method` | [`game/src/world/ChestManager.ts:96`](../../game/src/world/ChestManager.ts#L96) | - |
+| `ChestManager.getSnapshot` | `method` | [`game/src/world/ChestManager.ts:481`](../../game/src/world/ChestManager.ts#L481) | - |
+| `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:376`](../../game/src/world/ChestManager.ts#L376) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
 | `ChestSyncInfo` | `interface` | [`game/src/shared/types/network.ts:189`](../../game/src/shared/types/network.ts#L189) | - |
 | `ChestTier` | `type` | [`game/src/shared/types/registry.ts:29`](../../game/src/shared/types/registry.ts#L29) | - |
-| `ChestTier` | `type` | [`game/src/world/ChestManager.ts:25`](../../game/src/world/ChestManager.ts#L25) | - |
+| `ChestTier` | `type` | [`game/src/world/ChestManager.ts:26`](../../game/src/world/ChestManager.ts#L26) | - |
 | `ChunkManager` | `class` | [`game/src/world/ChunkManager.ts:28`](../../game/src/world/ChunkManager.ts#L28) | - |
 | `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:290`](../../game/src/world/ChunkManager.ts#L290) | Deep cleanup of all chunk geometries and entities. |
 | `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:278`](../../game/src/world/ChunkManager.ts#L278) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |

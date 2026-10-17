@@ -163,8 +163,8 @@ export class ChunkManager {
       const placedChests = chestManager.generateStageChests(
         0,
         0,
-        16,
-        1,
+        15,
+        stageNumber,
         rng,
         occupied,
         (x, z) => this.elevation.getElevation(x, z)
