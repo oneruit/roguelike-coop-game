@@ -25,6 +25,19 @@ import { getAssetUrl } from '../utils/assetPath';
 
 export type ChestTier = 'small' | 'large' | 'legendary';
 
+export interface StageChestTierCounts {
+  small: number;
+  large: number;
+  legendary: number;
+}
+
+export const STAGE_CHEST_DISTRIBUTION: Record<number, StageChestTierCounts> = {
+  1: { small: 11, large: 4, legendary: 0 },
+  2: { small: 10, large: 5, legendary: 0 },
+  3: { small: 0, large: 11, legendary: 4 },
+  4: { small: 0, large: 4, legendary: 11 }
+};
+
 export interface ChestInstance {
   id: string;
   tier: ChestTier;
@@ -269,13 +282,55 @@ export class ChestManager {
   }
 
   /**
+   * Returns a deterministic list of chest tiers for the given stage and count,
+   * shuffled with the provided PRNG.
+   *
+   * Stage 1: 11 small, 4 large, 0 legendary
+   * Stage 2: 10 small, 5 large, 0 legendary
+   * Stage 3: 0 small, 11 large, 4 legendary
+   * Stage 4+: 0 small, 4 large, 11 legendary
+   */
+  public static getStageChestTiers(stage: number, count: number = 15, prng?: SeededRNG): ChestTier[] {
+    const effectiveStage = Math.max(1, Math.min(4, Math.floor(stage || 1)));
+    const counts = STAGE_CHEST_DISTRIBUTION[effectiveStage] || STAGE_CHEST_DISTRIBUTION[4];
+
+    const tiers: ChestTier[] = [];
+    if (count === 15) {
+      for (let i = 0; i < counts.legendary; i++) tiers.push('legendary');
+      for (let i = 0; i < counts.large; i++) tiers.push('large');
+      for (let i = 0; i < counts.small; i++) tiers.push('small');
+    } else {
+      let leg = Math.round((counts.legendary / 15) * count);
+      let large = Math.round((counts.large / 15) * count);
+      let small = Math.max(0, count - leg - large);
+      for (let i = 0; i < leg; i++) tiers.push('legendary');
+      for (let i = 0; i < large; i++) tiers.push('large');
+      for (let i = 0; i < small; i++) tiers.push('small');
+      while (tiers.length < count) tiers.push('small');
+      if (tiers.length > count) tiers.length = count;
+    }
+
+    if (prng) {
+      // Deterministic Fisher-Yates shuffle
+      for (let i = tiers.length - 1; i > 0; i--) {
+        const j = Math.floor(prng.next() * (i + 1));
+        const temp = tiers[i];
+        tiers[i] = tiers[j];
+        tiers[j] = temp;
+      }
+    }
+
+    return tiers;
+  }
+
+  /**
    * Generates scattered chests across the fixed 500x500 map area using deterministic PRNG.
    * Guarantees healthy clearance from spawn, altars, teleporter, and other chests.
    */
   public generateStageChests(
     centerX: number = 0,
     centerZ: number = 0,
-    count: number = 16,
+    count: number = 15,
     stage: number = 1,
     rng?: SeededRNG,
     forbiddenZones?: { x: number; z: number; radius: number }[],
@@ -286,18 +341,8 @@ export class ChestManager {
     const prng = rng || new SeededRNG(stage * 7919);
     const placedZones: { x: number; z: number; radius: number }[] = [];
 
-    // Deterministic tier distribution
-    // On stage 1: exactly 4 large chests and remaining (11) small chests
-    const largeIndices = new Set<number>();
-    if (stage === 1) {
-      const targetLarge = Math.min(4, count);
-      const available = Array.from({ length: count }, (_, idx) => idx);
-      for (let k = 0; k < targetLarge; k++) {
-        const pickIdx = Math.floor(prng.next() * available.length);
-        largeIndices.add(available[pickIdx]);
-        available.splice(pickIdx, 1);
-      }
-    }
+    // Deterministic tier distribution per stage
+    const tiers = ChestManager.getStageChestTiers(stage, count, prng);
 
     // Attempt to scatter chests across the 450x450 map (-195 to +195)
     for (let i = 0; i < count; i++) {
@@ -349,18 +394,7 @@ export class ChestManager {
         chosenZ = centerZ + Math.sin(ang) * dist;
       }
 
-      // Deterministic tier weights
-      let tier: ChestTier = 'small';
-      if (stage === 1) {
-        tier = largeIndices.has(i) ? 'large' : 'small';
-      } else {
-        const roll = prng.next();
-        if (roll < 0.15) {
-          tier = 'legendary';
-        } else if (roll < 0.45) {
-          tier = 'large';
-        }
-      }
+      const tier: ChestTier = tiers[i] || 'small';
 
       const chosenY = getElevation ? getElevation(chosenX, chosenZ) : 0;
       this.spawnChest(chosenX, chosenZ, tier, undefined, undefined, chosenY);

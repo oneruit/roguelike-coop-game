@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T08:18:19.419Z | **Files:** 153 | **Top-level:** 474 | **Class Methods:** 1101
+> **Generated:** 2026-10-17T08:48:52.002Z | **Files:** 153 | **Top-level:** 476 | **Class Methods:** 1102
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 428 |
+| `game/src` | 430 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -246,15 +246,16 @@ Run `npm run index` to refresh this cache.
 | `ChartOptions` | `interface` | [`admin/src/chartUtils.ts:15`](../../admin/src/chartUtils.ts#L15) | - |
 | `ChartSeries` | `interface` | [`admin/src/chartUtils.ts:6`](../../admin/src/chartUtils.ts#L6) | Lightweight SVG Vector Chart Engine for Admin Panel Zero external dependenc... |
 | `CHEST_TIERS` | `const` | [`game/src/shared/types/registry.ts:28`](../../game/src/shared/types/registry.ts#L28) | - |
-| `ChestInstance` | `interface` | [`game/src/world/ChestManager.ts:28`](../../game/src/world/ChestManager.ts#L28) | - |
-| `ChestManager` | `class` | [`game/src/world/ChestManager.ts:48`](../../game/src/world/ChestManager.ts#L48) | - |
-| `ChestManager.clear` | `method` | [`game/src/world/ChestManager.ts:473`](../../game/src/world/ChestManager.ts#L473) | - |
-| `ChestManager.getChestGeometry` | `method` | [`game/src/world/ChestManager.ts:63`](../../game/src/world/ChestManager.ts#L63) | - |
-| `ChestManager.getShadowGeometry` | `method` | [`game/src/world/ChestManager.ts:73`](../../game/src/world/ChestManager.ts#L73) | - |
-| `ChestManager.getShadowTexture` | `method` | [`game/src/world/ChestManager.ts:82`](../../game/src/world/ChestManager.ts#L82) | - |
-| `ChestManager.getSheetTexture` | `method` | [`game/src/world/ChestManager.ts:96`](../../game/src/world/ChestManager.ts#L96) | - |
-| `ChestManager.getSnapshot` | `method` | [`game/src/world/ChestManager.ts:481`](../../game/src/world/ChestManager.ts#L481) | - |
-| `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:376`](../../game/src/world/ChestManager.ts#L376) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
+| `ChestInstance` | `interface` | [`game/src/world/ChestManager.ts:41`](../../game/src/world/ChestManager.ts#L41) | - |
+| `ChestManager` | `class` | [`game/src/world/ChestManager.ts:61`](../../game/src/world/ChestManager.ts#L61) | - |
+| `ChestManager.clear` | `method` | [`game/src/world/ChestManager.ts:507`](../../game/src/world/ChestManager.ts#L507) | - |
+| `ChestManager.getChestGeometry` | `method` | [`game/src/world/ChestManager.ts:76`](../../game/src/world/ChestManager.ts#L76) | - |
+| `ChestManager.getShadowGeometry` | `method` | [`game/src/world/ChestManager.ts:86`](../../game/src/world/ChestManager.ts#L86) | - |
+| `ChestManager.getShadowTexture` | `method` | [`game/src/world/ChestManager.ts:95`](../../game/src/world/ChestManager.ts#L95) | - |
+| `ChestManager.getSheetTexture` | `method` | [`game/src/world/ChestManager.ts:109`](../../game/src/world/ChestManager.ts#L109) | - |
+| `ChestManager.getSnapshot` | `method` | [`game/src/world/ChestManager.ts:515`](../../game/src/world/ChestManager.ts#L515) | - |
+| `ChestManager.getStageChestTiers` | `method` | [`game/src/world/ChestManager.ts:293`](../../game/src/world/ChestManager.ts#L293) | Returns a deterministic list of chest tiers for the given stage and count, ... |
+| `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:410`](../../game/src/world/ChestManager.ts#L410) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
 | `ChestSyncInfo` | `interface` | [`game/src/shared/types/network.ts:189`](../../game/src/shared/types/network.ts#L189) | - |
 | `ChestTier` | `type` | [`game/src/shared/types/registry.ts:29`](../../game/src/shared/types/registry.ts#L29) | - |
 | `ChestTier` | `type` | [`game/src/world/ChestManager.ts:26`](../../game/src/world/ChestManager.ts#L26) | - |
@@ -1442,6 +1443,8 @@ Run `npm run index` to refresh this cache.
 | `SpellEnemy` | `interface` | [`game/src/shared/InvokerSpellRuntime.ts:15`](../../game/src/shared/InvokerSpellRuntime.ts#L15) | - |
 | `SpellPosition` | `interface` | [`game/src/shared/InvokerSpellRuntime.ts:10`](../../game/src/shared/InvokerSpellRuntime.ts#L10) | - |
 | `SpriteDirection` | `type` | [`game/src/shared/types/entities.ts:10`](../../game/src/shared/types/entities.ts#L10) | - |
+| `STAGE_CHEST_DISTRIBUTION` | `const` | [`game/src/world/ChestManager.ts:34`](../../game/src/world/ChestManager.ts#L34) | - |
+| `StageChestTierCounts` | `interface` | [`game/src/world/ChestManager.ts:28`](../../game/src/world/ChestManager.ts#L28) | - |
 | `SulfurSmokeManager` | `class` | [`game/src/vfx/SulfurSmokeVfx.ts:131`](../../game/src/vfx/SulfurSmokeVfx.ts#L131) | Global manager for Brimstone / Sulfur Smoke teleport and disappearance effe... |
 | `SulfurSmokeManager.clear` | `method` | [`game/src/vfx/SulfurSmokeVfx.ts:154`](../../game/src/vfx/SulfurSmokeVfx.ts#L154) | - |
 | `SulfurSmokeManager.update` | `method` | [`game/src/vfx/SulfurSmokeVfx.ts:144`](../../game/src/vfx/SulfurSmokeVfx.ts#L144) | - |

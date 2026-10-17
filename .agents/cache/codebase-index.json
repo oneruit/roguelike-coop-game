@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-17T08:18:19.419Z",
+  "generatedAt": "2026-10-17T08:48:52.002Z",
   "totalFiles": 153,
-  "totalSymbols": 1575,
-  "topLevelCount": 474,
-  "methodsCount": 1101,
+  "totalSymbols": 1578,
+  "topLevelCount": 476,
+  "methodsCount": 1102,
   "entities": {
     "heroes": [
       {
@@ -2293,19 +2293,19 @@
       "name": "ChestInstance",
       "kind": "interface",
       "file": "game/src/world/ChestManager.ts",
-      "line": 28
+      "line": 41
     },
     {
       "name": "ChestManager",
       "kind": "class",
       "file": "game/src/world/ChestManager.ts",
-      "line": 48
+      "line": 61
     },
     {
       "name": "ChestManager.clear",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 473,
+      "line": 507,
       "className": "ChestManager",
       "methodName": "clear"
     },
@@ -2313,7 +2313,7 @@
       "name": "ChestManager.getChestGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 63,
+      "line": 76,
       "className": "ChestManager",
       "methodName": "getChestGeometry"
     },
@@ -2321,7 +2321,7 @@
       "name": "ChestManager.getShadowGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 73,
+      "line": 86,
       "className": "ChestManager",
       "methodName": "getShadowGeometry"
     },
@@ -2329,7 +2329,7 @@
       "name": "ChestManager.getShadowTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 82,
+      "line": 95,
       "className": "ChestManager",
       "methodName": "getShadowTexture"
     },
@@ -2337,7 +2337,7 @@
       "name": "ChestManager.getSheetTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 96,
+      "line": 109,
       "className": "ChestManager",
       "methodName": "getSheetTexture"
     },
@@ -2345,15 +2345,24 @@
       "name": "ChestManager.getSnapshot",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 481,
+      "line": 515,
       "className": "ChestManager",
       "methodName": "getSnapshot"
+    },
+    {
+      "name": "ChestManager.getStageChestTiers",
+      "kind": "method",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 293,
+      "className": "ChestManager",
+      "methodName": "getStageChestTiers",
+      "doc": "Returns a deterministic list of chest tiers for the given stage and count, shuffled with the provided PRNG. Stage 1: 11 small, 4 large, 0 legendary Stage 2: 10 small, 5 large, 0 legendary Stage 3: 0 small, 11 large, 4 legendary Stage 4+: 0 small, 4 large, 11 legendary"
     },
     {
       "name": "ChestManager.update",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 376,
+      "line": 410,
       "className": "ChestManager",
       "methodName": "update",
       "doc": "Updates floating chest hologram visuals, pulse aura, and opening animations."
@@ -11364,6 +11373,18 @@
       "kind": "type",
       "file": "game/src/shared/types/entities.ts",
       "line": 10
+    },
+    {
+      "name": "STAGE_CHEST_DISTRIBUTION",
+      "kind": "const",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 34
+    },
+    {
+      "name": "StageChestTierCounts",
+      "kind": "interface",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 28
     },
     {
       "name": "SulfurSmokeManager",
