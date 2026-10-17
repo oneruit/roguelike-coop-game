@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-17T03:27:34.853Z",
+  "generatedAt": "2026-10-17T04:18:35.688Z",
   "totalFiles": 153,
-  "totalSymbols": 1572,
-  "topLevelCount": 473,
-  "methodsCount": 1099,
+  "totalSymbols": 1575,
+  "topLevelCount": 474,
+  "methodsCount": 1101,
   "entities": {
     "heroes": [
       {
@@ -5970,6 +5970,12 @@
       "methodName": "upgrade"
     },
     {
+      "name": "LastRunInfo",
+      "kind": "interface",
+      "file": "game/src/core/LeaderboardManager.ts",
+      "line": 21
+    },
+    {
       "name": "LeaderboardEntry",
       "kind": "interface",
       "file": "game/src/core/LeaderboardManager.ts",
@@ -5985,13 +5991,13 @@
       "name": "LeaderboardManager",
       "kind": "class",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 20
+      "line": 25
     },
     {
       "name": "LeaderboardManager.fetchTopScores",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 137,
+      "line": 142,
       "className": "LeaderboardManager",
       "methodName": "fetchTopScores"
     },
@@ -5999,23 +6005,39 @@
       "name": "LeaderboardManager.getDefaultEntries",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 256,
+      "line": 300,
       "className": "LeaderboardManager",
       "methodName": "getDefaultEntries"
+    },
+    {
+      "name": "LeaderboardManager.getLastRun",
+      "kind": "method",
+      "file": "game/src/core/LeaderboardManager.ts",
+      "line": 203,
+      "className": "LeaderboardManager",
+      "methodName": "getLastRun"
     },
     {
       "name": "LeaderboardManager.getLocalEntries",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 188,
+      "line": 228,
       "className": "LeaderboardManager",
       "methodName": "getLocalEntries"
+    },
+    {
+      "name": "LeaderboardManager.saveLastRun",
+      "kind": "method",
+      "file": "game/src/core/LeaderboardManager.ts",
+      "line": 214,
+      "className": "LeaderboardManager",
+      "methodName": "saveLastRun"
     },
     {
       "name": "LeaderboardManager.saveLocalEntry",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 221,
+      "line": 261,
       "className": "LeaderboardManager",
       "methodName": "saveLocalEntry"
     },
@@ -6029,7 +6051,7 @@
       "name": "LeaderboardUI.bindElements",
       "kind": "method",
       "file": "game/src/ui/modules/LeaderboardUI.ts",
-      "line": 34,
+      "line": 35,
       "className": "LeaderboardUI",
       "methodName": "bindElements"
     },
@@ -6037,7 +6059,7 @@
       "name": "LeaderboardUI.bindEvents",
       "kind": "method",
       "file": "game/src/ui/modules/LeaderboardUI.ts",
-      "line": 45,
+      "line": 47,
       "className": "LeaderboardUI",
       "methodName": "bindEvents"
     },
@@ -6045,7 +6067,7 @@
       "name": "LeaderboardUI.getTemplate",
       "kind": "method",
       "file": "game/src/ui/modules/LeaderboardUI.ts",
-      "line": 30,
+      "line": 31,
       "className": "LeaderboardUI",
       "methodName": "getTemplate"
     },
@@ -6053,7 +6075,7 @@
       "name": "LeaderboardUI.loadAndRender",
       "kind": "method",
       "file": "game/src/ui/modules/LeaderboardUI.ts",
-      "line": 79,
+      "line": 96,
       "className": "LeaderboardUI",
       "methodName": "loadAndRender"
     },
@@ -6061,7 +6083,7 @@
       "name": "LeaderboardUI.renderTable",
       "kind": "method",
       "file": "game/src/ui/modules/LeaderboardUI.ts",
-      "line": 97,
+      "line": 114,
       "className": "LeaderboardUI",
       "methodName": "renderTable"
     },
@@ -11413,7 +11435,7 @@
       "name": "SupabaseService.deleteLeaderboardEntry",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
-      "line": 588,
+      "line": 585,
       "className": "SupabaseService",
       "methodName": "deleteLeaderboardEntry"
     },
@@ -11454,7 +11476,7 @@
       "name": "SupabaseService.resetAllLeaderboards",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
-      "line": 632,
+      "line": 629,
       "className": "SupabaseService",
       "methodName": "resetAllLeaderboards"
     },
@@ -11478,7 +11500,7 @@
       "name": "SupabaseService.seedDemoLeaderboards",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
-      "line": 662,
+      "line": 659,
       "className": "SupabaseService",
       "methodName": "seedDemoLeaderboards"
     },
@@ -11502,7 +11524,7 @@
       "name": "SupabaseService.updateLeaderboardEntry",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
-      "line": 696,
+      "line": 694,
       "className": "SupabaseService",
       "methodName": "updateLeaderboardEntry"
     },

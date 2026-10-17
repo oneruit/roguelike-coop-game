@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T03:27:34.853Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1099
+> **Generated:** 2026-10-17T04:18:35.688Z | **Files:** 153 | **Top-level:** 474 | **Class Methods:** 1101
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 427 |
+| `game/src` | 428 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -731,19 +731,22 @@ Run `npm run index` to refresh this cache.
 | `KukriWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:13`](../../game/src/combat/weapons/MeleeWeapons.ts#L13) | Kukri Knife (Нож Кукри) Rapid throws of spinning curved Gurkha kukri blades |
 | `KukriWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:91`](../../game/src/combat/weapons/MeleeWeapons.ts#L91) | - |
 | `KukriWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:84`](../../game/src/combat/weapons/MeleeWeapons.ts#L84) | - |
+| `LastRunInfo` | `interface` | [`game/src/core/LeaderboardManager.ts:21`](../../game/src/core/LeaderboardManager.ts#L21) | - |
 | `LeaderboardEntry` | `interface` | [`game/src/core/LeaderboardManager.ts:4`](../../game/src/core/LeaderboardManager.ts#L4) | - |
 | `LeaderboardEntry` | `interface` | [`admin/src/types.ts:43`](../../admin/src/types.ts#L43) | - |
-| `LeaderboardManager` | `class` | [`game/src/core/LeaderboardManager.ts:20`](../../game/src/core/LeaderboardManager.ts#L20) | - |
-| `LeaderboardManager.fetchTopScores` | `method` | [`game/src/core/LeaderboardManager.ts:137`](../../game/src/core/LeaderboardManager.ts#L137) | - |
-| `LeaderboardManager.getDefaultEntries` | `method` | [`game/src/core/LeaderboardManager.ts:256`](../../game/src/core/LeaderboardManager.ts#L256) | - |
-| `LeaderboardManager.getLocalEntries` | `method` | [`game/src/core/LeaderboardManager.ts:188`](../../game/src/core/LeaderboardManager.ts#L188) | - |
-| `LeaderboardManager.saveLocalEntry` | `method` | [`game/src/core/LeaderboardManager.ts:221`](../../game/src/core/LeaderboardManager.ts#L221) | - |
+| `LeaderboardManager` | `class` | [`game/src/core/LeaderboardManager.ts:25`](../../game/src/core/LeaderboardManager.ts#L25) | - |
+| `LeaderboardManager.fetchTopScores` | `method` | [`game/src/core/LeaderboardManager.ts:142`](../../game/src/core/LeaderboardManager.ts#L142) | - |
+| `LeaderboardManager.getDefaultEntries` | `method` | [`game/src/core/LeaderboardManager.ts:300`](../../game/src/core/LeaderboardManager.ts#L300) | - |
+| `LeaderboardManager.getLastRun` | `method` | [`game/src/core/LeaderboardManager.ts:203`](../../game/src/core/LeaderboardManager.ts#L203) | - |
+| `LeaderboardManager.getLocalEntries` | `method` | [`game/src/core/LeaderboardManager.ts:228`](../../game/src/core/LeaderboardManager.ts#L228) | - |
+| `LeaderboardManager.saveLastRun` | `method` | [`game/src/core/LeaderboardManager.ts:214`](../../game/src/core/LeaderboardManager.ts#L214) | - |
+| `LeaderboardManager.saveLocalEntry` | `method` | [`game/src/core/LeaderboardManager.ts:261`](../../game/src/core/LeaderboardManager.ts#L261) | - |
 | `LeaderboardUI` | `class` | [`game/src/ui/modules/LeaderboardUI.ts:11`](../../game/src/ui/modules/LeaderboardUI.ts#L11) | - |
-| `LeaderboardUI.bindElements` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:34`](../../game/src/ui/modules/LeaderboardUI.ts#L34) | - |
-| `LeaderboardUI.bindEvents` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:45`](../../game/src/ui/modules/LeaderboardUI.ts#L45) | - |
-| `LeaderboardUI.getTemplate` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:30`](../../game/src/ui/modules/LeaderboardUI.ts#L30) | - |
-| `LeaderboardUI.loadAndRender` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:79`](../../game/src/ui/modules/LeaderboardUI.ts#L79) | - |
-| `LeaderboardUI.renderTable` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:97`](../../game/src/ui/modules/LeaderboardUI.ts#L97) | - |
+| `LeaderboardUI.bindElements` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:35`](../../game/src/ui/modules/LeaderboardUI.ts#L35) | - |
+| `LeaderboardUI.bindEvents` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:47`](../../game/src/ui/modules/LeaderboardUI.ts#L47) | - |
+| `LeaderboardUI.getTemplate` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:31`](../../game/src/ui/modules/LeaderboardUI.ts#L31) | - |
+| `LeaderboardUI.loadAndRender` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:96`](../../game/src/ui/modules/LeaderboardUI.ts#L96) | - |
+| `LeaderboardUI.renderTable` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:114`](../../game/src/ui/modules/LeaderboardUI.ts#L114) | - |
 | `LeaderboardUIOptions` | `interface` | [`game/src/ui/modules/LeaderboardUI.ts:6`](../../game/src/ui/modules/LeaderboardUI.ts#L6) | - |
 | `LEGENDARY_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:264`](../../game/src/items/RiftItemSystem.ts#L264) | - |
 | `LevelUpScreen` | `class` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:87`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L87) | - |
@@ -1448,18 +1451,18 @@ Run `npm run index` to refresh this cache.
 | `SulfurSmokeVfxInstance.update` | `method` | [`game/src/vfx/SulfurSmokeVfx.ts:76`](../../game/src/vfx/SulfurSmokeVfx.ts#L76) | - |
 | `SupabaseService` | `class` | [`admin/src/api/supabaseService.ts:9`](../../admin/src/api/supabaseService.ts#L9) | - |
 | `SupabaseService.connect` | `method` | [`admin/src/api/supabaseService.ts:60`](../../admin/src/api/supabaseService.ts#L60) | - |
-| `SupabaseService.deleteLeaderboardEntry` | `method` | [`admin/src/api/supabaseService.ts:588`](../../admin/src/api/supabaseService.ts#L588) | - |
+| `SupabaseService.deleteLeaderboardEntry` | `method` | [`admin/src/api/supabaseService.ts:585`](../../admin/src/api/supabaseService.ts#L585) | - |
 | `SupabaseService.deploy` | `method` | [`admin/src/api/supabaseService.ts:397`](../../admin/src/api/supabaseService.ts#L397) | - |
 | `SupabaseService.fetchLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:525`](../../admin/src/api/supabaseService.ts#L525) | ========================================================================= |
 | `SupabaseService.getClient` | `method` | [`admin/src/api/supabaseService.ts:27`](../../admin/src/api/supabaseService.ts#L27) | - |
 | `SupabaseService.loadConfig` | `method` | [`admin/src/api/supabaseService.ts:31`](../../admin/src/api/supabaseService.ts#L31) | - |
-| `SupabaseService.resetAllLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:632`](../../admin/src/api/supabaseService.ts#L632) | - |
+| `SupabaseService.resetAllLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:629`](../../admin/src/api/supabaseService.ts#L629) | - |
 | `SupabaseService.saveConnectionSettings` | `method` | [`admin/src/api/supabaseService.ts:173`](../../admin/src/api/supabaseService.ts#L173) | - |
 | `SupabaseService.seedDatabase` | `method` | [`admin/src/api/supabaseService.ts:231`](../../admin/src/api/supabaseService.ts#L231) | - |
-| `SupabaseService.seedDemoLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:662`](../../admin/src/api/supabaseService.ts#L662) | - |
+| `SupabaseService.seedDemoLeaderboards` | `method` | [`admin/src/api/supabaseService.ts:659`](../../admin/src/api/supabaseService.ts#L659) | - |
 | `SupabaseService.setupRealtime` | `method` | [`admin/src/api/supabaseService.ts:147`](../../admin/src/api/supabaseService.ts#L147) | - |
 | `SupabaseService.testConnection` | `method` | [`admin/src/api/supabaseService.ts:202`](../../admin/src/api/supabaseService.ts#L202) | - |
-| `SupabaseService.updateLeaderboardEntry` | `method` | [`admin/src/api/supabaseService.ts:696`](../../admin/src/api/supabaseService.ts#L696) | - |
+| `SupabaseService.updateLeaderboardEntry` | `method` | [`admin/src/api/supabaseService.ts:694`](../../admin/src/api/supabaseService.ts#L694) | - |
 | `SvgChartRenderer` | `class` | [`admin/src/chartUtils.ts:30`](../../admin/src/chartUtils.ts#L30) | - |
 | `SwordsmanTextures` | `type` | [`game/src/core/TextureManager.ts:44`](../../game/src/core/TextureManager.ts#L44) | - |
 | `SyncState` | `type` | [`game/src/meta/CloudSyncManager.ts:6`](../../game/src/meta/CloudSyncManager.ts#L6) | - |

@@ -14,6 +14,7 @@ export class LeaderboardUI extends Screen {
   private btnClose: HTMLElement | null = null;
   private btnBack: HTMLElement | null = null;
   private btnRefresh: HTMLElement | null = null;
+  private subtitleEl: HTMLElement | null = null;
   private backdrop: HTMLElement | null = null;
   private onCloseCallback?: () => void;
 
@@ -39,6 +40,7 @@ export class LeaderboardUI extends Screen {
     this.btnClose = SafeDOM.query(this.modal, '#leaderboard-btn-close');
     this.btnBack = SafeDOM.query(this.modal, '#leaderboard-btn-back');
     this.btnRefresh = SafeDOM.query(this.modal, '#leaderboard-btn-refresh');
+    this.subtitleEl = SafeDOM.query(this.modal, '#leaderboard-subtitle');
     this.backdrop = SafeDOM.query(this.modal, '#leaderboard-backdrop');
   }
 
@@ -52,9 +54,24 @@ export class LeaderboardUI extends Screen {
     this.btnBack?.addEventListener('click', handleClose);
     this.backdrop?.addEventListener('click', handleClose);
 
-    this.btnRefresh?.addEventListener('click', () => {
+    this.btnRefresh?.addEventListener('click', async () => {
       SoundManager.playButtonClick?.();
-      this.loadAndRender();
+      if (this.btnRefresh) {
+        this.btnRefresh.innerText = '⟳ Загрузка...';
+        this.btnRefresh.style.pointerEvents = 'none';
+        this.btnRefresh.style.opacity = '0.7';
+      }
+      await this.loadAndRender();
+      if (this.btnRefresh) {
+        this.btnRefresh.innerText = '✓ Обновлено';
+        setTimeout(() => {
+          if (this.btnRefresh) {
+            this.btnRefresh.innerText = '↻ Обновить';
+            this.btnRefresh.style.pointerEvents = '';
+            this.btnRefresh.style.opacity = '';
+          }
+        }, 1200);
+      }
     });
   }
 
@@ -115,8 +132,27 @@ export class LeaderboardUI extends Screen {
       outlaw: '🤠 Разбойник',
       rocket: '🚀 Ракетчик',
       invoker: '✨ Инвокер',
-      alchemist: '⚗️ Алхимик'
+      alchemist: '⚗️ Алхимик',
+      necromancer: '💀 Некромант',
+      amazon: '🏹 Амазонка',
+      flail: '🛡️ Храмовник',
+      sorceress: '🔮 Чародейка',
+      chakram: '💫 Танцор с Чакрамами'
     };
+
+    const lastRun = LeaderboardManager.getLastRun();
+    if (this.subtitleEl) {
+      if (lastRun) {
+        const lastHero = heroIcons[lastRun.heroId] || lastRun.heroId;
+        if (lastRun.isNewRecord) {
+          this.subtitleEl.innerHTML = `🏆 <strong style="color: #facc15;">Новый рекорд!</strong> ${lastHero} — <strong>${lastRun.score.toLocaleString()}</strong> очков (Этап ${lastRun.stage})`;
+        } else {
+          this.subtitleEl.innerHTML = `⏱ Последний забег: ${lastHero} — <strong>${lastRun.score.toLocaleString()}</strong> очков (Этап ${lastRun.stage})`;
+        }
+      } else {
+        this.subtitleEl.innerText = 'Лучшие странники, покорившие Разлом';
+      }
+    }
 
     let html = '';
     entries.forEach((entry, idx) => {

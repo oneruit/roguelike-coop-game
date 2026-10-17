@@ -16,6 +16,11 @@ export interface LeaderboardEntry {
 }
 
 const LOCAL_LEADERBOARD_KEY = 'outlaw_local_leaderboards';
+const LOCAL_LAST_RUN_KEY = 'outlaw_last_run';
+
+export interface LastRunInfo extends LeaderboardEntry {
+  isNewRecord: boolean;
+}
 
 export class LeaderboardManager {
   public static calculateScore(data: {
@@ -86,21 +91,22 @@ export class LeaderboardManager {
       const supabase = getAuthSupabaseClient();
       if (supabase) {
         const payload = {
-          user_id: entry.playerId,
-          display_name: entry.playerName,
-          hero: entry.heroId,
-          stage_reached: entry.stage,
-          survival_time: Math.round(entry.survivalTimeSec),
+          player_id: entry.playerId,
+          player_name: entry.playerName,
+          hero_id: entry.heroId,
+          stage: entry.stage,
+          survival_time_sec: entry.survivalTimeSec,
           kills: entry.kills,
+          credits: entry.credits,
           score: entry.score,
-          crystals_collected: entry.credits
+          is_victory: entry.isVictory
         };
 
         // Query existing entry for this user to check personal best
         const { data: existingRows } = await supabase
           .from('leaderboards')
           .select('id, score')
-          .eq('user_id', entry.playerId)
+          .eq('player_id', entry.playerId)
           .order('score', { ascending: false })
           .limit(1);
 
@@ -109,14 +115,13 @@ export class LeaderboardManager {
         if (existing) {
           // Player already exists in leaderboard: only update if new record is higher!
           if (entry.score > existing.score) {
-            const { error: updateError, data: updated } = await supabase
+            const { error: updateError } = await supabase
               .from('leaderboards')
               .update(payload)
-              .eq('id', existing.id)
-              .select();
+              .eq('id', existing.id);
 
-            if (updateError || !updated || updated.length === 0) {
-              await supabase.from('leaderboards').insert([payload]);
+            if (updateError) {
+              console.warn('[LeaderboardManager] Supabase update warning:', updateError.message);
             }
           }
         } else {
@@ -145,24 +150,20 @@ export class LeaderboardManager {
           .limit(limit * 2);
 
         if (!error && data) {
-          if (data.length === 0) {
-            return [];
-          }
-
           // Client-side deduplication ensuring each player only appears once
           const map = new Map<string, LeaderboardEntry>();
           for (const d of data) {
             const item: LeaderboardEntry = {
               id: d.id,
-              playerId: d.user_id || d.player_id || d.id,
-              playerName: d.display_name || d.player_name || 'Странник',
-              heroId: d.hero || d.hero_id || 'ronin',
-              stage: Number(d.stage_reached ?? d.stage ?? 1),
-              survivalTimeSec: Number(d.survival_time ?? d.survival_time_sec ?? 0),
+              playerId: d.player_id || d.user_id || d.id,
+              playerName: d.player_name || d.display_name || 'Странник',
+              heroId: d.hero_id || d.hero || 'ronin',
+              stage: Number(d.stage ?? d.stage_reached ?? 1),
+              survivalTimeSec: Number(d.survival_time_sec ?? d.survival_time ?? 0),
               kills: Number(d.kills ?? 0),
-              credits: Number(d.crystals_collected ?? d.credits ?? 0),
+              credits: Number(d.credits ?? d.crystals_collected ?? 0),
               score: Number(d.score ?? 0),
-              isVictory: Boolean(d.is_victory ?? ((d.stage_reached ?? d.stage ?? 1) >= 4)),
+              isVictory: Boolean(d.is_victory ?? ((d.stage ?? d.stage_reached ?? 1) >= 4)),
               createdAt: d.created_at
             };
             const key = item.playerId || item.playerName;
@@ -172,10 +173,24 @@ export class LeaderboardManager {
             }
           }
 
-          return Array.from(map.values())
+          // Always merge local entries so player's best run appears immediately
+          const localEntries = this.getLocalEntries(limit);
+          for (const loc of localEntries) {
+            const key = loc.playerId || loc.playerName;
+            const prev = map.get(key);
+            if (!prev || loc.score > prev.score) {
+              map.set(key, loc);
+            }
+          }
+
+          const combined = Array.from(map.values())
             .filter((e) => !['p1', 'p2', 'p3', 'p4', 'p5', 'p6'].includes(e.playerId))
             .sort((a, b) => b.score - a.score)
             .slice(0, limit);
+
+          if (combined.length > 0) {
+            return combined;
+          }
         }
       }
     } catch (err) {
@@ -183,6 +198,31 @@ export class LeaderboardManager {
     }
 
     return this.getLocalEntries(limit);
+  }
+
+  public static getLastRun(): LastRunInfo | null {
+    const storage = typeof localStorage !== 'undefined' ? localStorage : (typeof window !== 'undefined' ? window.localStorage : null);
+    if (!storage) return null;
+    try {
+      const raw = storage.getItem(LOCAL_LAST_RUN_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private static saveLastRun(entry: LeaderboardEntry, isNewRecord: boolean): void {
+    const storage = typeof localStorage !== 'undefined' ? localStorage : (typeof window !== 'undefined' ? window.localStorage : null);
+    if (!storage) return;
+    try {
+      const lastRun: LastRunInfo = {
+        ...entry,
+        isNewRecord
+      };
+      storage.setItem(LOCAL_LAST_RUN_KEY, JSON.stringify(lastRun));
+    } catch {
+      // ignore
+    }
   }
 
   public static getLocalEntries(limit: number = 20): LeaderboardEntry[] {
@@ -228,6 +268,10 @@ export class LeaderboardManager {
       // A player cannot appear twice in the leaderboard.
       // If the player set a new record, update their entry; otherwise keep their highest score.
       const existingIdx = entries.findIndex(e => e.playerId === entry.playerId || (e.playerName === entry.playerName && entry.playerId.startsWith('guest_')));
+      const isNewRecord = existingIdx === -1 || entry.score > entries[existingIdx].score;
+
+      this.saveLastRun(entry, isNewRecord);
+
       if (existingIdx !== -1) {
         if (entry.score > entries[existingIdx].score) {
           entries[existingIdx] = {
