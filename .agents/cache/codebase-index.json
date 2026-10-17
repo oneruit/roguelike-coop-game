@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-17T05:12:23.146Z",
+  "generatedAt": "2026-10-17T04:40:25.158Z",
   "totalFiles": 153,
-  "totalSymbols": 1579,
+  "totalSymbols": 1575,
   "topLevelCount": 474,
-  "methodsCount": 1105,
+  "methodsCount": 1101,
   "entities": {
     "heroes": [
       {
@@ -1458,18 +1458,10 @@
       "line": 155
     },
     {
-      "name": "BattlePassManager.addPoints",
-      "kind": "method",
-      "file": "game/src/core/BattlePassManager.ts",
-      "line": 305,
-      "className": "BattlePassManager",
-      "methodName": "addPoints"
-    },
-    {
       "name": "BattlePassManager.addPointsForSurvival",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 338,
+      "line": 302,
       "className": "BattlePassManager",
       "methodName": "addPointsForSurvival"
     },
@@ -1477,7 +1469,7 @@
       "name": "BattlePassManager.canClaim",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 233,
+      "line": 230,
       "className": "BattlePassManager",
       "methodName": "canClaim"
     },
@@ -1485,7 +1477,7 @@
       "name": "BattlePassManager.claimAllAvailable",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 273,
+      "line": 270,
       "className": "BattlePassManager",
       "methodName": "claimAllAvailable"
     },
@@ -1493,7 +1485,7 @@
       "name": "BattlePassManager.claimReward",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 245,
+      "line": 242,
       "className": "BattlePassManager",
       "methodName": "claimReward"
     },
@@ -1501,7 +1493,7 @@
       "name": "BattlePassManager.getAllRewards",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 241,
+      "line": 238,
       "className": "BattlePassManager",
       "methodName": "getAllRewards"
     },
@@ -1509,7 +1501,7 @@
       "name": "BattlePassManager.getClaimedLevels",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 221,
+      "line": 218,
       "className": "BattlePassManager",
       "methodName": "getClaimedLevels"
     },
@@ -1517,7 +1509,7 @@
       "name": "BattlePassManager.getData",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 174,
+      "line": 171,
       "className": "BattlePassManager",
       "methodName": "getData"
     },
@@ -1533,7 +1525,7 @@
       "name": "BattlePassManager.getLevel",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 201,
+      "line": 198,
       "className": "BattlePassManager",
       "methodName": "getLevel"
     },
@@ -1541,7 +1533,7 @@
       "name": "BattlePassManager.getPoints",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 197,
+      "line": 194,
       "className": "BattlePassManager",
       "methodName": "getPoints"
     },
@@ -1549,7 +1541,7 @@
       "name": "BattlePassManager.getPointsInCurrentLevel",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 207,
+      "line": 204,
       "className": "BattlePassManager",
       "methodName": "getPointsInCurrentLevel"
     },
@@ -1557,7 +1549,7 @@
       "name": "BattlePassManager.getProgressPercent",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 215,
+      "line": 212,
       "className": "BattlePassManager",
       "methodName": "getProgressPercent"
     },
@@ -1565,7 +1557,7 @@
       "name": "BattlePassManager.getRewardForLevel",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 237,
+      "line": 234,
       "className": "BattlePassManager",
       "methodName": "getRewardForLevel"
     },
@@ -1573,7 +1565,7 @@
       "name": "BattlePassManager.getRewardIconUrl",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 381,
+      "line": 345,
       "className": "BattlePassManager",
       "methodName": "getRewardIconUrl"
     },
@@ -1581,7 +1573,7 @@
       "name": "BattlePassManager.isLevelClaimed",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 229,
+      "line": 226,
       "className": "BattlePassManager",
       "methodName": "isLevelClaimed"
     },
@@ -1589,7 +1581,7 @@
       "name": "BattlePassManager.isLevelUnlocked",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 225,
+      "line": 222,
       "className": "BattlePassManager",
       "methodName": "isLevelUnlocked"
     },
@@ -1597,7 +1589,7 @@
       "name": "BattlePassManager.notifyChanged",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 371,
+      "line": 335,
       "className": "BattlePassManager",
       "methodName": "notifyChanged"
     },
@@ -1605,7 +1597,7 @@
       "name": "BattlePassManager.reset",
       "kind": "method",
       "file": "game/src/core/BattlePassManager.ts",
-      "line": 186,
+      "line": 183,
       "className": "BattlePassManager",
       "methodName": "reset"
     },
@@ -8320,7 +8312,7 @@
       "name": "ProgressionManager.addAccountXp",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 358,
+      "line": 357,
       "className": "ProgressionManager",
       "methodName": "addAccountXp"
     },
@@ -8328,7 +8320,7 @@
       "name": "ProgressionManager.addCoins",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 372,
+      "line": 371,
       "className": "ProgressionManager",
       "methodName": "addCoins"
     },
@@ -8336,7 +8328,7 @@
       "name": "ProgressionManager.advanceChapterQuestForTest",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 995,
+      "line": 936,
       "className": "ProgressionManager",
       "methodName": "advanceChapterQuestForTest"
     },
@@ -8344,7 +8336,7 @@
       "name": "ProgressionManager.buyElf",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 618,
+      "line": 559,
       "className": "ProgressionManager",
       "methodName": "buyElf"
     },
@@ -8352,7 +8344,7 @@
       "name": "ProgressionManager.canUnlockElfByAchievement",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 639,
+      "line": 580,
       "className": "ProgressionManager",
       "methodName": "canUnlockElfByAchievement"
     },
@@ -8360,7 +8352,7 @@
       "name": "ProgressionManager.checkAutoUnlocks",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 328,
+      "line": 327,
       "className": "ProgressionManager",
       "methodName": "checkAutoUnlocks"
     },
@@ -8368,7 +8360,7 @@
       "name": "ProgressionManager.claimChapterFinalReward",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 981,
+      "line": 922,
       "className": "ProgressionManager",
       "methodName": "claimChapterFinalReward"
     },
@@ -8376,7 +8368,7 @@
       "name": "ProgressionManager.claimChapterQuest",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 940,
+      "line": 881,
       "className": "ProgressionManager",
       "methodName": "claimChapterQuest"
     },
@@ -8384,7 +8376,7 @@
       "name": "ProgressionManager.claimSidebarQuest",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 548,
+      "line": 507,
       "className": "ProgressionManager",
       "methodName": "claimSidebarQuest"
     },
@@ -8392,7 +8384,7 @@
       "name": "ProgressionManager.completeLeshyQuest",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 609,
+      "line": 550,
       "className": "ProgressionManager",
       "methodName": "completeLeshyQuest"
     },
@@ -8400,7 +8392,7 @@
       "name": "ProgressionManager.getChapterQuestProgress",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 843,
+      "line": 784,
       "className": "ProgressionManager",
       "methodName": "getChapterQuestProgress"
     },
@@ -8408,7 +8400,7 @@
       "name": "ProgressionManager.getDailySidebarQuests",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 426,
+      "line": 425,
       "className": "ProgressionManager",
       "methodName": "getDailySidebarQuests"
     },
@@ -8416,7 +8408,7 @@
       "name": "ProgressionManager.getDefaultChapterQuestsProgress",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 119,
+      "line": 118,
       "className": "ProgressionManager",
       "methodName": "getDefaultChapterQuestsProgress"
     },
@@ -8424,7 +8416,7 @@
       "name": "ProgressionManager.getDefaultData",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 129,
+      "line": 128,
       "className": "ProgressionManager",
       "methodName": "getDefaultData"
     },
@@ -8432,7 +8424,7 @@
       "name": "ProgressionManager.getDefaultProgressionData",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 265,
+      "line": 264,
       "className": "ProgressionManager",
       "methodName": "getDefaultProgressionData"
     },
@@ -8440,7 +8432,7 @@
       "name": "ProgressionManager.getHeroProgress",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 1223,
+      "line": 1164,
       "className": "ProgressionManager",
       "methodName": "getHeroProgress"
     },
@@ -8448,7 +8440,7 @@
       "name": "ProgressionManager.getHeroQuestDefinition",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 1032,
+      "line": 973,
       "className": "ProgressionManager",
       "methodName": "getHeroQuestDefinition"
     },
@@ -8456,7 +8448,7 @@
       "name": "ProgressionManager.getInstance",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 104,
+      "line": 103,
       "className": "ProgressionManager",
       "methodName": "getInstance"
     },
@@ -8464,7 +8456,7 @@
       "name": "ProgressionManager.getWeeklySidebarQuests",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 484,
+      "line": 466,
       "className": "ProgressionManager",
       "methodName": "getWeeklySidebarQuests"
     },
@@ -8472,7 +8464,7 @@
       "name": "ProgressionManager.isChapterComplete",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 961,
+      "line": 902,
       "className": "ProgressionManager",
       "methodName": "isChapterComplete"
     },
@@ -8480,7 +8472,7 @@
       "name": "ProgressionManager.isChapterRewardClaimed",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 977,
+      "line": 918,
       "className": "ProgressionManager",
       "methodName": "isChapterRewardClaimed"
     },
@@ -8488,7 +8480,7 @@
       "name": "ProgressionManager.isChapterUnlocked",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 645,
+      "line": 586,
       "className": "ProgressionManager",
       "methodName": "isChapterUnlocked",
       "doc": "--- Chapter Quests Tracking & Claiming ---"
@@ -8497,7 +8489,7 @@
       "name": "ProgressionManager.isHeroUnlocked",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 309,
+      "line": 308,
       "className": "ProgressionManager",
       "methodName": "isHeroUnlocked"
     },
@@ -8505,7 +8497,7 @@
       "name": "ProgressionManager.loadExternalData",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 269,
+      "line": 268,
       "className": "ProgressionManager",
       "methodName": "loadExternalData"
     },
@@ -8513,7 +8505,7 @@
       "name": "ProgressionManager.loadFromStorage",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 177,
+      "line": 176,
       "className": "ProgressionManager",
       "methodName": "loadFromStorage"
     },
@@ -8521,7 +8513,7 @@
       "name": "ProgressionManager.onSave",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 258,
+      "line": 257,
       "className": "ProgressionManager",
       "methodName": "onSave"
     },
@@ -8529,7 +8521,7 @@
       "name": "ProgressionManager.progressLeshyStep",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 598,
+      "line": 539,
       "className": "ProgressionManager",
       "methodName": "progressLeshyStep"
     },
@@ -8537,23 +8529,15 @@
       "name": "ProgressionManager.recordAltarCaptured",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 699,
+      "line": 640,
       "className": "ProgressionManager",
       "methodName": "recordAltarCaptured"
-    },
-    {
-      "name": "ProgressionManager.recordBisonKilled",
-      "kind": "method",
-      "file": "game/src/core/ProgressionManager.ts",
-      "line": 521,
-      "className": "ProgressionManager",
-      "methodName": "recordBisonKilled"
     },
     {
       "name": "ProgressionManager.recordBossDefeat",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 819,
+      "line": 760,
       "className": "ProgressionManager",
       "methodName": "recordBossDefeat"
     },
@@ -8561,7 +8545,7 @@
       "name": "ProgressionManager.recordBossKilled",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 380,
+      "line": 379,
       "className": "ProgressionManager",
       "methodName": "recordBossKilled"
     },
@@ -8569,23 +8553,15 @@
       "name": "ProgressionManager.recordBossSpawn",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 815,
+      "line": 756,
       "className": "ProgressionManager",
       "methodName": "recordBossSpawn"
-    },
-    {
-      "name": "ProgressionManager.recordCoyoteKilled",
-      "kind": "method",
-      "file": "game/src/core/ProgressionManager.ts",
-      "line": 507,
-      "className": "ProgressionManager",
-      "methodName": "recordCoyoteKilled"
     },
     {
       "name": "ProgressionManager.recordCrawlerOrCoyoteKilled",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 721,
+      "line": 662,
       "className": "ProgressionManager",
       "methodName": "recordCrawlerOrCoyoteKilled"
     },
@@ -8593,7 +8569,7 @@
       "name": "ProgressionManager.recordEnemyKilled",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 396,
+      "line": 395,
       "className": "ProgressionManager",
       "methodName": "recordEnemyKilled"
     },
@@ -8601,7 +8577,7 @@
       "name": "ProgressionManager.recordForestGoldenChestOpened",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 732,
+      "line": 673,
       "className": "ProgressionManager",
       "methodName": "recordForestGoldenChestOpened"
     },
@@ -8609,23 +8585,15 @@
       "name": "ProgressionManager.recordForestSurvivalTime",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 743,
+      "line": 684,
       "className": "ProgressionManager",
       "methodName": "recordForestSurvivalTime"
-    },
-    {
-      "name": "ProgressionManager.recordHeroPlayed",
-      "kind": "method",
-      "file": "game/src/core/ProgressionManager.ts",
-      "line": 535,
-      "className": "ProgressionManager",
-      "methodName": "recordHeroPlayed"
     },
     {
       "name": "ProgressionManager.recordLeshyDefeated",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 759,
+      "line": 700,
       "className": "ProgressionManager",
       "methodName": "recordLeshyDefeated"
     },
@@ -8633,7 +8601,7 @@
       "name": "ProgressionManager.recordMeleeOrSpellKill",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 677,
+      "line": 618,
       "className": "ProgressionManager",
       "methodName": "recordMeleeOrSpellKill"
     },
@@ -8641,7 +8609,7 @@
       "name": "ProgressionManager.recordMerchantPurchaseInRun",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 800,
+      "line": 741,
       "className": "ProgressionManager",
       "methodName": "recordMerchantPurchaseInRun"
     },
@@ -8649,7 +8617,7 @@
       "name": "ProgressionManager.recordRangedKill",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 832,
+      "line": 773,
       "className": "ProgressionManager",
       "methodName": "recordRangedKill"
     },
@@ -8657,7 +8625,7 @@
       "name": "ProgressionManager.recordResourceGather",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 417,
+      "line": 416,
       "className": "ProgressionManager",
       "methodName": "recordResourceGather"
     },
@@ -8665,7 +8633,7 @@
       "name": "ProgressionManager.recordRunCrit",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 770,
+      "line": 711,
       "className": "ProgressionManager",
       "methodName": "recordRunCrit"
     },
@@ -8673,7 +8641,7 @@
       "name": "ProgressionManager.recordSimultaneousPassives",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 785,
+      "line": 726,
       "className": "ProgressionManager",
       "methodName": "recordSimultaneousPassives"
     },
@@ -8681,7 +8649,7 @@
       "name": "ProgressionManager.recordTeleporterBossKilled",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 710,
+      "line": 651,
       "className": "ProgressionManager",
       "methodName": "recordTeleporterBossKilled"
     },
@@ -8689,7 +8657,7 @@
       "name": "ProgressionManager.recordXpGemCollected",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 688,
+      "line": 629,
       "className": "ProgressionManager",
       "methodName": "recordXpGemCollected"
     },
@@ -8697,7 +8665,7 @@
       "name": "ProgressionManager.resetAllProgress",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 1025,
+      "line": 966,
       "className": "ProgressionManager",
       "methodName": "resetAllProgress"
     },
@@ -8705,7 +8673,7 @@
       "name": "ProgressionManager.resetAllTasksToZero",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 1007,
+      "line": 948,
       "className": "ProgressionManager",
       "methodName": "resetAllTasksToZero"
     },
@@ -8713,7 +8681,7 @@
       "name": "ProgressionManager.resetRunSessionProgress",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 111,
+      "line": 110,
       "className": "ProgressionManager",
       "methodName": "resetRunSessionProgress"
     },
@@ -8721,7 +8689,7 @@
       "name": "ProgressionManager.sanitizeLockedChapters",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 655,
+      "line": 596,
       "className": "ProgressionManager",
       "methodName": "sanitizeLockedChapters"
     },
@@ -8729,7 +8697,7 @@
       "name": "ProgressionManager.save",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 239,
+      "line": 238,
       "className": "ProgressionManager",
       "methodName": "save"
     },
@@ -8737,7 +8705,7 @@
       "name": "ProgressionManager.unlockElfByAchievement",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 629,
+      "line": 570,
       "className": "ProgressionManager",
       "methodName": "unlockElfByAchievement"
     },
@@ -8745,7 +8713,7 @@
       "name": "ProgressionManager.unlockHero",
       "kind": "method",
       "file": "game/src/core/ProgressionManager.ts",
-      "line": 319,
+      "line": 318,
       "className": "ProgressionManager",
       "methodName": "unlockHero"
     },
@@ -9821,7 +9789,7 @@
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 703,
+      "line": 702,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -9830,7 +9798,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 838,
+      "line": 837,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -9838,7 +9806,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 987,
+      "line": 986,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -9847,7 +9815,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 445,
+      "line": 444,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -9855,7 +9823,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 561,
+      "line": 560,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -9863,7 +9831,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 436,
+      "line": 435,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -9871,7 +9839,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 487,
+      "line": 486,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -9879,7 +9847,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 428,
+      "line": 427,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -9887,7 +9855,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1133,
+      "line": 1132,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -9896,7 +9864,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 374,
+      "line": 373,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -9904,7 +9872,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1071,
+      "line": 1070,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -9913,7 +9881,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 318,
+      "line": 317,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -9921,7 +9889,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 263,
+      "line": 262,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -9929,7 +9897,7 @@
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 366,
+      "line": 365,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -9937,7 +9905,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1017,
+      "line": 1016,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -9954,7 +9922,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 916,
+      "line": 915,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -9962,7 +9930,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 455,
+      "line": 454,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -9970,7 +9938,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 722,
+      "line": 721,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },

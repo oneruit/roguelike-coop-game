@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T05:12:23.146Z | **Files:** 153 | **Top-level:** 474 | **Class Methods:** 1105
+> **Generated:** 2026-10-17T04:40:25.158Z | **Files:** 153 | **Top-level:** 474 | **Class Methods:** 1101
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -131,25 +131,24 @@ Run `npm run index` to refresh this cache.
 | `BattlePassData` | `interface` | [`game/src/core/ProgressionManager.ts:22`](../../game/src/core/ProgressionManager.ts#L22) | - |
 | `BattlePassGameOverResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:23`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L23) | - |
 | `BattlePassManager` | `class` | [`game/src/core/BattlePassManager.ts:155`](../../game/src/core/BattlePassManager.ts#L155) | - |
-| `BattlePassManager.addPoints` | `method` | [`game/src/core/BattlePassManager.ts:305`](../../game/src/core/BattlePassManager.ts#L305) | - |
-| `BattlePassManager.addPointsForSurvival` | `method` | [`game/src/core/BattlePassManager.ts:338`](../../game/src/core/BattlePassManager.ts#L338) | - |
-| `BattlePassManager.canClaim` | `method` | [`game/src/core/BattlePassManager.ts:233`](../../game/src/core/BattlePassManager.ts#L233) | - |
-| `BattlePassManager.claimAllAvailable` | `method` | [`game/src/core/BattlePassManager.ts:273`](../../game/src/core/BattlePassManager.ts#L273) | - |
-| `BattlePassManager.claimReward` | `method` | [`game/src/core/BattlePassManager.ts:245`](../../game/src/core/BattlePassManager.ts#L245) | - |
-| `BattlePassManager.getAllRewards` | `method` | [`game/src/core/BattlePassManager.ts:241`](../../game/src/core/BattlePassManager.ts#L241) | - |
-| `BattlePassManager.getClaimedLevels` | `method` | [`game/src/core/BattlePassManager.ts:221`](../../game/src/core/BattlePassManager.ts#L221) | - |
-| `BattlePassManager.getData` | `method` | [`game/src/core/BattlePassManager.ts:174`](../../game/src/core/BattlePassManager.ts#L174) | - |
+| `BattlePassManager.addPointsForSurvival` | `method` | [`game/src/core/BattlePassManager.ts:302`](../../game/src/core/BattlePassManager.ts#L302) | - |
+| `BattlePassManager.canClaim` | `method` | [`game/src/core/BattlePassManager.ts:230`](../../game/src/core/BattlePassManager.ts#L230) | - |
+| `BattlePassManager.claimAllAvailable` | `method` | [`game/src/core/BattlePassManager.ts:270`](../../game/src/core/BattlePassManager.ts#L270) | - |
+| `BattlePassManager.claimReward` | `method` | [`game/src/core/BattlePassManager.ts:242`](../../game/src/core/BattlePassManager.ts#L242) | - |
+| `BattlePassManager.getAllRewards` | `method` | [`game/src/core/BattlePassManager.ts:238`](../../game/src/core/BattlePassManager.ts#L238) | - |
+| `BattlePassManager.getClaimedLevels` | `method` | [`game/src/core/BattlePassManager.ts:218`](../../game/src/core/BattlePassManager.ts#L218) | - |
+| `BattlePassManager.getData` | `method` | [`game/src/core/BattlePassManager.ts:171`](../../game/src/core/BattlePassManager.ts#L171) | - |
 | `BattlePassManager.getInstance` | `method` | [`game/src/core/BattlePassManager.ts:161`](../../game/src/core/BattlePassManager.ts#L161) | - |
-| `BattlePassManager.getLevel` | `method` | [`game/src/core/BattlePassManager.ts:201`](../../game/src/core/BattlePassManager.ts#L201) | - |
-| `BattlePassManager.getPoints` | `method` | [`game/src/core/BattlePassManager.ts:197`](../../game/src/core/BattlePassManager.ts#L197) | - |
-| `BattlePassManager.getPointsInCurrentLevel` | `method` | [`game/src/core/BattlePassManager.ts:207`](../../game/src/core/BattlePassManager.ts#L207) | - |
-| `BattlePassManager.getProgressPercent` | `method` | [`game/src/core/BattlePassManager.ts:215`](../../game/src/core/BattlePassManager.ts#L215) | - |
-| `BattlePassManager.getRewardForLevel` | `method` | [`game/src/core/BattlePassManager.ts:237`](../../game/src/core/BattlePassManager.ts#L237) | - |
-| `BattlePassManager.getRewardIconUrl` | `method` | [`game/src/core/BattlePassManager.ts:381`](../../game/src/core/BattlePassManager.ts#L381) | - |
-| `BattlePassManager.isLevelClaimed` | `method` | [`game/src/core/BattlePassManager.ts:229`](../../game/src/core/BattlePassManager.ts#L229) | - |
-| `BattlePassManager.isLevelUnlocked` | `method` | [`game/src/core/BattlePassManager.ts:225`](../../game/src/core/BattlePassManager.ts#L225) | - |
-| `BattlePassManager.notifyChanged` | `method` | [`game/src/core/BattlePassManager.ts:371`](../../game/src/core/BattlePassManager.ts#L371) | - |
-| `BattlePassManager.reset` | `method` | [`game/src/core/BattlePassManager.ts:186`](../../game/src/core/BattlePassManager.ts#L186) | - |
+| `BattlePassManager.getLevel` | `method` | [`game/src/core/BattlePassManager.ts:198`](../../game/src/core/BattlePassManager.ts#L198) | - |
+| `BattlePassManager.getPoints` | `method` | [`game/src/core/BattlePassManager.ts:194`](../../game/src/core/BattlePassManager.ts#L194) | - |
+| `BattlePassManager.getPointsInCurrentLevel` | `method` | [`game/src/core/BattlePassManager.ts:204`](../../game/src/core/BattlePassManager.ts#L204) | - |
+| `BattlePassManager.getProgressPercent` | `method` | [`game/src/core/BattlePassManager.ts:212`](../../game/src/core/BattlePassManager.ts#L212) | - |
+| `BattlePassManager.getRewardForLevel` | `method` | [`game/src/core/BattlePassManager.ts:234`](../../game/src/core/BattlePassManager.ts#L234) | - |
+| `BattlePassManager.getRewardIconUrl` | `method` | [`game/src/core/BattlePassManager.ts:345`](../../game/src/core/BattlePassManager.ts#L345) | - |
+| `BattlePassManager.isLevelClaimed` | `method` | [`game/src/core/BattlePassManager.ts:226`](../../game/src/core/BattlePassManager.ts#L226) | - |
+| `BattlePassManager.isLevelUnlocked` | `method` | [`game/src/core/BattlePassManager.ts:222`](../../game/src/core/BattlePassManager.ts#L222) | - |
+| `BattlePassManager.notifyChanged` | `method` | [`game/src/core/BattlePassManager.ts:335`](../../game/src/core/BattlePassManager.ts#L335) | - |
+| `BattlePassManager.reset` | `method` | [`game/src/core/BattlePassManager.ts:183`](../../game/src/core/BattlePassManager.ts#L183) | - |
 | `BattlePassReward` | `interface` | [`game/src/core/BattlePassManager.ts:4`](../../game/src/core/BattlePassManager.ts#L4) | - |
 | `BattlePassUI` | `class` | [`game/src/ui/modules/BattlePassUI.ts:29`](../../game/src/ui/modules/BattlePassUI.ts#L29) | - |
 | `BattlePassUI.bindListeners` | `method` | [`game/src/ui/modules/BattlePassUI.ts:37`](../../game/src/ui/modules/BattlePassUI.ts#L37) | - |
@@ -1042,60 +1041,57 @@ Run `npm run index` to refresh this cache.
 | `ProgressionChartState` | `interface` | [`admin/src/types.ts:31`](../../admin/src/types.ts#L31) | - |
 | `ProgressionData` | `interface` | [`game/src/core/ProgressionManager.ts:34`](../../game/src/core/ProgressionManager.ts#L34) | - |
 | `ProgressionManager` | `class` | [`game/src/core/ProgressionManager.ts:81`](../../game/src/core/ProgressionManager.ts#L81) | - |
-| `ProgressionManager.addAccountXp` | `method` | [`game/src/core/ProgressionManager.ts:358`](../../game/src/core/ProgressionManager.ts#L358) | - |
-| `ProgressionManager.addCoins` | `method` | [`game/src/core/ProgressionManager.ts:372`](../../game/src/core/ProgressionManager.ts#L372) | - |
-| `ProgressionManager.advanceChapterQuestForTest` | `method` | [`game/src/core/ProgressionManager.ts:995`](../../game/src/core/ProgressionManager.ts#L995) | - |
-| `ProgressionManager.buyElf` | `method` | [`game/src/core/ProgressionManager.ts:618`](../../game/src/core/ProgressionManager.ts#L618) | - |
-| `ProgressionManager.canUnlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:639`](../../game/src/core/ProgressionManager.ts#L639) | - |
-| `ProgressionManager.checkAutoUnlocks` | `method` | [`game/src/core/ProgressionManager.ts:328`](../../game/src/core/ProgressionManager.ts#L328) | - |
-| `ProgressionManager.claimChapterFinalReward` | `method` | [`game/src/core/ProgressionManager.ts:981`](../../game/src/core/ProgressionManager.ts#L981) | - |
-| `ProgressionManager.claimChapterQuest` | `method` | [`game/src/core/ProgressionManager.ts:940`](../../game/src/core/ProgressionManager.ts#L940) | - |
-| `ProgressionManager.claimSidebarQuest` | `method` | [`game/src/core/ProgressionManager.ts:548`](../../game/src/core/ProgressionManager.ts#L548) | - |
-| `ProgressionManager.completeLeshyQuest` | `method` | [`game/src/core/ProgressionManager.ts:609`](../../game/src/core/ProgressionManager.ts#L609) | - |
-| `ProgressionManager.getChapterQuestProgress` | `method` | [`game/src/core/ProgressionManager.ts:843`](../../game/src/core/ProgressionManager.ts#L843) | - |
-| `ProgressionManager.getDailySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:426`](../../game/src/core/ProgressionManager.ts#L426) | - |
-| `ProgressionManager.getDefaultChapterQuestsProgress` | `method` | [`game/src/core/ProgressionManager.ts:119`](../../game/src/core/ProgressionManager.ts#L119) | - |
-| `ProgressionManager.getDefaultData` | `method` | [`game/src/core/ProgressionManager.ts:129`](../../game/src/core/ProgressionManager.ts#L129) | - |
-| `ProgressionManager.getDefaultProgressionData` | `method` | [`game/src/core/ProgressionManager.ts:265`](../../game/src/core/ProgressionManager.ts#L265) | - |
-| `ProgressionManager.getHeroProgress` | `method` | [`game/src/core/ProgressionManager.ts:1223`](../../game/src/core/ProgressionManager.ts#L1223) | - |
-| `ProgressionManager.getHeroQuestDefinition` | `method` | [`game/src/core/ProgressionManager.ts:1032`](../../game/src/core/ProgressionManager.ts#L1032) | - |
-| `ProgressionManager.getInstance` | `method` | [`game/src/core/ProgressionManager.ts:104`](../../game/src/core/ProgressionManager.ts#L104) | - |
-| `ProgressionManager.getWeeklySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:484`](../../game/src/core/ProgressionManager.ts#L484) | - |
-| `ProgressionManager.isChapterComplete` | `method` | [`game/src/core/ProgressionManager.ts:961`](../../game/src/core/ProgressionManager.ts#L961) | - |
-| `ProgressionManager.isChapterRewardClaimed` | `method` | [`game/src/core/ProgressionManager.ts:977`](../../game/src/core/ProgressionManager.ts#L977) | - |
-| `ProgressionManager.isChapterUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:645`](../../game/src/core/ProgressionManager.ts#L645) | --- Chapter Quests Tracking & Claiming --- |
-| `ProgressionManager.isHeroUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:309`](../../game/src/core/ProgressionManager.ts#L309) | - |
-| `ProgressionManager.loadExternalData` | `method` | [`game/src/core/ProgressionManager.ts:269`](../../game/src/core/ProgressionManager.ts#L269) | - |
-| `ProgressionManager.loadFromStorage` | `method` | [`game/src/core/ProgressionManager.ts:177`](../../game/src/core/ProgressionManager.ts#L177) | - |
-| `ProgressionManager.onSave` | `method` | [`game/src/core/ProgressionManager.ts:258`](../../game/src/core/ProgressionManager.ts#L258) | - |
-| `ProgressionManager.progressLeshyStep` | `method` | [`game/src/core/ProgressionManager.ts:598`](../../game/src/core/ProgressionManager.ts#L598) | - |
-| `ProgressionManager.recordAltarCaptured` | `method` | [`game/src/core/ProgressionManager.ts:699`](../../game/src/core/ProgressionManager.ts#L699) | - |
-| `ProgressionManager.recordBisonKilled` | `method` | [`game/src/core/ProgressionManager.ts:521`](../../game/src/core/ProgressionManager.ts#L521) | - |
-| `ProgressionManager.recordBossDefeat` | `method` | [`game/src/core/ProgressionManager.ts:819`](../../game/src/core/ProgressionManager.ts#L819) | - |
-| `ProgressionManager.recordBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:380`](../../game/src/core/ProgressionManager.ts#L380) | - |
-| `ProgressionManager.recordBossSpawn` | `method` | [`game/src/core/ProgressionManager.ts:815`](../../game/src/core/ProgressionManager.ts#L815) | - |
-| `ProgressionManager.recordCoyoteKilled` | `method` | [`game/src/core/ProgressionManager.ts:507`](../../game/src/core/ProgressionManager.ts#L507) | - |
-| `ProgressionManager.recordCrawlerOrCoyoteKilled` | `method` | [`game/src/core/ProgressionManager.ts:721`](../../game/src/core/ProgressionManager.ts#L721) | - |
-| `ProgressionManager.recordEnemyKilled` | `method` | [`game/src/core/ProgressionManager.ts:396`](../../game/src/core/ProgressionManager.ts#L396) | - |
-| `ProgressionManager.recordForestGoldenChestOpened` | `method` | [`game/src/core/ProgressionManager.ts:732`](../../game/src/core/ProgressionManager.ts#L732) | - |
-| `ProgressionManager.recordForestSurvivalTime` | `method` | [`game/src/core/ProgressionManager.ts:743`](../../game/src/core/ProgressionManager.ts#L743) | - |
-| `ProgressionManager.recordHeroPlayed` | `method` | [`game/src/core/ProgressionManager.ts:535`](../../game/src/core/ProgressionManager.ts#L535) | - |
-| `ProgressionManager.recordLeshyDefeated` | `method` | [`game/src/core/ProgressionManager.ts:759`](../../game/src/core/ProgressionManager.ts#L759) | - |
-| `ProgressionManager.recordMeleeOrSpellKill` | `method` | [`game/src/core/ProgressionManager.ts:677`](../../game/src/core/ProgressionManager.ts#L677) | - |
-| `ProgressionManager.recordMerchantPurchaseInRun` | `method` | [`game/src/core/ProgressionManager.ts:800`](../../game/src/core/ProgressionManager.ts#L800) | - |
-| `ProgressionManager.recordRangedKill` | `method` | [`game/src/core/ProgressionManager.ts:832`](../../game/src/core/ProgressionManager.ts#L832) | - |
-| `ProgressionManager.recordResourceGather` | `method` | [`game/src/core/ProgressionManager.ts:417`](../../game/src/core/ProgressionManager.ts#L417) | - |
-| `ProgressionManager.recordRunCrit` | `method` | [`game/src/core/ProgressionManager.ts:770`](../../game/src/core/ProgressionManager.ts#L770) | - |
-| `ProgressionManager.recordSimultaneousPassives` | `method` | [`game/src/core/ProgressionManager.ts:785`](../../game/src/core/ProgressionManager.ts#L785) | - |
-| `ProgressionManager.recordTeleporterBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:710`](../../game/src/core/ProgressionManager.ts#L710) | - |
-| `ProgressionManager.recordXpGemCollected` | `method` | [`game/src/core/ProgressionManager.ts:688`](../../game/src/core/ProgressionManager.ts#L688) | - |
-| `ProgressionManager.resetAllProgress` | `method` | [`game/src/core/ProgressionManager.ts:1025`](../../game/src/core/ProgressionManager.ts#L1025) | - |
-| `ProgressionManager.resetAllTasksToZero` | `method` | [`game/src/core/ProgressionManager.ts:1007`](../../game/src/core/ProgressionManager.ts#L1007) | - |
-| `ProgressionManager.resetRunSessionProgress` | `method` | [`game/src/core/ProgressionManager.ts:111`](../../game/src/core/ProgressionManager.ts#L111) | - |
-| `ProgressionManager.sanitizeLockedChapters` | `method` | [`game/src/core/ProgressionManager.ts:655`](../../game/src/core/ProgressionManager.ts#L655) | - |
-| `ProgressionManager.save` | `method` | [`game/src/core/ProgressionManager.ts:239`](../../game/src/core/ProgressionManager.ts#L239) | - |
-| `ProgressionManager.unlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:629`](../../game/src/core/ProgressionManager.ts#L629) | - |
-| `ProgressionManager.unlockHero` | `method` | [`game/src/core/ProgressionManager.ts:319`](../../game/src/core/ProgressionManager.ts#L319) | - |
+| `ProgressionManager.addAccountXp` | `method` | [`game/src/core/ProgressionManager.ts:357`](../../game/src/core/ProgressionManager.ts#L357) | - |
+| `ProgressionManager.addCoins` | `method` | [`game/src/core/ProgressionManager.ts:371`](../../game/src/core/ProgressionManager.ts#L371) | - |
+| `ProgressionManager.advanceChapterQuestForTest` | `method` | [`game/src/core/ProgressionManager.ts:936`](../../game/src/core/ProgressionManager.ts#L936) | - |
+| `ProgressionManager.buyElf` | `method` | [`game/src/core/ProgressionManager.ts:559`](../../game/src/core/ProgressionManager.ts#L559) | - |
+| `ProgressionManager.canUnlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:580`](../../game/src/core/ProgressionManager.ts#L580) | - |
+| `ProgressionManager.checkAutoUnlocks` | `method` | [`game/src/core/ProgressionManager.ts:327`](../../game/src/core/ProgressionManager.ts#L327) | - |
+| `ProgressionManager.claimChapterFinalReward` | `method` | [`game/src/core/ProgressionManager.ts:922`](../../game/src/core/ProgressionManager.ts#L922) | - |
+| `ProgressionManager.claimChapterQuest` | `method` | [`game/src/core/ProgressionManager.ts:881`](../../game/src/core/ProgressionManager.ts#L881) | - |
+| `ProgressionManager.claimSidebarQuest` | `method` | [`game/src/core/ProgressionManager.ts:507`](../../game/src/core/ProgressionManager.ts#L507) | - |
+| `ProgressionManager.completeLeshyQuest` | `method` | [`game/src/core/ProgressionManager.ts:550`](../../game/src/core/ProgressionManager.ts#L550) | - |
+| `ProgressionManager.getChapterQuestProgress` | `method` | [`game/src/core/ProgressionManager.ts:784`](../../game/src/core/ProgressionManager.ts#L784) | - |
+| `ProgressionManager.getDailySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:425`](../../game/src/core/ProgressionManager.ts#L425) | - |
+| `ProgressionManager.getDefaultChapterQuestsProgress` | `method` | [`game/src/core/ProgressionManager.ts:118`](../../game/src/core/ProgressionManager.ts#L118) | - |
+| `ProgressionManager.getDefaultData` | `method` | [`game/src/core/ProgressionManager.ts:128`](../../game/src/core/ProgressionManager.ts#L128) | - |
+| `ProgressionManager.getDefaultProgressionData` | `method` | [`game/src/core/ProgressionManager.ts:264`](../../game/src/core/ProgressionManager.ts#L264) | - |
+| `ProgressionManager.getHeroProgress` | `method` | [`game/src/core/ProgressionManager.ts:1164`](../../game/src/core/ProgressionManager.ts#L1164) | - |
+| `ProgressionManager.getHeroQuestDefinition` | `method` | [`game/src/core/ProgressionManager.ts:973`](../../game/src/core/ProgressionManager.ts#L973) | - |
+| `ProgressionManager.getInstance` | `method` | [`game/src/core/ProgressionManager.ts:103`](../../game/src/core/ProgressionManager.ts#L103) | - |
+| `ProgressionManager.getWeeklySidebarQuests` | `method` | [`game/src/core/ProgressionManager.ts:466`](../../game/src/core/ProgressionManager.ts#L466) | - |
+| `ProgressionManager.isChapterComplete` | `method` | [`game/src/core/ProgressionManager.ts:902`](../../game/src/core/ProgressionManager.ts#L902) | - |
+| `ProgressionManager.isChapterRewardClaimed` | `method` | [`game/src/core/ProgressionManager.ts:918`](../../game/src/core/ProgressionManager.ts#L918) | - |
+| `ProgressionManager.isChapterUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:586`](../../game/src/core/ProgressionManager.ts#L586) | --- Chapter Quests Tracking & Claiming --- |
+| `ProgressionManager.isHeroUnlocked` | `method` | [`game/src/core/ProgressionManager.ts:308`](../../game/src/core/ProgressionManager.ts#L308) | - |
+| `ProgressionManager.loadExternalData` | `method` | [`game/src/core/ProgressionManager.ts:268`](../../game/src/core/ProgressionManager.ts#L268) | - |
+| `ProgressionManager.loadFromStorage` | `method` | [`game/src/core/ProgressionManager.ts:176`](../../game/src/core/ProgressionManager.ts#L176) | - |
+| `ProgressionManager.onSave` | `method` | [`game/src/core/ProgressionManager.ts:257`](../../game/src/core/ProgressionManager.ts#L257) | - |
+| `ProgressionManager.progressLeshyStep` | `method` | [`game/src/core/ProgressionManager.ts:539`](../../game/src/core/ProgressionManager.ts#L539) | - |
+| `ProgressionManager.recordAltarCaptured` | `method` | [`game/src/core/ProgressionManager.ts:640`](../../game/src/core/ProgressionManager.ts#L640) | - |
+| `ProgressionManager.recordBossDefeat` | `method` | [`game/src/core/ProgressionManager.ts:760`](../../game/src/core/ProgressionManager.ts#L760) | - |
+| `ProgressionManager.recordBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:379`](../../game/src/core/ProgressionManager.ts#L379) | - |
+| `ProgressionManager.recordBossSpawn` | `method` | [`game/src/core/ProgressionManager.ts:756`](../../game/src/core/ProgressionManager.ts#L756) | - |
+| `ProgressionManager.recordCrawlerOrCoyoteKilled` | `method` | [`game/src/core/ProgressionManager.ts:662`](../../game/src/core/ProgressionManager.ts#L662) | - |
+| `ProgressionManager.recordEnemyKilled` | `method` | [`game/src/core/ProgressionManager.ts:395`](../../game/src/core/ProgressionManager.ts#L395) | - |
+| `ProgressionManager.recordForestGoldenChestOpened` | `method` | [`game/src/core/ProgressionManager.ts:673`](../../game/src/core/ProgressionManager.ts#L673) | - |
+| `ProgressionManager.recordForestSurvivalTime` | `method` | [`game/src/core/ProgressionManager.ts:684`](../../game/src/core/ProgressionManager.ts#L684) | - |
+| `ProgressionManager.recordLeshyDefeated` | `method` | [`game/src/core/ProgressionManager.ts:700`](../../game/src/core/ProgressionManager.ts#L700) | - |
+| `ProgressionManager.recordMeleeOrSpellKill` | `method` | [`game/src/core/ProgressionManager.ts:618`](../../game/src/core/ProgressionManager.ts#L618) | - |
+| `ProgressionManager.recordMerchantPurchaseInRun` | `method` | [`game/src/core/ProgressionManager.ts:741`](../../game/src/core/ProgressionManager.ts#L741) | - |
+| `ProgressionManager.recordRangedKill` | `method` | [`game/src/core/ProgressionManager.ts:773`](../../game/src/core/ProgressionManager.ts#L773) | - |
+| `ProgressionManager.recordResourceGather` | `method` | [`game/src/core/ProgressionManager.ts:416`](../../game/src/core/ProgressionManager.ts#L416) | - |
+| `ProgressionManager.recordRunCrit` | `method` | [`game/src/core/ProgressionManager.ts:711`](../../game/src/core/ProgressionManager.ts#L711) | - |
+| `ProgressionManager.recordSimultaneousPassives` | `method` | [`game/src/core/ProgressionManager.ts:726`](../../game/src/core/ProgressionManager.ts#L726) | - |
+| `ProgressionManager.recordTeleporterBossKilled` | `method` | [`game/src/core/ProgressionManager.ts:651`](../../game/src/core/ProgressionManager.ts#L651) | - |
+| `ProgressionManager.recordXpGemCollected` | `method` | [`game/src/core/ProgressionManager.ts:629`](../../game/src/core/ProgressionManager.ts#L629) | - |
+| `ProgressionManager.resetAllProgress` | `method` | [`game/src/core/ProgressionManager.ts:966`](../../game/src/core/ProgressionManager.ts#L966) | - |
+| `ProgressionManager.resetAllTasksToZero` | `method` | [`game/src/core/ProgressionManager.ts:948`](../../game/src/core/ProgressionManager.ts#L948) | - |
+| `ProgressionManager.resetRunSessionProgress` | `method` | [`game/src/core/ProgressionManager.ts:110`](../../game/src/core/ProgressionManager.ts#L110) | - |
+| `ProgressionManager.sanitizeLockedChapters` | `method` | [`game/src/core/ProgressionManager.ts:596`](../../game/src/core/ProgressionManager.ts#L596) | - |
+| `ProgressionManager.save` | `method` | [`game/src/core/ProgressionManager.ts:238`](../../game/src/core/ProgressionManager.ts#L238) | - |
+| `ProgressionManager.unlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:570`](../../game/src/core/ProgressionManager.ts#L570) | - |
+| `ProgressionManager.unlockHero` | `method` | [`game/src/core/ProgressionManager.ts:318`](../../game/src/core/ProgressionManager.ts#L318) | - |
 | `ProgressionView` | `class` | [`admin/src/views/progressionView.ts:6`](../../admin/src/views/progressionView.ts#L6) | - |
 | `ProgressionView.bindEvents` | `method` | [`admin/src/views/progressionView.ts:25`](../../admin/src/views/progressionView.ts#L25) | - |
 | `ProgressionView.render` | `method` | [`admin/src/views/progressionView.ts:194`](../../admin/src/views/progressionView.ts#L194) | - |
@@ -1240,25 +1236,25 @@ Run `npm run index` to refresh this cache.
 | `SeededRNG.rangeInt` | `method` | [`game/src/core/SeededRNG.ts:45`](../../game/src/core/SeededRNG.ts#L45) | Generates a deterministic integer in range [min, max] inclusive |
 | `selectWeaponUpgradeOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:5`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L5) | The pool is already shuffled and filtered for ownership, prerequisites and ... |
 | `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:60`](../../game/src/core/SessionDirector.ts#L60) | - |
-| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:703`](../../game/src/core/SessionDirector.ts#L703) | Activates the dimensional rift: summons the stage boss directly from the ri... |
-| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:838`](../../game/src/core/SessionDirector.ts#L838) | - |
-| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:987`](../../game/src/core/SessionDirector.ts#L987) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
-| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:445`](../../game/src/core/SessionDirector.ts#L445) | - |
-| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:561`](../../game/src/core/SessionDirector.ts#L561) | - |
-| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:436`](../../game/src/core/SessionDirector.ts#L436) | - |
-| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:487`](../../game/src/core/SessionDirector.ts#L487) | - |
-| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:428`](../../game/src/core/SessionDirector.ts#L428) | - |
-| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1133`](../../game/src/core/SessionDirector.ts#L1133) | Resumes a previously saved run from localStorage. |
-| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:374`](../../game/src/core/SessionDirector.ts#L374) | - |
-| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1071`](../../game/src/core/SessionDirector.ts#L1071) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
-| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:318`](../../game/src/core/SessionDirector.ts#L318) | - |
-| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:263`](../../game/src/core/SessionDirector.ts#L263) | - |
-| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:366`](../../game/src/core/SessionDirector.ts#L366) | - |
-| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1017`](../../game/src/core/SessionDirector.ts#L1017) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
+| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:702`](../../game/src/core/SessionDirector.ts#L702) | Activates the dimensional rift: summons the stage boss directly from the ri... |
+| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:837`](../../game/src/core/SessionDirector.ts#L837) | - |
+| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:986`](../../game/src/core/SessionDirector.ts#L986) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
+| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:444`](../../game/src/core/SessionDirector.ts#L444) | - |
+| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:560`](../../game/src/core/SessionDirector.ts#L560) | - |
+| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:435`](../../game/src/core/SessionDirector.ts#L435) | - |
+| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:486`](../../game/src/core/SessionDirector.ts#L486) | - |
+| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:427`](../../game/src/core/SessionDirector.ts#L427) | - |
+| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1132`](../../game/src/core/SessionDirector.ts#L1132) | Resumes a previously saved run from localStorage. |
+| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:373`](../../game/src/core/SessionDirector.ts#L373) | - |
+| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1070`](../../game/src/core/SessionDirector.ts#L1070) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
+| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:317`](../../game/src/core/SessionDirector.ts#L317) | - |
+| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:262`](../../game/src/core/SessionDirector.ts#L262) | - |
+| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:365`](../../game/src/core/SessionDirector.ts#L365) | - |
+| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1016`](../../game/src/core/SessionDirector.ts#L1016) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
 | `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:179`](../../game/src/core/SessionDirector.ts#L179) | - |
-| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:916`](../../game/src/core/SessionDirector.ts#L916) | - |
-| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:455`](../../game/src/core/SessionDirector.ts#L455) | - |
-| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:722`](../../game/src/core/SessionDirector.ts#L722) | - |
+| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:915`](../../game/src/core/SessionDirector.ts#L915) | - |
+| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:454`](../../game/src/core/SessionDirector.ts#L454) | - |
+| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:721`](../../game/src/core/SessionDirector.ts#L721) | - |
 | `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:157`](../../game/src/core/SessionDirector.ts#L157) | - |
 | `SettingsScreen` | `class` | [`game/src/ui/screens/Settings/SettingsScreen.ts:29`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L29) | Modular Settings Screen. Manages Graphics, Audio, HUD preferences, Controls... |
 | `SettingsScreen.activateSettingsTab` | `method` | [`game/src/ui/screens/Settings/SettingsScreen.ts:325`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L325) | - |

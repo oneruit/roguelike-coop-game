@@ -164,9 +164,6 @@ export class BattlePassManager {
       ProgressionManager.getInstance().onProgressionReset = () => {
         BattlePassManager.instance?.notifyChanged();
       };
-      ProgressionManager.getInstance().onAddBattlePassPoints = (amount: number) => {
-        BattlePassManager.instance?.addPoints(amount);
-      };
     }
     return BattlePassManager.instance;
   }
@@ -299,39 +296,6 @@ export class BattlePassManager {
       claimedCount: claimedRewards.length,
       totalCoins,
       rewards: claimedRewards
-    };
-  }
-
-  public addPoints(amount: number): {
-    pointsAwarded: number;
-    oldLevel: number;
-    newLevel: number;
-    leveledUp: boolean;
-    oldPoints: number;
-    newPoints: number;
-  } {
-    const safeAmount = Math.max(0, amount);
-    const data = this.getData();
-    const oldPoints = data.points;
-    const oldLevel = this.getLevel(oldPoints);
-
-    data.points = Math.max(0, oldPoints + safeAmount);
-    const newPoints = data.points;
-    const newLevel = this.getLevel(newPoints);
-    const leveledUp = newLevel > oldLevel;
-
-    const prog = ProgressionManager.getInstance();
-    prog.save();
-
-    this.notifyChanged();
-
-    return {
-      pointsAwarded: safeAmount,
-      oldLevel,
-      newLevel,
-      leveledUp,
-      oldPoints,
-      newPoints
     };
   }
 

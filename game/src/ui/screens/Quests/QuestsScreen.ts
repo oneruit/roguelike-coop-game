@@ -463,11 +463,6 @@ export class QuestsScreen extends Screen {
         ? '<span class="quest-card-claim-badge">ЗАБРАТЬ</span>'
         : '';
 
-      const isCoin = q.rewardType === 'coin';
-      const rewardValHtml = isCoin && q.rewardAmount > 1
-        ? `<span class="quest-card-reward-val">${q.rewardAmount}</span>`
-        : '';
-
       row.innerHTML = `
         <div class="quest-card-slot icon-slot">
           <img src="${getAssetUrl(q.icon)}" alt="${q.title}" draggable="false" />
@@ -481,7 +476,7 @@ export class QuestsScreen extends Screen {
         </div>
         <div class="quest-card-reward ${q.isComplete && !q.isClaimed ? 'claimable-pulse' : ''}">
           <img src="${getAssetUrl(q.rewardIcon)}" alt="${q.rewardLabel}" draggable="false" />
-          ${rewardValHtml}
+          <span class="quest-card-reward-val">${q.rewardAmount}</span>
           ${statusBadge}
         </div>
       `;
@@ -492,8 +487,7 @@ export class QuestsScreen extends Screen {
           const res = prog.claimSidebarQuest(q.id);
           if (res) {
             SoundManager.playButtonClick();
-            const notifColor = q.rewardType === 'bp_green_crystal' ? '#10b981' : q.rewardType === 'bp_blue_crystal' ? '#38bdf8' : '#f59e0b';
-            this.ctx.triggerAltarNotification('Награда получена!', `${q.title}: ${res.label}`, '🎁', notifColor);
+            this.ctx.triggerAltarNotification('Награда получена!', `${q.title}: +${res.label}`, '🎁', '#f59e0b');
             this.updateMainMenuQuests();
           }
         } else if (q.isClaimed) {
