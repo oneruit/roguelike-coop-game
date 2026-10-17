@@ -94,64 +94,74 @@
 /* Individual Quest Card */
 .quest-sidebar-card {
   position: relative;
-  width: clamp(270px, 22.5vw, 350px);
-  aspect-ratio: 624 / 468;
+  width: clamp(270px, 22.5vw, 360px);
+  aspect-ratio: 688 / 501;
   background-image: url('/textures/quests/ui_quest_card_panel.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   display: flex;
   flex-direction: column;
-  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.75));
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.85));
   box-sizing: border-box;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
 }
 
-.quest-sidebar-card:hover {
-  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.85)) brightness(1.03);
+.daily-quests-card {
+  background-image: url('/textures/quests/ui_quest_card_daily.png');
+  aspect-ratio: 688 / 501;
 }
 
-/* Hanging Wooden Plaque Header */
+.weekly-quests-card {
+  background-image: url('/textures/quests/ui_quest_card_weekly.png');
+  aspect-ratio: 692 / 486;
+}
+
+.quest-sidebar-card:hover {
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.95)) brightness(1.03);
+}
+
+/* Carved Stone Plaque Header */
 .quest-card-header {
-  height: 22.5%;
+  height: 18%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 16px;
   cursor: pointer;
+  margin-top: 1.5%;
 }
 
 .quest-card-header-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(11.5px, 0.98vw, 15px);
+  font-family: 'Cinzel', 'Montserrat', sans-serif;
+  font-size: clamp(12px, 1.05vw, 15.5px);
   font-weight: 900;
-  color: #fff6e8;
-  letter-spacing: 1.2px;
+  color: #faebd7;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
   text-align: center;
   line-height: 1.1;
   text-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.95),
-    1px 1px 0 #1c1108,
-    -1px -1px 0 #1c1108,
-    1px -1px 0 #1c1108,
-    -1px 1px 0 #1c1108;
+    0 0 12px rgba(168, 85, 247, 0.45),
+    1px 1px 0 #18141e,
+    -1px -1px 0 #18141e;
   transition: color 0.16s ease, text-shadow 0.16s ease;
 }
 
 .quest-card-header:hover .quest-card-header-title {
-  color: #fde68a;
+  color: #fef08a;
   text-shadow: 
-    0 0 10px rgba(251, 191, 36, 0.8),
+    0 0 14px rgba(234, 179, 8, 0.85),
     0 2px 4px rgba(0, 0, 0, 0.95),
-    1px 1px 0 #1c1108,
-    -1px -1px 0 #1c1108;
+    1px 1px 0 #18141e,
+    -1px -1px 0 #18141e;
 }
 
 /* Card Body & Subtitle */
 .quest-card-body {
   flex: 1;
-  padding: 1.5% 6% 4.5% 6%;
+  padding: 0 14% 6% 14%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -160,13 +170,13 @@
 
 .quest-card-subtitle {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(9.5px, 0.72vw, 11px);
+  font-size: clamp(9px, 0.72vw, 11px);
   font-weight: 500;
-  color: #8b9bb4;
+  color: #baa888;
   text-align: center;
-  letter-spacing: 0.2px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
-  margin-bottom: 2px;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -178,32 +188,34 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: clamp(6px, 0.9vh, 10px);
+  gap: clamp(5px, 0.8vh, 9px);
 }
 
 /* Quest Row */
 .quest-card-item-row {
   display: flex;
   align-items: center;
-  gap: clamp(8px, 0.75vw, 12px);
-  background: rgba(18, 24, 29, 0.4);
+  gap: clamp(6px, 0.6vw, 10px);
+  background: rgba(14, 13, 20, 0.6);
+  border: 1px solid rgba(88, 56, 122, 0.35);
   border-radius: 6px;
   padding: 2px 4px;
   box-sizing: border-box;
-  transition: background 0.16s ease, transform 0.16s ease;
+  transition: background 0.16s ease, transform 0.16s ease, border-color 0.16s ease;
   cursor: pointer;
   position: relative;
 }
 
 .quest-card-item-row:hover {
-  background: rgba(30, 42, 52, 0.75);
+  background: rgba(28, 22, 38, 0.85);
+  border-color: rgba(168, 85, 247, 0.6);
   transform: translateX(2px);
 }
 
 /* Left Icon Slot */
 .quest-card-slot.icon-slot {
-  width: clamp(38px, 2.8vw, 45px);
-  height: clamp(38px, 2.8vw, 45px);
+  width: clamp(36px, 2.7vw, 44px);
+  height: clamp(36px, 2.7vw, 44px);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -217,6 +229,7 @@
   object-fit: contain;
   image-rendering: pixelated;
   display: block;
+  border-radius: 4px;
 }
 
 /* Quest Info Center */
@@ -231,7 +244,7 @@
 
 .quest-card-name {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(11.5px, 0.88vw, 13px);
+  font-size: clamp(10.5px, 0.82vw, 12.5px);
   font-weight: 800;
   color: #ffffff;
   white-space: nowrap;
@@ -243,29 +256,29 @@
     1px 1px 0 rgba(0, 0, 0, 0.85);
 }
 
-/* Progress Bar */
+/* Progress Bar - Glowing Cyan Style */
 .quest-card-bar-wrap {
   position: relative;
   width: 100%;
-  height: clamp(12px, 0.92vw, 15px);
-  background: #14191c;
-  border: 1.5px solid #3c4950;
-  border-radius: 3px;
+  height: clamp(13px, 1.0vw, 16px);
+  background: #06141a;
+  border: 1.5px solid #00f0ff;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .quest-card-bar-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(180deg, #ff7a3d 0%, #e65100 50%, #b23b00 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 8px rgba(230, 81, 0, 0.4);
+  background: linear-gradient(90deg, #0088cc 0%, #00e5ff 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 8px rgba(0, 229, 255, 0.6);
   transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .quest-card-bar-fill.completed {
-  background: linear-gradient(180deg, #ff8c42 0%, #eb5b14 50%, #ba3a00 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 10px rgba(255, 122, 61, 0.6);
+  background: linear-gradient(90deg, #00b4d8 0%, #00ffff 100%);
+  box-shadow: inset 0 1px 0 #ffffff, 0 0 12px rgba(0, 255, 255, 0.85);
 }
 
 .quest-card-bar-val {
@@ -278,7 +291,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(9.5px, 0.72vw, 11px);
+  font-size: clamp(9px, 0.72vw, 11px);
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 0.5px;
@@ -293,13 +306,14 @@
 /* Right Reward Slot */
 .quest-card-reward {
   position: relative;
-  width: clamp(38px, 2.8vw, 45px);
-  height: clamp(38px, 2.8vw, 45px);
+  width: clamp(38px, 2.8vw, 44px);
+  height: clamp(38px, 2.8vw, 44px);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.16s ease, filter 0.16s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
 .quest-card-reward img {
@@ -312,10 +326,10 @@
 
 .quest-card-reward-val {
   position: absolute;
-  right: 4px;
-  bottom: 2px;
+  right: 2px;
+  bottom: 1px;
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(10px, 0.76vw, 11.5px);
+  font-size: clamp(9.5px, 0.72vw, 11px);
   font-weight: 900;
   color: #ffffff;
   line-height: 1;
@@ -330,25 +344,27 @@
 
 /* Claimable & Claimed States */
 .quest-card-item-row.claimable {
-  background: rgba(60, 45, 15, 0.45);
+  background: rgba(55, 25, 75, 0.6);
+  border-color: rgba(192, 132, 252, 0.7);
 }
 
 .quest-card-item-row.claimable:hover {
-  background: rgba(85, 62, 20, 0.65);
+  background: rgba(75, 35, 100, 0.8);
+  border-color: #d8b4fe;
 }
 
 .quest-card-item-row.claimable .quest-card-reward {
-  animation: rewardPulseGlow 1.8s infinite ease-in-out;
+  animation: rewardPurplePulseGlow 1.8s infinite ease-in-out;
 }
 
-@keyframes rewardPulseGlow {
+@keyframes rewardPurplePulseGlow {
   0%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 5px #f59e0b) brightness(1.05);
+    filter: drop-shadow(0 0 6px #a855f7) brightness(1.1);
   }
   50% {
     transform: scale(1.08);
-    filter: drop-shadow(0 0 12px #fbbf24) brightness(1.25);
+    filter: drop-shadow(0 0 14px #c084fc) brightness(1.3);
   }
 }
 

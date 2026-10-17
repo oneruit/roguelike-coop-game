@@ -241,6 +241,7 @@ export class SessionDirector {
       this.player.displayName = 'Вы';
       this.player.colorCss = '#f59e0b';
       this.player.setCharacter(charType);
+      ProgressionManager.getInstance().recordHeroPlayed(charType);
       this.player.redrawOverhead();
       this.hud.setCoopBadge(null);
       this.hud.clearTeammates();
