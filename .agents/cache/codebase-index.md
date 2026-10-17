@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T04:40:25.158Z | **Files:** 153 | **Top-level:** 474 | **Class Methods:** 1101
+> **Generated:** 2026-10-17T05:21:23.602Z | **Files:** 153 | **Top-level:** 474 | **Class Methods:** 1101
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -541,105 +541,105 @@ Run `npm run index` to refresh this cache.
 | `HeroTextureAction` | `type` | [`game/src/utils/AssetResolver.ts:3`](../../game/src/utils/AssetResolver.ts#L3) | - |
 | `HostSnapshotMessage` | `interface` | [`game/src/shared/types/network.ts:207`](../../game/src/shared/types/network.ts#L207) | - |
 | `HUD` | `class` | [`game/src/ui/HUD.ts:43`](../../game/src/ui/HUD.ts#L43) | - |
-| `HUD.activateSettingsTab` | `method` | [`game/src/ui/HUD.ts:860`](../../game/src/ui/HUD.ts#L860) | - |
-| `HUD.applyRandomMenuBackground` | `method` | [`game/src/ui/HUD.ts:99`](../../game/src/ui/HUD.ts#L99) | - |
-| `HUD.bindMainMenuListeners` | `method` | [`game/src/ui/HUD.ts:509`](../../game/src/ui/HUD.ts#L509) | --- Main Menu & Navigation Listeners --- |
-| `HUD.bindPauseListeners` | `method` | [`game/src/ui/HUD.ts:576`](../../game/src/ui/HUD.ts#L576) | - |
-| `HUD.clearMenuStack` | `method` | [`game/src/ui/HUD.ts:796`](../../game/src/ui/HUD.ts#L796) | - |
-| `HUD.clearTeammates` | `method` | [`game/src/ui/HUD.ts:1394`](../../game/src/ui/HUD.ts#L1394) | - |
-| `HUD.closeAllPreGameModals` | `method` | [`game/src/ui/HUD.ts:800`](../../game/src/ui/HUD.ts#L800) | - |
-| `HUD.getChapterQuests` | `method` | [`game/src/ui/HUD.ts:1153`](../../game/src/ui/HUD.ts#L1153) | - |
-| `HUD.getHeroAvatar` | `method` | [`game/src/ui/HUD.ts:1505`](../../game/src/ui/HUD.ts#L1505) | - |
-| `HUD.getHeroIcon` | `method` | [`game/src/ui/HUD.ts:1497`](../../game/src/ui/HUD.ts#L1497) | --- Hero Info Static / Instance Helpers --- |
-| `HUD.getHeroName` | `method` | [`game/src/ui/HUD.ts:1501`](../../game/src/ui/HUD.ts#L1501) | - |
-| `HUD.handleClaimAllBattlePass` | `method` | [`game/src/ui/HUD.ts:1191`](../../game/src/ui/HUD.ts#L1191) | - |
-| `HUD.handleEscape` | `method` | [`game/src/ui/HUD.ts:966`](../../game/src/ui/HUD.ts#L966) | - |
-| `HUD.hideAuthModal` | `method` | [`game/src/ui/HUD.ts:949`](../../game/src/ui/HUD.ts#L949) | - |
-| `HUD.hideBattlePassModal` | `method` | [`game/src/ui/HUD.ts:1187`](../../game/src/ui/HUD.ts#L1187) | - |
-| `HUD.hideCharacterSelect` | `method` | [`game/src/ui/HUD.ts:932`](../../game/src/ui/HUD.ts#L932) | - |
-| `HUD.hideChestChoice` | `method` | [`game/src/ui/HUD.ts:1319`](../../game/src/ui/HUD.ts#L1319) | - |
-| `HUD.hideCoopMenu` | `method` | [`game/src/ui/HUD.ts:847`](../../game/src/ui/HUD.ts#L847) | - |
-| `HUD.hideExitModal` | `method` | [`game/src/ui/HUD.ts:872`](../../game/src/ui/HUD.ts#L872) | - |
-| `HUD.hideGameOver` | `method` | [`game/src/ui/HUD.ts:1349`](../../game/src/ui/HUD.ts#L1349) | - |
-| `HUD.hideHostLobby` | `method` | [`game/src/ui/HUD.ts:1201`](../../game/src/ui/HUD.ts#L1201) | - |
-| `HUD.hideInteractionPrompt` | `method` | [`game/src/ui/HUD.ts:1430`](../../game/src/ui/HUD.ts#L1430) | - |
-| `HUD.hideInventory` | `method` | [`game/src/ui/HUD.ts:1285`](../../game/src/ui/HUD.ts#L1285) | - |
-| `HUD.hideJoinLobby` | `method` | [`game/src/ui/HUD.ts:1237`](../../game/src/ui/HUD.ts#L1237) | - |
-| `HUD.hideLeaderboard` | `method` | [`game/src/ui/HUD.ts:1363`](../../game/src/ui/HUD.ts#L1363) | - |
-| `HUD.hideLevelUp` | `method` | [`game/src/ui/HUD.ts:1267`](../../game/src/ui/HUD.ts#L1267) | - |
-| `HUD.hideMainMenu` | `method` | [`game/src/ui/HUD.ts:788`](../../game/src/ui/HUD.ts#L788) | - |
-| `HUD.hideMerchant` | `method` | [`game/src/ui/HUD.ts:1303`](../../game/src/ui/HUD.ts#L1303) | - |
-| `HUD.hidePartnerHp` | `method` | [`game/src/ui/HUD.ts:1402`](../../game/src/ui/HUD.ts#L1402) | - |
-| `HUD.hidePasswordPrompt` | `method` | [`game/src/ui/HUD.ts:1221`](../../game/src/ui/HUD.ts#L1221) | - |
-| `HUD.hidePause` | `method` | [`game/src/ui/HUD.ts:897`](../../game/src/ui/HUD.ts#L897) | - |
-| `HUD.hideQuestsModal` | `method` | [`game/src/ui/HUD.ts:1149`](../../game/src/ui/HUD.ts#L1149) | - |
-| `HUD.hideSettings` | `method` | [`game/src/ui/HUD.ts:856`](../../game/src/ui/HUD.ts#L856) | - |
-| `HUD.hideShopModal` | `method` | [`game/src/ui/HUD.ts:825`](../../game/src/ui/HUD.ts#L825) | - |
-| `HUD.isAnyMenuOpen` | `method` | [`game/src/ui/HUD.ts:958`](../../game/src/ui/HUD.ts#L958) | - |
-| `HUD.isAuthModalOpen` | `method` | [`game/src/ui/HUD.ts:954`](../../game/src/ui/HUD.ts#L954) | - |
-| `HUD.isInventoryOpen` | `method` | [`game/src/ui/HUD.ts:1273`](../../game/src/ui/HUD.ts#L1273) | --- Inventory Methods Forwarding --- |
-| `HUD.isMerchantOpen` | `method` | [`game/src/ui/HUD.ts:1295`](../../game/src/ui/HUD.ts#L1295) | --- Merchant & Chest Methods Forwarding --- |
-| `HUD.openBattlePassModal` | `method` | [`game/src/ui/HUD.ts:1183`](../../game/src/ui/HUD.ts#L1183) | - |
-| `HUD.renderAvailableRooms` | `method` | [`game/src/ui/HUD.ts:1229`](../../game/src/ui/HUD.ts#L1229) | - |
-| `HUD.renderBattlePassModal` | `method` | [`game/src/ui/HUD.ts:1179`](../../game/src/ui/HUD.ts#L1179) | - |
-| `HUD.renderHostRoster` | `method` | [`game/src/ui/HUD.ts:1209`](../../game/src/ui/HUD.ts#L1209) | - |
-| `HUD.renderInventory` | `method` | [`game/src/ui/HUD.ts:1289`](../../game/src/ui/HUD.ts#L1289) | - |
-| `HUD.renderItemInventory` | `method` | [`game/src/ui/HUD.ts:1434`](../../game/src/ui/HUD.ts#L1434) | - |
-| `HUD.renderJoinRoster` | `method` | [`game/src/ui/HUD.ts:1213`](../../game/src/ui/HUD.ts#L1213) | - |
-| `HUD.renderQuestsModal` | `method` | [`game/src/ui/HUD.ts:1157`](../../game/src/ui/HUD.ts#L1157) | - |
-| `HUD.resetBossUI` | `method` | [`game/src/ui/HUD.ts:1462`](../../game/src/ui/HUD.ts#L1462) | - |
-| `HUD.resetExitModal` | `method` | [`game/src/ui/HUD.ts:743`](../../game/src/ui/HUD.ts#L743) | - |
-| `HUD.resetLevelUpState` | `method` | [`game/src/ui/HUD.ts:1263`](../../game/src/ui/HUD.ts#L1263) | - |
-| `HUD.resetSessionHUD` | `method` | [`game/src/ui/HUD.ts:1466`](../../game/src/ui/HUD.ts#L1466) | - |
-| `HUD.selectQuestChapter` | `method` | [`game/src/ui/HUD.ts:1137`](../../game/src/ui/HUD.ts#L1137) | - |
-| `HUD.setCoopBadge` | `method` | [`game/src/ui/HUD.ts:1370`](../../game/src/ui/HUD.ts#L1370) | --- In-Game Overlay & Overlays Methods Forwarding --- |
-| `HUD.setGuestConnectedMode` | `method` | [`game/src/ui/HUD.ts:1245`](../../game/src/ui/HUD.ts#L1245) | - |
-| `HUD.setHostPartnerConnected` | `method` | [`game/src/ui/HUD.ts:1205`](../../game/src/ui/HUD.ts#L1205) | - |
-| `HUD.setInGameHUDVisible` | `method` | [`game/src/ui/HUD.ts:1145`](../../game/src/ui/HUD.ts#L1145) | - |
-| `HUD.setJoinStatus` | `method` | [`game/src/ui/HUD.ts:1241`](../../game/src/ui/HUD.ts#L1241) | - |
-| `HUD.setTrainingModeActive` | `method` | [`game/src/ui/HUD.ts:1482`](../../game/src/ui/HUD.ts#L1482) | - |
-| `HUD.setupExitListeners` | `method` | [`game/src/ui/HUD.ts:713`](../../game/src/ui/HUD.ts#L713) | - |
-| `HUD.showAuthModal` | `method` | [`game/src/ui/HUD.ts:942`](../../game/src/ui/HUD.ts#L942) | - |
-| `HUD.showBalanceToast` | `method` | [`game/src/ui/HUD.ts:1442`](../../game/src/ui/HUD.ts#L1442) | - |
-| `HUD.showCharacterSelect` | `method` | [`game/src/ui/HUD.ts:913`](../../game/src/ui/HUD.ts#L913) | - |
-| `HUD.showCoopMenu` | `method` | [`game/src/ui/HUD.ts:841`](../../game/src/ui/HUD.ts#L841) | - |
-| `HUD.showExitModal` | `method` | [`game/src/ui/HUD.ts:864`](../../game/src/ui/HUD.ts#L864) | - |
-| `HUD.showHostLobby` | `method` | [`game/src/ui/HUD.ts:1197`](../../game/src/ui/HUD.ts#L1197) | --- Lobby Methods Forwarding --- |
-| `HUD.showInteractionPrompt` | `method` | [`game/src/ui/HUD.ts:1426`](../../game/src/ui/HUD.ts#L1426) | - |
-| `HUD.showInventory` | `method` | [`game/src/ui/HUD.ts:1281`](../../game/src/ui/HUD.ts#L1281) | - |
-| `HUD.showJoinLobby` | `method` | [`game/src/ui/HUD.ts:1233`](../../game/src/ui/HUD.ts#L1233) | - |
-| `HUD.showLeaderboard` | `method` | [`game/src/ui/HUD.ts:1356`](../../game/src/ui/HUD.ts#L1356) | --- Leaderboard Methods Forwarding --- |
-| `HUD.showLevelUp` | `method` | [`game/src/ui/HUD.ts:1259`](../../game/src/ui/HUD.ts#L1259) | --- Level Up Methods Forwarding --- |
-| `HUD.showMainMenu` | `method` | [`game/src/ui/HUD.ts:758`](../../game/src/ui/HUD.ts#L758) | --- Modal Navigation Methods --- |
-| `HUD.showMerchant` | `method` | [`game/src/ui/HUD.ts:1299`](../../game/src/ui/HUD.ts#L1299) | - |
-| `HUD.showPasswordPrompt` | `method` | [`game/src/ui/HUD.ts:1217`](../../game/src/ui/HUD.ts#L1217) | - |
-| `HUD.showPasswordPromptError` | `method` | [`game/src/ui/HUD.ts:1225`](../../game/src/ui/HUD.ts#L1225) | - |
-| `HUD.showPause` | `method` | [`game/src/ui/HUD.ts:877`](../../game/src/ui/HUD.ts#L877) | - |
-| `HUD.showQuestsModal` | `method` | [`game/src/ui/HUD.ts:1141`](../../game/src/ui/HUD.ts#L1141) | - |
-| `HUD.showSettings` | `method` | [`game/src/ui/HUD.ts:852`](../../game/src/ui/HUD.ts#L852) | - |
-| `HUD.showShopModal` | `method` | [`game/src/ui/HUD.ts:814`](../../game/src/ui/HUD.ts#L814) | - |
-| `HUD.switchJoinTab` | `method` | [`game/src/ui/HUD.ts:1253`](../../game/src/ui/HUD.ts#L1253) | - |
-| `HUD.toggleInventory` | `method` | [`game/src/ui/HUD.ts:1277`](../../game/src/ui/HUD.ts#L1277) | - |
-| `HUD.togglePause` | `method` | [`game/src/ui/HUD.ts:903`](../../game/src/ui/HUD.ts#L903) | - |
-| `HUD.toggleQuestsInMainMenu` | `method` | [`game/src/ui/HUD.ts:1133`](../../game/src/ui/HUD.ts#L1133) | --- Quests Methods Forwarding --- |
-| `HUD.triggerAltarNotification` | `method` | [`game/src/ui/HUD.ts:1438`](../../game/src/ui/HUD.ts#L1438) | - |
-| `HUD.triggerBossWarning` | `method` | [`game/src/ui/HUD.ts:1454`](../../game/src/ui/HUD.ts#L1454) | - |
-| `HUD.triggerDamageFlash` | `method` | [`game/src/ui/HUD.ts:1450`](../../game/src/ui/HUD.ts#L1450) | - |
-| `HUD.triggerImmortalBossWarning` | `method` | [`game/src/ui/HUD.ts:1458`](../../game/src/ui/HUD.ts#L1458) | - |
-| `HUD.updateBuffsTray` | `method` | [`game/src/ui/HUD.ts:1446`](../../game/src/ui/HUD.ts#L1446) | - |
-| `HUD.updateCharacterSelectLockStatus` | `method` | [`game/src/ui/HUD.ts:1161`](../../game/src/ui/HUD.ts#L1161) | - |
-| `HUD.updateCrystalsCounter` | `method` | [`game/src/ui/HUD.ts:834`](../../game/src/ui/HUD.ts#L834) | - |
-| `HUD.updateGuestReadyButtonUI` | `method` | [`game/src/ui/HUD.ts:1249`](../../game/src/ui/HUD.ts#L1249) | - |
-| `HUD.updateLobbyHeroesLockStatus` | `method` | [`game/src/ui/HUD.ts:1165`](../../game/src/ui/HUD.ts#L1165) | - |
-| `HUD.updateMainMenuBattlePass` | `method` | [`game/src/ui/HUD.ts:1175`](../../game/src/ui/HUD.ts#L1175) | --- Battle Pass Methods Forwarding --- |
-| `HUD.updateMainMenuQuests` | `method` | [`game/src/ui/HUD.ts:1169`](../../game/src/ui/HUD.ts#L1169) | - |
-| `HUD.updateMerchantTimer` | `method` | [`game/src/ui/HUD.ts:1307`](../../game/src/ui/HUD.ts#L1307) | - |
-| `HUD.updatePartnerHp` | `method` | [`game/src/ui/HUD.ts:1398`](../../game/src/ui/HUD.ts#L1398) | - |
-| `HUD.updatePassivesBar` | `method` | [`game/src/ui/HUD.ts:1474`](../../game/src/ui/HUD.ts#L1474) | - |
-| `HUD.updatePerformance` | `method` | [`game/src/ui/HUD.ts:1478`](../../game/src/ui/HUD.ts#L1478) | - |
-| `HUD.updateStageText` | `method` | [`game/src/ui/HUD.ts:1417`](../../game/src/ui/HUD.ts#L1417) | - |
-| `HUD.updateTeleportButton` | `method` | [`game/src/ui/HUD.ts:1422`](../../game/src/ui/HUD.ts#L1422) | - |
-| `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1470`](../../game/src/ui/HUD.ts#L1470) | - |
+| `HUD.activateSettingsTab` | `method` | [`game/src/ui/HUD.ts:858`](../../game/src/ui/HUD.ts#L858) | - |
+| `HUD.applyRandomMenuBackground` | `method` | [`game/src/ui/HUD.ts:97`](../../game/src/ui/HUD.ts#L97) | - |
+| `HUD.bindMainMenuListeners` | `method` | [`game/src/ui/HUD.ts:507`](../../game/src/ui/HUD.ts#L507) | --- Main Menu & Navigation Listeners --- |
+| `HUD.bindPauseListeners` | `method` | [`game/src/ui/HUD.ts:574`](../../game/src/ui/HUD.ts#L574) | - |
+| `HUD.clearMenuStack` | `method` | [`game/src/ui/HUD.ts:794`](../../game/src/ui/HUD.ts#L794) | - |
+| `HUD.clearTeammates` | `method` | [`game/src/ui/HUD.ts:1392`](../../game/src/ui/HUD.ts#L1392) | - |
+| `HUD.closeAllPreGameModals` | `method` | [`game/src/ui/HUD.ts:798`](../../game/src/ui/HUD.ts#L798) | - |
+| `HUD.getChapterQuests` | `method` | [`game/src/ui/HUD.ts:1151`](../../game/src/ui/HUD.ts#L1151) | - |
+| `HUD.getHeroAvatar` | `method` | [`game/src/ui/HUD.ts:1503`](../../game/src/ui/HUD.ts#L1503) | - |
+| `HUD.getHeroIcon` | `method` | [`game/src/ui/HUD.ts:1495`](../../game/src/ui/HUD.ts#L1495) | --- Hero Info Static / Instance Helpers --- |
+| `HUD.getHeroName` | `method` | [`game/src/ui/HUD.ts:1499`](../../game/src/ui/HUD.ts#L1499) | - |
+| `HUD.handleClaimAllBattlePass` | `method` | [`game/src/ui/HUD.ts:1189`](../../game/src/ui/HUD.ts#L1189) | - |
+| `HUD.handleEscape` | `method` | [`game/src/ui/HUD.ts:964`](../../game/src/ui/HUD.ts#L964) | - |
+| `HUD.hideAuthModal` | `method` | [`game/src/ui/HUD.ts:947`](../../game/src/ui/HUD.ts#L947) | - |
+| `HUD.hideBattlePassModal` | `method` | [`game/src/ui/HUD.ts:1185`](../../game/src/ui/HUD.ts#L1185) | - |
+| `HUD.hideCharacterSelect` | `method` | [`game/src/ui/HUD.ts:930`](../../game/src/ui/HUD.ts#L930) | - |
+| `HUD.hideChestChoice` | `method` | [`game/src/ui/HUD.ts:1317`](../../game/src/ui/HUD.ts#L1317) | - |
+| `HUD.hideCoopMenu` | `method` | [`game/src/ui/HUD.ts:845`](../../game/src/ui/HUD.ts#L845) | - |
+| `HUD.hideExitModal` | `method` | [`game/src/ui/HUD.ts:870`](../../game/src/ui/HUD.ts#L870) | - |
+| `HUD.hideGameOver` | `method` | [`game/src/ui/HUD.ts:1347`](../../game/src/ui/HUD.ts#L1347) | - |
+| `HUD.hideHostLobby` | `method` | [`game/src/ui/HUD.ts:1199`](../../game/src/ui/HUD.ts#L1199) | - |
+| `HUD.hideInteractionPrompt` | `method` | [`game/src/ui/HUD.ts:1428`](../../game/src/ui/HUD.ts#L1428) | - |
+| `HUD.hideInventory` | `method` | [`game/src/ui/HUD.ts:1283`](../../game/src/ui/HUD.ts#L1283) | - |
+| `HUD.hideJoinLobby` | `method` | [`game/src/ui/HUD.ts:1235`](../../game/src/ui/HUD.ts#L1235) | - |
+| `HUD.hideLeaderboard` | `method` | [`game/src/ui/HUD.ts:1361`](../../game/src/ui/HUD.ts#L1361) | - |
+| `HUD.hideLevelUp` | `method` | [`game/src/ui/HUD.ts:1265`](../../game/src/ui/HUD.ts#L1265) | - |
+| `HUD.hideMainMenu` | `method` | [`game/src/ui/HUD.ts:786`](../../game/src/ui/HUD.ts#L786) | - |
+| `HUD.hideMerchant` | `method` | [`game/src/ui/HUD.ts:1301`](../../game/src/ui/HUD.ts#L1301) | - |
+| `HUD.hidePartnerHp` | `method` | [`game/src/ui/HUD.ts:1400`](../../game/src/ui/HUD.ts#L1400) | - |
+| `HUD.hidePasswordPrompt` | `method` | [`game/src/ui/HUD.ts:1219`](../../game/src/ui/HUD.ts#L1219) | - |
+| `HUD.hidePause` | `method` | [`game/src/ui/HUD.ts:895`](../../game/src/ui/HUD.ts#L895) | - |
+| `HUD.hideQuestsModal` | `method` | [`game/src/ui/HUD.ts:1147`](../../game/src/ui/HUD.ts#L1147) | - |
+| `HUD.hideSettings` | `method` | [`game/src/ui/HUD.ts:854`](../../game/src/ui/HUD.ts#L854) | - |
+| `HUD.hideShopModal` | `method` | [`game/src/ui/HUD.ts:823`](../../game/src/ui/HUD.ts#L823) | - |
+| `HUD.isAnyMenuOpen` | `method` | [`game/src/ui/HUD.ts:956`](../../game/src/ui/HUD.ts#L956) | - |
+| `HUD.isAuthModalOpen` | `method` | [`game/src/ui/HUD.ts:952`](../../game/src/ui/HUD.ts#L952) | - |
+| `HUD.isInventoryOpen` | `method` | [`game/src/ui/HUD.ts:1271`](../../game/src/ui/HUD.ts#L1271) | --- Inventory Methods Forwarding --- |
+| `HUD.isMerchantOpen` | `method` | [`game/src/ui/HUD.ts:1293`](../../game/src/ui/HUD.ts#L1293) | --- Merchant & Chest Methods Forwarding --- |
+| `HUD.openBattlePassModal` | `method` | [`game/src/ui/HUD.ts:1181`](../../game/src/ui/HUD.ts#L1181) | - |
+| `HUD.renderAvailableRooms` | `method` | [`game/src/ui/HUD.ts:1227`](../../game/src/ui/HUD.ts#L1227) | - |
+| `HUD.renderBattlePassModal` | `method` | [`game/src/ui/HUD.ts:1177`](../../game/src/ui/HUD.ts#L1177) | - |
+| `HUD.renderHostRoster` | `method` | [`game/src/ui/HUD.ts:1207`](../../game/src/ui/HUD.ts#L1207) | - |
+| `HUD.renderInventory` | `method` | [`game/src/ui/HUD.ts:1287`](../../game/src/ui/HUD.ts#L1287) | - |
+| `HUD.renderItemInventory` | `method` | [`game/src/ui/HUD.ts:1432`](../../game/src/ui/HUD.ts#L1432) | - |
+| `HUD.renderJoinRoster` | `method` | [`game/src/ui/HUD.ts:1211`](../../game/src/ui/HUD.ts#L1211) | - |
+| `HUD.renderQuestsModal` | `method` | [`game/src/ui/HUD.ts:1155`](../../game/src/ui/HUD.ts#L1155) | - |
+| `HUD.resetBossUI` | `method` | [`game/src/ui/HUD.ts:1460`](../../game/src/ui/HUD.ts#L1460) | - |
+| `HUD.resetExitModal` | `method` | [`game/src/ui/HUD.ts:741`](../../game/src/ui/HUD.ts#L741) | - |
+| `HUD.resetLevelUpState` | `method` | [`game/src/ui/HUD.ts:1261`](../../game/src/ui/HUD.ts#L1261) | - |
+| `HUD.resetSessionHUD` | `method` | [`game/src/ui/HUD.ts:1464`](../../game/src/ui/HUD.ts#L1464) | - |
+| `HUD.selectQuestChapter` | `method` | [`game/src/ui/HUD.ts:1135`](../../game/src/ui/HUD.ts#L1135) | - |
+| `HUD.setCoopBadge` | `method` | [`game/src/ui/HUD.ts:1368`](../../game/src/ui/HUD.ts#L1368) | --- In-Game Overlay & Overlays Methods Forwarding --- |
+| `HUD.setGuestConnectedMode` | `method` | [`game/src/ui/HUD.ts:1243`](../../game/src/ui/HUD.ts#L1243) | - |
+| `HUD.setHostPartnerConnected` | `method` | [`game/src/ui/HUD.ts:1203`](../../game/src/ui/HUD.ts#L1203) | - |
+| `HUD.setInGameHUDVisible` | `method` | [`game/src/ui/HUD.ts:1143`](../../game/src/ui/HUD.ts#L1143) | - |
+| `HUD.setJoinStatus` | `method` | [`game/src/ui/HUD.ts:1239`](../../game/src/ui/HUD.ts#L1239) | - |
+| `HUD.setTrainingModeActive` | `method` | [`game/src/ui/HUD.ts:1480`](../../game/src/ui/HUD.ts#L1480) | - |
+| `HUD.setupExitListeners` | `method` | [`game/src/ui/HUD.ts:711`](../../game/src/ui/HUD.ts#L711) | - |
+| `HUD.showAuthModal` | `method` | [`game/src/ui/HUD.ts:940`](../../game/src/ui/HUD.ts#L940) | - |
+| `HUD.showBalanceToast` | `method` | [`game/src/ui/HUD.ts:1440`](../../game/src/ui/HUD.ts#L1440) | - |
+| `HUD.showCharacterSelect` | `method` | [`game/src/ui/HUD.ts:911`](../../game/src/ui/HUD.ts#L911) | - |
+| `HUD.showCoopMenu` | `method` | [`game/src/ui/HUD.ts:839`](../../game/src/ui/HUD.ts#L839) | - |
+| `HUD.showExitModal` | `method` | [`game/src/ui/HUD.ts:862`](../../game/src/ui/HUD.ts#L862) | - |
+| `HUD.showHostLobby` | `method` | [`game/src/ui/HUD.ts:1195`](../../game/src/ui/HUD.ts#L1195) | --- Lobby Methods Forwarding --- |
+| `HUD.showInteractionPrompt` | `method` | [`game/src/ui/HUD.ts:1424`](../../game/src/ui/HUD.ts#L1424) | - |
+| `HUD.showInventory` | `method` | [`game/src/ui/HUD.ts:1279`](../../game/src/ui/HUD.ts#L1279) | - |
+| `HUD.showJoinLobby` | `method` | [`game/src/ui/HUD.ts:1231`](../../game/src/ui/HUD.ts#L1231) | - |
+| `HUD.showLeaderboard` | `method` | [`game/src/ui/HUD.ts:1354`](../../game/src/ui/HUD.ts#L1354) | --- Leaderboard Methods Forwarding --- |
+| `HUD.showLevelUp` | `method` | [`game/src/ui/HUD.ts:1257`](../../game/src/ui/HUD.ts#L1257) | --- Level Up Methods Forwarding --- |
+| `HUD.showMainMenu` | `method` | [`game/src/ui/HUD.ts:756`](../../game/src/ui/HUD.ts#L756) | --- Modal Navigation Methods --- |
+| `HUD.showMerchant` | `method` | [`game/src/ui/HUD.ts:1297`](../../game/src/ui/HUD.ts#L1297) | - |
+| `HUD.showPasswordPrompt` | `method` | [`game/src/ui/HUD.ts:1215`](../../game/src/ui/HUD.ts#L1215) | - |
+| `HUD.showPasswordPromptError` | `method` | [`game/src/ui/HUD.ts:1223`](../../game/src/ui/HUD.ts#L1223) | - |
+| `HUD.showPause` | `method` | [`game/src/ui/HUD.ts:875`](../../game/src/ui/HUD.ts#L875) | - |
+| `HUD.showQuestsModal` | `method` | [`game/src/ui/HUD.ts:1139`](../../game/src/ui/HUD.ts#L1139) | - |
+| `HUD.showSettings` | `method` | [`game/src/ui/HUD.ts:850`](../../game/src/ui/HUD.ts#L850) | - |
+| `HUD.showShopModal` | `method` | [`game/src/ui/HUD.ts:812`](../../game/src/ui/HUD.ts#L812) | - |
+| `HUD.switchJoinTab` | `method` | [`game/src/ui/HUD.ts:1251`](../../game/src/ui/HUD.ts#L1251) | - |
+| `HUD.toggleInventory` | `method` | [`game/src/ui/HUD.ts:1275`](../../game/src/ui/HUD.ts#L1275) | - |
+| `HUD.togglePause` | `method` | [`game/src/ui/HUD.ts:901`](../../game/src/ui/HUD.ts#L901) | - |
+| `HUD.toggleQuestsInMainMenu` | `method` | [`game/src/ui/HUD.ts:1131`](../../game/src/ui/HUD.ts#L1131) | --- Quests Methods Forwarding --- |
+| `HUD.triggerAltarNotification` | `method` | [`game/src/ui/HUD.ts:1436`](../../game/src/ui/HUD.ts#L1436) | - |
+| `HUD.triggerBossWarning` | `method` | [`game/src/ui/HUD.ts:1452`](../../game/src/ui/HUD.ts#L1452) | - |
+| `HUD.triggerDamageFlash` | `method` | [`game/src/ui/HUD.ts:1448`](../../game/src/ui/HUD.ts#L1448) | - |
+| `HUD.triggerImmortalBossWarning` | `method` | [`game/src/ui/HUD.ts:1456`](../../game/src/ui/HUD.ts#L1456) | - |
+| `HUD.updateBuffsTray` | `method` | [`game/src/ui/HUD.ts:1444`](../../game/src/ui/HUD.ts#L1444) | - |
+| `HUD.updateCharacterSelectLockStatus` | `method` | [`game/src/ui/HUD.ts:1159`](../../game/src/ui/HUD.ts#L1159) | - |
+| `HUD.updateCrystalsCounter` | `method` | [`game/src/ui/HUD.ts:832`](../../game/src/ui/HUD.ts#L832) | - |
+| `HUD.updateGuestReadyButtonUI` | `method` | [`game/src/ui/HUD.ts:1247`](../../game/src/ui/HUD.ts#L1247) | - |
+| `HUD.updateLobbyHeroesLockStatus` | `method` | [`game/src/ui/HUD.ts:1163`](../../game/src/ui/HUD.ts#L1163) | - |
+| `HUD.updateMainMenuBattlePass` | `method` | [`game/src/ui/HUD.ts:1173`](../../game/src/ui/HUD.ts#L1173) | --- Battle Pass Methods Forwarding --- |
+| `HUD.updateMainMenuQuests` | `method` | [`game/src/ui/HUD.ts:1167`](../../game/src/ui/HUD.ts#L1167) | - |
+| `HUD.updateMerchantTimer` | `method` | [`game/src/ui/HUD.ts:1305`](../../game/src/ui/HUD.ts#L1305) | - |
+| `HUD.updatePartnerHp` | `method` | [`game/src/ui/HUD.ts:1396`](../../game/src/ui/HUD.ts#L1396) | - |
+| `HUD.updatePassivesBar` | `method` | [`game/src/ui/HUD.ts:1472`](../../game/src/ui/HUD.ts#L1472) | - |
+| `HUD.updatePerformance` | `method` | [`game/src/ui/HUD.ts:1476`](../../game/src/ui/HUD.ts#L1476) | - |
+| `HUD.updateStageText` | `method` | [`game/src/ui/HUD.ts:1415`](../../game/src/ui/HUD.ts#L1415) | - |
+| `HUD.updateTeleportButton` | `method` | [`game/src/ui/HUD.ts:1420`](../../game/src/ui/HUD.ts#L1420) | - |
+| `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1468`](../../game/src/ui/HUD.ts#L1468) | - |
 | `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:483`](../../game/src/combat/weapons/MagicWeapons.ts#L483) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
 | `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:568`](../../game/src/combat/weapons/MagicWeapons.ts#L568) | - |
 | `IceSpikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:509`](../../game/src/combat/weapons/MagicWeapons.ts#L509) | - |
@@ -1488,42 +1488,42 @@ Run `npm run index` to refresh this cache.
 | `TerrainProps.createWagonWheel` | `method` | [`game/src/world/TerrainProps.ts:529`](../../game/src/world/TerrainProps.ts#L529) | Builds an abandoned wooden wagon wheel half-buried in the sand. |
 | `TEXTURE_MAP` | `const` | [`admin/src/constants.ts:4`](../../admin/src/constants.ts#L4) | - |
 | `TextureManager` | `class` | [`game/src/core/TextureManager.ts:46`](../../game/src/core/TextureManager.ts#L46) | - |
-| `TextureManager.createShadowMesh` | `method` | [`game/src/core/TextureManager.ts:746`](../../game/src/core/TextureManager.ts#L746) | High-performance contact shadow mesh sharing a single texture and material. |
-| `TextureManager.getArrowTexture` | `method` | [`game/src/core/TextureManager.ts:594`](../../game/src/core/TextureManager.ts#L594) | - |
+| `TextureManager.createShadowMesh` | `method` | [`game/src/core/TextureManager.ts:745`](../../game/src/core/TextureManager.ts#L745) | High-performance contact shadow mesh sharing a single texture and material. |
+| `TextureManager.getArrowTexture` | `method` | [`game/src/core/TextureManager.ts:593`](../../game/src/core/TextureManager.ts#L593) | - |
 | `TextureManager.getAssetUrl` | `method` | [`game/src/core/TextureManager.ts:51`](../../game/src/core/TextureManager.ts#L51) | - |
-| `TextureManager.getBulletTexture` | `method` | [`game/src/core/TextureManager.ts:585`](../../game/src/core/TextureManager.ts#L585) | - |
-| `TextureManager.getChakramTexture` | `method` | [`game/src/core/TextureManager.ts:680`](../../game/src/core/TextureManager.ts#L680) | - |
-| `TextureManager.getCharacterAnimatedTextures` | `method` | [`game/src/core/TextureManager.ts:581`](../../game/src/core/TextureManager.ts#L581) | - |
-| `TextureManager.getFireballTexture` | `method` | [`game/src/core/TextureManager.ts:701`](../../game/src/core/TextureManager.ts#L701) | - |
-| `TextureManager.getFireRingTexture` | `method` | [`game/src/core/TextureManager.ts:715`](../../game/src/core/TextureManager.ts#L715) | - |
-| `TextureManager.getIceSpikeTexture` | `method` | [`game/src/core/TextureManager.ts:694`](../../game/src/core/TextureManager.ts#L694) | - |
-| `TextureManager.getKukriTexture` | `method` | [`game/src/core/TextureManager.ts:673`](../../game/src/core/TextureManager.ts#L673) | - |
-| `TextureManager.getLightningTexture` | `method` | [`game/src/core/TextureManager.ts:687`](../../game/src/core/TextureManager.ts#L687) | - |
-| `TextureManager.getRiftClosedTexture` | `method` | [`game/src/core/TextureManager.ts:722`](../../game/src/core/TextureManager.ts#L722) | - |
-| `TextureManager.getRiftOpenTexture` | `method` | [`game/src/core/TextureManager.ts:729`](../../game/src/core/TextureManager.ts#L729) | - |
-| `TextureManager.getScytheTexture` | `method` | [`game/src/core/TextureManager.ts:708`](../../game/src/core/TextureManager.ts#L708) | - |
-| `TextureManager.getSulfurSmokeTexture` | `method` | [`game/src/core/TextureManager.ts:736`](../../game/src/core/TextureManager.ts#L736) | - |
+| `TextureManager.getBulletTexture` | `method` | [`game/src/core/TextureManager.ts:584`](../../game/src/core/TextureManager.ts#L584) | - |
+| `TextureManager.getChakramTexture` | `method` | [`game/src/core/TextureManager.ts:679`](../../game/src/core/TextureManager.ts#L679) | - |
+| `TextureManager.getCharacterAnimatedTextures` | `method` | [`game/src/core/TextureManager.ts:580`](../../game/src/core/TextureManager.ts#L580) | - |
+| `TextureManager.getFireballTexture` | `method` | [`game/src/core/TextureManager.ts:700`](../../game/src/core/TextureManager.ts#L700) | - |
+| `TextureManager.getFireRingTexture` | `method` | [`game/src/core/TextureManager.ts:714`](../../game/src/core/TextureManager.ts#L714) | - |
+| `TextureManager.getIceSpikeTexture` | `method` | [`game/src/core/TextureManager.ts:693`](../../game/src/core/TextureManager.ts#L693) | - |
+| `TextureManager.getKukriTexture` | `method` | [`game/src/core/TextureManager.ts:672`](../../game/src/core/TextureManager.ts#L672) | - |
+| `TextureManager.getLightningTexture` | `method` | [`game/src/core/TextureManager.ts:686`](../../game/src/core/TextureManager.ts#L686) | - |
+| `TextureManager.getRiftClosedTexture` | `method` | [`game/src/core/TextureManager.ts:721`](../../game/src/core/TextureManager.ts#L721) | - |
+| `TextureManager.getRiftOpenTexture` | `method` | [`game/src/core/TextureManager.ts:728`](../../game/src/core/TextureManager.ts#L728) | - |
+| `TextureManager.getScytheTexture` | `method` | [`game/src/core/TextureManager.ts:707`](../../game/src/core/TextureManager.ts#L707) | - |
+| `TextureManager.getSulfurSmokeTexture` | `method` | [`game/src/core/TextureManager.ts:735`](../../game/src/core/TextureManager.ts#L735) | - |
 | `TextureManager.getWeaponBlobUrl` | `method` | [`game/src/core/TextureManager.ts:111`](../../game/src/core/TextureManager.ts#L111) | - |
-| `TextureManager.hasCharacterAnimations` | `method` | [`game/src/core/TextureManager.ts:577`](../../game/src/core/TextureManager.ts#L577) | - |
+| `TextureManager.hasCharacterAnimations` | `method` | [`game/src/core/TextureManager.ts:576`](../../game/src/core/TextureManager.ts#L576) | - |
 | `TextureManager.initWeaponBlobs` | `method` | [`game/src/core/TextureManager.ts:128`](../../game/src/core/TextureManager.ts#L128) | - |
 | `TextureManager.load` | `method` | [`game/src/core/TextureManager.ts:151`](../../game/src/core/TextureManager.ts#L151) | - |
-| `TextureManager.loadAmazonTextures` | `method` | [`game/src/core/TextureManager.ts:573`](../../game/src/core/TextureManager.ts#L573) | - |
-| `TextureManager.loadAnimatedTextures` | `method` | [`game/src/core/TextureManager.ts:513`](../../game/src/core/TextureManager.ts#L513) | - |
-| `TextureManager.loadArcherTextures` | `method` | [`game/src/core/TextureManager.ts:561`](../../game/src/core/TextureManager.ts#L561) | - |
-| `TextureManager.loadBossTextures` | `method` | [`game/src/core/TextureManager.ts:485`](../../game/src/core/TextureManager.ts#L485) | - |
-| `TextureManager.loadChakramTextures` | `method` | [`game/src/core/TextureManager.ts:553`](../../game/src/core/TextureManager.ts#L553) | - |
+| `TextureManager.loadAmazonTextures` | `method` | [`game/src/core/TextureManager.ts:572`](../../game/src/core/TextureManager.ts#L572) | - |
+| `TextureManager.loadAnimatedTextures` | `method` | [`game/src/core/TextureManager.ts:512`](../../game/src/core/TextureManager.ts#L512) | - |
+| `TextureManager.loadArcherTextures` | `method` | [`game/src/core/TextureManager.ts:560`](../../game/src/core/TextureManager.ts#L560) | - |
+| `TextureManager.loadBossTextures` | `method` | [`game/src/core/TextureManager.ts:484`](../../game/src/core/TextureManager.ts#L484) | - |
+| `TextureManager.loadChakramTextures` | `method` | [`game/src/core/TextureManager.ts:552`](../../game/src/core/TextureManager.ts#L552) | - |
 | `TextureManager.loadDirectional` | `method` | [`game/src/core/TextureManager.ts:186`](../../game/src/core/TextureManager.ts#L186) | - |
-| `TextureManager.loadFlailTextures` | `method` | [`game/src/core/TextureManager.ts:545`](../../game/src/core/TextureManager.ts#L545) | - |
-| `TextureManager.loadInvokerTextures` | `method` | [`game/src/core/TextureManager.ts:557`](../../game/src/core/TextureManager.ts#L557) | - |
-| `TextureManager.loadMonsterTextures` | `method` | [`game/src/core/TextureManager.ts:499`](../../game/src/core/TextureManager.ts#L499) | - |
-| `TextureManager.loadNecromancerTextures` | `method` | [`game/src/core/TextureManager.ts:569`](../../game/src/core/TextureManager.ts#L569) | - |
-| `TextureManager.loadRocketTextures` | `method` | [`game/src/core/TextureManager.ts:565`](../../game/src/core/TextureManager.ts#L565) | - |
-| `TextureManager.loadRoninTextures` | `method` | [`game/src/core/TextureManager.ts:537`](../../game/src/core/TextureManager.ts#L537) | - |
-| `TextureManager.loadSorceressTextures` | `method` | [`game/src/core/TextureManager.ts:549`](../../game/src/core/TextureManager.ts#L549) | - |
-| `TextureManager.loadSwordsmanTextures` | `method` | [`game/src/core/TextureManager.ts:533`](../../game/src/core/TextureManager.ts#L533) | - |
-| `TextureManager.loadValkyrieTextures` | `method` | [`game/src/core/TextureManager.ts:541`](../../game/src/core/TextureManager.ts#L541) | - |
+| `TextureManager.loadFlailTextures` | `method` | [`game/src/core/TextureManager.ts:544`](../../game/src/core/TextureManager.ts#L544) | - |
+| `TextureManager.loadInvokerTextures` | `method` | [`game/src/core/TextureManager.ts:556`](../../game/src/core/TextureManager.ts#L556) | - |
+| `TextureManager.loadMonsterTextures` | `method` | [`game/src/core/TextureManager.ts:498`](../../game/src/core/TextureManager.ts#L498) | - |
+| `TextureManager.loadNecromancerTextures` | `method` | [`game/src/core/TextureManager.ts:568`](../../game/src/core/TextureManager.ts#L568) | - |
+| `TextureManager.loadRocketTextures` | `method` | [`game/src/core/TextureManager.ts:564`](../../game/src/core/TextureManager.ts#L564) | - |
+| `TextureManager.loadRoninTextures` | `method` | [`game/src/core/TextureManager.ts:536`](../../game/src/core/TextureManager.ts#L536) | - |
+| `TextureManager.loadSorceressTextures` | `method` | [`game/src/core/TextureManager.ts:548`](../../game/src/core/TextureManager.ts#L548) | - |
+| `TextureManager.loadSwordsmanTextures` | `method` | [`game/src/core/TextureManager.ts:532`](../../game/src/core/TextureManager.ts#L532) | - |
+| `TextureManager.loadValkyrieTextures` | `method` | [`game/src/core/TextureManager.ts:540`](../../game/src/core/TextureManager.ts#L540) | - |
 | `TextureManager.normalizeTextureUrl` | `method` | [`game/src/core/TextureManager.ts:55`](../../game/src/core/TextureManager.ts#L55) | - |
-| `TextureManager.preloadAll` | `method` | [`game/src/core/TextureManager.ts:481`](../../game/src/core/TextureManager.ts#L481) | Preloads all entity sprite sheets upfront to eliminate mid-game texture loa... |
+| `TextureManager.preloadAll` | `method` | [`game/src/core/TextureManager.ts:480`](../../game/src/core/TextureManager.ts#L480) | Preloads all entity sprite sheets upfront to eliminate mid-game texture loa... |
 | `toggleRow` | `function` | [`admin/src/views/controlHelpers.ts:52`](../../admin/src/views/controlHelpers.ts#L52) | - |
 | `toPluralCategory` | `function` | [`admin/src/constants.ts:136`](../../admin/src/constants.ts#L136) | - |
 | `toSingularCategory` | `function` | [`admin/src/constants.ts:107`](../../admin/src/constants.ts#L107) | - |

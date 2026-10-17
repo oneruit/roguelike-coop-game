@@ -91,9 +91,7 @@ export class HUD {
   public isTrainingModeActive: boolean = false;
 
   public static readonly MENU_BACKGROUNDS: readonly string[] = [
-    '/textures/ui/menu_rift_bg.webp',
-    '/textures/ui/menu_background_1.jpg',
-    '/textures/ui/menu_background_2.jpg'
+    '/textures/ui/menu_rift_bg.webp'
   ];
 
   public static applyRandomMenuBackground() {
