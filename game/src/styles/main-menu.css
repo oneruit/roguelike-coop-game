@@ -43,7 +43,7 @@
 /* Game Title Logo Banner (Top Center) */
 .main-menu-game-title {
   position: absolute;
-  top: clamp(14px, 2.5vh, 28px);
+  top: clamp(8px, 1.2vh, 16px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
@@ -55,27 +55,11 @@
 }
 
 .main-menu-logo-img {
-  width: clamp(380px, 42vw, 560px);
+  width: clamp(380px, 40vw, 540px);
   height: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.85)) drop-shadow(0 0 35px rgba(0, 168, 255, 0.55));
-  animation: riftLightningFlicker 6.5s infinite ease-in-out;
-}
-
-@keyframes riftLightningFlicker {
-  0%, 46%, 50%, 54%, 100% {
-    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.65)) drop-shadow(0 0 22px rgba(0, 168, 255, 0.4));
-    transform: scale(1);
-  }
-  48%, 52% {
-    filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.98)) drop-shadow(0 0 42px rgba(0, 229, 255, 0.88)) brightness(1.2);
-    transform: scale(1.02);
-  }
-  49% {
-    filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.7)) drop-shadow(0 0 26px rgba(0, 168, 255, 0.45));
-    transform: scale(1.005);
-  }
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 32px rgba(126, 34, 206, 0.6));
 }
 
 /* Right Side: Quests Sidebar (Daily & Weekly) */
