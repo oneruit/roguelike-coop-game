@@ -663,5 +663,56 @@ test('LeaderboardManager prevents duplicate player entries and updates on new pe
   assert.equal(dupResults[0].score, 2500, 'Highest score must be retained during deduplication');
 });
 
+test('Bison rebalancing - default balance and EnemyManager consistency', () => {
+  const bisonBalance = DEFAULT_BALANCE.monsters.bison;
+  assert.equal(bisonBalance.hp, 480, 'Bison base HP should be 480');
+  assert.equal(bisonBalance.speed, 3.9, 'Bison base speed should be 3.9');
+  assert.equal(bisonBalance.damage, 34, 'Bison base damage should be 34');
+
+  const scene = new Scene();
+  const dropManager = new DropManager(scene);
+  const damageNumbers = new DamageNumberManager(scene);
+  const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
+  assert.equal(enemyManager.configs.bison.hp, 480);
+  assert.equal(enemyManager.configs.bison.speed, 3.9);
+  assert.equal(enemyManager.configs.bison.damage, 34);
+});
+
+test('Difficulty scaling preserves 15+ minute late-game surge while smoothing 4m early game', () => {
+  const scene = new Scene();
+  const dropManager = new DropManager(scene);
+  const damageNumbers = new DamageNumberManager(scene);
+  const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
+
+  // 1. HP scaling at 4 min vs 15 min vs 20 min
+  enemyManager.gameTime = 0;
+  const hp0 = enemyManager.getHpMultiplier();
+  assert.equal(Math.round(hp0 * 100) / 100, 1.0, '0m HP mult is 1.0x');
+
+  enemyManager.gameTime = 240; // 4 min
+  const hp4 = enemyManager.getHpMultiplier();
+  assert.ok(hp4 > 3.5 && hp4 < 4.0, `4m HP mult is ~3.78x (got ${hp4})`);
+
+  enemyManager.gameTime = 900; // 15 min
+  const hp15 = enemyManager.getHpMultiplier();
+  assert.ok(hp15 > 15 && hp15 < 18, `15m HP mult is ~16.2x (got ${hp15})`);
+
+  enemyManager.gameTime = 1200; // 20 min (post-15m surge active)
+  const hp20 = enemyManager.getHpMultiplier();
+  assert.ok(hp20 > 30, `20m HP mult surges via hpPostSurge (got ${hp20})`);
+
+  // 2. Late-game CC, damage and knockback resistance kicks in from 15 min
+  enemyManager.gameTime = 240; // 4 min
+  assert.equal(enemyManager.getLateGameCcResistance(false), 0, 'Normal mobs have 0% CC resistance before 15m');
+  assert.equal(enemyManager.getLateGameDamageResistance(false), 0, 'Normal mobs have 0% damage resistance before 20m');
+  assert.equal(enemyManager.getKnockbackResistance(false, true), 0.25, 'Tough mobs (bison) have base 25% knockback resistance at 4m');
+
+  enemyManager.gameTime = 1200; // 20 min
+  const cc20 = enemyManager.getLateGameCcResistance(false);
+  assert.ok(cc20 > 0, `CC resistance starts scaling after 15m (got ${cc20})`);
+  const kb20 = enemyManager.getKnockbackResistance(false, true);
+  assert.ok(kb20 > 0.30, `Knockback resistance scales after 15m (got ${kb20})`);
+});
+
 
 

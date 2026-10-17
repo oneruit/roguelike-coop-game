@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-16T15:10:53.037Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1097
+> **Generated:** 2026-10-17T02:13:59.391Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1097
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -377,31 +377,31 @@ Run `npm run index` to refresh this cache.
 | `EnemyAnimState` | `type` | [`game/src/entities/Enemy.ts:18`](../../game/src/entities/Enemy.ts#L18) | - |
 | `EnemyConfig` | `interface` | [`game/src/entities/Enemy.ts:24`](../../game/src/entities/Enemy.ts#L24) | - |
 | `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:20`](../../game/src/entities/EnemyManager.ts#L20) | - |
-| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:997`](../../game/src/entities/EnemyManager.ts#L997) | - |
-| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1105`](../../game/src/entities/EnemyManager.ts#L1105) | - |
+| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1002`](../../game/src/entities/EnemyManager.ts#L1002) | - |
+| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1110`](../../game/src/entities/EnemyManager.ts#L1110) | - |
 | `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:257`](../../game/src/entities/EnemyManager.ts#L257) | - |
 | `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:247`](../../game/src/entities/EnemyManager.ts#L247) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
 | `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:289`](../../game/src/entities/EnemyManager.ts#L289) | - |
 | `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:278`](../../game/src/entities/EnemyManager.ts#L278) | - |
 | `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:304`](../../game/src/entities/EnemyManager.ts#L304) | - |
-| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:886`](../../game/src/entities/EnemyManager.ts#L886) | Fast query for enemies within radius using the Spatial Grid. |
-| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:984`](../../game/src/entities/EnemyManager.ts#L984) | - |
+| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:891`](../../game/src/entities/EnemyManager.ts#L891) | Fast query for enemies within radius using the Spatial Grid. |
+| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:989`](../../game/src/entities/EnemyManager.ts#L989) | - |
 | `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:267`](../../game/src/entities/EnemyManager.ts#L267) | - |
-| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:911`](../../game/src/entities/EnemyManager.ts#L911) | - |
+| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:916`](../../game/src/entities/EnemyManager.ts#L916) | - |
 | `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:222`](../../game/src/entities/EnemyManager.ts#L222) | - |
 | `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:274`](../../game/src/entities/EnemyManager.ts#L274) | - |
-| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:968`](../../game/src/entities/EnemyManager.ts#L968) | - |
-| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:955`](../../game/src/entities/EnemyManager.ts#L955) | - |
-| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:960`](../../game/src/entities/EnemyManager.ts#L960) | - |
-| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:701`](../../game/src/entities/EnemyManager.ts#L701) | Spawns an endgame rift boss |
-| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:964`](../../game/src/entities/EnemyManager.ts#L964) | - |
-| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:842`](../../game/src/entities/EnemyManager.ts#L842) | - |
-| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:939`](../../game/src/entities/EnemyManager.ts#L939) | - |
-| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:629`](../../game/src/entities/EnemyManager.ts#L629) | Spawns a stage boss explicitly when the Teleporter event is activated. |
-| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:568`](../../game/src/entities/EnemyManager.ts#L568) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
-| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:735`](../../game/src/entities/EnemyManager.ts#L735) | - |
+| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:973`](../../game/src/entities/EnemyManager.ts#L973) | - |
+| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:960`](../../game/src/entities/EnemyManager.ts#L960) | - |
+| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:965`](../../game/src/entities/EnemyManager.ts#L965) | - |
+| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:706`](../../game/src/entities/EnemyManager.ts#L706) | Spawns an endgame rift boss |
+| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:969`](../../game/src/entities/EnemyManager.ts#L969) | - |
+| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:847`](../../game/src/entities/EnemyManager.ts#L847) | - |
+| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:944`](../../game/src/entities/EnemyManager.ts#L944) | - |
+| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:634`](../../game/src/entities/EnemyManager.ts#L634) | Spawns a stage boss explicitly when the Teleporter event is activated. |
+| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:573`](../../game/src/entities/EnemyManager.ts#L573) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
+| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:740`](../../game/src/entities/EnemyManager.ts#L740) | - |
 | `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:192`](../../game/src/entities/EnemyManager.ts#L192) | - |
-| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1077`](../../game/src/entities/EnemyManager.ts#L1077) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
+| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1082`](../../game/src/entities/EnemyManager.ts#L1082) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |

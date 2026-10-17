@@ -359,9 +359,9 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     bison: {
       id: 'bison',
       name: 'Белый бизон-убийца',
-      hp: 800,
-      speed: 4.8,
-      damage: 40,
+      hp: 480,
+      speed: 3.9,
+      damage: 34,
       gemType: 'red',
       description: 'Быстрый смертоносный танк (чардж-атаки)'
     }

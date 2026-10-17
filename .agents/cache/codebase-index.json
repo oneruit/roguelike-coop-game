@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T15:10:53.037Z",
+  "generatedAt": "2026-10-17T02:13:59.391Z",
   "totalFiles": 153,
   "totalSymbols": 1570,
   "topLevelCount": 473,
@@ -412,9 +412,9 @@
       {
         "id": "bison",
         "name": "Белый бизон-убийца",
-        "hp": 800,
-        "speed": 4.8,
-        "damage": 40
+        "hp": 480,
+        "speed": 3.9,
+        "damage": 34
       }
     ],
     "bosses": [
@@ -3299,7 +3299,7 @@
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 997,
+      "line": 1002,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -3307,7 +3307,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1105,
+      "line": 1110,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -3356,7 +3356,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 886,
+      "line": 891,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -3365,7 +3365,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 984,
+      "line": 989,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -3381,7 +3381,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 911,
+      "line": 916,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -3405,7 +3405,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 968,
+      "line": 973,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -3413,7 +3413,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 955,
+      "line": 960,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -3421,7 +3421,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 960,
+      "line": 965,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -3429,7 +3429,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 701,
+      "line": 706,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -3438,7 +3438,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 964,
+      "line": 969,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -3446,7 +3446,7 @@
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 842,
+      "line": 847,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -3454,7 +3454,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 939,
+      "line": 944,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -3462,7 +3462,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 629,
+      "line": 634,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -3471,7 +3471,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 568,
+      "line": 573,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -3480,7 +3480,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 735,
+      "line": 740,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -3496,7 +3496,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1077,
+      "line": 1082,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
