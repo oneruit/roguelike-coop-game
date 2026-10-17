@@ -105,6 +105,7 @@ export class MainMenuScreen extends Screen {
   public updateResumeRunButton(): void {
     const resumeBtn = SafeDOM.query(this.container, '#menu-btn-resume-run');
     const titleEl = SafeDOM.query(this.container, '#menu-btn-resume-title');
+    const badgeEl = SafeDOM.query(this.container, '#menu-btn-resume-badge');
     if (!resumeBtn) return;
 
     const runInfo = RunSaveManager.getSavedRunInfo();
@@ -114,7 +115,10 @@ export class MainMenuScreen extends Screen {
       const seconds = Math.floor(runInfo.gameTime % 60);
       const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
       if (titleEl) {
-        titleEl.textContent = `ДОИГРАТЬ ЗАБЕГ (Этап ${runInfo.stageNumber}, ${timeStr})`;
+        titleEl.textContent = 'ДОИГРАТЬ ЗАБЕГ';
+      }
+      if (badgeEl) {
+        badgeEl.textContent = `ЭТАП ${runInfo.stageNumber} • ${timeStr}`;
       }
     } else {
       resumeBtn.classList.add('hidden');

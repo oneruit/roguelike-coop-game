@@ -1015,6 +1015,50 @@
   transform: scale(0.97);
 }
 
+.main-menu-action-btn.btn-resume-run {
+  background: url('/textures/ui/btn_resume_rift_blank.png') center center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 12px rgba(234, 88, 12, 0.45));
+}
+
+.main-menu-action-btn.btn-resume-run:hover {
+  background-position: center center;
+  filter: brightness(1.15) drop-shadow(0 0 20px rgba(249, 115, 22, 0.9));
+  transform: scale(1.03);
+}
+
+.main-menu-action-btn.btn-resume-run:active {
+  background-position: center center;
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.main-menu-action-btn.btn-resume-run .menu-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.main-menu-action-btn.btn-resume-run .menu-btn-title {
+  color: #ffffff;
+  font-size: clamp(13px, 1.3vw, 15px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 2px 4px #000000;
+}
+
+.main-menu-action-btn.btn-resume-run .menu-btn-badge {
+  color: #fde047;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(217, 119, 6, 0.7), 0 1px 3px #000000;
+  opacity: 0.95;
+}
+
 .main-menu-gothic-btn {
   width: clamp(240px, 22vw, 320px);
   height: clamp(48px, 5.5vh, 60px);

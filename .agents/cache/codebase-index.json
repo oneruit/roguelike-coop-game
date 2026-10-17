@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T02:43:54.789Z",
+  "generatedAt": "2026-10-17T03:07:16.748Z",
   "totalFiles": 153,
   "totalSymbols": 1572,
   "topLevelCount": 473,
@@ -6545,7 +6545,7 @@
       "name": "MainMenuScreen.destroy",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 174,
+      "line": 178,
       "className": "MainMenuScreen",
       "methodName": "destroy"
     },
@@ -6561,7 +6561,7 @@
       "name": "MainMenuScreen.onHide",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 170,
+      "line": 174,
       "className": "MainMenuScreen",
       "methodName": "onHide"
     },
@@ -6569,7 +6569,7 @@
       "name": "MainMenuScreen.onShow",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 162,
+      "line": 166,
       "className": "MainMenuScreen",
       "methodName": "onShow"
     },
@@ -6577,7 +6577,7 @@
       "name": "MainMenuScreen.updateAuthDisplay",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 132,
+      "line": 136,
       "className": "MainMenuScreen",
       "methodName": "updateAuthDisplay"
     },
@@ -6585,7 +6585,7 @@
       "name": "MainMenuScreen.updateCrystalsDisplay",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 124,
+      "line": 128,
       "className": "MainMenuScreen",
       "methodName": "updateCrystalsDisplay"
     },

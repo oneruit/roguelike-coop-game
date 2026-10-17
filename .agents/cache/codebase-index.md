@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T02:43:54.789Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1099
+> **Generated:** 2026-10-17T03:07:16.748Z | **Files:** 153 | **Top-level:** 473 | **Class Methods:** 1099
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -808,12 +808,12 @@ Run `npm run index` to refresh this cache.
 | `MainMenuScreen` | `class` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:25`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L25) | Modular Main Menu Screen (Dark ARPG Rift UI). Coordinates singleplayer star... |
 | `MainMenuScreen.bindElements` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:51`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L51) | - |
 | `MainMenuScreen.bindEvents` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:53`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L53) | - |
-| `MainMenuScreen.destroy` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:174`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L174) | - |
+| `MainMenuScreen.destroy` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:178`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L178) | - |
 | `MainMenuScreen.getTemplate` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:47`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L47) | - |
-| `MainMenuScreen.onHide` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:170`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L170) | - |
-| `MainMenuScreen.onShow` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:162`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L162) | - |
-| `MainMenuScreen.updateAuthDisplay` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:132`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L132) | - |
-| `MainMenuScreen.updateCrystalsDisplay` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:124`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L124) | - |
+| `MainMenuScreen.onHide` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:174`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L174) | - |
+| `MainMenuScreen.onShow` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:166`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L166) | - |
+| `MainMenuScreen.updateAuthDisplay` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:136`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L136) | - |
+| `MainMenuScreen.updateCrystalsDisplay` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:128`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L128) | - |
 | `MainMenuScreen.updateResumeRunButton` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:105`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L105) | - |
 | `MainMenuScreenOptions` | `interface` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:8`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L8) | - |
 | `MapManager` | `class` | [`game/src/ui/MapManager.ts:22`](../../game/src/ui/MapManager.ts#L22) | - |
