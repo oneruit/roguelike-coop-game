@@ -60,7 +60,8 @@ test('Time Crystal consumption from inventory', async (t) => {
     player.addRiftItem(RIFT_ITEMS.chronos_phylactery);
     assert.equal(player.getItemStacks('chronos_phylactery'), 2);
 
-    // Inflict lethal damage
+    // Inflict lethal damage (shield depleted)
+    player.shield = 0;
     player.hp = 10;
     const isDead1 = player.takeDamage(100);
     assert.equal(isDead1, false, 'Player should be saved from lethal damage');

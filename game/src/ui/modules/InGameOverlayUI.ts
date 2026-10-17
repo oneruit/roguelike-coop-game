@@ -179,6 +179,9 @@ export class InGameOverlayUI extends InGameHUDScreen {
       colorCss: string;
       hp: number;
       maxHp: number;
+      shield: number;
+      maxShield: number;
+      isShieldRecharging: boolean;
       level: number;
       xp: number;
       xpToNextLevel: number;
@@ -208,6 +211,9 @@ export class InGameOverlayUI extends InGameHUDScreen {
       colorCss: localColor,
       hp: localPlayer.hp,
       maxHp: localPlayer.maxHp,
+      shield: localPlayer.shield,
+      maxShield: localPlayer.maxShield,
+      isShieldRecharging: localPlayer.shieldRegenDelay <= 0 && localPlayer.shield < localPlayer.maxShield,
       level: localPlayer.level,
       xp: localPlayer.xp,
       xpToNextLevel: localPlayer.xpToNextLevel,
@@ -237,6 +243,9 @@ export class InGameOverlayUI extends InGameHUDScreen {
         colorCss: rp.colorCss,
         hp: rp.hp,
         maxHp: rp.maxHp,
+        shield: rp.shield || 0,
+        maxShield: rp.maxShield || 0,
+        isShieldRecharging: false,
         level: rp.level,
         xp: rp.xp,
         xpToNextLevel: rp.xpToNextLevel,
@@ -276,6 +285,7 @@ export class InGameOverlayUI extends InGameHUDScreen {
             <div class="poe-hp-frame">
               <div class="poe-hp-track">
                 <div class="poe-hp-fill" style="width: 100%;"></div>
+                <div class="poe-shield-fill" style="width: 100%;"></div>
                 <div class="poe-hp-glass-shine"></div>
                 <span class="poe-hp-text">100 / 100</span>
                 <div class="poe-downed-badge hidden">РАНЕН!</div>
@@ -330,9 +340,28 @@ export class InGameOverlayUI extends InGameHUDScreen {
       if (hpFillEl) {
         hpFillEl.style.width = `${hpPct}%`;
       }
+
+      // Update Shield (Armor)
+      const shieldFillEl = el.querySelector<HTMLElement>('.poe-shield-fill');
+      const shieldPct = (m.maxShield && m.maxShield > 0)
+        ? Math.max(0, Math.min(100, (m.shield / m.maxShield) * 100))
+        : 0;
+      if (shieldFillEl) {
+        shieldFillEl.style.width = `${shieldPct}%`;
+        if (m.isShieldRecharging) {
+          shieldFillEl.classList.add('is-recharging');
+        } else {
+          shieldFillEl.classList.remove('is-recharging');
+        }
+      }
+
       const hpTextEl = el.querySelector<HTMLElement>('.poe-hp-text');
       if (hpTextEl) {
-        hpTextEl.innerText = `${Math.ceil(m.hp)} / ${m.maxHp}`;
+        if (m.shield > 0) {
+          hpTextEl.innerHTML = `${Math.ceil(m.hp)} / ${m.maxHp} <span class="poe-shield-badge">[🛡️ ${Math.ceil(m.shield)}]</span>`;
+        } else {
+          hpTextEl.innerText = `${Math.ceil(m.hp)} / ${m.maxHp}`;
+        }
       }
 
       // Invulnerable frame glow

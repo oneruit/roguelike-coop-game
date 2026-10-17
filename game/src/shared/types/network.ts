@@ -60,6 +60,8 @@ export interface PlayerNetState {
   anim: HeroAnimState;
   hp: number;
   maxHp: number;
+  shield?: number;
+  maxShield?: number;
   level: number;
   xp?: number;
   xpToNextLevel?: number;

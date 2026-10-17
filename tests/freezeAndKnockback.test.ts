@@ -239,7 +239,8 @@ test('Time Crystal (Chronos Phylactery) - Triggers 5s freeze and 25m knockback o
     enemyManager.freezeAndKnockbackAll(pos, 5.0, 25.0);
   };
 
-  // Player takes lethal damage
+  // Player takes lethal damage (shield depleted)
+  player.shield = 0;
   player.hp = 10;
   const died = player.takeDamage(100);
 

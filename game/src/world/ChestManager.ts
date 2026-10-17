@@ -497,7 +497,7 @@ export class ChestManager {
     chest.mesh.add(flash);
     chest.flashLight = flash;
 
-    const pair = rollChestDropPair(stageNumber, Math.random, this.chronosDroppedInCurrentBiome, isItemMaxed);
+    const pair = rollChestDropPair(stageNumber, Math.random, this.chronosDroppedInCurrentBiome, isItemMaxed, chest.tier);
     if (pair[0].id === 'chronos_phylactery' || pair[1].id === 'chronos_phylactery') {
       this.chronosDroppedInCurrentBiome = true;
     }

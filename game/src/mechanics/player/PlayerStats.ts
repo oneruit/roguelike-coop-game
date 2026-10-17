@@ -14,6 +14,8 @@ export interface PlayerStatsConfig {
 export interface CalculatedPlayerStats {
   hpRegen: number;
   maxShield: number;
+  shieldRegenDelay: number;
+  shieldRegenMultiplier: number;
   critChance: number;
   critDamage: number;
   damageReduction: number;
@@ -76,7 +78,8 @@ export class PlayerStats {
     const adrenalineStacks = getItemStacks('adrenaline_dart');
     const injectorStacks = getItemStacks('kinetic_injector');
     const vialStacks = getItemStacks('health_vial');
-    const aegisStacks = getItemStacks('aegis_battery');
+    const carapaceStacks = getItemStacks('phase_carapace');
+    const exoskeletonStacks = getItemStacks('aegis_exoskeleton');
     const critStacks = getItemStacks('crit_visor');
     const titanHeartStacks = getItemStacks('titan_heart');
     const overclockStacks = getItemStacks('overclock_module');
@@ -97,8 +100,14 @@ export class PlayerStats {
     const amuletScale = amuletCfg?.perStackValue ?? 1.0;
     const hpRegen = (counts.amuletCount * amuletScale) + (vialStacks * 2.5) + (titanHeartStacks * 15) + (metaBonuses?.hpRegenBonus ?? 0);
 
-    // Max Shield: +50 shield per Aegis Battery stack
-    const maxShield = aegisStacks * 50;
+    // Max Shield (Armor): 100 base + 50 per Phase Carapace stack, capped at 350 max
+    const maxShield = Math.min(350, 100 + (carapaceStacks * 50));
+
+    // Shield Regen Delay: 3.0s base, reduced by 0.25s per Aegis Exoskeleton stack (min 1.5s)
+    const shieldRegenDelay = Math.max(1.5, 3.0 - (exoskeletonStacks * 0.25));
+
+    // Shield Regen Speed: +25% regen rate per Aegis Exoskeleton stack
+    const shieldRegenMultiplier = 1.0 + (exoskeletonStacks * 0.25);
 
     // Crit Chance: baseCritChance from globalCfg + meta crit + 6% per Crit Lens + 3% per Crit Visor, cap at 1.0 (100%)
     const critLensStacks = getItemStacks('crit_lens');
@@ -163,6 +172,8 @@ export class PlayerStats {
     return {
       hpRegen,
       maxShield,
+      shieldRegenDelay,
+      shieldRegenMultiplier,
       critChance,
       critDamage,
       damageReduction,

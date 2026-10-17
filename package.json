@@ -18,7 +18,7 @@
     "preview:prod": "vite preview",
     "server": "tsx server/dedicatedServer.ts",
     "index": "tsx scripts/generate-index.ts",
-    "test": "tsx --test tests/auth.test.ts tests/cloudSync.test.ts tests/chapterQuestsRework.test.ts tests/battlePass.test.ts tests/invoker.test.ts tests/uniqueCharacters.test.ts tests/teleporterDiscovery.test.ts tests/weaponReroll.test.ts tests/damageAndWeaponGrades.test.ts tests/gameplayFixes.test.ts tests/endGameWeaponStatsAndMightElixir.test.ts tests/combatBalanceAndResistance.test.ts tests/treeManager.test.ts tests/freezeAndKnockback.test.ts tests/poisonPuddleWeapon.test.ts tests/leaderboardAdmin.test.ts tests/lobbyCoop.test.ts tests/chestGeneration.test.ts && npm run test:rewards",
+    "test": "tsx --test tests/auth.test.ts tests/cloudSync.test.ts tests/chapterQuestsRework.test.ts tests/battlePass.test.ts tests/invoker.test.ts tests/uniqueCharacters.test.ts tests/teleporterDiscovery.test.ts tests/weaponReroll.test.ts tests/damageAndWeaponGrades.test.ts tests/gameplayFixes.test.ts tests/endGameWeaponStatsAndMightElixir.test.ts tests/combatBalanceAndResistance.test.ts tests/treeManager.test.ts tests/freezeAndKnockback.test.ts tests/poisonPuddleWeapon.test.ts tests/leaderboardAdmin.test.ts tests/lobbyCoop.test.ts tests/chestGeneration.test.ts tests/armorAndChestProgression.test.ts && npm run test:rewards",
     "test:invoker": "tsx --test tests/invoker.test.ts",
     "test:unique": "tsx --test tests/uniqueCharacters.test.ts",
     "test:teleporter": "tsx --test tests/teleporterDiscovery.test.ts",

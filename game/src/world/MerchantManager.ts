@@ -267,7 +267,7 @@ export class MerchantManager {
     });
 
     // 2. Two Uncommon items
-    const uncommonPool = ['chain_lightning', 'plasma_detonator', 'crit_visor', 'aegis_battery', 'bio_leech', 'overclock_module'] as RiftItemId[];
+    const uncommonPool = ['chain_lightning', 'plasma_detonator', 'crit_visor', 'aegis_exoskeleton', 'bio_leech', 'overclock_module'] as RiftItemId[];
     const u1 = pickRandomDef(uncommonPool);
     const u2 = pickRandomDef(uncommonPool.filter(id => id !== u1.id));
     items.push({
@@ -294,7 +294,7 @@ export class MerchantManager {
     });
 
     // 3. One Rare item
-    const rarePool = ['crit_lens', 'heavy_hollowpoint', 'energy_amplifier'] as RiftItemId[];
+    const rarePool = ['crit_lens', 'heavy_hollowpoint', 'energy_amplifier', 'phase_carapace'] as RiftItemId[];
     const r1 = pickRandomDef(rarePool);
     items.push({
       id: r1.id,
