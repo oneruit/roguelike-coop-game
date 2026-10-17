@@ -981,13 +981,22 @@
 .main-menu-card .main-menu-buttons {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   align-items: flex-start;
 }
 
+.main-menu-buttons .menu-btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .main-menu-action-btn {
-  width: clamp(220px, 19vw, 270px);
-  height: clamp(42px, 4.6vh, 48px);
+  width: clamp(250px, 21.5vw, 315px);
+  height: clamp(48px, 5.2vh, 56px);
   background: url('/textures/ui/btn_action_strip.png') 0 0 / 100% 400% no-repeat;
   border: none;
   cursor: pointer;
@@ -998,11 +1007,12 @@
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   letter-spacing: 1.8px;
-  font-size: 13px;
+  font-size: clamp(13px, 1.25vw, 14.5px);
   text-shadow: 0 0 10px rgba(245, 158, 11, 0.75), 0 2px 4px rgba(0, 0, 0, 0.9);
   transition: filter 0.2s, transform 0.15s;
   user-select: none;
   box-sizing: border-box;
+  padding: 0 18px;
 }
 
 .main-menu-action-btn:hover {
@@ -1017,6 +1027,8 @@
 }
 
 .main-menu-action-btn.btn-resume-run {
+  height: clamp(52px, 5.8vh, 62px);
+  margin-bottom: clamp(12px, 1.6vh, 18px);
   background: url('/textures/ui/btn_resume_rift_blank.png') center center / 100% 100% no-repeat;
   filter: drop-shadow(0 0 12px rgba(234, 88, 12, 0.45));
 }
@@ -1044,25 +1056,27 @@
 
 .main-menu-action-btn.btn-resume-run .menu-btn-title {
   color: #ffffff;
-  font-size: clamp(12px, 1.2vw, 13.5px);
+  font-size: clamp(12.5px, 1.15vw, 14px);
   font-weight: 800;
-  letter-spacing: 1.6px;
+  letter-spacing: 1.8px;
   text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 2px 4px #000000;
+  white-space: nowrap;
 }
 
 .main-menu-action-btn.btn-resume-run .menu-btn-badge {
   color: #fde047;
-  font-size: 10px;
+  font-size: clamp(9.5px, 0.85vw, 10.5px);
   font-weight: 700;
   letter-spacing: 1.4px;
   text-transform: uppercase;
   text-shadow: 0 0 8px rgba(217, 119, 6, 0.7), 0 1px 3px #000000;
   opacity: 0.95;
+  white-space: nowrap;
 }
 
 .main-menu-gothic-btn {
-  width: clamp(220px, 19vw, 270px);
-  height: clamp(38px, 4.2vh, 44px);
+  width: clamp(250px, 21.5vw, 315px);
+  height: clamp(43px, 4.7vh, 49px);
   background: url('/textures/ui/btn_gothic_menu_strip.png') 0 0 / 100% 400% no-repeat;
   border: none;
   cursor: pointer;
@@ -1072,13 +1086,21 @@
   color: #f8fafc;
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
-  letter-spacing: 1.3px;
-  font-size: 11.5px;
+  letter-spacing: 1.25px;
+  font-size: clamp(11.5px, 1.05vw, 12.5px);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 2px 5px #000000;
   transition: filter 0.2s, transform 0.15s;
   user-select: none;
   box-sizing: border-box;
   padding: 0 16px;
+}
+
+.main-menu-gothic-btn .menu-btn-title,
+.main-menu-action-btn:not(.btn-resume-run) .menu-btn-title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .main-menu-gothic-btn:hover {
