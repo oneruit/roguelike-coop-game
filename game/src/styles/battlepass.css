@@ -617,12 +617,7 @@
 
 
 
-.main-menu-buttons {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
+
 
 /* Hexagonal futuristic menu buttons (Main Screen) */
 .main-menu-hex-btn {

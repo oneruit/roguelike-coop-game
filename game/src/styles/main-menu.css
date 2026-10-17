@@ -977,16 +977,17 @@
 /* ==========================================================================
    Dark Fantasy ARPG Raster Menu Buttons
    ========================================================================== */
-.main-menu-buttons {
+.main-menu-buttons,
+.main-menu-card .main-menu-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 7px;
   align-items: flex-start;
 }
 
 .main-menu-action-btn {
-  width: clamp(260px, 24vw, 340px);
-  height: clamp(56px, 6.6vh, 70px);
+  width: clamp(220px, 19vw, 270px);
+  height: clamp(42px, 4.6vh, 48px);
   background: url('/textures/ui/btn_action_strip.png') 0 0 / 100% 400% no-repeat;
   border: none;
   cursor: pointer;
@@ -996,9 +997,9 @@
   color: #fef08a;
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
-  letter-spacing: 3px;
-  font-size: 15px;
-  text-shadow: 0 0 12px rgba(245, 158, 11, 0.75), 0 2px 4px rgba(0, 0, 0, 0.85);
+  letter-spacing: 1.8px;
+  font-size: 13px;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.75), 0 2px 4px rgba(0, 0, 0, 0.9);
   transition: filter 0.2s, transform 0.15s;
   user-select: none;
   box-sizing: border-box;
@@ -1007,7 +1008,7 @@
 .main-menu-action-btn:hover {
   background-position: 0 33.33%;
   filter: drop-shadow(0 0 18px rgba(249, 115, 22, 0.95));
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .main-menu-action-btn:active {
@@ -1023,7 +1024,7 @@
 .main-menu-action-btn.btn-resume-run:hover {
   background-position: center center;
   filter: brightness(1.15) drop-shadow(0 0 20px rgba(249, 115, 22, 0.9));
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .main-menu-action-btn.btn-resume-run:active {
@@ -1043,46 +1044,48 @@
 
 .main-menu-action-btn.btn-resume-run .menu-btn-title {
   color: #ffffff;
-  font-size: clamp(13px, 1.3vw, 15px);
+  font-size: clamp(12px, 1.2vw, 13.5px);
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1.6px;
   text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 2px 4px #000000;
 }
 
 .main-menu-action-btn.btn-resume-run .menu-btn-badge {
   color: #fde047;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 1.8px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   text-shadow: 0 0 8px rgba(217, 119, 6, 0.7), 0 1px 3px #000000;
   opacity: 0.95;
 }
 
 .main-menu-gothic-btn {
-  width: clamp(240px, 22vw, 320px);
-  height: clamp(48px, 5.5vh, 60px);
+  width: clamp(220px, 19vw, 270px);
+  height: clamp(38px, 4.2vh, 44px);
   background: url('/textures/ui/btn_gothic_menu_strip.png') 0 0 / 100% 400% no-repeat;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e2e8f0;
+  color: #f8fafc;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  letter-spacing: 2.2px;
-  font-size: 13px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  font-size: 11.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 2px 5px #000000;
   transition: filter 0.2s, transform 0.15s;
   user-select: none;
   box-sizing: border-box;
+  padding: 0 16px;
 }
 
 .main-menu-gothic-btn:hover {
   background-position: 0 33.33%;
   color: #ffffff;
-  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.85));
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.9));
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.8), 0 2px 4px #000000;
   transform: scale(1.02);
 }
 
@@ -1092,7 +1095,7 @@
 }
 
 .main-menu-gothic-btn.btn-shop:hover {
-  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.75));
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 24px rgba(192, 132, 252, 0.65));
 }
 
 /* Crystal Currency Pill in Main Menu */
