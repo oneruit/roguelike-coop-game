@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-17T12:24:44.728Z | **Files:** 153 | **Top-level:** 476 | **Class Methods:** 1104
+> **Generated:** 2026-10-18T01:15:37.553Z | **Files:** 153 | **Top-level:** 476 | **Class Methods:** 1105
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -215,13 +215,14 @@ Run `npm run index` to refresh this cache.
 | `CharacterAnimLayout` | `interface` | [`game/src/entities/CharacterAnimator.ts:8`](../../game/src/entities/CharacterAnimator.ts#L8) | Grid layout specification for directional spritesheets. |
 | `CharacterAnimStateConfig` | `interface` | [`game/src/entities/CharacterAnimator.ts:17`](../../game/src/entities/CharacterAnimator.ts#L17) | State configuration for animation timing and playback. |
 | `CharacterPreviewRenderer` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:8`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L8) | Renders an animated 2.5D chibi hero preview on the character selection dais... |
-| `CharacterPreviewRenderer.dispose` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:118`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L118) | - |
+| `CharacterPreviewRenderer.dispose` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:135`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L135) | - |
+| `CharacterPreviewRenderer.getFrameDimensions` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:60`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L60) | - |
 | `CharacterPreviewRenderer.loadHero` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:40`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L40) | - |
 | `CharacterPreviewRenderer.preloadHeroIdleImages` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:31`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L31) | - |
-| `CharacterPreviewRenderer.renderCanvasFrame` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:75`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L75) | - |
+| `CharacterPreviewRenderer.renderCanvasFrame` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:95`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L95) | - |
 | `CharacterPreviewRenderer.setCanvas` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:25`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L25) | - |
-| `CharacterPreviewRenderer.startAnimation` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:52`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L52) | - |
-| `CharacterPreviewRenderer.stopAnimation` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:68`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L68) | - |
+| `CharacterPreviewRenderer.startAnimation` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:71`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L71) | - |
+| `CharacterPreviewRenderer.stopAnimation` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:88`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L88) | - |
 | `CHARACTERS` | `const` | [`game/src/shared/types/registry.ts:15`](../../game/src/shared/types/registry.ts#L15) | - |
 | `CharacterSelectScreen` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:39`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L39) | Modular Character Selection Screen (Rift ARPG UI). Manages carousel track, ... |
 | `CharacterSelectScreen.attemptLaunch` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:274`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L274) | - |

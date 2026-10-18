@@ -46,7 +46,26 @@ export class CharacterPreviewRenderer {
     }
     this.currentIdleImage = img;
     this.currentFrameIndex = 0;
-    this.renderCanvasFrame();
+    if (!img.complete) {
+      img.onload = () => {
+        if (this.currentIdleImage === img) {
+          this.renderCanvasFrame();
+        }
+      };
+    } else {
+      this.renderCanvasFrame();
+    }
+  }
+
+  private getFrameDimensions(img: HTMLImageElement | null): { frameW: number; frameH: number; totalCols: number } {
+    if (!img || !img.complete || img.naturalHeight === 0) {
+      return { frameW: 96, frameH: 96, totalCols: 6 };
+    }
+    const totalRows = 4;
+    const frameH = img.naturalHeight / totalRows;
+    const frameW = frameH; // Spritesheet cells are strictly square
+    const totalCols = Math.max(1, Math.round(img.naturalWidth / frameW));
+    return { frameW, frameH, totalCols };
   }
 
   public startAnimation() {
@@ -58,7 +77,8 @@ export class CharacterPreviewRenderer {
       // 8 FPS = 125ms per frame
       if (delta >= 125) {
         this.lastFrameTime = now;
-        this.currentFrameIndex = (this.currentFrameIndex + 1) % 6;
+        const { totalCols } = this.getFrameDimensions(this.currentIdleImage);
+        this.currentFrameIndex = (this.currentFrameIndex + 1) % totalCols;
         this.renderCanvasFrame();
       }
     };
@@ -86,27 +106,24 @@ export class CharacterPreviewRenderer {
       return;
     }
 
-    // Each row has 6 frames, row 0 is front-facing
-    const totalCols = 6;
-    const totalRows = img.naturalHeight >= 512 ? 4 : 4;
-    const frameW = img.naturalWidth / totalCols;
-    const frameH = img.naturalHeight / totalRows;
+    const { frameW, frameH, totalCols } = this.getFrameDimensions(img);
+    const validFrameIndex = this.currentFrameIndex % totalCols;
 
-    const srcX = this.currentFrameIndex * frameW;
+    const srcX = validFrameIndex * frameW;
     const srcY = 0; // Front row
 
-    // Draw hero centered and grounded on stone dais with normalized height
-    const targetH = 210;
+    // Draw hero centered and grounded on stone dais with enlarged normalized height
+    const targetH = 280;
     const drawScale = targetH / frameH;
     const drawW = frameW * drawScale;
     const drawH = targetH;
     const drawX = (w - drawW) / 2;
-    const drawY = h - drawH - 16;
+    const drawY = h - drawH - 20;
 
     // Contact drop shadow at feet
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(w / 2, h - 20, Math.min(drawW * 0.32, 54), 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(w / 2, h - 24, Math.min(drawW * 0.35, 72), 12, 0, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
     ctx.fill();
     ctx.restore();

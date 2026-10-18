@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-17T12:24:44.728Z",
+  "generatedAt": "2026-10-18T01:15:37.553Z",
   "totalFiles": 153,
-  "totalSymbols": 1580,
+  "totalSymbols": 1581,
   "topLevelCount": 476,
-  "methodsCount": 1104,
+  "methodsCount": 1105,
   "entities": {
     "heroes": [
       {
@@ -2066,9 +2066,17 @@
       "name": "CharacterPreviewRenderer.dispose",
       "kind": "method",
       "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
-      "line": 118,
+      "line": 135,
       "className": "CharacterPreviewRenderer",
       "methodName": "dispose"
+    },
+    {
+      "name": "CharacterPreviewRenderer.getFrameDimensions",
+      "kind": "method",
+      "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
+      "line": 60,
+      "className": "CharacterPreviewRenderer",
+      "methodName": "getFrameDimensions"
     },
     {
       "name": "CharacterPreviewRenderer.loadHero",
@@ -2090,7 +2098,7 @@
       "name": "CharacterPreviewRenderer.renderCanvasFrame",
       "kind": "method",
       "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
-      "line": 75,
+      "line": 95,
       "className": "CharacterPreviewRenderer",
       "methodName": "renderCanvasFrame"
     },
@@ -2106,7 +2114,7 @@
       "name": "CharacterPreviewRenderer.startAnimation",
       "kind": "method",
       "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
-      "line": 52,
+      "line": 71,
       "className": "CharacterPreviewRenderer",
       "methodName": "startAnimation"
     },
@@ -2114,7 +2122,7 @@
       "name": "CharacterPreviewRenderer.stopAnimation",
       "kind": "method",
       "file": "game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts",
-      "line": 68,
+      "line": 88,
       "className": "CharacterPreviewRenderer",
       "methodName": "stopAnimation"
     },
