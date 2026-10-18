@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T15:02:28.003Z",
+  "generatedAt": "2026-10-18T15:26:13.528Z",
   "totalFiles": 154,
   "totalSymbols": 1592,
   "topLevelCount": 480,
@@ -496,7 +496,7 @@
         "id": "aegis_exoskeleton",
         "name": "Экзоскелет «Эгида»",
         "icon": "🛡️",
-        "description": "Ускоряет перезарядку брони на -0.25 сек и повышает скорость восстановления на +25%"
+        "description": "Ускоряет перезарядку брони на -0.3 сек и повышает скорость восстановления на +15%"
       },
       {
         "id": "bio_leech",
@@ -532,7 +532,7 @@
         "id": "phase_carapace",
         "name": "Фазовый Панцирь",
         "icon": "💠",
-        "description": "Увеличивает максимальную емкость брони на +50 (максимум до 350)"
+        "description": "Увеличивает максимальную емкость брони на +25 (максимум до 160)"
       },
       {
         "id": "singularity_core",
@@ -1355,7 +1355,7 @@
       "name": "BalanceChangeEvent",
       "kind": "interface",
       "file": "game/src/balance/BalanceTypes.ts",
-      "line": 136
+      "line": 141
     },
     {
       "name": "BalanceManager",
@@ -1367,7 +1367,7 @@
       "name": "BalanceRow",
       "kind": "interface",
       "file": "game/src/balance/BalanceTypes.ts",
-      "line": 124
+      "line": 129
     },
     {
       "name": "BalanceState",
@@ -3764,7 +3764,7 @@
       "name": "GameBalanceState",
       "kind": "interface",
       "file": "game/src/balance/BalanceTypes.ts",
-      "line": 113
+      "line": 118
     },
     {
       "name": "GameCore",

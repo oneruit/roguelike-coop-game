@@ -123,8 +123,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'uncommon',
     icon: '🛡️',
     color: '#22c55e',
-    description: 'Ускоряет перезарядку брони на -0.25 сек и повышает скорость восстановления на +25%.',
-    stackText: '-0.25с задержки и +25% скорости за стак (макс. 5)'
+    description: 'Ускоряет перезарядку брони на -0.3 сек и повышает скорость восстановления на +15%.',
+    stackText: '-0.3с задержки и +15% скорости за стак (макс. 5)'
   },
   bio_leech: {
     id: 'bio_leech',
@@ -179,8 +179,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'rare',
     icon: '💠',
     color: '#38bdf8',
-    description: 'Увеличивает максимальную емкость брони на +50 (максимум до 350).',
-    stackText: '+50 к макс. броне за стак (макс. 350)'
+    description: 'Увеличивает максимальную емкость брони на +25 (максимум до 160).',
+    stackText: '+25 к макс. броне за стак (макс. 160)'
   },
 
   // --- Legendary (Легендарные) ---
@@ -327,8 +327,8 @@ export function rollChestDropPair(
   chestTier?: 'small' | 'large' | 'legendary'
 ): [RiftItemDef, RiftItemDef] {
   let item1: RiftItemDef;
-  // Large chests grant Phase Carapace to incrementally scale player armor up to 350 max
-  if (chestTier === 'large' && isItemMaxed && !isItemMaxed('phase_carapace') && rng() < 0.65) {
+  // Large chests grant Phase Carapace to incrementally scale player armor up to 160 max
+  if (chestTier === 'large' && isItemMaxed && !isItemMaxed('phase_carapace') && rng() < 0.30) {
     item1 = RIFT_ITEMS['phase_carapace'];
   } else {
     item1 = rollRiftItemByStage(stageNumber, rng, excludeChronos, isItemMaxed);

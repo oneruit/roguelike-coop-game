@@ -100,14 +100,19 @@ export class PlayerStats {
     const amuletScale = amuletCfg?.perStackValue ?? 1.0;
     const hpRegen = (counts.amuletCount * amuletScale) + (vialStacks * 2.5) + (titanHeartStacks * 15) + (metaBonuses?.hpRegenBonus ?? 0);
 
-    // Max Shield (Armor): 100 base + 50 per Phase Carapace stack, capped at 350 max
-    const maxShield = Math.min(350, 100 + (carapaceStacks * 50));
+    // Max Shield (Armor): 35 base + meta shield + 25 per Phase Carapace stack, capped at (160 + meta)
+    const baseShield = globalCfg?.baseShield ?? 35;
+    const carapaceBonus = globalCfg?.shieldCarapaceBonus ?? 25;
+    const shieldCap = globalCfg?.maxShieldCap ?? 160;
+    const metaShield = metaBonuses?.shieldBarrierBonus ?? 0;
+    const maxShield = Math.min(shieldCap + metaShield, baseShield + metaShield + (carapaceStacks * carapaceBonus));
 
-    // Shield Regen Delay: 3.0s base, reduced by 0.25s per Aegis Exoskeleton stack (min 1.5s)
-    const shieldRegenDelay = Math.max(1.5, 3.0 - (exoskeletonStacks * 0.25));
+    // Shield Regen Delay: 5.0s base, reduced by 0.3s per Aegis Exoskeleton stack (min 3.5s)
+    const baseDelay = globalCfg?.shieldRegenDelay ?? 5.0;
+    const shieldRegenDelay = Math.max(3.5, baseDelay - (exoskeletonStacks * 0.3));
 
-    // Shield Regen Speed: +25% regen rate per Aegis Exoskeleton stack
-    const shieldRegenMultiplier = 1.0 + (exoskeletonStacks * 0.25);
+    // Shield Regen Speed: +15% regen rate per Aegis Exoskeleton stack
+    const shieldRegenMultiplier = 1.0 + (exoskeletonStacks * 0.15);
 
     // Crit Chance: baseCritChance from globalCfg + meta crit + 6% per Crit Lens + 3% per Crit Visor, cap at 1.0 (100%)
     const critLensStacks = getItemStacks('crit_lens');

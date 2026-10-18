@@ -110,10 +110,10 @@ export class Player {
   // The Rift: Item Inventory & Economy
   public riftItems: Map<RiftItemId, number> = new Map();
   public credits: number = 0; // Plasma Credits currency
-  public shield: number = 100;
-  public maxShield: number = 100;
+  public shield: number = 35;
+  public maxShield: number = 35;
   public shieldRegenDelay: number = 0;
-  public shieldRegenBaseDelay: number = 3.0;
+  public shieldRegenBaseDelay: number = 5.0;
   public shieldRegenMultiplier: number = 1.0;
   public critChance: number = 0.05; // 5% base crit chance (max 100% / 1.0)
   public critDamage: number = 0.50; // 50% base crit damage (max 1000% / 10.0)
@@ -714,7 +714,7 @@ export class Player {
 
   public isStatMaxedForItem(itemId: string): boolean {
     if (itemId === 'phase_carapace') {
-      return this.maxShield >= 350;
+      return this.getItemStacks('phase_carapace') >= 5 || this.maxShield >= 160;
     }
     if (itemId === 'aegis_exoskeleton') {
       return this.getItemStacks('aegis_exoskeleton') >= 5;
@@ -801,7 +801,7 @@ export class Player {
         this.shieldRegenDelay -= dt;
       } else if (this.shield < this.maxShield) {
         const prevShield = this.shield;
-        const baseRate = this.maxShield / 3.0; // Fully restores shield in 3.0 seconds
+        const baseRate = this.maxShield / 6.0; // Fully restores shield in 6.0 seconds
         const regenRate = baseRate * this.shieldRegenMultiplier;
         this.shield = Math.min(this.maxShield, this.shield + regenRate * dt);
         if (Math.floor(prevShield) !== Math.floor(this.shield)) {

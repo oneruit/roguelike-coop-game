@@ -108,6 +108,11 @@ export interface GlobalBalanceConfig {
   merchantPriceLegendary: number;
   merchantPriceBoss: number;
   merchantPriceWeaponUpgrade: number;
+  baseShield?: number;
+  shieldRegenDelay?: number;
+  shieldRegenDuration?: number;
+  shieldCarapaceBonus?: number;
+  maxShieldCap?: number;
 }
 
 export interface GameBalanceState {

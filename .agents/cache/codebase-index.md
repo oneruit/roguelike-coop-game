@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T15:02:28.003Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
+> **Generated:** 2026-10-18T15:26:13.528Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -115,9 +115,9 @@ Run `npm run index` to refresh this cache.
 | `AuthUser` | `interface` | [`game/src/auth/AuthManager.ts:5`](../../game/src/auth/AuthManager.ts#L5) | - |
 | `AVAILABLE_SLOT_IDS` | `const` | [`game/src/shared/types/network.ts:174`](../../game/src/shared/types/network.ts#L174) | - |
 | `BalanceCategory` | `type` | [`game/src/balance/BalanceTypes.ts:1`](../../game/src/balance/BalanceTypes.ts#L1) | - |
-| `BalanceChangeEvent` | `interface` | [`game/src/balance/BalanceTypes.ts:136`](../../game/src/balance/BalanceTypes.ts#L136) | - |
+| `BalanceChangeEvent` | `interface` | [`game/src/balance/BalanceTypes.ts:141`](../../game/src/balance/BalanceTypes.ts#L141) | - |
 | `BalanceManager` | `const` | [`game/src/balance/BalanceManager.ts:310`](../../game/src/balance/BalanceManager.ts#L310) | - |
-| `BalanceRow` | `interface` | [`game/src/balance/BalanceTypes.ts:124`](../../game/src/balance/BalanceTypes.ts#L124) | - |
+| `BalanceRow` | `interface` | [`game/src/balance/BalanceTypes.ts:129`](../../game/src/balance/BalanceTypes.ts#L129) | - |
 | `BalanceState` | `class` | [`admin/src/state/balanceState.ts:6`](../../admin/src/state/balanceState.ts#L6) | - |
 | `BalanceState.applyFieldChange` | `method` | [`admin/src/state/balanceState.ts:44`](../../admin/src/state/balanceState.ts#L44) | - |
 | `BalanceState.checkAllCategoryChanges` | `method` | [`admin/src/state/balanceState.ts:61`](../../admin/src/state/balanceState.ts#L61) | - |
@@ -435,7 +435,7 @@ Run `npm run index` to refresh this cache.
 | `FlailWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:468`](../../game/src/combat/weapons/MeleeWeapons.ts#L468) | - |
 | `FlailWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:410`](../../game/src/combat/weapons/MeleeWeapons.ts#L410) | - |
 | `FlailWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:461`](../../game/src/combat/weapons/MeleeWeapons.ts#L461) | - |
-| `GameBalanceState` | `interface` | [`game/src/balance/BalanceTypes.ts:113`](../../game/src/balance/BalanceTypes.ts#L113) | - |
+| `GameBalanceState` | `interface` | [`game/src/balance/BalanceTypes.ts:118`](../../game/src/balance/BalanceTypes.ts#L118) | - |
 | `GameCore` | `class` | [`game/src/sim/GameCore.ts:321`](../../game/src/sim/GameCore.ts#L321) | Headless Deterministic GameCore Simulation Engine Manages all authoritative... |
 | `GameCore.addPlayer` | `method` | [`game/src/sim/GameCore.ts:386`](../../game/src/sim/GameCore.ts#L386) | ------------------------------------------------------------- |
 | `GameCore.collectDrop` | `method` | [`game/src/sim/GameCore.ts:1060`](../../game/src/sim/GameCore.ts#L1060) | - |
