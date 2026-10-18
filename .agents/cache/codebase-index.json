@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T06:03:09.180Z",
+  "generatedAt": "2026-10-18T09:41:56.792Z",
   "totalFiles": 154,
   "totalSymbols": 1592,
   "topLevelCount": 480,
@@ -1940,7 +1940,7 @@
       "name": "canRerollWeaponOptions",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 29,
+      "line": 43,
       "doc": "Determines whether the current weapon selection qualifies for a reroll. Per rule: reroll is allowed if and only if all three choices are new weapons."
     },
     {
@@ -3627,7 +3627,7 @@
       "name": "filterAndShuffleForReroll",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 40,
+      "line": 54,
       "doc": "Partitions and shuffles the pool for reroll: Options not in `excludedIds` are prioritized first (in random order), followed by options in `excludedIds` (in random order)."
     },
     {
@@ -4411,8 +4411,8 @@
       "name": "getWeaponEffectiveCap",
       "kind": "function",
       "file": "game/src/combat/WeaponBase.ts",
-      "line": 306,
-      "doc": "Calculates the level cap for a weapon based on tier rules: - Tier 3 (awakenedGrade === 0): cap is 12. - Tier 2 (awakenedGrade === 1): 1 weapon at Tier 2 -> cap 6 2 weapons at Tier 2 -> cap 8 3 weapons at Tier 2 -> cap 10 4 weapons at Tier 2 -> cap 12 - Tier 1 (awakenedGrade >= 2): 1 weapon at Tier 1 -> cap 6 2 weapons at Tier 1 -> cap 8 3 weapons at Tier 1 -> cap 10 4 weapons at Tier 1 -> cap 12"
+      "line": 296,
+      "doc": "Calculates the level cap for a weapon based on tier rules: - Each weapon can individually progress up to its max level (12) across Tier 3, Tier 2, and Tier 1."
     },
     {
       "name": "getWeaponIconUrl",

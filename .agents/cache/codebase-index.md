@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T06:03:09.180Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
+> **Generated:** 2026-10-18T09:41:56.792Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -197,7 +197,7 @@ Run `npm run index` to refresh this cache.
 | `CalculatedPlayerStats` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:14`](../../game/src/mechanics/player/PlayerStats.ts#L14) | - |
 | `canAcquireInvokerWeapon` | `function` | [`game/src/shared/InvokerSpells.ts:160`](../../game/src/shared/InvokerSpells.ts#L160) | Separate spell weapons require Invoke in the same inventory, and hero must ... |
 | `canCharacterAcquireWeapon` | `function` | [`game/src/shared/UniqueCharacters.ts:122`](../../game/src/shared/UniqueCharacters.ts#L122) | The single source of truth for whether a hero is allowed to acquire or upgr... |
-| `canRerollWeaponOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:29`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L29) | Determines whether the current weapon selection qualifies for a reroll. Per... |
+| `canRerollWeaponOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:43`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L43) | Determines whether the current weapon selection qualifies for a reroll. Per... |
 | `CenterSquareMapRenderContext` | `interface` | [`game/src/ui/MapCenterSquareRenderer.ts:10`](../../game/src/ui/MapCenterSquareRenderer.ts#L10) | - |
 | `ChakramWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:126`](../../game/src/combat/weapons/RangedWeapons.ts#L126) | Chakram (Танцующий Чакрам) Boomerang spinning blades returning to player |
 | `ChakramWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:220`](../../game/src/combat/weapons/RangedWeapons.ts#L220) | - |
@@ -417,7 +417,7 @@ Run `npm run index` to refresh this cache.
 | `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:80`](../../game/src/core/Engine.ts#L80) | - |
 | `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:179`](../../game/src/core/Engine.ts#L179) | - |
 | `exportLeaderboardJson` | `function` | [`admin/src/views/leaderboardsView.ts:280`](../../admin/src/views/leaderboardsView.ts#L280) | Exports current leaderboard entries as a formatted JSON file. |
-| `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
+| `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:54`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L54) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
 | `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:590`](../../game/src/combat/weapons/MagicWeapons.ts#L590) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
@@ -526,7 +526,7 @@ Run `npm run index` to refresh this cache.
 | `getSupabaseUrl` | `function` | [`game/src/balance/supabaseClient.ts:24`](../../game/src/balance/supabaseClient.ts#L24) | - |
 | `getUniqueCharacterConfig` | `function` | [`game/src/shared/UniqueCharacters.ts:86`](../../game/src/shared/UniqueCharacters.ts#L86) | Returns configuration for a unique character, if registered. |
 | `getWeaponColor` | `function` | [`admin/src/constants.ts:87`](../../admin/src/constants.ts#L87) | - |
-| `getWeaponEffectiveCap` | `function` | [`game/src/combat/WeaponBase.ts:306`](../../game/src/combat/WeaponBase.ts#L306) | Calculates the level cap for a weapon based on tier rules: - Tier 3 (awaken... |
+| `getWeaponEffectiveCap` | `function` | [`game/src/combat/WeaponBase.ts:296`](../../game/src/combat/WeaponBase.ts#L296) | Calculates the level cap for a weapon based on tier rules: - Each weapon ca... |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/modules/HeroUIHelpers.ts:191`](../../game/src/ui/modules/HeroUIHelpers.ts#L191) | - |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:44`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L44) | - |
 | `GlobalBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:94`](../../game/src/balance/BalanceTypes.ts#L94) | - |
