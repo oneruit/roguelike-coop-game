@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-18T16:26:01.658Z",
-  "totalFiles": 162,
-  "totalSymbols": 1653,
-  "topLevelCount": 506,
+  "generatedAt": "2026-10-18T16:35:09.671Z",
+  "totalFiles": 169,
+  "totalSymbols": 1666,
+  "topLevelCount": 519,
   "methodsCount": 1147,
   "entities": {
     "heroes": [
@@ -3084,6 +3084,13 @@
       "line": 13
     },
     {
+      "name": "disposeReactUI",
+      "kind": "function",
+      "file": "game/src/ui/react/mountReactUI.tsx",
+      "line": 34,
+      "doc": "Disposes React UI root cleanly."
+    },
+    {
       "name": "DropManager",
       "kind": "class",
       "file": "game/src/drops/DropManager.ts",
@@ -4219,6 +4226,18 @@
       "line": 843,
       "className": "GameNetworkCoordinator",
       "methodName": "updateRevives"
+    },
+    {
+      "name": "GameOverModal",
+      "kind": "const",
+      "file": "game/src/ui/react/modals/GameOverModal.tsx",
+      "line": 12
+    },
+    {
+      "name": "GameOverModalProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/modals/GameOverModal.tsx",
+      "line": 7
     },
     {
       "name": "GameOverScreen",
@@ -5598,6 +5617,12 @@
       "methodName": "updateWeaponsBar"
     },
     {
+      "name": "HUDOverlay",
+      "kind": "const",
+      "file": "game/src/ui/react/hud/HUDOverlay.tsx",
+      "line": 5
+    },
+    {
       "name": "IceSpikeWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
@@ -5846,6 +5871,13 @@
       "line": 895,
       "className": "InGameOverlayUI",
       "methodName": "updateWeaponsBar"
+    },
+    {
+      "name": "initReactUI",
+      "kind": "function",
+      "file": "game/src/ui/react/mountReactUI.tsx",
+      "line": 9,
+      "doc": "Initializes and mounts React UI Root into DOM container."
     },
     {
       "name": "InputActionType",
@@ -6512,6 +6544,18 @@
       "line": 275
     },
     {
+      "name": "LevelUpModal",
+      "kind": "const",
+      "file": "game/src/ui/react/modals/LevelUpModal.tsx",
+      "line": 11
+    },
+    {
+      "name": "LevelUpModalProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/modals/LevelUpModal.tsx",
+      "line": 5
+    },
+    {
       "name": "LevelUpOption",
       "kind": "interface",
       "file": "game/src/ui/stores/useUIModalStore.ts",
@@ -6969,6 +7013,18 @@
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
       "line": 244
+    },
+    {
+      "name": "MainMenuModal",
+      "kind": "const",
+      "file": "game/src/ui/react/modals/MainMenuModal.tsx",
+      "line": 20
+    },
+    {
+      "name": "MainMenuModalProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/modals/MainMenuModal.tsx",
+      "line": 9
     },
     {
       "name": "MainMenuScreen",
@@ -9486,6 +9542,18 @@
       "line": 268
     },
     {
+      "name": "ReactUIRoot",
+      "kind": "const",
+      "file": "game/src/ui/react/ReactUIRoot.tsx",
+      "line": 16
+    },
+    {
+      "name": "ReactUIRootProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/ReactUIRoot.tsx",
+      "line": 9
+    },
+    {
       "name": "ReaperScytheWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
@@ -10465,6 +10533,18 @@
       "line": 157,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
+    },
+    {
+      "name": "SettingsModal",
+      "kind": "const",
+      "file": "game/src/ui/react/modals/SettingsModal.tsx",
+      "line": 10
+    },
+    {
+      "name": "SettingsModalProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/modals/SettingsModal.tsx",
+      "line": 5
     },
     {
       "name": "SettingsScreen",

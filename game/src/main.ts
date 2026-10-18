@@ -34,6 +34,8 @@ import { SessionDirector, GameState } from './core/SessionDirector';
 import { LobbyCoordinator } from './net/LobbyCoordinator';
 import { MerchantManager } from './world/MerchantManager';
 import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
+import { GameStateBridge } from './ui/stores/GameStateBridge';
+import { initReactUI } from './ui/react/mountReactUI';
 
 class Game {
   private engine: Engine;
@@ -321,6 +323,36 @@ class Game {
       // ready
     });
 
+    // Initialize React UI and GameStateBridge
+    GameStateBridge.getInstance().init();
+    GameStateBridge.getInstance().syncGameState('MAIN_MENU');
+    initReactUI('react-ui-root', {
+      mainMenuProps: {
+        onStartSinglePlayer: () => {
+          this.sessionDirector.gameState = GameState.CHARACTER_SELECT;
+          this.hud.showCharacterSelect();
+          GameStateBridge.getInstance().syncGameState('CHARACTER_SELECT');
+        },
+        onResumeRun: () => this.sessionDirector.resumeSavedRun(),
+        onOpenCoop: () => this.hud.showCoopMenu(),
+        onOpenShop: () => this.hud.showShopModal(),
+        onOpenQuests: () => this.hud.showQuestsModal(),
+        onOpenLeaderboard: () => this.hud.showLeaderboard(),
+        onOpenSettings: () => this.hud.showSettings('main')
+      },
+      settingsProps: {
+        onShadowQualityChange: (q) => this.engine.setShadowQuality(q),
+        onTimeOfDayChange: (mode) => {
+          this.engine.setTimeOfDay(mode);
+          this.biomeManager.applyBiomeToScene(this.engine.scene, mode);
+        }
+      },
+      gameOverProps: {
+        onRestart: () => this.sessionDirector.restartGame(undefined, false),
+        onReturnToMenu: () => this.sessionDirector.returnToMainMenu()
+      }
+    });
+
     this.loop();
   }
 
@@ -576,6 +608,21 @@ class Game {
       this.sessionDirector.gameTime = this.enemyManager.gameTime;
     }
     this.netCoordinator.gameTime = this.sessionDirector.gameTime;
+
+    // Sync bridge state (throttled)
+    GameStateBridge.getInstance().syncPlayerVitals(
+      this.player.hp,
+      this.player.maxHp,
+      this.player.shield,
+      this.player.maxShield
+    );
+    GameStateBridge.getInstance().syncPlayerProgression(
+      this.player.xp,
+      this.player.xpToNextLevel,
+      this.player.level,
+      this.player.credits
+    );
+    GameStateBridge.getInstance().syncGameTime(this.sessionDirector.gameTime);
 
     if (this.biomeManager?.currentBiome?.id === 'bioluminescent_wilds') {
       ProgressionManager.getInstance().recordForestSurvivalTime(this.sessionDirector.gameTime);

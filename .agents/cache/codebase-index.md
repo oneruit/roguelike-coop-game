@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T16:26:01.658Z | **Files:** 162 | **Top-level:** 506 | **Class Methods:** 1147
+> **Generated:** 2026-10-18T16:35:09.671Z | **Files:** 169 | **Top-level:** 519 | **Class Methods:** 1147
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 460 |
+| `game/src` | 473 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -349,6 +349,7 @@ Run `npm run index` to refresh this cache.
 | `DirectionalTextures` | `interface` | [`game/src/core/TextureManager.ts:19`](../../game/src/core/TextureManager.ts#L19) | - |
 | `DIRECTIONS` | `const` | [`game/src/shared/types/registry.ts:11`](../../game/src/shared/types/registry.ts#L11) | - |
 | `DiscoveredAltar` | `interface` | [`game/src/ui/MapManager.ts:13`](../../game/src/ui/MapManager.ts#L13) | - |
+| `disposeReactUI` | `function` | [`game/src/ui/react/mountReactUI.tsx:34`](../../game/src/ui/react/mountReactUI.tsx#L34) | Disposes React UI root cleanly. |
 | `DropManager` | `class` | [`game/src/drops/DropManager.ts:15`](../../game/src/drops/DropManager.ts#L15) | - |
 | `DropManager.applySnapshot` | `method` | [`game/src/drops/DropManager.ts:192`](../../game/src/drops/DropManager.ts#L192) | - |
 | `DropManager.attractAllGemsTo` | `method` | [`game/src/drops/DropManager.ts:90`](../../game/src/drops/DropManager.ts#L90) | Attracts all gems and passive crystals across the map directly to the targe... |
@@ -494,6 +495,8 @@ Run `npm run index` to refresh this cache.
 | `GameNetworkCoordinator.setupNetworkCallbacks` | `method` | [`game/src/net/GameNetworkCoordinator.ts:105`](../../game/src/net/GameNetworkCoordinator.ts#L105) | - |
 | `GameNetworkCoordinator.syncMapManagerPartners` | `method` | [`game/src/net/GameNetworkCoordinator.ts:94`](../../game/src/net/GameNetworkCoordinator.ts#L94) | - |
 | `GameNetworkCoordinator.updateRevives` | `method` | [`game/src/net/GameNetworkCoordinator.ts:843`](../../game/src/net/GameNetworkCoordinator.ts#L843) | - |
+| `GameOverModal` | `const` | [`game/src/ui/react/modals/GameOverModal.tsx:12`](../../game/src/ui/react/modals/GameOverModal.tsx#L12) | - |
+| `GameOverModalProps` | `interface` | [`game/src/ui/react/modals/GameOverModal.tsx:7`](../../game/src/ui/react/modals/GameOverModal.tsx#L7) | - |
 | `GameOverScreen` | `class` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:36`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L36) | - |
 | `GameOverScreen.bindElements` | `method` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:90`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L90) | - |
 | `GameOverScreen.bindEvents` | `method` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:128`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L128) | - |
@@ -678,6 +681,7 @@ Run `npm run index` to refresh this cache.
 | `HUD.updateStageText` | `method` | [`game/src/ui/HUD.ts:1426`](../../game/src/ui/HUD.ts#L1426) | - |
 | `HUD.updateTeleportButton` | `method` | [`game/src/ui/HUD.ts:1431`](../../game/src/ui/HUD.ts#L1431) | - |
 | `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1479`](../../game/src/ui/HUD.ts#L1479) | - |
+| `HUDOverlay` | `const` | [`game/src/ui/react/hud/HUDOverlay.tsx:5`](../../game/src/ui/react/hud/HUDOverlay.tsx#L5) | - |
 | `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:486`](../../game/src/combat/weapons/MagicWeapons.ts#L486) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
 | `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:572`](../../game/src/combat/weapons/MagicWeapons.ts#L572) | - |
 | `IceSpikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:513`](../../game/src/combat/weapons/MagicWeapons.ts#L513) | - |
@@ -710,6 +714,7 @@ Run `npm run index` to refresh this cache.
 | `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:626`](../../game/src/ui/modules/InGameOverlayUI.ts#L626) | - |
 | `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:633`](../../game/src/ui/modules/InGameOverlayUI.ts#L633) | - |
 | `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:895`](../../game/src/ui/modules/InGameOverlayUI.ts#L895) | - |
+| `initReactUI` | `function` | [`game/src/ui/react/mountReactUI.tsx:9`](../../game/src/ui/react/mountReactUI.tsx#L9) | Initializes and mounts React UI Root into DOM container. |
 | `InputActionType` | `type` | [`game/src/core/InputBuffer.ts:6`](../../game/src/core/InputBuffer.ts#L6) | High-performance, zero-React input buffer for game actions and continuous d... |
 | `InputBuffer` | `class` | [`game/src/core/InputBuffer.ts:25`](../../game/src/core/InputBuffer.ts#L25) | - |
 | `InputBuffer.clear` | `method` | [`game/src/core/InputBuffer.ts:118`](../../game/src/core/InputBuffer.ts#L118) | Clears all queued actions and resets vectors. |
@@ -800,6 +805,8 @@ Run `npm run index` to refresh this cache.
 | `LeaderboardUI.renderTable` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:114`](../../game/src/ui/modules/LeaderboardUI.ts#L114) | - |
 | `LeaderboardUIOptions` | `interface` | [`game/src/ui/modules/LeaderboardUI.ts:6`](../../game/src/ui/modules/LeaderboardUI.ts#L6) | - |
 | `LEGENDARY_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:275`](../../game/src/items/RiftItemSystem.ts#L275) | - |
+| `LevelUpModal` | `const` | [`game/src/ui/react/modals/LevelUpModal.tsx:11`](../../game/src/ui/react/modals/LevelUpModal.tsx#L11) | - |
+| `LevelUpModalProps` | `interface` | [`game/src/ui/react/modals/LevelUpModal.tsx:5`](../../game/src/ui/react/modals/LevelUpModal.tsx#L5) | - |
 | `LevelUpOption` | `interface` | [`game/src/ui/stores/useUIModalStore.ts:19`](../../game/src/ui/stores/useUIModalStore.ts#L19) | - |
 | `LevelUpScreen` | `class` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:87`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L87) | - |
 | `LevelUpScreen.bindElements` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:113`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L113) | - |
@@ -862,6 +869,8 @@ Run `npm run index` to refresh this cache.
 | `LobbyUIContext` | `type` | [`game/src/ui/modules/LobbyUI.ts:8`](../../game/src/ui/modules/LobbyUI.ts#L8) | - |
 | `LobbyUIElements` | `type` | [`game/src/ui/modules/LobbyUI.ts:7`](../../game/src/ui/modules/LobbyUI.ts#L7) | - |
 | `LobbyUpdateMessage` | `interface` | [`game/src/shared/types/network.ts:244`](../../game/src/shared/types/network.ts#L244) | - |
+| `MainMenuModal` | `const` | [`game/src/ui/react/modals/MainMenuModal.tsx:20`](../../game/src/ui/react/modals/MainMenuModal.tsx#L20) | - |
+| `MainMenuModalProps` | `interface` | [`game/src/ui/react/modals/MainMenuModal.tsx:9`](../../game/src/ui/react/modals/MainMenuModal.tsx#L9) | - |
 | `MainMenuScreen` | `class` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:27`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L27) | Modular Main Menu Screen (Dark ARPG Rift UI). Coordinates singleplayer star... |
 | `MainMenuScreen.bindElements` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:53`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L53) | - |
 | `MainMenuScreen.bindEvents` | `method` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:55`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L55) | - |
@@ -1192,6 +1201,8 @@ Run `npm run index` to refresh this cache.
 | `QuestsUI` | `class` | [`game/src/ui/modules/QuestsUI.ts:13`](../../game/src/ui/modules/QuestsUI.ts#L13) | - |
 | `QuestsUIContext` | `type` | [`game/src/ui/modules/QuestsUI.ts:8`](../../game/src/ui/modules/QuestsUI.ts#L8) | - |
 | `RARE_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:268`](../../game/src/items/RiftItemSystem.ts#L268) | - |
+| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:16`](../../game/src/ui/react/ReactUIRoot.tsx#L16) | - |
+| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:9`](../../game/src/ui/react/ReactUIRoot.tsx#L9) | - |
 | `ReaperScytheWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:23`](../../game/src/combat/weapons/MagicWeapons.ts#L23) | Reaper's Scythe (Коса Жнеца) Rotating scythes circle the hero, cutting thro... |
 | `ReaperScytheWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:49`](../../game/src/combat/weapons/MagicWeapons.ts#L49) | - |
 | `ReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:103`](../../game/src/combat/weapons/MagicWeapons.ts#L103) | - |
@@ -1322,6 +1333,8 @@ Run `npm run index` to refresh this cache.
 | `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:457`](../../game/src/core/SessionDirector.ts#L457) | - |
 | `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:724`](../../game/src/core/SessionDirector.ts#L724) | - |
 | `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:157`](../../game/src/core/SessionDirector.ts#L157) | - |
+| `SettingsModal` | `const` | [`game/src/ui/react/modals/SettingsModal.tsx:10`](../../game/src/ui/react/modals/SettingsModal.tsx#L10) | - |
+| `SettingsModalProps` | `interface` | [`game/src/ui/react/modals/SettingsModal.tsx:5`](../../game/src/ui/react/modals/SettingsModal.tsx#L5) | - |
 | `SettingsScreen` | `class` | [`game/src/ui/screens/Settings/SettingsScreen.ts:29`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L29) | Modular Settings Screen. Manages Graphics, Audio, HUD preferences, Controls... |
 | `SettingsScreen.activateSettingsTab` | `method` | [`game/src/ui/screens/Settings/SettingsScreen.ts:325`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L325) | - |
 | `SettingsScreen.bindElements` | `method` | [`game/src/ui/screens/Settings/SettingsScreen.ts:53`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L53) | - |
