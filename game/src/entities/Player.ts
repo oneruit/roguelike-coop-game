@@ -442,11 +442,16 @@ export class Player {
       duration = Math.min(baseDuration, Math.max(0.08, mainWeapon.effectiveCooldown * 0.95));
     }
 
+    const wasAttacking = this.attackAnimTimer > 0;
     this.attackAnimTimer = duration;
-    this.animFrameTimer = 0;
+    if (!wasAttacking) {
+      this.animFrameTimer = 0;
+    }
     if (this.animation) {
       this.animation.attackAnimTimer = duration;
-      this.animation.animFrameTimer = 0;
+      if (!wasAttacking) {
+        this.animation.animFrameTimer = 0;
+      }
     }
     if (this.animator) {
       this.animator.triggerAttack(duration);

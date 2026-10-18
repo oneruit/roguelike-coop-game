@@ -158,7 +158,8 @@ export class FireRingWeapon extends Weapon {
     const cfg = BalanceManager.getWeaponConfig('fire_ring');
     const baseRad = cfg?.explosionRadius ?? 3.5;
     this.radius = Number((baseRad + (this.level - 1) * 0.35).toFixed(2));
-    this.cooldown = Math.max(0.20, Number((this.baseCooldown * Math.pow(0.93, this.level - 1)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, this.level - 1);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
     if (this.auraMesh) {
       this.auraMesh.geometry.dispose();
       this.auraMesh.geometry = new PlaneGeometry(this.radius * 2.3, this.radius * 2.3);
@@ -184,7 +185,7 @@ export class FireRingWeapon extends Weapon {
 
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
 
       for (const enemy of enemies) {
         if (!enemy.isAlive) continue;
@@ -286,7 +287,8 @@ export class AstralStaffWeapon extends Weapon {
     this.projectileCount = baseCount + [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.pierceCount = basePierce + [4, 8, 12].filter(lvl => this.level >= lvl).length;
     const cdSteps = [2, 5, 8, 10, 12].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.30, Number((this.baseCooldown * Math.pow(0.94, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.94, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -306,7 +308,7 @@ export class AstralStaffWeapon extends Weapon {
       const targets = findClosestEnemies(enemies, playerPos, 1, 22 * 22);
       if (targets.length === 0) return;
 
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
@@ -394,7 +396,8 @@ export class LightningStrikeWeapon extends Weapon {
     const countSteps = [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.strikeCount = baseCount + countSteps;
     const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.40, Number((this.baseCooldown * Math.pow(0.92, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.92, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
     const radSteps = [4, 8, 12].filter(lvl => this.level >= lvl).length;
     this.strikeRadius = Number((baseRadius + radSteps * 0.30).toFixed(2));
   }
@@ -416,7 +419,7 @@ export class LightningStrikeWeapon extends Weapon {
       const candidates = findClosestEnemies(enemies, playerPos, this.strikeCount, this.range * this.range);
       if (candidates.length === 0) return;
 
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
@@ -501,7 +504,8 @@ export class IceSpikeWeapon extends Weapon {
     const countSteps = [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.spikeCount = baseCount + countSteps;
     const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.35, Number((this.baseCooldown * Math.pow(0.93, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
     const radSteps = [4, 8, 12].filter(lvl => this.level >= lvl).length;
     this.spikeRadius = Number((baseRadius + radSteps * 0.25).toFixed(2));
   }
@@ -523,7 +527,7 @@ export class IceSpikeWeapon extends Weapon {
       const candidates = findClosestEnemies(enemies, playerPos, this.spikeCount, this.range * this.range);
       if (candidates.length === 0) return;
 
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
@@ -610,7 +614,8 @@ export class FireballWeapon extends Weapon {
     const countSteps = [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.fireballCount = baseCount + countSteps;
     const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.40, Number((this.baseCooldown * Math.pow(0.92, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.92, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
     const radSteps = [4, 8, 12].filter(lvl => this.level >= lvl).length;
     this.explosionRadius = Number((baseRadius + radSteps * 0.35).toFixed(2));
   }
@@ -632,7 +637,7 @@ export class FireballWeapon extends Weapon {
       const candidates = findClosestEnemies(enemies, playerPos, this.fireballCount, this.range * this.range);
       if (candidates.length === 0) return;
 
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
@@ -727,7 +732,8 @@ export class PoisonPuddleWeapon extends Weapon {
     const countSteps = [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.puddleCount = baseCount + countSteps;
     const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.65, Number((this.baseCooldown * Math.pow(0.93, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
     const radSteps = [4, 8, 12].filter(lvl => this.level >= lvl).length;
     this.puddleRadius = Number((baseRadius + radSteps * 0.25).toFixed(2));
   }
@@ -749,7 +755,7 @@ export class PoisonPuddleWeapon extends Weapon {
       const candidates = findClosestEnemies(enemies, playerPos, this.puddleCount, this.range * this.range);
       if (candidates.length === 0) return;
 
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }

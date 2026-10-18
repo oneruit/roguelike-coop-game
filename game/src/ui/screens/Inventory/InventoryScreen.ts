@@ -379,7 +379,7 @@ export class InventoryScreen extends Screen {
           icon: '⏱️',
           count: player.watchCount,
           title: 'Карманные Часы',
-          desc: `+${Math.round((1 - player.passiveCooldownMultiplier) * 100)}% к ускорению перезарядки (макс. 30%)`
+          desc: `-${Math.round((player.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(player.watchCount, Math.log(30) / Math.log(300)))) * 100)}% к времени перезарядки (макс. 30%)`
         },
         {
           id: 'stat_might_elixir',
@@ -455,8 +455,32 @@ export class InventoryScreen extends Screen {
             const anyW = weapon as any;
             const dps = Math.round(weapon.damage / Math.max(0.08, weapon.effectiveCooldown));
             const dmgNum = Math.round(weapon.damage);
-            const projCount = typeof anyW.projectileCount === 'number' ? anyW.projectileCount : typeof anyW.orbCount === 'number' ? anyW.orbCount : 1;
-            const projSpeed = typeof anyW.projectileSpeed === 'number' ? `${anyW.projectileSpeed} м/с` : typeof anyW.radius === 'number' ? `${anyW.radius}м` : '16 м/с';
+            const projCount =
+              typeof anyW.projectileCount === 'number'
+                ? anyW.projectileCount
+                : typeof anyW.burstCount === 'number'
+                ? anyW.burstCount
+                : typeof anyW.strikeCount === 'number'
+                ? anyW.strikeCount
+                : typeof anyW.spikeCount === 'number'
+                ? anyW.spikeCount
+                : typeof anyW.fireballCount === 'number'
+                ? anyW.fireballCount
+                : typeof anyW.puddleCount === 'number'
+                ? anyW.puddleCount
+                : typeof anyW.orbCount === 'number'
+                ? anyW.orbCount
+                : 1;
+            const isMelee =
+              typeof anyW.slashRadius === 'number' ||
+              typeof anyW.flailRadius === 'number' ||
+              (typeof anyW.radius === 'number' && typeof anyW.projectileSpeed !== 'number');
+            const speedLbl = isMelee ? 'Радиус' : 'Скорость';
+            const speedVal = isMelee
+              ? `${(anyW.slashRadius || anyW.flailRadius || anyW.radius).toFixed(1)}м`
+              : typeof anyW.projectileSpeed === 'number'
+              ? `${anyW.projectileSpeed} м/с`
+              : '16 м/с';
             const dealt = Math.round(weapon.damageDealt || 0).toLocaleString('ru-RU');
 
             return `
@@ -497,8 +521,8 @@ export class InventoryScreen extends Screen {
                   <span class="metric-num" style="color: #38bdf8;">${projCount}</span>
                 </div>
                 <div class="metric-tile">
-                  <span class="metric-lbl">Скорость</span>
-                  <span class="metric-num">${projSpeed} м/с</span>
+                  <span class="metric-lbl">${speedLbl}</span>
+                  <span class="metric-num">${speedVal}</span>
                 </div>
                 <div class="metric-tile">
                   <span class="metric-lbl">Нанесено</span>

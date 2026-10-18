@@ -69,11 +69,10 @@ export class InvokerWeapon extends Weapon {
   }
   public override recalculateStats(): void {
     super.recalculateStats();
-    this.cooldown = Math.max(
-      0.5,
+    const levelCd =
       this.baseCooldown *
-        Math.pow(this.spell ? 0.975 : INVOKE_COOLDOWN_FACTOR, this.level - 1),
-    );
+      Math.pow(this.spell ? 0.975 : INVOKE_COOLDOWN_FACTOR, this.level - 1);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
   public update(
     dt: number,
@@ -122,7 +121,7 @@ export class InvokerWeapon extends Weapon {
       ? this.damage * (this.invokeSource!.damage / INVOKE_BASE_DAMAGE)
       : BalanceManager.getWeaponConfig(invokerWeaponId(spell)).damage *
         (this.damage / INVOKE_BASE_DAMAGE);
-    this.timer = 0;
+    this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
     this.lastSpell = spell;
     this.runtime.cast(
       spell,

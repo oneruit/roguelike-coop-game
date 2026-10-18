@@ -326,3 +326,19 @@ test('Nano-Armor diminishing returns and speed calculation', () => {
     prevDelta = delta;
   }
 });
+
+test('Weapon grades with cooldownReductionBonus strictly reduce cooldown compared to common', () => {
+  const commonBow = new BowWeapon();
+  commonBow.upgrade('common');
+
+  const rareBow = new BowWeapon();
+  rareBow.upgrade('rare');
+
+  const legBow = new BowWeapon();
+  legBow.upgrade('legendary');
+
+  assert.ok(rareBow.cooldown < commonBow.cooldown, `Expected rare CD ${rareBow.cooldown} < common CD ${commonBow.cooldown}`);
+  assert.ok(legBow.cooldown < rareBow.cooldown, `Expected leg CD ${legBow.cooldown} < rare CD ${rareBow.cooldown}`);
+  assert.equal(rareBow.cooldownBonus, 0.08);
+  assert.equal(legBow.cooldownBonus, 0.15);
+});

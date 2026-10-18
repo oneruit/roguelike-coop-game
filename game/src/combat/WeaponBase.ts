@@ -159,15 +159,11 @@ export abstract class Weapon {
     const extraDamage = Math.round(this.damagePerLevel * (cfg.damageMultiplierBonus - 1.0) * this.gradeStatMultiplier);
     this.bonusDamage += extraDamage;
     this.cooldownBonus = Math.min(0.60, this.cooldownBonus + cfg.cooldownReductionBonus);
-    if (cfg.cooldownReductionBonus > 0) {
-      this.cooldown = Math.max(0.08, Number((this.cooldown * (1 - cfg.cooldownReductionBonus)).toFixed(3)));
-    }
   }
 
   public recomputeGradeBonuses(): void {
     this.bonusDamage = 0;
     this.cooldownBonus = 0;
-    this.cooldown = this.baseCooldown;
 
     for (const grade of this.upgradeHistory) {
       const cfg = WEAPON_GRADES[grade];
@@ -175,9 +171,6 @@ export abstract class Weapon {
       const extraDamage = Math.round(this.damagePerLevel * (cfg.damageMultiplierBonus - 1.0) * this.gradeStatMultiplier);
       this.bonusDamage += extraDamage;
       this.cooldownBonus = Math.min(0.60, this.cooldownBonus + cfg.cooldownReductionBonus);
-      if (cfg.cooldownReductionBonus > 0) {
-        this.cooldown = Math.max(0.08, Number((this.cooldown * (1 - cfg.cooldownReductionBonus)).toFixed(3)));
-      }
     }
     this.recalculateStats();
   }

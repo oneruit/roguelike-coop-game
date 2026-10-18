@@ -131,7 +131,7 @@ export class PlayerStats {
     const watchMaxReduction = (watchCfg?.maxValue ?? 30) / 100;
     const watchReduction = counts.watchCount <= 0 ? 0 : Math.min(watchMaxReduction, 0.01 * Math.pow(counts.watchCount, Math.log(watchMaxReduction * 100) / Math.log(300)));
     const metaCdr = metaBonuses?.cooldownReductionBonus ?? 0;
-    const watchMult = Math.max(0.60, 1 - watchReduction - metaCdr);
+    const watchMult = Math.max(0.40, 1 - watchReduction - metaCdr);
     const injectorMult = Math.pow(0.90, injectorStacks);
     const overclockMult = Math.pow(0.82, overclockStacks);
     const cooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);

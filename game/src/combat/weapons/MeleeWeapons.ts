@@ -29,7 +29,8 @@ export class KukriWeapon extends Weapon {
     this.burstCount = baseCount + [2, 4, 6, 8, 10, 12].filter(lvl => this.level >= lvl).length;
     this.pierce = basePierce + [6, 12].filter(lvl => this.level >= lvl).length;
     const cdSteps = [3, 5, 7, 9, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.25, Number((this.baseCooldown * Math.pow(0.94, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.94, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public update(
@@ -41,19 +42,25 @@ export class KukriWeapon extends Weapon {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
-      this.timer = 0;
 
       const sorted = findClosestEnemies(enemies, playerPos, this.burstCount);
       if (sorted.length === 0) return;
 
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
+
+      const burstDelay = Math.max(30, Math.round(110 * this.cooldownMultiplier));
       for (let i = 0; i < this.burstCount; i++) {
         setTimeout(() => {
-          if (sorted.length === 0) return;
-          const target = sorted[i % sorted.length];
-          if (!target || !target.isAlive) return;
+          let target = sorted[i % sorted.length];
+          if (!target || !target.isAlive) {
+            const fallback = findClosestEnemies(enemies, playerPos, 1);
+            if (fallback.length > 0) target = fallback[0];
+          }
 
           const spawnPos = playerPos.clone().add(new Vector3(0, 0.7, 0));
-          const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+          const targetPos = target && target.isAlive
+            ? target.position.clone().add(new Vector3(0, 0.4, 0))
+            : spawnPos.clone().add(new Vector3(0, 0, -10));
           const dir = new Vector3().subVectors(targetPos, spawnPos);
           if (dir.lengthSq() > 0) {
             dir.normalize();
@@ -76,7 +83,7 @@ export class KukriWeapon extends Weapon {
 
           spawnProjectile(proj);
           SoundManager.playSlash();
-        }, i * 110);
+        }, i * burstDelay);
       }
     }
   }
@@ -129,7 +136,8 @@ export class KatanaSlashWeapon extends Weapon {
     const cfg = BalanceManager.getWeaponConfig('katana_slash');
     const baseRad = cfg?.explosionRadius ?? 3.8;
     this.slashRadius = Number((baseRad + (this.level - 1) * 0.22).toFixed(2));
-    this.cooldown = Math.max(0.28, Number((this.baseCooldown * Math.pow(0.93, this.level - 1)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, this.level - 1);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -168,7 +176,7 @@ export class KatanaSlashWeapon extends Weapon {
       // If enemies are nearby or hit, trigger the swing animation and sound
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 45);
       if (hitCount > 0 || nearby) {
-        this.timer = 0;
+        this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('katana_slash', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
@@ -216,7 +224,8 @@ export class WhirlwindSlashWeapon extends Weapon {
     const cfg = BalanceManager.getWeaponConfig('whirlwind_slash');
     const baseRad = cfg?.explosionRadius ?? 3.6;
     this.slashRadius = Number((baseRad + (this.level - 1) * 0.20).toFixed(2));
-    this.cooldown = Math.max(0.18, Number((this.baseCooldown * Math.pow(0.93, this.level - 1)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, this.level - 1);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -254,7 +263,7 @@ export class WhirlwindSlashWeapon extends Weapon {
 
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 40);
       if (hitCount > 0 || nearby) {
-        this.timer = 0;
+        this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('whirlwind_slash', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
@@ -302,7 +311,8 @@ export class GreatswordWeapon extends Weapon {
     const cfg = BalanceManager.getWeaponConfig('greatsword');
     const baseRad = cfg?.explosionRadius ?? 4.2;
     this.slashRadius = Number((baseRad + (this.level - 1) * 0.25).toFixed(2));
-    this.cooldown = Math.max(0.30, Number((this.baseCooldown * Math.pow(0.93, this.level - 1)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, this.level - 1);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -340,7 +350,7 @@ export class GreatswordWeapon extends Weapon {
 
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 48);
       if (hitCount > 0 || nearby) {
-        this.timer = 0;
+        this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('greatsword', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
@@ -393,7 +403,8 @@ export class FlailWeapon extends Weapon {
     const baseKb = cfg?.knockback ?? 0.35;
     this.flailRadius = Number((baseRad + (this.level - 1) * 0.22).toFixed(2));
     this.knockback = Number((baseKb + (this.level - 1) * 0.04).toFixed(2));
-    this.cooldown = Math.max(0.25, Number((this.baseCooldown * Math.pow(0.93, this.level - 1)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, this.level - 1);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -437,7 +448,7 @@ export class FlailWeapon extends Weapon {
 
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 42);
       if (hitCount > 0 || nearby) {
-        this.timer = 0;
+        this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('flail', playerPos, this.flailRadius, attackAngle);
         if (this.onTriggerAttack) {
           this.onTriggerAttack();
