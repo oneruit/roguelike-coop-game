@@ -63,6 +63,27 @@ export class ChestManager {
   public chests: ChestInstance[] = [];
   public chronosDroppedInCurrentBiome: boolean = false;
   private static nextId = 1;
+  public isDeclarative = false;
+  private chestListeners = new Set<(action: 'add' | 'remove' | 'reset', chest?: ChestInstance) => void>();
+
+  public addChestListener(listener: (action: 'add' | 'remove' | 'reset', chest?: ChestInstance) => void): () => void {
+    this.chestListeners.add(listener);
+    return () => this.chestListeners.delete(listener);
+  }
+
+  public setDeclarative(declarative: boolean): void {
+    if (this.isDeclarative === declarative) return;
+    this.isDeclarative = declarative;
+    if (declarative) {
+      for (const chest of this.chests) {
+        this.scene.remove(chest.mesh);
+      }
+    } else {
+      for (const chest of this.chests) {
+        this.scene.add(chest.mesh);
+      }
+    }
+  }
 
   // Shared Textures & Geometry for high performance
   private static textureLoader = new TextureLoader();
@@ -277,7 +298,12 @@ export class ChestManager {
     };
 
     this.chests.push(chest);
-    this.scene.add(group);
+    if (!this.isDeclarative) {
+      this.scene.add(group);
+    }
+    for (const listener of this.chestListeners) {
+      listener('add', chest);
+    }
     return chest;
   }
 
@@ -507,9 +533,14 @@ export class ChestManager {
   public clear() {
     this.chronosDroppedInCurrentBiome = false;
     for (const chest of this.chests) {
-      this.scene.remove(chest.mesh);
+      if (!this.isDeclarative) {
+        this.scene.remove(chest.mesh);
+      }
     }
     this.chests = [];
+    for (const listener of this.chestListeners) {
+      listener('reset');
+    }
   }
 
   public getSnapshot(): { id: string; tier: ChestTier; baseCost: number; x: number; z: number; isOpened: boolean }[] {

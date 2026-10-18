@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T16:41:43.079Z | **Files:** 175 | **Top-level:** 529 | **Class Methods:** 1149
+> **Generated:** 2026-10-18T16:50:32.478Z | **Files:** 180 | **Top-level:** 537 | **Class Methods:** 1156
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 483 |
+| `game/src` | 491 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -53,12 +53,16 @@ Run `npm run index` to refresh this cache.
 | `Altar.updateVisuals` | `method` | [`game/src/world/Altar.ts:431`](../../game/src/world/Altar.ts#L431) | Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh a... |
 | `AltarConfig` | `interface` | [`game/src/world/Altar.ts:27`](../../game/src/world/Altar.ts#L27) | - |
 | `AltarManager` | `class` | [`game/src/world/AltarManager.ts:5`](../../game/src/world/AltarManager.ts#L5) | - |
-| `AltarManager.applyRemoteCapture` | `method` | [`game/src/world/AltarManager.ts:71`](../../game/src/world/AltarManager.ts#L71) | - |
-| `AltarManager.clear` | `method` | [`game/src/world/AltarManager.ts:76`](../../game/src/world/AltarManager.ts#L76) | - |
-| `AltarManager.registerAltar` | `method` | [`game/src/world/AltarManager.ts:14`](../../game/src/world/AltarManager.ts#L14) | - |
-| `AltarManager.unregisterAltar` | `method` | [`game/src/world/AltarManager.ts:24`](../../game/src/world/AltarManager.ts#L24) | - |
-| `AltarManager.updateVisuals` | `method` | [`game/src/world/AltarManager.ts:47`](../../game/src/world/AltarManager.ts#L47) | - |
+| `AltarManager.addAltarListener` | `method` | [`game/src/world/AltarManager.ts:16`](../../game/src/world/AltarManager.ts#L16) | - |
+| `AltarManager.applyRemoteCapture` | `method` | [`game/src/world/AltarManager.ts:102`](../../game/src/world/AltarManager.ts#L102) | - |
+| `AltarManager.clear` | `method` | [`game/src/world/AltarManager.ts:107`](../../game/src/world/AltarManager.ts#L107) | - |
+| `AltarManager.registerAltar` | `method` | [`game/src/world/AltarManager.ts:35`](../../game/src/world/AltarManager.ts#L35) | - |
+| `AltarManager.setDeclarative` | `method` | [`game/src/world/AltarManager.ts:21`](../../game/src/world/AltarManager.ts#L21) | - |
+| `AltarManager.unregisterAltar` | `method` | [`game/src/world/AltarManager.ts:50`](../../game/src/world/AltarManager.ts#L50) | - |
+| `AltarManager.updateVisuals` | `method` | [`game/src/world/AltarManager.ts:78`](../../game/src/world/AltarManager.ts#L78) | - |
 | `AltarNotificationPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:46`](../../game/src/mechanics/events/GameEventBus.ts#L46) | - |
+| `AltarsRenderer` | `const` | [`game/src/ui/react/r3f/world/AltarsRenderer.tsx:16`](../../game/src/ui/react/r3f/world/AltarsRenderer.tsx#L16) | Declarative R3F container for capture altars and interaction zones. Bridges... |
+| `AltarsRendererProps` | `interface` | [`game/src/ui/react/r3f/world/AltarsRenderer.tsx:8`](../../game/src/ui/react/r3f/world/AltarsRenderer.tsx#L8) | - |
 | `ANIM_LAYOUT_LEGACY` | `const` | [`game/src/entities/CharacterAnimator.ts:60`](../../game/src/entities/CharacterAnimator.ts#L60) | Legacy 4x4 / Ronin Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3... |
 | `ANIM_LAYOUT_NECROMANCER` | `const` | [`game/src/entities/CharacterAnimator.ts:45`](../../game/src/entities/CharacterAnimator.ts#L45) | Necromancer / Transition Layout: Row 0: FRONT, Row 1: BACK, Row 2: LEFT, Ro... |
 | `ANIM_LAYOUT_V2` | `const` | [`game/src/entities/CharacterAnimator.ts:30`](../../game/src/entities/CharacterAnimator.ts#L30) | V2 Pipeline Standard Layout: Row 0: FRONT (Лицо) Row 1: BACK (Спина) Row 2:... |
@@ -253,24 +257,31 @@ Run `npm run index` to refresh this cache.
 | `CHEST_TIERS` | `const` | [`game/src/shared/types/registry.ts:28`](../../game/src/shared/types/registry.ts#L28) | - |
 | `ChestInstance` | `interface` | [`game/src/world/ChestManager.ts:41`](../../game/src/world/ChestManager.ts#L41) | - |
 | `ChestManager` | `class` | [`game/src/world/ChestManager.ts:61`](../../game/src/world/ChestManager.ts#L61) | - |
-| `ChestManager.clear` | `method` | [`game/src/world/ChestManager.ts:507`](../../game/src/world/ChestManager.ts#L507) | - |
-| `ChestManager.getChestGeometry` | `method` | [`game/src/world/ChestManager.ts:76`](../../game/src/world/ChestManager.ts#L76) | - |
-| `ChestManager.getShadowGeometry` | `method` | [`game/src/world/ChestManager.ts:86`](../../game/src/world/ChestManager.ts#L86) | - |
-| `ChestManager.getShadowTexture` | `method` | [`game/src/world/ChestManager.ts:95`](../../game/src/world/ChestManager.ts#L95) | - |
-| `ChestManager.getSheetTexture` | `method` | [`game/src/world/ChestManager.ts:109`](../../game/src/world/ChestManager.ts#L109) | - |
-| `ChestManager.getSnapshot` | `method` | [`game/src/world/ChestManager.ts:515`](../../game/src/world/ChestManager.ts#L515) | - |
-| `ChestManager.getStageChestTiers` | `method` | [`game/src/world/ChestManager.ts:293`](../../game/src/world/ChestManager.ts#L293) | Returns a deterministic list of chest tiers for the given stage and count, ... |
-| `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:410`](../../game/src/world/ChestManager.ts#L410) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
+| `ChestManager.addChestListener` | `method` | [`game/src/world/ChestManager.ts:69`](../../game/src/world/ChestManager.ts#L69) | - |
+| `ChestManager.clear` | `method` | [`game/src/world/ChestManager.ts:533`](../../game/src/world/ChestManager.ts#L533) | - |
+| `ChestManager.getChestGeometry` | `method` | [`game/src/world/ChestManager.ts:97`](../../game/src/world/ChestManager.ts#L97) | - |
+| `ChestManager.getShadowGeometry` | `method` | [`game/src/world/ChestManager.ts:107`](../../game/src/world/ChestManager.ts#L107) | - |
+| `ChestManager.getShadowTexture` | `method` | [`game/src/world/ChestManager.ts:116`](../../game/src/world/ChestManager.ts#L116) | - |
+| `ChestManager.getSheetTexture` | `method` | [`game/src/world/ChestManager.ts:130`](../../game/src/world/ChestManager.ts#L130) | - |
+| `ChestManager.getSnapshot` | `method` | [`game/src/world/ChestManager.ts:546`](../../game/src/world/ChestManager.ts#L546) | - |
+| `ChestManager.getStageChestTiers` | `method` | [`game/src/world/ChestManager.ts:319`](../../game/src/world/ChestManager.ts#L319) | Returns a deterministic list of chest tiers for the given stage and count, ... |
+| `ChestManager.setDeclarative` | `method` | [`game/src/world/ChestManager.ts:74`](../../game/src/world/ChestManager.ts#L74) | - |
+| `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:436`](../../game/src/world/ChestManager.ts#L436) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
+| `ChestsRenderer` | `const` | [`game/src/ui/react/r3f/world/ChestsRenderer.tsx:13`](../../game/src/ui/react/r3f/world/ChestsRenderer.tsx#L13) | Declarative R3F container for stage chests. Manages chest object lifecycle ... |
+| `ChestsRendererProps` | `interface` | [`game/src/ui/react/r3f/world/ChestsRenderer.tsx:5`](../../game/src/ui/react/r3f/world/ChestsRenderer.tsx#L5) | - |
 | `ChestSyncInfo` | `interface` | [`game/src/shared/types/network.ts:191`](../../game/src/shared/types/network.ts#L191) | - |
 | `ChestTier` | `type` | [`game/src/shared/types/registry.ts:29`](../../game/src/shared/types/registry.ts#L29) | - |
 | `ChestTier` | `type` | [`game/src/world/ChestManager.ts:26`](../../game/src/world/ChestManager.ts#L26) | - |
 | `ChunkManager` | `class` | [`game/src/world/ChunkManager.ts:28`](../../game/src/world/ChunkManager.ts#L28) | - |
-| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:290`](../../game/src/world/ChunkManager.ts#L290) | Deep cleanup of all chunk geometries and entities. |
-| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:278`](../../game/src/world/ChunkManager.ts#L278) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
-| `ChunkManager.getElevation` | `method` | [`game/src/world/ChunkManager.ts:60`](../../game/src/world/ChunkManager.ts#L60) | Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5... |
-| `ChunkManager.getNormal` | `method` | [`game/src/world/ChunkManager.ts:74`](../../game/src/world/ChunkManager.ts#L74) | Returns surface normal vector at world coordinate (x, z). |
-| `ChunkManager.getSlowFactor` | `method` | [`game/src/world/ChunkManager.ts:67`](../../game/src/world/ChunkManager.ts#L67) | Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 norma... |
-| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:270`](../../game/src/world/ChunkManager.ts#L270) | With the fixed preloaded map, update does not need to stream or unload chun... |
+| `ChunkManager.addChunkListener` | `method` | [`game/src/world/ChunkManager.ts:59`](../../game/src/world/ChunkManager.ts#L59) | - |
+| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:320`](../../game/src/world/ChunkManager.ts#L320) | Deep cleanup of all chunk geometries and entities. |
+| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:308`](../../game/src/world/ChunkManager.ts#L308) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
+| `ChunkManager.getActiveChunks` | `method` | [`game/src/world/ChunkManager.ts:64`](../../game/src/world/ChunkManager.ts#L64) | - |
+| `ChunkManager.getElevation` | `method` | [`game/src/world/ChunkManager.ts:85`](../../game/src/world/ChunkManager.ts#L85) | Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5... |
+| `ChunkManager.getNormal` | `method` | [`game/src/world/ChunkManager.ts:99`](../../game/src/world/ChunkManager.ts#L99) | Returns surface normal vector at world coordinate (x, z). |
+| `ChunkManager.getSlowFactor` | `method` | [`game/src/world/ChunkManager.ts:92`](../../game/src/world/ChunkManager.ts#L92) | Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 norma... |
+| `ChunkManager.setDeclarative` | `method` | [`game/src/world/ChunkManager.ts:68`](../../game/src/world/ChunkManager.ts#L68) | - |
+| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:300`](../../game/src/world/ChunkManager.ts#L300) | With the fixed preloaded map, update does not need to stream or unload chun... |
 | `ClientSyncMessage` | `interface` | [`game/src/shared/types/network.ts:229`](../../game/src/shared/types/network.ts#L229) | - |
 | `CloudSyncManager` | `class` | [`game/src/meta/CloudSyncManager.ts:24`](../../game/src/meta/CloudSyncManager.ts#L24) | Cloud Synchronization Manager for The Rift. Bridges local client storage (M... |
 | `CloudSyncManager.deleteAccount` | `method` | [`game/src/meta/CloudSyncManager.ts:312`](../../game/src/meta/CloudSyncManager.ts#L312) | Permanently deletes user profile data and unlinks account. |
@@ -1209,8 +1220,8 @@ Run `npm run index` to refresh this cache.
 | `R3FErrorBoundary.getDerivedStateFromError` | `method` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:23`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L23) | - |
 | `R3FErrorBoundaryProps` | `interface` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:3`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L3) | - |
 | `RARE_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:268`](../../game/src/items/RiftItemSystem.ts#L268) | - |
-| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:21`](../../game/src/ui/react/ReactUIRoot.tsx#L21) | - |
-| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:12`](../../game/src/ui/react/ReactUIRoot.tsx#L12) | - |
+| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:28`](../../game/src/ui/react/ReactUIRoot.tsx#L28) | - |
+| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:15`](../../game/src/ui/react/ReactUIRoot.tsx#L15) | - |
 | `ReaperScytheWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:23`](../../game/src/combat/weapons/MagicWeapons.ts#L23) | Reaper's Scythe (Коса Жнеца) Rotating scythes circle the hero, cutting thro... |
 | `ReaperScytheWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:49`](../../game/src/combat/weapons/MagicWeapons.ts#L49) | - |
 | `ReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:103`](../../game/src/combat/weapons/MagicWeapons.ts#L103) | - |
@@ -1244,8 +1255,8 @@ Run `npm run index` to refresh this cache.
 | `resetSupabaseClients` | `function` | [`game/src/balance/supabaseClient.ts:140`](../../game/src/balance/supabaseClient.ts#L140) | - |
 | `ReviveActionMessage` | `interface` | [`game/src/shared/types/network.ts:255`](../../game/src/shared/types/network.ts#L255) | - |
 | `RIFT_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:44`](../../game/src/items/RiftItemSystem.ts#L44) | - |
-| `RiftCanvas` | `const` | [`game/src/ui/react/r3f/RiftCanvas.tsx:24`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L24) | Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, sha... |
-| `RiftCanvasProps` | `interface` | [`game/src/ui/react/r3f/RiftCanvas.tsx:14`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L14) | - |
+| `RiftCanvas` | `const` | [`game/src/ui/react/r3f/RiftCanvas.tsx:33`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L33) | Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, sha... |
+| `RiftCanvasProps` | `interface` | [`game/src/ui/react/r3f/RiftCanvas.tsx:19`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L19) | - |
 | `RiftItemDef` | `interface` | [`game/src/items/RiftItemSystem.ts:34`](../../game/src/items/RiftItemSystem.ts#L34) | - |
 | `RiftItemId` | `type` | [`game/src/items/RiftItemSystem.ts:5`](../../game/src/items/RiftItemSystem.ts#L5) | - |
 | `RiftItemId` | `type` | [`game/src/shared/types/entities.ts:48`](../../game/src/shared/types/entities.ts#L48) | - |
@@ -1674,6 +1685,8 @@ Run `npm run index` to refresh this cache.
 | `usePlayerStore` | `const` | [`game/src/ui/stores/usePlayerStore.ts:111`](../../game/src/ui/stores/usePlayerStore.ts#L111) | Player store featuring dual-frequency updates: - Continuous meters (HP, shi... |
 | `useUIModalStore` | `const` | [`game/src/ui/stores/useUIModalStore.ts:50`](../../game/src/ui/stores/useUIModalStore.ts#L50) | UI Modal store coordinating modal stack, overlays, and card draft dialogs. |
 | `VersionInfo` | `interface` | [`game/src/core/UpdateNotifier.ts:1`](../../game/src/core/UpdateNotifier.ts#L1) | - |
+| `VfxEnvironment` | `const` | [`game/src/ui/react/r3f/world/VfxEnvironment.tsx:21`](../../game/src/ui/react/r3f/world/VfxEnvironment.tsx#L21) | Ambient environmental VFX component for The Rift. Renders drifting dust mot... |
+| `VfxEnvironmentProps` | `interface` | [`game/src/ui/react/r3f/world/VfxEnvironment.tsx:11`](../../game/src/ui/react/r3f/world/VfxEnvironment.tsx#L11) | - |
 | `Weapon` | `class` | [`game/src/combat/WeaponBase.ts:91`](../../game/src/combat/WeaponBase.ts#L91) | - |
 | `WEAPON_COLORS` | `const` | [`admin/src/constants.ts:53`](../../admin/src/constants.ts#L53) | - |
 | `WEAPON_GRADES` | `const` | [`game/src/combat/WeaponGrades.ts:16`](../../game/src/combat/WeaponGrades.ts#L16) | - |
@@ -1698,3 +1711,5 @@ Run `npm run index` to refresh this cache.
 | `WhirlwindSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:283`](../../game/src/combat/weapons/MeleeWeapons.ts#L283) | - |
 | `WhirlwindSlashWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:231`](../../game/src/combat/weapons/MeleeWeapons.ts#L231) | - |
 | `WhirlwindSlashWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:276`](../../game/src/combat/weapons/MeleeWeapons.ts#L276) | - |
+| `WorldChunks` | `const` | [`game/src/ui/react/r3f/world/WorldChunks.tsx:15`](../../game/src/ui/react/r3f/world/WorldChunks.tsx#L15) | Declarative R3F container for terrain chunks. Enforces scene ownership guar... |
+| `WorldChunksProps` | `interface` | [`game/src/ui/react/r3f/world/WorldChunks.tsx:7`](../../game/src/ui/react/r3f/world/WorldChunks.tsx#L7) | - |

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T16:41:43.079Z",
-  "totalFiles": 175,
-  "totalSymbols": 1678,
-  "topLevelCount": 529,
-  "methodsCount": 1149,
+  "generatedAt": "2026-10-18T16:50:32.478Z",
+  "totalFiles": 180,
+  "totalSymbols": 1693,
+  "topLevelCount": 537,
+  "methodsCount": 1156,
   "entities": {
     "heroes": [
       {
@@ -872,10 +872,18 @@
       "line": 5
     },
     {
+      "name": "AltarManager.addAltarListener",
+      "kind": "method",
+      "file": "game/src/world/AltarManager.ts",
+      "line": 16,
+      "className": "AltarManager",
+      "methodName": "addAltarListener"
+    },
+    {
       "name": "AltarManager.applyRemoteCapture",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 71,
+      "line": 102,
       "className": "AltarManager",
       "methodName": "applyRemoteCapture"
     },
@@ -883,7 +891,7 @@
       "name": "AltarManager.clear",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 76,
+      "line": 107,
       "className": "AltarManager",
       "methodName": "clear"
     },
@@ -891,15 +899,23 @@
       "name": "AltarManager.registerAltar",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 14,
+      "line": 35,
       "className": "AltarManager",
       "methodName": "registerAltar"
+    },
+    {
+      "name": "AltarManager.setDeclarative",
+      "kind": "method",
+      "file": "game/src/world/AltarManager.ts",
+      "line": 21,
+      "className": "AltarManager",
+      "methodName": "setDeclarative"
     },
     {
       "name": "AltarManager.unregisterAltar",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 24,
+      "line": 50,
       "className": "AltarManager",
       "methodName": "unregisterAltar"
     },
@@ -907,7 +923,7 @@
       "name": "AltarManager.updateVisuals",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 47,
+      "line": 78,
       "className": "AltarManager",
       "methodName": "updateVisuals"
     },
@@ -916,6 +932,19 @@
       "kind": "interface",
       "file": "game/src/mechanics/events/GameEventBus.ts",
       "line": 46
+    },
+    {
+      "name": "AltarsRenderer",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/world/AltarsRenderer.tsx",
+      "line": 16,
+      "doc": "Declarative R3F container for capture altars and interaction zones. Bridges altar simulation with declarative scene hierarchy."
+    },
+    {
+      "name": "AltarsRendererProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/world/AltarsRenderer.tsx",
+      "line": 8
     },
     {
       "name": "ANIM_LAYOUT_LEGACY",
@@ -2342,10 +2371,18 @@
       "line": 61
     },
     {
+      "name": "ChestManager.addChestListener",
+      "kind": "method",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 69,
+      "className": "ChestManager",
+      "methodName": "addChestListener"
+    },
+    {
       "name": "ChestManager.clear",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 507,
+      "line": 533,
       "className": "ChestManager",
       "methodName": "clear"
     },
@@ -2353,7 +2390,7 @@
       "name": "ChestManager.getChestGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 76,
+      "line": 97,
       "className": "ChestManager",
       "methodName": "getChestGeometry"
     },
@@ -2361,7 +2398,7 @@
       "name": "ChestManager.getShadowGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 86,
+      "line": 107,
       "className": "ChestManager",
       "methodName": "getShadowGeometry"
     },
@@ -2369,7 +2406,7 @@
       "name": "ChestManager.getShadowTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 95,
+      "line": 116,
       "className": "ChestManager",
       "methodName": "getShadowTexture"
     },
@@ -2377,7 +2414,7 @@
       "name": "ChestManager.getSheetTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 109,
+      "line": 130,
       "className": "ChestManager",
       "methodName": "getSheetTexture"
     },
@@ -2385,7 +2422,7 @@
       "name": "ChestManager.getSnapshot",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 515,
+      "line": 546,
       "className": "ChestManager",
       "methodName": "getSnapshot"
     },
@@ -2393,19 +2430,40 @@
       "name": "ChestManager.getStageChestTiers",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 293,
+      "line": 319,
       "className": "ChestManager",
       "methodName": "getStageChestTiers",
       "doc": "Returns a deterministic list of chest tiers for the given stage and count, shuffled with the provided PRNG. Stage 1: 11 small, 4 large, 0 legendary Stage 2: 10 small, 5 large, 0 legendary Stage 3: 0 small, 11 large, 4 legendary Stage 4+: 0 small, 4 large, 11 legendary"
     },
     {
+      "name": "ChestManager.setDeclarative",
+      "kind": "method",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 74,
+      "className": "ChestManager",
+      "methodName": "setDeclarative"
+    },
+    {
       "name": "ChestManager.update",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 410,
+      "line": 436,
       "className": "ChestManager",
       "methodName": "update",
       "doc": "Updates floating chest hologram visuals, pulse aura, and opening animations."
+    },
+    {
+      "name": "ChestsRenderer",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/world/ChestsRenderer.tsx",
+      "line": 13,
+      "doc": "Declarative R3F container for stage chests. Manages chest object lifecycle and mounting within R3F."
+    },
+    {
+      "name": "ChestsRendererProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/world/ChestsRenderer.tsx",
+      "line": 5
     },
     {
       "name": "ChestSyncInfo",
@@ -2432,10 +2490,18 @@
       "line": 28
     },
     {
+      "name": "ChunkManager.addChunkListener",
+      "kind": "method",
+      "file": "game/src/world/ChunkManager.ts",
+      "line": 59,
+      "className": "ChunkManager",
+      "methodName": "addChunkListener"
+    },
+    {
       "name": "ChunkManager.clear",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 290,
+      "line": 320,
       "className": "ChunkManager",
       "methodName": "clear",
       "doc": "Deep cleanup of all chunk geometries and entities."
@@ -2444,16 +2510,24 @@
       "name": "ChunkManager.cull",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 278,
+      "line": 308,
       "className": "ChunkManager",
       "methodName": "cull",
       "doc": "Frustum Culling: Hides chunks that are completely outside the camera view. Keeps active rendering to only the 6-9 chunks in front of the camera."
     },
     {
+      "name": "ChunkManager.getActiveChunks",
+      "kind": "method",
+      "file": "game/src/world/ChunkManager.ts",
+      "line": 64,
+      "className": "ChunkManager",
+      "methodName": "getActiveChunks"
+    },
+    {
       "name": "ChunkManager.getElevation",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 60,
+      "line": 85,
       "className": "ChunkManager",
       "methodName": "getElevation",
       "doc": "Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5D pixel art consistency)."
@@ -2462,7 +2536,7 @@
       "name": "ChunkManager.getNormal",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 74,
+      "line": 99,
       "className": "ChunkManager",
       "methodName": "getNormal",
       "doc": "Returns surface normal vector at world coordinate (x, z)."
@@ -2471,16 +2545,24 @@
       "name": "ChunkManager.getSlowFactor",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 67,
+      "line": 92,
       "className": "ChunkManager",
       "methodName": "getSlowFactor",
       "doc": "Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 normally)."
     },
     {
+      "name": "ChunkManager.setDeclarative",
+      "kind": "method",
+      "file": "game/src/world/ChunkManager.ts",
+      "line": 68,
+      "className": "ChunkManager",
+      "methodName": "setDeclarative"
+    },
+    {
       "name": "ChunkManager.update",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 270,
+      "line": 300,
       "className": "ChunkManager",
       "methodName": "update",
       "doc": "With the fixed preloaded map, update does not need to stream or unload chunks. Runs in 0ms without runtime memory allocation."
@@ -9601,13 +9683,13 @@
       "name": "ReactUIRoot",
       "kind": "const",
       "file": "game/src/ui/react/ReactUIRoot.tsx",
-      "line": 21
+      "line": 28
     },
     {
       "name": "ReactUIRootProps",
       "kind": "interface",
       "file": "game/src/ui/react/ReactUIRoot.tsx",
-      "line": 12
+      "line": 15
     },
     {
       "name": "ReaperScytheWeapon",
@@ -9838,14 +9920,14 @@
       "name": "RiftCanvas",
       "kind": "const",
       "file": "game/src/ui/react/r3f/RiftCanvas.tsx",
-      "line": 24,
+      "line": 33,
       "doc": "Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, shadow map settings, tone mapping, and error isolation."
     },
     {
       "name": "RiftCanvasProps",
       "kind": "interface",
       "file": "game/src/ui/react/r3f/RiftCanvas.tsx",
-      "line": 14
+      "line": 19
     },
     {
       "name": "RiftItemDef",
@@ -13126,6 +13208,19 @@
       "line": 1
     },
     {
+      "name": "VfxEnvironment",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/world/VfxEnvironment.tsx",
+      "line": 21,
+      "doc": "Ambient environmental VFX component for The Rift. Renders drifting dust motes and optional celestial portal aura without garbage collection spikes."
+    },
+    {
+      "name": "VfxEnvironmentProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/world/VfxEnvironment.tsx",
+      "line": 11
+    },
+    {
       "name": "Weapon",
       "kind": "class",
       "file": "game/src/combat/WeaponBase.ts",
@@ -13299,6 +13394,19 @@
       "line": 276,
       "className": "WhirlwindSlashWeapon",
       "methodName": "upgrade"
+    },
+    {
+      "name": "WorldChunks",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/world/WorldChunks.tsx",
+      "line": 15,
+      "doc": "Declarative R3F container for terrain chunks. Enforces scene ownership guardrail: mounts chunks via stable keys without mutating R3F scene directly."
+    },
+    {
+      "name": "WorldChunksProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/world/WorldChunks.tsx",
+      "line": 7
     }
   ]
 }

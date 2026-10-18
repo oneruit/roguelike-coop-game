@@ -335,6 +335,10 @@ class Game {
 
     initReactUI('react-ui-root', {
       scene: this.engine.scene,
+      chunkManager: this.engine.chunkManager,
+      altarManager: this.engine.altarManager,
+      chestManager: this.chestManager,
+      portalPosition: this.riftTeleporter.position,
       getTargetPosition: () => this.player.position,
       mainMenuProps: {
         onStartSinglePlayer: () => {

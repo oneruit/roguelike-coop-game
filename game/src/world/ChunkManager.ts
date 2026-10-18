@@ -45,6 +45,8 @@ export class ChunkManager {
   public roughTerrainManager: RoughTerrainManager;
   private oasisGroups: Group[] = [];
   private activeChunks = new Map<string, Group>();
+  public isDeclarative: boolean = false;
+  private chunkListeners: Set<(action: 'add' | 'remove' | 'reset', key?: string, group?: Group) => void> = new Set();
 
   constructor(scene: Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
     this.scene = scene;
@@ -52,6 +54,29 @@ export class ChunkManager {
     this.obstacleManager = obstacleManager;
     this.roughTerrainManager = new RoughTerrainManager(this.scene);
     TerrainMaterials.init();
+  }
+
+  public addChunkListener(listener: (action: 'add' | 'remove' | 'reset', key?: string, group?: Group) => void): () => void {
+    this.chunkListeners.add(listener);
+    return () => this.chunkListeners.delete(listener);
+  }
+
+  public getActiveChunks(): Map<string, Group> {
+    return this.activeChunks;
+  }
+
+  public setDeclarative(declarative: boolean): void {
+    if (this.isDeclarative === declarative) return;
+    this.isDeclarative = declarative;
+    if (declarative) {
+      for (const group of this.activeChunks.values()) {
+        this.scene.remove(group);
+      }
+    } else {
+      for (const group of this.activeChunks.values()) {
+        this.scene.add(group);
+      }
+    }
   }
 
   /**
@@ -230,7 +255,12 @@ export class ChunkManager {
         chunkGroup.add(floorMesh);
 
         this.activeChunks.set(key, chunkGroup);
-        this.scene.add(chunkGroup);
+        if (!this.isDeclarative) {
+          this.scene.add(chunkGroup);
+        }
+        for (const listener of this.chunkListeners) {
+          listener('add', key, chunkGroup);
+        }
       }
     }
 
@@ -288,8 +318,13 @@ export class ChunkManager {
    * Deep cleanup of all chunk geometries and entities.
    */
   public clear() {
-    for (const group of this.activeChunks.values()) {
-      this.scene.remove(group);
+    for (const [key, group] of this.activeChunks.entries()) {
+      if (!this.isDeclarative) {
+        this.scene.remove(group);
+      }
+      for (const listener of this.chunkListeners) {
+        listener('remove', key, group);
+      }
       group.traverse((obj) => {
         if (obj instanceof Mesh) {
           obj.geometry.dispose();
@@ -297,6 +332,9 @@ export class ChunkManager {
       });
     }
     this.activeChunks.clear();
+    for (const listener of this.chunkListeners) {
+      listener('reset');
+    }
 
     for (const oasis of this.oasisGroups) {
       this.scene.remove(oasis);

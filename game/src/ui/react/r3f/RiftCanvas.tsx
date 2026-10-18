@@ -10,11 +10,20 @@ import { GameCamera } from './GameCamera';
 import { DayNightLighting } from './DayNightLighting';
 import { SceneBridge } from './SceneBridge';
 import { R3FErrorBoundary } from './R3FErrorBoundary';
+import { WorldChunks, AltarsRenderer, ChestsRenderer, VfxEnvironment } from './world';
+import { FeatureFlags } from '../../../core/FeatureFlags';
+import type { ChunkManager } from '../../../world/ChunkManager';
+import type { AltarManager } from '../../../world/AltarManager';
+import type { ChestManager } from '../../../world/ChestManager';
 
 export interface RiftCanvasProps {
   scene: Scene;
   timeOfDay?: 'day' | 'night';
   getTargetPosition?: () => Vector3;
+  chunkManager?: ChunkManager;
+  altarManager?: AltarManager;
+  chestManager?: ChestManager;
+  portalPosition?: Vector3;
 }
 
 /**
@@ -24,8 +33,13 @@ export interface RiftCanvasProps {
 export const RiftCanvas: React.FC<RiftCanvasProps> = ({
   scene,
   timeOfDay = 'day',
-  getTargetPosition
+  getTargetPosition,
+  chunkManager,
+  altarManager,
+  chestManager,
+  portalPosition
 }) => {
+  const isWorldDeclarative = FeatureFlags.getInstance().isEnabled('r3f_world');
   return (
     <div
       id="r3f-canvas-container"
@@ -68,6 +82,16 @@ export const RiftCanvas: React.FC<RiftCanvasProps> = ({
 
             {/* Lighting */}
             <DayNightLighting timeOfDay={timeOfDay} getTargetPosition={getTargetPosition} />
+
+            {/* Declarative World Systems (Phase 4) */}
+            {isWorldDeclarative && (
+              <>
+                <WorldChunks chunkManager={chunkManager} />
+                <AltarsRenderer altarManager={altarManager} />
+                <ChestsRenderer chestManager={chestManager} />
+                <VfxEnvironment getTargetPosition={getTargetPosition} portalPosition={portalPosition} />
+              </>
+            )}
 
             {/* Imperative Scene Bridge */}
             <SceneBridge scene={scene} />

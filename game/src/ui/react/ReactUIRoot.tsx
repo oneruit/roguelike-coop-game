@@ -8,9 +8,16 @@ import { GameOverModal, type GameOverModalProps } from './modals/GameOverModal';
 
 import { RiftCanvas } from './r3f/RiftCanvas';
 import type { Scene, Vector3 } from 'three';
+import type { ChunkManager } from '../../world/ChunkManager';
+import type { AltarManager } from '../../world/AltarManager';
+import type { ChestManager } from '../../world/ChestManager';
 
 export interface ReactUIRootProps {
   scene?: Scene;
+  chunkManager?: ChunkManager;
+  altarManager?: AltarManager;
+  chestManager?: ChestManager;
+  portalPosition?: Vector3;
   getTargetPosition?: () => Vector3;
   mainMenuProps?: MainMenuModalProps;
   levelUpProps?: LevelUpModalProps;
@@ -20,6 +27,10 @@ export interface ReactUIRootProps {
 
 export const ReactUIRoot: React.FC<ReactUIRootProps> = ({
   scene,
+  chunkManager,
+  altarManager,
+  chestManager,
+  portalPosition,
   getTargetPosition,
   mainMenuProps,
   levelUpProps,
@@ -50,6 +61,10 @@ export const ReactUIRoot: React.FC<ReactUIRootProps> = ({
         <RiftCanvas
           scene={scene}
           getTargetPosition={getTargetPosition}
+          chunkManager={chunkManager}
+          altarManager={altarManager}
+          chestManager={chestManager}
+          portalPosition={portalPosition}
         />
       )}
 
