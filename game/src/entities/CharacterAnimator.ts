@@ -128,11 +128,13 @@ export class CharacterAnimator {
 
   public triggerAttack(duration: number = 0.5): void {
     this.attackAnimTimer = duration;
-    this.animFrameTimer = 0;
     const cols = this.layout.cols || 6;
     const targetFps = Math.max(8, cols / Math.max(0.05, duration));
     this.stateConfigs.IDLE_ATTACK.fps = targetFps;
     this.stateConfigs.WALK_ATTACK.fps = targetFps;
+    if (this.animState !== 'IDLE_ATTACK' && this.animState !== 'WALK_ATTACK') {
+      this.animFrameTimer = 0;
+    }
   }
 
   public setState(state: HeroAnimState): void {

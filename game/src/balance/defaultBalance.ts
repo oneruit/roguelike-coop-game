@@ -563,10 +563,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'uncommon',
       icon: '🛡️',
       color: '#22c55e',
-      description: 'Ускоряет перезарядку брони на -0.25 сек и повышает скорость восстановления на +25%',
-      stackText: '-0.25с задержки и +25% скорости за стак (макс. 5)',
-      baseValue: 0.25,
-      scaling: '-0.25с задержки, +25% скорости регена'
+      description: 'Ускоряет перезарядку брони на -0.3 сек и повышает скорость восстановления на +15%',
+      stackText: '-0.3с задержки и +15% скорости за стак (макс. 5)',
+      baseValue: 0.3,
+      scaling: '-0.3с задержки, +15% скорости регена'
     },
     bio_leech: {
       id: 'bio_leech',
@@ -629,10 +629,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'rare',
       icon: '💠',
       color: '#38bdf8',
-      description: 'Увеличивает максимальную емкость брони на +50 (максимум до 350)',
-      stackText: '+50 к макс. броне за стак (макс. 350)',
-      baseValue: 50,
-      scaling: '+50 к макс. броне (макс. 350)'
+      description: 'Увеличивает максимальную емкость брони на +25 (максимум до 160)',
+      stackText: '+25 к макс. броне за стак (макс. 160)',
+      baseValue: 25,
+      scaling: '+25 к макс. броне (макс. 160)'
     },
     singularity_core: {
       id: 'singularity_core',
@@ -968,10 +968,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       branch: 'defense',
       name: 'Эгида Разлома',
       icon: '💠',
-      description: '+10 к объему щита, восстанавливающегося раз в 60с',
+      description: '+5 к макс. объему щита (брони) за ранг',
       maxLevel: 5,
       costPerLevel: [15, 35, 75, 140, 240],
-      bonusPerLevel: 10,
+      bonusPerLevel: 5,
       unit: 'HP',
       statKey: 'shieldBarrierBonus',
       notes: 'Поглощает урон перед снижением HP'
@@ -1125,6 +1125,11 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     merchantPriceRare: 1500,
     merchantPriceLegendary: 3000,
     merchantPriceBoss: 5000,
-    merchantPriceWeaponUpgrade: 500
+    merchantPriceWeaponUpgrade: 500,
+    baseShield: 35,
+    shieldRegenDelay: 5.0,
+    shieldRegenDuration: 6.0,
+    shieldCarapaceBonus: 25,
+    maxShieldCap: 160
   }
 };

@@ -10,10 +10,10 @@ import {
   type RiftItemId
 } from '../game/src/items/RiftItemSystem';
 
-test('Armor System - Base stats and Phase Carapace scaling up to 350 cap', () => {
+test('Armor System - Base stats and Phase Carapace scaling up to 160 cap', () => {
   const getZeroItems = (_id: RiftItemId) => 0;
 
-  // 1. Base player stats: 100 base shield, 3.0s regen delay, 1.0x regen multiplier
+  // 1. Base player stats: 35 base shield, 5.0s regen delay, 1.0x regen multiplier
   const baseStats = PlayerStats.recalculate(
     100,
     5.0,
@@ -25,11 +25,11 @@ test('Armor System - Base stats and Phase Carapace scaling up to 350 cap', () =>
     []
   );
 
-  assert.equal(baseStats.maxShield, 100, 'Base maxShield must be 100');
-  assert.equal(baseStats.shieldRegenDelay, 3.0, 'Base shieldRegenDelay must be 3.0 seconds');
+  assert.equal(baseStats.maxShield, 35, 'Base maxShield must be 35');
+  assert.equal(baseStats.shieldRegenDelay, 5.0, 'Base shieldRegenDelay must be 5.0 seconds');
   assert.equal(baseStats.shieldRegenMultiplier, 1.0, 'Base shieldRegenMultiplier must be 1.0');
 
-  // 2. 1 stack of Phase Carapace -> 150 shield
+  // 2. 1 stack of Phase Carapace -> 60 shield (35 + 25)
   const stats1 = PlayerStats.recalculate(
     100,
     5.0,
@@ -40,9 +40,9 @@ test('Armor System - Base stats and Phase Carapace scaling up to 350 cap', () =>
     {},
     []
   );
-  assert.equal(stats1.maxShield, 150, '1 stack of Phase Carapace should give 150 max shield');
+  assert.equal(stats1.maxShield, 60, '1 stack of Phase Carapace should give 60 max shield');
 
-  // 3. 5 stacks of Phase Carapace -> 350 shield (Cap)
+  // 3. 5 stacks of Phase Carapace -> 160 shield (Cap: 35 + 125 = 160)
   const stats5 = PlayerStats.recalculate(
     100,
     5.0,
@@ -53,9 +53,9 @@ test('Armor System - Base stats and Phase Carapace scaling up to 350 cap', () =>
     {},
     []
   );
-  assert.equal(stats5.maxShield, 350, '5 stacks of Phase Carapace should hit the 350 max shield cap');
+  assert.equal(stats5.maxShield, 160, '5 stacks of Phase Carapace should hit the 160 max shield cap');
 
-  // 4. Over cap (e.g. 8 stacks) -> strictly capped at 350
+  // 4. Over cap (e.g. 8 stacks) -> strictly capped at 160
   const stats8 = PlayerStats.recalculate(
     100,
     5.0,
@@ -66,11 +66,25 @@ test('Armor System - Base stats and Phase Carapace scaling up to 350 cap', () =>
     {},
     []
   );
-  assert.equal(stats8.maxShield, 350, 'Over-stacked Phase Carapace must not exceed 350');
+  assert.equal(stats8.maxShield, 160, 'Over-stacked Phase Carapace must not exceed 160');
+
+  // 5. Meta progression shield barrier bonus (+15 shield)
+  const metaStats = PlayerStats.recalculate(
+    100,
+    5.0,
+    1.0,
+    new Map(),
+    getZeroItems,
+    { amplifierCount: 0, speedBootsCount: 0, flaskCount: 0, magnetCount: 0, amuletCount: 0, vestCount: 0, watchCount: 0, mightElixirCount: 0 },
+    {},
+    [],
+    { shieldBarrierBonus: 15 } as any
+  );
+  assert.equal(metaStats.maxShield, 50, 'Base 35 + 15 meta bonus should give 50 max shield');
 });
 
 test('Armor System - Aegis Exoskeleton accelerates regen delay and multiplier', () => {
-  // 1. 2 stacks of Aegis Exoskeleton (-0.5s delay, +50% speed)
+  // 1. 2 stacks of Aegis Exoskeleton (-0.6s delay, +30% speed)
   const stats = PlayerStats.recalculate(
     100,
     5.0,
@@ -82,10 +96,10 @@ test('Armor System - Aegis Exoskeleton accelerates regen delay and multiplier', 
     []
   );
 
-  assert.equal(stats.shieldRegenDelay, 2.5, '2 stacks of Aegis Exoskeleton should reduce delay from 3.0s to 2.5s');
-  assert.equal(stats.shieldRegenMultiplier, 1.5, '2 stacks of Aegis Exoskeleton should increase regen speed to 1.5x');
+  assert.equal(stats.shieldRegenDelay, 4.4, '2 stacks of Aegis Exoskeleton should reduce delay from 5.0s to 4.4s');
+  assert.equal(stats.shieldRegenMultiplier, 1.3, '2 stacks of Aegis Exoskeleton should increase regen speed to 1.3x');
 
-  // 2. Max 5 stacks -> delay reduced to 1.75s, 2.25x speed
+  // 2. Max 5 stacks -> delay reduced to min 3.5s, 1.75x speed
   const statsMax = PlayerStats.recalculate(
     100,
     5.0,
@@ -96,8 +110,8 @@ test('Armor System - Aegis Exoskeleton accelerates regen delay and multiplier', 
     {},
     []
   );
-  assert.equal(statsMax.shieldRegenDelay, 1.75, '5 stacks of Aegis Exoskeleton should reduce delay to 1.75s');
-  assert.equal(statsMax.shieldRegenMultiplier, 2.25, '5 stacks of Aegis Exoskeleton should give 2.25x regen speed');
+  assert.equal(statsMax.shieldRegenDelay, 3.5, '5 stacks of Aegis Exoskeleton should hit the 3.5s minimum delay');
+  assert.equal(statsMax.shieldRegenMultiplier, 1.75, '5 stacks of Aegis Exoskeleton should give 1.75x regen speed');
 });
 
 test('Item Pool - aegis_battery removed, phase_carapace and aegis_exoskeleton registered', () => {
@@ -120,16 +134,16 @@ test('Chest Drops - Large Chests prioritize Phase Carapace until capped', () => 
   // When player has not maxed Phase Carapace (isItemMaxed returns false)
   const isItemMaxedUncapped = (id: string) => id === 'phase_carapace' ? false : false;
 
-  // Predictable RNG that triggers the < 0.65 check
+  // Predictable RNG that triggers the < 0.30 check
   const fakeRng = () => 0.1;
 
   const [item1, item2] = rollChestDropPair(1, fakeRng, false, isItemMaxedUncapped, 'large');
-  assert.equal(item1.id, 'phase_carapace', 'Large chest should offer Phase Carapace when player is below 350 armor');
+  assert.equal(item1.id, 'phase_carapace', 'Large chest should offer Phase Carapace when player is below 160 armor');
   assert.notEqual(item2.id, 'phase_carapace', 'Second drop must be distinct from first drop');
 
-  // When player has reached 350 armor (isItemMaxed returns true)
+  // When player has reached 160 armor (isItemMaxed returns true)
   const isItemMaxedCapped = (id: string) => id === 'phase_carapace';
   const [cappedItem1, cappedItem2] = rollChestDropPair(1, fakeRng, false, isItemMaxedCapped, 'large');
-  assert.notEqual(cappedItem1.id, 'phase_carapace', 'Large chest should NOT offer Phase Carapace once armor is capped at 350');
-  assert.notEqual(cappedItem2.id, 'phase_carapace', 'Large chest should NOT offer Phase Carapace once armor is capped at 350');
+  assert.notEqual(cappedItem1.id, 'phase_carapace', 'Large chest should NOT offer Phase Carapace once armor is capped at 160');
+  assert.notEqual(cappedItem2.id, 'phase_carapace', 'Large chest should NOT offer Phase Carapace once armor is capped at 160');
 });

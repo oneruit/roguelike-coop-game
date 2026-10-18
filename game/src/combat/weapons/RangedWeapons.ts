@@ -31,7 +31,8 @@ export class BowWeapon extends Weapon {
     this.projectileCount = baseCount + [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.pierce = basePierce + [4, 8, 12].filter(lvl => this.level >= lvl).length;
     const cdSteps = [2, 4, 6, 8, 10, 12].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.40, Number((this.baseCooldown * Math.pow(0.93, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.93, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -47,21 +48,28 @@ export class BowWeapon extends Weapon {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
-      this.timer = 0;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount);
       if (candidates.length === 0) return;
+
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
 
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
+      const burstDelay = Math.max(25, Math.round(70 * this.cooldownMultiplier));
       for (let index = 0; index < this.projectileCount; index++) {
-        const target = candidates[index % candidates.length];
         setTimeout(() => {
-          if (!target || !target.isAlive) return;
+          let target = candidates[index % candidates.length];
+          if (!target || !target.isAlive) {
+            const fallback = findClosestEnemies(enemies, playerPos, 1);
+            if (fallback.length > 0) target = fallback[0];
+          }
           const spawnPos = playerPos.clone().add(new Vector3(0, 0.7, 0));
-          const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+          const targetPos = target && target.isAlive
+            ? target.position.clone().add(new Vector3(0, 0.4, 0))
+            : spawnPos.clone().add(new Vector3(0, 0, -10));
           const dir = new Vector3().subVectors(targetPos, spawnPos);
           if (dir.lengthSq() > 0) dir.normalize();
 
@@ -85,7 +93,7 @@ export class BowWeapon extends Weapon {
 
           spawnProjectile(proj);
           SoundManager.playBowShoot();
-        }, index * 70);
+        }, index * burstDelay);
       }
     }
   }
@@ -145,7 +153,8 @@ export class ChakramWeapon extends Weapon {
     const spdSteps = [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.flightSpeed = Number((baseSpd + spdSteps * 1.2).toFixed(2));
     const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.30, Number((this.baseCooldown * Math.pow(0.94, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.94, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -165,7 +174,7 @@ export class ChakramWeapon extends Weapon {
       const targets = findClosestEnemies(enemies, playerPos, 1, 20 * 20);
       if (targets.length === 0) return;
 
-      this.timer = 0;
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
@@ -261,7 +270,8 @@ export class AssaultRifleWeapon extends Weapon {
     this.projectileCount = baseCount + [3, 6, 9, 12].filter(lvl => this.level >= lvl).length;
     this.pierce = basePierce + [4, 8, 12].filter(lvl => this.level >= lvl).length;
     const cdSteps = [2, 5, 8, 11].filter(lvl => this.level >= lvl).length;
-    this.cooldown = Math.max(0.09, Number((this.baseCooldown * Math.pow(0.95, cdSteps)).toFixed(3)));
+    const levelCd = this.baseCooldown * Math.pow(0.95, cdSteps);
+    this.cooldown = Math.max(0.08, Number((levelCd * (1 - this.cooldownBonus)).toFixed(3)));
   }
 
   public setAttackCallback(cb: () => void) {
@@ -277,21 +287,27 @@ export class AssaultRifleWeapon extends Weapon {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
       if (enemies.length === 0) return;
-      this.timer = 0;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount, 18.2 * 18.2);
       if (candidates.length === 0) return;
+
+      this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
 
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
       for (let index = 0; index < this.projectileCount; index++) {
-        const target = candidates[index % candidates.length];
-        if (!target || !target.isAlive) continue;
+        let target = candidates[index % candidates.length];
+        if (!target || !target.isAlive) {
+          const fallback = findClosestEnemies(enemies, playerPos, 1, 18.2 * 18.2);
+          if (fallback.length > 0) target = fallback[0];
+        }
 
         const spawnPos = playerPos.clone().add(new Vector3(0, 0.65, 0));
-        const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
+        const targetPos = target && target.isAlive
+          ? target.position.clone().add(new Vector3(0, 0.4, 0))
+          : spawnPos.clone().add(new Vector3(0, 0, -10));
         const dir = new Vector3().subVectors(targetPos, spawnPos);
         if (dir.lengthSq() > 0) dir.normalize();
 

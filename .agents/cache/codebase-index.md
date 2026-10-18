@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T09:41:56.792Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
+> **Generated:** 2026-10-18T15:26:13.528Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -62,10 +62,10 @@ Run `npm run index` to refresh this cache.
 | `ANIM_LAYOUT_V2` | `const` | [`game/src/entities/CharacterAnimator.ts:30`](../../game/src/entities/CharacterAnimator.ts#L30) | V2 Pipeline Standard Layout: Row 0: FRONT (Лицо) Row 1: BACK (Спина) Row 2:... |
 | `ANIM_STATES` | `const` | [`game/src/shared/types/registry.ts:13`](../../game/src/shared/types/registry.ts#L13) | - |
 | `AnimatedCharacterTextures` | `interface` | [`game/src/core/TextureManager.ts:26`](../../game/src/core/TextureManager.ts#L26) | - |
-| `AssaultRifleWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:242`](../../game/src/combat/weapons/RangedWeapons.ts#L242) | Assault Rifle (Штурмовая Винтовка) Rapid automatic bursts of bullets |
-| `AssaultRifleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:330`](../../game/src/combat/weapons/RangedWeapons.ts#L330) | - |
-| `AssaultRifleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:267`](../../game/src/combat/weapons/RangedWeapons.ts#L267) | - |
-| `AssaultRifleWeapon.upgrade` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:323`](../../game/src/combat/weapons/RangedWeapons.ts#L323) | - |
+| `AssaultRifleWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:251`](../../game/src/combat/weapons/RangedWeapons.ts#L251) | Assault Rifle (Штурмовая Винтовка) Rapid automatic bursts of bullets |
+| `AssaultRifleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:346`](../../game/src/combat/weapons/RangedWeapons.ts#L346) | - |
+| `AssaultRifleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:277`](../../game/src/combat/weapons/RangedWeapons.ts#L277) | - |
+| `AssaultRifleWeapon.upgrade` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:339`](../../game/src/combat/weapons/RangedWeapons.ts#L339) | - |
 | `AssetPreloader` | `class` | [`game/src/core/AssetPreloader.ts:4`](../../game/src/core/AssetPreloader.ts#L4) | - |
 | `AssetPreloader.init` | `method` | [`game/src/core/AssetPreloader.ts:5`](../../game/src/core/AssetPreloader.ts#L5) | - |
 | `AssetPreloader.showMapLoadingProgress` | `method` | [`game/src/core/AssetPreloader.ts:45`](../../game/src/core/AssetPreloader.ts#L45) | - |
@@ -74,10 +74,10 @@ Run `npm run index` to refresh this cache.
 | `AssetResolver.getHeroTexture` | `method` | [`game/src/utils/AssetResolver.ts:15`](../../game/src/utils/AssetResolver.ts#L15) | Get hero texture URL for a given action. Path: /textures/heroes/<heroId>/<a... |
 | `AssetResolver.getWeaponIcon` | `method` | [`game/src/utils/AssetResolver.ts:34`](../../game/src/utils/AssetResolver.ts#L34) | Get weapon icon URL. Path: /textures/weapons/weapon_<weaponId>.png |
 | `AssetResolver.normalizeTextureUrl` | `method` | [`game/src/utils/AssetResolver.ts:42`](../../game/src/utils/AssetResolver.ts#L42) | Normalizes legacy URLs to modular structure if applicable. |
-| `AstralStaffWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:268`](../../game/src/combat/weapons/MagicWeapons.ts#L268) | Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high... |
-| `AstralStaffWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:354`](../../game/src/combat/weapons/MagicWeapons.ts#L354) | - |
-| `AstralStaffWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:292`](../../game/src/combat/weapons/MagicWeapons.ts#L292) | - |
-| `AstralStaffWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:347`](../../game/src/combat/weapons/MagicWeapons.ts#L347) | - |
+| `AstralStaffWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:269`](../../game/src/combat/weapons/MagicWeapons.ts#L269) | Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high... |
+| `AstralStaffWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:356`](../../game/src/combat/weapons/MagicWeapons.ts#L356) | - |
+| `AstralStaffWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:294`](../../game/src/combat/weapons/MagicWeapons.ts#L294) | - |
+| `AstralStaffWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:349`](../../game/src/combat/weapons/MagicWeapons.ts#L349) | - |
 | `attachInputListeners` | `function` | [`admin/src/views/controlHelpers.ts:35`](../../admin/src/views/controlHelpers.ts#L35) | - |
 | `AuthListener` | `type` | [`game/src/auth/AuthManager.ts:16`](../../game/src/auth/AuthManager.ts#L16) | - |
 | `AuthManager` | `class` | [`game/src/auth/AuthManager.ts:26`](../../game/src/auth/AuthManager.ts#L26) | Authentication Manager for The Rift. Handles local Guest mode and Supabase ... |
@@ -115,9 +115,9 @@ Run `npm run index` to refresh this cache.
 | `AuthUser` | `interface` | [`game/src/auth/AuthManager.ts:5`](../../game/src/auth/AuthManager.ts#L5) | - |
 | `AVAILABLE_SLOT_IDS` | `const` | [`game/src/shared/types/network.ts:174`](../../game/src/shared/types/network.ts#L174) | - |
 | `BalanceCategory` | `type` | [`game/src/balance/BalanceTypes.ts:1`](../../game/src/balance/BalanceTypes.ts#L1) | - |
-| `BalanceChangeEvent` | `interface` | [`game/src/balance/BalanceTypes.ts:136`](../../game/src/balance/BalanceTypes.ts#L136) | - |
+| `BalanceChangeEvent` | `interface` | [`game/src/balance/BalanceTypes.ts:141`](../../game/src/balance/BalanceTypes.ts#L141) | - |
 | `BalanceManager` | `const` | [`game/src/balance/BalanceManager.ts:310`](../../game/src/balance/BalanceManager.ts#L310) | - |
-| `BalanceRow` | `interface` | [`game/src/balance/BalanceTypes.ts:124`](../../game/src/balance/BalanceTypes.ts#L124) | - |
+| `BalanceRow` | `interface` | [`game/src/balance/BalanceTypes.ts:129`](../../game/src/balance/BalanceTypes.ts#L129) | - |
 | `BalanceState` | `class` | [`admin/src/state/balanceState.ts:6`](../../admin/src/state/balanceState.ts#L6) | - |
 | `BalanceState.applyFieldChange` | `method` | [`admin/src/state/balanceState.ts:44`](../../admin/src/state/balanceState.ts#L44) | - |
 | `BalanceState.checkAllCategoryChanges` | `method` | [`admin/src/state/balanceState.ts:61`](../../admin/src/state/balanceState.ts#L61) | - |
@@ -182,9 +182,9 @@ Run `npm run index` to refresh this cache.
 | `BossSpawnPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:35`](../../game/src/mechanics/events/GameEventBus.ts#L35) | - |
 | `BossTextures` | `interface` | [`game/src/core/TextureManager.ts:34`](../../game/src/core/TextureManager.ts#L34) | - |
 | `BowWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:13`](../../game/src/combat/weapons/RangedWeapons.ts#L13) | Hunting Bow (Охотничий Лук) Long-range sharp piercing arrows cutting throug... |
-| `BowWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:100`](../../game/src/combat/weapons/RangedWeapons.ts#L100) | - |
-| `BowWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:37`](../../game/src/combat/weapons/RangedWeapons.ts#L37) | - |
-| `BowWeapon.upgrade` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:93`](../../game/src/combat/weapons/RangedWeapons.ts#L93) | - |
+| `BowWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:108`](../../game/src/combat/weapons/RangedWeapons.ts#L108) | - |
+| `BowWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:38`](../../game/src/combat/weapons/RangedWeapons.ts#L38) | - |
+| `BowWeapon.upgrade` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:101`](../../game/src/combat/weapons/RangedWeapons.ts#L101) | - |
 | `BP_MAX_LEVEL` | `const` | [`game/src/core/BattlePassManager.ts:17`](../../game/src/core/BattlePassManager.ts#L17) | - |
 | `BP_MAX_POINTS` | `const` | [`game/src/core/BattlePassManager.ts:19`](../../game/src/core/BattlePassManager.ts#L19) | - |
 | `BP_POINTS_PER_LEVEL` | `const` | [`game/src/core/BattlePassManager.ts:18`](../../game/src/core/BattlePassManager.ts#L18) | - |
@@ -197,21 +197,21 @@ Run `npm run index` to refresh this cache.
 | `CalculatedPlayerStats` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:14`](../../game/src/mechanics/player/PlayerStats.ts#L14) | - |
 | `canAcquireInvokerWeapon` | `function` | [`game/src/shared/InvokerSpells.ts:160`](../../game/src/shared/InvokerSpells.ts#L160) | Separate spell weapons require Invoke in the same inventory, and hero must ... |
 | `canCharacterAcquireWeapon` | `function` | [`game/src/shared/UniqueCharacters.ts:122`](../../game/src/shared/UniqueCharacters.ts#L122) | The single source of truth for whether a hero is allowed to acquire or upgr... |
-| `canRerollWeaponOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:43`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L43) | Determines whether the current weapon selection qualifies for a reroll. Per... |
+| `canRerollWeaponOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:29`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L29) | Determines whether the current weapon selection qualifies for a reroll. Per... |
 | `CenterSquareMapRenderContext` | `interface` | [`game/src/ui/MapCenterSquareRenderer.ts:10`](../../game/src/ui/MapCenterSquareRenderer.ts#L10) | - |
-| `ChakramWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:126`](../../game/src/combat/weapons/RangedWeapons.ts#L126) | Chakram (Танцующий Чакрам) Boomerang spinning blades returning to player |
-| `ChakramWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:220`](../../game/src/combat/weapons/RangedWeapons.ts#L220) | - |
-| `ChakramWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:151`](../../game/src/combat/weapons/RangedWeapons.ts#L151) | - |
-| `ChakramWeapon.upgrade` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:213`](../../game/src/combat/weapons/RangedWeapons.ts#L213) | - |
+| `ChakramWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:134`](../../game/src/combat/weapons/RangedWeapons.ts#L134) | Chakram (Танцующий Чакрам) Boomerang spinning blades returning to player |
+| `ChakramWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:229`](../../game/src/combat/weapons/RangedWeapons.ts#L229) | - |
+| `ChakramWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:160`](../../game/src/combat/weapons/RangedWeapons.ts#L160) | - |
+| `ChakramWeapon.upgrade` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:222`](../../game/src/combat/weapons/RangedWeapons.ts#L222) | - |
 | `ChapterDef` | `interface` | [`game/src/core/ChapterQuestsConfig.ts:17`](../../game/src/core/ChapterQuestsConfig.ts#L17) | - |
 | `ChapterQuestDef` | `interface` | [`game/src/core/ChapterQuestsConfig.ts:3`](../../game/src/core/ChapterQuestsConfig.ts#L3) | - |
 | `ChapterQuestItem` | `interface` | [`game/src/ui/screens/Quests/QuestsScreen.ts:10`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L10) | - |
 | `ChapterQuestProgress` | `interface` | [`game/src/core/ProgressionManager.ts:30`](../../game/src/core/ProgressionManager.ts#L30) | - |
 | `CHAPTERS_CONFIG` | `const` | [`game/src/core/ChapterQuestsConfig.ts:25`](../../game/src/core/ChapterQuestsConfig.ts#L25) | - |
 | `CharacterAnimator` | `class` | [`game/src/entities/CharacterAnimator.ts:102`](../../game/src/entities/CharacterAnimator.ts#L102) | Modular Character Animator Handles directional sprite state machines, UV re... |
-| `CharacterAnimator.getActiveTexture` | `method` | [`game/src/entities/CharacterAnimator.ts:145`](../../game/src/entities/CharacterAnimator.ts#L145) | - |
+| `CharacterAnimator.getActiveTexture` | `method` | [`game/src/entities/CharacterAnimator.ts:147`](../../game/src/entities/CharacterAnimator.ts#L147) | - |
 | `CharacterAnimator.setDirection` | `method` | [`game/src/entities/CharacterAnimator.ts:125`](../../game/src/entities/CharacterAnimator.ts#L125) | - |
-| `CharacterAnimator.setState` | `method` | [`game/src/entities/CharacterAnimator.ts:138`](../../game/src/entities/CharacterAnimator.ts#L138) | - |
+| `CharacterAnimator.setState` | `method` | [`game/src/entities/CharacterAnimator.ts:140`](../../game/src/entities/CharacterAnimator.ts#L140) | - |
 | `CharacterAnimator.triggerAttack` | `method` | [`game/src/entities/CharacterAnimator.ts:129`](../../game/src/entities/CharacterAnimator.ts#L129) | - |
 | `CharacterAnimLayout` | `interface` | [`game/src/entities/CharacterAnimator.ts:8`](../../game/src/entities/CharacterAnimator.ts#L8) | Grid layout specification for directional spritesheets. |
 | `CharacterAnimStateConfig` | `interface` | [`game/src/entities/CharacterAnimator.ts:17`](../../game/src/entities/CharacterAnimator.ts#L17) | State configuration for animation timing and playback. |
@@ -358,8 +358,8 @@ Run `npm run index` to refresh this cache.
 | `DropManager.updateWithCollectors` | `method` | [`game/src/drops/DropManager.ts:100`](../../game/src/drops/DropManager.ts#L100) | Updates gem attraction and pickup with multi-player support. Dead/downed pl... |
 | `DropManager.vacuumAll` | `method` | [`game/src/drops/DropManager.ts:212`](../../game/src/drops/DropManager.ts#L212) | - |
 | `DropSnapshot` | `interface` | [`game/src/shared/types/network.ts:32`](../../game/src/shared/types/network.ts#L32) | - |
-| `DualRevolversWeapon` | `const` | [`game/src/combat/weapons/MeleeWeapons.ts:110`](../../game/src/combat/weapons/MeleeWeapons.ts#L110) | Backwards compatibility alias |
-| `DualRevolversWeapon` | `type` | [`game/src/combat/weapons/MeleeWeapons.ts:111`](../../game/src/combat/weapons/MeleeWeapons.ts#L111) | - |
+| `DualRevolversWeapon` | `const` | [`game/src/combat/weapons/MeleeWeapons.ts:117`](../../game/src/combat/weapons/MeleeWeapons.ts#L117) | Backwards compatibility alias |
+| `DualRevolversWeapon` | `type` | [`game/src/combat/weapons/MeleeWeapons.ts:118`](../../game/src/combat/weapons/MeleeWeapons.ts#L118) | - |
 | `ENEMIES` | `const` | [`game/src/shared/types/registry.ts:31`](../../game/src/shared/types/registry.ts#L31) | - |
 | `Enemy` | `class` | [`game/src/entities/Enemy.ts:48`](../../game/src/entities/Enemy.ts#L48) | - |
 | `Enemy.addBleed` | `method` | [`game/src/entities/Enemy.ts:789`](../../game/src/entities/Enemy.ts#L789) | - |
@@ -417,25 +417,25 @@ Run `npm run index` to refresh this cache.
 | `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:80`](../../game/src/core/Engine.ts#L80) | - |
 | `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:179`](../../game/src/core/Engine.ts#L179) | - |
 | `exportLeaderboardJson` | `function` | [`admin/src/views/leaderboardsView.ts:280`](../../admin/src/views/leaderboardsView.ts#L280) | Exports current leaderboard entries as a formatted JSON file. |
-| `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:54`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L54) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
+| `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
-| `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:590`](../../game/src/combat/weapons/MagicWeapons.ts#L590) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
-| `FireballWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:685`](../../game/src/combat/weapons/MagicWeapons.ts#L685) | - |
-| `FireballWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:618`](../../game/src/combat/weapons/MagicWeapons.ts#L618) | - |
-| `FireballWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:678`](../../game/src/combat/weapons/MagicWeapons.ts#L678) | - |
+| `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:594`](../../game/src/combat/weapons/MagicWeapons.ts#L594) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
+| `FireballWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:690`](../../game/src/combat/weapons/MagicWeapons.ts#L690) | - |
+| `FireballWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:623`](../../game/src/combat/weapons/MagicWeapons.ts#L623) | - |
+| `FireballWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:683`](../../game/src/combat/weapons/MagicWeapons.ts#L683) | - |
 | `FireRingWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:123`](../../game/src/combat/weapons/MagicWeapons.ts#L123) | Fire Ring (Огненное Кольцо) Fiery ring of blazing animated flames surroundi... |
-| `FireRingWeapon.destroy` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:228`](../../game/src/combat/weapons/MagicWeapons.ts#L228) | - |
+| `FireRingWeapon.destroy` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:229`](../../game/src/combat/weapons/MagicWeapons.ts#L229) | - |
 | `FireRingWeapon.destroyAll` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:138`](../../game/src/combat/weapons/MagicWeapons.ts#L138) | - |
-| `FireRingWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:252`](../../game/src/combat/weapons/MagicWeapons.ts#L252) | - |
-| `FireRingWeapon.initVisual` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:206`](../../game/src/combat/weapons/MagicWeapons.ts#L206) | - |
+| `FireRingWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:253`](../../game/src/combat/weapons/MagicWeapons.ts#L253) | - |
+| `FireRingWeapon.initVisual` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:207`](../../game/src/combat/weapons/MagicWeapons.ts#L207) | - |
 | `FireRingWeapon.setVfxOpacity` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:127`](../../game/src/combat/weapons/MagicWeapons.ts#L127) | - |
-| `FireRingWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:245`](../../game/src/combat/weapons/MagicWeapons.ts#L245) | - |
-| `FlailWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:378`](../../game/src/combat/weapons/MeleeWeapons.ts#L378) | Steel Flail (Боевой Цеп) - Hero 3 Brigitta starting weapon Whirls a heavy b... |
-| `FlailWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:457`](../../game/src/combat/weapons/MeleeWeapons.ts#L457) | - |
-| `FlailWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:399`](../../game/src/combat/weapons/MeleeWeapons.ts#L399) | - |
-| `FlailWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:450`](../../game/src/combat/weapons/MeleeWeapons.ts#L450) | - |
-| `GameBalanceState` | `interface` | [`game/src/balance/BalanceTypes.ts:113`](../../game/src/balance/BalanceTypes.ts#L113) | - |
+| `FireRingWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:246`](../../game/src/combat/weapons/MagicWeapons.ts#L246) | - |
+| `FlailWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:388`](../../game/src/combat/weapons/MeleeWeapons.ts#L388) | Steel Flail (Боевой Цеп) - Hero 3 Brigitta starting weapon Whirls a heavy b... |
+| `FlailWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:468`](../../game/src/combat/weapons/MeleeWeapons.ts#L468) | - |
+| `FlailWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:410`](../../game/src/combat/weapons/MeleeWeapons.ts#L410) | - |
+| `FlailWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:461`](../../game/src/combat/weapons/MeleeWeapons.ts#L461) | - |
+| `GameBalanceState` | `interface` | [`game/src/balance/BalanceTypes.ts:118`](../../game/src/balance/BalanceTypes.ts#L118) | - |
 | `GameCore` | `class` | [`game/src/sim/GameCore.ts:321`](../../game/src/sim/GameCore.ts#L321) | Headless Deterministic GameCore Simulation Engine Manages all authoritative... |
 | `GameCore.addPlayer` | `method` | [`game/src/sim/GameCore.ts:386`](../../game/src/sim/GameCore.ts#L386) | ------------------------------------------------------------- |
 | `GameCore.collectDrop` | `method` | [`game/src/sim/GameCore.ts:1060`](../../game/src/sim/GameCore.ts#L1060) | - |
@@ -526,16 +526,16 @@ Run `npm run index` to refresh this cache.
 | `getSupabaseUrl` | `function` | [`game/src/balance/supabaseClient.ts:24`](../../game/src/balance/supabaseClient.ts#L24) | - |
 | `getUniqueCharacterConfig` | `function` | [`game/src/shared/UniqueCharacters.ts:86`](../../game/src/shared/UniqueCharacters.ts#L86) | Returns configuration for a unique character, if registered. |
 | `getWeaponColor` | `function` | [`admin/src/constants.ts:87`](../../admin/src/constants.ts#L87) | - |
-| `getWeaponEffectiveCap` | `function` | [`game/src/combat/WeaponBase.ts:296`](../../game/src/combat/WeaponBase.ts#L296) | Calculates the level cap for a weapon based on tier rules: - Each weapon ca... |
+| `getWeaponEffectiveCap` | `function` | [`game/src/combat/WeaponBase.ts:299`](../../game/src/combat/WeaponBase.ts#L299) | Calculates the level cap for a weapon based on tier rules: - Tier 3 (awaken... |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/modules/HeroUIHelpers.ts:191`](../../game/src/ui/modules/HeroUIHelpers.ts#L191) | - |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:44`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L44) | - |
 | `GlobalBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:94`](../../game/src/balance/BalanceTypes.ts#L94) | - |
-| `GreatswordWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:290`](../../game/src/combat/weapons/MeleeWeapons.ts#L290) | Greatsword (Двуручный Меч) - Hero 2 Valkyrie starting weapon Massive sweepi... |
-| `GreatswordWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:360`](../../game/src/combat/weapons/MeleeWeapons.ts#L360) | - |
-| `GreatswordWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:308`](../../game/src/combat/weapons/MeleeWeapons.ts#L308) | - |
-| `GreatswordWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:353`](../../game/src/combat/weapons/MeleeWeapons.ts#L353) | - |
-| `HeavyColtWeapon` | `const` | [`game/src/combat/weapons/RangedWeapons.ts:119`](../../game/src/combat/weapons/RangedWeapons.ts#L119) | Backwards compatibility alias |
-| `HeavyColtWeapon` | `type` | [`game/src/combat/weapons/RangedWeapons.ts:120`](../../game/src/combat/weapons/RangedWeapons.ts#L120) | - |
+| `GreatswordWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:299`](../../game/src/combat/weapons/MeleeWeapons.ts#L299) | Greatsword (Двуручный Меч) - Hero 2 Valkyrie starting weapon Massive sweepi... |
+| `GreatswordWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:370`](../../game/src/combat/weapons/MeleeWeapons.ts#L370) | - |
+| `GreatswordWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:318`](../../game/src/combat/weapons/MeleeWeapons.ts#L318) | - |
+| `GreatswordWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:363`](../../game/src/combat/weapons/MeleeWeapons.ts#L363) | - |
+| `HeavyColtWeapon` | `const` | [`game/src/combat/weapons/RangedWeapons.ts:127`](../../game/src/combat/weapons/RangedWeapons.ts#L127) | Backwards compatibility alias |
+| `HeavyColtWeapon` | `type` | [`game/src/combat/weapons/RangedWeapons.ts:128`](../../game/src/combat/weapons/RangedWeapons.ts#L128) | - |
 | `HERO_NAMES` | `const` | [`admin/src/constants.ts:196`](../../admin/src/constants.ts#L196) | - |
 | `HERO_ORDER` | `const` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:9`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L9) | - |
 | `HeroAbility` | `interface` | [`game/src/ui/modules/HeroUIHelpers.ts:37`](../../game/src/ui/modules/HeroUIHelpers.ts#L37) | - |
@@ -644,10 +644,10 @@ Run `npm run index` to refresh this cache.
 | `HUD.updateStageText` | `method` | [`game/src/ui/HUD.ts:1426`](../../game/src/ui/HUD.ts#L1426) | - |
 | `HUD.updateTeleportButton` | `method` | [`game/src/ui/HUD.ts:1431`](../../game/src/ui/HUD.ts#L1431) | - |
 | `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1479`](../../game/src/ui/HUD.ts#L1479) | - |
-| `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:483`](../../game/src/combat/weapons/MagicWeapons.ts#L483) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
-| `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:568`](../../game/src/combat/weapons/MagicWeapons.ts#L568) | - |
-| `IceSpikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:509`](../../game/src/combat/weapons/MagicWeapons.ts#L509) | - |
-| `IceSpikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:561`](../../game/src/combat/weapons/MagicWeapons.ts#L561) | - |
+| `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:486`](../../game/src/combat/weapons/MagicWeapons.ts#L486) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
+| `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:572`](../../game/src/combat/weapons/MagicWeapons.ts#L572) | - |
+| `IceSpikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:513`](../../game/src/combat/weapons/MagicWeapons.ts#L513) | - |
+| `IceSpikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:565`](../../game/src/combat/weapons/MagicWeapons.ts#L565) | - |
 | `InGameHUDScreen` | `class` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:12`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L12) | Base In-Game HUD Screen. Provides modular Screen lifecycle for the in-comba... |
 | `InGameHUDScreen.bindElements` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:22`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L22) | - |
 | `InGameHUDScreen.bindEvents` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:23`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L23) | - |
@@ -685,7 +685,7 @@ Run `npm run index` to refresh this cache.
 | `InventoryScreen.bindElements` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:48`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L48) | - |
 | `InventoryScreen.bindEvents` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:67`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L67) | - |
 | `InventoryScreen.getTemplate` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:44`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L44) | - |
-| `InventoryScreen.getWeaponDetailedInventoryStats` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:616`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L616) | - |
+| `InventoryScreen.getWeaponDetailedInventoryStats` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:640`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L640) | - |
 | `InventoryScreen.hideInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:112`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L112) | - |
 | `InventoryScreen.isInventoryOpen` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:89`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L89) | - |
 | `InventoryScreen.renderInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:118`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L118) | - |
@@ -700,7 +700,7 @@ Run `npm run index` to refresh this cache.
 | `INVOKER_EXCLUSIVE_WEAPONS` | `const` | [`game/src/shared/UniqueCharacters.ts:6`](../../game/src/shared/UniqueCharacters.ts#L6) | All exclusive weapon IDs belonging to Invoker. |
 | `INVOKER_SPELL_IDS` | `const` | [`game/src/shared/InvokerSpells.ts:3`](../../game/src/shared/InvokerSpells.ts#L3) | - |
 | `INVOKER_SPELLS` | `const` | [`game/src/shared/InvokerSpells.ts:27`](../../game/src/shared/InvokerSpells.ts#L27) | - |
-| `InvokerInvokeWeapon` | `class` | [`game/src/combat/InvokerWeapons.ts:168`](../../game/src/combat/InvokerWeapons.ts#L168) | - |
+| `InvokerInvokeWeapon` | `class` | [`game/src/combat/InvokerWeapons.ts:167`](../../game/src/combat/InvokerWeapons.ts#L167) | - |
 | `InvokerSpellCast` | `interface` | [`game/src/shared/InvokerSpells.ts:197`](../../game/src/shared/InvokerSpells.ts#L197) | - |
 | `InvokerSpellDefinition` | `interface` | [`game/src/shared/InvokerSpells.ts:16`](../../game/src/shared/InvokerSpells.ts#L16) | - |
 | `InvokerSpellEffects` | `class` | [`game/src/combat/InvokerSpellEffects.ts:35`](../../game/src/combat/InvokerSpellEffects.ts#L35) | Purely visual, bounded effects for local casts and co-op replay. |
@@ -715,11 +715,11 @@ Run `npm run index` to refresh this cache.
 | `InvokerSpellRuntime` | `class` | [`game/src/shared/InvokerSpellRuntime.ts:36`](../../game/src/shared/InvokerSpellRuntime.ts#L36) | Spell rules are independent of rendering: remote visual events cannot deal ... |
 | `InvokerSpellRuntime.clear` | `method` | [`game/src/shared/InvokerSpellRuntime.ts:38`](../../game/src/shared/InvokerSpellRuntime.ts#L38) | - |
 | `InvokerSpellRuntime.update` | `method` | [`game/src/shared/InvokerSpellRuntime.ts:83`](../../game/src/shared/InvokerSpellRuntime.ts#L83) | - |
-| `InvokerSpellWeapon` | `class` | [`game/src/combat/InvokerWeapons.ts:173`](../../game/src/combat/InvokerWeapons.ts#L173) | - |
+| `InvokerSpellWeapon` | `class` | [`game/src/combat/InvokerWeapons.ts:172`](../../game/src/combat/InvokerWeapons.ts#L172) | - |
 | `InvokerWeapon` | `class` | [`game/src/combat/InvokerWeapons.ts:25`](../../game/src/combat/InvokerWeapons.ts#L25) | Invoke powers random casts and any separately acquired spell weapons. |
-| `InvokerWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/InvokerWeapons.ts:146`](../../game/src/combat/InvokerWeapons.ts#L146) | - |
+| `InvokerWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/InvokerWeapons.ts:145`](../../game/src/combat/InvokerWeapons.ts#L145) | - |
 | `InvokerWeapon.setInvokeSource` | `method` | [`game/src/combat/InvokerWeapons.ts:34`](../../game/src/combat/InvokerWeapons.ts#L34) | - |
-| `InvokerWeapon.upgrade` | `method` | [`game/src/combat/InvokerWeapons.ts:139`](../../game/src/combat/InvokerWeapons.ts#L139) | - |
+| `InvokerWeapon.upgrade` | `method` | [`game/src/combat/InvokerWeapons.ts:138`](../../game/src/combat/InvokerWeapons.ts#L138) | - |
 | `invokerWeaponId` | `function` | [`game/src/shared/InvokerSpells.ts:150`](../../game/src/shared/InvokerSpells.ts#L150) | - |
 | `isBinarySnapshot` | `function` | [`game/src/net/BinarySnapshot.ts:29`](../../game/src/net/BinarySnapshot.ts#L29) | Checks if incoming data is a binary HostSnapshot packet |
 | `isExclusiveWeapon` | `function` | [`game/src/shared/UniqueCharacters.ts:93`](../../game/src/shared/UniqueCharacters.ts#L93) | Checks whether a given weapon ID is exclusive to any registered unique char... |
@@ -728,13 +728,13 @@ Run `npm run index` to refresh this cache.
 | `ItemBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:81`](../../game/src/balance/BalanceTypes.ts#L81) | - |
 | `ItemRarity` | `type` | [`game/src/items/RiftItemSystem.ts:3`](../../game/src/items/RiftItemSystem.ts#L3) | - |
 | `ItemRarity` | `type` | [`game/src/shared/types/entities.ts:46`](../../game/src/shared/types/entities.ts#L46) | - |
-| `KatanaSlashWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:117`](../../game/src/combat/weapons/MeleeWeapons.ts#L117) | Katana Slash (Рассекающий Клинок) Swift katana slash in an arc hitting all ... |
-| `KatanaSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:188`](../../game/src/combat/weapons/MeleeWeapons.ts#L188) | - |
-| `KatanaSlashWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:135`](../../game/src/combat/weapons/MeleeWeapons.ts#L135) | - |
-| `KatanaSlashWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:181`](../../game/src/combat/weapons/MeleeWeapons.ts#L181) | - |
+| `KatanaSlashWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:124`](../../game/src/combat/weapons/MeleeWeapons.ts#L124) | Katana Slash (Рассекающий Клинок) Swift katana slash in an arc hitting all ... |
+| `KatanaSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:196`](../../game/src/combat/weapons/MeleeWeapons.ts#L196) | - |
+| `KatanaSlashWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:143`](../../game/src/combat/weapons/MeleeWeapons.ts#L143) | - |
+| `KatanaSlashWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:189`](../../game/src/combat/weapons/MeleeWeapons.ts#L189) | - |
 | `KukriWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:13`](../../game/src/combat/weapons/MeleeWeapons.ts#L13) | Kukri Knife (Нож Кукри) Rapid throws of spinning curved Gurkha kukri blades |
-| `KukriWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:91`](../../game/src/combat/weapons/MeleeWeapons.ts#L91) | - |
-| `KukriWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:84`](../../game/src/combat/weapons/MeleeWeapons.ts#L84) | - |
+| `KukriWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:98`](../../game/src/combat/weapons/MeleeWeapons.ts#L98) | - |
+| `KukriWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:91`](../../game/src/combat/weapons/MeleeWeapons.ts#L91) | - |
 | `LastRunInfo` | `interface` | [`game/src/core/LeaderboardManager.ts:21`](../../game/src/core/LeaderboardManager.ts#L21) | - |
 | `LeaderboardEntry` | `interface` | [`game/src/core/LeaderboardManager.ts:4`](../../game/src/core/LeaderboardManager.ts#L4) | - |
 | `LeaderboardEntry` | `interface` | [`admin/src/types.ts:43`](../../admin/src/types.ts#L43) | - |
@@ -767,10 +767,10 @@ Run `npm run index` to refresh this cache.
 | `LevelUpUI` | `class` | [`game/src/ui/modules/LevelUpUI.ts:18`](../../game/src/ui/modules/LevelUpUI.ts#L18) | - |
 | `LevelUpUIContext` | `type` | [`game/src/ui/modules/LevelUpUI.ts:13`](../../game/src/ui/modules/LevelUpUI.ts#L13) | - |
 | `LevelUpUIElements` | `type` | [`game/src/ui/modules/LevelUpUI.ts:12`](../../game/src/ui/modules/LevelUpUI.ts#L12) | - |
-| `LightningStrikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:376`](../../game/src/combat/weapons/MagicWeapons.ts#L376) | Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from... |
-| `LightningStrikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:461`](../../game/src/combat/weapons/MagicWeapons.ts#L461) | - |
-| `LightningStrikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:402`](../../game/src/combat/weapons/MagicWeapons.ts#L402) | - |
-| `LightningStrikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:454`](../../game/src/combat/weapons/MagicWeapons.ts#L454) | - |
+| `LightningStrikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:378`](../../game/src/combat/weapons/MagicWeapons.ts#L378) | Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from... |
+| `LightningStrikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:464`](../../game/src/combat/weapons/MagicWeapons.ts#L464) | - |
+| `LightningStrikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:405`](../../game/src/combat/weapons/MagicWeapons.ts#L405) | - |
+| `LightningStrikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:457`](../../game/src/combat/weapons/MagicWeapons.ts#L457) | - |
 | `LobbyCoordinator` | `class` | [`game/src/net/LobbyCoordinator.ts:6`](../../game/src/net/LobbyCoordinator.ts#L6) | - |
 | `LobbyCoordinator.connectAsGuest` | `method` | [`game/src/net/LobbyCoordinator.ts:139`](../../game/src/net/LobbyCoordinator.ts#L139) | - |
 | `LobbyCoordinator.openHostLobby` | `method` | [`game/src/net/LobbyCoordinator.ts:82`](../../game/src/net/LobbyCoordinator.ts#L82) | - |
@@ -954,60 +954,60 @@ Run `npm run index` to refresh this cache.
 | `PassiveBuffId` | `type` | [`game/src/drops/PassiveBuffs.ts:1`](../../game/src/drops/PassiveBuffs.ts#L1) | - |
 | `Player` | `class` | [`game/src/entities/Player.ts:58`](../../game/src/entities/Player.ts#L58) | - |
 | `PLAYER_COLORS` | `const` | [`game/src/shared/types/network.ts:166`](../../game/src/shared/types/network.ts#L166) | - |
-| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:664`](../../game/src/entities/Player.ts#L664) | - |
-| `Player.addBuff` | `method` | [`game/src/entities/Player.ts:538`](../../game/src/entities/Player.ts#L538) | - |
-| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:683`](../../game/src/entities/Player.ts#L683) | - |
-| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:681`](../../game/src/entities/Player.ts#L681) | - |
-| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:690`](../../game/src/entities/Player.ts#L690) | - |
-| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:680`](../../game/src/entities/Player.ts#L680) | - |
-| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1196`](../../game/src/entities/Player.ts#L1196) | - |
-| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:697`](../../game/src/entities/Player.ts#L697) | - |
-| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:665`](../../game/src/entities/Player.ts#L665) | - |
-| `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:550`](../../game/src/entities/Player.ts#L550) | - |
-| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:679`](../../game/src/entities/Player.ts#L679) | - |
-| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:678`](../../game/src/entities/Player.ts#L678) | - |
+| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:669`](../../game/src/entities/Player.ts#L669) | - |
+| `Player.addBuff` | `method` | [`game/src/entities/Player.ts:543`](../../game/src/entities/Player.ts#L543) | - |
+| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:688`](../../game/src/entities/Player.ts#L688) | - |
+| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:686`](../../game/src/entities/Player.ts#L686) | - |
+| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:695`](../../game/src/entities/Player.ts#L695) | - |
+| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:685`](../../game/src/entities/Player.ts#L685) | - |
+| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1201`](../../game/src/entities/Player.ts#L1201) | - |
+| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:702`](../../game/src/entities/Player.ts#L702) | - |
+| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:670`](../../game/src/entities/Player.ts#L670) | - |
+| `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:555`](../../game/src/entities/Player.ts#L555) | - |
+| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:684`](../../game/src/entities/Player.ts#L684) | - |
+| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:683`](../../game/src/entities/Player.ts#L683) | - |
 | `Player.applyBurn` | `method` | [`game/src/entities/Player.ts:128`](../../game/src/entities/Player.ts#L128) | - |
-| `Player.applyCharacterPerks` | `method` | [`game/src/entities/Player.ts:469`](../../game/src/entities/Player.ts#L469) | - |
-| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:741`](../../game/src/entities/Player.ts#L741) | - |
+| `Player.applyCharacterPerks` | `method` | [`game/src/entities/Player.ts:474`](../../game/src/entities/Player.ts#L474) | - |
+| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:746`](../../game/src/entities/Player.ts#L746) | - |
 | `Player.applyShock` | `method` | [`game/src/entities/Player.ts:133`](../../game/src/entities/Player.ts#L133) | - |
 | `Player.applySlow` | `method` | [`game/src/entities/Player.ts:138`](../../game/src/entities/Player.ts#L138) | - |
-| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1157`](../../game/src/entities/Player.ts#L1157) | - |
-| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1192`](../../game/src/entities/Player.ts#L1192) | - |
-| `Player.clearWeapons` | `method` | [`game/src/entities/Player.ts:456`](../../game/src/entities/Player.ts#L456) | - |
-| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1296`](../../game/src/entities/Player.ts#L1296) | - |
-| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1126`](../../game/src/entities/Player.ts#L1126) | - |
-| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1204`](../../game/src/entities/Player.ts#L1204) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
-| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1153`](../../game/src/entities/Player.ts#L1153) | - |
-| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1329`](../../game/src/entities/Player.ts#L1329) | - |
+| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1162`](../../game/src/entities/Player.ts#L1162) | - |
+| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1197`](../../game/src/entities/Player.ts#L1197) | - |
+| `Player.clearWeapons` | `method` | [`game/src/entities/Player.ts:461`](../../game/src/entities/Player.ts#L461) | - |
+| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1301`](../../game/src/entities/Player.ts#L1301) | - |
+| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1131`](../../game/src/entities/Player.ts#L1131) | - |
+| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1209`](../../game/src/entities/Player.ts#L1209) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
+| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1158`](../../game/src/entities/Player.ts#L1158) | - |
+| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1334`](../../game/src/entities/Player.ts#L1334) | - |
 | `Player.getCharacterGeometry` | `method` | [`game/src/entities/Player.ts:212`](../../game/src/entities/Player.ts#L212) | - |
-| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:651`](../../game/src/entities/Player.ts#L651) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
-| `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:546`](../../game/src/entities/Player.ts#L546) | - |
-| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:704`](../../game/src/entities/Player.ts#L704) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
-| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1320`](../../game/src/entities/Player.ts#L1320) | - |
-| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1162`](../../game/src/entities/Player.ts#L1162) | - |
-| `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:542`](../../game/src/entities/Player.ts#L542) | - |
-| `Player.heal` | `method` | [`game/src/entities/Player.ts:1121`](../../game/src/entities/Player.ts#L1121) | - |
+| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:656`](../../game/src/entities/Player.ts#L656) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
+| `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:551`](../../game/src/entities/Player.ts#L551) | - |
+| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:709`](../../game/src/entities/Player.ts#L709) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
+| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1325`](../../game/src/entities/Player.ts#L1325) | - |
+| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1167`](../../game/src/entities/Player.ts#L1167) | - |
+| `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:547`](../../game/src/entities/Player.ts#L547) | - |
+| `Player.heal` | `method` | [`game/src/entities/Player.ts:1126`](../../game/src/entities/Player.ts#L1126) | - |
 | `Player.isAnimatedCharacter` | `method` | [`game/src/entities/Player.ts:355`](../../game/src/entities/Player.ts#L355) | - |
-| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:710`](../../game/src/entities/Player.ts#L710) | - |
+| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:715`](../../game/src/entities/Player.ts#L715) | - |
 | `Player.loadCharacterTextures` | `method` | [`game/src/entities/Player.ts:359`](../../game/src/entities/Player.ts#L359) | - |
-| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1184`](../../game/src/entities/Player.ts#L1184) | - |
-| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:595`](../../game/src/entities/Player.ts#L595) | - |
-| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:667`](../../game/src/entities/Player.ts#L667) | - |
-| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1270`](../../game/src/entities/Player.ts#L1270) | - |
-| `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:561`](../../game/src/entities/Player.ts#L561) | - |
-| `Player.reset` | `method` | [`game/src/entities/Player.ts:1221`](../../game/src/entities/Player.ts#L1221) | - |
-| `Player.revive` | `method` | [`game/src/entities/Player.ts:1102`](../../game/src/entities/Player.ts#L1102) | - |
+| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1189`](../../game/src/entities/Player.ts#L1189) | - |
+| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:600`](../../game/src/entities/Player.ts#L600) | - |
+| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:672`](../../game/src/entities/Player.ts#L672) | - |
+| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1275`](../../game/src/entities/Player.ts#L1275) | - |
+| `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:566`](../../game/src/entities/Player.ts#L566) | - |
+| `Player.reset` | `method` | [`game/src/entities/Player.ts:1226`](../../game/src/entities/Player.ts#L1226) | - |
+| `Player.revive` | `method` | [`game/src/entities/Player.ts:1107`](../../game/src/entities/Player.ts#L1107) | - |
 | `Player.setCharacter` | `method` | [`game/src/entities/Player.ts:396`](../../game/src/entities/Player.ts#L396) | - |
 | `Player.setDirection` | `method` | [`game/src/entities/Player.ts:420`](../../game/src/entities/Player.ts#L420) | - |
 | `Player.setupAuras` | `method` | [`game/src/entities/Player.ts:299`](../../game/src/entities/Player.ts#L299) | - |
-| `Player.syncBalance` | `method` | [`game/src/entities/Player.ts:516`](../../game/src/entities/Player.ts#L516) | - |
-| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1027`](../../game/src/entities/Player.ts#L1027) | - |
-| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1130`](../../game/src/entities/Player.ts#L1130) | - |
-| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1145`](../../game/src/entities/Player.ts#L1145) | - |
-| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1139`](../../game/src/entities/Player.ts#L1139) | - |
+| `Player.syncBalance` | `method` | [`game/src/entities/Player.ts:521`](../../game/src/entities/Player.ts#L521) | - |
+| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1032`](../../game/src/entities/Player.ts#L1032) | - |
+| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1135`](../../game/src/entities/Player.ts#L1135) | - |
+| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1150`](../../game/src/entities/Player.ts#L1150) | - |
+| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1144`](../../game/src/entities/Player.ts#L1144) | - |
 | `Player.triggerAttackAnim` | `method` | [`game/src/entities/Player.ts:432`](../../game/src/entities/Player.ts#L432) | - |
-| `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:577`](../../game/src/entities/Player.ts#L577) | - |
-| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:1010`](../../game/src/entities/Player.ts#L1010) | - |
+| `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:582`](../../game/src/entities/Player.ts#L582) | - |
+| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:1015`](../../game/src/entities/Player.ts#L1015) | - |
 | `PlayerAnimation` | `class` | [`game/src/mechanics/player/PlayerAnimation.ts:21`](../../game/src/mechanics/player/PlayerAnimation.ts#L21) | Handles sprite direction, sheet animations (IDLE, WALK, ATTACK), texture lo... |
 | `PlayerAnimation.isAnimatedCharacter` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:78`](../../game/src/mechanics/player/PlayerAnimation.ts#L78) | - |
 | `PlayerAnimation.loadCharacterTextures` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:82`](../../game/src/mechanics/player/PlayerAnimation.ts#L82) | - |
@@ -1038,10 +1038,10 @@ Run `npm run index` to refresh this cache.
 | `PlayerStatusManager.update` | `method` | [`game/src/entities/PlayerStatusManager.ts:42`](../../game/src/entities/PlayerStatusManager.ts#L42) | - |
 | `PlayerTargetInfo` | `interface` | [`game/src/entities/EnemyManager.ts:13`](../../game/src/entities/EnemyManager.ts#L13) | - |
 | `PlayerXpPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:23`](../../game/src/mechanics/events/GameEventBus.ts#L23) | - |
-| `PoisonPuddleWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:707`](../../game/src/combat/weapons/MagicWeapons.ts#L707) | Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on... |
-| `PoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:803`](../../game/src/combat/weapons/MagicWeapons.ts#L803) | - |
-| `PoisonPuddleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:735`](../../game/src/combat/weapons/MagicWeapons.ts#L735) | - |
-| `PoisonPuddleWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:796`](../../game/src/combat/weapons/MagicWeapons.ts#L796) | - |
+| `PoisonPuddleWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:712`](../../game/src/combat/weapons/MagicWeapons.ts#L712) | Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on... |
+| `PoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:809`](../../game/src/combat/weapons/MagicWeapons.ts#L809) | - |
+| `PoisonPuddleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:741`](../../game/src/combat/weapons/MagicWeapons.ts#L741) | - |
+| `PoisonPuddleWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:802`](../../game/src/combat/weapons/MagicWeapons.ts#L802) | - |
 | `ProgressionChartState` | `interface` | [`admin/src/types.ts:31`](../../admin/src/types.ts#L31) | - |
 | `ProgressionData` | `interface` | [`game/src/core/ProgressionManager.ts:36`](../../game/src/core/ProgressionManager.ts#L36) | - |
 | `ProgressionManager` | `class` | [`game/src/core/ProgressionManager.ts:84`](../../game/src/core/ProgressionManager.ts#L84) | - |
@@ -1594,21 +1594,21 @@ Run `npm run index` to refresh this cache.
 | `WEAPON_GRADES` | `const` | [`game/src/combat/WeaponGrades.ts:16`](../../game/src/combat/WeaponGrades.ts#L16) | - |
 | `Weapon.applyBalance` | `method` | [`game/src/combat/WeaponBase.ts:145`](../../game/src/combat/WeaponBase.ts#L145) | - |
 | `Weapon.applyGradeUpgrade` | `method` | [`game/src/combat/WeaponBase.ts:156`](../../game/src/combat/WeaponBase.ts#L156) | - |
-| `Weapon.awakenGrade` | `method` | [`game/src/combat/WeaponBase.ts:210`](../../game/src/combat/WeaponBase.ts#L210) | - |
-| `Weapon.canUpgradeUpgradeRarity` | `method` | [`game/src/combat/WeaponBase.ts:185`](../../game/src/combat/WeaponBase.ts#L185) | - |
-| `Weapon.emitMeleeAttack` | `method` | [`game/src/combat/WeaponBase.ts:269`](../../game/src/combat/WeaponBase.ts#L269) | - |
-| `Weapon.getEffectiveCap` | `method` | [`game/src/combat/WeaponBase.ts:236`](../../game/src/combat/WeaponBase.ts#L236) | - |
-| `Weapon.getGradePrefix` | `method` | [`game/src/combat/WeaponBase.ts:230`](../../game/src/combat/WeaponBase.ts#L230) | - |
-| `Weapon.getInfo` | `method` | [`game/src/combat/WeaponBase.ts:278`](../../game/src/combat/WeaponBase.ts#L278) | - |
-| `Weapon.getMeleeAttackAngle` | `method` | [`game/src/combat/WeaponBase.ts:253`](../../game/src/combat/WeaponBase.ts#L253) | - |
-| `Weapon.recalculateStats` | `method` | [`game/src/combat/WeaponBase.ts:240`](../../game/src/combat/WeaponBase.ts#L240) | - |
-| `Weapon.recomputeGradeBonuses` | `method` | [`game/src/combat/WeaponBase.ts:167`](../../game/src/combat/WeaponBase.ts#L167) | - |
-| `Weapon.upgradeUpgradeRarity` | `method` | [`game/src/combat/WeaponBase.ts:190`](../../game/src/combat/WeaponBase.ts#L190) | - |
+| `Weapon.awakenGrade` | `method` | [`game/src/combat/WeaponBase.ts:203`](../../game/src/combat/WeaponBase.ts#L203) | - |
+| `Weapon.canUpgradeUpgradeRarity` | `method` | [`game/src/combat/WeaponBase.ts:178`](../../game/src/combat/WeaponBase.ts#L178) | - |
+| `Weapon.emitMeleeAttack` | `method` | [`game/src/combat/WeaponBase.ts:262`](../../game/src/combat/WeaponBase.ts#L262) | - |
+| `Weapon.getEffectiveCap` | `method` | [`game/src/combat/WeaponBase.ts:229`](../../game/src/combat/WeaponBase.ts#L229) | - |
+| `Weapon.getGradePrefix` | `method` | [`game/src/combat/WeaponBase.ts:223`](../../game/src/combat/WeaponBase.ts#L223) | - |
+| `Weapon.getInfo` | `method` | [`game/src/combat/WeaponBase.ts:271`](../../game/src/combat/WeaponBase.ts#L271) | - |
+| `Weapon.getMeleeAttackAngle` | `method` | [`game/src/combat/WeaponBase.ts:246`](../../game/src/combat/WeaponBase.ts#L246) | - |
+| `Weapon.recalculateStats` | `method` | [`game/src/combat/WeaponBase.ts:233`](../../game/src/combat/WeaponBase.ts#L233) | - |
+| `Weapon.recomputeGradeBonuses` | `method` | [`game/src/combat/WeaponBase.ts:164`](../../game/src/combat/WeaponBase.ts#L164) | - |
+| `Weapon.upgradeUpgradeRarity` | `method` | [`game/src/combat/WeaponBase.ts:183`](../../game/src/combat/WeaponBase.ts#L183) | - |
 | `WeaponBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:17`](../../game/src/balance/BalanceTypes.ts#L17) | - |
 | `WeaponGrade` | `type` | [`game/src/combat/WeaponGrades.ts:1`](../../game/src/combat/WeaponGrades.ts#L1) | - |
 | `WeaponGradeConfig` | `interface` | [`game/src/combat/WeaponGrades.ts:3`](../../game/src/combat/WeaponGrades.ts#L3) | - |
 | `WeaponInfo` | `interface` | [`game/src/combat/WeaponBase.ts:13`](../../game/src/combat/WeaponBase.ts#L13) | - |
-| `WhirlwindSlashWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:204`](../../game/src/combat/weapons/MeleeWeapons.ts#L204) | Crimson Whirlwind (Багровый Вихрь) - Hero 4 Ronin starting weapon Rapid fur... |
-| `WhirlwindSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:274`](../../game/src/combat/weapons/MeleeWeapons.ts#L274) | - |
-| `WhirlwindSlashWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:222`](../../game/src/combat/weapons/MeleeWeapons.ts#L222) | - |
-| `WhirlwindSlashWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:267`](../../game/src/combat/weapons/MeleeWeapons.ts#L267) | - |
+| `WhirlwindSlashWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:212`](../../game/src/combat/weapons/MeleeWeapons.ts#L212) | Crimson Whirlwind (Багровый Вихрь) - Hero 4 Ronin starting weapon Rapid fur... |
+| `WhirlwindSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:283`](../../game/src/combat/weapons/MeleeWeapons.ts#L283) | - |
+| `WhirlwindSlashWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:231`](../../game/src/combat/weapons/MeleeWeapons.ts#L231) | - |
+| `WhirlwindSlashWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:276`](../../game/src/combat/weapons/MeleeWeapons.ts#L276) | - |
