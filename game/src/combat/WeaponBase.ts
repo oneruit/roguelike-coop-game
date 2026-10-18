@@ -291,9 +291,30 @@ export abstract class Weapon {
 
 /**
  * Calculates the level cap for a weapon based on tier rules:
- * - Each weapon can individually progress up to its max level (12) across Tier 3, Tier 2, and Tier 1.
+ * - Tier 3 (awakenedGrade === 0): cap is 12.
+ * - Tier 2 (awakenedGrade === 1):
+ *     1 weapon at Tier 2 -> cap 6
+ *     2 weapons at Tier 2 -> cap 8
+ *     3 weapons at Tier 2 -> cap 10
+ *     4 weapons at Tier 2 -> cap 12
+ * - Tier 1 (awakenedGrade >= 2):
+ *     1 weapon at Tier 1 -> cap 6
+ *     2 weapons at Tier 1 -> cap 8
+ *     3 weapons at Tier 1 -> cap 10
+ *     4 weapons at Tier 1 -> cap 12
  */
-export function getWeaponEffectiveCap(weapon: Weapon, _allWeapons?: readonly Weapon[]): number {
-  return weapon.maxLevel || 12;
+export function getWeaponEffectiveCap(weapon: Weapon, allWeapons: readonly Weapon[]): number {
+  if (weapon.awakenedGrade === 0) {
+    return 12;
+  }
+  if (weapon.awakenedGrade === 1) {
+    const tier2Count = allWeapons.filter(w => w.awakenedGrade >= 1).length;
+    return Math.min(12, 4 + tier2Count * 2);
+  }
+  if (weapon.awakenedGrade >= 2) {
+    const tier1Count = allWeapons.filter(w => w.awakenedGrade >= 2).length;
+    return Math.min(12, 4 + tier1Count * 2);
+  }
+  return 12;
 }
 

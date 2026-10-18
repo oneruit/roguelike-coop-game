@@ -338,23 +338,52 @@ test('Boss relics golem_core and molten_scale balance definitions', () => {
   assert.equal(moltenScale.name, 'Огненная Чешуя');
 });
 
-test('Weapon tier effective caps (individual weapons maintain max cap 12 across all tiers)', () => {
+test('Weapon tier effective caps (Tier 3 = 12, Tier 2 = 6/8/10/12, Tier 1 = 6/8/10/12)', () => {
   const w1 = new BowWeapon();
   const w2 = new KukriWeapon();
-  const all = [w1, w2];
+  const w3 = new ReaperScytheWeapon();
+  const w4 = new GreatswordWeapon();
+  const all = [w1, w2, w3, w4];
 
   // Tier 3 always has cap 12
   assert.equal(getWeaponEffectiveCap(w1, all), 12);
   assert.equal(getWeaponEffectiveCap(w2, all), 12);
 
-  // 1 Tier 2 awakened individually has cap 12
+  // 1 Tier 2 awakened
   w1.awakenedGrade = 1;
-  assert.equal(getWeaponEffectiveCap(w1, all), 12, '1 Tier 2 weapon individually has cap 12');
+  assert.equal(getWeaponEffectiveCap(w1, all), 6, '1 Tier 2 weapon -> cap 6');
   assert.equal(getWeaponEffectiveCap(w2, all), 12, 'Tier 3 weapon still cap 12');
 
-  // Tier 1 awakened individually has cap 12
+  // 2 Tier 2 awakened
+  w2.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 8, '2 Tier 2 weapons -> cap 8');
+  assert.equal(getWeaponEffectiveCap(w2, all), 8);
+
+  // 3 Tier 2 awakened
+  w3.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 10, '3 Tier 2 weapons -> cap 10');
+
+  // 4 Tier 2 awakened
+  w4.awakenedGrade = 1;
+  assert.equal(getWeaponEffectiveCap(w1, all), 12, '4 Tier 2 weapons -> cap 12');
+  assert.equal(getWeaponEffectiveCap(w4, all), 12);
+
+  // 1 Tier 1 awakened (from Tier 2)
   w1.awakenedGrade = 2;
-  assert.equal(getWeaponEffectiveCap(w1, all), 12, 'Tier 1 weapon individually has cap 12');
+  assert.equal(getWeaponEffectiveCap(w1, all), 6, '1 Tier 1 weapon -> cap 6');
+  assert.equal(getWeaponEffectiveCap(w2, all), 12, 'Tier 2 weapon with 4 Tier-2-or-higher weapons has cap 12');
+
+  // 2 Tier 1 awakened
+  w2.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 8, '2 Tier 1 weapons -> cap 8');
+
+  // 3 Tier 1 awakened
+  w3.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 10, '3 Tier 1 weapons -> cap 10');
+
+  // 4 Tier 1 awakened
+  w4.awakenedGrade = 2;
+  assert.equal(getWeaponEffectiveCap(w1, all), 12, '4 Tier 1 weapons -> cap 12');
 });
 
 test('Diminishing returns on speed boots, magnet, and pocket watch', () => {

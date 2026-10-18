@@ -487,14 +487,17 @@ export class LevelUpScreen extends Screen {
 
     const pool: UpgradeOption[] = [];
 
-    // Awakening options: any weapon that reached its max level (12) can awaken individually
-    const tier2Awakenings = tier3Weapons
-      .filter(w => w.level >= getWeaponEffectiveCap(w, weapons))
-      .map(createTier2AwakenOption);
+    // Awakening options (if unlocked)
+    const tier2Unlocked = weapons.length === 4 && weapons.every(w => (w.awakenedGrade ?? 0) >= 1 || w.level >= 12);
+    const tier1Unlocked = weapons.length === 4 && weapons.every(w => (w.awakenedGrade ?? 0) >= 2 || (w.awakenedGrade === 1 && w.level >= 12));
 
-    const tier1Awakenings = tier2Weapons
-      .filter(w => w.level >= getWeaponEffectiveCap(w, weapons))
-      .map(createTier1AwakenOption);
+    const tier2Awakenings = tier2Unlocked
+      ? tier3Weapons.filter(w => w.level >= 12).map(createTier2AwakenOption)
+      : [];
+
+    const tier1Awakenings = tier1Unlocked
+      ? tier2Weapons.filter(w => w.level >= 12).map(createTier1AwakenOption)
+      : [];
 
     const availableAwakenings = [...tier2Awakenings, ...tier1Awakenings];
 
