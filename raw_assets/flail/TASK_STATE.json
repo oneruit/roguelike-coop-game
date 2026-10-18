@@ -4,7 +4,7 @@
   "character_id": "flail",
   "character_name": "Бригитта",
   "created_at": "2026-10-18T20:57:35+03:00",
-  "status": "paused_quota_exhausted",
+  "status": "completed",
   "visual_spec": {
     "gender_role": "Armored Guardian Paladin / Female Crusader Knight (Бригитта)",
     "hair_head": "Lavender/purple bob hair with bangs, two dark curved ram/goat horns on temples, silver tiara with teardrop blue gemstone on forehead, cyan neck scarf/gorget",
@@ -34,45 +34,7 @@
       ]
     }
   ],
-  "pending_steps": [
-    {
-      "step": "generate_animation_sheets",
-      "description": "Generate 4 raw 6x4 animation sheets on pure magenta rgb(255,0,255) background using turnaround.png as reference",
-      "targets": [
-        "raw_assets/flail/source_idle.png",
-        "raw_assets/flail/source_walk.png",
-        "raw_assets/flail/source_attack.png",
-        "raw_assets/flail/source_walk_attack.png"
-      ],
-      "rules": "6 columns x 4 rows (FRONT, BACK, RIGHT, LEFT); Row 2 and 3 strict side profile; Column 3 closed eyes across all rows where eyes visible; no attack VFX; pure magenta background."
-    },
-    {
-      "step": "process_sheets",
-      "command": "python .agents/skills/character-animation-pipeline-updated/scripts/process_character_sheets.py --name flail --idle raw_assets/flail/source_idle_square.png --walk raw_assets/flail/source_walk_square.png --attack raw_assets/flail/source_attack_square.png --walk-attack raw_assets/flail/source_walk_attack_square.png --out-dir raw_assets/flail/processed --bg-mode magenta --row-order fbrl --mirror-left"
-    },
-    {
-      "step": "validate_sheets",
-      "command": "python .agents/skills/character-animation-pipeline-updated/scripts/validate_sheets.py --idle raw_assets/flail/processed/hero_flail_idle.png --walk raw_assets/flail/processed/hero_flail_walk.png --attack raw_assets/flail/processed/hero_flail_attack.png --walk-attack raw_assets/flail/processed/hero_flail_walk_attack.png --row-order fbrl"
-    },
-    {
-      "step": "engine_integration",
-      "description": "In game/src/entities/CharacterAnimator.ts, update getCharacterAnimLayout to map 'flail' to ANIM_LAYOUT_V2 (same as amazon, valkyrie, sorceress, chakram)."
-    },
-    {
-      "step": "copy_public_textures",
-      "description": "Copy processed textures to public/textures/heroes/flail/ (idle.png, walk.png, attack.png, walk_attack.png, front.png, portrait.png)."
-    },
-    {
-      "step": "verification",
-      "commands": [
-        "npm run index",
-        "npm run typecheck",
-        "npm run build",
-        "npm run build:admin",
-        "npm test"
-      ]
-    }
-  ],
+  "pending_steps": [],
   "quota_exhaustion_incident": {
     "http_status": 429,
     "error_code": "RESOURCE_EXHAUSTED",
