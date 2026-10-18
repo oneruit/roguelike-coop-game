@@ -1,0 +1,85 @@
+{
+  "task": "Brigitte (flail) character appearance redesign",
+  "branch": "development",
+  "character_id": "flail",
+  "character_name": "Бригитта",
+  "created_at": "2026-10-18T20:57:35+03:00",
+  "status": "paused_quota_exhausted",
+  "visual_spec": {
+    "gender_role": "Armored Guardian Paladin / Female Crusader Knight (Бригитта)",
+    "hair_head": "Lavender/purple bob hair with bangs, two dark curved ram/goat horns on temples, silver tiara with teardrop blue gemstone on forehead, cyan neck scarf/gorget",
+    "attire": "Royal blue armored tunic with belt and silver buckle, royal blue pleated battle skirt with silver swirls, heavy white and silver plate armor with cyan crystal accents",
+    "pauldron": "Left shoulder pauldron is an ornate sculpted silver/white RAM HEAD with curved horns and cyan crystal eyes",
+    "boots": "Heavy white plate greaves and boots styled like armored hooves (split-toe sabatons)",
+    "weapon": "Combat Flail (боевой цеп) with blue wrapped handle, steel chain, and heavy spiked white/silver flail head with cyan crystal core",
+    "proportions": "Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact body, sturdy boots)",
+    "reference_image": "raw_assets/flail/reference.png"
+  },
+  "completed_steps": [
+    {
+      "step": "turnaround_generation",
+      "status": "approved",
+      "file": "raw_assets/flail/turnaround.png",
+      "notes": "5-in-1 Character Reference Turnaround sheet explicitly approved by user. Contains Portrait, Front View, Back View, Right Profile View (strict 90 deg profile), Weapon Preview (combat flail). Pure solid magenta rgb(255,0,255) background."
+    },
+    {
+      "step": "panel_crops",
+      "status": "completed",
+      "files": [
+        "raw_assets/flail/portrait_crop.png",
+        "raw_assets/flail/front_crop.png",
+        "raw_assets/flail/back_crop.png",
+        "raw_assets/flail/right_crop.png",
+        "raw_assets/flail/weapon_crop.png"
+      ]
+    }
+  ],
+  "pending_steps": [
+    {
+      "step": "generate_animation_sheets",
+      "description": "Generate 4 raw 6x4 animation sheets on pure magenta rgb(255,0,255) background using turnaround.png as reference",
+      "targets": [
+        "raw_assets/flail/source_idle.png",
+        "raw_assets/flail/source_walk.png",
+        "raw_assets/flail/source_attack.png",
+        "raw_assets/flail/source_walk_attack.png"
+      ],
+      "rules": "6 columns x 4 rows (FRONT, BACK, RIGHT, LEFT); Row 2 and 3 strict side profile; Column 3 closed eyes across all rows where eyes visible; no attack VFX; pure magenta background."
+    },
+    {
+      "step": "process_sheets",
+      "command": "python .agents/skills/character-animation-pipeline-updated/scripts/process_character_sheets.py --name flail --idle raw_assets/flail/source_idle_square.png --walk raw_assets/flail/source_walk_square.png --attack raw_assets/flail/source_attack_square.png --walk-attack raw_assets/flail/source_walk_attack_square.png --out-dir raw_assets/flail/processed --bg-mode magenta --row-order fbrl --mirror-left"
+    },
+    {
+      "step": "validate_sheets",
+      "command": "python .agents/skills/character-animation-pipeline-updated/scripts/validate_sheets.py --idle raw_assets/flail/processed/hero_flail_idle.png --walk raw_assets/flail/processed/hero_flail_walk.png --attack raw_assets/flail/processed/hero_flail_attack.png --walk-attack raw_assets/flail/processed/hero_flail_walk_attack.png --row-order fbrl"
+    },
+    {
+      "step": "engine_integration",
+      "description": "In game/src/entities/CharacterAnimator.ts, update getCharacterAnimLayout to map 'flail' to ANIM_LAYOUT_V2 (same as amazon, valkyrie, sorceress, chakram)."
+    },
+    {
+      "step": "copy_public_textures",
+      "description": "Copy processed textures to public/textures/heroes/flail/ (idle.png, walk.png, attack.png, walk_attack.png, front.png, portrait.png)."
+    },
+    {
+      "step": "verification",
+      "commands": [
+        "npm run index",
+        "npm run typecheck",
+        "npm run build",
+        "npm run build:admin",
+        "npm test"
+      ]
+    }
+  ],
+  "quota_exhaustion_incident": {
+    "http_status": 429,
+    "error_code": "RESOURCE_EXHAUSTED",
+    "model": "gemini-3.1-flash-image",
+    "incident_timestamp": "2026-10-18T21:02:20+03:00",
+    "estimated_cooldown": "~3 hours 17 minutes",
+    "estimated_reset_time_local": "2026-10-19T00:20:00+03:00"
+  },
+  "resumption_prompt": "Продолжи выполнение задачи редизайна Бригитты из чекпоинта raw_assets/flail/TASK_STATE.json"
+}
