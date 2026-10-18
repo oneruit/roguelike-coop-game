@@ -44,7 +44,7 @@
 /* Top Centered Faceted Purple Plaque Header */
 .quest-book-top-plaque {
   position: absolute;
-  top: 4px;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 45;
@@ -55,11 +55,11 @@
   min-width: 240px;
   height: 42px;
   padding: 0 30px;
-  background: linear-gradient(180deg, #4d1872 0%, #2f0b47 100%);
-  border: 2.5px solid #8e3ebf;
+  background: linear-gradient(180deg, #32164a 0%, #1c0a2d 100%);
+  border: 2px solid #a855f7;
   outline: 2px solid #1a0528;
   clip-path: polygon(18px 0%, calc(100% - 18px) 0%, 100% 50%, calc(100% - 18px) 100%, 18px 100%, 0% 50%);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75), 0 0 14px rgba(142, 62, 191, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 16px rgba(168, 85, 247, 0.6);
   box-sizing: border-box;
 }
 
@@ -155,12 +155,12 @@
 /* Left Sidebar Tabs: Chapters of the Grimoire */
 .quest-book-tabs-sidebar {
   position: absolute;
-  left: -54px;
+  left: -50px;
   top: 48px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 5;
+  z-index: 25;
 }
 
 .quest-chapter-tab {
@@ -435,56 +435,66 @@
   50% { opacity: 1; transform: scale(1.12) rotate(10deg); filter: drop-shadow(0 0 18px #f5d0fe) drop-shadow(0 0 35px #c084fc); }
 }
 
-/* Pixel Art Grimoire Card */
+/* Authentic Battle Pass & Active Events Crystal Stone Grimoire Card */
 .quest-book-card {
   position: relative;
   width: 100%;
   height: clamp(380px, calc(84vh - 30px), 570px);
-  background: #2a0b3f;
-  border: 5px solid #6b21a8;
-  outline: 2.5px solid #180326;
-  border-radius: 16px;
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.95),
-    0 0 30px rgba(147, 51, 234, 0.45),
-    inset 0 0 20px rgba(0, 0, 0, 0.85);
-  padding: 10px;
+  background: radial-gradient(ellipse at center, #1e122e 0%, #10081c 65%, #08030f 100%);
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 24px 38px 22px 38px;
   box-sizing: border-box;
   display: flex;
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.45));
 }
 
-/* Stepped Pixel Corners */
-.pixel-book-corner {
+/* 9-Slice Scalable Crystal Stone Frame Overlay */
+.quest-frame-overlay {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  background: #a855f7;
+  inset: -6px;
   pointer-events: none;
-  z-index: 25;
+  z-index: 20;
+  border-style: solid;
+  border-width: 44px 58px 44px 58px;
+  border-image-source: url('/textures/ui/quests_frame_9slice.png');
+  border-image-slice: 46 64 46 64 fill;
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4));
 }
 
-.pixel-book-corner.corner-tl {
-  top: 5px;
-  left: 5px;
-  box-shadow: 4px 4px 0 #2a0b3f;
+/* Top and Bottom Center Gothic Diamond Crests */
+.quest-frame-crest-top {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 36px;
+  background: url('/textures/ui/quests_crest_top.png') no-repeat center center / contain;
+  z-index: 46;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.85));
 }
 
-.pixel-book-corner.corner-tr {
-  top: 5px;
-  right: 5px;
-  box-shadow: -4px 4px 0 #2a0b3f;
+.quest-frame-crest-bottom {
+  position: absolute;
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 28px;
+  background: url('/textures/ui/quests_crest_bottom.png') no-repeat center center / contain;
+  z-index: 30;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.85));
 }
 
-.pixel-book-corner.corner-bl {
-  bottom: 5px;
-  left: 5px;
-  box-shadow: 4px -4px 0 #2a0b3f;
-}
-
-.pixel-book-corner.corner-br {
-  bottom: 5px;
-  right: 5px;
-  box-shadow: -4px -4px 0 #2a0b3f;
+/* Deprecated pixel corner fallback */
+.pixel-book-corner {
+  display: none !important;
 }
 
 /* Two-Page Open Book Spread */
@@ -495,12 +505,13 @@
   background: linear-gradient(135deg, #efe2c8 0%, #e6d3ac 50%, #debfa4 100%);
   border: 2px solid #8e734c;
   outline: 1.5px solid #4a3820;
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow:
-    inset 0 0 36px rgba(110, 80, 40, 0.35),
-    0 4px 14px rgba(0, 0, 0, 0.65);
+    inset 0 0 32px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   position: relative;
+  z-index: 10;
 }
 
 /* Central Book Crease Spine */
