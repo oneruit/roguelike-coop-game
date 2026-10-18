@@ -28,7 +28,7 @@ export class ReaperScytheWeapon extends Weapon {
   private bleedDps: number = 8;
 
   constructor() {
-    super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 4, 2);
+    super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 16, 2);
     this.recalculateStats();
   }
 

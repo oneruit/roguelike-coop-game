@@ -346,7 +346,7 @@ class Game {
       remotePlayers: this.remotePlayers,
       enemyManager: this.enemyManager,
       combatDirector: this.combatDirector,
-      getTargetPosition: () => this.player.position,
+      getTargetPosition: () => (this.player.renderPosition || this.player.position),
       mainMenuProps: {
         onStartSinglePlayer: () => {
           this.sessionDirector.gameState = GameState.CHARACTER_SELECT;
@@ -992,17 +992,21 @@ class Game {
     }
   }
 
-  private updateRendering(rawDt: number, fps: number): void {
+  private updateRendering(rawDt: number, fps: number, alpha: number = 1.0): void {
     this.devManager.updateTelemetry(fps, this.combatDirector.projectiles.length);
     this.hud.updatePerformance(fps, this.player.isCoop ? this.net.ping : undefined);
 
-    this.engine.updateCamera(this.player.position, rawDt);
+    if (this.sessionDirector.gameState === GameState.PLAYING) {
+      this.player.updateVisuals(alpha);
+    }
+
+    this.engine.updateCamera(this.player.renderPosition, rawDt);
     this.projScreenMatrix.multiplyMatrices(this.engine.camera.projectionMatrix, this.engine.camera.matrixWorldInverse);
     this.cameraFrustum.setFromProjectionMatrix(this.projScreenMatrix);
 
     if (this.sessionDirector.gameState === GameState.PLAYING) {
       this.engine.chunkManager.cull(this.cameraFrustum);
-      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum, this.player.position);
+      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum, this.player.renderPosition);
       this.dropManager.updateVisuals(rawDt, this.cameraFrustum);
       this.combatDirector.updateProjectileVisuals(this.cameraFrustum);
       this.engine.altarManager.updateVisuals(rawDt, this.engine.camera, this.cameraFrustum);
@@ -1097,8 +1101,12 @@ class Game {
     }
     const simDuration = performance.now() - simStart;
 
+    const alpha = this.sessionDirector.gameState === GameState.PLAYING
+      ? Math.max(0, Math.min(1, this.accumulator / Game.FIXED_TIMESTEP))
+      : 1.0;
+
     const renderStart = performance.now();
-    this.updateRendering(rawDt, fps);
+    this.updateRendering(rawDt, fps, alpha);
     const renderDuration = performance.now() - renderStart;
 
     this.simTimeEma = this.simTimeEma === 0 ? simDuration : this.simTimeEma * 0.85 + simDuration * 0.15;

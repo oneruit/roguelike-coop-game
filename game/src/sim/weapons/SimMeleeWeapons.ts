@@ -194,7 +194,7 @@ export class SimReaperScytheWeapon extends SimWeapon {
   private activeOrbIds: string[] = [];
 
   constructor() {
-    super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 4);
+    super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 16);
   }
 
   public update(

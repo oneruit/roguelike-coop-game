@@ -58,6 +58,8 @@ import { GameEventBus } from '../mechanics/events/GameEventBus';
 export class Player {
   public mesh: Group;
   public position: Vector3;
+  public prevPosition: Vector3;
+  public renderPosition: Vector3;
   public motor: PlayerMotor = new PlayerMotor();
   public animation!: PlayerAnimation;
   private spriteMesh: Mesh;
@@ -227,6 +229,8 @@ export class Player {
     this.scene = scene;
     this.charType = charType;
     this.position = new Vector3(0, 0, 0);
+    this.prevPosition = new Vector3(0, 0, 0);
+    this.renderPosition = new Vector3(0, 0, 0);
     this.mesh = new Group();
 
     this.roninGeom = Player.getCharacterGeometry('ronin');
@@ -783,6 +787,9 @@ export class Player {
       this.getElevation = getElevation;
     }
     if (!this.isAlive) return;
+
+    // Record previous position for render interpolation between fixed simulation ticks
+    this.prevPosition.copy(this.position);
 
     // Tactical Dash Cooldown & Movement
     const dashResult = this.motor.updateDash(dt, this.position, this.speed, obstacleManager);
@@ -1344,5 +1351,16 @@ export class Player {
       });
     }
     return list;
+  }
+
+  /**
+   * Smoothly interpolates the player mesh position between the previous and current fixed simulation states.
+   * Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+).
+   * @param alpha Interpolation factor in [0, 1] representing the fractional progress through the current tick.
+   */
+  public updateVisuals(alpha: number = 1.0): void {
+    const clampedAlpha = Math.max(0, Math.min(1, alpha));
+    this.renderPosition.lerpVectors(this.prevPosition, this.position, clampedAlpha);
+    this.mesh.position.copy(this.renderPosition);
   }
 }

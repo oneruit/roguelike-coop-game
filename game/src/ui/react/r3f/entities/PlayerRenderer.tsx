@@ -36,8 +36,9 @@ export const PlayerRenderer: FC<PlayerRendererProps> = ({ player, scene }) => {
 
   useFrame(() => {
     if (!player) return;
-    // Player mesh position is kept in sync with player simulation position
-    player.mesh.position.copy(player.position);
+    // Keep mesh position synchronized with smoothly interpolated renderPosition
+    const targetPos = player.renderPosition || player.position;
+    player.mesh.position.copy(targetPos);
   });
 
   if (!player) return null;

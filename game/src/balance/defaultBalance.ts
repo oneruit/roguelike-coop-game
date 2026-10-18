@@ -60,7 +60,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'reaper_scythe',
       name: 'Коса Жнеца',
       icon: '🌙',
-      damage: 4,
+      damage: 16,
       cooldown: 0.0,
       damagePerLevel: 2,
       maxLevel: 12,
