@@ -3,6 +3,7 @@ import { SafeDOM } from '../../core/SafeDOM';
 import { Player } from '../../../entities/Player';
 import { Weapon } from '../../../combat/Weapon';
 import { RIFT_ITEMS } from '../../../items/RiftItemSystem';
+import { getHeroDetails, getHeroName } from '../../modules/HeroUIHelpers';
 
 export interface InventoryScreenOptions {
   container?: HTMLElement | null;
@@ -13,6 +14,12 @@ export class InventoryScreen extends Screen {
   private btnCloseInventory: HTMLElement | null = null;
   private btnOpenInventory: HTMLElement | null = null;
   private inventoryHeroTitle: HTMLElement | null = null;
+  private inventoryHeroPortraitImg: HTMLImageElement | null = null;
+  private inventoryHeroName: HTMLElement | null = null;
+  private inventoryHeroLevelBadge: HTMLElement | null = null;
+  private inventoryHeroSubtitleText: HTMLElement | null = null;
+  private inventoryHeroXpFill: HTMLElement | null = null;
+  private inventoryHeroXpText: HTMLElement | null = null;
   private inventoryStatsList: HTMLElement | null = null;
   private inventoryPassivesList: HTMLElement | null = null;
   private inventoryWeaponsList: HTMLElement | null = null;
@@ -43,6 +50,12 @@ export class InventoryScreen extends Screen {
     this.btnCloseInventory = SafeDOM.query(this.container, '#btn-close-inventory');
     this.btnOpenInventory = SafeDOM.getElementById('btn-open-inventory');
     this.inventoryHeroTitle = SafeDOM.query(this.container, '#inventory-hero-title');
+    this.inventoryHeroPortraitImg = SafeDOM.query<HTMLImageElement>(this.container, '#inventory-hero-portrait-img');
+    this.inventoryHeroName = SafeDOM.query(this.container, '#inventory-hero-name');
+    this.inventoryHeroLevelBadge = SafeDOM.query(this.container, '#inventory-hero-level-badge');
+    this.inventoryHeroSubtitleText = SafeDOM.query(this.container, '#inventory-hero-subtitle-text');
+    this.inventoryHeroXpFill = SafeDOM.query(this.container, '#inventory-hero-xp-fill');
+    this.inventoryHeroXpText = SafeDOM.query(this.container, '#inventory-hero-xp-text');
     this.inventoryStatsList = SafeDOM.query(this.container, '#inventory-stats-list');
     this.inventoryPassivesList = SafeDOM.query(this.container, '#inventory-passives-list');
     this.inventoryWeaponsList = SafeDOM.query(this.container, '#inventory-weapons-list');
@@ -103,9 +116,33 @@ export class InventoryScreen extends Screen {
   }
 
   public renderInventory(player: Player): void {
-    const heroName = player.displayName || player.charType || 'Странник Прерии';
+    const rawHeroName = player.displayName || getHeroName(player.charType) || player.charType || 'Странник Прерии';
+    const heroName = rawHeroName.toUpperCase();
+
     if (this.inventoryHeroTitle) {
-      this.inventoryHeroTitle.textContent = `${heroName.toUpperCase()} • УРОВЕНЬ ${player.level}`;
+      this.inventoryHeroTitle.textContent = `${heroName} • УРОВЕНЬ ${player.level}`;
+    }
+    if (this.inventoryHeroName) {
+      this.inventoryHeroName.textContent = heroName;
+    }
+    if (this.inventoryHeroLevelBadge) {
+      this.inventoryHeroLevelBadge.textContent = `УР. ${player.level}`;
+    }
+    if (this.inventoryHeroPortraitImg) {
+      this.inventoryHeroPortraitImg.src = `/textures/heroes/${player.charType}/portrait.png`;
+      this.inventoryHeroPortraitImg.alt = heroName;
+    }
+    if (this.inventoryHeroSubtitleText) {
+      const details = getHeroDetails(player.charType);
+      const roleText = details?.role ? `${details.role} • Странник Разлома` : '«Адепт Разлома» • Странник Бездны';
+      this.inventoryHeroSubtitleText.textContent = roleText;
+    }
+    if (this.inventoryHeroXpFill && this.inventoryHeroXpText) {
+      const xpNeeded = player.xpToNextLevel || 100;
+      const currentXp = player.xp || 0;
+      const xpPercent = Math.min(100, Math.max(0, Math.round((currentXp / Math.max(1, xpNeeded)) * 100)));
+      this.inventoryHeroXpFill.style.width = `${xpPercent}%`;
+      this.inventoryHeroXpText.textContent = `${Math.round(currentXp)} / ${Math.round(xpNeeded)} XP`;
     }
 
     if (this.statModeLabel) {
@@ -120,12 +157,16 @@ export class InventoryScreen extends Screen {
       const naniteReduction = player.getNaniteDamageReduction();
       const totalArmorPct = Math.round((1 - (1 - player.passiveDamageReduction) * (1 - naniteReduction)) * 100);
 
-      // HP display
+      // HP display & gauge fill
       const baseMaxHp = player.baseMaxHp || 100;
       const hpBonus = Math.max(0, player.maxHp - baseMaxHp);
+      const hpRatio = Math.min(100, Math.max(0, Math.round((player.hp / Math.max(1, player.maxHp)) * 100)));
       const hpValue = this.statDisplayMode === 'split' && hpBonus > 0
-        ? `<span style="color: #f1f5f9;">${Math.round(player.hp)} / ${baseMaxHp}</span> <span style="color: #22c55e;">(+${hpBonus})</span>`
-        : `<span style="color: #f1f5f9;">${Math.round(player.hp)} / ${player.maxHp}</span>`;
+        ? `<span style="color: #f8fafc;">${Math.round(player.hp)} / ${baseMaxHp}</span> <span class="val-green">(+${hpBonus})</span>`
+        : `<span style="color: #f8fafc;">${Math.round(player.hp)} / ${player.maxHp}</span>`;
+
+      // Shield gauge fill
+      const shieldRatio = player.maxShield > 0 ? Math.min(100, Math.max(0, Math.round((player.shield / player.maxShield) * 100))) : 0;
 
       // Weapon damage calculations across all currently equipped weapons
       const activeWeapons = player.weapons.length > 0 ? player.weapons : [];
@@ -156,72 +197,134 @@ export class InventoryScreen extends Screen {
       const totalBonusDps = Math.max(0, Math.round(totalDps - totalBaseDps));
 
       const dpsValue = this.statDisplayMode === 'split' && totalBonusDps > 0
-        ? `<span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalBaseDps)} <span style="color: #22c55e;">(+${totalBonusDps})</span> DPS)</span>`
-        : `<span style="color: #94a3b8; font-size: 11px;">(${Math.round(totalDps)} DPS)</span>`;
+        ? `<span class="val-dps">(${Math.round(totalBaseDps)} <span style="color: #4ade80;">(+${totalBonusDps})</span> DPS)</span>`
+        : `<span class="val-dps">(${Math.round(totalDps)} DPS)</span>`;
 
       const weaponsDmgValue = this.statDisplayMode === 'split' && totalBonusDmg > 0
-        ? `<span style="color: #f1f5f9;">${Math.round(totalBaseDamage)}</span> <span style="color: #22c55e;">(+${totalBonusDmg})</span> ${dpsValue}`
-        : `<span style="color: #f1f5f9;">${Math.round(totalEffectiveDamage)}</span> ${dpsValue}`;
+        ? `<span style="color: #f8fafc;">${Math.round(totalBaseDamage)}</span> <span class="val-green">(+${totalBonusDmg})</span> ${dpsValue}`
+        : `<span style="color: #f8fafc;">${Math.round(totalEffectiveDamage)}</span> ${dpsValue}`;
 
       // Speed display
       const spdBonus = Number((player.speed - player.baseSpeed).toFixed(1));
       const spdValue = this.statDisplayMode === 'split' && spdBonus > 0
-        ? `<span style="color: #f1f5f9;">${player.baseSpeed.toFixed(1)}</span> <span style="color: #22c55e;">(+${spdBonus})</span> (x${player.passiveSpeedMultiplier.toFixed(2)})`
-        : `<span style="color: #f1f5f9;">${player.speed.toFixed(1)} (x${player.passiveSpeedMultiplier.toFixed(2)})</span>`;
+        ? `<span style="color: #f8fafc;">${player.baseSpeed.toFixed(1)}</span> <span class="val-green">(+${spdBonus})</span> <span style="color: #94a3b8; font-size: 10px;">(x${player.passiveSpeedMultiplier.toFixed(2)})</span>`
+        : `<span style="color: #f8fafc;">${player.speed.toFixed(1)}</span> <span style="color: #94a3b8; font-size: 10px;">(x${player.passiveSpeedMultiplier.toFixed(2)})</span>`;
 
       this.inventoryStatsList.innerHTML = `
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">❤️ Здоровье</span>
-          <span class="inv-stat-value">${hpValue}</span>
+        <!-- Subgroup: Survivability -->
+        <div class="stat-subgroup-title">Выживаемость</div>
+
+        <div class="stat-row-plate">
+          <div class="stat-gauge-fill gauge-hp" style="width: ${hpRatio}%;"></div>
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">❤️</span>
+            <span class="stat-name">Здоровье</span>
+          </div>
+          <div class="stat-val-wrap">${hpValue}</div>
         </div>
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">🛡️ Энергощит</span>
-          <span class="inv-stat-value">${Math.round(player.shield)} / ${player.maxShield}</span>
+
+        <div class="stat-row-plate">
+          <div class="stat-gauge-fill gauge-shield" style="width: ${shieldRatio}%;"></div>
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">🛡️</span>
+            <span class="stat-name">Энергощит</span>
+          </div>
+          <div class="stat-val-wrap" style="color: #38bdf8;">${Math.round(player.shield)} / ${player.maxShield}</div>
         </div>
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">💖 Регенерация HP</span>
-          <span class="inv-stat-value">+${player.passiveHpRegen.toFixed(1)} / с</span>
+
+        <div class="stat-row-plate">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">💖</span>
+            <span class="stat-name">Регенерация HP</span>
+          </div>
+          <div class="stat-val-wrap val-green">+${player.passiveHpRegen.toFixed(1)} / с</div>
         </div>
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">👟 Скорость</span>
-          <span class="inv-stat-value">${spdValue}</span>
+
+        <div class="stat-row-plate">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">🦺</span>
+            <span class="stat-name">Броня (Снижение урона)</span>
+          </div>
+          <div class="stat-val-wrap">-${totalArmorPct}%</div>
         </div>
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">🦺 Снижение урона (Броня)</span>
-          <span class="inv-stat-value">-${totalArmorPct}%</span>
+
+        <!-- Subgroup: Combat -->
+        <div class="stat-subgroup-title">Боевая Мощь</div>
+
+        <div class="stat-row-plate" title="Суммарный базовый или эффективный урон (+бонус) и общий DPS всех экипированных оружий">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">⚔️</span>
+            <span class="stat-name">Урон оружий</span>
+          </div>
+          <div class="stat-val-wrap">${weaponsDmgValue}</div>
         </div>
-        <div class="inv-stat-row" title="Суммарный базовый или эффективный урон (+бонус) и общий DPS всех экипированных оружий">
-          <span class="inv-stat-label">⚔️ Урон оружий</span>
-          <span class="inv-stat-value text-accent">${weaponsDmgValue}</span>
-        </div>
+
         ${player.mightElixirCount > 0 ? `
-        <div class="inv-stat-row" title="Бонус урона от Эликсира Могущества (+1% за каждый заряд)">
-          <span class="inv-stat-label">⚡ Эликсир Могущества</span>
-          <span class="inv-stat-value text-accent">+${player.mightElixirCount * 1}% <span style="color: #94a3b8; font-size: 11px;">(x${player.mightElixirCount})</span></span>
+        <div class="stat-row-plate" title="Бонус урона от Эликсира Могущества (+1% за каждый заряд)">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">⚡</span>
+            <span class="stat-name">Эликсир Могущества</span>
+          </div>
+          <div class="stat-val-wrap val-amber">+${player.mightElixirCount * 1}% <span class="val-dps">(x${player.mightElixirCount})</span></div>
         </div>` : ''}
-        <div class="inv-stat-row" title="Шанс критического удара (максимум 100%)">
-          <span class="inv-stat-label">🎯 Шанс крит. урона</span>
-          <span class="inv-stat-value text-crit">${critPct}%</span>
+
+        <div class="stat-row-plate" title="Шанс критического удара (максимум 100%)">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">🎯</span>
+            <span class="stat-name">Шанс крит. урона</span>
+          </div>
+          <div class="stat-val-wrap val-crit">${critPct}%</div>
         </div>
-        <div class="inv-stat-row" title="Множитель критического урона (максимум 1000%)">
-          <span class="inv-stat-label">💥 Крит. урон</span>
-          <span class="inv-stat-value text-crit-dmg">+${critDmgPct}%</span>
+
+        <div class="stat-row-plate" title="Множитель критического урона (максимум 1000%)">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">💥</span>
+            <span class="stat-name">Крит. урон</span>
+          </div>
+          <div class="stat-val-wrap val-crit-dmg">+${critDmgPct}%</div>
         </div>
-        <div class="inv-stat-row" title="Ускорение перезарядки">
-          <span class="inv-stat-label">⏱️ Ускорение перезарядки</span>
-          <span class="inv-stat-value">+${cdrPct}%</span>
+
+        <div class="stat-row-plate" title="Ускорение перезарядки">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">⏱️</span>
+            <span class="stat-name">Ускорение перезарядки</span>
+          </div>
+          <div class="stat-val-wrap val-purple">+${cdrPct}%</div>
         </div>
-        <div class="inv-stat-row" title="Радиус сбора кристаллов">
-          <span class="inv-stat-label">🧲 Радиус сбора</span>
-          <span class="inv-stat-value">${player.pickupRadius.toFixed(1)}м</span>
+
+        <!-- Subgroup: Expedition & Rift -->
+        <div class="stat-subgroup-title">Экспедиция и Разлом</div>
+
+        <div class="stat-row-plate">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">👟</span>
+            <span class="stat-name">Скорость</span>
+          </div>
+          <div class="stat-val-wrap val-cyan">${spdValue}</div>
         </div>
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">⬡ Кредиты Разлома</span>
-          <span class="inv-stat-value text-yellow">${player.credits}</span>
+
+        <div class="stat-row-plate" title="Радиус сбора кристаллов">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">🧲</span>
+            <span class="stat-name">Радиус сбора</span>
+          </div>
+          <div class="stat-val-wrap">${player.pickupRadius.toFixed(1)}м</div>
         </div>
-        <div class="inv-stat-row">
-          <span class="inv-stat-label">💀 Убийств</span>
-          <span class="inv-stat-value">${player.kills}</span>
+
+        <div class="stat-row-plate">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">⬡</span>
+            <span class="stat-name">Кредиты Разлома</span>
+          </div>
+          <div class="stat-val-wrap val-amber">${player.credits} ◈</div>
+        </div>
+
+        <div class="stat-row-plate">
+          <div class="stat-left-wrap">
+            <span class="stat-icon-glyph">💀</span>
+            <span class="stat-name">Убийств</span>
+          </div>
+          <div class="stat-val-wrap" style="color: #cbd5e1;">${player.kills}</div>
         </div>
       `;
     }
@@ -289,7 +392,17 @@ export class InventoryScreen extends Screen {
 
       const active = passivesList.filter((p) => p.count > 0);
       if (active.length === 0) {
-        this.inventoryPassivesList.innerHTML = `<div class="inv-empty-hint">Пассивные усиления ещё не получены</div>`;
+        this.inventoryPassivesList.innerHTML = `
+          <div class="passives-sockets-row">
+            <div class="passive-socket-item"><span class="passive-empty-symbol">ᚱ</span></div>
+            <div class="passive-socket-item"><span class="passive-empty-symbol">ᛟ</span></div>
+            <div class="passive-socket-item"><span class="passive-empty-symbol">ᛉ</span></div>
+            <div class="passive-socket-item"><span class="passive-empty-symbol">ᚦ</span></div>
+            <div class="passive-socket-item"><span class="passive-empty-symbol">ᚷ</span></div>
+            <div class="passive-socket-item"><span class="passive-empty-symbol">ᚹ</span></div>
+          </div>
+          <div class="passives-empty-hint">Древние руны безмолвствуют. Пассивные дары откроются при получении уровней!</div>
+        `;
       } else {
         this.inventoryPassivesList.innerHTML = active
           .map(
@@ -310,7 +423,7 @@ export class InventoryScreen extends Screen {
       }
     }
 
-    // 3. Weapons with Upgrade History & Extended Stats
+    // 3. Weapons with Upgrade History, Metrics & Evolution Line
     if (this.inventoryWeaponsList) {
       if (player.weapons.length === 0) {
         this.inventoryWeaponsList.innerHTML = `<div class="inv-empty-hint">Оружие пока не получено</div>`;
@@ -337,40 +450,89 @@ export class InventoryScreen extends Screen {
               )
               .join('');
 
-            const stats = this.getWeaponDetailedInventoryStats(weapon);
-            const statChipsHtml = stats
-              .map(
-                (s) => `
-            <span class="inv-weapon-stat-chip">${s.label}: <strong>${s.value}</strong></span>
-          `
-              )
-              .join('');
+            const pipsHtml = Array.from({ length: 12 }, (_, i) => `<div class="weapon-pip ${i < weapon.level ? 'active' : ''}"></div>`).join('');
+
+            const anyW = weapon as any;
+            const dps = Math.round(weapon.damage / Math.max(0.08, weapon.effectiveCooldown));
+            const dmgNum = Math.round(weapon.damage);
+            const projCount = typeof anyW.projectileCount === 'number' ? anyW.projectileCount : typeof anyW.orbCount === 'number' ? anyW.orbCount : 1;
+            const projSpeed = typeof anyW.projectileSpeed === 'number' ? `${anyW.projectileSpeed} м/с` : typeof anyW.radius === 'number' ? `${anyW.radius}м` : '16 м/с';
+            const dealt = Math.round(weapon.damageDealt || 0).toLocaleString('ru-RU');
 
             return `
-            <div class="inv-weapon-card">
-              <div class="inv-weapon-top">
-                <div class="inv-weapon-icon">
-                  <img src="${weapon.iconImage || `/textures/weapons/weapon_${weapon.id}.png`}" class="inv-weapon-img" alt="${weapon.name}" onerror="this.style.display='none'; if(this.nextElementSibling) (this.nextElementSibling as HTMLElement).style.display='inline';" />
+            <div class="weapon-card-gothic">
+              <div class="weapon-card-top-row">
+                <div class="weapon-socket-art">
+                  <img src="${weapon.iconImage || `/textures/weapons/weapon_${weapon.id}.png`}" class="weapon-sprite-img" alt="${weapon.name}" onerror="this.style.display='none'; if(this.nextElementSibling) (this.nextElementSibling as HTMLElement).style.display='inline';" />
                   <span class="inv-weapon-fallback-icon" style="display: none;">${weapon.icon}</span>
                 </div>
-                <div class="inv-weapon-title-box">
-                  <div class="inv-weapon-name-row">
-                    <span class="inv-weapon-name">${weapon.name}</span>
-                    <span class="inv-weapon-grade-badge ${badgeClass}">${gradeLabel}</span>
-                    ${isStart ? '<span class="inv-tag-start">НАЧАЛЬНОЕ</span>' : ''}
-                    <span class="inv-tag-lvl">Ур. ${weapon.level}/${weapon.maxLevel}</span>
+                <div class="weapon-details-col">
+                  <div class="weapon-title-line">
+                    <span class="weapon-main-name">${weapon.name}</span>
+                    <span class="badge-tier-plaque ${badgeClass}">${gradeLabel}</span>
+                    ${isStart ? '<span class="badge-tag-start">НАЧАЛЬНОЕ</span>' : ''}
+                    <span class="badge-tag-lvl">УР. ${weapon.level} / ${weapon.maxLevel}</span>
                   </div>
-                  <div class="inv-weapon-stat-badges" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
-                    ${statChipsHtml}
+                  <div class="weapon-pips-track">
+                    ${pipsHtml}
                   </div>
                 </div>
               </div>
-              <div class="inv-weapon-history-row">
+
+              <div class="weapon-metrics-grid">
+                <div class="metric-tile">
+                  <span class="metric-lbl">Урон</span>
+                  <span class="metric-num" style="color: #fb923c;">${dmgNum}</span>
+                </div>
+                <div class="metric-tile">
+                  <span class="metric-lbl">Кулдаун</span>
+                  <span class="metric-num">${weapon.effectiveCooldown.toFixed(2)}с</span>
+                </div>
+                <div class="metric-tile">
+                  <span class="metric-lbl">DPS</span>
+                  <span class="metric-num" style="color: #f59e0b;">${dps}</span>
+                </div>
+                <div class="metric-tile">
+                  <span class="metric-lbl">Снаряды</span>
+                  <span class="metric-num" style="color: #38bdf8;">${projCount}</span>
+                </div>
+                <div class="metric-tile">
+                  <span class="metric-lbl">Скорость</span>
+                  <span class="metric-num">${projSpeed} м/с</span>
+                </div>
+                <div class="metric-tile">
+                  <span class="metric-lbl">Нанесено</span>
+                  <span class="metric-num" style="color: #cbd5e1;">${dealt}</span>
+                </div>
+              </div>
+
+              <div class="weapon-evolution-track">
+                <span class="evo-header-lbl">Линия Эволюции Оружия:</span>
+                <div class="evo-nodes-wrap">
+                  <div class="evo-node ${tier >= 3 ? 'active' : 'locked'}">
+                    <span>◈</span>
+                    <span>Тир III (Базовый)</span>
+                  </div>
+                  <span class="evo-arrow">➔</span>
+                  <div class="evo-node ${tier <= 2 ? 'active' : 'locked'}">
+                    <span>${tier <= 2 ? '◈' : '🔒'}</span>
+                    <span>Тир II (Закалённый)</span>
+                  </div>
+                  <span class="evo-arrow">➔</span>
+                  <div class="evo-node ${tier === 1 ? 'active' : 'locked'}">
+                    <span>${tier === 1 ? '◈' : '🔒'}</span>
+                    <span>Тир I (Пробуждённый)</span>
+                  </div>
+                </div>
+              </div>
+
+              ${historyHtml ? `
+              <div class="inv-weapon-history-row" style="margin-top: 8px;">
                 <span class="inv-history-label">Тиры улучшений:</span>
                 <div class="inv-history-chips">
-                  ${historyHtml || '<span class="inv-history-none">Базовое состояние (без улучшений)</span>'}
+                  ${historyHtml}
                 </div>
-              </div>
+              </div>` : ''}
             </div>
           `;
           })
@@ -378,11 +540,24 @@ export class InventoryScreen extends Screen {
       }
     }
 
-    // 4. Rift Items
+    // 4. Rift Items / Relics
     if (this.inventoryItemsList) {
       const itemEntries = Array.from(player.riftItems.entries());
       if (itemEntries.length === 0) {
-        this.inventoryItemsList.innerHTML = `<div class="inv-empty-hint">Сундуки Разлома ещё не открыты. Найдите контейнер в прерии!</div>`;
+        this.inventoryItemsList.innerHTML = `
+          <div class="relics-sockets-grid">
+            ${Array.from({ length: 8 }, (_, i) => `
+              <div class="relic-socket-cell">
+                <span class="relic-rune-watermark">✧</span>
+                <span class="relic-socket-hint">Слот ${i + 1}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="relic-empty-banner">
+            <span>🗝️</span>
+            <span>Сундуки Разлома ещё не открыты. Отыщите реликварий в прерии!</span>
+          </div>
+        `;
       } else {
         const rarityOrder: Record<string, number> = {
           boss: 5,
@@ -407,29 +582,33 @@ export class InventoryScreen extends Screen {
           boss: 'Босс'
         };
 
-        this.inventoryItemsList.innerHTML = itemEntries
-          .map(([id, count]) => {
-            const def = RIFT_ITEMS[id];
-            if (!def) return '';
-            const rarityLabel = rarityLabels[def.rarity] || def.rarity;
+        this.inventoryItemsList.innerHTML = `
+          <div class="relics-items-populated-grid">
+            ${itemEntries
+              .map(([id, count]) => {
+                const def = RIFT_ITEMS[id];
+                if (!def) return '';
+                const rarityLabel = rarityLabels[def.rarity] || def.rarity;
 
-            const itemDesc = id === 'nanite_plating'
-              ? `Снижает входящий урон на ${(player.getNaniteDamageReduction() * 100).toFixed(1)}% (макс. 60% на 20 ур.).`
-              : def.description;
+                const itemDesc = id === 'nanite_plating'
+                  ? `Снижает входящий урон на ${(player.getNaniteDamageReduction() * 100).toFixed(1)}% (макс. 60% на 20 ур.).`
+                  : def.description;
 
-            return `
-            <div class="inv-item-card grade-${def.rarity}">
-              <div class="inv-item-card-top">
-                <span class="inv-item-icon" style="color: ${def.color}">${def.icon}</span>
-                <span class="grade-badge grade-${def.rarity}">${rarityLabel.toUpperCase()}</span>
-                <span class="inv-item-count">x${count}</span>
-              </div>
-              <div class="inv-item-name" style="color: ${def.color}">${def.name}</div>
-              <div class="inv-item-desc">${itemDesc}</div>
-            </div>
-          `;
-          })
-          .join('');
+                return `
+                <div class="inv-item-card grade-${def.rarity}">
+                  <div class="inv-item-card-top">
+                    <span class="inv-item-icon" style="color: ${def.color};">${def.icon}</span>
+                    <span class="grade-badge grade-${def.rarity}">${rarityLabel.toUpperCase()}</span>
+                    <span class="inv-item-count">x${count}</span>
+                  </div>
+                  <div class="inv-item-name" style="color: ${def.color};">${def.name}</div>
+                  <div class="inv-item-desc">${itemDesc}</div>
+                </div>
+              `;
+              })
+              .join('')}
+          </div>
+        `;
       }
     }
   }

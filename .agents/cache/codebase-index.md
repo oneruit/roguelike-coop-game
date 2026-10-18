@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T04:40:31.514Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
+> **Generated:** 2026-10-18T06:03:09.180Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -681,18 +681,18 @@ Run `npm run index` to refresh this cache.
 | `InputManager.onKeyUp` | `method` | [`game/src/core/InputManager.ts:87`](../../game/src/core/InputManager.ts#L87) | - |
 | `InputManager.onMouseMove` | `method` | [`game/src/core/InputManager.ts:91`](../../game/src/core/InputManager.ts#L91) | - |
 | `InputManager.update` | `method` | [`game/src/core/InputManager.ts:96`](../../game/src/core/InputManager.ts#L96) | - |
-| `InventoryScreen` | `class` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:11`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L11) | - |
-| `InventoryScreen.bindElements` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:41`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L41) | - |
-| `InventoryScreen.bindEvents` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:54`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L54) | - |
-| `InventoryScreen.getTemplate` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:37`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L37) | - |
-| `InventoryScreen.getWeaponDetailedInventoryStats` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:437`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L437) | - |
-| `InventoryScreen.hideInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:99`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L99) | - |
-| `InventoryScreen.isInventoryOpen` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:76`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L76) | - |
-| `InventoryScreen.renderInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:105`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L105) | - |
-| `InventoryScreen.showInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:91`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L91) | - |
-| `InventoryScreen.toggleInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:80`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L80) | - |
-| `InventoryScreen.toggleStatDisplayMode` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:66`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L66) | - |
-| `InventoryScreenOptions` | `interface` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:7`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L7) | - |
+| `InventoryScreen` | `class` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:12`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L12) | - |
+| `InventoryScreen.bindElements` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:48`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L48) | - |
+| `InventoryScreen.bindEvents` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:67`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L67) | - |
+| `InventoryScreen.getTemplate` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:44`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L44) | - |
+| `InventoryScreen.getWeaponDetailedInventoryStats` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:616`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L616) | - |
+| `InventoryScreen.hideInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:112`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L112) | - |
+| `InventoryScreen.isInventoryOpen` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:89`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L89) | - |
+| `InventoryScreen.renderInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:118`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L118) | - |
+| `InventoryScreen.showInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:104`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L104) | - |
+| `InventoryScreen.toggleInventory` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:93`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L93) | - |
+| `InventoryScreen.toggleStatDisplayMode` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:79`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L79) | - |
+| `InventoryScreenOptions` | `interface` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:8`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L8) | - |
 | `InventoryUI` | `class` | [`game/src/ui/modules/InventoryUI.ts:11`](../../game/src/ui/modules/InventoryUI.ts#L11) | - |
 | `INVOKE_BASE_DAMAGE` | `const` | [`game/src/shared/InvokerSpells.ts:167`](../../game/src/shared/InvokerSpells.ts#L167) | - |
 | `INVOKE_COOLDOWN_FACTOR` | `const` | [`game/src/shared/InvokerSpells.ts:169`](../../game/src/shared/InvokerSpells.ts#L169) | - |

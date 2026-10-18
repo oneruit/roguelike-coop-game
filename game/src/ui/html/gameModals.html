@@ -156,38 +156,79 @@
       <!-- Character & Inventory Modal (I / C / HUD Button) -->
       <div id="inventory-modal" class="modal hidden">
         <div class="modal-backdrop in-game-modal-backdrop" id="inventory-backdrop"></div>
-        <div class="modal-card inventory-modal-card modern-glass-modal">
+        <div class="modal-card inventory-modal-card">
+          <!-- Scalable 9-slice stone frame overlay -->
+          <div class="inventory-frame-overlay"></div>
+          <!-- Bottom Crest -->
+          <div class="inventory-frame-crest-bottom"></div>
+
+          <!-- Top Faceted Plaque -->
+          <div class="inventory-top-faceted-plaque">
+            <span class="plaque-diamond">◈</span>
+            <span class="plaque-title">СНАРЯЖЕНИЕ И АРТЕФАКТЫ</span>
+            <span class="plaque-diamond">◈</span>
+          </div>
+
+          <!-- Header Bar Inside Modal -->
           <div class="inventory-modal-header">
-            <div class="inventory-title-group">
-              <div class="sub-title menu-badge-blue">СНАРЯЖЕНИЕ И АРТЕФАКТЫ</div>
-              <h2 class="wild-west-title modern-menu-title" id="inventory-hero-title">ИНВЕНТАРЬ ПЕРСОНАЖА</h2>
+            <!-- Hero Profile Group -->
+            <div class="inventory-hero-profile-group">
+              <div class="inventory-hero-portrait-socket">
+                <img id="inventory-hero-portrait-img" src="/textures/heroes/sorceress/portrait.png" alt="Герой" onerror="this.src='/textures/ui/icon_hud_inventory.png';" />
+              </div>
+              <div class="inventory-hero-info-text">
+                <div class="inventory-hero-name-row">
+                  <span class="inventory-hero-class-name" id="inventory-hero-name">ГЕРОЙ</span>
+                  <span class="inventory-hero-level-seal" id="inventory-hero-level-badge">УР. 1</span>
+                  <h2 class="inventory-legacy-title hidden" id="inventory-hero-title">ИНВЕНТАРЬ ПЕРСОНАЖА</h2>
+                </div>
+                <div class="inventory-hero-subtitle">
+                  <span id="inventory-hero-subtitle-text">«Странник Разлома»</span>
+                  <div class="inventory-hero-xp-wrap" id="inventory-hero-xp-wrap">
+                    <div class="inventory-hero-xp-track">
+                      <div class="inventory-hero-xp-fill" id="inventory-hero-xp-fill" style="width: 0%;"></div>
+                    </div>
+                    <span class="inventory-hero-xp-text" id="inventory-hero-xp-text">0 / 100 XP</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="inventory-header-actions" style="display: flex; align-items: center; gap: 10px;">
-              <button id="btn-inventory-toggle-stat-mode" class="stat-mode-toggle-btn" type="button" title="Переключить режим отображения характеристик">
+
+            <!-- Action Buttons -->
+            <div class="inventory-header-actions">
+              <button id="btn-inventory-toggle-stat-mode" class="inventory-gothic-btn-toggle stat-mode-toggle-btn" type="button" title="Переключить режим отображения характеристик">
                 <span class="stat-mode-icon">📊</span>
                 <span id="inventory-stat-mode-label">Режим: Базовый (+бонус)</span>
               </button>
-              <button id="btn-close-inventory" class="modern-back-btn" type="button" title="Закрыть [ESC] / [I]">[X] ЗАКРЫТЬ [I]</button>
+              <button id="btn-close-inventory" class="inventory-gothic-btn-close modern-back-btn" type="button" title="Закрыть [ESC] / [I]">
+                <span>✕ ЗАКРЫТЬ [I / ESC]</span>
+              </button>
             </div>
           </div>
 
           <div class="inventory-modal-content">
             <!-- Left Panel: Hero Stats & Passives -->
             <div class="inventory-col inventory-left-panel">
-              <div class="inventory-card-section">
+              <div class="inventory-card-section inventory-gothic-panel">
                 <div class="inventory-section-heading">
-                  <span class="inventory-heading-icon">👤</span>
-                  <span>ХАРАКТЕРИСТИКИ</span>
+                  <div class="inventory-heading-left">
+                    <span class="inventory-heading-diamond">◈</span>
+                    <span>ХАРАКТЕРИСТИКИ</span>
+                  </div>
+                  <span class="inventory-heading-tag">АТРИБУТЫ ГЕРОЯ</span>
                 </div>
                 <div id="inventory-stats-list" class="inventory-stats-table">
                   <!-- Populated dynamically -->
                 </div>
               </div>
 
-              <div class="inventory-card-section">
+              <div class="inventory-card-section inventory-gothic-panel inventory-passives-section">
                 <div class="inventory-section-heading">
-                  <span class="inventory-heading-icon">⭐</span>
-                  <span>ПАССИВНЫЕ УСИЛЕНИЯ</span>
+                  <div class="inventory-heading-left">
+                    <span class="inventory-heading-icon" style="color: #f59e0b;">⭐</span>
+                    <span>ПАССИВНЫЕ УСИЛЕНИЯ</span>
+                  </div>
+                  <span class="inventory-heading-tag">ГНЕЗДА ДАРОВ</span>
                 </div>
                 <div id="inventory-passives-list" class="inventory-passives-list">
                   <!-- Populated dynamically -->
@@ -197,20 +238,26 @@
 
             <!-- Right Panel: Weapons & Rift Items -->
             <div class="inventory-col inventory-right-panel">
-              <div class="inventory-card-section">
+              <div class="inventory-card-section inventory-gothic-panel">
                 <div class="inventory-section-heading">
-                  <span class="inventory-heading-icon">⚔️</span>
-                  <span>ОРУЖИЕ И УЛУЧШЕНИЯ</span>
+                  <div class="inventory-heading-left">
+                    <span class="inventory-heading-icon" style="color: #c084fc;">⚔️</span>
+                    <span>ОРУЖИЕ И УЛУЧШЕНИЯ</span>
+                  </div>
+                  <span class="inventory-heading-tag">АРСЕНАЛ</span>
                 </div>
                 <div id="inventory-weapons-list" class="inventory-weapons-list">
                   <!-- Populated dynamically -->
                 </div>
               </div>
 
-              <div class="inventory-card-section">
+              <div class="inventory-card-section inventory-gothic-panel inventory-relics-section">
                 <div class="inventory-section-heading">
-                  <span class="inventory-heading-icon">💎</span>
-                  <span>ПРЕДМЕТЫ РАЗЛОМА</span>
+                  <div class="inventory-heading-left">
+                    <span class="inventory-heading-icon" style="color: #38bdf8;">💎</span>
+                    <span>ПРЕДМЕТЫ И РЕЛИКВИИ РАЗЛОМА</span>
+                  </div>
+                  <span class="inventory-heading-tag">АРТЕФАКТЫ БЕЗДНЫ</span>
                 </div>
                 <div id="inventory-items-list" class="inventory-items-grid">
                   <!-- Populated dynamically -->

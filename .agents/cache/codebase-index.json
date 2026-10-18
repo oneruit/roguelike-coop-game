@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T04:40:31.514Z",
+  "generatedAt": "2026-10-18T06:03:09.180Z",
   "totalFiles": 154,
   "totalSymbols": 1592,
   "topLevelCount": 480,
@@ -5623,13 +5623,13 @@
       "name": "InventoryScreen",
       "kind": "class",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 11
+      "line": 12
     },
     {
       "name": "InventoryScreen.bindElements",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 41,
+      "line": 48,
       "className": "InventoryScreen",
       "methodName": "bindElements"
     },
@@ -5637,7 +5637,7 @@
       "name": "InventoryScreen.bindEvents",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 54,
+      "line": 67,
       "className": "InventoryScreen",
       "methodName": "bindEvents"
     },
@@ -5645,7 +5645,7 @@
       "name": "InventoryScreen.getTemplate",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 37,
+      "line": 44,
       "className": "InventoryScreen",
       "methodName": "getTemplate"
     },
@@ -5653,7 +5653,7 @@
       "name": "InventoryScreen.getWeaponDetailedInventoryStats",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 437,
+      "line": 616,
       "className": "InventoryScreen",
       "methodName": "getWeaponDetailedInventoryStats"
     },
@@ -5661,7 +5661,7 @@
       "name": "InventoryScreen.hideInventory",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 99,
+      "line": 112,
       "className": "InventoryScreen",
       "methodName": "hideInventory"
     },
@@ -5669,7 +5669,7 @@
       "name": "InventoryScreen.isInventoryOpen",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 76,
+      "line": 89,
       "className": "InventoryScreen",
       "methodName": "isInventoryOpen"
     },
@@ -5677,7 +5677,7 @@
       "name": "InventoryScreen.renderInventory",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 105,
+      "line": 118,
       "className": "InventoryScreen",
       "methodName": "renderInventory"
     },
@@ -5685,7 +5685,7 @@
       "name": "InventoryScreen.showInventory",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 91,
+      "line": 104,
       "className": "InventoryScreen",
       "methodName": "showInventory"
     },
@@ -5693,7 +5693,7 @@
       "name": "InventoryScreen.toggleInventory",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 80,
+      "line": 93,
       "className": "InventoryScreen",
       "methodName": "toggleInventory"
     },
@@ -5701,7 +5701,7 @@
       "name": "InventoryScreen.toggleStatDisplayMode",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 66,
+      "line": 79,
       "className": "InventoryScreen",
       "methodName": "toggleStatDisplayMode"
     },
@@ -5709,7 +5709,7 @@
       "name": "InventoryScreenOptions",
       "kind": "interface",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 7
+      "line": 8
     },
     {
       "name": "InventoryUI",
