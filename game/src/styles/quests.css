@@ -155,7 +155,7 @@
 /* Left Sidebar Tabs: Chapters of the Grimoire */
 .quest-book-tabs-sidebar {
   position: absolute;
-  left: -50px;
+  left: -44px;
   top: 48px;
   display: flex;
   flex-direction: column;
@@ -440,12 +440,12 @@
   position: relative;
   width: 100%;
   height: clamp(380px, calc(84vh - 30px), 570px);
-  background: radial-gradient(ellipse at center, #1e122e 0%, #10081c 65%, #08030f 100%);
+  background: transparent;
   border: none;
   outline: none;
   border-radius: 8px;
   box-shadow: none;
-  padding: 24px 38px 22px 38px;
+  padding: 10px 18px 10px 18px;
   box-sizing: border-box;
   display: flex;
   filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.45));
@@ -454,29 +454,20 @@
 /* 9-Slice Scalable Crystal Stone Frame Overlay */
 .quest-frame-overlay {
   position: absolute;
-  inset: -6px;
+  inset: -2px;
   pointer-events: none;
   z-index: 20;
   border-style: solid;
-  border-width: 44px 58px 44px 58px;
+  border-width: 24px 42px 24px 42px;
   border-image-source: url('/textures/ui/quests_frame_9slice.png');
-  border-image-slice: 46 64 46 64 fill;
+  border-image-slice: 24 42 24 42 fill;
   border-image-repeat: stretch;
   filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4));
 }
 
-/* Top and Bottom Center Gothic Diamond Crests */
+/* Top Crest deprecated (plaque acts as the focal top header) */
 .quest-frame-crest-top {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 72px;
-  height: 36px;
-  background: url('/textures/ui/quests_crest_top.png') no-repeat center center / contain;
-  z-index: 46;
-  pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.85));
+  display: none !important;
 }
 
 .quest-frame-crest-bottom {
