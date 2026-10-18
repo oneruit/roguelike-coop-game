@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T16:50:32.478Z",
-  "totalFiles": 180,
-  "totalSymbols": 1693,
-  "topLevelCount": 537,
-  "methodsCount": 1156,
+  "generatedAt": "2026-10-18T16:59:56.254Z",
+  "totalFiles": 186,
+  "totalSymbols": 1707,
+  "topLevelCount": 547,
+  "methodsCount": 1160,
   "entities": {
     "heroes": [
       {
@@ -2736,6 +2736,19 @@
       "methodName": "updateProjectileVisuals"
     },
     {
+      "name": "CombatVfxRenderer",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx",
+      "line": 25,
+      "doc": "Pre-allocated projectile and combat VFX pool. Uses InstancedMesh to batch render high-frequency projectiles without React list creation."
+    },
+    {
+      "name": "CombatVfxRendererProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx",
+      "line": 16
+    },
+    {
       "name": "COMMON_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
@@ -3301,6 +3314,19 @@
       "line": 31
     },
     {
+      "name": "EnemiesRenderer",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/entities/EnemiesRenderer.tsx",
+      "line": 24,
+      "doc": "High-performance InstancedMesh batch renderer for 100+ enemies. Follows the zero-React-list spawning principle: updates instance matrices in useFrame without GC spikes."
+    },
+    {
+      "name": "EnemiesRendererProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/entities/EnemiesRenderer.tsx",
+      "line": 15
+    },
+    {
       "name": "Enemy",
       "kind": "class",
       "file": "game/src/entities/Enemy.ts",
@@ -3466,7 +3492,7 @@
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1002,
+      "line": 1025,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -3474,7 +3500,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1110,
+      "line": 1135,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -3482,7 +3508,7 @@
       "name": "EnemyManager.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 257,
+      "line": 272,
       "className": "EnemyManager",
       "methodName": "getDamageMultiplier"
     },
@@ -3490,7 +3516,7 @@
       "name": "EnemyManager.getHpMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 247,
+      "line": 262,
       "className": "EnemyManager",
       "methodName": "getHpMultiplier",
       "doc": "Continuous progressive scaling multipliers with endless scaling, stage progression, and biome overstay penalties."
@@ -3499,7 +3525,7 @@
       "name": "EnemyManager.getKnockbackResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 289,
+      "line": 304,
       "className": "EnemyManager",
       "methodName": "getKnockbackResistance"
     },
@@ -3507,7 +3533,7 @@
       "name": "EnemyManager.getLateGameCcResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 278,
+      "line": 293,
       "className": "EnemyManager",
       "methodName": "getLateGameCcResistance"
     },
@@ -3515,7 +3541,7 @@
       "name": "EnemyManager.getLateGameDamageResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 304,
+      "line": 319,
       "className": "EnemyManager",
       "methodName": "getLateGameDamageResistance"
     },
@@ -3523,7 +3549,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 891,
+      "line": 914,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -3532,7 +3558,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 989,
+      "line": 1012,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -3540,7 +3566,7 @@
       "name": "EnemyManager.getSpeedMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 267,
+      "line": 282,
       "className": "EnemyManager",
       "methodName": "getSpeedMultiplier"
     },
@@ -3548,7 +3574,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 916,
+      "line": 939,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -3556,7 +3582,7 @@
       "name": "EnemyManager.registerEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 222,
+      "line": 237,
       "className": "EnemyManager",
       "methodName": "registerEnemy"
     },
@@ -3564,15 +3590,23 @@
       "name": "EnemyManager.resetStageTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 274,
+      "line": 289,
       "className": "EnemyManager",
       "methodName": "resetStageTime"
+    },
+    {
+      "name": "EnemyManager.setDeclarative",
+      "kind": "method",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 38,
+      "className": "EnemyManager",
+      "methodName": "setDeclarative"
     },
     {
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 973,
+      "line": 996,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -3580,7 +3614,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 960,
+      "line": 983,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -3588,7 +3622,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 965,
+      "line": 988,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -3596,7 +3630,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 706,
+      "line": 725,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -3605,7 +3639,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 969,
+      "line": 992,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -3613,7 +3647,7 @@
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 847,
+      "line": 868,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -3621,7 +3655,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 944,
+      "line": 967,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -3629,7 +3663,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 634,
+      "line": 651,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -3638,7 +3672,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 573,
+      "line": 588,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -3647,7 +3681,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 740,
+      "line": 761,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -3655,7 +3689,7 @@
       "name": "EnemyManager.syncBalance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 192,
+      "line": 207,
       "className": "EnemyManager",
       "methodName": "syncBalance"
     },
@@ -3663,7 +3697,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1082,
+      "line": 1107,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -7923,6 +7957,38 @@
       "line": 39
     },
     {
+      "name": "NetworkInterpolationBuffer",
+      "kind": "class",
+      "file": "game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts",
+      "line": 14,
+      "doc": "Dedicated client-side network jitter buffer for co-op remote players. Targets a smooth ~100 ms buffer delay to eliminate teleportation and packet jitter."
+    },
+    {
+      "name": "NetworkInterpolationBuffer.clear",
+      "kind": "method",
+      "file": "game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts",
+      "line": 106,
+      "className": "NetworkInterpolationBuffer",
+      "methodName": "clear"
+    },
+    {
+      "name": "NetworkInterpolationBuffer.getSnapshotCount",
+      "kind": "method",
+      "file": "game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts",
+      "line": 102,
+      "className": "NetworkInterpolationBuffer",
+      "methodName": "getSnapshotCount"
+    },
+    {
+      "name": "NetworkInterpolationBuffer.pushSnapshot",
+      "kind": "method",
+      "file": "game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts",
+      "line": 25,
+      "className": "NetworkInterpolationBuffer",
+      "methodName": "pushSnapshot",
+      "doc": "Pushes a new timestamped snapshot from a network packet."
+    },
+    {
       "name": "NetworkManager",
       "kind": "class",
       "file": "game/src/net/NetworkManager.ts",
@@ -8110,6 +8176,12 @@
       "line": 1094,
       "className": "NetworkManager",
       "methodName": "updateBandwidth"
+    },
+    {
+      "name": "NetworkPlayerSnapshot",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts",
+      "line": 3
     },
     {
       "name": "Obstacle",
@@ -8800,6 +8872,19 @@
       "kind": "interface",
       "file": "game/src/meta/CloudSyncManager.ts",
       "line": 8
+    },
+    {
+      "name": "PlayerRenderer",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/entities/PlayerRenderer.tsx",
+      "line": 16,
+      "doc": "Declarative R3F component wrapping local Player entity. Directly synchronizes player billboard mesh, position, and status aura in useFrame."
+    },
+    {
+      "name": "PlayerRendererProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/entities/PlayerRenderer.tsx",
+      "line": 7
     },
     {
       "name": "PlayerStats",
@@ -9683,13 +9768,13 @@
       "name": "ReactUIRoot",
       "kind": "const",
       "file": "game/src/ui/react/ReactUIRoot.tsx",
-      "line": 28
+      "line": 36
     },
     {
       "name": "ReactUIRootProps",
       "kind": "interface",
       "file": "game/src/ui/react/ReactUIRoot.tsx",
-      "line": 15
+      "line": 19
     },
     {
       "name": "ReaperScytheWeapon",
@@ -9808,6 +9893,19 @@
       "methodName": "updateAnimation"
     },
     {
+      "name": "RemotePlayersRenderer",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/entities/RemotePlayersRenderer.tsx",
+      "line": 18,
+      "doc": "Declarative R3F container for co-op remote teammates. Employs client-side network jitter buffer (~100 ms target delay) to smoothly interpolate transforms."
+    },
+    {
+      "name": "RemotePlayersRendererProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/entities/RemotePlayersRenderer.tsx",
+      "line": 8
+    },
+    {
       "name": "renderBosses",
       "kind": "function",
       "file": "admin/src/views/bossesView.ts",
@@ -9920,14 +10018,14 @@
       "name": "RiftCanvas",
       "kind": "const",
       "file": "game/src/ui/react/r3f/RiftCanvas.tsx",
-      "line": 33,
+      "line": 42,
       "doc": "Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, shadow map settings, tone mapping, and error isolation."
     },
     {
       "name": "RiftCanvasProps",
       "kind": "interface",
       "file": "game/src/ui/react/r3f/RiftCanvas.tsx",
-      "line": 19
+      "line": 24
     },
     {
       "name": "RiftItemDef",

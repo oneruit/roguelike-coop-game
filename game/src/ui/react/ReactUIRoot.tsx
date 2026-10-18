@@ -11,6 +11,10 @@ import type { Scene, Vector3 } from 'three';
 import type { ChunkManager } from '../../world/ChunkManager';
 import type { AltarManager } from '../../world/AltarManager';
 import type { ChestManager } from '../../world/ChestManager';
+import type { Player } from '../../entities/Player';
+import type { RemotePlayer } from '../../entities/RemotePlayer';
+import type { EnemyManager } from '../../entities/EnemyManager';
+import type { CombatDirector } from '../../combat/CombatDirector';
 
 export interface ReactUIRootProps {
   scene?: Scene;
@@ -18,6 +22,10 @@ export interface ReactUIRootProps {
   altarManager?: AltarManager;
   chestManager?: ChestManager;
   portalPosition?: Vector3;
+  player?: Player;
+  remotePlayers?: Map<string, RemotePlayer> | RemotePlayer[];
+  enemyManager?: EnemyManager;
+  combatDirector?: CombatDirector;
   getTargetPosition?: () => Vector3;
   mainMenuProps?: MainMenuModalProps;
   levelUpProps?: LevelUpModalProps;
@@ -31,6 +39,10 @@ export const ReactUIRoot: React.FC<ReactUIRootProps> = ({
   altarManager,
   chestManager,
   portalPosition,
+  player,
+  remotePlayers,
+  enemyManager,
+  combatDirector,
   getTargetPosition,
   mainMenuProps,
   levelUpProps,
@@ -65,6 +77,10 @@ export const ReactUIRoot: React.FC<ReactUIRootProps> = ({
           altarManager={altarManager}
           chestManager={chestManager}
           portalPosition={portalPosition}
+          player={player}
+          remotePlayers={remotePlayers}
+          enemyManager={enemyManager}
+          combatDirector={combatDirector}
         />
       )}
 

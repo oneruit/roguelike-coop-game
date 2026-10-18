@@ -339,6 +339,10 @@ class Game {
       altarManager: this.engine.altarManager,
       chestManager: this.chestManager,
       portalPosition: this.riftTeleporter.position,
+      player: this.player,
+      remotePlayers: this.remotePlayers,
+      enemyManager: this.enemyManager,
+      combatDirector: this.combatDirector,
       getTargetPosition: () => this.player.position,
       mainMenuProps: {
         onStartSinglePlayer: () => {

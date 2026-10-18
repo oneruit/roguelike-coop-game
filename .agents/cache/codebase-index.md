@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T16:50:32.478Z | **Files:** 180 | **Top-level:** 537 | **Class Methods:** 1156
+> **Generated:** 2026-10-18T16:59:56.254Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1160
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 491 |
+| `game/src` | 501 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -303,6 +303,8 @@ Run `npm run index` to refresh this cache.
 | `CombatDirector.updateItemProcs` | `method` | [`game/src/combat/CombatDirector.ts:656`](../../game/src/combat/CombatDirector.ts#L656) | - |
 | `CombatDirector.updateProjectiles` | `method` | [`game/src/combat/CombatDirector.ts:452`](../../game/src/combat/CombatDirector.ts#L452) | - |
 | `CombatDirector.updateProjectileVisuals` | `method` | [`game/src/combat/CombatDirector.ts:645`](../../game/src/combat/CombatDirector.ts#L645) | - |
+| `CombatVfxRenderer` | `const` | [`game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx:25`](../../game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx#L25) | Pre-allocated projectile and combat VFX pool. Uses InstancedMesh to batch r... |
+| `CombatVfxRendererProps` | `interface` | [`game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx:16`](../../game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx#L16) | - |
 | `COMMON_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:254`](../../game/src/items/RiftItemSystem.ts#L254) | - |
 | `createInvokerBuff` | `function` | [`game/src/shared/InvokerSpells.ts:273`](../../game/src/shared/InvokerSpells.ts#L273) | - |
 | `createSimWeaponById` | `function` | [`game/src/sim/weapons/SimWeaponFactory.ts:56`](../../game/src/sim/weapons/SimWeaponFactory.ts#L56) | Creates weapon by ID |
@@ -378,6 +380,8 @@ Run `npm run index` to refresh this cache.
 | `DualRevolversWeapon` | `const` | [`game/src/combat/weapons/MeleeWeapons.ts:117`](../../game/src/combat/weapons/MeleeWeapons.ts#L117) | Backwards compatibility alias |
 | `DualRevolversWeapon` | `type` | [`game/src/combat/weapons/MeleeWeapons.ts:118`](../../game/src/combat/weapons/MeleeWeapons.ts#L118) | - |
 | `ENEMIES` | `const` | [`game/src/shared/types/registry.ts:31`](../../game/src/shared/types/registry.ts#L31) | - |
+| `EnemiesRenderer` | `const` | [`game/src/ui/react/r3f/entities/EnemiesRenderer.tsx:24`](../../game/src/ui/react/r3f/entities/EnemiesRenderer.tsx#L24) | High-performance InstancedMesh batch renderer for 100+ enemies. Follows the... |
+| `EnemiesRendererProps` | `interface` | [`game/src/ui/react/r3f/entities/EnemiesRenderer.tsx:15`](../../game/src/ui/react/r3f/entities/EnemiesRenderer.tsx#L15) | - |
 | `Enemy` | `class` | [`game/src/entities/Enemy.ts:48`](../../game/src/entities/Enemy.ts#L48) | - |
 | `Enemy.addBleed` | `method` | [`game/src/entities/Enemy.ts:789`](../../game/src/entities/Enemy.ts#L789) | - |
 | `Enemy.applyBurn` | `method` | [`game/src/entities/Enemy.ts:139`](../../game/src/entities/Enemy.ts#L139) | - |
@@ -399,31 +403,32 @@ Run `npm run index` to refresh this cache.
 | `EnemyAnimState` | `type` | [`game/src/entities/Enemy.ts:18`](../../game/src/entities/Enemy.ts#L18) | - |
 | `EnemyConfig` | `interface` | [`game/src/entities/Enemy.ts:24`](../../game/src/entities/Enemy.ts#L24) | - |
 | `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:20`](../../game/src/entities/EnemyManager.ts#L20) | - |
-| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1002`](../../game/src/entities/EnemyManager.ts#L1002) | - |
-| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1110`](../../game/src/entities/EnemyManager.ts#L1110) | - |
-| `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:257`](../../game/src/entities/EnemyManager.ts#L257) | - |
-| `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:247`](../../game/src/entities/EnemyManager.ts#L247) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
-| `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:289`](../../game/src/entities/EnemyManager.ts#L289) | - |
-| `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:278`](../../game/src/entities/EnemyManager.ts#L278) | - |
-| `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:304`](../../game/src/entities/EnemyManager.ts#L304) | - |
-| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:891`](../../game/src/entities/EnemyManager.ts#L891) | Fast query for enemies within radius using the Spatial Grid. |
-| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:989`](../../game/src/entities/EnemyManager.ts#L989) | - |
-| `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:267`](../../game/src/entities/EnemyManager.ts#L267) | - |
-| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:916`](../../game/src/entities/EnemyManager.ts#L916) | - |
-| `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:222`](../../game/src/entities/EnemyManager.ts#L222) | - |
-| `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:274`](../../game/src/entities/EnemyManager.ts#L274) | - |
-| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:973`](../../game/src/entities/EnemyManager.ts#L973) | - |
-| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:960`](../../game/src/entities/EnemyManager.ts#L960) | - |
-| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:965`](../../game/src/entities/EnemyManager.ts#L965) | - |
-| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:706`](../../game/src/entities/EnemyManager.ts#L706) | Spawns an endgame rift boss |
-| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:969`](../../game/src/entities/EnemyManager.ts#L969) | - |
-| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:847`](../../game/src/entities/EnemyManager.ts#L847) | - |
-| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:944`](../../game/src/entities/EnemyManager.ts#L944) | - |
-| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:634`](../../game/src/entities/EnemyManager.ts#L634) | Spawns a stage boss explicitly when the Teleporter event is activated. |
-| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:573`](../../game/src/entities/EnemyManager.ts#L573) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
-| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:740`](../../game/src/entities/EnemyManager.ts#L740) | - |
-| `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:192`](../../game/src/entities/EnemyManager.ts#L192) | - |
-| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1082`](../../game/src/entities/EnemyManager.ts#L1082) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
+| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1025`](../../game/src/entities/EnemyManager.ts#L1025) | - |
+| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1135`](../../game/src/entities/EnemyManager.ts#L1135) | - |
+| `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:272`](../../game/src/entities/EnemyManager.ts#L272) | - |
+| `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:262`](../../game/src/entities/EnemyManager.ts#L262) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
+| `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:304`](../../game/src/entities/EnemyManager.ts#L304) | - |
+| `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:293`](../../game/src/entities/EnemyManager.ts#L293) | - |
+| `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:319`](../../game/src/entities/EnemyManager.ts#L319) | - |
+| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:914`](../../game/src/entities/EnemyManager.ts#L914) | Fast query for enemies within radius using the Spatial Grid. |
+| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1012`](../../game/src/entities/EnemyManager.ts#L1012) | - |
+| `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:282`](../../game/src/entities/EnemyManager.ts#L282) | - |
+| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:939`](../../game/src/entities/EnemyManager.ts#L939) | - |
+| `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:237`](../../game/src/entities/EnemyManager.ts#L237) | - |
+| `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:289`](../../game/src/entities/EnemyManager.ts#L289) | - |
+| `EnemyManager.setDeclarative` | `method` | [`game/src/entities/EnemyManager.ts:38`](../../game/src/entities/EnemyManager.ts#L38) | - |
+| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:996`](../../game/src/entities/EnemyManager.ts#L996) | - |
+| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:983`](../../game/src/entities/EnemyManager.ts#L983) | - |
+| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:988`](../../game/src/entities/EnemyManager.ts#L988) | - |
+| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:725`](../../game/src/entities/EnemyManager.ts#L725) | Spawns an endgame rift boss |
+| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:992`](../../game/src/entities/EnemyManager.ts#L992) | - |
+| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:868`](../../game/src/entities/EnemyManager.ts#L868) | - |
+| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:967`](../../game/src/entities/EnemyManager.ts#L967) | - |
+| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:651`](../../game/src/entities/EnemyManager.ts#L651) | Spawns a stage boss explicitly when the Teleporter event is activated. |
+| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:588`](../../game/src/entities/EnemyManager.ts#L588) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
+| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:761`](../../game/src/entities/EnemyManager.ts#L761) | - |
+| `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:207`](../../game/src/entities/EnemyManager.ts#L207) | - |
+| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1107`](../../game/src/entities/EnemyManager.ts#L1107) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
@@ -991,6 +996,10 @@ Run `npm run index` to refresh this cache.
 | `NetRole` | `type` | [`game/src/shared/types/network.ts:19`](../../game/src/shared/types/network.ts#L19) | - |
 | `NetShotInfo` | `interface` | [`game/src/shared/types/network.ts:89`](../../game/src/shared/types/network.ts#L89) | - |
 | `NetWeaponInfo` | `interface` | [`game/src/shared/types/network.ts:39`](../../game/src/shared/types/network.ts#L39) | - |
+| `NetworkInterpolationBuffer` | `class` | [`game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts:14`](../../game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts#L14) | Dedicated client-side network jitter buffer for co-op remote players. Targe... |
+| `NetworkInterpolationBuffer.clear` | `method` | [`game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts:106`](../../game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts#L106) | - |
+| `NetworkInterpolationBuffer.getSnapshotCount` | `method` | [`game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts:102`](../../game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts#L102) | - |
+| `NetworkInterpolationBuffer.pushSnapshot` | `method` | [`game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts:25`](../../game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts#L25) | Pushes a new timestamped snapshot from a network packet. |
 | `NetworkManager` | `class` | [`game/src/net/NetworkManager.ts:73`](../../game/src/net/NetworkManager.ts#L73) | - |
 | `NetworkManager.broadcastLobbyUpdate` | `method` | [`game/src/net/NetworkManager.ts:507`](../../game/src/net/NetworkManager.ts#L507) | - |
 | `NetworkManager.createRoom` | `method` | [`game/src/net/NetworkManager.ts:151`](../../game/src/net/NetworkManager.ts#L151) | Host creates a new multiplayer room for up to 5 players. |
@@ -1014,6 +1023,7 @@ Run `npm run index` to refresh this cache.
 | `NetworkManager.startGame` | `method` | [`game/src/net/NetworkManager.ts:1046`](../../game/src/net/NetworkManager.ts#L1046) | - |
 | `NetworkManager.startPingLoop` | `method` | [`game/src/net/NetworkManager.ts:1061`](../../game/src/net/NetworkManager.ts#L1061) | - |
 | `NetworkManager.updateBandwidth` | `method` | [`game/src/net/NetworkManager.ts:1094`](../../game/src/net/NetworkManager.ts#L1094) | - |
+| `NetworkPlayerSnapshot` | `interface` | [`game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts:3`](../../game/src/ui/react/r3f/entities/NetworkInterpolationBuffer.ts#L3) | - |
 | `Obstacle` | `interface` | [`game/src/world/ObstacleManager.ts:3`](../../game/src/world/ObstacleManager.ts#L3) | - |
 | `ObstacleManager` | `class` | [`game/src/world/ObstacleManager.ts:15`](../../game/src/world/ObstacleManager.ts#L15) | - |
 | `ObstacleManager.addObstacle` | `method` | [`game/src/world/ObstacleManager.ts:33`](../../game/src/world/ObstacleManager.ts#L33) | Registers an obstacle under a chunk key (spatially hashed by obstacle world... |
@@ -1105,6 +1115,8 @@ Run `npm run index` to refresh this cache.
 | `PlayerNetState` | `interface` | [`game/src/shared/types/network.ts:55`](../../game/src/shared/types/network.ts#L55) | - |
 | `PlayerOverheadData` | `interface` | [`game/src/entities/PlayerOverheadRenderer.ts:3`](../../game/src/entities/PlayerOverheadRenderer.ts#L3) | - |
 | `PlayerProfileRow` | `interface` | [`game/src/meta/CloudSyncManager.ts:8`](../../game/src/meta/CloudSyncManager.ts#L8) | - |
+| `PlayerRenderer` | `const` | [`game/src/ui/react/r3f/entities/PlayerRenderer.tsx:16`](../../game/src/ui/react/r3f/entities/PlayerRenderer.tsx#L16) | Declarative R3F component wrapping local Player entity. Directly synchroniz... |
+| `PlayerRendererProps` | `interface` | [`game/src/ui/react/r3f/entities/PlayerRenderer.tsx:7`](../../game/src/ui/react/r3f/entities/PlayerRenderer.tsx#L7) | - |
 | `PlayerStats` | `class` | [`game/src/mechanics/player/PlayerStats.ts:34`](../../game/src/mechanics/player/PlayerStats.ts#L34) | Encapsulates RPG stat computation, passive bonus scaling, dimishing returns... |
 | `PlayerStats` | `interface` | [`game/src/shared/types/entities.ts:39`](../../game/src/shared/types/entities.ts#L39) | - |
 | `PlayerStats.calculateXpToNextLevel` | `method` | [`game/src/mechanics/player/PlayerStats.ts:35`](../../game/src/mechanics/player/PlayerStats.ts#L35) | - |
@@ -1220,8 +1232,8 @@ Run `npm run index` to refresh this cache.
 | `R3FErrorBoundary.getDerivedStateFromError` | `method` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:23`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L23) | - |
 | `R3FErrorBoundaryProps` | `interface` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:3`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L3) | - |
 | `RARE_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:268`](../../game/src/items/RiftItemSystem.ts#L268) | - |
-| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:28`](../../game/src/ui/react/ReactUIRoot.tsx#L28) | - |
-| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:15`](../../game/src/ui/react/ReactUIRoot.tsx#L15) | - |
+| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:36`](../../game/src/ui/react/ReactUIRoot.tsx#L36) | - |
+| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:19`](../../game/src/ui/react/ReactUIRoot.tsx#L19) | - |
 | `ReaperScytheWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:23`](../../game/src/combat/weapons/MagicWeapons.ts#L23) | Reaper's Scythe (Коса Жнеца) Rotating scythes circle the hero, cutting thro... |
 | `ReaperScytheWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:49`](../../game/src/combat/weapons/MagicWeapons.ts#L49) | - |
 | `ReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:103`](../../game/src/combat/weapons/MagicWeapons.ts#L103) | - |
@@ -1237,6 +1249,8 @@ Run `npm run index` to refresh this cache.
 | `RemotePlayer.syncState` | `method` | [`game/src/entities/RemotePlayer.ts:294`](../../game/src/entities/RemotePlayer.ts#L294) | - |
 | `RemotePlayer.update` | `method` | [`game/src/entities/RemotePlayer.ts:353`](../../game/src/entities/RemotePlayer.ts#L353) | - |
 | `RemotePlayer.updateAnimation` | `method` | [`game/src/entities/RemotePlayer.ts:427`](../../game/src/entities/RemotePlayer.ts#L427) | - |
+| `RemotePlayersRenderer` | `const` | [`game/src/ui/react/r3f/entities/RemotePlayersRenderer.tsx:18`](../../game/src/ui/react/r3f/entities/RemotePlayersRenderer.tsx#L18) | Declarative R3F container for co-op remote teammates. Employs client-side n... |
+| `RemotePlayersRendererProps` | `interface` | [`game/src/ui/react/r3f/entities/RemotePlayersRenderer.tsx:8`](../../game/src/ui/react/r3f/entities/RemotePlayersRenderer.tsx#L8) | - |
 | `renderBosses` | `function` | [`admin/src/views/bossesView.ts:6`](../../admin/src/views/bossesView.ts#L6) | - |
 | `renderCenterSquareMap` | `function` | [`game/src/ui/MapCenterSquareRenderer.ts:34`](../../game/src/ui/MapCenterSquareRenderer.ts#L34) | Renders the square full-world interactive overlay map (Diablo / PoE TAB sty... |
 | `renderDashboard` | `function` | [`admin/src/views/dashboardView.ts:4`](../../admin/src/views/dashboardView.ts#L4) | - |
@@ -1255,8 +1269,8 @@ Run `npm run index` to refresh this cache.
 | `resetSupabaseClients` | `function` | [`game/src/balance/supabaseClient.ts:140`](../../game/src/balance/supabaseClient.ts#L140) | - |
 | `ReviveActionMessage` | `interface` | [`game/src/shared/types/network.ts:255`](../../game/src/shared/types/network.ts#L255) | - |
 | `RIFT_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:44`](../../game/src/items/RiftItemSystem.ts#L44) | - |
-| `RiftCanvas` | `const` | [`game/src/ui/react/r3f/RiftCanvas.tsx:33`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L33) | Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, sha... |
-| `RiftCanvasProps` | `interface` | [`game/src/ui/react/r3f/RiftCanvas.tsx:19`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L19) | - |
+| `RiftCanvas` | `const` | [`game/src/ui/react/r3f/RiftCanvas.tsx:42`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L42) | Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, sha... |
+| `RiftCanvasProps` | `interface` | [`game/src/ui/react/r3f/RiftCanvas.tsx:24`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L24) | - |
 | `RiftItemDef` | `interface` | [`game/src/items/RiftItemSystem.ts:34`](../../game/src/items/RiftItemSystem.ts#L34) | - |
 | `RiftItemId` | `type` | [`game/src/items/RiftItemSystem.ts:5`](../../game/src/items/RiftItemSystem.ts#L5) | - |
 | `RiftItemId` | `type` | [`game/src/shared/types/entities.ts:48`](../../game/src/shared/types/entities.ts#L48) | - |

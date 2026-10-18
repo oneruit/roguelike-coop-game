@@ -4,3 +4,4 @@ export * from './SceneBridge';
 export * from './R3FErrorBoundary';
 export * from './RiftCanvas';
 export * from './world';
+export * from './entities';

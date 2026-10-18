@@ -33,6 +33,21 @@ export class EnemyManager {
   private spawnTimer = 0;
   private spawnInterval = 1.0;
   public gameTime = 0;
+  public isDeclarative = false;
+
+  public setDeclarative(declarative: boolean): void {
+    if (this.isDeclarative === declarative) return;
+    this.isDeclarative = declarative;
+    if (declarative) {
+      for (const enemy of this.enemies) {
+        this.scene.remove(enemy.mesh);
+      }
+    } else {
+      for (const enemy of this.enemies) {
+        this.scene.add(enemy.mesh);
+      }
+    }
+  }
 
   private configs: Record<EnemyType, EnemyConfig> = {
     coyote: {
@@ -619,7 +634,9 @@ export class EnemyManager {
 
     const boss = this.registerEnemy(new Enemy(bossConfig, spawnPos));
     this.enemies.push(boss);
-    this.scene.add(boss.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(boss.mesh);
+    }
     this.activeBoss = boss;
     this.bossSpawned = true;
 
@@ -690,7 +707,9 @@ export class EnemyManager {
       boss.knockbackResistance = 0.95;
     }
     this.enemies.push(boss);
-    this.scene.add(boss.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(boss.mesh);
+    }
     this.activeBoss = boss;
     this.bossSpawned = true;
 
@@ -728,7 +747,9 @@ export class EnemyManager {
 
     const reaper = this.registerEnemy(new Enemy(reaperConfig, spawnPos));
     this.enemies.push(reaper);
-    this.scene.add(reaper.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(reaper.mesh);
+    }
     this.activeBoss = reaper;
     this.immortalBossSpawned = true;
 
@@ -882,7 +903,9 @@ export class EnemyManager {
     enemy.damageResistance = this.getLateGameDamageResistance(false);
     enemy.knockbackResistance = this.getKnockbackResistance(false, isTough);
     this.enemies.push(enemy);
-    this.scene.add(enemy.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(enemy.mesh);
+    }
   }
 
   /**
@@ -1023,7 +1046,9 @@ export class EnemyManager {
         enemy = this.registerEnemy(new Enemy(config, new Vector3(s.x, initY, s.z)));
         enemy.id = s.id;
         this.enemies.push(enemy);
-        this.scene.add(enemy.mesh);
+        if (!this.isDeclarative) {
+          this.scene.add(enemy.mesh);
+        }
         if (enemy.isBoss) {
           this.activeBoss = enemy;
         }

@@ -11,10 +11,15 @@ import { DayNightLighting } from './DayNightLighting';
 import { SceneBridge } from './SceneBridge';
 import { R3FErrorBoundary } from './R3FErrorBoundary';
 import { WorldChunks, AltarsRenderer, ChestsRenderer, VfxEnvironment } from './world';
+import { PlayerRenderer, RemotePlayersRenderer, EnemiesRenderer, CombatVfxRenderer } from './entities';
 import { FeatureFlags } from '../../../core/FeatureFlags';
 import type { ChunkManager } from '../../../world/ChunkManager';
 import type { AltarManager } from '../../../world/AltarManager';
 import type { ChestManager } from '../../../world/ChestManager';
+import type { Player } from '../../../entities/Player';
+import type { RemotePlayer } from '../../../entities/RemotePlayer';
+import type { EnemyManager } from '../../../entities/EnemyManager';
+import type { CombatDirector } from '../../../combat/CombatDirector';
 
 export interface RiftCanvasProps {
   scene: Scene;
@@ -24,6 +29,10 @@ export interface RiftCanvasProps {
   altarManager?: AltarManager;
   chestManager?: ChestManager;
   portalPosition?: Vector3;
+  player?: Player;
+  remotePlayers?: Map<string, RemotePlayer> | RemotePlayer[];
+  enemyManager?: EnemyManager;
+  combatDirector?: CombatDirector;
 }
 
 /**
@@ -37,9 +46,14 @@ export const RiftCanvas: React.FC<RiftCanvasProps> = ({
   chunkManager,
   altarManager,
   chestManager,
-  portalPosition
+  portalPosition,
+  player,
+  remotePlayers,
+  enemyManager,
+  combatDirector
 }) => {
   const isWorldDeclarative = FeatureFlags.getInstance().isEnabled('r3f_world');
+  const isEntitiesDeclarative = FeatureFlags.getInstance().isEnabled('r3f_entities');
   return (
     <div
       id="r3f-canvas-container"
@@ -90,6 +104,16 @@ export const RiftCanvas: React.FC<RiftCanvasProps> = ({
                 <AltarsRenderer altarManager={altarManager} />
                 <ChestsRenderer chestManager={chestManager} />
                 <VfxEnvironment getTargetPosition={getTargetPosition} portalPosition={portalPosition} />
+              </>
+            )}
+
+            {/* Declarative Entity Systems (Phase 5) */}
+            {isEntitiesDeclarative && (
+              <>
+                <PlayerRenderer player={player} scene={scene} />
+                <RemotePlayersRenderer remotePlayers={remotePlayers} scene={scene} />
+                <EnemiesRenderer enemyManager={enemyManager} />
+                <CombatVfxRenderer combatDirector={combatDirector} />
               </>
             )}
 
