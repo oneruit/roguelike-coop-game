@@ -435,12 +435,15 @@ export class QuestsScreen extends Screen {
   }
 
   public updateMainMenuQuests(): void {
+    const dailyContainer = SafeDOM.getElementById('daily-quest-items-list');
+    const weeklyContainer = SafeDOM.getElementById('weekly-quest-items-list');
+    if (!dailyContainer && !weeklyContainer) {
+      return;
+    }
+
     const prog = ProgressionManager.getInstance();
     const dailyQuests = prog.getDailySidebarQuests();
     const weeklyQuests = prog.getWeeklySidebarQuests();
-
-    const dailyContainer = SafeDOM.getElementById('daily-quest-items-list');
-    const weeklyContainer = SafeDOM.getElementById('weekly-quest-items-list');
 
     const renderQuestRow = (q: SidebarQuestItem) => {
       const row = document.createElement('div');

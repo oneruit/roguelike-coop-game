@@ -846,12 +846,6 @@
   filter: drop-shadow(0 0 6px #ff1744);
 }
 
-@media (max-width: 950px) {
-  .main-menu-quests-sidebar {
-    display: none !important;
-  }
-}
-
 @media (max-width: 768px) {
   .main-menu-modal {
     align-items: center !important;
@@ -939,13 +933,6 @@
   }
   .main-menu-logo-img {
     width: 280px;
-  }
-  .main-menu-quests-sidebar {
-    top: 8px;
-    gap: 8px;
-  }
-  .quest-sidebar-card {
-    width: clamp(210px, 18vw, 240px);
   }
 }
 
