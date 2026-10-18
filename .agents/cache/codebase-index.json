@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T16:35:09.671Z",
-  "totalFiles": 169,
-  "totalSymbols": 1666,
-  "topLevelCount": 519,
-  "methodsCount": 1147,
+  "generatedAt": "2026-10-18T16:41:43.079Z",
+  "totalFiles": 175,
+  "totalSymbols": 1678,
+  "topLevelCount": 529,
+  "methodsCount": 1149,
   "entities": {
     "heroes": [
       {
@@ -2722,6 +2722,19 @@
       "methodName": "spawnXp"
     },
     {
+      "name": "DayNightLighting",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/DayNightLighting.tsx",
+      "line": 14,
+      "doc": "Lighting rig for The Rift R3F scene. Manages Ambient, Directional (with shadows), and Hemisphere lights with Day/Night transitions."
+    },
+    {
+      "name": "DayNightLightingProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/DayNightLighting.tsx",
+      "line": 5
+    },
+    {
       "name": "DebugHUD",
       "kind": "class",
       "file": "game/src/ui/DebugHUD.ts",
@@ -3592,10 +3605,19 @@
       "line": 20
     },
     {
+      "name": "Engine.detachRenderer",
+      "kind": "method",
+      "file": "game/src/core/Engine.ts",
+      "line": 217,
+      "className": "Engine",
+      "methodName": "detachRenderer",
+      "doc": "Safely detaches and disposes the legacy WebGLRenderer to yield ownership to React Three Fiber."
+    },
+    {
       "name": "Engine.onWindowResize",
       "kind": "method",
       "file": "game/src/core/Engine.ts",
-      "line": 205,
+      "line": 208,
       "className": "Engine",
       "methodName": "onWindowResize"
     },
@@ -3603,7 +3625,7 @@
       "name": "Engine.render",
       "kind": "method",
       "file": "game/src/core/Engine.ts",
-      "line": 211,
+      "line": 227,
       "className": "Engine",
       "methodName": "render"
     },
@@ -3611,7 +3633,7 @@
       "name": "Engine.setShadowQuality",
       "kind": "method",
       "file": "game/src/core/Engine.ts",
-      "line": 153,
+      "line": 156,
       "className": "Engine",
       "methodName": "setShadowQuality",
       "doc": "Configures shadow map resolution or disables shadows (0, 512, 1024, 2048)."
@@ -3620,7 +3642,7 @@
       "name": "Engine.setTimeOfDay",
       "kind": "method",
       "file": "game/src/core/Engine.ts",
-      "line": 110,
+      "line": 113,
       "className": "Engine",
       "methodName": "setTimeOfDay",
       "doc": "Switches lighting between Day (Sun) and Night (Moon)."
@@ -3629,7 +3651,7 @@
       "name": "Engine.setupLighting",
       "kind": "method",
       "file": "game/src/core/Engine.ts",
-      "line": 80,
+      "line": 83,
       "className": "Engine",
       "methodName": "setupLighting"
     },
@@ -3637,7 +3659,7 @@
       "name": "Engine.updateCamera",
       "kind": "method",
       "file": "game/src/core/Engine.ts",
-      "line": 179,
+      "line": 182,
       "className": "Engine",
       "methodName": "updateCamera"
     },
@@ -3919,6 +3941,19 @@
       "kind": "interface",
       "file": "game/src/balance/BalanceTypes.ts",
       "line": 118
+    },
+    {
+      "name": "GameCamera",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/GameCamera.tsx",
+      "line": 15,
+      "doc": "2.5D tilted perspective camera for The Rift. Interpolates smoothly towards target position on each render frame."
+    },
+    {
+      "name": "GameCameraProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/GameCamera.tsx",
+      "line": 7
     },
     {
       "name": "GameCore",
@@ -9536,6 +9571,27 @@
       "line": 8
     },
     {
+      "name": "R3FErrorBoundary",
+      "kind": "class",
+      "file": "game/src/ui/react/r3f/R3FErrorBoundary.tsx",
+      "line": 17,
+      "doc": "Production ErrorBoundary isolating 3D R3F Canvas failures from the 2D UI."
+    },
+    {
+      "name": "R3FErrorBoundary.getDerivedStateFromError",
+      "kind": "method",
+      "file": "game/src/ui/react/r3f/R3FErrorBoundary.tsx",
+      "line": 23,
+      "className": "R3FErrorBoundary",
+      "methodName": "getDerivedStateFromError"
+    },
+    {
+      "name": "R3FErrorBoundaryProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/R3FErrorBoundary.tsx",
+      "line": 3
+    },
+    {
       "name": "RARE_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
@@ -9545,13 +9601,13 @@
       "name": "ReactUIRoot",
       "kind": "const",
       "file": "game/src/ui/react/ReactUIRoot.tsx",
-      "line": 16
+      "line": 21
     },
     {
       "name": "ReactUIRootProps",
       "kind": "interface",
       "file": "game/src/ui/react/ReactUIRoot.tsx",
-      "line": 9
+      "line": 12
     },
     {
       "name": "ReaperScytheWeapon",
@@ -9777,6 +9833,19 @@
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
       "line": 44
+    },
+    {
+      "name": "RiftCanvas",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/RiftCanvas.tsx",
+      "line": 24,
+      "doc": "Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, shadow map settings, tone mapping, and error isolation."
+    },
+    {
+      "name": "RiftCanvasProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/RiftCanvas.tsx",
+      "line": 14
     },
     {
       "name": "RiftItemDef",
@@ -10162,6 +10231,19 @@
       "kind": "interface",
       "file": "game/src/core/RunSaveManager.ts",
       "line": 6
+    },
+    {
+      "name": "SceneBridge",
+      "kind": "const",
+      "file": "game/src/ui/react/r3f/SceneBridge.tsx",
+      "line": 14,
+      "doc": "Transient hybrid bridge mounting imperative Three.js Scene inside R3F. Guardrails: - Read-only rendering adapter. - Never attach R3F pointer events or changing reactive props directly to the primitive."
+    },
+    {
+      "name": "SceneBridgeProps",
+      "kind": "interface",
+      "file": "game/src/ui/react/r3f/SceneBridge.tsx",
+      "line": 4
     },
     {
       "name": "Screen",

@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T16:35:09.671Z | **Files:** 169 | **Top-level:** 519 | **Class Methods:** 1147
+> **Generated:** 2026-10-18T16:41:43.079Z | **Files:** 175 | **Top-level:** 529 | **Class Methods:** 1149
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 473 |
+| `game/src` | 483 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -302,6 +302,8 @@ Run `npm run index` to refresh this cache.
 | `DamageNumberManager.spawnLevelUp` | `method` | [`game/src/combat/DamageNumberManager.ts:152`](../../game/src/combat/DamageNumberManager.ts#L152) | - |
 | `DamageNumberManager.spawnPassiveBuff` | `method` | [`game/src/combat/DamageNumberManager.ts:178`](../../game/src/combat/DamageNumberManager.ts#L178) | - |
 | `DamageNumberManager.spawnXp` | `method` | [`game/src/combat/DamageNumberManager.ts:114`](../../game/src/combat/DamageNumberManager.ts#L114) | - |
+| `DayNightLighting` | `const` | [`game/src/ui/react/r3f/DayNightLighting.tsx:14`](../../game/src/ui/react/r3f/DayNightLighting.tsx#L14) | Lighting rig for The Rift R3F scene. Manages Ambient, Directional (with sha... |
+| `DayNightLightingProps` | `interface` | [`game/src/ui/react/r3f/DayNightLighting.tsx:5`](../../game/src/ui/react/r3f/DayNightLighting.tsx#L5) | - |
 | `DebugHUD` | `class` | [`game/src/ui/DebugHUD.ts:19`](../../game/src/ui/DebugHUD.ts#L19) | - |
 | `DebugHUD.formatBandwidth` | `method` | [`game/src/ui/DebugHUD.ts:78`](../../game/src/ui/DebugHUD.ts#L78) | - |
 | `DebugHUD.formatEmpty` | `method` | [`game/src/ui/DebugHUD.ts:74`](../../game/src/ui/DebugHUD.ts#L74) | - |
@@ -414,12 +416,13 @@ Run `npm run index` to refresh this cache.
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
-| `Engine.onWindowResize` | `method` | [`game/src/core/Engine.ts:205`](../../game/src/core/Engine.ts#L205) | - |
-| `Engine.render` | `method` | [`game/src/core/Engine.ts:211`](../../game/src/core/Engine.ts#L211) | - |
-| `Engine.setShadowQuality` | `method` | [`game/src/core/Engine.ts:153`](../../game/src/core/Engine.ts#L153) | Configures shadow map resolution or disables shadows (0, 512, 1024, 2048). |
-| `Engine.setTimeOfDay` | `method` | [`game/src/core/Engine.ts:110`](../../game/src/core/Engine.ts#L110) | Switches lighting between Day (Sun) and Night (Moon). |
-| `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:80`](../../game/src/core/Engine.ts#L80) | - |
-| `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:179`](../../game/src/core/Engine.ts#L179) | - |
+| `Engine.detachRenderer` | `method` | [`game/src/core/Engine.ts:217`](../../game/src/core/Engine.ts#L217) | Safely detaches and disposes the legacy WebGLRenderer to yield ownership to... |
+| `Engine.onWindowResize` | `method` | [`game/src/core/Engine.ts:208`](../../game/src/core/Engine.ts#L208) | - |
+| `Engine.render` | `method` | [`game/src/core/Engine.ts:227`](../../game/src/core/Engine.ts#L227) | - |
+| `Engine.setShadowQuality` | `method` | [`game/src/core/Engine.ts:156`](../../game/src/core/Engine.ts#L156) | Configures shadow map resolution or disables shadows (0, 512, 1024, 2048). |
+| `Engine.setTimeOfDay` | `method` | [`game/src/core/Engine.ts:113`](../../game/src/core/Engine.ts#L113) | Switches lighting between Day (Sun) and Night (Moon). |
+| `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:83`](../../game/src/core/Engine.ts#L83) | - |
+| `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:182`](../../game/src/core/Engine.ts#L182) | - |
 | `exportLeaderboardJson` | `function` | [`admin/src/views/leaderboardsView.ts:280`](../../admin/src/views/leaderboardsView.ts#L280) | Exports current leaderboard entries as a formatted JSON file. |
 | `FEATURE_FLAG_DEFINITIONS` | `const` | [`game/src/core/FeatureFlags.ts:20`](../../game/src/core/FeatureFlags.ts#L20) | - |
 | `FeatureFlagDefinition` | `interface` | [`game/src/core/FeatureFlags.ts:14`](../../game/src/core/FeatureFlags.ts#L14) | - |
@@ -456,6 +459,8 @@ Run `npm run index` to refresh this cache.
 | `FlailWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:410`](../../game/src/combat/weapons/MeleeWeapons.ts#L410) | - |
 | `FlailWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:461`](../../game/src/combat/weapons/MeleeWeapons.ts#L461) | - |
 | `GameBalanceState` | `interface` | [`game/src/balance/BalanceTypes.ts:118`](../../game/src/balance/BalanceTypes.ts#L118) | - |
+| `GameCamera` | `const` | [`game/src/ui/react/r3f/GameCamera.tsx:15`](../../game/src/ui/react/r3f/GameCamera.tsx#L15) | 2.5D tilted perspective camera for The Rift. Interpolates smoothly towards ... |
+| `GameCameraProps` | `interface` | [`game/src/ui/react/r3f/GameCamera.tsx:7`](../../game/src/ui/react/r3f/GameCamera.tsx#L7) | - |
 | `GameCore` | `class` | [`game/src/sim/GameCore.ts:321`](../../game/src/sim/GameCore.ts#L321) | Headless Deterministic GameCore Simulation Engine Manages all authoritative... |
 | `GameCore.addPlayer` | `method` | [`game/src/sim/GameCore.ts:386`](../../game/src/sim/GameCore.ts#L386) | ------------------------------------------------------------- |
 | `GameCore.collectDrop` | `method` | [`game/src/sim/GameCore.ts:1060`](../../game/src/sim/GameCore.ts#L1060) | - |
@@ -1200,9 +1205,12 @@ Run `npm run index` to refresh this cache.
 | `QuestStepItem` | `interface` | [`game/src/core/ProgressionManager.ts:57`](../../game/src/core/ProgressionManager.ts#L57) | - |
 | `QuestsUI` | `class` | [`game/src/ui/modules/QuestsUI.ts:13`](../../game/src/ui/modules/QuestsUI.ts#L13) | - |
 | `QuestsUIContext` | `type` | [`game/src/ui/modules/QuestsUI.ts:8`](../../game/src/ui/modules/QuestsUI.ts#L8) | - |
+| `R3FErrorBoundary` | `class` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:17`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L17) | Production ErrorBoundary isolating 3D R3F Canvas failures from the 2D UI. |
+| `R3FErrorBoundary.getDerivedStateFromError` | `method` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:23`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L23) | - |
+| `R3FErrorBoundaryProps` | `interface` | [`game/src/ui/react/r3f/R3FErrorBoundary.tsx:3`](../../game/src/ui/react/r3f/R3FErrorBoundary.tsx#L3) | - |
 | `RARE_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:268`](../../game/src/items/RiftItemSystem.ts#L268) | - |
-| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:16`](../../game/src/ui/react/ReactUIRoot.tsx#L16) | - |
-| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:9`](../../game/src/ui/react/ReactUIRoot.tsx#L9) | - |
+| `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:21`](../../game/src/ui/react/ReactUIRoot.tsx#L21) | - |
+| `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:12`](../../game/src/ui/react/ReactUIRoot.tsx#L12) | - |
 | `ReaperScytheWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:23`](../../game/src/combat/weapons/MagicWeapons.ts#L23) | Reaper's Scythe (Коса Жнеца) Rotating scythes circle the hero, cutting thro... |
 | `ReaperScytheWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:49`](../../game/src/combat/weapons/MagicWeapons.ts#L49) | - |
 | `ReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:103`](../../game/src/combat/weapons/MagicWeapons.ts#L103) | - |
@@ -1236,6 +1244,8 @@ Run `npm run index` to refresh this cache.
 | `resetSupabaseClients` | `function` | [`game/src/balance/supabaseClient.ts:140`](../../game/src/balance/supabaseClient.ts#L140) | - |
 | `ReviveActionMessage` | `interface` | [`game/src/shared/types/network.ts:255`](../../game/src/shared/types/network.ts#L255) | - |
 | `RIFT_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:44`](../../game/src/items/RiftItemSystem.ts#L44) | - |
+| `RiftCanvas` | `const` | [`game/src/ui/react/r3f/RiftCanvas.tsx:24`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L24) | Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, sha... |
+| `RiftCanvasProps` | `interface` | [`game/src/ui/react/r3f/RiftCanvas.tsx:14`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L14) | - |
 | `RiftItemDef` | `interface` | [`game/src/items/RiftItemSystem.ts:34`](../../game/src/items/RiftItemSystem.ts#L34) | - |
 | `RiftItemId` | `type` | [`game/src/items/RiftItemSystem.ts:5`](../../game/src/items/RiftItemSystem.ts#L5) | - |
 | `RiftItemId` | `type` | [`game/src/shared/types/entities.ts:48`](../../game/src/shared/types/entities.ts#L48) | - |
@@ -1287,6 +1297,8 @@ Run `npm run index` to refresh this cache.
 | `SafeDOM.setVisible` | `method` | [`game/src/ui/core/SafeDOM.ts:71`](../../game/src/ui/core/SafeDOM.ts#L71) | - |
 | `SavedRunData` | `interface` | [`game/src/core/RunSaveManager.ts:15`](../../game/src/core/RunSaveManager.ts#L15) | - |
 | `SavedWeaponData` | `interface` | [`game/src/core/RunSaveManager.ts:6`](../../game/src/core/RunSaveManager.ts#L6) | - |
+| `SceneBridge` | `const` | [`game/src/ui/react/r3f/SceneBridge.tsx:14`](../../game/src/ui/react/r3f/SceneBridge.tsx#L14) | Transient hybrid bridge mounting imperative Three.js Scene inside R3F. Guar... |
+| `SceneBridgeProps` | `interface` | [`game/src/ui/react/r3f/SceneBridge.tsx:4`](../../game/src/ui/react/r3f/SceneBridge.tsx#L4) | - |
 | `Screen` | `class` | [`game/src/ui/core/Screen.ts:5`](../../game/src/ui/core/Screen.ts#L5) | Base abstract class for modular UI screens. Implements standard lifecycle: ... |
 | `Screen.destroy` | `method` | [`game/src/ui/core/Screen.ts:48`](../../game/src/ui/core/Screen.ts#L48) | - |
 | `Screen.getContainer` | `method` | [`game/src/ui/core/Screen.ts:54`](../../game/src/ui/core/Screen.ts#L54) | - |

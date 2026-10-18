@@ -36,6 +36,7 @@ import { MerchantManager } from './world/MerchantManager';
 import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
 import { GameStateBridge } from './ui/stores/GameStateBridge';
 import { initReactUI } from './ui/react/mountReactUI';
+import { FeatureFlags } from './core/FeatureFlags';
 
 class Game {
   private engine: Engine;
@@ -326,7 +327,15 @@ class Game {
     // Initialize React UI and GameStateBridge
     GameStateBridge.getInstance().init();
     GameStateBridge.getInstance().syncGameState('MAIN_MENU');
+
+    const isR3FCanvasActive = FeatureFlags.getInstance().isEnabled('r3f_canvas');
+    if (isR3FCanvasActive) {
+      this.engine.detachRenderer();
+    }
+
     initReactUI('react-ui-root', {
+      scene: this.engine.scene,
+      getTargetPosition: () => this.player.position,
       mainMenuProps: {
         onStartSinglePlayer: () => {
           this.sessionDirector.gameState = GameState.CHARACTER_SELECT;

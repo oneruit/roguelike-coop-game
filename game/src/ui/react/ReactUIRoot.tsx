@@ -6,7 +6,12 @@ import { LevelUpModal, type LevelUpModalProps } from './modals/LevelUpModal';
 import { SettingsModal, type SettingsModalProps } from './modals/SettingsModal';
 import { GameOverModal, type GameOverModalProps } from './modals/GameOverModal';
 
+import { RiftCanvas } from './r3f/RiftCanvas';
+import type { Scene, Vector3 } from 'three';
+
 export interface ReactUIRootProps {
+  scene?: Scene;
+  getTargetPosition?: () => Vector3;
   mainMenuProps?: MainMenuModalProps;
   levelUpProps?: LevelUpModalProps;
   settingsProps?: SettingsModalProps;
@@ -14,6 +19,8 @@ export interface ReactUIRootProps {
 }
 
 export const ReactUIRoot: React.FC<ReactUIRootProps> = ({
+  scene,
+  getTargetPosition,
   mainMenuProps,
   levelUpProps,
   settingsProps,
@@ -38,6 +45,14 @@ export const ReactUIRoot: React.FC<ReactUIRootProps> = ({
         zIndex: 20
       }}
     >
+      {/* React Three Fiber Canvas (Feature Flag gated) */}
+      {flags.r3f_canvas && scene && (
+        <RiftCanvas
+          scene={scene}
+          getTargetPosition={getTargetPosition}
+        />
+      )}
+
       {/* React HUD (Feature Flag gated) */}
       {flags.react_hud && <HUDOverlay />}
 

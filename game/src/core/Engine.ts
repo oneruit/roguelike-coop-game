@@ -27,6 +27,8 @@ export class Engine {
   private container: HTMLElement;
 
   public timeOfDay: 'day' | 'night' = 'day';
+  public isDetached = false;
+  private onResizeBound!: () => void;
 
   private ambientLight!: AmbientLight;
   private dirLight!: DirectionalLight;
@@ -74,7 +76,8 @@ export class Engine {
     this.chunkManager = new ChunkManager(this.scene, this.altarManager, this.obstacleManager);
     this.chunkManager.update(new Vector3(0, 0, 0));
 
-    window.addEventListener('resize', () => this.onWindowResize());
+    this.onResizeBound = () => this.onWindowResize();
+    window.addEventListener('resize', this.onResizeBound);
   }
 
   private setupLighting() {
@@ -208,7 +211,21 @@ export class Engine {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  /**
+   * Safely detaches and disposes the legacy WebGLRenderer to yield ownership to React Three Fiber.
+   */
+  public detachRenderer(): void {
+    if (this.isDetached) return;
+    this.isDetached = true;
+    window.removeEventListener('resize', this.onResizeBound);
+    if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+      this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+    }
+    this.renderer.dispose();
+  }
+
   public render() {
+    if (this.isDetached) return;
     this.renderer.render(this.scene, this.camera);
   }
 }
