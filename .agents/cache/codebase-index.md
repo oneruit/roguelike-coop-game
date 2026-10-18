@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T01:15:37.553Z | **Files:** 153 | **Top-level:** 476 | **Class Methods:** 1105
+> **Generated:** 2026-10-18T02:15:44.314Z | **Files:** 153 | **Top-level:** 476 | **Class Methods:** 1105
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -652,28 +652,28 @@ Run `npm run index` to refresh this cache.
 | `InGameHUDScreen.getTemplate` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:18`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L18) | - |
 | `InGameHUDScreenOptions` | `interface` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:4`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L4) | - |
 | `InGameOverlayUI` | `class` | [`game/src/ui/modules/InGameOverlayUI.ts:16`](../../game/src/ui/modules/InGameOverlayUI.ts#L16) | - |
-| `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:469`](../../game/src/ui/modules/InGameOverlayUI.ts#L469) | - |
-| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:653`](../../game/src/ui/modules/InGameOverlayUI.ts#L653) | - |
-| `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:496`](../../game/src/ui/modules/InGameOverlayUI.ts#L496) | - |
-| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:659`](../../game/src/ui/modules/InGameOverlayUI.ts#L659) | - |
-| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:872`](../../game/src/ui/modules/InGameOverlayUI.ts#L872) | - |
-| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:968`](../../game/src/ui/modules/InGameOverlayUI.ts#L968) | - |
-| `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:156`](../../game/src/ui/modules/InGameOverlayUI.ts#L156) | - |
-| `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:151`](../../game/src/ui/modules/InGameOverlayUI.ts#L151) | - |
-| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:999`](../../game/src/ui/modules/InGameOverlayUI.ts#L999) | - |
-| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:703`](../../game/src/ui/modules/InGameOverlayUI.ts#L703) | - |
-| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:646`](../../game/src/ui/modules/InGameOverlayUI.ts#L646) | - |
-| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:685`](../../game/src/ui/modules/InGameOverlayUI.ts#L685) | - |
-| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:832`](../../game/src/ui/modules/InGameOverlayUI.ts#L832) | - |
-| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:817`](../../game/src/ui/modules/InGameOverlayUI.ts#L817) | - |
-| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:852`](../../game/src/ui/modules/InGameOverlayUI.ts#L852) | - |
-| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:750`](../../game/src/ui/modules/InGameOverlayUI.ts#L750) | - |
-| `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:479`](../../game/src/ui/modules/InGameOverlayUI.ts#L479) | - |
-| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:926`](../../game/src/ui/modules/InGameOverlayUI.ts#L926) | - |
-| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:931`](../../game/src/ui/modules/InGameOverlayUI.ts#L931) | - |
-| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:622`](../../game/src/ui/modules/InGameOverlayUI.ts#L622) | - |
-| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:629`](../../game/src/ui/modules/InGameOverlayUI.ts#L629) | - |
-| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:891`](../../game/src/ui/modules/InGameOverlayUI.ts#L891) | - |
+| `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:471`](../../game/src/ui/modules/InGameOverlayUI.ts#L471) | - |
+| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:657`](../../game/src/ui/modules/InGameOverlayUI.ts#L657) | - |
+| `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:498`](../../game/src/ui/modules/InGameOverlayUI.ts#L498) | - |
+| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:663`](../../game/src/ui/modules/InGameOverlayUI.ts#L663) | - |
+| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:876`](../../game/src/ui/modules/InGameOverlayUI.ts#L876) | - |
+| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:972`](../../game/src/ui/modules/InGameOverlayUI.ts#L972) | - |
+| `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:158`](../../game/src/ui/modules/InGameOverlayUI.ts#L158) | - |
+| `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:153`](../../game/src/ui/modules/InGameOverlayUI.ts#L153) | - |
+| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1004`](../../game/src/ui/modules/InGameOverlayUI.ts#L1004) | - |
+| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:707`](../../game/src/ui/modules/InGameOverlayUI.ts#L707) | - |
+| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:650`](../../game/src/ui/modules/InGameOverlayUI.ts#L650) | - |
+| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:689`](../../game/src/ui/modules/InGameOverlayUI.ts#L689) | - |
+| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:836`](../../game/src/ui/modules/InGameOverlayUI.ts#L836) | - |
+| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:821`](../../game/src/ui/modules/InGameOverlayUI.ts#L821) | - |
+| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:856`](../../game/src/ui/modules/InGameOverlayUI.ts#L856) | - |
+| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:754`](../../game/src/ui/modules/InGameOverlayUI.ts#L754) | - |
+| `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:481`](../../game/src/ui/modules/InGameOverlayUI.ts#L481) | - |
+| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:930`](../../game/src/ui/modules/InGameOverlayUI.ts#L930) | - |
+| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:935`](../../game/src/ui/modules/InGameOverlayUI.ts#L935) | - |
+| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:626`](../../game/src/ui/modules/InGameOverlayUI.ts#L626) | - |
+| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:633`](../../game/src/ui/modules/InGameOverlayUI.ts#L633) | - |
+| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:895`](../../game/src/ui/modules/InGameOverlayUI.ts#L895) | - |
 | `InputManager` | `class` | [`game/src/core/InputManager.ts:3`](../../game/src/core/InputManager.ts#L3) | - |
 | `InputManager.onKeyDown` | `method` | [`game/src/core/InputManager.ts:26`](../../game/src/core/InputManager.ts#L26) | - |
 | `InputManager.onKeyUp` | `method` | [`game/src/core/InputManager.ts:87`](../../game/src/core/InputManager.ts#L87) | - |

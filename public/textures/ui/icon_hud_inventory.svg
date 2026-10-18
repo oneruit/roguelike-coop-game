@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <filter id="inv-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <linearGradient id="inv-leather" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b45309" />
+      <stop offset="50%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+    <linearGradient id="inv-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <radialGradient id="inv-crystal" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f5d0fe" />
+      <stop offset="40%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#6b21a8" />
+    </radialGradient>
+  </defs>
+
+  <!-- Ambient Outer Glow -->
+  <ellipse cx="32" cy="36" rx="24" ry="22" fill="#f59e0b" opacity="0.3" filter="url(#inv-glow)" />
+
+  <!-- Top Handle -->
+  <path d="M 23 18 C 23 10, 41 10, 41 18" fill="none" stroke="url(#inv-gold)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Main Bag Body -->
+  <rect x="11" y="22" width="42" height="34" rx="8" fill="url(#inv-leather)" stroke="url(#inv-gold)" stroke-width="2.5" />
+
+  <!-- Flap Cover -->
+  <path d="M 9 22 C 9 20, 11 18, 14 18 L 50 18 C 53 18, 55 20, 55 22 L 53 36 C 53 38, 51 40, 48 40 L 16 40 C 13 40, 11 38, 11 36 Z" 
+        fill="#92400e" stroke="url(#inv-gold)" stroke-width="2" />
+
+  <!-- Vertical Leather Straps -->
+  <rect x="20" y="18" width="5" height="38" fill="#451a03" stroke="#b45309" stroke-width="1" />
+  <rect x="39" y="18" width="5" height="38" fill="#451a03" stroke="#b45309" stroke-width="1" />
+
+  <!-- Gold Buckles on Straps -->
+  <rect x="18" y="32" width="9" height="7" rx="1.5" fill="none" stroke="url(#inv-gold)" stroke-width="2" />
+  <rect x="37" y="32" width="9" height="7" rx="1.5" fill="none" stroke="url(#inv-gold)" stroke-width="2" />
+
+  <!-- Central Arcane Rift Crystal Lock -->
+  <circle cx="32" cy="27" r="5.5" fill="url(#inv-crystal)" stroke="url(#inv-gold)" stroke-width="1.8" filter="url(#inv-glow)" />
+  <circle cx="30.5" cy="25.5" r="1.5" fill="#ffffff" opacity="0.9" />
+
+  <!-- Bottom Corner Reinforcements -->
+  <path d="M 11 48 L 19 56 L 11 56 Z" fill="url(#inv-gold)" />
+  <path d="M 53 48 L 45 56 L 53 56 Z" fill="url(#inv-gold)" />
+</svg>

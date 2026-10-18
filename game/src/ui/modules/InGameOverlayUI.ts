@@ -46,6 +46,7 @@ export class InGameOverlayUI extends InGameHUDScreen {
   private itemInventoryTray: HTMLElement | null;
   private dashCooldownBadge: HTMLElement | null;
   private dashCooldownText: HTMLElement | null;
+  private dashCooldownFloating: HTMLElement | null;
 
   // Screen Damage & Low HP Vignette
   private damageFlashLayer: HTMLElement | null;
@@ -117,6 +118,7 @@ export class InGameOverlayUI extends InGameHUDScreen {
     this.itemInventoryTray = SafeDOM.getElementById('item-inventory-tray');
     this.dashCooldownBadge = SafeDOM.getElementById('dash-cooldown-badge');
     this.dashCooldownText = SafeDOM.getElementById('dash-cooldown-text');
+    this.dashCooldownFloating = SafeDOM.getElementById('dash-cooldown-floating');
 
     // Screen Damage & Low HP Vignette
     this.damageFlashLayer = SafeDOM.getElementById('damage-flash-layer');
@@ -604,14 +606,16 @@ export class InGameOverlayUI extends InGameHUDScreen {
       this.diffBarFill.style.backgroundColor = tier.color;
     }
 
-    // Tactical Dash Badge
+    // Tactical Dash Badge & Floating Cooldown Indicator
     if (this.dashCooldownText) {
       if (player.dashCooldown > 0) {
         this.dashCooldownText.innerText = `${player.dashCooldown.toFixed(1)}s`;
         this.dashCooldownBadge?.classList.add('cooling-down');
+        this.dashCooldownFloating?.classList.remove('hidden');
       } else {
-        this.dashCooldownText.innerText = 'РЫВОК';
+        this.dashCooldownText.innerText = '0.0s';
         this.dashCooldownBadge?.classList.remove('cooling-down');
+        this.dashCooldownFloating?.classList.add('hidden');
       }
     }
 
@@ -987,6 +991,7 @@ export class InGameOverlayUI extends InGameHUDScreen {
     if (this.itemInventoryTray) this.itemInventoryTray.innerHTML = '';
     if (this.interactionPrompt) this.interactionPrompt.classList.add('hidden');
     if (this.dashCooldownBadge) this.dashCooldownBadge.classList.remove('cooling-down');
+    if (this.dashCooldownFloating) this.dashCooldownFloating.classList.add('hidden');
 
     const damageFlash = document.getElementById('damage-flash-layer');
     if (damageFlash) damageFlash.style.opacity = '0';

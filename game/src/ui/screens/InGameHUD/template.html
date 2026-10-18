@@ -135,10 +135,24 @@
   <!-- Item Inventory Tray (Stacked passive items) -->
   <div id="item-inventory-tray"></div>
 
-  <!-- Tactical Dash Cooldown Badge -->
-  <div id="dash-cooldown-badge" class="dash-cooldown-badge">
-    <span class="dash-key">ПРОБЕЛ</span>
-    <span id="dash-cooldown-text">РЫВОК</span>
+  <!-- Bottom-Right Action Hotbar (Inventory, Rift Teleport, Tactical Dash) -->
+  <div id="hud-bottom-right-actions" class="hud-bottom-right-actions">
+    <button id="btn-open-inventory" class="hud-socket-btn btn-inventory-trigger" type="button" title="Инвентарь персонажа [I]">
+      <span class="hud-socket-icon inv-icon"></span>
+      <span class="hud-socket-key">I</span>
+    </button>
+    <button id="btn-teleport-to-rift" class="hud-socket-btn btn-rift-teleport" type="button" title="Телепортация к разлому [T] (+20 сек времени)">
+      <span class="hud-socket-icon rift-icon"></span>
+      <span class="hud-socket-key">T</span>
+    </button>
+    <div id="dash-cooldown-badge" class="hud-socket-btn dash-socket-badge dash-cooldown-badge" title="Тактический рывок [ПРОБЕЛ]">
+      <div id="dash-cooldown-floating" class="dash-cooldown-floating hidden">
+        <span id="dash-cooldown-text">0.0s</span>
+        <span class="dash-cooldown-arrow"></span>
+      </div>
+      <span class="hud-socket-icon dash-icon"></span>
+      <span class="hud-socket-key dash-key">ПРОБЕЛ</span>
+    </div>
   </div>
 
   <!-- Top-Left HUD: Acquired Abilities, Altar Buffs & PoE Party List -->
@@ -146,16 +160,6 @@
     <div id="active-weapons-bar" class="weapons-bar"></div>
     <div id="active-passives-bar" class="passives-bar"></div>
     <div id="active-buffs-tray" class="buffs-tray"></div>
-    <div class="hud-inventory-btn-wrap" style="display: flex; gap: 8px;">
-      <button id="btn-open-inventory" class="btn-inventory-trigger" type="button" title="Инвентарь персонажа [I]">
-        <span class="btn-inv-icon">🎒</span>
-        <span class="btn-inv-text">ИНВЕНТАРЬ [I]</span>
-      </button>
-      <button id="btn-teleport-to-rift" class="btn-inventory-trigger btn-rift-teleport" type="button" title="Телепортация к разлому [T] (+20 сек времени)" style="border-color: #38bdf8; color: #bae6fd; background: rgba(14, 165, 233, 0.25);">
-        <span class="btn-inv-icon">🌀</span>
-        <span class="btn-inv-text">К РАЗЛОМУ [T]</span>
-      </button>
-    </div>
     <!-- Path of Exile Style Party List -->
     <div id="poe-party-list" class="poe-party-list"></div>
   </div>

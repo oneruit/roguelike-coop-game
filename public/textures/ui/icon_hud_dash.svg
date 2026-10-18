@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <filter id="dash-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <linearGradient id="dash-boot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e9d5ff" />
+      <stop offset="40%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#581c87" />
+    </linearGradient>
+    <linearGradient id="dash-wing-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#d8b4fe" />
+      <stop offset="100%" stop-color="#9333ea" />
+    </linearGradient>
+    <linearGradient id="dash-speed-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(192, 132, 252, 0)" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ambient Speed Aura -->
+  <ellipse cx="34" cy="34" rx="24" ry="20" fill="#9333ea" opacity="0.3" filter="url(#dash-glow)" />
+
+  <!-- Motion Streak Lines Behind -->
+  <line x1="6" y1="20" x2="24" y2="20" stroke="url(#dash-speed-grad)" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="2" y1="28" x2="20" y2="28" stroke="url(#dash-speed-grad)" stroke-width="3" stroke-linecap="round" />
+  <line x1="5" y1="36" x2="22" y2="36" stroke="url(#dash-speed-grad)" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="10" y1="44" x2="26" y2="44" stroke="url(#dash-speed-grad)" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Speed Shockwave Arcs -->
+  <path d="M 16 14 C 20 22, 20 40, 15 50" fill="none" stroke="#e9d5ff" stroke-width="1.8" opacity="0.6" stroke-linecap="round" filter="url(#dash-glow)" />
+
+  <!-- Wing Feathers -->
+  <path d="M 26 24 Q 10 12, 16 26 Q 22 26, 26 28" fill="url(#dash-wing-grad)" stroke="#f5d0fe" stroke-width="1.2" filter="url(#dash-glow)" />
+  <path d="M 28 30 Q 14 20, 20 32 Q 24 32, 28 33" fill="url(#dash-wing-grad)" stroke="#f5d0fe" stroke-width="1.2" />
+
+  <!-- Swift Heroic Armored Boot Silhouette -->
+  <path d="M 26 14 L 38 14 L 35 28 L 52 38 C 55 40, 56 46, 52 50 L 44 54 C 38 56, 32 54, 28 48 L 22 36 L 24 16 Z" 
+        fill="url(#dash-boot-grad)" stroke="#f3e8ff" stroke-width="2" stroke-linejoin="round" filter="url(#dash-glow)" />
+
+  <!-- Boot Armor Plates & Highlights -->
+  <path d="M 33 22 L 44 32 L 38 36 L 28 26 Z" fill="#c084fc" opacity="0.6" />
+  <line x1="30" y1="46" x2="48" y2="46" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+  <circle cx="48" cy="40" r="2" fill="#ffffff" filter="url(#dash-glow)" />
+</svg>
