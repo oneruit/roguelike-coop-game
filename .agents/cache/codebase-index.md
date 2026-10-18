@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T16:59:56.254Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1160
+> **Generated:** 2026-10-18T17:06:34.005Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1161
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -1504,44 +1504,45 @@ Run `npm run index` to refresh this cache.
 | `SLOTS` | `const` | [`game/src/shared/types/registry.ts:8`](../../game/src/shared/types/registry.ts#L8) | - |
 | `SoundManager` | `class` | [`game/src/core/SoundManager.ts:5`](../../game/src/core/SoundManager.ts#L5) | SoundManager handles lightweight procedural audio synthesis via Web Audio A... |
 | `SoundManager.getMasterGain` | `method` | [`game/src/core/SoundManager.ts:24`](../../game/src/core/SoundManager.ts#L24) | - |
-| `SoundManager.getMuted` | `method` | [`game/src/core/SoundManager.ts:51`](../../game/src/core/SoundManager.ts#L51) | - |
+| `SoundManager.getMuted` | `method` | [`game/src/core/SoundManager.ts:59`](../../game/src/core/SoundManager.ts#L59) | - |
 | `SoundManager.getVolume` | `method` | [`game/src/core/SoundManager.ts:40`](../../game/src/core/SoundManager.ts#L40) | - |
 | `SoundManager.init` | `method` | [`game/src/core/SoundManager.ts:11`](../../game/src/core/SoundManager.ts#L11) | - |
-| `SoundManager.playAltarCaptured` | `method` | [`game/src/core/SoundManager.ts:443`](../../game/src/core/SoundManager.ts#L443) | Grand triumphant chord on altar capture completion |
-| `SoundManager.playAltarCapturing` | `method` | [`game/src/core/SoundManager.ts:413`](../../game/src/core/SoundManager.ts#L413) | - |
-| `SoundManager.playBowShoot` | `method` | [`game/src/core/SoundManager.ts:124`](../../game/src/core/SoundManager.ts#L124) | Sound when bow releases an arrow (bowstring twang + swift aerodynamic whoos... |
-| `SoundManager.playBuffExpire` | `method` | [`game/src/core/SoundManager.ts:471`](../../game/src/core/SoundManager.ts#L471) | Soft chime when buff expires |
-| `SoundManager.playButtonClick` | `method` | [`game/src/core/SoundManager.ts:926`](../../game/src/core/SoundManager.ts#L926) | Sound when clicking UI buttons/cards |
-| `SoundManager.playChainLightning` | `method` | [`game/src/core/SoundManager.ts:696`](../../game/src/core/SoundManager.ts#L696) | Sound when chain lightning procs |
-| `SoundManager.playChakram` | `method` | [`game/src/core/SoundManager.ts:214`](../../game/src/core/SoundManager.ts#L214) | Whistling spinning sound for returning chakram |
-| `SoundManager.playChestOpen` | `method` | [`game/src/core/SoundManager.ts:596`](../../game/src/core/SoundManager.ts#L596) | Sound when opening a loot chest/capsule |
-| `SoundManager.playCrit` | `method` | [`game/src/core/SoundManager.ts:883`](../../game/src/core/SoundManager.ts#L883) | Sound when critical strike hits |
-| `SoundManager.playDash` | `method` | [`game/src/core/SoundManager.ts:675`](../../game/src/core/SoundManager.ts#L675) | Sound when player dashes |
-| `SoundManager.playFireballImpact` | `method` | [`game/src/core/SoundManager.ts:808`](../../game/src/core/SoundManager.ts#L808) | Sound when falling fireball impacts ground and explodes |
-| `SoundManager.playFireballLaunch` | `method` | [`game/src/core/SoundManager.ts:787`](../../game/src/core/SoundManager.ts#L787) | Sound when fireball descends from the sky (whistling fiery fall whoosh) |
-| `SoundManager.playGameOver` | `method` | [`game/src/core/SoundManager.ts:496`](../../game/src/core/SoundManager.ts#L496) | Game Over sound |
-| `SoundManager.playGem` | `method` | [`game/src/core/SoundManager.ts:265`](../../game/src/core/SoundManager.ts#L265) | Crystal / XP Gem pickup chime |
-| `SoundManager.playHit` | `method` | [`game/src/core/SoundManager.ts:240`](../../game/src/core/SoundManager.ts#L240) | Sound when enemy gets hit |
-| `SoundManager.playIceSpike` | `method` | [`game/src/core/SoundManager.ts:752`](../../game/src/core/SoundManager.ts#L752) | Sound when ice spike bursts from beneath the ground (sharp frost crack + cr... |
-| `SoundManager.playItemPickup` | `method` | [`game/src/core/SoundManager.ts:904`](../../game/src/core/SoundManager.ts#L904) | Sound when collecting an item |
-| `SoundManager.playLevelUp` | `method` | [`game/src/core/SoundManager.ts:385`](../../game/src/core/SoundManager.ts#L385) | Level up fanfare |
-| `SoundManager.playLightning` | `method` | [`game/src/core/SoundManager.ts:717`](../../game/src/core/SoundManager.ts#L717) | Sound when lightning strikes from above (electric discharge snap + thunder ... |
-| `SoundManager.playMachineGunShoot` | `method` | [`game/src/core/SoundManager.ts:83`](../../game/src/core/SoundManager.ts#L83) | Sound when automatic rifle / machine gun fires a round |
-| `SoundManager.playMagic` | `method` | [`game/src/core/SoundManager.ts:188`](../../game/src/core/SoundManager.ts#L188) | Sound when magical spell or staff projectile casts |
-| `SoundManager.playPlayerHurt` | `method` | [`game/src/core/SoundManager.ts:293`](../../game/src/core/SoundManager.ts#L293) | Player damaged sound |
-| `SoundManager.playPoisonPuddle` | `method` | [`game/src/core/SoundManager.ts:843`](../../game/src/core/SoundManager.ts#L843) | Sound when toxic poison puddle bubbles and splatters on the ground |
-| `SoundManager.playReaperSpawn` | `method` | [`game/src/core/SoundManager.ts:571`](../../game/src/core/SoundManager.ts#L571) | Ominous death drone when Immortal Reaper spawns at 30 minutes |
-| `SoundManager.playReroll` | `method` | [`game/src/core/SoundManager.ts:946`](../../game/src/core/SoundManager.ts#L946) | Sound when rerolling weapon selection |
-| `SoundManager.playShieldBreak` | `method` | [`game/src/core/SoundManager.ts:344`](../../game/src/core/SoundManager.ts#L344) | Resonant crystalline shatter sound when player armor is completely broken (... |
-| `SoundManager.playShieldHit` | `method` | [`game/src/core/SoundManager.ts:318`](../../game/src/core/SoundManager.ts#L318) | Sound when incoming damage is absorbed by player's energy armor |
-| `SoundManager.playShoot` | `method` | [`game/src/core/SoundManager.ts:58`](../../game/src/core/SoundManager.ts#L58) | Sound when projectile shoots |
-| `SoundManager.playSlash` | `method` | [`game/src/core/SoundManager.ts:163`](../../game/src/core/SoundManager.ts#L163) | Sound when sword slashes |
-| `SoundManager.playTeleporterActivate` | `method` | [`game/src/core/SoundManager.ts:632`](../../game/src/core/SoundManager.ts#L632) | Sound when activating the teleporter event |
-| `SoundManager.playTeleporterComplete` | `method` | [`game/src/core/SoundManager.ts:653`](../../game/src/core/SoundManager.ts#L653) | Sound when teleporter charge reaches 100% and rift stabilizes |
-| `SoundManager.playTimeFreeze` | `method` | [`game/src/core/SoundManager.ts:967`](../../game/src/core/SoundManager.ts#L967) | Sound when Time Crystal activates (temporal freeze + deep shockwave) |
-| `SoundManager.playVictory` | `method` | [`game/src/core/SoundManager.ts:521`](../../game/src/core/SoundManager.ts#L521) | Triumphant victory fanfare (30 minutes survived!) |
+| `SoundManager.playAltarCaptured` | `method` | [`game/src/core/SoundManager.ts:451`](../../game/src/core/SoundManager.ts#L451) | Grand triumphant chord on altar capture completion |
+| `SoundManager.playAltarCapturing` | `method` | [`game/src/core/SoundManager.ts:421`](../../game/src/core/SoundManager.ts#L421) | - |
+| `SoundManager.playBowShoot` | `method` | [`game/src/core/SoundManager.ts:132`](../../game/src/core/SoundManager.ts#L132) | Sound when bow releases an arrow (bowstring twang + swift aerodynamic whoos... |
+| `SoundManager.playBuffExpire` | `method` | [`game/src/core/SoundManager.ts:479`](../../game/src/core/SoundManager.ts#L479) | Soft chime when buff expires |
+| `SoundManager.playButtonClick` | `method` | [`game/src/core/SoundManager.ts:934`](../../game/src/core/SoundManager.ts#L934) | Sound when clicking UI buttons/cards |
+| `SoundManager.playChainLightning` | `method` | [`game/src/core/SoundManager.ts:704`](../../game/src/core/SoundManager.ts#L704) | Sound when chain lightning procs |
+| `SoundManager.playChakram` | `method` | [`game/src/core/SoundManager.ts:222`](../../game/src/core/SoundManager.ts#L222) | Whistling spinning sound for returning chakram |
+| `SoundManager.playChestOpen` | `method` | [`game/src/core/SoundManager.ts:604`](../../game/src/core/SoundManager.ts#L604) | Sound when opening a loot chest/capsule |
+| `SoundManager.playCrit` | `method` | [`game/src/core/SoundManager.ts:891`](../../game/src/core/SoundManager.ts#L891) | Sound when critical strike hits |
+| `SoundManager.playDash` | `method` | [`game/src/core/SoundManager.ts:683`](../../game/src/core/SoundManager.ts#L683) | Sound when player dashes |
+| `SoundManager.playFireballImpact` | `method` | [`game/src/core/SoundManager.ts:816`](../../game/src/core/SoundManager.ts#L816) | Sound when falling fireball impacts ground and explodes |
+| `SoundManager.playFireballLaunch` | `method` | [`game/src/core/SoundManager.ts:795`](../../game/src/core/SoundManager.ts#L795) | Sound when fireball descends from the sky (whistling fiery fall whoosh) |
+| `SoundManager.playGameOver` | `method` | [`game/src/core/SoundManager.ts:504`](../../game/src/core/SoundManager.ts#L504) | Game Over sound |
+| `SoundManager.playGem` | `method` | [`game/src/core/SoundManager.ts:273`](../../game/src/core/SoundManager.ts#L273) | Crystal / XP Gem pickup chime |
+| `SoundManager.playHit` | `method` | [`game/src/core/SoundManager.ts:248`](../../game/src/core/SoundManager.ts#L248) | Sound when enemy gets hit |
+| `SoundManager.playIceSpike` | `method` | [`game/src/core/SoundManager.ts:760`](../../game/src/core/SoundManager.ts#L760) | Sound when ice spike bursts from beneath the ground (sharp frost crack + cr... |
+| `SoundManager.playItemPickup` | `method` | [`game/src/core/SoundManager.ts:912`](../../game/src/core/SoundManager.ts#L912) | Sound when collecting an item |
+| `SoundManager.playLevelUp` | `method` | [`game/src/core/SoundManager.ts:393`](../../game/src/core/SoundManager.ts#L393) | Level up fanfare |
+| `SoundManager.playLightning` | `method` | [`game/src/core/SoundManager.ts:725`](../../game/src/core/SoundManager.ts#L725) | Sound when lightning strikes from above (electric discharge snap + thunder ... |
+| `SoundManager.playMachineGunShoot` | `method` | [`game/src/core/SoundManager.ts:91`](../../game/src/core/SoundManager.ts#L91) | Sound when automatic rifle / machine gun fires a round |
+| `SoundManager.playMagic` | `method` | [`game/src/core/SoundManager.ts:196`](../../game/src/core/SoundManager.ts#L196) | Sound when magical spell or staff projectile casts |
+| `SoundManager.playPlayerHurt` | `method` | [`game/src/core/SoundManager.ts:301`](../../game/src/core/SoundManager.ts#L301) | Player damaged sound |
+| `SoundManager.playPoisonPuddle` | `method` | [`game/src/core/SoundManager.ts:851`](../../game/src/core/SoundManager.ts#L851) | Sound when toxic poison puddle bubbles and splatters on the ground |
+| `SoundManager.playReaperSpawn` | `method` | [`game/src/core/SoundManager.ts:579`](../../game/src/core/SoundManager.ts#L579) | Ominous death drone when Immortal Reaper spawns at 30 minutes |
+| `SoundManager.playReroll` | `method` | [`game/src/core/SoundManager.ts:954`](../../game/src/core/SoundManager.ts#L954) | Sound when rerolling weapon selection |
+| `SoundManager.playShieldBreak` | `method` | [`game/src/core/SoundManager.ts:352`](../../game/src/core/SoundManager.ts#L352) | Resonant crystalline shatter sound when player armor is completely broken (... |
+| `SoundManager.playShieldHit` | `method` | [`game/src/core/SoundManager.ts:326`](../../game/src/core/SoundManager.ts#L326) | Sound when incoming damage is absorbed by player's energy armor |
+| `SoundManager.playShoot` | `method` | [`game/src/core/SoundManager.ts:66`](../../game/src/core/SoundManager.ts#L66) | Sound when projectile shoots |
+| `SoundManager.playSlash` | `method` | [`game/src/core/SoundManager.ts:171`](../../game/src/core/SoundManager.ts#L171) | Sound when sword slashes |
+| `SoundManager.playTeleporterActivate` | `method` | [`game/src/core/SoundManager.ts:640`](../../game/src/core/SoundManager.ts#L640) | Sound when activating the teleporter event |
+| `SoundManager.playTeleporterComplete` | `method` | [`game/src/core/SoundManager.ts:661`](../../game/src/core/SoundManager.ts#L661) | Sound when teleporter charge reaches 100% and rift stabilizes |
+| `SoundManager.playTimeFreeze` | `method` | [`game/src/core/SoundManager.ts:975`](../../game/src/core/SoundManager.ts#L975) | Sound when Time Crystal activates (temporal freeze + deep shockwave) |
+| `SoundManager.playVictory` | `method` | [`game/src/core/SoundManager.ts:529`](../../game/src/core/SoundManager.ts#L529) | Triumphant victory fanfare (30 minutes survived!) |
 | `SoundManager.setMuted` | `method` | [`game/src/core/SoundManager.ts:44`](../../game/src/core/SoundManager.ts#L44) | - |
 | `SoundManager.setVolume` | `method` | [`game/src/core/SoundManager.ts:33`](../../game/src/core/SoundManager.ts#L33) | - |
+| `SoundManager.stopAll` | `method` | [`game/src/core/SoundManager.ts:51`](../../game/src/core/SoundManager.ts#L51) | - |
 | `SpatialGrid` | `class` | [`game/src/entities/SpatialGrid.ts:10`](../../game/src/entities/SpatialGrid.ts#L10) | High-performance 2D Spatial Hash Grid for entity collisions, separation, an... |
 | `SpatialGrid.clear` | `method` | [`game/src/entities/SpatialGrid.ts:30`](../../game/src/entities/SpatialGrid.ts#L30) | - |
 | `SpatialGrid.getCellSize` | `method` | [`game/src/entities/SpatialGrid.ts:22`](../../game/src/entities/SpatialGrid.ts#L22) | - |

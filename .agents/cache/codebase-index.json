@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T16:59:56.254Z",
+  "generatedAt": "2026-10-18T17:06:34.005Z",
   "totalFiles": 186,
-  "totalSymbols": 1707,
+  "totalSymbols": 1708,
   "topLevelCount": 547,
-  "methodsCount": 1160,
+  "methodsCount": 1161,
   "entities": {
     "heroes": [
       {
@@ -11777,7 +11777,7 @@
       "name": "SoundManager.getMuted",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 51,
+      "line": 59,
       "className": "SoundManager",
       "methodName": "getMuted"
     },
@@ -11801,7 +11801,7 @@
       "name": "SoundManager.playAltarCaptured",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 443,
+      "line": 451,
       "className": "SoundManager",
       "methodName": "playAltarCaptured",
       "doc": "Grand triumphant chord on altar capture completion"
@@ -11810,7 +11810,7 @@
       "name": "SoundManager.playAltarCapturing",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 413,
+      "line": 421,
       "className": "SoundManager",
       "methodName": "playAltarCapturing"
     },
@@ -11818,7 +11818,7 @@
       "name": "SoundManager.playBowShoot",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 124,
+      "line": 132,
       "className": "SoundManager",
       "methodName": "playBowShoot",
       "doc": "Sound when bow releases an arrow (bowstring twang + swift aerodynamic whoosh)"
@@ -11827,7 +11827,7 @@
       "name": "SoundManager.playBuffExpire",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 471,
+      "line": 479,
       "className": "SoundManager",
       "methodName": "playBuffExpire",
       "doc": "Soft chime when buff expires"
@@ -11836,7 +11836,7 @@
       "name": "SoundManager.playButtonClick",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 926,
+      "line": 934,
       "className": "SoundManager",
       "methodName": "playButtonClick",
       "doc": "Sound when clicking UI buttons/cards"
@@ -11845,7 +11845,7 @@
       "name": "SoundManager.playChainLightning",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 696,
+      "line": 704,
       "className": "SoundManager",
       "methodName": "playChainLightning",
       "doc": "Sound when chain lightning procs"
@@ -11854,7 +11854,7 @@
       "name": "SoundManager.playChakram",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 214,
+      "line": 222,
       "className": "SoundManager",
       "methodName": "playChakram",
       "doc": "Whistling spinning sound for returning chakram"
@@ -11863,7 +11863,7 @@
       "name": "SoundManager.playChestOpen",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 596,
+      "line": 604,
       "className": "SoundManager",
       "methodName": "playChestOpen",
       "doc": "Sound when opening a loot chest/capsule"
@@ -11872,7 +11872,7 @@
       "name": "SoundManager.playCrit",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 883,
+      "line": 891,
       "className": "SoundManager",
       "methodName": "playCrit",
       "doc": "Sound when critical strike hits"
@@ -11881,7 +11881,7 @@
       "name": "SoundManager.playDash",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 675,
+      "line": 683,
       "className": "SoundManager",
       "methodName": "playDash",
       "doc": "Sound when player dashes"
@@ -11890,7 +11890,7 @@
       "name": "SoundManager.playFireballImpact",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 808,
+      "line": 816,
       "className": "SoundManager",
       "methodName": "playFireballImpact",
       "doc": "Sound when falling fireball impacts ground and explodes"
@@ -11899,7 +11899,7 @@
       "name": "SoundManager.playFireballLaunch",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 787,
+      "line": 795,
       "className": "SoundManager",
       "methodName": "playFireballLaunch",
       "doc": "Sound when fireball descends from the sky (whistling fiery fall whoosh)"
@@ -11908,7 +11908,7 @@
       "name": "SoundManager.playGameOver",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 496,
+      "line": 504,
       "className": "SoundManager",
       "methodName": "playGameOver",
       "doc": "Game Over sound"
@@ -11917,7 +11917,7 @@
       "name": "SoundManager.playGem",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 265,
+      "line": 273,
       "className": "SoundManager",
       "methodName": "playGem",
       "doc": "Crystal / XP Gem pickup chime"
@@ -11926,7 +11926,7 @@
       "name": "SoundManager.playHit",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 240,
+      "line": 248,
       "className": "SoundManager",
       "methodName": "playHit",
       "doc": "Sound when enemy gets hit"
@@ -11935,7 +11935,7 @@
       "name": "SoundManager.playIceSpike",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 752,
+      "line": 760,
       "className": "SoundManager",
       "methodName": "playIceSpike",
       "doc": "Sound when ice spike bursts from beneath the ground (sharp frost crack + crystalline chime)"
@@ -11944,7 +11944,7 @@
       "name": "SoundManager.playItemPickup",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 904,
+      "line": 912,
       "className": "SoundManager",
       "methodName": "playItemPickup",
       "doc": "Sound when collecting an item"
@@ -11953,7 +11953,7 @@
       "name": "SoundManager.playLevelUp",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 385,
+      "line": 393,
       "className": "SoundManager",
       "methodName": "playLevelUp",
       "doc": "Level up fanfare"
@@ -11962,7 +11962,7 @@
       "name": "SoundManager.playLightning",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 717,
+      "line": 725,
       "className": "SoundManager",
       "methodName": "playLightning",
       "doc": "Sound when lightning strikes from above (electric discharge snap + thunder boom)"
@@ -11971,7 +11971,7 @@
       "name": "SoundManager.playMachineGunShoot",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 83,
+      "line": 91,
       "className": "SoundManager",
       "methodName": "playMachineGunShoot",
       "doc": "Sound when automatic rifle / machine gun fires a round"
@@ -11980,7 +11980,7 @@
       "name": "SoundManager.playMagic",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 188,
+      "line": 196,
       "className": "SoundManager",
       "methodName": "playMagic",
       "doc": "Sound when magical spell or staff projectile casts"
@@ -11989,7 +11989,7 @@
       "name": "SoundManager.playPlayerHurt",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 293,
+      "line": 301,
       "className": "SoundManager",
       "methodName": "playPlayerHurt",
       "doc": "Player damaged sound"
@@ -11998,7 +11998,7 @@
       "name": "SoundManager.playPoisonPuddle",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 843,
+      "line": 851,
       "className": "SoundManager",
       "methodName": "playPoisonPuddle",
       "doc": "Sound when toxic poison puddle bubbles and splatters on the ground"
@@ -12007,7 +12007,7 @@
       "name": "SoundManager.playReaperSpawn",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 571,
+      "line": 579,
       "className": "SoundManager",
       "methodName": "playReaperSpawn",
       "doc": "Ominous death drone when Immortal Reaper spawns at 30 minutes"
@@ -12016,7 +12016,7 @@
       "name": "SoundManager.playReroll",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 946,
+      "line": 954,
       "className": "SoundManager",
       "methodName": "playReroll",
       "doc": "Sound when rerolling weapon selection"
@@ -12025,7 +12025,7 @@
       "name": "SoundManager.playShieldBreak",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 344,
+      "line": 352,
       "className": "SoundManager",
       "methodName": "playShieldBreak",
       "doc": "Resonant crystalline shatter sound when player armor is completely broken (0)"
@@ -12034,7 +12034,7 @@
       "name": "SoundManager.playShieldHit",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 318,
+      "line": 326,
       "className": "SoundManager",
       "methodName": "playShieldHit",
       "doc": "Sound when incoming damage is absorbed by player's energy armor"
@@ -12043,7 +12043,7 @@
       "name": "SoundManager.playShoot",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 58,
+      "line": 66,
       "className": "SoundManager",
       "methodName": "playShoot",
       "doc": "Sound when projectile shoots"
@@ -12052,7 +12052,7 @@
       "name": "SoundManager.playSlash",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 163,
+      "line": 171,
       "className": "SoundManager",
       "methodName": "playSlash",
       "doc": "Sound when sword slashes"
@@ -12061,7 +12061,7 @@
       "name": "SoundManager.playTeleporterActivate",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 632,
+      "line": 640,
       "className": "SoundManager",
       "methodName": "playTeleporterActivate",
       "doc": "Sound when activating the teleporter event"
@@ -12070,7 +12070,7 @@
       "name": "SoundManager.playTeleporterComplete",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 653,
+      "line": 661,
       "className": "SoundManager",
       "methodName": "playTeleporterComplete",
       "doc": "Sound when teleporter charge reaches 100% and rift stabilizes"
@@ -12079,7 +12079,7 @@
       "name": "SoundManager.playTimeFreeze",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 967,
+      "line": 975,
       "className": "SoundManager",
       "methodName": "playTimeFreeze",
       "doc": "Sound when Time Crystal activates (temporal freeze + deep shockwave)"
@@ -12088,7 +12088,7 @@
       "name": "SoundManager.playVictory",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
-      "line": 521,
+      "line": 529,
       "className": "SoundManager",
       "methodName": "playVictory",
       "doc": "Triumphant victory fanfare (30 minutes survived!)"
@@ -12108,6 +12108,14 @@
       "line": 33,
       "className": "SoundManager",
       "methodName": "setVolume"
+    },
+    {
+      "name": "SoundManager.stopAll",
+      "kind": "method",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 51,
+      "className": "SoundManager",
+      "methodName": "stopAll"
     },
     {
       "name": "SpatialGrid",

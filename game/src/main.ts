@@ -35,7 +35,7 @@ import { LobbyCoordinator } from './net/LobbyCoordinator';
 import { MerchantManager } from './world/MerchantManager';
 import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
 import { GameStateBridge } from './ui/stores/GameStateBridge';
-import { initReactUI } from './ui/react/mountReactUI';
+import { initReactUI, disposeReactUI } from './ui/react/mountReactUI';
 import { FeatureFlags } from './core/FeatureFlags';
 
 class Game {
@@ -76,6 +76,9 @@ class Game {
   private frameTimeEma: number = 0;
   private fpsEma: number = 0;
   private lastTime = performance.now();
+  private animFrameId: number = 0;
+  private accumulator: number = 0;
+  public static readonly FIXED_TIMESTEP: number = 1 / 60;
 
   constructor() {
     this.engine = new Engine('game-container');
@@ -1065,7 +1068,7 @@ class Game {
   }
 
   private loop = (): void => {
-    requestAnimationFrame(this.loop);
+    this.animFrameId = requestAnimationFrame(this.loop);
 
     const now = performance.now();
     const frameTimeMs = now - this.lastTime;
@@ -1077,7 +1080,18 @@ class Game {
 
     const simStart = performance.now();
     if (this.sessionDirector.gameState === GameState.PLAYING) {
-      this.updateSimulation(scaledDt);
+      // Fixed 60 Hz deterministic simulation steps with spiral-of-death clamp
+      this.accumulator += scaledDt;
+      const MAX_SUB_STEPS = 5;
+      let subSteps = 0;
+      while (this.accumulator >= Game.FIXED_TIMESTEP && subSteps < MAX_SUB_STEPS) {
+        this.updateSimulation(Game.FIXED_TIMESTEP);
+        this.accumulator -= Game.FIXED_TIMESTEP;
+        subSteps++;
+      }
+      if (subSteps >= MAX_SUB_STEPS) {
+        this.accumulator = 0;
+      }
     } else if (this.sessionDirector.gameState === GameState.PAUSED && this.mapManager.isOpen) {
       this.mapManager.update(rawDt);
     }
@@ -1147,6 +1161,23 @@ class Game {
 
     return { total, visible, simulated };
   }
+
+  public destroy(): void {
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = 0;
+    }
+    this.engine.detachRenderer();
+    disposeReactUI();
+    SoundManager.stopAll();
+  }
 }
 
-new Game();
+const gameInstance = new Game();
+
+// Vite Hot Module Replacement (HMR) clean teardown
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    gameInstance.destroy();
+  });
+}

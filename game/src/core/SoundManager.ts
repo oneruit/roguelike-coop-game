@@ -48,6 +48,14 @@ export class SoundManager {
     }
   }
 
+  public static stopAll(): void {
+    if (this.ctx && this.ctx.state !== 'closed') {
+      try {
+        this.ctx.suspend();
+      } catch {}
+    }
+  }
+
   public static getMuted(): boolean {
     return this.isMuted;
   }
