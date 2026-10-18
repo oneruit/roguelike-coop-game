@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T16:21:41.130Z | **Files:** 155 | **Top-level:** 484 | **Class Methods:** 1124
+> **Generated:** 2026-10-18T16:26:01.658Z | **Files:** 162 | **Top-level:** 506 | **Class Methods:** 1147
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 438 |
+| `game/src` | 460 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -20,7 +20,9 @@ Run `npm run index` to refresh this cache.
 
 | Symbol / Member | Kind | File & Line | Description |
 | :--- | :--- | :--- | :--- |
+| `ActiveBossData` | `interface` | [`game/src/ui/stores/usePlayerStore.ts:20`](../../game/src/ui/stores/usePlayerStore.ts#L20) | - |
 | `ActiveBuff` | `interface` | [`game/src/shared/types/entities.ts:29`](../../game/src/shared/types/entities.ts#L29) | - |
+| `ActiveBuffData` | `interface` | [`game/src/ui/stores/usePlayerStore.ts:12`](../../game/src/ui/stores/usePlayerStore.ts#L12) | - |
 | `AdminConfig` | `interface` | [`admin/src/types.ts:6`](../../admin/src/types.ts#L6) | - |
 | `AdminController` | `class` | [`admin/src/admin.ts:20`](../../admin/src/admin.ts#L20) | - |
 | `AdminController.applyFilter` | `method` | [`admin/src/admin.ts:436`](../../admin/src/admin.ts#L436) | - |
@@ -192,6 +194,7 @@ Run `npm run index` to refresh this cache.
 | `BP_SEASON_SUBTITLE` | `const` | [`game/src/core/BattlePassManager.ts:16`](../../game/src/core/BattlePassManager.ts#L16) | - |
 | `BP_SEASON_TITLE` | `const` | [`game/src/core/BattlePassManager.ts:15`](../../game/src/core/BattlePassManager.ts#L15) | - |
 | `BUFF_TYPES` | `const` | [`game/src/shared/types/registry.ts:46`](../../game/src/shared/types/registry.ts#L46) | - |
+| `BufferedInputAction` | `interface` | [`game/src/core/InputBuffer.ts:19`](../../game/src/core/InputBuffer.ts#L19) | - |
 | `BuffType` | `type` | [`game/src/shared/types/entities.ts:12`](../../game/src/shared/types/entities.ts#L12) | - |
 | `calculateBattlePassPoints` | `function` | [`game/src/core/BattlePassManager.ts:30`](../../game/src/core/BattlePassManager.ts#L30) | Calculates Battle Pass experience points awarded for a run based on surviva... |
 | `CalculatedPlayerStats` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:14`](../../game/src/mechanics/player/PlayerStats.ts#L14) | - |
@@ -500,6 +503,21 @@ Run `npm run index` to refresh this cache.
 | `GameOverUI` | `class` | [`game/src/ui/modules/GameOverUI.ts:13`](../../game/src/ui/modules/GameOverUI.ts#L13) | - |
 | `GameStartMessage` | `interface` | [`game/src/shared/types/network.ts:249`](../../game/src/shared/types/network.ts#L249) | - |
 | `GameState` | `enum` | [`game/src/core/SessionDirector.ts:40`](../../game/src/core/SessionDirector.ts#L40) | - |
+| `GameStateBridge` | `class` | [`game/src/ui/stores/GameStateBridge.ts:27`](../../game/src/ui/stores/GameStateBridge.ts#L27) | GameStateBridge decouples headless game simulation from the UI stores. - Ro... |
+| `GameStateBridge.cleanup` | `method` | [`game/src/ui/stores/GameStateBridge.ts:54`](../../game/src/ui/stores/GameStateBridge.ts#L54) | - |
+| `GameStateBridge.emitMinimapSnapshot` | `method` | [`game/src/ui/stores/GameStateBridge.ts:68`](../../game/src/ui/stores/GameStateBridge.ts#L68) | - |
+| `GameStateBridge.getInstance` | `method` | [`game/src/ui/stores/GameStateBridge.ts:32`](../../game/src/ui/stores/GameStateBridge.ts#L32) | - |
+| `GameStateBridge.init` | `method` | [`game/src/ui/stores/GameStateBridge.ts:39`](../../game/src/ui/stores/GameStateBridge.ts#L39) | - |
+| `GameStateBridge.onDamageFlash` | `method` | [`game/src/ui/stores/GameStateBridge.ts:108`](../../game/src/ui/stores/GameStateBridge.ts#L108) | - |
+| `GameStateBridge.onPlayerDeath` | `method` | [`game/src/ui/stores/GameStateBridge.ts:97`](../../game/src/ui/stores/GameStateBridge.ts#L97) | --- Immediate Player Events --- |
+| `GameStateBridge.onPlayerDowned` | `method` | [`game/src/ui/stores/GameStateBridge.ts:104`](../../game/src/ui/stores/GameStateBridge.ts#L104) | - |
+| `GameStateBridge.subscribeMinimap` | `method` | [`game/src/ui/stores/GameStateBridge.ts:63`](../../game/src/ui/stores/GameStateBridge.ts#L63) | --- Fast Path Minimap Stream (Non-React) --- |
+| `GameStateBridge.syncGameState` | `method` | [`game/src/ui/stores/GameStateBridge.ts:75`](../../game/src/ui/stores/GameStateBridge.ts#L75) | --- Immediate Game State Events --- |
+| `GameStateBridge.syncGameTime` | `method` | [`game/src/ui/stores/GameStateBridge.ts:79`](../../game/src/ui/stores/GameStateBridge.ts#L79) | - |
+| `GameStateBridge.syncPlayerProgression` | `method` | [`game/src/ui/stores/GameStateBridge.ts:90`](../../game/src/ui/stores/GameStateBridge.ts#L90) | - |
+| `GameStateBridge.syncPlayerVitals` | `method` | [`game/src/ui/stores/GameStateBridge.ts:84`](../../game/src/ui/stores/GameStateBridge.ts#L84) | --- Throttled Player Stats Updates --- |
+| `GameStateEnum` | `type` | [`game/src/ui/stores/useGameStore.ts:4`](../../game/src/ui/stores/useGameStore.ts#L4) | - |
+| `GameStoreState` | `interface` | [`game/src/ui/stores/useGameStore.ts:13`](../../game/src/ui/stores/useGameStore.ts#L13) | - |
 | `Gem` | `class` | [`game/src/drops/Gem.ts:17`](../../game/src/drops/Gem.ts#L17) | - |
 | `Gem.addXp` | `method` | [`game/src/drops/Gem.ts:156`](../../game/src/drops/Gem.ts#L156) | - |
 | `Gem.destroy` | `method` | [`game/src/drops/Gem.ts:222`](../../game/src/drops/Gem.ts#L222) | - |
@@ -692,11 +710,24 @@ Run `npm run index` to refresh this cache.
 | `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:626`](../../game/src/ui/modules/InGameOverlayUI.ts#L626) | - |
 | `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:633`](../../game/src/ui/modules/InGameOverlayUI.ts#L633) | - |
 | `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:895`](../../game/src/ui/modules/InGameOverlayUI.ts#L895) | - |
-| `InputManager` | `class` | [`game/src/core/InputManager.ts:3`](../../game/src/core/InputManager.ts#L3) | - |
-| `InputManager.onKeyDown` | `method` | [`game/src/core/InputManager.ts:26`](../../game/src/core/InputManager.ts#L26) | - |
-| `InputManager.onKeyUp` | `method` | [`game/src/core/InputManager.ts:87`](../../game/src/core/InputManager.ts#L87) | - |
-| `InputManager.onMouseMove` | `method` | [`game/src/core/InputManager.ts:91`](../../game/src/core/InputManager.ts#L91) | - |
-| `InputManager.update` | `method` | [`game/src/core/InputManager.ts:96`](../../game/src/core/InputManager.ts#L96) | - |
+| `InputActionType` | `type` | [`game/src/core/InputBuffer.ts:6`](../../game/src/core/InputBuffer.ts#L6) | High-performance, zero-React input buffer for game actions and continuous d... |
+| `InputBuffer` | `class` | [`game/src/core/InputBuffer.ts:25`](../../game/src/core/InputBuffer.ts#L25) | - |
+| `InputBuffer.clear` | `method` | [`game/src/core/InputBuffer.ts:118`](../../game/src/core/InputBuffer.ts#L118) | Clears all queued actions and resets vectors. |
+| `InputBuffer.consumeAction` | `method` | [`game/src/core/InputBuffer.ts:69`](../../game/src/core/InputBuffer.ts#L69) | Consumes and removes the earliest action of a specific type. |
+| `InputBuffer.consumeActions` | `method` | [`game/src/core/InputBuffer.ts:59`](../../game/src/core/InputBuffer.ts#L59) | Consumes and removes all pending actions at the start of a simulation tick. |
+| `InputBuffer.getAimPosition` | `method` | [`game/src/core/InputBuffer.ts:111`](../../game/src/core/InputBuffer.ts#L111) | Returns current aim world position. |
+| `InputBuffer.getInstance` | `method` | [`game/src/core/InputBuffer.ts:31`](../../game/src/core/InputBuffer.ts#L31) | - |
+| `InputBuffer.getMoveVector` | `method` | [`game/src/core/InputBuffer.ts:96`](../../game/src/core/InputBuffer.ts#L96) | Returns current continuous move vector. |
+| `InputBuffer.hasAction` | `method` | [`game/src/core/InputBuffer.ts:81`](../../game/src/core/InputBuffer.ts#L81) | Checks if a specific action is queued without consuming it. |
+| `InputBuffer.queueAction` | `method` | [`game/src/core/InputBuffer.ts:48`](../../game/src/core/InputBuffer.ts#L48) | Pushes a discrete action into the queue. |
+| `InputBuffer.resetInstance` | `method` | [`game/src/core/InputBuffer.ts:41`](../../game/src/core/InputBuffer.ts#L41) | Resets singleton instance (useful for unit testing). |
+| `InputBuffer.setAimPosition` | `method` | [`game/src/core/InputBuffer.ts:103`](../../game/src/core/InputBuffer.ts#L103) | Sets current mouse/aim world position on XZ plane. |
+| `InputBuffer.setMoveVector` | `method` | [`game/src/core/InputBuffer.ts:88`](../../game/src/core/InputBuffer.ts#L88) | Sets continuous 2D move vector on XZ plane. |
+| `InputManager` | `class` | [`game/src/core/InputManager.ts:4`](../../game/src/core/InputManager.ts#L4) | - |
+| `InputManager.onKeyDown` | `method` | [`game/src/core/InputManager.ts:27`](../../game/src/core/InputManager.ts#L27) | - |
+| `InputManager.onKeyUp` | `method` | [`game/src/core/InputManager.ts:97`](../../game/src/core/InputManager.ts#L97) | - |
+| `InputManager.onMouseMove` | `method` | [`game/src/core/InputManager.ts:101`](../../game/src/core/InputManager.ts#L101) | - |
+| `InputManager.update` | `method` | [`game/src/core/InputManager.ts:106`](../../game/src/core/InputManager.ts#L106) | - |
 | `InventoryScreen` | `class` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:12`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L12) | - |
 | `InventoryScreen.bindElements` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:48`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L48) | - |
 | `InventoryScreen.bindEvents` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:67`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L67) | - |
@@ -769,6 +800,7 @@ Run `npm run index` to refresh this cache.
 | `LeaderboardUI.renderTable` | `method` | [`game/src/ui/modules/LeaderboardUI.ts:114`](../../game/src/ui/modules/LeaderboardUI.ts#L114) | - |
 | `LeaderboardUIOptions` | `interface` | [`game/src/ui/modules/LeaderboardUI.ts:6`](../../game/src/ui/modules/LeaderboardUI.ts#L6) | - |
 | `LEGENDARY_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:275`](../../game/src/items/RiftItemSystem.ts#L275) | - |
+| `LevelUpOption` | `interface` | [`game/src/ui/stores/useUIModalStore.ts:19`](../../game/src/ui/stores/useUIModalStore.ts#L19) | - |
 | `LevelUpScreen` | `class` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:87`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L87) | - |
 | `LevelUpScreen.bindElements` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:113`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L113) | - |
 | `LevelUpScreen.bindEvents` | `method` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:121`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L121) | - |
@@ -794,6 +826,7 @@ Run `npm run index` to refresh this cache.
 | `LobbyCoordinator.setupMenuNavigation` | `method` | [`game/src/net/LobbyCoordinator.ts:26`](../../game/src/net/LobbyCoordinator.ts#L26) | - |
 | `LobbyCoordinator.startRoomPolling` | `method` | [`game/src/net/LobbyCoordinator.ts:116`](../../game/src/net/LobbyCoordinator.ts#L116) | - |
 | `LobbyCoordinator.stopRoomPolling` | `method` | [`game/src/net/LobbyCoordinator.ts:132`](../../game/src/net/LobbyCoordinator.ts#L132) | - |
+| `LobbyPeer` | `interface` | [`game/src/ui/stores/useLobbyStore.ts:4`](../../game/src/ui/stores/useLobbyStore.ts#L4) | - |
 | `LobbyPlayerInfo` | `interface` | [`game/src/shared/types/network.ts:154`](../../game/src/shared/types/network.ts#L154) | - |
 | `LobbyScreen` | `class` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:69`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L69) | - |
 | `LobbyScreen.bindElements` | `method` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:100`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L100) | - |
@@ -824,6 +857,7 @@ Run `npm run index` to refresh this cache.
 | `LobbyScreen.updateLobbyHeroesLockStatus` | `method` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:850`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L850) | - |
 | `LobbyScreenElements` | `interface` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:9`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L9) | - |
 | `LobbyScreenOptions` | `interface` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:55`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L55) | - |
+| `LobbyStoreState` | `interface` | [`game/src/ui/stores/useLobbyStore.ts:13`](../../game/src/ui/stores/useLobbyStore.ts#L13) | - |
 | `LobbyUI` | `class` | [`game/src/ui/modules/LobbyUI.ts:13`](../../game/src/ui/modules/LobbyUI.ts#L13) | - |
 | `LobbyUIContext` | `type` | [`game/src/ui/modules/LobbyUI.ts:8`](../../game/src/ui/modules/LobbyUI.ts#L8) | - |
 | `LobbyUIElements` | `type` | [`game/src/ui/modules/LobbyUI.ts:7`](../../game/src/ui/modules/LobbyUI.ts#L7) | - |
@@ -915,10 +949,14 @@ Run `npm run index` to refresh this cache.
 | `MetaProgression.saveState` | `method` | [`game/src/meta/MetaProgression.ts:204`](../../game/src/meta/MetaProgression.ts#L204) | - |
 | `MetaProgression.upgradeTalent` | `method` | [`game/src/meta/MetaProgression.ts:294`](../../game/src/meta/MetaProgression.ts#L294) | - |
 | `MetaProgressionSave` | `interface` | [`game/src/meta/MetaProgression.ts:55`](../../game/src/meta/MetaProgression.ts#L55) | - |
+| `MinimapEntityCoord` | `interface` | [`game/src/ui/stores/GameStateBridge.ts:6`](../../game/src/ui/stores/GameStateBridge.ts#L6) | - |
+| `MinimapListener` | `type` | [`game/src/ui/stores/GameStateBridge.ts:19`](../../game/src/ui/stores/GameStateBridge.ts#L19) | - |
+| `MinimapSnapshot` | `interface` | [`game/src/ui/stores/GameStateBridge.ts:13`](../../game/src/ui/stores/GameStateBridge.ts#L13) | - |
 | `ModalManager` | `class` | [`admin/src/ui/modal.ts:3`](../../admin/src/ui/modal.ts#L3) | - |
 | `ModalManager.bindEvents` | `method` | [`admin/src/ui/modal.ts:13`](../../admin/src/ui/modal.ts#L13) | - |
 | `ModalManager.closeReviewModal` | `method` | [`admin/src/ui/modal.ts:58`](../../admin/src/ui/modal.ts#L58) | - |
 | `ModalManager.openReviewModal` | `method` | [`admin/src/ui/modal.ts:21`](../../admin/src/ui/modal.ts#L21) | - |
+| `ModalType` | `type` | [`game/src/ui/stores/useUIModalStore.ts:4`](../../game/src/ui/stores/useUIModalStore.ts#L4) | - |
 | `MONSTER_COLORS` | `const` | [`admin/src/constants.ts:73`](../../admin/src/constants.ts#L73) | - |
 | `MonsterBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:50`](../../game/src/balance/BalanceTypes.ts#L50) | - |
 | `MonsterTextures` | `interface` | [`game/src/core/TextureManager.ts:39`](../../game/src/core/TextureManager.ts#L39) | - |
@@ -1052,6 +1090,7 @@ Run `npm run index` to refresh this cache.
 | `PlayerStatusManager.applySlow` | `method` | [`game/src/entities/PlayerStatusManager.ts:16`](../../game/src/entities/PlayerStatusManager.ts#L16) | - |
 | `PlayerStatusManager.reset` | `method` | [`game/src/entities/PlayerStatusManager.ts:67`](../../game/src/entities/PlayerStatusManager.ts#L67) | - |
 | `PlayerStatusManager.update` | `method` | [`game/src/entities/PlayerStatusManager.ts:42`](../../game/src/entities/PlayerStatusManager.ts#L42) | - |
+| `PlayerStoreState` | `interface` | [`game/src/ui/stores/usePlayerStore.ts:28`](../../game/src/ui/stores/usePlayerStore.ts#L28) | - |
 | `PlayerTargetInfo` | `interface` | [`game/src/entities/EnemyManager.ts:13`](../../game/src/entities/EnemyManager.ts#L13) | - |
 | `PlayerXpPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:23`](../../game/src/mechanics/events/GameEventBus.ts#L23) | - |
 | `PoisonPuddleWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:712`](../../game/src/combat/weapons/MagicWeapons.ts#L712) | Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on... |
@@ -1570,6 +1609,7 @@ Run `npm run index` to refresh this cache.
 | `UIEventBus` | `class` | [`game/src/ui/core/UIEventBus.ts:6`](../../game/src/ui/core/UIEventBus.ts#L6) | Lightweight, zero-dependency UI Event Bus for decoupled cross-module commun... |
 | `UIEventBus.clear` | `method` | [`game/src/ui/core/UIEventBus.ts:39`](../../game/src/ui/core/UIEventBus.ts#L39) | - |
 | `UIEventListener` | `type` | [`game/src/ui/core/UIEventBus.ts:1`](../../game/src/ui/core/UIEventBus.ts#L1) | - |
+| `UIModalStoreState` | `interface` | [`game/src/ui/stores/useUIModalStore.ts:28`](../../game/src/ui/stores/useUIModalStore.ts#L28) | - |
 | `UNCOMMON_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:261`](../../game/src/items/RiftItemSystem.ts#L261) | - |
 | `UNIQUE_CHARACTERS` | `const` | [`game/src/shared/UniqueCharacters.ts:54`](../../game/src/shared/UniqueCharacters.ts#L54) | Registry of unique characters. Easily extensible for future unique characte... |
 | `UniqueCharacterConfig` | `interface` | [`game/src/shared/UniqueCharacters.ts:24`](../../game/src/shared/UniqueCharacters.ts#L24) | Unique Character Specification. Defines exclusive weapons, restriction rule... |
@@ -1604,6 +1644,10 @@ Run `npm run index` to refresh this cache.
 | `UpdateNotifier.simulateUpdate` | `method` | [`game/src/core/UpdateNotifier.ts:184`](../../game/src/core/UpdateNotifier.ts#L184) | Simulates an update event (useful for UI testing and verification in Dev mo... |
 | `updateOverviewStats` | `function` | [`admin/src/views/dashboardView.ts:160`](../../admin/src/views/dashboardView.ts#L160) | - |
 | `UpgradeOption` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:33`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L33) | - |
+| `useGameStore` | `const` | [`game/src/ui/stores/useGameStore.ts:34`](../../game/src/ui/stores/useGameStore.ts#L34) | Global game lifecycle store for game states, timers, and dev mode. Uses sub... |
+| `useLobbyStore` | `const` | [`game/src/ui/stores/useLobbyStore.ts:33`](../../game/src/ui/stores/useLobbyStore.ts#L33) | Co-op Lobby store coordinating network rooms, slots, and peer readiness. |
+| `usePlayerStore` | `const` | [`game/src/ui/stores/usePlayerStore.ts:111`](../../game/src/ui/stores/usePlayerStore.ts#L111) | Player store featuring dual-frequency updates: - Continuous meters (HP, shi... |
+| `useUIModalStore` | `const` | [`game/src/ui/stores/useUIModalStore.ts:50`](../../game/src/ui/stores/useUIModalStore.ts#L50) | UI Modal store coordinating modal stack, overlays, and card draft dialogs. |
 | `VersionInfo` | `interface` | [`game/src/core/UpdateNotifier.ts:1`](../../game/src/core/UpdateNotifier.ts#L1) | - |
 | `Weapon` | `class` | [`game/src/combat/WeaponBase.ts:91`](../../game/src/combat/WeaponBase.ts#L91) | - |
 | `WEAPON_COLORS` | `const` | [`admin/src/constants.ts:53`](../../admin/src/constants.ts#L53) | - |
@@ -1624,6 +1668,7 @@ Run `npm run index` to refresh this cache.
 | `WeaponGrade` | `type` | [`game/src/combat/WeaponGrades.ts:1`](../../game/src/combat/WeaponGrades.ts#L1) | - |
 | `WeaponGradeConfig` | `interface` | [`game/src/combat/WeaponGrades.ts:3`](../../game/src/combat/WeaponGrades.ts#L3) | - |
 | `WeaponInfo` | `interface` | [`game/src/combat/WeaponBase.ts:13`](../../game/src/combat/WeaponBase.ts#L13) | - |
+| `WeaponSlotData` | `interface` | [`game/src/ui/stores/usePlayerStore.ts:4`](../../game/src/ui/stores/usePlayerStore.ts#L4) | - |
 | `WhirlwindSlashWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:212`](../../game/src/combat/weapons/MeleeWeapons.ts#L212) | Crimson Whirlwind (Багровый Вихрь) - Hero 4 Ronin starting weapon Rapid fur... |
 | `WhirlwindSlashWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:283`](../../game/src/combat/weapons/MeleeWeapons.ts#L283) | - |
 | `WhirlwindSlashWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:231`](../../game/src/combat/weapons/MeleeWeapons.ts#L231) | - |

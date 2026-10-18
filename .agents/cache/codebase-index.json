@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T16:21:41.130Z",
-  "totalFiles": 155,
-  "totalSymbols": 1608,
-  "topLevelCount": 484,
-  "methodsCount": 1124,
+  "generatedAt": "2026-10-18T16:26:01.658Z",
+  "totalFiles": 162,
+  "totalSymbols": 1653,
+  "topLevelCount": 506,
+  "methodsCount": 1147,
   "entities": {
     "heroes": [
       {
@@ -624,10 +624,22 @@
   },
   "symbols": [
     {
+      "name": "ActiveBossData",
+      "kind": "interface",
+      "file": "game/src/ui/stores/usePlayerStore.ts",
+      "line": 20
+    },
+    {
       "name": "ActiveBuff",
       "kind": "interface",
       "file": "game/src/shared/types/entities.ts",
       "line": 29
+    },
+    {
+      "name": "ActiveBuffData",
+      "kind": "interface",
+      "file": "game/src/ui/stores/usePlayerStore.ts",
+      "line": 12
     },
     {
       "name": "AdminConfig",
@@ -1902,6 +1914,12 @@
       "kind": "const",
       "file": "game/src/shared/types/registry.ts",
       "line": 46
+    },
+    {
+      "name": "BufferedInputAction",
+      "kind": "interface",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 19
     },
     {
       "name": "BuffType",
@@ -4265,6 +4283,125 @@
       "line": 40
     },
     {
+      "name": "GameStateBridge",
+      "kind": "class",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 27,
+      "doc": "GameStateBridge decouples headless game simulation from the UI stores. - Routes continuous stats through throttled channels. - Routes critical game events (level-up, death, game over) immediately. - Provides non-React high-frequency fast-path streams for minimap rendering."
+    },
+    {
+      "name": "GameStateBridge.cleanup",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 54,
+      "className": "GameStateBridge",
+      "methodName": "cleanup"
+    },
+    {
+      "name": "GameStateBridge.emitMinimapSnapshot",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 68,
+      "className": "GameStateBridge",
+      "methodName": "emitMinimapSnapshot"
+    },
+    {
+      "name": "GameStateBridge.getInstance",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 32,
+      "className": "GameStateBridge",
+      "methodName": "getInstance"
+    },
+    {
+      "name": "GameStateBridge.init",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 39,
+      "className": "GameStateBridge",
+      "methodName": "init"
+    },
+    {
+      "name": "GameStateBridge.onDamageFlash",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 108,
+      "className": "GameStateBridge",
+      "methodName": "onDamageFlash"
+    },
+    {
+      "name": "GameStateBridge.onPlayerDeath",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 97,
+      "className": "GameStateBridge",
+      "methodName": "onPlayerDeath",
+      "doc": "--- Immediate Player Events ---"
+    },
+    {
+      "name": "GameStateBridge.onPlayerDowned",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 104,
+      "className": "GameStateBridge",
+      "methodName": "onPlayerDowned"
+    },
+    {
+      "name": "GameStateBridge.subscribeMinimap",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 63,
+      "className": "GameStateBridge",
+      "methodName": "subscribeMinimap",
+      "doc": "--- Fast Path Minimap Stream (Non-React) ---"
+    },
+    {
+      "name": "GameStateBridge.syncGameState",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 75,
+      "className": "GameStateBridge",
+      "methodName": "syncGameState",
+      "doc": "--- Immediate Game State Events ---"
+    },
+    {
+      "name": "GameStateBridge.syncGameTime",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 79,
+      "className": "GameStateBridge",
+      "methodName": "syncGameTime"
+    },
+    {
+      "name": "GameStateBridge.syncPlayerProgression",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 90,
+      "className": "GameStateBridge",
+      "methodName": "syncPlayerProgression"
+    },
+    {
+      "name": "GameStateBridge.syncPlayerVitals",
+      "kind": "method",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 84,
+      "className": "GameStateBridge",
+      "methodName": "syncPlayerVitals",
+      "doc": "--- Throttled Player Stats Updates ---"
+    },
+    {
+      "name": "GameStateEnum",
+      "kind": "type",
+      "file": "game/src/ui/stores/useGameStore.ts",
+      "line": 4
+    },
+    {
+      "name": "GameStoreState",
+      "kind": "interface",
+      "file": "game/src/ui/stores/useGameStore.ts",
+      "line": 13
+    },
+    {
       "name": "Gem",
       "kind": "class",
       "file": "game/src/drops/Gem.ts",
@@ -5711,16 +5848,127 @@
       "methodName": "updateWeaponsBar"
     },
     {
+      "name": "InputActionType",
+      "kind": "type",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 6,
+      "doc": "High-performance, zero-React input buffer for game actions and continuous directional movement. Buffers discrete key/click actions between ticks so inputs are never lost during frame pauses or low tick rates."
+    },
+    {
+      "name": "InputBuffer",
+      "kind": "class",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 25
+    },
+    {
+      "name": "InputBuffer.clear",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 118,
+      "className": "InputBuffer",
+      "methodName": "clear",
+      "doc": "Clears all queued actions and resets vectors."
+    },
+    {
+      "name": "InputBuffer.consumeAction",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 69,
+      "className": "InputBuffer",
+      "methodName": "consumeAction",
+      "doc": "Consumes and removes the earliest action of a specific type."
+    },
+    {
+      "name": "InputBuffer.consumeActions",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 59,
+      "className": "InputBuffer",
+      "methodName": "consumeActions",
+      "doc": "Consumes and removes all pending actions at the start of a simulation tick."
+    },
+    {
+      "name": "InputBuffer.getAimPosition",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 111,
+      "className": "InputBuffer",
+      "methodName": "getAimPosition",
+      "doc": "Returns current aim world position."
+    },
+    {
+      "name": "InputBuffer.getInstance",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 31,
+      "className": "InputBuffer",
+      "methodName": "getInstance"
+    },
+    {
+      "name": "InputBuffer.getMoveVector",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 96,
+      "className": "InputBuffer",
+      "methodName": "getMoveVector",
+      "doc": "Returns current continuous move vector."
+    },
+    {
+      "name": "InputBuffer.hasAction",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 81,
+      "className": "InputBuffer",
+      "methodName": "hasAction",
+      "doc": "Checks if a specific action is queued without consuming it."
+    },
+    {
+      "name": "InputBuffer.queueAction",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 48,
+      "className": "InputBuffer",
+      "methodName": "queueAction",
+      "doc": "Pushes a discrete action into the queue."
+    },
+    {
+      "name": "InputBuffer.resetInstance",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 41,
+      "className": "InputBuffer",
+      "methodName": "resetInstance",
+      "doc": "Resets singleton instance (useful for unit testing)."
+    },
+    {
+      "name": "InputBuffer.setAimPosition",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 103,
+      "className": "InputBuffer",
+      "methodName": "setAimPosition",
+      "doc": "Sets current mouse/aim world position on XZ plane."
+    },
+    {
+      "name": "InputBuffer.setMoveVector",
+      "kind": "method",
+      "file": "game/src/core/InputBuffer.ts",
+      "line": 88,
+      "className": "InputBuffer",
+      "methodName": "setMoveVector",
+      "doc": "Sets continuous 2D move vector on XZ plane."
+    },
+    {
       "name": "InputManager",
       "kind": "class",
       "file": "game/src/core/InputManager.ts",
-      "line": 3
+      "line": 4
     },
     {
       "name": "InputManager.onKeyDown",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 26,
+      "line": 27,
       "className": "InputManager",
       "methodName": "onKeyDown"
     },
@@ -5728,7 +5976,7 @@
       "name": "InputManager.onKeyUp",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 87,
+      "line": 97,
       "className": "InputManager",
       "methodName": "onKeyUp"
     },
@@ -5736,7 +5984,7 @@
       "name": "InputManager.onMouseMove",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 91,
+      "line": 101,
       "className": "InputManager",
       "methodName": "onMouseMove"
     },
@@ -5744,7 +5992,7 @@
       "name": "InputManager.update",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 96,
+      "line": 106,
       "className": "InputManager",
       "methodName": "update"
     },
@@ -6264,6 +6512,12 @@
       "line": 275
     },
     {
+      "name": "LevelUpOption",
+      "kind": "interface",
+      "file": "game/src/ui/stores/useUIModalStore.ts",
+      "line": 19
+    },
+    {
       "name": "LevelUpScreen",
       "kind": "class",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
@@ -6447,6 +6701,12 @@
       "line": 132,
       "className": "LobbyCoordinator",
       "methodName": "stopRoomPolling"
+    },
+    {
+      "name": "LobbyPeer",
+      "kind": "interface",
+      "file": "game/src/ui/stores/useLobbyStore.ts",
+      "line": 4
     },
     {
       "name": "LobbyPlayerInfo",
@@ -6679,6 +6939,12 @@
       "kind": "interface",
       "file": "game/src/ui/screens/Lobby/LobbyScreen.ts",
       "line": 55
+    },
+    {
+      "name": "LobbyStoreState",
+      "kind": "interface",
+      "file": "game/src/ui/stores/useLobbyStore.ts",
+      "line": 13
     },
     {
       "name": "LobbyUI",
@@ -7376,6 +7642,24 @@
       "line": 55
     },
     {
+      "name": "MinimapEntityCoord",
+      "kind": "interface",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 6
+    },
+    {
+      "name": "MinimapListener",
+      "kind": "type",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 19
+    },
+    {
+      "name": "MinimapSnapshot",
+      "kind": "interface",
+      "file": "game/src/ui/stores/GameStateBridge.ts",
+      "line": 13
+    },
+    {
       "name": "ModalManager",
       "kind": "class",
       "file": "admin/src/ui/modal.ts",
@@ -7404,6 +7688,12 @@
       "line": 21,
       "className": "ModalManager",
       "methodName": "openReviewModal"
+    },
+    {
+      "name": "ModalType",
+      "kind": "type",
+      "file": "game/src/ui/stores/useUIModalStore.ts",
+      "line": 4
     },
     {
       "name": "MONSTER_COLORS",
@@ -8410,6 +8700,12 @@
       "line": 42,
       "className": "PlayerStatusManager",
       "methodName": "update"
+    },
+    {
+      "name": "PlayerStoreState",
+      "kind": "interface",
+      "file": "game/src/ui/stores/usePlayerStore.ts",
+      "line": 28
     },
     {
       "name": "PlayerTargetInfo",
@@ -12363,6 +12659,12 @@
       "line": 1
     },
     {
+      "name": "UIModalStoreState",
+      "kind": "interface",
+      "file": "game/src/ui/stores/useUIModalStore.ts",
+      "line": 28
+    },
+    {
       "name": "UNCOMMON_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
@@ -12628,6 +12930,34 @@
       "line": 33
     },
     {
+      "name": "useGameStore",
+      "kind": "const",
+      "file": "game/src/ui/stores/useGameStore.ts",
+      "line": 34,
+      "doc": "Global game lifecycle store for game states, timers, and dev mode. Uses subscribeWithSelector middleware for fine-grained non-re-rendering subscriptions."
+    },
+    {
+      "name": "useLobbyStore",
+      "kind": "const",
+      "file": "game/src/ui/stores/useLobbyStore.ts",
+      "line": 33,
+      "doc": "Co-op Lobby store coordinating network rooms, slots, and peer readiness."
+    },
+    {
+      "name": "usePlayerStore",
+      "kind": "const",
+      "file": "game/src/ui/stores/usePlayerStore.ts",
+      "line": 111,
+      "doc": "Player store featuring dual-frequency updates: - Continuous meters (HP, shields, XP, credits) are throttled at 15 Hz to prevent React re-render thrashing. - Discrete events (death, boss spawns, level-up, damage flash) update with 0ms latency."
+    },
+    {
+      "name": "useUIModalStore",
+      "kind": "const",
+      "file": "game/src/ui/stores/useUIModalStore.ts",
+      "line": 50,
+      "doc": "UI Modal store coordinating modal stack, overlays, and card draft dialogs."
+    },
+    {
       "name": "VersionInfo",
       "kind": "interface",
       "file": "game/src/core/UpdateNotifier.ts",
@@ -12770,6 +13100,12 @@
       "kind": "interface",
       "file": "game/src/combat/WeaponBase.ts",
       "line": 13
+    },
+    {
+      "name": "WeaponSlotData",
+      "kind": "interface",
+      "file": "game/src/ui/stores/usePlayerStore.ts",
+      "line": 4
     },
     {
       "name": "WhirlwindSlashWeapon",
