@@ -10,18 +10,18 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 
 | Property | Value |
 |---|---|
-| Grid Dimensions | 6 columns × 4 rows (24 cells) |
-| Cell Dimensions | 96 × 96 px |
-| Total Resolution | 576 × 384 px (or 1152 × 768 px for high-res source) |
+| Grid Dimensions | **6 columns × 3 rows** (18 source cells; Row 3 LEFT is auto-mirrored by script) |
+| Cell Dimensions | 96 × 96 px (or native square cells e.g. 200×200 / 256×256) |
+| Total Resolution | 576 × 288 px (or 1536 × 768 px high-res source) |
 | Background | Pure solid magenta chromakey `rgb(255,0,255)` (`#ff00ff`) |
-| Direction Rows (Top to Bottom) | Row 0: `FRONT` (front)<br>Row 1: `BACK` (rear)<br>Row 2 (3rd row): `RIGHT` (right — body sideways, face in profile)<br>Row 3 (4th row): `LEFT` (left — body sideways, face in profile) |
+| Direction Rows (Top to Bottom) | Row 0: `FRONT` (facing camera)<br>Row 1: `BACK` (facing away — 100% rear view, no eyes/face)<br>Row 2: `RIGHT` (body sideways, face strictly in 90° profile)<br>*(Row 3 LEFT is automatically generated via script mirroring)* |
 
 ---
 
-## 2. Mandatory Directional Profile Rule
+## 2. Mandatory Directional Profile & Back Protection Rules
 
-* **Row 2 (3rd row — RIGHT)**: The character faces to the RIGHT. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
-* **Row 3 (4th row — LEFT)**: The character faces to the LEFT. The **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+* **Row 1 (BACK VIEW)**: The character faces 100% away from camera across **ALL 6 frames**. **NO face, NO eyes, and NO head turning on Frame 3**. The back of the hood/hair/backplate simply dips 1px with breath.
+* **Row 2 (3rd row — RIGHT)**: The character faces to the RIGHT. The **body is ALWAYS turned sideways**, and the **face is strictly in 90° profile**. No three-quarters (3/4) views, no torso or head angled towards camera.
 
 ---
 
@@ -31,26 +31,26 @@ Every directional row depicts a subtle, rhythmic 6-frame combat idle / breathing
 
 * **Column 1 (Base Stance)**:
   - Alert, grounded battle-ready stance. Feet firmly planted on the baseline (`y ≈ 88`).
-  - Weapon / magical focus firmly held in ready position.
-  - **Eyes are open and alert**, focused directly forward in the direction of the row with a serious, grim expression.
+  - Weapon firmly held in ready combat grip.
+  - Eyes are open, calm, and focused forward with a serious battle glare.
 * **Column 2 (Inhale / Expansion)**:
   - Inhale begins. Torso and chest rise subtly by 1–2 pixels.
   - Subtle upward shift of weapon and hands following the breath.
-  - **Eyes are open and watchful**.
+  - Eyes remain open and watchful.
 * **Column 3 (Peak Inhale & Mandatory Closed Eyes)**:
-  - **MANDATORY CLOSED EYES**: On this 3rd frame across all rows where eyes are visible, the character's **eyes are fully closed** in a natural, calm, focused blink at the apex of the breath cycle.
-  - Closed eyelids are rendered with a crisp dark lash contour on FRONT, RIGHT, and LEFT rows; on BACK row, slight meditative neck angle corresponds with the blink.
+  - **MANDATORY CLOSED EYES**: On this 3rd frame across FRONT and RIGHT rows, the character's **eyes are fully closed** in a natural, calm blink. Closed dark eyelid contour.
+  - **BACK ROW**: Remains 100% facing away. No eyes or face!
   - Torso is at maximum subtle vertical expansion (+2 px).
-* **Column 4 (Exhale / Descent)**:
-  - Exhale begins. Torso and shoulders begin lowering smoothly.
-  - **Eyes snap open again**, sharp, vigilant, and battle-ready.
-  - Weapon begins lowering back toward resting height.
+* **Column 4 (Exhale / Descent & Eye Normalization)**:
+  - Exhale begins. Torso and shoulders lower smoothly.
+  - **NORMALIZED EYES**: Eyes return to normal, steady, calm battle-ready gaze (identical size/shape to Column 1). **NO bulging eyes, NO wide crazy stare, NO anime shocked expression**.
+  - Weapon lowers back toward resting height.
 * **Column 5 (Settling)**:
   - Weight settles down toward the base resting pose.
-  - **Eyes remain open and focused**.
+  - Eyes remain open and focused.
 * **Column 6 (Loop Transition)**:
   - Transition frame connecting smoothly back into Column 1.
-  - **Eyes remain open**, weapon and posture align with the starting frame.
+  - Eyes remain open, weapon and posture align with the starting frame.
 
 ---
 
@@ -59,7 +59,7 @@ Every directional row depicts a subtle, rhythmic 6-frame combat idle / breathing
 * **Strict Proportions**: Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact sturdy body).
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no tile grid**.
 * **Global Magenta Keying & Defringing**: Magenta is removed globally inside and outside the character. Boundary edges are cleaned with a 1px black outline without any purple/magenta aura.
-* **Weapon Continuity**: Same weapon / focus held in all frames and rows. Plausible grip, no warping or disappearing items.
+* **Weapon Continuity**: Same weapon firmly held across all frames and rows. Weapon never disappears.
 * **Mandatory Negative Constraint**:
-  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
+  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes.`
 * **Pixel Art Quality**: Crisp hard pixel edges, limited color palette, strong contrast, 16-bit game sprite aesthetic.

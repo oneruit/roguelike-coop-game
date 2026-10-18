@@ -60,23 +60,48 @@ Additional character details to include: [list all extra details the user specif
 ## 3. Strict Negative Constraint String
 
 Every prompt MUST contain this exact negative constraint block:
-> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`
+> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes.`
 
 ---
 
-## 4. Directional Orientation & Strict Profile Contract
+## 4. Directional Orientation & 6x3 / 6x4 Architecture Contract
 
-In all multi-view sheets and directional spritesheets, the standard row mapping is:
+The animation pipeline supports both **6×3** (recommended for generation efficiency and consistency) and **6×4** source grids:
 * **Row 0 (1st row)**: `FRONT` — Character faces directly toward the camera / screen bottom.
 * **Row 1 (2nd row)**: `BACK` — Character faces directly away toward the top of the screen.
+  - **BACK VIEW PROTECTION RULE**: The back of head, hair, hood, and armor MUST face 100% away from camera across **ALL 6 frames**. **NO face, NO eyes, and NO head turning on Frame 3**. On Frame 3, the neck/head merely dips 1px with breath/stride.
 * **Row 2 (3rd row)**: `RIGHT` — Character faces to the RIGHT.
-  **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
-* **Row 3 (4th row)**: `LEFT` — Character faces to the LEFT.
-  **MANDATORY PROFILE RULE**: When drawn facing LEFT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards the camera.
+  - **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards camera.
+* **Row 3 (4th row — Optional in Source)**: `LEFT` — Character faces to the LEFT.
+  - **AUTOMATED SCRIPT MIRRORING**: To prevent token waste and asymmetric AI hallucinations, Row 3 (LEFT) is **automatically derived by horizontally mirroring Row 2** in `process_character_sheets.py`. Generation prompts only need to produce 3 rows (`FRONT`, `BACK`, `RIGHT`).
 
 ---
 
-## 5. Chromakey & Edge Cleanup Contract
+## 5. Whole-Body Kinematics & Facial Expressiveness Contract
+
+* **Whole-Body Locomotion & Attacks (No Mannequin / Stiff Torso)**:
+  - In `WALK`: Torso leans forward 5–10° during stride, bobs vertically (+/- 2–3px), shoulders counter-twist with leg strikes.
+  - In `ATTACK` and `WALK_ATTACK`: Entire body commits to the strike. Frame 2–3 coils and pulls back with shoulder twist; Frame 4 explosively lunges forward (8–12px forward chest drive) following through with weapon release; Frames 5–6 absorb recoil and reset.
+* **Frame 3 Blink & Frame 4 Eye Normalization**:
+  - **Frame 3**: Calm, focused blink (eyelids fully closed) on visible front/side rows (`FRONT`, `RIGHT`).
+  - **Frame 4**: Eyes return to normal, steady, calm battle-ready gaze (identical size/shape to Frames 1–2). **NO bulging eyes, NO wide crazy stare, NO anime shocked expression**.
+* **Head Height Anchor**:
+  - Head height must remain strictly **30–35% of total character height** across all frames. Proportions never stretch into realistic human scale during lunges.
+* **Strict Palette Lock**:
+  - All frames and sheets must sample and preserve the exact color palette (armor, hair, skin, metal) established in the approved turnaround sheet.
+
+---
+
+## 6. Weapon Continuity Contract
+
+* **Permanent Weapon Grip**:
+  - The held weapon (flail, sword, staff, bow, or chakram) **MUST remain clearly visible and firmly held in the character's hand across ALL 6 frames**.
+  - The weapon **NEVER disappears, dissolves into empty hands, or flies off-screen** during attacks. Even during throw/strike release (Frame 4) and follow-through (Frame 5), the character visibly grips the weapon through the full swing arc.
+  - In-engine projectile spawning is handled separately by code; character sprites must always remain fully equipped and combat-ready.
+
+---
+
+## 7. Chromakey & Edge Cleanup Contract
 
 * **Pure Solid Magenta Background `rgb(255,0,255)` (`#ff00ff`)**: Strict chromakey background for automated transparent extraction.
 * **Global Removal**: Magenta is NEVER used as a character color. Magenta is removed completely and globally — **both outside the character and inside any enclosed gaps, holes, limbs, or weapon loops**.
