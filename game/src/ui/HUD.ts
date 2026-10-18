@@ -91,9 +91,7 @@ export class HUD {
   public isTrainingModeActive: boolean = false;
 
   public static readonly MENU_BACKGROUNDS: readonly string[] = [
-    '/textures/ui/menu_rift_bg.webp',
-    '/textures/ui/menu_background_1.jpg',
-    '/textures/ui/menu_background_2.jpg'
+    '/textures/ui/menu_rift_bg.webp'
   ];
 
   public static applyRandomMenuBackground() {
@@ -243,6 +241,8 @@ export class HUD {
       },
       hideCoopMenu: () => this.hideCoopMenu(),
       hideMainMenu: () => this.hideMainMenu(),
+      showCoopMenu: () => this.showCoopMenu(),
+      showMainMenu: () => this.showMainMenu(),
       getMenuStack: () => this.menuStack,
       setMenuStack: (stack) => {
         this.menuStack = stack;
@@ -252,6 +252,9 @@ export class HUD {
       },
       removeMenu: (menu) => {
         this.menuStack = this.menuStack.filter((m) => m !== menu);
+      },
+      onReturnToMenu: () => {
+        this.onReturnToMenu?.();
       }
     });
     ScreenManager.getInstance().register(this.lobbyUI);
@@ -535,6 +538,12 @@ export class HUD {
       onQuests: () => {
         this.toggleQuestsInMainMenu();
       },
+      onOpenRiftPath: () => {
+        this.showQuestsModal('rift_elite_bisons', 1, false, 'rift_path');
+      },
+      onOpenWeeklyQuests: () => {
+        this.showQuestsModal('weekly_elite_coyotes', 1, false, 'weekly');
+      },
       onLeaderboard: () => {
         this.showLeaderboard();
       },
@@ -788,6 +797,24 @@ export class HUD {
     }
   }
 
+  public clearMenuStack(): void {
+    this.menuStack = [];
+  }
+
+  public closeAllPreGameModals(): void {
+    this.menuStack = [];
+    this.hideCoopMenu();
+    this.hideHostLobby();
+    this.hideJoinLobby();
+    this.hidePasswordPrompt();
+    this.hideCharacterSelect();
+    this.hideShopModal();
+    this.hideLeaderboard();
+    this.hideAuthModal();
+    this.hideQuestsModal();
+    this.hideBattlePassModal();
+  }
+
   public showShopModal() {
     this.hideMainMenu();
     this.hideQuestsModal();
@@ -946,6 +973,14 @@ export class HUD {
       return 'handled';
     }
 
+    const isInGame = typeof document !== 'undefined' && document.body?.classList.contains('is-in-game');
+    if (isInGame) {
+      const preGameMenus = new Set(['coop', 'host_lobby', 'join_lobby', 'password_prompt', 'char_select', 'shop', 'auth']);
+      if (this.menuStack.some((m) => preGameMenus.has(m))) {
+        this.menuStack = this.menuStack.filter((m) => !preGameMenus.has(m));
+      }
+    }
+
     if (this.menuStack.length === 0) {
       return 'noop';
     }
@@ -983,7 +1018,9 @@ export class HUD {
 
       case 'shop': {
         this.hideShopModal();
-        this.showMainMenu();
+        if (!isInGame) {
+          this.showMainMenu();
+        }
         return 'handled';
       }
 
@@ -992,7 +1029,7 @@ export class HUD {
         const next = this.menuStack[this.menuStack.length - 1];
         if (next === 'pause') {
           this.pauseModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1008,7 +1045,7 @@ export class HUD {
         const next = this.menuStack[this.menuStack.length - 1];
         if (next === 'coop') {
           this.coopModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1019,7 +1056,7 @@ export class HUD {
         const next = this.menuStack[this.menuStack.length - 1];
         if (next === 'coop') {
           this.coopModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1027,7 +1064,9 @@ export class HUD {
 
       case 'coop': {
         this.hideCoopMenu();
-        this.showMainMenu();
+        if (!isInGame) {
+          this.showMainMenu();
+        }
         return 'handled';
       }
 
@@ -1036,7 +1075,7 @@ export class HUD {
         const next = this.menuStack[this.menuStack.length - 1];
         if (next === 'pause') {
           this.pauseModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1047,7 +1086,7 @@ export class HUD {
         const next = this.menuStack[this.menuStack.length - 1];
         if (next === 'pause') {
           this.pauseModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1057,7 +1096,7 @@ export class HUD {
         this.hideQuestsModal();
         if (this.isPaused || this.menuStack.includes('pause')) {
           this.pauseModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1067,7 +1106,7 @@ export class HUD {
         this.hideBattlePassModal();
         if (this.isPaused || this.menuStack.includes('pause')) {
           this.pauseModal.classList.remove('hidden');
-        } else {
+        } else if (!isInGame) {
           this.showMainMenu();
         }
         return 'handled';
@@ -1103,8 +1142,13 @@ export class HUD {
     this.questsUI.selectQuestChapter(chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'ch1_deadly_debut', chapter: number = 1, fromCharSelect: boolean = false) {
-    this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect);
+  public showQuestsModal(
+    selectedQuestId: string = 'ch1_deadly_debut',
+    chapter: number = 1,
+    fromCharSelect: boolean = false,
+    tabType: 'chapter' | 'rift_path' | 'weekly' = 'chapter'
+  ) {
+    this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect, tabType);
   }
 
   public setInGameHUDVisible(visible: boolean) {

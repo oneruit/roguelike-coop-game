@@ -313,6 +313,73 @@ export class SoundManager {
   }
 
   /**
+   * Sound when incoming damage is absorbed by player's energy armor
+   */
+  public static playShieldHit() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(680, now);
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+
+    osc.start(now);
+    osc.stop(now + 0.09);
+  }
+
+  /**
+   * Resonant crystalline shatter sound when player armor is completely broken (0)
+   */
+  public static playShieldBreak() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // 1. High crystalline crack
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(1150, now);
+    osc1.frequency.exponentialRampToValueAtTime(220, now + 0.16);
+
+    gain1.gain.setValueAtTime(0.25, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    osc1.connect(gain1);
+    gain1.connect(this.getMasterGain());
+    osc1.start(now);
+    osc1.stop(now + 0.17);
+
+    // 2. Low metallic pop
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(340, now);
+    osc2.frequency.exponentialRampToValueAtTime(60, now + 0.14);
+
+    gain2.gain.setValueAtTime(0.2, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+    osc2.connect(gain2);
+    gain2.connect(this.getMasterGain());
+    osc2.start(now);
+    osc2.stop(now + 0.15);
+  }
+
+  /**
    * Level up fanfare
    */
   public static playLevelUp() {

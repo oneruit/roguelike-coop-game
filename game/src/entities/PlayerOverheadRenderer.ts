@@ -3,6 +3,8 @@ import type { CharacterType } from './Player';
 export interface PlayerOverheadData {
   hp: number;
   maxHp: number;
+  shield?: number;
+  maxShield?: number;
   level: number;
   isDowned: boolean;
   reviveProgress: number;
@@ -129,14 +131,44 @@ export function renderPlayerOverhead(
       ctx.fill();
     }
 
-    // Numeric HP Text
+    // Armor / Shield layer overlaying HP
+    if (data.shield && data.shield > 0 && data.maxShield && data.maxShield > 0) {
+      const shieldPct = Math.max(0, Math.min(1, data.shield / data.maxShield));
+      const shieldW = (barW - 4) * shieldPct;
+      if (shieldW > 0) {
+        if (ctx.createLinearGradient) {
+          const sGrad = ctx.createLinearGradient(barX + 2, barY, barX + 2 + shieldW, barY);
+          sGrad.addColorStop(0, '#0284c7');
+          sGrad.addColorStop(0.5, '#06b6d4');
+          sGrad.addColorStop(1, '#38bdf8');
+          ctx.fillStyle = sGrad;
+        } else {
+          ctx.fillStyle = '#06b6d4';
+        }
+        ctx.beginPath();
+        ctx.roundRect(barX + 2, barY + 2, shieldW, barH - 4, (barH - 4) / 2);
+        ctx.fill();
+
+        // Shield glossy highlight
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.beginPath();
+        ctx.roundRect(barX + 4, barY + 2.5, Math.max(0, shieldW - 4), (barH - 4) * 0.38, (barH - 4) * 0.19);
+        ctx.fill();
+      }
+    }
+
+    // Numeric HP & Armor Text
     ctx.fillStyle = '#ffffff';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
     ctx.shadowBlur = 4;
     ctx.font = 'bold 11px "Cinzel", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${Math.ceil(data.hp)} / ${data.maxHp}`, w / 2, barY + barH / 2 + 1);
+    if (data.shield && data.shield > 0) {
+      ctx.fillText(`${Math.ceil(data.hp)} / ${data.maxHp} [🛡️ ${Math.ceil(data.shield)}]`, w / 2, barY + barH / 2 + 1);
+    } else {
+      ctx.fillText(`${Math.ceil(data.hp)} / ${data.maxHp}`, w / 2, barY + barH / 2 + 1);
+    }
     ctx.shadowBlur = 0;
   }
 }

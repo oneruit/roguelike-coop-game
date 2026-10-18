@@ -60,7 +60,8 @@ test('Time Crystal consumption from inventory', async (t) => {
     player.addRiftItem(RIFT_ITEMS.chronos_phylactery);
     assert.equal(player.getItemStacks('chronos_phylactery'), 2);
 
-    // Inflict lethal damage
+    // Inflict lethal damage (shield depleted)
+    player.shield = 0;
     player.hp = 10;
     const isDead1 = player.takeDamage(100);
     assert.equal(isDead1, false, 'Player should be saved from lethal damage');
@@ -173,7 +174,7 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
     return new LevelUpUI(ctx);
   }
 
-  await t.test('weapon grade is NOT offered when any weapon is below level 12', () => {
+  await t.test('weapon grade is NOT offered when weapons are below level 12, and IS offered individually once a weapon reaches 12', () => {
     const scene = new Scene();
     const player = new Player(scene, 'ronin');
     player.weapons = [
@@ -182,19 +183,26 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
       new OrbitingBarrierWeapon(),
       new GreatswordWeapon()
     ];
-    player.weapons[0].level = 12;
+    player.weapons[0].level = 10;
     player.weapons[1].level = 11;
-    player.weapons[2].level = 12;
+    player.weapons[2].level = 8;
     player.weapons[3].level = 9;
 
     assert.equal(player.areAllWeaponsMaxed(), false);
 
     const levelUpUI = createTestLevelUpUI(scene);
-    const options = levelUpUI.generateWeaponOptions(player);
+    const optionsBefore = levelUpUI.generateWeaponOptions(player);
 
-    assert.equal(options.length, 3, 'Must offer exactly 3 options');
-    const hasAwaken = options.some(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_'));
-    assert.equal(hasAwaken, false, 'No weapon grade should be offered when any weapon is < level 12');
+    assert.equal(optionsBefore.length, 3, 'Must offer exactly 3 options');
+    const hasAwakenBefore = optionsBefore.some(opt => opt.id.startsWith('awaken_') || opt.id.startsWith('awaken3_'));
+    assert.equal(hasAwakenBefore, false, 'No weapon grade should be offered when all weapons are < level 12');
+
+    // Once a weapon individually reaches level 12, awakening IS offered
+    player.weapons[0].level = 12;
+    const optionsAfter = levelUpUI.generateWeaponOptions(player);
+    assert.equal(optionsAfter.length, 3, 'Must offer exactly 3 options');
+    const hasAwakenAfter = optionsAfter.some(opt => opt.id === `awaken_${player.weapons[0].id}`);
+    assert.equal(hasAwakenAfter, true, 'Individual weapon awakening should be offered when weapon reaches level 12');
   });
 
   await t.test('weapon grade IS offered and gives exactly 3 choices when all weapons are level 12', () => {

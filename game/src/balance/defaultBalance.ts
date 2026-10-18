@@ -257,7 +257,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     },
     archer: {
       id: 'archer',
-      name: 'Эльф лучник',
+      name: 'Лучница',
       maxHp: 110,
       baseSpeed: 8.9,
       damageMultiplier: 1.35,
@@ -359,9 +359,9 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     bison: {
       id: 'bison',
       name: 'Белый бизон-убийца',
-      hp: 800,
-      speed: 4.8,
-      damage: 40,
+      hp: 480,
+      speed: 3.9,
+      damage: 34,
       gemType: 'red',
       description: 'Быстрый смертоносный танк (чардж-атаки)'
     }
@@ -557,16 +557,16 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       baseValue: 3.0,
       scaling: '+3% шанс крита за стак'
     },
-    aegis_battery: {
-      id: 'aegis_battery',
-      name: 'Гипер-Щит Защиты',
+    aegis_exoskeleton: {
+      id: 'aegis_exoskeleton',
+      name: 'Экзоскелет «Эгида»',
       rarity: 'uncommon',
-      icon: '💠',
+      icon: '🛡️',
       color: '#22c55e',
-      description: 'Постоянно генерирует энергощит до +50 HP, восстанавливающийся вне боя',
-      stackText: '+50 макс. емкости щита за стак',
-      baseValue: 50,
-      scaling: '+50 к емкости щита'
+      description: 'Ускоряет перезарядку брони на -0.25 сек и повышает скорость восстановления на +25%',
+      stackText: '-0.25с задержки и +25% скорости за стак (макс. 5)',
+      baseValue: 0.25,
+      scaling: '-0.25с задержки, +25% скорости регена'
     },
     bio_leech: {
       id: 'bio_leech',
@@ -622,6 +622,17 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       stackText: '+18% урона за стак',
       baseValue: 18,
       scaling: '+18% урон за стак'
+    },
+    phase_carapace: {
+      id: 'phase_carapace',
+      name: 'Фазовый Панцирь',
+      rarity: 'rare',
+      icon: '💠',
+      color: '#38bdf8',
+      description: 'Увеличивает максимальную емкость брони на +50 (максимум до 350)',
+      stackText: '+50 к макс. броне за стак (макс. 350)',
+      baseValue: 50,
+      scaling: '+50 к макс. броне (макс. 350)'
     },
     singularity_core: {
       id: 'singularity_core',

@@ -56,13 +56,14 @@ export type RiftItemId =
   | 'chain_lightning'
   | 'plasma_detonator'
   | 'crit_visor'
-  | 'aegis_battery'
+  | 'aegis_exoskeleton'
   | 'bio_leech'
   | 'overclock_module'
   // Rare
   | 'crit_lens'
   | 'heavy_hollowpoint'
   | 'energy_amplifier'
+  | 'phase_carapace'
   // Legendary
   | 'singularity_core'
   | 'orbital_strike'

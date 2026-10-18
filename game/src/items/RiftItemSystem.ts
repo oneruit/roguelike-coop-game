@@ -13,13 +13,14 @@ export type RiftItemId =
   | 'chain_lightning'
   | 'plasma_detonator'
   | 'crit_visor'
-  | 'aegis_battery'
+  | 'aegis_exoskeleton'
   | 'bio_leech'
   | 'overclock_module'
   // Rare (Редкие / Синие)
   | 'crit_lens'
   | 'heavy_hollowpoint'
   | 'energy_amplifier'
+  | 'phase_carapace'
   // Legendary (Легендарные / Оранжевые)
   | 'singularity_core'
   | 'orbital_strike'
@@ -116,14 +117,14 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     description: '+3.0% к шансу нанести критический удар.',
     stackText: '+3.0% шанс за стак'
   },
-  aegis_battery: {
-    id: 'aegis_battery',
-    name: 'Гипер-Щит Защиты',
+  aegis_exoskeleton: {
+    id: 'aegis_exoskeleton',
+    name: 'Экзоскелет «Эгида»',
     rarity: 'uncommon',
-    icon: '💠',
+    icon: '🛡️',
     color: '#22c55e',
-    description: 'Постоянно генерирует энергощит до +50 HP, восстанавливающийся вне боя.',
-    stackText: '+50 макс. емкости щита за стак'
+    description: 'Ускоряет перезарядку брони на -0.25 сек и повышает скорость восстановления на +25%.',
+    stackText: '-0.25с задержки и +25% скорости за стак (макс. 5)'
   },
   bio_leech: {
     id: 'bio_leech',
@@ -171,6 +172,15 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     color: '#38bdf8',
     description: '+12% к общему урону всех видов оружия героя.',
     stackText: '+12% урон за стак'
+  },
+  phase_carapace: {
+    id: 'phase_carapace',
+    name: 'Фазовый Панцирь',
+    rarity: 'rare',
+    icon: '💠',
+    color: '#38bdf8',
+    description: 'Увеличивает максимальную емкость брони на +50 (максимум до 350).',
+    stackText: '+50 к макс. броне за стак (макс. 350)'
   },
 
   // --- Legendary (Легендарные) ---
@@ -250,7 +260,7 @@ export const COMMON_ITEMS: RiftItemId[] = [
 
 export const UNCOMMON_ITEMS: RiftItemId[] = [
   'crit_visor',
-  'aegis_battery',
+  'aegis_exoskeleton',
   'bio_leech',
   'overclock_module'
 ];
@@ -258,7 +268,8 @@ export const UNCOMMON_ITEMS: RiftItemId[] = [
 export const RARE_ITEMS: RiftItemId[] = [
   'crit_lens',
   'heavy_hollowpoint',
-  'energy_amplifier'
+  'energy_amplifier',
+  'phase_carapace'
 ];
 
 export const LEGENDARY_ITEMS: RiftItemId[] = [
@@ -312,9 +323,16 @@ export function rollChestDropPair(
   stageNumber: number,
   rng: () => number = Math.random,
   excludeChronos: boolean = false,
-  isItemMaxed?: (id: string) => boolean
+  isItemMaxed?: (id: string) => boolean,
+  chestTier?: 'small' | 'large' | 'legendary'
 ): [RiftItemDef, RiftItemDef] {
-  const item1 = rollRiftItemByStage(stageNumber, rng, excludeChronos, isItemMaxed);
+  let item1: RiftItemDef;
+  // Large chests grant Phase Carapace to incrementally scale player armor up to 350 max
+  if (chestTier === 'large' && isItemMaxed && !isItemMaxed('phase_carapace') && rng() < 0.65) {
+    item1 = RIFT_ITEMS['phase_carapace'];
+  } else {
+    item1 = rollRiftItemByStage(stageNumber, rng, excludeChronos, isItemMaxed);
+  }
   const excludeForSecond = excludeChronos || item1.id === 'chronos_phylactery';
   let item2 = rollRiftItemByStage(stageNumber, rng, excludeForSecond, isItemMaxed);
   let attempts = 0;

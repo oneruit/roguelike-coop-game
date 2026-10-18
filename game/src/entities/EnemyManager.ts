@@ -123,9 +123,9 @@ export class EnemyManager {
       type: 'bison',
       name: 'Белый бизон-убийца',
       texturePrefix: '/textures/monsters/monster_bison',
-      hp: 720,
-      speed: 4.8,
-      damage: 35,
+      hp: 480,
+      speed: 3.9,
+      damage: 34,
       width: 2.4,
       height: 2.4,
       gemType: 'red',
@@ -338,8 +338,13 @@ export class EnemyManager {
       this.spawnTieredBoss(playerPos, tier);
     }
 
-    // Dynamic spawn interval (gets faster over time, down to 0.14s per wave)
-    const currentInterval = Math.max(0.14, this.spawnInterval - (this.gameTime / 240) * 0.75);
+    // Progressive spawn interval: starts at this.spawnInterval (1.0s), accelerates smoothly through early game
+    // (~0.47s at 4 min, ~0.35s at 8 min, ~0.26s at 10 min), and surges down to 0.14s-0.12s
+    // from minute 15+ for high-intensity late-game swarm pressure.
+    const tMin = this.gameTime / 60;
+    const currentInterval = tMin < 15
+      ? Math.max(0.18, this.spawnInterval / (1 + tMin * 0.28))
+      : Math.max(0.12, 0.18 - (tMin - 15) * 0.006);
 
     if (this.spawnTimer >= currentInterval) {
       this.spawnTimer = 0;
@@ -759,15 +764,15 @@ export class EnemyManager {
       else if (r < 0.75) types = ['brute'];
       else types = ['skeleton', 'cactus'];
     } else if (time < 300) {
-      // 4 - 5 min: Charging Bisons, Brutes, Scorpions
+      // 4 - 5 min: Introduction of Bisons as heavy vanguard, supported by Brutes, Scorpions, and XP fodder
       const r = Math.random();
-      if (r < 0.35) types = ['bison'];
-      else if (r < 0.7) types = ['brute', 'scorpion'];
-      else types = ['ghost', 'crawler'];
+      if (r < 0.18) types = ['bison'];
+      else if (r < 0.58) types = ['brute', 'scorpion'];
+      else types = ['skeleton', 'ghost', 'crawler'];
     } else if (time < 600) {
       // 5 - 10 min: Heavy frontline (Bisons, Brutes) with flankers
       const r = Math.random();
-      if (r < 0.4) types = ['bison', 'brute'];
+      if (r < 0.35) types = ['bison', 'brute'];
       else if (r < 0.7) types = ['scorpion', 'skeleton'];
       else types = ['ghost', 'crawler'];
     } else if (time < 900) {

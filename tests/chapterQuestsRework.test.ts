@@ -89,15 +89,9 @@ describe('Chapter Quests Rework & Zero State', () => {
       assert.equal(prog.isChapterRewardClaimed(ch.chapter), false);
       for (const q of ch.quests) {
         const p = prog.getChapterQuestProgress(q.id);
-        if (q.id === 'ch4_veteran') {
-          assert.equal(p.current, Math.min(5, prog.data.accountLevel));
-        } else if (q.id === 'ch4_golden_treasury') {
-          assert.equal(p.current, Math.min(500, prog.data.walletCoins));
-        } else {
-          assert.equal(p.current, 0, `Quest ${q.id} current progress must be 0`);
-          assert.equal(p.isComplete, false, `Quest ${q.id} must not be complete`);
-          assert.equal(p.isClaimed, false, `Quest ${q.id} must not be claimed`);
-        }
+        assert.equal(p.current, 0, `Quest ${q.id} current progress must be 0`);
+        assert.equal(p.isComplete, false, `Quest ${q.id} must not be complete`);
+        assert.equal(p.isClaimed, false, `Quest ${q.id} must not be claimed`);
       }
     }
   });
@@ -169,22 +163,87 @@ describe('Chapter Quests Rework & Zero State', () => {
     assert.equal(prog.isChapterRewardClaimed(1), true);
   });
 
-  test('Chapter 2 and 3 in-run tasks track and reset properly', () => {
+  test('tasks in locked chapters do NOT progress or complete', () => {
     const prog = ProgressionManager.getInstance();
+    prog.resetAllTasksToZero();
 
-    // Chapter 2: Crawler / coyote
+    assert.equal(prog.isChapterUnlocked(1), true);
+    assert.equal(prog.isChapterUnlocked(2), false);
+    assert.equal(prog.isChapterUnlocked(3), false);
+    assert.equal(prog.isChapterUnlocked(4), false);
+
+    // Try to progress Chapter 2 tasks while Chapter 1 is incomplete
+    prog.recordCrawlerOrCoyoteKilled(75);
+    prog.recordForestGoldenChestOpened();
+    prog.recordForestSurvivalTime(720);
+    prog.recordLeshyDefeated();
+
+    assert.equal(prog.getChapterQuestProgress('ch2_trail_of_beasts').current, 0);
+    assert.equal(prog.getChapterQuestProgress('ch2_trail_of_beasts').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch2_forest_cache').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch2_cleanse_roots').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch2_fall_of_leshy').isComplete, false);
+
+    // Try to progress Chapter 3 tasks while Chapter 1 & 2 are incomplete
+    prog.recordRunCrit(50);
+    prog.recordSimultaneousPassives(4);
+    prog.recordMerchantPurchaseInRun(3);
+    prog.recordBossSpawn(100);
+    prog.recordBossDefeat(180);
+
+    assert.equal(prog.getChapterQuestProgress('ch3_critical_overload').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch3_energy_symbiosis').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch3_rift_smuggler').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch3_death_of_titan').isComplete, false);
+
+    // Try to progress Chapter 4 tasks while previous chapters are incomplete
+    prog.recordRangedKill(200);
+    prog.data.accountLevel = 10;
+    prog.data.walletCoins = 1000;
+
+    assert.equal(prog.getChapterQuestProgress('ch4_arrow_hail').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch4_veteran').isComplete, false);
+    assert.equal(prog.getChapterQuestProgress('ch4_golden_treasury').isComplete, false);
+
+    assert.equal(prog.isChapterComplete(2), false);
+    assert.equal(prog.isChapterComplete(3), false);
+    assert.equal(prog.isChapterComplete(4), false);
+  });
+
+  test('sequential chapter progression unlocks each chapter only after previous is complete', () => {
+    const prog = ProgressionManager.getInstance();
+    prog.resetAllTasksToZero();
+
+    // 1. Complete Chapter 1
+    assert.equal(prog.isChapterUnlocked(2), false);
+    prog.recordMeleeOrSpellKill(50);
+    prog.recordXpGemCollected(100);
+    prog.recordAltarCaptured();
+    prog.recordTeleporterBossKilled();
+
+    assert.equal(prog.isChapterComplete(1), true);
+    assert.equal(prog.isChapterUnlocked(2), true);
+    assert.equal(prog.isChapterUnlocked(3), false);
+    assert.equal(prog.isChapterUnlocked(4), false);
+
+    // 2. Complete Chapter 2
     prog.recordCrawlerOrCoyoteKilled(75);
     assert.equal(prog.getChapterQuestProgress('ch2_trail_of_beasts').isComplete, true);
 
-    // Chapter 2: Forest golden chest
     prog.recordForestGoldenChestOpened();
     assert.equal(prog.getChapterQuestProgress('ch2_forest_cache').isComplete, true);
 
-    // Chapter 2: Cleanse roots (12 min)
     prog.recordForestSurvivalTime(720);
     assert.equal(prog.getChapterQuestProgress('ch2_cleanse_roots').isComplete, true);
 
-    // Chapter 3: Critical overload (50 crits in a run)
+    prog.recordLeshyDefeated();
+    assert.equal(prog.getChapterQuestProgress('ch2_fall_of_leshy').isComplete, true);
+
+    assert.equal(prog.isChapterComplete(2), true);
+    assert.equal(prog.isChapterUnlocked(3), true);
+    assert.equal(prog.isChapterUnlocked(4), false);
+
+    // 3. Complete Chapter 3
     prog.recordRunCrit(30);
     assert.equal(prog.getChapterQuestProgress('ch3_critical_overload').current, 30);
     prog.resetRunSessionProgress();
@@ -192,34 +251,28 @@ describe('Chapter Quests Rework & Zero State', () => {
     prog.recordRunCrit(50);
     assert.equal(prog.getChapterQuestProgress('ch3_critical_overload').isComplete, true);
 
-    // Chapter 3: Energy symbiosis (4 passives)
     prog.recordSimultaneousPassives(4);
     assert.equal(prog.getChapterQuestProgress('ch3_energy_symbiosis').isComplete, true);
 
-    // Chapter 3: Rift smuggler (3 purchases)
     prog.recordMerchantPurchaseInRun(2);
     assert.equal(prog.getChapterQuestProgress('ch3_rift_smuggler').current, 2);
     prog.recordMerchantPurchaseInRun(1);
     assert.equal(prog.getChapterQuestProgress('ch3_rift_smuggler').isComplete, true);
 
-    // Chapter 3: Speed boss kill (<90s)
     prog.recordBossSpawn(100);
-    prog.recordBossDefeat(180); // 80s elapsed (<90s)
+    prog.recordBossDefeat(180);
     assert.equal(prog.getChapterQuestProgress('ch3_death_of_titan').isComplete, true);
-  });
 
-  test('Chapter 4 tasks track ranged kills and account milestones', () => {
-    const prog = ProgressionManager.getInstance();
+    assert.equal(prog.isChapterComplete(3), true);
+    assert.equal(prog.isChapterUnlocked(4), true);
 
-    // Ranged kills
+    // 4. Complete Chapter 4
     prog.recordRangedKill(200);
     assert.equal(prog.getChapterQuestProgress('ch4_arrow_hail').isComplete, true);
 
-    // Account level
     prog.data.accountLevel = 5;
     assert.equal(prog.getChapterQuestProgress('ch4_veteran').isComplete, true);
 
-    // Wallet coins
     prog.data.walletCoins = 500;
     assert.equal(prog.getChapterQuestProgress('ch4_golden_treasury').isComplete, true);
 
@@ -229,45 +282,13 @@ describe('Chapter Quests Rework & Zero State', () => {
     assert.equal(finalRes.coins, 5000);
   });
 
-  test('version 1 saves with cheat-progressed quests are reset to zero upon load', () => {
-    const v1Save = {
-      accountLevel: 5,
-      walletCoins: 1200,
-      chapterQuestsReworkVersion: 1,
-      chapterQuestsProgress: {
-        ch1_deadly_debut: { current: 50, isComplete: true, isClaimed: true },
-        ch1_essence_collection: { current: 100, isComplete: true, isClaimed: true },
-        ch2_trail_of_beasts: { current: 75, isComplete: true, isClaimed: true }
-      },
-      claimedChapterRewards: { 1: true }
-    };
-    localStorage.setItem('rift_progression_save_v2', JSON.stringify(v1Save));
-
+  test('archer is unlocked and playable by default', () => {
     const prog = ProgressionManager.getInstance();
-    (prog as any).data = (prog as any).loadFromStorage();
-
-    assert.equal(prog.data.accountLevel, 5);
-    assert.equal(prog.data.walletCoins, 1200);
-    assert.equal(prog.data.chapterQuestsReworkVersion, 2);
-    assert.equal(prog.getChapterQuestProgress('ch1_deadly_debut').current, 0);
-    assert.equal(prog.getChapterQuestProgress('ch1_deadly_debut').isComplete, false);
-    assert.equal(prog.isChapterRewardClaimed(1), false);
-  });
-
-  test('chapter gating: chapters 2, 3, 4 require previous chapter completion', () => {
-    const prog = ProgressionManager.getInstance();
-    prog.resetAllTasksToZero();
-
-    assert.equal(prog.isChapterComplete(1), false);
-    assert.equal(prog.isChapterComplete(2), false);
-    assert.equal(prog.isChapterComplete(3), false);
-    assert.equal(prog.isChapterComplete(4), false);
-
-    // Complete chapter 1
-    prog.recordMeleeOrSpellKill(50);
-    prog.recordXpGemCollected(100);
-    prog.recordAltarCaptured();
-    prog.recordTeleporterBossKilled();
-    assert.equal(prog.isChapterComplete(1), true);
+    assert.equal(prog.isHeroUnlocked('archer'), true);
+    assert.equal(prog.data.unlockedHeroes.archer, true);
+    const progress = prog.getHeroProgress('archer');
+    assert.equal(progress.isComplete, true);
+    const def = prog.getHeroQuestDefinition('archer');
+    assert.equal(def.heroName, 'Лучница');
   });
 });

@@ -43,7 +43,7 @@
 /* Game Title Logo Banner (Top Center) */
 .main-menu-game-title {
   position: absolute;
-  top: clamp(14px, 2.5vh, 28px);
+  top: clamp(8px, 1.2vh, 16px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
@@ -55,346 +55,249 @@
 }
 
 .main-menu-logo-img {
-  width: clamp(380px, 42vw, 560px);
+  width: clamp(380px, 40vw, 540px);
   height: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.85)) drop-shadow(0 0 35px rgba(0, 168, 255, 0.55));
-  animation: riftLightningFlicker 6.5s infinite ease-in-out;
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 32px rgba(126, 34, 206, 0.6));
 }
 
-@keyframes riftLightningFlicker {
-  0%, 46%, 50%, 54%, 100% {
-    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.65)) drop-shadow(0 0 22px rgba(0, 168, 255, 0.4));
-    transform: scale(1);
-  }
-  48%, 52% {
-    filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.98)) drop-shadow(0 0 42px rgba(0, 229, 255, 0.88)) brightness(1.2);
-    transform: scale(1.02);
-  }
-  49% {
-    filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.7)) drop-shadow(0 0 26px rgba(0, 168, 255, 0.45));
-    transform: scale(1.005);
-  }
-}
-
-/* Right Side: Quests Sidebar (Daily & Weekly) */
-.main-menu-quests-sidebar {
+/* ==========================================================================
+   ACTIVE EVENTS WIDGET (AUTHENTIC BATTLE PASS FRAME STYLE & LOWERED POSITION)
+   ========================================================================== */
+.active-events-widget {
   position: absolute;
-  right: clamp(16px, 3.2vw, 44px);
-  top: clamp(62px, 8.5vh, 88px);
+  right: clamp(16px, 2.6vw, 36px);
+  top: clamp(84px, 10.5vh, 108px); /* Lowered ~35px under the player profile pill */
   z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(10px, 1.6vh, 18px);
+  width: clamp(330px, 25.5vw, 410px);
+  aspect-ratio: 487 / 215;
   pointer-events: auto;
   user-select: none;
-}
-
-/* Individual Quest Card */
-.quest-sidebar-card {
-  position: relative;
-  width: clamp(270px, 22.5vw, 350px);
-  aspect-ratio: 624 / 468;
-  background-image: url('/textures/quests/ui_quest_card_panel.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  display: flex;
-  flex-direction: column;
-  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.75));
-  box-sizing: border-box;
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.95));
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
 }
 
-.quest-sidebar-card:hover {
-  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.85)) brightness(1.03);
+.active-events-widget:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.98)) drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
 }
 
-/* Hanging Wooden Plaque Header */
-.quest-card-header {
-  height: 22.5%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;
-  cursor: pointer;
-}
-
-.quest-card-header-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(11.5px, 0.98vw, 15px);
-  font-weight: 900;
-  color: #fff6e8;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.1;
-  text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.95),
-    1px 1px 0 #1c1108,
-    -1px -1px 0 #1c1108,
-    1px -1px 0 #1c1108,
-    -1px 1px 0 #1c1108;
-  transition: color 0.16s ease, text-shadow 0.16s ease;
-}
-
-.quest-card-header:hover .quest-card-header-title {
-  color: #fde68a;
-  text-shadow: 
-    0 0 10px rgba(251, 191, 36, 0.8),
-    0 2px 4px rgba(0, 0, 0, 0.95),
-    1px 1px 0 #1c1108,
-    -1px -1px 0 #1c1108;
-}
-
-/* Card Body & Subtitle */
-.quest-card-body {
-  flex: 1;
-  padding: 1.5% 6% 4.5% 6%;
+.active-events-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-image: url('/textures/ui/events_panel_bg.png?v=2');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  padding: 19px 30px 17px 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-sizing: border-box;
 }
 
-.quest-card-subtitle {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(9.5px, 0.72vw, 11px);
-  font-weight: 500;
-  color: #8b9bb4;
-  text-align: center;
-  letter-spacing: 0.2px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Items List */
-.quest-card-items {
-  flex: 1;
+.active-events-header {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: clamp(6px, 0.9vh, 10px);
+  align-items: center;
+  margin-bottom: 2px;
 }
 
-/* Quest Row */
-.quest-card-item-row {
+.active-events-header-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(11.5px, 0.9vw, 12.5px);
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(192, 132, 252, 0.9), 0 2px 4px #000;
   display: flex;
   align-items: center;
-  gap: clamp(8px, 0.75vw, 12px);
-  background: rgba(18, 24, 29, 0.4);
-  border-radius: 6px;
-  padding: 2px 4px;
-  box-sizing: border-box;
-  transition: background 0.16s ease, transform 0.16s ease;
+  gap: 6px;
+  padding-bottom: 3px;
+}
+
+.active-events-header-divider {
+  width: 90%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.7) 25%, rgba(216, 180, 254, 0.9) 50%, rgba(168, 85, 247, 0.7) 75%, transparent 100%);
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
+}
+
+.active-events-diamond {
+  color: #c084fc;
+  font-size: 11px;
+  filter: drop-shadow(0 0 6px #c084fc);
+}
+
+.active-events-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+}
+
+.active-event-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 9px;
+  background: linear-gradient(135deg, rgba(30, 20, 52, 0.75) 0%, rgba(16, 10, 30, 0.9) 100%);
+  border: 1.5px solid #4c1d95;
+  border-radius: 8px;
   cursor: pointer;
-  position: relative;
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.85),
+    inset 0 0 10px rgba(168, 85, 247, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.quest-card-item-row:hover {
-  background: rgba(30, 42, 52, 0.75);
-  transform: translateX(2px);
+.active-event-card:hover {
+  background: linear-gradient(135deg, rgba(46, 26, 80, 0.85) 0%, rgba(26, 15, 48, 0.95) 100%);
+  border-color: #c084fc;
+  transform: translateX(4px);
+  box-shadow: 
+    inset 0 1px 4px rgba(255, 255, 255, 0.2),
+    0 0 18px rgba(168, 85, 247, 0.45),
+    0 6px 14px rgba(0, 0, 0, 0.7);
 }
 
-/* Left Icon Slot */
-.quest-card-slot.icon-slot {
-  width: clamp(38px, 2.8vw, 45px);
-  height: clamp(38px, 2.8vw, 45px);
-  flex-shrink: 0;
+.event-card-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #180c2c 0%, #0d0619 100%);
+  border: 1.5px solid #6b21a8;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 10px rgba(168, 85, 247, 0.3);
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
-.quest-card-slot img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-  display: block;
+.event-card-emoji {
+  font-size: 16px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
-/* Quest Info Center */
-.quest-card-info {
+.event-card-icon-box.rift-glow {
+  border-color: #0284c7;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 10px rgba(14, 165, 233, 0.4);
+}
+
+.event-card-icon-box.weekly-glow {
+  border-color: #d97706;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.active-event-card:hover .event-card-icon-box {
+  transform: scale(1.08);
+  border-color: #e9d5ff;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.7);
+}
+
+.event-card-info {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  justify-content: center;
 }
 
-.quest-card-name {
+.event-card-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.event-card-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(11.5px, 0.88vw, 13px);
+  font-size: 11.5px;
   font-weight: 800;
   color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.2px;
-  text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.95),
-    1px 1px 0 rgba(0, 0, 0, 0.85);
+  transition: color 0.16s ease;
 }
 
-/* Progress Bar */
-.quest-card-bar-wrap {
-  position: relative;
-  width: 100%;
-  height: clamp(12px, 0.92vw, 15px);
-  background: #14191c;
-  border: 1.5px solid #3c4950;
-  border-radius: 3px;
-  overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9);
+.active-event-card:hover .event-card-title {
+  color: #e9d5ff;
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.8);
 }
 
-.quest-card-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(180deg, #ff7a3d 0%, #e65100 50%, #b23b00 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 8px rgba(230, 81, 0, 0.4);
-  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.quest-card-bar-fill.completed {
-  background: linear-gradient(180deg, #ff8c42 0%, #eb5b14 50%, #ba3a00 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 10px rgba(255, 122, 61, 0.6);
-}
-
-.quest-card-bar-val {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.event-card-sub {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(9.5px, 0.72vw, 11px);
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-  text-shadow: 
-    0 1px 2px #000,
-    1px 0 0 #000,
-    -1px 0 0 #000,
-    0 -1px 0 #000;
-  pointer-events: none;
-}
-
-/* Right Reward Slot */
-.quest-card-reward {
-  position: relative;
-  width: clamp(38px, 2.8vw, 45px);
-  height: clamp(38px, 2.8vw, 45px);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.16s ease, filter 0.16s ease;
-}
-
-.quest-card-reward img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-  display: block;
-}
-
-.quest-card-reward-val {
-  position: absolute;
-  right: 4px;
-  bottom: 2px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(10px, 0.76vw, 11.5px);
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1;
-  text-shadow: 
-    0 1px 2px #000,
-    1px 1px 0 #000,
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000;
-  pointer-events: none;
-}
-
-/* Claimable & Claimed States */
-.quest-card-item-row.claimable {
-  background: rgba(60, 45, 15, 0.45);
-}
-
-.quest-card-item-row.claimable:hover {
-  background: rgba(85, 62, 20, 0.65);
-}
-
-.quest-card-item-row.claimable .quest-card-reward {
-  animation: rewardPulseGlow 1.8s infinite ease-in-out;
-}
-
-@keyframes rewardPulseGlow {
-  0%, 100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 5px #f59e0b) brightness(1.05);
-  }
-  50% {
-    transform: scale(1.08);
-    filter: drop-shadow(0 0 12px #fbbf24) brightness(1.25);
-  }
-}
-
-.quest-card-claim-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 8px;
-  font-weight: 900;
-  padding: 1px 4px;
-  border-radius: 4px;
-  border: 1px solid #34d399;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  letter-spacing: 0.3px;
-  pointer-events: none;
-}
-
-.quest-card-item-row.claimed {
-  opacity: 0.75;
-}
-
-.quest-card-item-row.claimed .quest-card-reward {
-  filter: grayscale(0.2) brightness(0.85);
-}
-
-.quest-card-claimed-check {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #10b981;
-  color: #ffffff;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 9.5px;
-  font-weight: 900;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-  border: 1px solid #34d399;
+  font-weight: 500;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
+.event-card-reward-tag {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #7dd3fc;
+  margin-top: 2px;
+  letter-spacing: 0.2px;
+}
+
+.event-card-timer {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1.5px 6px;
+  border-radius: 5px;
+  background: rgba(2, 132, 199, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  color: #38bdf8;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.7);
+  white-space: nowrap;
+}
+
+.event-card-counter {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1.5px 6px;
+  border-radius: 5px;
+  background: rgba(217, 119, 6, 0.25);
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+  white-space: nowrap;
+}
+
+.event-card-arrow {
+  font-size: 18px;
+  font-weight: 900;
+  color: #a855f7;
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+  margin-left: auto;
+  padding-left: 2px;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.active-event-card:hover .event-card-arrow {
+  transform: translateX(3px);
+  color: #e9d5ff;
+  text-shadow: 0 0 12px #c084fc;
+}
+
+@media (max-width: 950px) {
+  .active-events-widget {
+    display: none !important;
+  }
+}
 
 /* ==========================================================================
    BATTLE PASS (TOP-LEFT MAIN MENU & FULL MODAL & GAME OVER)
@@ -460,10 +363,10 @@
 /* Track Section */
 .bp-track-section {
   position: absolute;
-  top: 45%;
+  top: 48.37%;
   left: 0;
   width: 100%;
-  height: 12%;
+  height: 0;
   pointer-events: none;
   z-index: 2;
 }
@@ -476,9 +379,9 @@
 .bp-progress-bar-container {
   position: absolute;
   top: 0;
-  left: 15.6%;
+  left: 15.4%;
   width: 75%;
-  height: 100%;
+  height: 0;
 }
 
 .bp-milestones {
@@ -486,31 +389,31 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 0;
   pointer-events: none;
 }
 
 .bp-milestone {
   position: absolute;
+  top: -26px;
   display: flex;
   flex-direction: column;
   align-items: center;
   transform: translateX(-50%);
   pointer-events: auto;
   cursor: pointer;
-  opacity: 0.85;
+  opacity: 0.9;
   white-space: nowrap;
   transition: opacity 0.2s ease, filter 0.2s ease, transform 0.16s ease;
+  z-index: 3;
 }
 
 .bp-m-lvl10 {
   left: 64.3%;
-  top: -16px;
 }
 
 .bp-m-lvl15 {
   left: 96%;
-  top: -16px;
 }
 
 .bp-m-label {
@@ -522,21 +425,21 @@
   text-shadow: 0 1px 2px #000;
   line-height: 1;
   white-space: nowrap;
+  margin-bottom: 2px;
 }
 
 .bp-m-chest {
-  width: clamp(18px, 1.35vw, 22px);
-  height: clamp(18px, 1.35vw, 22px);
+  width: clamp(26px, 2vw, 32px);
+  height: clamp(26px, 2vw, 32px);
   object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.85));
   transition: transform 0.16s ease, filter 0.16s ease;
-  margin-top: 1px;
 }
 
 .bp-milestone:hover .bp-m-chest {
-  transform: scale(1.2);
-  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.9));
+  transform: scale(1.18);
+  filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.95)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.9));
 }
 
 .bp-milestone.reached {
@@ -549,27 +452,31 @@
 }
 
 .bp-milestone.reached .bp-m-chest {
-  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.95)) drop-shadow(0 2px 4px #000);
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.95)) drop-shadow(0 2px 5px #000);
 }
 
 .bp-bar-track {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
   left: 0;
+  transform: translateY(-50%);
   width: 100%;
-  height: 5px;
+  height: clamp(16px, 1.25vw, 20px);
   background: transparent;
   border: none;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .bp-bar-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(180deg, #f0abfc 0%, #c084fc 35%, #9333ea 70%, #6b21a8 100%);
-  box-shadow: 0 0 8px rgba(192, 132, 252, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
+  background-image: url('/textures/ui/bp_bar_gem_tile.png');
+  background-repeat: repeat-x;
+  background-position: left center;
+  background-size: auto 100%;
+  image-rendering: auto;
+  filter: drop-shadow(0 0 6px rgba(216, 70, 239, 0.9));
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -657,17 +564,7 @@
 }
 
 .bp-slot-lvl {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(8px, 0.62vw, 9.5px);
-  font-weight: 800;
-  color: #cbd5e1;
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 2px #000;
-  line-height: 1;
-  margin-top: 1px;
-  pointer-events: none;
-  white-space: nowrap;
-  transition: color 0.16s ease, text-shadow 0.16s ease;
+  display: none !important;
 }
 
 .bp-slot-card:hover .bp-slot-lvl {
@@ -892,16 +789,8 @@
   transform: translateY(1px);
 }
 
-/* ==========================================================================
-   CO-OP MODE MODAL
-   ========================================================================== */
-.coop-menu-card {
-  max-width: 480px !important;
-  width: 90vw !important;
-  padding: 34px 28px !important;
-  border-color: rgba(168, 85, 247, 0.4) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(168, 85, 247, 0.22) !important;
-}
+/* Co-op mode styles are located in lobby.css */
+
 
 .pause-card {
   max-width: 480px !important;
@@ -991,16 +880,26 @@
 /* ==========================================================================
    Dark Fantasy ARPG Raster Menu Buttons
    ========================================================================== */
-.main-menu-buttons {
+.main-menu-buttons,
+.main-menu-card .main-menu-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   align-items: flex-start;
 }
 
+.main-menu-buttons .menu-btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .main-menu-action-btn {
-  width: clamp(260px, 24vw, 340px);
-  height: clamp(56px, 6.6vh, 70px);
+  width: clamp(250px, 21.5vw, 315px);
+  height: clamp(48px, 5.2vh, 56px);
   background: url('/textures/ui/btn_action_strip.png') 0 0 / 100% 400% no-repeat;
   border: none;
   cursor: pointer;
@@ -1010,18 +909,19 @@
   color: #fef08a;
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
-  letter-spacing: 3px;
-  font-size: 15px;
-  text-shadow: 0 0 12px rgba(245, 158, 11, 0.75), 0 2px 4px rgba(0, 0, 0, 0.85);
+  letter-spacing: 1.8px;
+  font-size: clamp(13px, 1.25vw, 14.5px);
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.75), 0 2px 4px rgba(0, 0, 0, 0.9);
   transition: filter 0.2s, transform 0.15s;
   user-select: none;
   box-sizing: border-box;
+  padding: 0 18px;
 }
 
 .main-menu-action-btn:hover {
   background-position: 0 33.33%;
   filter: drop-shadow(0 0 18px rgba(249, 115, 22, 0.95));
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .main-menu-action-btn:active {
@@ -1029,30 +929,88 @@
   transform: scale(0.97);
 }
 
+.main-menu-action-btn.btn-resume-run {
+  height: clamp(52px, 5.8vh, 62px);
+  margin-bottom: clamp(12px, 1.6vh, 18px);
+  background: url('/textures/ui/btn_resume_rift_blank.png') center center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 12px rgba(234, 88, 12, 0.45));
+}
+
+.main-menu-action-btn.btn-resume-run:hover {
+  background-position: center center;
+  filter: brightness(1.15) drop-shadow(0 0 20px rgba(249, 115, 22, 0.9));
+  transform: scale(1.02);
+}
+
+.main-menu-action-btn.btn-resume-run:active {
+  background-position: center center;
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.main-menu-action-btn.btn-resume-run .menu-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.main-menu-action-btn.btn-resume-run .menu-btn-title {
+  color: #ffffff;
+  font-size: clamp(12.5px, 1.15vw, 14px);
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 2px 4px #000000;
+  white-space: nowrap;
+}
+
+.main-menu-action-btn.btn-resume-run .menu-btn-badge {
+  color: #fde047;
+  font-size: clamp(9.5px, 0.85vw, 10.5px);
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(217, 119, 6, 0.7), 0 1px 3px #000000;
+  opacity: 0.95;
+  white-space: nowrap;
+}
+
 .main-menu-gothic-btn {
-  width: clamp(240px, 22vw, 320px);
-  height: clamp(48px, 5.5vh, 60px);
+  width: clamp(250px, 21.5vw, 315px);
+  height: clamp(43px, 4.7vh, 49px);
   background: url('/textures/ui/btn_gothic_menu_strip.png') 0 0 / 100% 400% no-repeat;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e2e8f0;
+  color: #f8fafc;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  letter-spacing: 2.2px;
-  font-size: 13px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  font-weight: 800;
+  letter-spacing: 1.25px;
+  font-size: clamp(11.5px, 1.05vw, 12.5px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 2px 5px #000000;
   transition: filter 0.2s, transform 0.15s;
   user-select: none;
   box-sizing: border-box;
+  padding: 0 16px;
+}
+
+.main-menu-gothic-btn .menu-btn-title,
+.main-menu-action-btn:not(.btn-resume-run) .menu-btn-title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .main-menu-gothic-btn:hover {
   background-position: 0 33.33%;
   color: #ffffff;
-  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.85));
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.9));
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.8), 0 2px 4px #000000;
   transform: scale(1.02);
 }
 
@@ -1062,7 +1020,7 @@
 }
 
 .main-menu-gothic-btn.btn-shop:hover {
-  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.75));
+  filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 24px rgba(192, 132, 252, 0.65));
 }
 
 /* Crystal Currency Pill in Main Menu */

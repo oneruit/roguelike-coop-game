@@ -12,6 +12,8 @@ export interface MainMenuScreenOptions {
   onCoop?: () => void;
   onShop?: () => void;
   onQuests?: () => void;
+  onOpenRiftPath?: () => void;
+  onOpenWeeklyQuests?: () => void;
   onLeaderboard?: () => void;
   onSettings?: () => void;
   onAuth?: () => void;
@@ -86,6 +88,16 @@ export class MainMenuScreen extends Screen {
       this.options.onQuests?.();
     });
 
+    SafeDOM.query(this.container, '#event-card-rift-path')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onOpenRiftPath?.();
+    });
+
+    SafeDOM.query(this.container, '#event-card-weekly')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onOpenWeeklyQuests?.();
+    });
+
     SafeDOM.query(this.container, '#menu-btn-leaderboard')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onLeaderboard?.();
@@ -105,6 +117,7 @@ export class MainMenuScreen extends Screen {
   public updateResumeRunButton(): void {
     const resumeBtn = SafeDOM.query(this.container, '#menu-btn-resume-run');
     const titleEl = SafeDOM.query(this.container, '#menu-btn-resume-title');
+    const badgeEl = SafeDOM.query(this.container, '#menu-btn-resume-badge');
     if (!resumeBtn) return;
 
     const runInfo = RunSaveManager.getSavedRunInfo();
@@ -114,7 +127,10 @@ export class MainMenuScreen extends Screen {
       const seconds = Math.floor(runInfo.gameTime % 60);
       const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
       if (titleEl) {
-        titleEl.textContent = `ДОИГРАТЬ ЗАБЕГ (Этап ${runInfo.stageNumber}, ${timeStr})`;
+        titleEl.textContent = 'ДОИГРАТЬ ЗАБЕГ';
+      }
+      if (badgeEl) {
+        badgeEl.textContent = `ЭТАП ${runInfo.stageNumber} • ${timeStr}`;
       }
     } else {
       resumeBtn.classList.add('hidden');

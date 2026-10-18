@@ -44,7 +44,7 @@
 /* Top Centered Faceted Purple Plaque Header */
 .quest-book-top-plaque {
   position: absolute;
-  top: 4px;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 45;
@@ -55,11 +55,11 @@
   min-width: 240px;
   height: 42px;
   padding: 0 30px;
-  background: linear-gradient(180deg, #4d1872 0%, #2f0b47 100%);
-  border: 2.5px solid #8e3ebf;
+  background: linear-gradient(180deg, #32164a 0%, #1c0a2d 100%);
+  border: 2px solid #a855f7;
   outline: 2px solid #1a0528;
   clip-path: polygon(18px 0%, calc(100% - 18px) 0%, 100% 50%, calc(100% - 18px) 100%, 18px 100%, 0% 50%);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75), 0 0 14px rgba(142, 62, 191, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 16px rgba(168, 85, 247, 0.6);
   box-sizing: border-box;
 }
 
@@ -155,15 +155,16 @@
 /* Left Sidebar Tabs: Chapters of the Grimoire */
 .quest-book-tabs-sidebar {
   position: absolute;
-  left: -54px;
+  left: -44px;
   top: 48px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  z-index: 5;
+  z-index: 25;
 }
 
 .quest-chapter-tab {
+  position: relative;
   width: 58px;
   height: 52px;
   border-radius: 12px 0 0 12px;
@@ -205,6 +206,17 @@
   opacity: 0.6;
   cursor: not-allowed !important;
   border-color: #3f2312 !important;
+}
+
+.quest-chapter-tab.locked::after {
+  content: '🔒';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
 }
 
 .quest-chapter-tab.locked:hover {
@@ -249,6 +261,129 @@
 .quest-chapter-tab.active .chapter-tab-roman {
   color: #ffffff;
   text-shadow: 0 0 10px #f0abfc, 0 2px 5px rgba(0, 0, 0, 0.95);
+}
+
+/* Tabs Divider */
+.quest-book-tabs-divider {
+  width: 48px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 2px -4px;
+  position: relative;
+}
+
+.quest-book-tabs-divider::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.6), transparent);
+}
+
+.quest-tabs-divider-diamond {
+  position: relative;
+  z-index: 1;
+  font-size: 8px;
+  color: #c084fc;
+  background: #15102a;
+  padding: 0 4px;
+}
+
+/* Special Bottom Tabs */
+.quest-special-tab {
+  position: relative;
+  width: 58px;
+  height: 52px;
+  border-radius: 12px 0 0 12px;
+  border: 2.5px solid #1e3a5f;
+  border-right: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 0 2px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #0f172a 0%, #080d1a 100%);
+  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.65);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+              filter 0.18s ease,
+              background 0.18s ease,
+              border-color 0.18s ease,
+              box-shadow 0.18s ease;
+  user-select: none;
+  outline: none;
+}
+
+.quest-special-tab:hover {
+  transform: translateX(-6px);
+  filter: brightness(1.25);
+  box-shadow: -6px 6px 14px rgba(0, 0, 0, 0.75);
+}
+
+/* Rift Path Tab */
+.quest-special-tab.tab-rift {
+  background: linear-gradient(135deg, #0e304b 0%, #061929 100%);
+  border-color: #0284c7;
+}
+
+.quest-special-tab.tab-rift:hover {
+  border-color: #38bdf8;
+  box-shadow: -6px 6px 14px rgba(6, 182, 212, 0.4);
+}
+
+.quest-special-tab.tab-rift.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #7dd3fc !important;
+  box-shadow: -8px 4px 18px rgba(6, 182, 212, 0.75), -2px 0 10px rgba(125, 211, 252, 0.5) !important;
+  transform: translateX(-8px);
+}
+
+/* Weekly Tab */
+.quest-special-tab.tab-weekly {
+  background: linear-gradient(135deg, #422006 0%, #261103 100%);
+  border-color: #b45309;
+}
+
+.quest-special-tab.tab-weekly:hover {
+  border-color: #f59e0b;
+  box-shadow: -6px 6px 14px rgba(245, 158, 11, 0.4);
+}
+
+.quest-special-tab.tab-weekly.active {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  border-color: #fde68a !important;
+  box-shadow: -8px 4px 18px rgba(245, 158, 11, 0.75), -2px 0 10px rgba(253, 230, 138, 0.5) !important;
+  transform: translateX(-8px);
+}
+
+.special-tab-icon {
+  font-size: 15px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+}
+
+.special-tab-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #e2e8f0;
+  line-height: 1;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.quest-special-tab.tab-rift.active .special-tab-label {
+  color: #e0f2fe;
+  text-shadow: 0 0 8px #38bdf8;
+}
+
+.quest-special-tab.tab-weekly.active .special-tab-label {
+  color: #fef3c7;
+  text-shadow: 0 0 8px #f59e0b;
 }
 
 /* Floating Magic Sparkle Particles */
@@ -300,56 +435,57 @@
   50% { opacity: 1; transform: scale(1.12) rotate(10deg); filter: drop-shadow(0 0 18px #f5d0fe) drop-shadow(0 0 35px #c084fc); }
 }
 
-/* Pixel Art Grimoire Card */
+/* Authentic Battle Pass & Active Events Crystal Stone Grimoire Card */
 .quest-book-card {
   position: relative;
   width: 100%;
   height: clamp(380px, calc(84vh - 30px), 570px);
-  background: #2a0b3f;
-  border: 5px solid #6b21a8;
-  outline: 2.5px solid #180326;
-  border-radius: 16px;
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.95),
-    0 0 30px rgba(147, 51, 234, 0.45),
-    inset 0 0 20px rgba(0, 0, 0, 0.85);
-  padding: 10px;
+  background: transparent;
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 10px 18px 10px 18px;
   box-sizing: border-box;
   display: flex;
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.45));
 }
 
-/* Stepped Pixel Corners */
-.pixel-book-corner {
+/* 9-Slice Scalable Crystal Stone Frame Overlay */
+.quest-frame-overlay {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  background: #a855f7;
+  inset: -2px;
   pointer-events: none;
-  z-index: 25;
+  z-index: 20;
+  border-style: solid;
+  border-width: 24px 42px 24px 42px;
+  border-image-source: url('/textures/ui/quests_frame_9slice.png');
+  border-image-slice: 24 42 24 42 fill;
+  border-image-repeat: stretch;
+  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4));
 }
 
-.pixel-book-corner.corner-tl {
-  top: 5px;
-  left: 5px;
-  box-shadow: 4px 4px 0 #2a0b3f;
+/* Top Crest deprecated (plaque acts as the focal top header) */
+.quest-frame-crest-top {
+  display: none !important;
 }
 
-.pixel-book-corner.corner-tr {
-  top: 5px;
-  right: 5px;
-  box-shadow: -4px 4px 0 #2a0b3f;
+.quest-frame-crest-bottom {
+  position: absolute;
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 28px;
+  background: url('/textures/ui/quests_crest_bottom.png') no-repeat center center / contain;
+  z-index: 30;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.85));
 }
 
-.pixel-book-corner.corner-bl {
-  bottom: 5px;
-  left: 5px;
-  box-shadow: 4px -4px 0 #2a0b3f;
-}
-
-.pixel-book-corner.corner-br {
-  bottom: 5px;
-  right: 5px;
-  box-shadow: -4px -4px 0 #2a0b3f;
+/* Deprecated pixel corner fallback */
+.pixel-book-corner {
+  display: none !important;
 }
 
 /* Two-Page Open Book Spread */
@@ -360,12 +496,13 @@
   background: linear-gradient(135deg, #efe2c8 0%, #e6d3ac 50%, #debfa4 100%);
   border: 2px solid #8e734c;
   outline: 1.5px solid #4a3820;
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow:
-    inset 0 0 36px rgba(110, 80, 40, 0.35),
-    0 4px 14px rgba(0, 0, 0, 0.65);
+    inset 0 0 32px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   position: relative;
+  z-index: 10;
 }
 
 /* Central Book Crease Spine */
@@ -933,6 +1070,13 @@
   border-color: #a855f7;
   outline-color: #d8b4fe;
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.reward-slot.reward-slot-bp {
+  border-color: #0284c7;
+  outline-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, #0c2d48 0%, #061929 100%);
 }
 
 .reward-pixel-icon {

@@ -422,10 +422,22 @@
 
   /* Inventory Modal */
   .inventory-modal-card {
-    max-width: 95vw !important;
+    max-width: 96vw !important;
     max-height: 92vh !important;
     overflow-y: auto !important;
-    padding: 16px 10px !important;
+    padding: 24px 14px 16px 14px !important;
+  }
+
+  .inventory-top-faceted-plaque {
+    min-width: 240px !important;
+    padding: 0 16px !important;
+    height: 32px !important;
+    top: -12px !important;
+  }
+
+  .inventory-top-faceted-plaque .plaque-title {
+    font-size: 11.5px !important;
+    letter-spacing: 1px !important;
   }
 
   .inventory-modal-header {
@@ -503,8 +515,21 @@
     padding: 18px 10px !important;
   }
 
-  .upgrade-grid {
-    grid-template-columns: 1fr !important;
+  /* Leaderboard Modal */
+  .leaderboard-card {
+    max-width: 96vw !important;
+    width: 96vw !important;
+    padding: 16px 12px !important;
+  }
+
+  .leaderboard-table-container {
+    overflow-x: auto !important;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
   }
 }
 

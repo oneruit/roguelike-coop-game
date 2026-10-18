@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <filter id="rift-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <radialGradient id="rift-core-grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="35%" stop-color="#bae6fd" />
+      <stop offset="70%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </radialGradient>
+    <linearGradient id="rift-spiral-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <linearGradient id="rift-spiral-2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ambient Rift Aura -->
+  <circle cx="32" cy="32" r="26" fill="#0284c7" opacity="0.3" filter="url(#rift-glow)" />
+  <circle cx="32" cy="32" r="18" fill="#a855f7" opacity="0.35" filter="url(#rift-glow)" />
+
+  <!-- Outer Arcane Ring -->
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="14 6 8 4" opacity="0.75" />
+
+  <!-- Spiral Arm 1 -->
+  <path d="M 32 32 Q 44 20, 52 30 T 48 48 T 26 54 T 12 36" 
+        fill="none" stroke="url(#rift-spiral-1)" stroke-width="3.5" stroke-linecap="round" filter="url(#rift-glow)" />
+
+  <!-- Spiral Arm 2 -->
+  <path d="M 32 32 Q 20 44, 12 34 T 16 16 T 38 10 T 52 28" 
+        fill="none" stroke="url(#rift-spiral-2)" stroke-width="3" stroke-linecap="round" filter="url(#rift-glow)" />
+
+  <!-- Inner Swirl Arc -->
+  <path d="M 32 32 Q 38 24, 42 32 T 32 42 T 22 32 T 32 22" 
+        fill="none" stroke="#e0f2fe" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Orbiting Star Particles -->
+  <circle cx="48" cy="20" r="1.8" fill="#ffffff" filter="url(#rift-glow)" />
+  <circle cx="16" cy="46" r="1.5" fill="#bae6fd" filter="url(#rift-glow)" />
+  <circle cx="50" cy="44" r="1.5" fill="#f5d0fe" filter="url(#rift-glow)" />
+  <circle cx="18" cy="18" r="2" fill="#38bdf8" filter="url(#rift-glow)" />
+
+  <!-- Brilliant Center Rift Core -->
+  <circle cx="32" cy="32" r="8" fill="url(#rift-core-grad)" stroke="#bae6fd" stroke-width="1.5" filter="url(#rift-glow)" />
+  <circle cx="30" cy="30" r="2.5" fill="#ffffff" />
+</svg>

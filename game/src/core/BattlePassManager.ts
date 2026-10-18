@@ -299,6 +299,38 @@ export class BattlePassManager {
     };
   }
 
+  public addPoints(amount: number): {
+    pointsAwarded: number;
+    oldLevel: number;
+    newLevel: number;
+    leveledUp: boolean;
+    oldPoints: number;
+    newPoints: number;
+  } {
+    const data = this.getData();
+    const oldPoints = data.points;
+    const oldLevel = this.getLevel(oldPoints);
+
+    data.points = Math.max(0, oldPoints + amount);
+    const newPoints = data.points;
+    const newLevel = this.getLevel(newPoints);
+    const leveledUp = newLevel > oldLevel;
+
+    const prog = ProgressionManager.getInstance();
+    prog.save();
+
+    this.notifyChanged();
+
+    return {
+      pointsAwarded: amount,
+      oldLevel,
+      newLevel,
+      leveledUp,
+      oldPoints,
+      newPoints
+    };
+  }
+
   public addPointsForSurvival(gameTimeSeconds: number): {
     pointsAwarded: number;
     oldLevel: number;

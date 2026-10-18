@@ -537,15 +537,15 @@ export class SupabaseService {
         if (!error && data) {
           entries = data.map((d: any) => ({
             id: d.id,
-            playerId: d.user_id || d.player_id || d.id,
-            playerName: d.display_name || d.player_name || 'Странник',
-            heroId: d.hero || d.hero_id || 'ronin',
-            stage: Number(d.stage_reached ?? d.stage ?? 1),
-            survivalTimeSec: Number(d.survival_time ?? d.survival_time_sec ?? 0),
+            playerId: d.player_id || d.user_id || d.id,
+            playerName: d.player_name || d.display_name || 'Странник',
+            heroId: d.hero_id || d.hero || 'ronin',
+            stage: Number(d.stage ?? d.stage_reached ?? 1),
+            survivalTimeSec: Number(d.survival_time_sec ?? d.survival_time ?? 0),
             kills: Number(d.kills ?? 0),
-            credits: Number(d.crystals_collected ?? d.credits ?? 0),
+            credits: Number(d.credits ?? d.crystals_collected ?? 0),
             score: Number(d.score ?? 0),
-            isVictory: Boolean(d.is_victory ?? ((d.stage_reached ?? d.stage ?? 1) >= 4)),
+            isVictory: Boolean(d.is_victory ?? ((d.stage ?? d.stage_reached ?? 1) >= 4)),
             createdAt: d.created_at
           }));
         } else if (error) {
@@ -556,8 +556,8 @@ export class SupabaseService {
       }
     }
 
-    // Fallback to local storage only if offline and no DB client is connected
-    if (entries.length === 0 && !this.client && typeof localStorage !== 'undefined') {
+    // Fallback to local storage if no DB records found or offline
+    if (entries.length === 0 && typeof localStorage !== 'undefined') {
       try {
         const raw = localStorage.getItem(LOCAL_KEY);
         if (raw) {
@@ -567,9 +567,6 @@ export class SupabaseService {
         // ignore
       }
     }
-
-    // Filter out any legacy demo records
-    entries = entries.filter((e) => !['p1', 'p2', 'p3', 'p4', 'p5', 'p6'].includes(e.playerId));
 
     // Deduplicate by playerId keeping highest score
     const map = new Map<string, LeaderboardEntry>();
@@ -595,7 +592,7 @@ export class SupabaseService {
         if (id) {
           query = query.eq('id', id);
         } else if (playerId) {
-          query = query.or(`user_id.eq.${playerId},id.eq.${playerId}`);
+          query = query.eq('player_id', playerId);
         }
         const { error } = await query;
         if (!error) {
@@ -666,14 +663,15 @@ export class SupabaseService {
     if (this.client) {
       try {
         const rows = demo.map((e) => ({
-          user_id: e.playerId,
-          display_name: e.playerName,
-          hero: e.heroId,
-          stage_reached: e.stage,
-          survival_time: Math.round(e.survivalTimeSec),
+          player_id: e.playerId,
+          player_name: e.playerName,
+          hero_id: e.heroId,
+          stage: e.stage,
+          survival_time_sec: e.survivalTimeSec,
           kills: e.kills,
-          crystals_collected: e.credits,
-          score: e.score
+          credits: e.credits,
+          score: e.score,
+          is_victory: e.isVictory ?? false
         }));
 
         const { error } = await this.client.from('leaderboards').insert(rows);
@@ -700,13 +698,14 @@ export class SupabaseService {
     if (this.client && id) {
       try {
         const dbUpdates: any = {};
-        if (updates.playerName !== undefined) dbUpdates.display_name = updates.playerName;
+        if (updates.playerName !== undefined) dbUpdates.player_name = updates.playerName;
         if (updates.score !== undefined) dbUpdates.score = updates.score;
-        if (updates.stage !== undefined) dbUpdates.stage_reached = updates.stage;
+        if (updates.stage !== undefined) dbUpdates.stage = updates.stage;
         if (updates.kills !== undefined) dbUpdates.kills = updates.kills;
-        if (updates.heroId !== undefined) dbUpdates.hero = updates.heroId;
-        if (updates.credits !== undefined) dbUpdates.crystals_collected = updates.credits;
-        if (updates.survivalTimeSec !== undefined) dbUpdates.survival_time = Math.round(updates.survivalTimeSec);
+        if (updates.heroId !== undefined) dbUpdates.hero_id = updates.heroId;
+        if (updates.credits !== undefined) dbUpdates.credits = updates.credits;
+        if (updates.survivalTimeSec !== undefined) dbUpdates.survival_time_sec = updates.survivalTimeSec;
+        if (updates.isVictory !== undefined) dbUpdates.is_victory = updates.isVictory;
 
         const { error } = await this.client.from('leaderboards').update(dbUpdates).eq('id', id);
         if (!error) success = true;

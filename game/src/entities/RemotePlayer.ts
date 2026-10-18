@@ -42,6 +42,8 @@ export class RemotePlayer {
   public animator?: CharacterAnimator;
   public hp: number = 100;
   public maxHp: number = 100;
+  public shield: number = 0;
+  public maxShield: number = 0;
   public level: number = 1;
   public xp: number = 0;
   public xpToNextLevel: number = 10;
@@ -295,6 +297,8 @@ export class RemotePlayer {
     this.animState = state.anim;
     this.hp = state.hp;
     this.maxHp = state.maxHp;
+    if (state.shield !== undefined) this.shield = state.shield;
+    if (state.maxShield !== undefined) this.maxShield = state.maxShield;
     this.level = state.level;
     if (state.xp !== undefined) this.xp = state.xp;
     this.isDowned = state.isDowned;
@@ -542,14 +546,43 @@ export class RemotePlayer {
         ctx.fill();
       }
 
-      // Numeric HP Text
+      // Armor / Shield layer overlaying HP
+      if (this.shield > 0 && this.maxShield > 0) {
+        const shieldPct = Math.max(0, Math.min(1, this.shield / this.maxShield));
+        const shieldW = (barW - 4) * shieldPct;
+        if (shieldW > 0) {
+          if (ctx.createLinearGradient) {
+            const sGrad = ctx.createLinearGradient(barX + 2, barY, barX + 2 + shieldW, barY);
+            sGrad.addColorStop(0, '#0284c7');
+            sGrad.addColorStop(0.5, '#06b6d4');
+            sGrad.addColorStop(1, '#38bdf8');
+            ctx.fillStyle = sGrad;
+          } else {
+            ctx.fillStyle = '#06b6d4';
+          }
+          ctx.beginPath();
+          ctx.roundRect(barX + 2, barY + 2, shieldW, barH - 4, (barH - 4) / 2);
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.beginPath();
+          ctx.roundRect(barX + 4, barY + 2.5, Math.max(0, shieldW - 4), (barH - 4) * 0.38, (barH - 4) * 0.19);
+          ctx.fill();
+        }
+      }
+
+      // Numeric HP & Armor Text
       ctx.fillStyle = '#ffffff';
       ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
       ctx.shadowBlur = 4;
       ctx.font = 'bold 11px "Cinzel", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
+      if (this.shield > 0) {
+        ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp} [🛡️ ${Math.ceil(this.shield)}]`, w / 2, barY + barH / 2 + 1);
+      } else {
+        ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, w / 2, barY + barH / 2 + 1);
+      }
       ctx.shadowBlur = 0;
     }
 

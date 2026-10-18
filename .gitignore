@@ -8,4 +8,5 @@ node_modules
 __pycache__/
 *.py[cod]
 raw_assets/
+scratch/
 

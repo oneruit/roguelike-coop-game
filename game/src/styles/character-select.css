@@ -113,18 +113,22 @@
 }
 
 .char-stage-viewport {
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  position: relative;
+  pointer-events: none;
+  z-index: 5;
   height: 100%;
-  padding-bottom: 24px;
+  padding-bottom: 8px;
 }
 
 .char-hero-canvas {
-  width: clamp(260px, 28vw, 360px);
-  height: clamp(260px, 28vw, 360px);
+  width: clamp(320px, 32vw, 420px);
+  height: clamp(320px, 32vw, 420px);
   image-rendering: pixelated;
   position: relative;
   z-index: 5;
@@ -136,6 +140,8 @@
 .char-inspect-panel {
   width: clamp(340px, 26vw, 340px);
   position: relative;
+  margin-left: auto;
+  z-index: 10;
   background: url('/textures/ui/frame_panel_gothic_arpg.png') center center / 100% 100% no-repeat;
   box-sizing: border-box;
   display: flex;
@@ -601,15 +607,20 @@
     gap: 14px;
   }
   .char-stage-viewport {
-    height: 180px;
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    height: 200px;
     padding-bottom: 0;
   }
   .char-hero-canvas {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
   }
   .char-inspect-panel {
     width: 95%;
+    margin-left: 0;
     padding: 14px 16px;
   }
 }

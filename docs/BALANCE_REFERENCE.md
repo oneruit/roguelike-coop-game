@@ -42,8 +42,7 @@ The game features **6 unique heroes**. Character selection determines base healt
 | **Pickup Radius (Magnet)** | **3.5 m** | x1.35 per stack of Magnet (`stat_magnet`) | **25.0 m** |
 | **Health Regeneration** | **0 HP/s** | +1.5 HP/s (Hunter's Amulet), +2.5 HP/s (Bio-Injector) | **30.0 HP/s** |
 | **Damage Reduction (Armor)** | **0%** | +10% (Leather Vest), diminishing returns (Nano-Plating) | **75% (0.75)** |
-| **Cooldown Reduction (CDR)** | **0%** | -8% (Pocket Watch), x0.85 (Kinetic Accelerator) | **70-80%** (CD min 0.12–0.30s) |
-| **Energy Shield** | **0 HP** | +35 HP per stack of Aegis Battery (`aegis_battery`) | Regens 25% shield/s out of combat (3s delay) |
+| **Energy Shield (Armor)** | **100 HP** | +50 HP per stack of Phase Carapace (`phase_carapace`) (max 350) | Recharges full shield in 3.0s after 3.0s out-of-combat delay (delay reduced by Aegis Exoskeleton) |
 
 ---
 
@@ -225,7 +224,8 @@ Chests spawn deterministically (16 per stage). Opening a chest requires gold dro
 | **Chain Lightning** | `chain_lightning` | Uncommon | 🌩️ | **25%** chance to trigger chain lightning on 3 targets (160% damage) | +2 targets and +30% damage per stack |
 | **Plasma Detonator** | `plasma_detonator` | Uncommon | 💥 | On kill, enemy explodes (4m radius, **200%** damage) | +1m radius and +50% damage per stack |
 | **Sniper Visor** | `crit_visor` | Uncommon | 🎯 | **+12%** critical strike chance (base x2.0 damage) | +12% crit chance per stack |
-| **Aegis Battery** | `aegis_battery` | Uncommon | 💠 | Grants an energy shield with **+35 HP**, recharges out of combat | +35 max shield capacity per stack |
+| **Aegis Exoskeleton** | `aegis_exoskeleton` | Uncommon | 🛡️ | Accelerates shield recharge delay by **-0.25s** and speed by **+25%** | -0.25s delay & +25% recharge speed per stack (max 5) |
+| **Phase Carapace** | `phase_carapace` | Rare | 💠 | **+50 Max Shield (Armor)** from Large Chests (caps at 350) | +50 shield capacity per stack (max 350) |
 | **Bio-Leech** | `bio_leech` | Uncommon | 🧬 | Restores **+2 HP** per monster kill | +2 HP per stack |
 | **Singularity Core** | `singularity_core` | Legendary | 🕳️ | Every **10th kill** spawns a black hole detonating for **600%** damage | -2 kills required, +200% damage per stack |
 | **Orbital Strike** | `orbital_strike` | Legendary | 🛰️ | Every **12 s**, an orbital beam incinerates the strongest enemy for **800%** | -2 s CD per stack |

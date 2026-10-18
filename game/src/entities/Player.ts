@@ -110,9 +110,11 @@ export class Player {
   // The Rift: Item Inventory & Economy
   public riftItems: Map<RiftItemId, number> = new Map();
   public credits: number = 0; // Plasma Credits currency
-  public shield: number = 0;
-  public maxShield: number = 0;
+  public shield: number = 100;
+  public maxShield: number = 100;
   public shieldRegenDelay: number = 0;
+  public shieldRegenBaseDelay: number = 3.0;
+  public shieldRegenMultiplier: number = 1.0;
   public critChance: number = 0.05; // 5% base crit chance (max 100% / 1.0)
   public critDamage: number = 0.50; // 50% base crit damage (max 1000% / 10.0)
   public startingWeaponId: string = '';
@@ -199,6 +201,8 @@ export class Player {
   private overheadSprite: Sprite;
   private lastDrawnHp: number = -1;
   private lastDrawnMaxHp: number = -1;
+  private lastDrawnShield: number = -1;
+  private lastDrawnMaxShield: number = -1;
   private lastDrawnLevel: number = -1;
   private lastDrawnDowned: boolean = false;
   private lastDrawnRevive: number = -1;
@@ -616,6 +620,8 @@ export class Player {
 
     this.passiveHpRegen = stats.hpRegen;
     this.maxShield = stats.maxShield;
+    this.shieldRegenBaseDelay = stats.shieldRegenDelay;
+    this.shieldRegenMultiplier = stats.shieldRegenMultiplier;
     if (this.shield > this.maxShield) this.shield = this.maxShield;
     this.critChance = stats.critChance;
     this.critDamage = stats.critDamage;
@@ -702,6 +708,12 @@ export class Player {
   }
 
   public isStatMaxedForItem(itemId: string): boolean {
+    if (itemId === 'phase_carapace') {
+      return this.maxShield >= 350;
+    }
+    if (itemId === 'aegis_exoskeleton') {
+      return this.getItemStacks('aegis_exoskeleton') >= 5;
+    }
     if (itemId === 'nanite_plating') {
       return this.getItemStacks('nanite_plating') >= 20;
     }
@@ -778,12 +790,18 @@ export class Player {
       this.spriteMaterial.color.setHex(0xffffff);
     }
 
-    // Shield Regeneration (Aegis Battery)
+    // Shield (Armor) Regeneration
     if (this.maxShield > 0) {
       if (this.shieldRegenDelay > 0) {
         this.shieldRegenDelay -= dt;
       } else if (this.shield < this.maxShield) {
-        this.shield = Math.min(this.maxShield, this.shield + (this.maxShield * 0.25) * dt);
+        const prevShield = this.shield;
+        const baseRate = this.maxShield / 3.0; // Fully restores shield in 3.0 seconds
+        const regenRate = baseRate * this.shieldRegenMultiplier;
+        this.shield = Math.min(this.maxShield, this.shield + regenRate * dt);
+        if (Math.floor(prevShield) !== Math.floor(this.shield)) {
+          this.redrawOverhead();
+        }
       }
     }
 
@@ -979,6 +997,8 @@ export class Player {
     if (
       this.hp !== this.lastDrawnHp ||
       this.maxHp !== this.lastDrawnMaxHp ||
+      this.shield !== this.lastDrawnShield ||
+      this.maxShield !== this.lastDrawnMaxShield ||
       this.level !== this.lastDrawnLevel ||
       this.isDowned !== this.lastDrawnDowned ||
       Math.abs(this.reviveProgress - this.lastDrawnRevive) > 0.05
@@ -1010,7 +1030,7 @@ export class Player {
       return false;
     }
 
-    this.shieldRegenDelay = 3.5;
+    this.shieldRegenDelay = this.shieldRegenBaseDelay;
 
     // Apply shock vulnerability (+10% damage taken) and Nanite Plating damage reduction
     const incomingAmount = this.isShocked
@@ -1021,15 +1041,18 @@ export class Player {
       ? incomingAmount
       : Math.max(1, (incomingAmount * (1 - naniteReduction)) * (1 - this.passiveDamageReduction));
 
-    // Absorb with shield first
+    // Absorb with shield (armor) first
     if (this.shield > 0) {
       if (this.shield >= finalAmount) {
         this.shield -= finalAmount;
         finalAmount = 0;
+        SoundManager.playShieldHit();
       } else {
         finalAmount -= this.shield;
         this.shield = 0;
+        SoundManager.playShieldBreak();
       }
+      this.redrawOverhead();
     }
 
     if (finalAmount > 0) {
@@ -1236,13 +1259,19 @@ export class Player {
     this.activeBuffs.clear();
     this.setDirection('front');
     this.applyCharacterPerks();
+    this.recalculateStats();
+    this.shield = this.maxShield;
+    this.shieldRegenDelay = 0;
     this.lastDrawnHp = -1;
+    this.lastDrawnShield = -1;
     this.redrawOverhead();
   }
 
   public redrawOverhead() {
     this.lastDrawnHp = this.hp;
     this.lastDrawnMaxHp = this.maxHp;
+    this.lastDrawnShield = this.shield;
+    this.lastDrawnMaxShield = this.maxShield;
     this.lastDrawnLevel = this.level;
     this.lastDrawnDowned = this.isDowned;
     this.lastDrawnRevive = this.reviveProgress;
@@ -1252,6 +1281,8 @@ export class Player {
     renderPlayerOverhead(ctx, this.overheadCanvas.width, this.overheadCanvas.height, {
       hp: this.hp,
       maxHp: this.maxHp,
+      shield: this.shield,
+      maxShield: this.maxShield,
       level: this.level,
       isDowned: this.isDowned,
       reviveProgress: this.reviveProgress,

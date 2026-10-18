@@ -157,4 +157,34 @@ test('LeaderboardManager - submitScore records run on surrender or death without
   const localAfterDeath = LeaderboardManager.getLocalEntries();
   assert.equal(localAfterDeath.length, 2);
   assert.equal(localAfterDeath[0].playerId, 'died_hero_2', 'Higher score run should rank first');
+
+  // Verify getLastRun returns the latest run info
+  const lastRun = LeaderboardManager.getLastRun();
+  assert.ok(lastRun, 'getLastRun must return info about the most recent run');
+  assert.equal(lastRun.playerId, 'died_hero_2');
+  assert.equal(lastRun.heroId, 'valkyrie');
+  assert.equal(lastRun.isNewRecord, true);
+
+  // Submit a lower score run for the same player
+  await LeaderboardManager.submitScore({
+    heroId: 'valkyrie',
+    stage: 1,
+    survivalTimeSec: 60.0,
+    kills: 10,
+    credits: 50,
+    isVictory: false,
+    playerId: 'died_hero_2',
+    playerName: 'FallenValkyrie'
+  });
+
+  const updatedLastRun = LeaderboardManager.getLastRun();
+  assert.ok(updatedLastRun);
+  assert.equal(updatedLastRun.stage, 1);
+  assert.equal(updatedLastRun.isNewRecord, false, 'Lower score run should not be flagged as new record');
+
+  // fetchTopScores returns entries seamlessly
+  const topScores = await LeaderboardManager.fetchTopScores(10);
+  assert.ok(topScores.length >= 2);
+  assert.equal(topScores[0].playerId, 'died_hero_2');
+  assert.equal(topScores[0].stage, 3, 'High score personal best must remain intact in leaderboard');
 });

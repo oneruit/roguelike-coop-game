@@ -2,6 +2,8 @@ import { CharacterType } from '../sim/types';
 import { getAssetUrl } from '../utils/assetPath';
 import { AssetResolver } from '../utils/AssetResolver';
 import { CHAPTERS_CONFIG, getChapterDef, getChapterQuestDef } from './ChapterQuestsConfig';
+import { getSpecialQuestDef } from './SpecialQuestsConfig';
+import { BattlePassManager } from './BattlePassManager';
 
 export interface SidebarQuestItem {
   id: string;
@@ -45,6 +47,7 @@ export interface ProgressionData {
   unlockedHeroes: Record<CharacterType, boolean>;
   dailyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
   weeklyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
+  specialQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
   chapterQuestsProgress: Record<string, ChapterQuestProgress>;
   claimedChapterRewards: Record<number, boolean>;
   chapterQuestsReworkVersion?: number;
@@ -96,6 +99,7 @@ export class ProgressionManager {
 
   private constructor() {
     this.data = this.loadFromStorage();
+    this.sanitizeLockedChapters();
     this.checkAutoUnlocks();
   }
 
@@ -146,7 +150,7 @@ export class ProgressionManager {
         invoker: true,   // Invoker (unlocked)
         necromancer: true, // Mortis (unlocked)
         amazon: true,    // Amazon (unlocked)
-        archer: false    // Elf: Locked! (Buy / Achievement)
+        archer: true     // Archer / Elf (unlocked)
       },
       dailyQuestsProgress: {
         daily_goblins: { current: 0, isClaimed: false },
@@ -155,6 +159,12 @@ export class ProgressionManager {
       weeklyQuestsProgress: {
         weekly_goblins: { current: 0, isClaimed: false },
         weekly_resources: { current: 0, isClaimed: false }
+      },
+      specialQuestsProgress: {
+        rift_elite_bisons: { current: 0, isClaimed: false },
+        weekly_elite_coyotes: { current: 0, isClaimed: false },
+        weekly_defeat_bosses: { current: 0, isClaimed: false },
+        weekly_play_invoker: { current: 0, isClaimed: false }
       },
       chapterQuestsProgress: this.getDefaultChapterQuestsProgress(),
       claimedChapterRewards: {
@@ -202,7 +212,7 @@ export class ProgressionManager {
             invoker: true,
             necromancer: parsed.unlockedHeroes?.necromancer ?? true,
             amazon: parsed.unlockedHeroes?.amazon ?? true,
-            archer: Boolean(parsed.unlockedHeroes?.archer)
+            archer: parsed.unlockedHeroes?.archer ?? true
           },
           dailyQuestsProgress: isReworked && parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
             ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
@@ -210,6 +220,9 @@ export class ProgressionManager {
           weeklyQuestsProgress: isReworked && parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
             ? { ...defaults.weeklyQuestsProgress, ...parsed.weeklyQuestsProgress }
             : defaults.weeklyQuestsProgress,
+          specialQuestsProgress: isReworked && parsed.specialQuestsProgress && typeof parsed.specialQuestsProgress === 'object'
+            ? { ...defaults.specialQuestsProgress, ...parsed.specialQuestsProgress }
+            : defaults.specialQuestsProgress,
           chapterQuestsProgress: isReworked && parsed.chapterQuestsProgress && typeof parsed.chapterQuestsProgress === 'object'
             ? { ...defaults.chapterQuestsProgress, ...parsed.chapterQuestsProgress }
             : defaults.chapterQuestsProgress,
@@ -305,10 +318,7 @@ export class ProgressionManager {
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
-    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker' || hero === 'necromancer' || hero === 'amazon') return true; // TODO
-    if (hero === 'archer') {
-      return Boolean(this.data.unlockedHeroes.archer);
-    }
+    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker' || hero === 'necromancer' || hero === 'amazon' || hero === 'archer') return true;
     // Existing base heroes are unlocked by default
     if (hero === 'valkyrie' || hero === 'flail' || hero === 'sorceress' || hero === 'chakram') {
       return this.data.unlockedHeroes[hero] ?? true;
@@ -329,7 +339,7 @@ export class ProgressionManager {
   public checkAutoUnlocks() {
     let changed = false;
 
-    // Existing heroes are unlocked; only Elf is locked
+    // Base heroes are unlocked
     if (!this.data.unlockedHeroes.valkyrie) {
       this.data.unlockedHeroes.valkyrie = true;
       changed = true;
@@ -344,6 +354,10 @@ export class ProgressionManager {
     }
     if (!this.data.unlockedHeroes.chakram) {
       this.data.unlockedHeroes.chakram = true;
+      changed = true;
+    }
+    if (!this.data.unlockedHeroes.archer) {
+      this.data.unlockedHeroes.archer = true;
       changed = true;
     }
 
@@ -380,6 +394,7 @@ export class ProgressionManager {
     if (this.data.dailyQuestsProgress?.daily_bosses && !this.data.dailyQuestsProgress.daily_bosses.isClaimed) {
       this.data.dailyQuestsProgress.daily_bosses.current = Math.min(2, this.data.dailyQuestsProgress.daily_bosses.current + 1);
     }
+    this.recordSpecialQuestProgress('weekly_defeat_bosses', 1);
     // Step 3 of Leshy quest can also progress when a boss is defeated
     if (this.data.questLeshySteps[0] && this.data.questLeshySteps[1] && !this.data.questLeshySteps[2]) {
       this.data.questLeshySteps[2] = true;
@@ -534,6 +549,83 @@ export class ProgressionManager {
     return { success: true, rewardType: target.rewardType, amount: target.rewardAmount, label: target.rewardLabel };
   }
 
+  public getSpecialQuestProgress(questId: string): { current: number; max: number; isComplete: boolean; isClaimed: boolean; label: string } {
+    const def = getSpecialQuestDef(questId);
+    const max = def ? def.targetCount : 1;
+    const prog = this.data.specialQuestsProgress?.[questId] ?? { current: 0, isClaimed: false };
+    const current = Math.min(max, Math.max(0, prog.current));
+    return {
+      current,
+      max,
+      isComplete: current >= max,
+      isClaimed: !!prog.isClaimed,
+      label: `${current} / ${max}`
+    };
+  }
+
+  public recordSpecialQuestProgress(questId: string, count: number = 1): void {
+    if (this.isTrainingMode || count <= 0) return;
+    const def = getSpecialQuestDef(questId);
+    if (!def) return;
+    if (!this.data.specialQuestsProgress) {
+      this.data.specialQuestsProgress = {};
+    }
+    const currentProg = this.data.specialQuestsProgress[questId] ?? { current: 0, isClaimed: false };
+    if (currentProg.isClaimed) return;
+    currentProg.current = Math.min(def.targetCount, currentProg.current + count);
+    this.data.specialQuestsProgress[questId] = currentProg;
+    this.save();
+  }
+
+  public recordEliteBisonKilled(count: number = 1): void {
+    this.recordSpecialQuestProgress('rift_elite_bisons', count);
+  }
+
+  public recordEliteCoyoteKilled(count: number = 1): void {
+    this.recordSpecialQuestProgress('weekly_elite_coyotes', count);
+  }
+
+  public recordHeroPlayed(hero: CharacterType): void {
+    if (hero === 'invoker') {
+      this.recordSpecialQuestProgress('weekly_play_invoker', 1);
+    }
+  }
+
+  public claimSpecialQuest(questId: string): { success: boolean; bpXp?: number; coins?: number; label: string } | null {
+    if (this.isTrainingMode) return null;
+    const def = getSpecialQuestDef(questId);
+    if (!def) return null;
+    if (!this.data.specialQuestsProgress) {
+      this.data.specialQuestsProgress = {};
+    }
+    const prog = this.data.specialQuestsProgress[questId] ?? { current: 0, isClaimed: false };
+    if (prog.isClaimed || prog.current < def.targetCount) {
+      return null;
+    }
+    prog.isClaimed = true;
+    this.data.specialQuestsProgress[questId] = prog;
+
+    let bpXp: number | undefined;
+    let coins: number | undefined;
+
+    if (def.rewards.bp_xp) {
+      bpXp = def.rewards.bp_xp;
+      BattlePassManager.getInstance().addPoints(bpXp);
+    }
+    if (def.rewards.coins) {
+      coins = def.rewards.coins;
+      this.addCoins(coins);
+    }
+
+    this.save();
+    return {
+      success: true,
+      bpXp,
+      coins,
+      label: def.rewardLabel
+    };
+  }
+
   public progressLeshyStep(stepIndex: 0 | 1 | 2): boolean {
     if (this.isTrainingMode || stepIndex < 0 || stepIndex > 2) return false;
     this.data.questLeshySteps[stepIndex] = true;
@@ -581,8 +673,41 @@ export class ProgressionManager {
 
   // --- Chapter Quests Tracking & Claiming ---
 
+  public isChapterUnlocked(chapter: number): boolean {
+    if (chapter <= 1) return true;
+    for (let c = 1; c < chapter; c++) {
+      if (!this.isChapterComplete(c)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public sanitizeLockedChapters(): void {
+    if (!this.data.chapterQuestsProgress) {
+      this.data.chapterQuestsProgress = this.getDefaultChapterQuestsProgress();
+    }
+    for (let c = 2; c <= 4; c++) {
+      if (!this.isChapterUnlocked(c)) {
+        const chDef = getChapterDef(c);
+        if (chDef) {
+          for (const q of chDef.quests) {
+            const p = this.data.chapterQuestsProgress[q.id];
+            if (p && (p.current > 0 || p.isComplete || p.isClaimed)) {
+              this.data.chapterQuestsProgress[q.id] = { current: 0, isComplete: false, isClaimed: false };
+            }
+          }
+        }
+        if (this.data.claimedChapterRewards && this.data.claimedChapterRewards[c]) {
+          this.data.claimedChapterRewards[c] = false;
+        }
+      }
+    }
+  }
+
   public recordMeleeOrSpellKill(count: number = 1): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(1)) return;
     const q = this.data.chapterQuestsProgress?.ch1_deadly_debut;
     if (q && !q.isComplete) {
       q.current = Math.min(50, q.current + count);
@@ -593,6 +718,7 @@ export class ProgressionManager {
 
   public recordXpGemCollected(count: number = 1): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(1)) return;
     const q = this.data.chapterQuestsProgress?.ch1_essence_collection;
     if (q && !q.isComplete) {
       q.current = Math.min(100, q.current + count);
@@ -603,6 +729,7 @@ export class ProgressionManager {
 
   public recordAltarCaptured(count: number = 1): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(1)) return;
     const q = this.data.chapterQuestsProgress?.ch1_altar_call;
     if (q && !q.isComplete) {
       q.current = Math.min(1, q.current + count);
@@ -613,24 +740,18 @@ export class ProgressionManager {
 
   public recordTeleporterBossKilled(): void {
     if (this.isTrainingMode) return;
-    let changed = false;
+    if (!this.isChapterUnlocked(1)) return;
     const q1 = this.data.chapterQuestsProgress?.ch1_veil_breakthrough;
     if (q1 && !q1.isComplete) {
       q1.current = 1;
       q1.isComplete = true;
-      changed = true;
+      this.save();
     }
-    const q2 = this.data.chapterQuestsProgress?.ch2_fall_of_leshy;
-    if (q2 && !q2.isComplete) {
-      q2.current = 1;
-      q2.isComplete = true;
-      changed = true;
-    }
-    if (changed) this.save();
   }
 
   public recordCrawlerOrCoyoteKilled(count: number = 1): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(2)) return;
     const q = this.data.chapterQuestsProgress?.ch2_trail_of_beasts;
     if (q && !q.isComplete) {
       q.current = Math.min(75, q.current + count);
@@ -641,6 +762,7 @@ export class ProgressionManager {
 
   public recordForestGoldenChestOpened(): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(2)) return;
     const q = this.data.chapterQuestsProgress?.ch2_forest_cache;
     if (q && !q.isComplete) {
       q.current = 1;
@@ -652,6 +774,7 @@ export class ProgressionManager {
   public recordForestSurvivalTime(seconds: number): void {
     if (this.isTrainingMode) return;
     this.runForestSurvivalSeconds = Math.max(this.runForestSurvivalSeconds, seconds);
+    if (!this.isChapterUnlocked(2)) return;
     const minutes = Math.min(12, Math.floor(seconds / 60));
     const q = this.data.chapterQuestsProgress?.ch2_cleanse_roots;
     if (q && !q.isComplete) {
@@ -666,6 +789,7 @@ export class ProgressionManager {
 
   public recordLeshyDefeated(): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(2)) return;
     const q = this.data.chapterQuestsProgress?.ch2_fall_of_leshy;
     if (q && !q.isComplete) {
       q.current = 1;
@@ -677,6 +801,7 @@ export class ProgressionManager {
   public recordRunCrit(count: number = 1): void {
     if (this.isTrainingMode) return;
     this.runCritsCount += count;
+    if (!this.isChapterUnlocked(3)) return;
     const q = this.data.chapterQuestsProgress?.ch3_critical_overload;
     if (q && !q.isComplete) {
       q.current = Math.min(50, this.runCritsCount);
@@ -691,6 +816,7 @@ export class ProgressionManager {
   public recordSimultaneousPassives(count: number): void {
     if (this.isTrainingMode) return;
     this.runSimultaneousPassives = Math.max(this.runSimultaneousPassives, count);
+    if (!this.isChapterUnlocked(3)) return;
     const q = this.data.chapterQuestsProgress?.ch3_energy_symbiosis;
     if (q && !q.isComplete) {
       q.current = Math.min(4, Math.max(q.current, count));
@@ -705,6 +831,7 @@ export class ProgressionManager {
   public recordMerchantPurchaseInRun(count: number = 1): void {
     if (this.isTrainingMode) return;
     this.runMerchantPurchases += count;
+    if (!this.isChapterUnlocked(3)) return;
     const q = this.data.chapterQuestsProgress?.ch3_rift_smuggler;
     if (q && !q.isComplete) {
       q.current = Math.min(3, this.runMerchantPurchases);
@@ -722,6 +849,7 @@ export class ProgressionManager {
 
   public recordBossDefeat(gameTime: number): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(3)) return;
     if (this.runBossSpawnTime !== null && (gameTime - this.runBossSpawnTime) <= 90) {
       const q = this.data.chapterQuestsProgress?.ch3_death_of_titan;
       if (q && !q.isComplete) {
@@ -734,6 +862,7 @@ export class ProgressionManager {
 
   public recordRangedKill(count: number = 1): void {
     if (this.isTrainingMode) return;
+    if (!this.isChapterUnlocked(4)) return;
     const q = this.data.chapterQuestsProgress?.ch4_arrow_hail;
     if (q && !q.isComplete) {
       q.current = Math.min(200, q.current + count);
@@ -757,13 +886,24 @@ export class ProgressionManager {
     }
     const qData = this.data.chapterQuestsProgress[questId] || { current: 0, isComplete: false, isClaimed: false };
 
+    // If chapter is locked, tasks in closed chapters must NOT count or show complete!
+    if (def && !this.isChapterUnlocked(def.chapter)) {
+      return {
+        current: 0,
+        max: maxVal,
+        label: def.chapter === 2 && questId === 'ch2_cleanse_roots' ? '0/12 мин' : `0/${maxVal}`,
+        isComplete: false,
+        isClaimed: false
+      };
+    }
+
     if (questId === 'ch4_veteran') {
       const lvl = this.data.accountLevel;
       const complete = lvl >= 5;
       return {
         current: Math.min(5, lvl),
         max: 5,
-        label: `${Math.min(5, lvl)}/5`,
+        label: complete ? '✓ Готово' : `${Math.min(5, lvl)}/5`,
         isComplete: complete,
         isClaimed: qData.isClaimed
       };
@@ -775,7 +915,7 @@ export class ProgressionManager {
       return {
         current: Math.min(500, coins),
         max: 500,
-        label: `${Math.min(500, coins)}/500`,
+        label: complete ? '✓ Готово' : `${Math.min(500, coins)}/500`,
         isComplete: complete,
         isClaimed: qData.isClaimed
       };
@@ -783,33 +923,36 @@ export class ProgressionManager {
 
     if (questId === 'ch3_critical_overload' && !qData.isComplete) {
       const cur = Math.min(maxVal, this.runCritsCount);
+      const complete = cur >= maxVal;
       return {
         current: cur,
         max: maxVal,
-        label: `${cur}/${maxVal}`,
-        isComplete: cur >= maxVal,
+        label: complete ? '✓ Готово' : `${cur}/${maxVal}`,
+        isComplete: complete,
         isClaimed: qData.isClaimed
       };
     }
 
     if (questId === 'ch3_rift_smuggler' && !qData.isComplete) {
       const cur = Math.min(maxVal, this.runMerchantPurchases);
+      const complete = cur >= maxVal;
       return {
         current: cur,
         max: maxVal,
-        label: `${cur}/${maxVal}`,
-        isComplete: cur >= maxVal,
+        label: complete ? '✓ Готово' : `${cur}/${maxVal}`,
+        isComplete: complete,
         isClaimed: qData.isClaimed
       };
     }
 
     if (questId === 'ch2_cleanse_roots') {
       const cur = Math.min(maxVal, qData.current);
+      const complete = qData.isComplete || cur >= maxVal;
       return {
         current: cur,
         max: maxVal,
-        label: `${cur}/${maxVal} мин`,
-        isComplete: qData.isComplete || cur >= maxVal,
+        label: complete ? '✓ Готово' : `${cur}/${maxVal} мин`,
+        isComplete: complete,
         isClaimed: qData.isClaimed
       };
     }
@@ -826,10 +969,11 @@ export class ProgressionManager {
   }
 
   public claimChapterQuest(questId: string): { success: boolean; coins: number } | null {
+    const def = getChapterQuestDef(questId);
+    if (!def || !this.isChapterUnlocked(def.chapter)) return null;
+
     const p = this.getChapterQuestProgress(questId);
     if (!p.isComplete || p.isClaimed) return null;
-    const def = getChapterQuestDef(questId);
-    if (!def) return null;
 
     if (!this.data.chapterQuestsProgress[questId]) {
       this.data.chapterQuestsProgress[questId] = { current: def.max, isComplete: true, isClaimed: true };
@@ -846,9 +990,19 @@ export class ProgressionManager {
   }
 
   public isChapterComplete(chapter: number): boolean {
+    if (chapter > 1 && !this.isChapterUnlocked(chapter)) {
+      return false;
+    }
     const chDef = getChapterDef(chapter);
     if (!chDef) return false;
-    return chDef.quests.every((q) => this.getChapterQuestProgress(q.id).isComplete);
+    return chDef.quests.every((q) => {
+      const p = this.data.chapterQuestsProgress?.[q.id];
+      if (q.id === 'ch4_veteran') return this.data.accountLevel >= 5;
+      if (q.id === 'ch4_golden_treasury') return this.data.walletCoins >= 500;
+      if (q.id === 'ch3_critical_overload') return Boolean(p?.isComplete || this.runCritsCount >= q.max);
+      if (q.id === 'ch3_rift_smuggler') return Boolean(p?.isComplete || this.runMerchantPurchases >= q.max);
+      return Boolean(p?.isComplete || (p && p.current >= q.max));
+    });
   }
 
   public isChapterRewardClaimed(chapter: number): boolean {
@@ -856,7 +1010,7 @@ export class ProgressionManager {
   }
 
   public claimChapterFinalReward(chapter: number): { success: boolean; coins: number } | null {
-    if (!this.isChapterComplete(chapter) || this.isChapterRewardClaimed(chapter)) return null;
+    if (!this.isChapterUnlocked(chapter) || !this.isChapterComplete(chapter) || this.isChapterRewardClaimed(chapter)) return null;
     const chDef = getChapterDef(chapter);
     if (!chDef) return null;
 
@@ -891,6 +1045,12 @@ export class ProgressionManager {
     this.data.weeklyQuestsProgress = {
       weekly_goblins: { current: 0, isClaimed: false },
       weekly_resources: { current: 0, isClaimed: false }
+    };
+    this.data.specialQuestsProgress = {
+      rift_elite_bisons: { current: 0, isClaimed: false },
+      weekly_elite_coyotes: { current: 0, isClaimed: false },
+      weekly_defeat_bosses: { current: 0, isClaimed: false },
+      weekly_play_invoker: { current: 0, isClaimed: false }
     };
     this.data.resourcesGathered = 0;
     this.data.enemiesKilled = 0;
@@ -1076,16 +1236,15 @@ export class ProgressionManager {
       default:
         return {
           hero: 'archer',
-          heroName: 'Эльф',
+          heroName: 'Лучница',
           heroSubtitle: '«Охотничий Лук»',
           weaponIcon: getAssetUrl('/textures/weapons/weapon_bow.png'),
           weaponName: 'Охотничий лук',
           avatarIcon: AssetResolver.getHeroTexture('archer', 'front'),
-          questTitle: 'Контракт Следопыта',
-          questDesc: 'Эльфийский мастер стрельбы готов присоединиться к отряду по контракту за 100 монет либо за выдающееся достижение охотника.',
+          questTitle: 'Мастер Стрельбы',
+          questDesc: 'Меткая эльфийская лучница, разящая врагов быстрыми стрелами и владеющая тактическим отскоком.',
           steps: [
-            'Накопите 100 монет в кошельке ИЛИ уничтожьте 100 чудовищ (убито: ' + Math.min(100, this.data.enemiesKilled) + '/100).',
-            'Приобретите контракт за 100 монет либо подтвердите охотничье достижение.'
+            'Доступна сразу всем защитникам Рифта.'
           ],
           rewards: {
             potions: 2,
@@ -1093,7 +1252,7 @@ export class ProgressionManager {
             rings: 3,
             crystals: 24
           },
-          unlockConditionHint: 'Открывается после покупки/достижения'
+          unlockConditionHint: 'Разблокирована по умолчанию'
         };
     }
   }
@@ -1141,14 +1300,7 @@ export class ProgressionManager {
         };
       }
       case 'archer': {
-        const canAchieve = this.canUnlockElfByAchievement();
-        const canAfford = this.data.walletCoins >= 100;
-        return {
-          current: canAchieve || canAfford ? 1 : 0,
-          max: 1,
-          label: canAchieve || canAfford ? 'ГОТОВО' : '0/1',
-          isComplete: canAchieve || canAfford
-        };
+        return { current: 1, max: 1, label: '1/1', isComplete: true };
       }
       default:
         return { current: 1, max: 1, label: '1/1', isComplete: true };

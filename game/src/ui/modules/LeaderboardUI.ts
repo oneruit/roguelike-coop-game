@@ -14,6 +14,7 @@ export class LeaderboardUI extends Screen {
   private btnClose: HTMLElement | null = null;
   private btnBack: HTMLElement | null = null;
   private btnRefresh: HTMLElement | null = null;
+  private subtitleEl: HTMLElement | null = null;
   private backdrop: HTMLElement | null = null;
   private onCloseCallback?: () => void;
 
@@ -39,6 +40,7 @@ export class LeaderboardUI extends Screen {
     this.btnClose = SafeDOM.query(this.modal, '#leaderboard-btn-close');
     this.btnBack = SafeDOM.query(this.modal, '#leaderboard-btn-back');
     this.btnRefresh = SafeDOM.query(this.modal, '#leaderboard-btn-refresh');
+    this.subtitleEl = SafeDOM.query(this.modal, '#leaderboard-subtitle');
     this.backdrop = SafeDOM.query(this.modal, '#leaderboard-backdrop');
   }
 
@@ -52,9 +54,24 @@ export class LeaderboardUI extends Screen {
     this.btnBack?.addEventListener('click', handleClose);
     this.backdrop?.addEventListener('click', handleClose);
 
-    this.btnRefresh?.addEventListener('click', () => {
+    this.btnRefresh?.addEventListener('click', async () => {
       SoundManager.playButtonClick?.();
-      this.loadAndRender();
+      if (this.btnRefresh) {
+        this.btnRefresh.innerText = '⟳ Загрузка...';
+        this.btnRefresh.style.pointerEvents = 'none';
+        this.btnRefresh.style.opacity = '0.7';
+      }
+      await this.loadAndRender();
+      if (this.btnRefresh) {
+        this.btnRefresh.innerText = '✓ Обновлено';
+        setTimeout(() => {
+          if (this.btnRefresh) {
+            this.btnRefresh.innerText = '↻ Обновить';
+            this.btnRefresh.style.pointerEvents = '';
+            this.btnRefresh.style.opacity = '';
+          }
+        }, 1200);
+      }
     });
   }
 
@@ -115,8 +132,27 @@ export class LeaderboardUI extends Screen {
       outlaw: '🤠 Разбойник',
       rocket: '🚀 Ракетчик',
       invoker: '✨ Инвокер',
-      alchemist: '⚗️ Алхимик'
+      alchemist: '⚗️ Алхимик',
+      necromancer: '💀 Некромант',
+      amazon: '🏹 Амазонка',
+      flail: '🛡️ Храмовник',
+      sorceress: '🔮 Чародейка',
+      chakram: '💫 Танцор с Чакрамами'
     };
+
+    const lastRun = LeaderboardManager.getLastRun();
+    if (this.subtitleEl) {
+      if (lastRun) {
+        const lastHero = heroIcons[lastRun.heroId] || lastRun.heroId;
+        if (lastRun.isNewRecord) {
+          this.subtitleEl.innerHTML = `🏆 <strong style="color: #facc15;">Новый рекорд!</strong> ${lastHero} — <strong>${lastRun.score.toLocaleString()}</strong> очков (Этап ${lastRun.stage})`;
+        } else {
+          this.subtitleEl.innerHTML = `⏱ Последний забег: ${lastHero} — <strong>${lastRun.score.toLocaleString()}</strong> очков (Этап ${lastRun.stage})`;
+        }
+      } else {
+        this.subtitleEl.innerText = 'Лучшие странники, покорившие Разлом';
+      }
+    }
 
     let html = '';
     entries.forEach((entry, idx) => {
@@ -140,15 +176,15 @@ export class LeaderboardUI extends Screen {
 
       html += `
         <tr style="background: ${rowBg}; border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
-          <td style="padding: 10px 14px; font-weight: bold; color: ${rankColor};">${rankDisplay}</td>
-          <td style="padding: 10px 14px; font-weight: 500; color: #f8fafc;">
+          <td style="padding: 10px 14px; font-weight: bold; color: ${rankColor}; white-space: nowrap;">${rankDisplay}</td>
+          <td style="padding: 10px 14px; font-weight: 500; color: #f8fafc; white-space: nowrap;">
             ${escapeHtml(entry.playerName)} ${outcomeBadge}
           </td>
-          <td style="padding: 10px 14px; color: #cbd5e1;">${heroStr}</td>
-          <td style="padding: 10px 14px; color: #38bdf8;">Этап ${entry.stage}</td>
-          <td style="padding: 10px 14px; color: #e2e8f0;">${timeStr}</td>
-          <td style="padding: 10px 14px; color: #f43f5e;">${entry.kills}</td>
-          <td style="padding: 10px 14px; text-align: right; font-weight: bold; color: #facc15;">${entry.score.toLocaleString()}</td>
+          <td style="padding: 10px 14px; color: #cbd5e1; white-space: nowrap;">${heroStr}</td>
+          <td style="padding: 10px 14px; color: #38bdf8; white-space: nowrap;">Этап ${entry.stage}</td>
+          <td style="padding: 10px 14px; color: #e2e8f0; white-space: nowrap;">${timeStr}</td>
+          <td style="padding: 10px 14px; color: #f43f5e; font-weight: 600; white-space: nowrap;">${entry.kills}</td>
+          <td style="padding: 10px 14px; text-align: right; font-weight: bold; color: #facc15; white-space: nowrap;">${entry.score.toLocaleString()}</td>
         </tr>
       `;
     });

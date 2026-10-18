@@ -72,9 +72,10 @@
 
           <div class="main-menu-buttons">
             <!-- 0. ДОИГРАТЬ ЗАБЕГ (если сохранен) -->
-            <button id="menu-btn-resume-run" class="main-menu-action-btn btn-resume-run hidden" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.45) 0%, rgba(56, 189, 248, 0.25) 100%); border-color: #38bdf8;" type="button">
+            <button id="menu-btn-resume-run" class="main-menu-action-btn btn-resume-run hidden" type="button">
               <div class="menu-btn-content">
                 <span class="menu-btn-title" id="menu-btn-resume-title">ДОИГРАТЬ ЗАБЕГ</span>
+                <span class="menu-btn-badge" id="menu-btn-resume-badge">ЭТАП 1 • 00:00</span>
               </div>
             </button>
 
@@ -134,34 +135,50 @@
           </div>
         </div>
 
-
-        <!-- Right Side: Daily & Weekly Quests Sidebar -->
-        <aside class="main-menu-quests-sidebar" id="main-menu-quests-sidebar" aria-label="Панель заданий">
-          <!-- 1. Daily Quests Card -->
-          <section class="quest-sidebar-card daily-quests-card" id="daily-quests-card" aria-label="Ежедневные задания">
-            <header class="quest-card-header" id="daily-quests-header" title="Нажмите, чтобы открыть журнал заданий">
-              <span class="quest-card-header-title">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</span>
+        <!-- Right Side: Active Events Widget (Authentic Battle Pass Frame) -->
+        <aside class="active-events-widget" id="active-events-widget" aria-label="Активные события">
+          <div class="active-events-card">
+            <header class="active-events-header">
+              <div class="active-events-header-title">
+                <span class="active-events-diamond">◈</span>
+                <span>АКТИВНЫЕ СОБЫТИЯ</span>
+              </div>
+              <div class="active-events-header-divider"></div>
             </header>
-            <div class="quest-card-body">
-              <div class="quest-card-subtitle">Бессменные ежедневные задания.</div>
-              <div class="quest-card-items" id="daily-quest-items-list">
-                <!-- Populated dynamically via HUD.ts -->
+            <div class="active-events-body">
+              <!-- 1. Путь в Разлом -->
+              <div class="active-event-card" id="event-card-rift-path" role="button" tabindex="0" title="Открыть событие «Путь в Разлом»">
+                <div class="event-card-icon-box rift-glow">
+                  <span class="event-card-emoji">💎</span>
+                </div>
+                <div class="event-card-info">
+                  <div class="event-card-row-top">
+                    <span class="event-card-title">Путь в Разлом</span>
+                    <span class="event-card-timer">⏱ 6 д. 14 ч.</span>
+                  </div>
+                  <div class="event-card-sub">Особое испытание Недели</div>
+                  <div class="event-card-reward-tag">+500 Опыта БП ⭐</div>
+                </div>
+                <div class="event-card-arrow">›</div>
+              </div>
+
+              <!-- 2. Еженедельные задания -->
+              <div class="active-event-card" id="event-card-weekly" role="button" tabindex="0" title="Открыть Еженедельные задания">
+                <div class="event-card-icon-box weekly-glow">
+                  <span class="event-card-emoji">📜</span>
+                </div>
+                <div class="event-card-info">
+                  <div class="event-card-row-top">
+                    <span class="event-card-title">Еженедельные задания</span>
+                    <span class="event-card-counter" id="active-events-weekly-counter">3 задания</span>
+                  </div>
+                  <div class="event-card-sub">Испытания текущей недели</div>
+                  <div class="event-card-reward-tag">Монеты 🪙 и Опыт БП ⭐</div>
+                </div>
+                <div class="event-card-arrow">›</div>
               </div>
             </div>
-          </section>
-
-          <!-- 2. Weekly Quests Card -->
-          <section class="quest-sidebar-card weekly-quests-card" id="weekly-quests-card" aria-label="Еженедельные задания">
-            <header class="quest-card-header" id="weekly-quests-header" title="Нажмите, чтобы открыть журнал заданий">
-              <span class="quest-card-header-title">ЕЖЕНЕДЕЛЬНЫЕ ЗАДАНИЯ</span>
-            </header>
-            <div class="quest-card-body">
-              <div class="quest-card-subtitle">Контракты и еженедельные испытания.</div>
-              <div class="quest-card-items" id="weekly-quest-items-list">
-                <!-- Populated dynamically via HUD.ts -->
-              </div>
-            </div>
-          </section>
+          </div>
         </aside>
       </div>
 
