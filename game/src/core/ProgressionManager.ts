@@ -2,6 +2,8 @@ import { CharacterType } from '../sim/types';
 import { getAssetUrl } from '../utils/assetPath';
 import { AssetResolver } from '../utils/AssetResolver';
 import { CHAPTERS_CONFIG, getChapterDef, getChapterQuestDef } from './ChapterQuestsConfig';
+import { getSpecialQuestDef } from './SpecialQuestsConfig';
+import { BattlePassManager } from './BattlePassManager';
 
 export interface SidebarQuestItem {
   id: string;
@@ -45,6 +47,7 @@ export interface ProgressionData {
   unlockedHeroes: Record<CharacterType, boolean>;
   dailyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
   weeklyQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
+  specialQuestsProgress: Record<string, { current: number; isClaimed: boolean }>;
   chapterQuestsProgress: Record<string, ChapterQuestProgress>;
   claimedChapterRewards: Record<number, boolean>;
   chapterQuestsReworkVersion?: number;
@@ -157,6 +160,12 @@ export class ProgressionManager {
         weekly_goblins: { current: 0, isClaimed: false },
         weekly_resources: { current: 0, isClaimed: false }
       },
+      specialQuestsProgress: {
+        rift_elite_bisons: { current: 0, isClaimed: false },
+        weekly_elite_coyotes: { current: 0, isClaimed: false },
+        weekly_defeat_bosses: { current: 0, isClaimed: false },
+        weekly_play_invoker: { current: 0, isClaimed: false }
+      },
       chapterQuestsProgress: this.getDefaultChapterQuestsProgress(),
       claimedChapterRewards: {
         1: false,
@@ -211,6 +220,9 @@ export class ProgressionManager {
           weeklyQuestsProgress: isReworked && parsed.weeklyQuestsProgress && typeof parsed.weeklyQuestsProgress === 'object'
             ? { ...defaults.weeklyQuestsProgress, ...parsed.weeklyQuestsProgress }
             : defaults.weeklyQuestsProgress,
+          specialQuestsProgress: isReworked && parsed.specialQuestsProgress && typeof parsed.specialQuestsProgress === 'object'
+            ? { ...defaults.specialQuestsProgress, ...parsed.specialQuestsProgress }
+            : defaults.specialQuestsProgress,
           chapterQuestsProgress: isReworked && parsed.chapterQuestsProgress && typeof parsed.chapterQuestsProgress === 'object'
             ? { ...defaults.chapterQuestsProgress, ...parsed.chapterQuestsProgress }
             : defaults.chapterQuestsProgress,
@@ -382,6 +394,7 @@ export class ProgressionManager {
     if (this.data.dailyQuestsProgress?.daily_bosses && !this.data.dailyQuestsProgress.daily_bosses.isClaimed) {
       this.data.dailyQuestsProgress.daily_bosses.current = Math.min(2, this.data.dailyQuestsProgress.daily_bosses.current + 1);
     }
+    this.recordSpecialQuestProgress('weekly_defeat_bosses', 1);
     // Step 3 of Leshy quest can also progress when a boss is defeated
     if (this.data.questLeshySteps[0] && this.data.questLeshySteps[1] && !this.data.questLeshySteps[2]) {
       this.data.questLeshySteps[2] = true;
@@ -534,6 +547,83 @@ export class ProgressionManager {
 
     this.save();
     return { success: true, rewardType: target.rewardType, amount: target.rewardAmount, label: target.rewardLabel };
+  }
+
+  public getSpecialQuestProgress(questId: string): { current: number; max: number; isComplete: boolean; isClaimed: boolean; label: string } {
+    const def = getSpecialQuestDef(questId);
+    const max = def ? def.targetCount : 1;
+    const prog = this.data.specialQuestsProgress?.[questId] ?? { current: 0, isClaimed: false };
+    const current = Math.min(max, Math.max(0, prog.current));
+    return {
+      current,
+      max,
+      isComplete: current >= max,
+      isClaimed: !!prog.isClaimed,
+      label: `${current} / ${max}`
+    };
+  }
+
+  public recordSpecialQuestProgress(questId: string, count: number = 1): void {
+    if (this.isTrainingMode || count <= 0) return;
+    const def = getSpecialQuestDef(questId);
+    if (!def) return;
+    if (!this.data.specialQuestsProgress) {
+      this.data.specialQuestsProgress = {};
+    }
+    const currentProg = this.data.specialQuestsProgress[questId] ?? { current: 0, isClaimed: false };
+    if (currentProg.isClaimed) return;
+    currentProg.current = Math.min(def.targetCount, currentProg.current + count);
+    this.data.specialQuestsProgress[questId] = currentProg;
+    this.save();
+  }
+
+  public recordEliteBisonKilled(count: number = 1): void {
+    this.recordSpecialQuestProgress('rift_elite_bisons', count);
+  }
+
+  public recordEliteCoyoteKilled(count: number = 1): void {
+    this.recordSpecialQuestProgress('weekly_elite_coyotes', count);
+  }
+
+  public recordHeroPlayed(hero: CharacterType): void {
+    if (hero === 'invoker') {
+      this.recordSpecialQuestProgress('weekly_play_invoker', 1);
+    }
+  }
+
+  public claimSpecialQuest(questId: string): { success: boolean; bpXp?: number; coins?: number; label: string } | null {
+    if (this.isTrainingMode) return null;
+    const def = getSpecialQuestDef(questId);
+    if (!def) return null;
+    if (!this.data.specialQuestsProgress) {
+      this.data.specialQuestsProgress = {};
+    }
+    const prog = this.data.specialQuestsProgress[questId] ?? { current: 0, isClaimed: false };
+    if (prog.isClaimed || prog.current < def.targetCount) {
+      return null;
+    }
+    prog.isClaimed = true;
+    this.data.specialQuestsProgress[questId] = prog;
+
+    let bpXp: number | undefined;
+    let coins: number | undefined;
+
+    if (def.rewards.bp_xp) {
+      bpXp = def.rewards.bp_xp;
+      BattlePassManager.getInstance().addPoints(bpXp);
+    }
+    if (def.rewards.coins) {
+      coins = def.rewards.coins;
+      this.addCoins(coins);
+    }
+
+    this.save();
+    return {
+      success: true,
+      bpXp,
+      coins,
+      label: def.rewardLabel
+    };
   }
 
   public progressLeshyStep(stepIndex: 0 | 1 | 2): boolean {
@@ -955,6 +1045,12 @@ export class ProgressionManager {
     this.data.weeklyQuestsProgress = {
       weekly_goblins: { current: 0, isClaimed: false },
       weekly_resources: { current: 0, isClaimed: false }
+    };
+    this.data.specialQuestsProgress = {
+      rift_elite_bisons: { current: 0, isClaimed: false },
+      weekly_elite_coyotes: { current: 0, isClaimed: false },
+      weekly_defeat_bosses: { current: 0, isClaimed: false },
+      weekly_play_invoker: { current: 0, isClaimed: false }
     };
     this.data.resourcesGathered = 0;
     this.data.enemiesKilled = 0;

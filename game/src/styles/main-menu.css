@@ -63,6 +63,181 @@
 }
 
 /* ==========================================================================
+   ACTIVE EVENTS WIDGET (TOP-RIGHT MAIN MENU - REFERENCE SCREENSHOT STYLE)
+   ========================================================================== */
+.active-events-widget {
+  position: absolute;
+  right: clamp(16px, 3.2vw, 44px);
+  top: clamp(62px, 8.5vh, 88px);
+  z-index: 20;
+  width: clamp(290px, 23vw, 360px);
+  background: linear-gradient(180deg, #0d1726 0%, #070c16 100%);
+  border: 2px solid #1e3a5f;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), inset 0 0 16px rgba(14, 165, 233, 0.12);
+  overflow: hidden;
+  user-select: none;
+  pointer-events: auto;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.active-events-widget:hover {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(14, 165, 233, 0.2);
+}
+
+.active-events-header {
+  background: linear-gradient(90deg, #0b2545 0%, #154275 50%, #0b2545 100%);
+  border-bottom: 2px solid #2563eb;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.active-events-badge-icon {
+  width: 26px;
+  height: 26px;
+  background: rgba(6, 182, 212, 0.2);
+  border: 1.5px solid rgba(56, 189, 248, 0.6);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+}
+
+.active-events-header-title {
+  font-family: 'Cinzel', 'Montserrat', sans-serif;
+  font-size: clamp(12px, 0.95vw, 14px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1.2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+
+.active-events-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.active-event-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.active-event-card:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: #38bdf8;
+  transform: translateX(3px);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25);
+}
+
+.event-card-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: #070b14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card-icon-box.rift-glow {
+  border: 1.5px solid #06b6d4;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.35);
+  background: radial-gradient(circle at center, #0e304b 0%, #050a12 100%);
+}
+
+.event-card-icon-box.weekly-glow {
+  border: 1.5px solid #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+  background: radial-gradient(circle at center, #3d2305 0%, #050a12 100%);
+}
+
+.event-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.16s ease;
+}
+
+.active-event-card:hover .event-card-title {
+  color: #38bdf8;
+}
+
+.event-card-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.event-card-timer {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-top: 3px;
+}
+
+.event-card-counter {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-top: 3px;
+}
+
+.event-card-arrow {
+  color: #38bdf8;
+  font-size: 20px;
+  font-weight: 900;
+  padding-left: 2px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.active-event-card:hover .event-card-arrow {
+  transform: translateX(3px);
+  color: #7dd3fc;
+}
+
+@media (max-width: 950px) {
+  .active-events-widget {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
    BATTLE PASS (TOP-LEFT MAIN MENU & FULL MODAL & GAME OVER)
    ========================================================================== */
 .battle-pass-widget {

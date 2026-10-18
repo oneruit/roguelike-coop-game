@@ -538,6 +538,12 @@ export class HUD {
       onQuests: () => {
         this.toggleQuestsInMainMenu();
       },
+      onOpenRiftPath: () => {
+        this.showQuestsModal('rift_elite_bisons', 1, false, 'rift_path');
+      },
+      onOpenWeeklyQuests: () => {
+        this.showQuestsModal('weekly_elite_coyotes', 1, false, 'weekly');
+      },
       onLeaderboard: () => {
         this.showLeaderboard();
       },
@@ -1136,8 +1142,13 @@ export class HUD {
     this.questsUI.selectQuestChapter(chapter);
   }
 
-  public showQuestsModal(selectedQuestId: string = 'ch1_deadly_debut', chapter: number = 1, fromCharSelect: boolean = false) {
-    this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect);
+  public showQuestsModal(
+    selectedQuestId: string = 'ch1_deadly_debut',
+    chapter: number = 1,
+    fromCharSelect: boolean = false,
+    tabType: 'chapter' | 'rift_path' | 'weekly' = 'chapter'
+  ) {
+    this.questsUI.showQuestsModal(selectedQuestId, chapter, fromCharSelect, tabType);
   }
 
   public setInGameHUDVisible(visible: boolean) {

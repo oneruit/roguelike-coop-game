@@ -241,6 +241,7 @@ export class SessionDirector {
       this.player.displayName = 'Вы';
       this.player.colorCss = '#f59e0b';
       this.player.setCharacter(charType);
+      ProgressionManager.getInstance().recordHeroPlayed(charType);
       this.player.redrawOverhead();
       this.hud.setCoopBadge(null);
       this.hud.clearTeammates();
@@ -305,6 +306,7 @@ export class SessionDirector {
     }
 
     this.restartGame(new Vector3(0, 0, 0), true);
+    ProgressionManager.getInstance().recordHeroPlayed(this.player.charType);
 
     const numericSeed = typeof this.currentSeed === 'number'
       ? this.currentSeed
@@ -360,6 +362,7 @@ export class SessionDirector {
 
     this.currentSeed = seed ?? 1337;
     this.restartGame(new Vector3(myOffset[0], 0, myOffset[1]), true);
+    ProgressionManager.getInstance().recordHeroPlayed(this.player.charType);
   }
 
   public surrenderGame(): void {

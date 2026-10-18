@@ -263,6 +263,129 @@
   text-shadow: 0 0 10px #f0abfc, 0 2px 5px rgba(0, 0, 0, 0.95);
 }
 
+/* Tabs Divider */
+.quest-book-tabs-divider {
+  width: 48px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 2px -4px;
+  position: relative;
+}
+
+.quest-book-tabs-divider::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.6), transparent);
+}
+
+.quest-tabs-divider-diamond {
+  position: relative;
+  z-index: 1;
+  font-size: 8px;
+  color: #c084fc;
+  background: #15102a;
+  padding: 0 4px;
+}
+
+/* Special Bottom Tabs */
+.quest-special-tab {
+  position: relative;
+  width: 58px;
+  height: 52px;
+  border-radius: 12px 0 0 12px;
+  border: 2.5px solid #1e3a5f;
+  border-right: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px 0 2px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #0f172a 0%, #080d1a 100%);
+  box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.65);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+              filter 0.18s ease,
+              background 0.18s ease,
+              border-color 0.18s ease,
+              box-shadow 0.18s ease;
+  user-select: none;
+  outline: none;
+}
+
+.quest-special-tab:hover {
+  transform: translateX(-6px);
+  filter: brightness(1.25);
+  box-shadow: -6px 6px 14px rgba(0, 0, 0, 0.75);
+}
+
+/* Rift Path Tab */
+.quest-special-tab.tab-rift {
+  background: linear-gradient(135deg, #0e304b 0%, #061929 100%);
+  border-color: #0284c7;
+}
+
+.quest-special-tab.tab-rift:hover {
+  border-color: #38bdf8;
+  box-shadow: -6px 6px 14px rgba(6, 182, 212, 0.4);
+}
+
+.quest-special-tab.tab-rift.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+  border-color: #7dd3fc !important;
+  box-shadow: -8px 4px 18px rgba(6, 182, 212, 0.75), -2px 0 10px rgba(125, 211, 252, 0.5) !important;
+  transform: translateX(-8px);
+}
+
+/* Weekly Tab */
+.quest-special-tab.tab-weekly {
+  background: linear-gradient(135deg, #422006 0%, #261103 100%);
+  border-color: #b45309;
+}
+
+.quest-special-tab.tab-weekly:hover {
+  border-color: #f59e0b;
+  box-shadow: -6px 6px 14px rgba(245, 158, 11, 0.4);
+}
+
+.quest-special-tab.tab-weekly.active {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  border-color: #fde68a !important;
+  box-shadow: -8px 4px 18px rgba(245, 158, 11, 0.75), -2px 0 10px rgba(253, 230, 138, 0.5) !important;
+  transform: translateX(-8px);
+}
+
+.special-tab-icon {
+  font-size: 15px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+}
+
+.special-tab-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #e2e8f0;
+  line-height: 1;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.quest-special-tab.tab-rift.active .special-tab-label {
+  color: #e0f2fe;
+  text-shadow: 0 0 8px #38bdf8;
+}
+
+.quest-special-tab.tab-weekly.active .special-tab-label {
+  color: #fef3c7;
+  text-shadow: 0 0 8px #f59e0b;
+}
+
 /* Floating Magic Sparkle Particles */
 .quest-magic-particles {
   position: absolute;
@@ -945,6 +1068,13 @@
   border-color: #a855f7;
   outline-color: #d8b4fe;
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.reward-slot.reward-slot-bp {
+  border-color: #0284c7;
+  outline-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, #0c2d48 0%, #061929 100%);
 }
 
 .reward-pixel-icon {

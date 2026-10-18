@@ -12,6 +12,8 @@ export interface MainMenuScreenOptions {
   onCoop?: () => void;
   onShop?: () => void;
   onQuests?: () => void;
+  onOpenRiftPath?: () => void;
+  onOpenWeeklyQuests?: () => void;
   onLeaderboard?: () => void;
   onSettings?: () => void;
   onAuth?: () => void;
@@ -84,6 +86,16 @@ export class MainMenuScreen extends Screen {
     SafeDOM.query(this.container, '#menu-btn-quests')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onQuests?.();
+    });
+
+    SafeDOM.query(this.container, '#event-card-rift-path')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onOpenRiftPath?.();
+    });
+
+    SafeDOM.query(this.container, '#event-card-weekly')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onOpenWeeklyQuests?.();
     });
 
     SafeDOM.query(this.container, '#menu-btn-leaderboard')?.addEventListener('click', () => {
