@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T15:26:13.528Z",
-  "totalFiles": 154,
-  "totalSymbols": 1592,
-  "topLevelCount": 480,
-  "methodsCount": 1112,
+  "generatedAt": "2026-10-18T16:21:41.130Z",
+  "totalFiles": 155,
+  "totalSymbols": 1608,
+  "topLevelCount": 484,
+  "methodsCount": 1124,
   "entities": {
     "heroes": [
       {
@@ -3622,6 +3622,135 @@
       "file": "admin/src/views/leaderboardsView.ts",
       "line": 280,
       "doc": "Exports current leaderboard entries as a formatted JSON file."
+    },
+    {
+      "name": "FEATURE_FLAG_DEFINITIONS",
+      "kind": "const",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 20
+    },
+    {
+      "name": "FeatureFlagDefinition",
+      "kind": "interface",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 14
+    },
+    {
+      "name": "FeatureFlagKey",
+      "kind": "type",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 6,
+      "doc": "Granular runtime feature flag registry and kill-switch system. Supports environment defaults, localStorage persistence, and URL query overrides."
+    },
+    {
+      "name": "FeatureFlags",
+      "kind": "class",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 55
+    },
+    {
+      "name": "FeatureFlags.addListener",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 143,
+      "className": "FeatureFlags",
+      "methodName": "addListener",
+      "doc": "Subscribes to feature flag change events."
+    },
+    {
+      "name": "FeatureFlags.clearFlag",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 106,
+      "className": "FeatureFlags",
+      "methodName": "clearFlag",
+      "doc": "Clears override for a specific flag, restoring its default value."
+    },
+    {
+      "name": "FeatureFlags.getAllFlags",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 132,
+      "className": "FeatureFlags",
+      "methodName": "getAllFlags",
+      "doc": "Returns snapshot of all feature flag states."
+    },
+    {
+      "name": "FeatureFlags.getInstance",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 68,
+      "className": "FeatureFlags",
+      "methodName": "getInstance",
+      "doc": "Returns singleton instance of FeatureFlags."
+    },
+    {
+      "name": "FeatureFlags.isEnabled",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 85,
+      "className": "FeatureFlags",
+      "methodName": "isEnabled",
+      "doc": "Checks if a given feature flag is enabled."
+    },
+    {
+      "name": "FeatureFlags.loadFromStorage",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 158,
+      "className": "FeatureFlags",
+      "methodName": "loadFromStorage"
+    },
+    {
+      "name": "FeatureFlags.loadFromUrl",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 189,
+      "className": "FeatureFlags",
+      "methodName": "loadFromUrl"
+    },
+    {
+      "name": "FeatureFlags.notifyListeners",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 148,
+      "className": "FeatureFlags",
+      "methodName": "notifyListeners"
+    },
+    {
+      "name": "FeatureFlags.resetInstance",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 78,
+      "className": "FeatureFlags",
+      "methodName": "resetInstance",
+      "doc": "Resets singleton instance (useful for unit tests)."
+    },
+    {
+      "name": "FeatureFlags.resetToDefaults",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 115,
+      "className": "FeatureFlags",
+      "methodName": "resetToDefaults",
+      "doc": "Resets all flags to default values and clears persistence."
+    },
+    {
+      "name": "FeatureFlags.saveToStorage",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 176,
+      "className": "FeatureFlags",
+      "methodName": "saveToStorage"
+    },
+    {
+      "name": "FeatureFlags.setFlag",
+      "kind": "method",
+      "file": "game/src/core/FeatureFlags.ts",
+      "line": 95,
+      "className": "FeatureFlags",
+      "methodName": "setFlag",
+      "doc": "Sets a runtime override for a feature flag."
     },
     {
       "name": "filterAndShuffleForReroll",

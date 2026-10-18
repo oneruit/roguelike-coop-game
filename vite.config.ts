@@ -1,4 +1,5 @@
 import { defineConfig, Plugin } from 'vite';
+import react from '@vitejs/plugin-react';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -141,6 +142,7 @@ export default defineConfig(({ command }) => {
         ? './'
         : '/'),
     plugins: [
+      react(),
       versionPlugin(isBuild, currentBuildTime, currentBuildId),
       htmlPartialsPlugin(),
       ViteImageOptimizer({
@@ -178,7 +180,10 @@ export default defineConfig(({ command }) => {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('three')) {
+              if (id.includes('react') || id.includes('scheduler')) {
+                return 'react-vendor';
+              }
+              if (id.includes('three') || id.includes('@react-three')) {
                 return 'three';
               }
               if (id.includes('@supabase')) {

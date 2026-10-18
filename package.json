@@ -18,7 +18,7 @@
     "preview:prod": "vite preview",
     "server": "tsx server/dedicatedServer.ts",
     "index": "tsx scripts/generate-index.ts",
-    "test": "tsx --test tests/auth.test.ts tests/cloudSync.test.ts tests/chapterQuestsRework.test.ts tests/battlePass.test.ts tests/invoker.test.ts tests/uniqueCharacters.test.ts tests/teleporterDiscovery.test.ts tests/weaponReroll.test.ts tests/damageAndWeaponGrades.test.ts tests/gameplayFixes.test.ts tests/endGameWeaponStatsAndMightElixir.test.ts tests/combatBalanceAndResistance.test.ts tests/treeManager.test.ts tests/freezeAndKnockback.test.ts tests/poisonPuddleWeapon.test.ts tests/leaderboardAdmin.test.ts tests/lobbyCoop.test.ts tests/chestGeneration.test.ts tests/armorAndChestProgression.test.ts tests/specialQuests.test.ts && npm run test:rewards",
+    "test": "tsx --test tests/featureFlags.test.ts tests/auth.test.ts tests/cloudSync.test.ts tests/chapterQuestsRework.test.ts tests/battlePass.test.ts tests/invoker.test.ts tests/uniqueCharacters.test.ts tests/teleporterDiscovery.test.ts tests/weaponReroll.test.ts tests/damageAndWeaponGrades.test.ts tests/gameplayFixes.test.ts tests/endGameWeaponStatsAndMightElixir.test.ts tests/combatBalanceAndResistance.test.ts tests/treeManager.test.ts tests/freezeAndKnockback.test.ts tests/poisonPuddleWeapon.test.ts tests/leaderboardAdmin.test.ts tests/lobbyCoop.test.ts tests/chestGeneration.test.ts tests/armorAndChestProgression.test.ts tests/specialQuests.test.ts && npm run test:rewards",
     "test:invoker": "tsx --test tests/invoker.test.ts",
     "test:unique": "tsx --test tests/uniqueCharacters.test.ts",
     "test:teleporter": "tsx --test tests/teleporterDiscovery.test.ts",
@@ -29,14 +29,22 @@
     "test:rewards": "node tests/runRewardFlowTests.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "@supabase/supabase-js": "^2.117.3",
     "peerjs": "^1.5.5",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "three": "^0.186.1",
-    "ws": "^8.22.0"
+    "ws": "^8.22.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
     "@types/ws": "^8.18.2",
+    "@vitejs/plugin-react": "^6.1.2",
     "concurrently": "^10.0.5",
     "sharp": "^0.35.5",
     "tsx": "^4.23.15",

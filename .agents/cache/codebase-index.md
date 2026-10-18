@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T15:26:13.528Z | **Files:** 154 | **Top-level:** 480 | **Class Methods:** 1112
+> **Generated:** 2026-10-18T16:21:41.130Z | **Files:** 155 | **Top-level:** 484 | **Class Methods:** 1124
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 434 |
+| `game/src` | 438 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -417,6 +417,22 @@ Run `npm run index` to refresh this cache.
 | `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:80`](../../game/src/core/Engine.ts#L80) | - |
 | `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:179`](../../game/src/core/Engine.ts#L179) | - |
 | `exportLeaderboardJson` | `function` | [`admin/src/views/leaderboardsView.ts:280`](../../admin/src/views/leaderboardsView.ts#L280) | Exports current leaderboard entries as a formatted JSON file. |
+| `FEATURE_FLAG_DEFINITIONS` | `const` | [`game/src/core/FeatureFlags.ts:20`](../../game/src/core/FeatureFlags.ts#L20) | - |
+| `FeatureFlagDefinition` | `interface` | [`game/src/core/FeatureFlags.ts:14`](../../game/src/core/FeatureFlags.ts#L14) | - |
+| `FeatureFlagKey` | `type` | [`game/src/core/FeatureFlags.ts:6`](../../game/src/core/FeatureFlags.ts#L6) | Granular runtime feature flag registry and kill-switch system. Supports env... |
+| `FeatureFlags` | `class` | [`game/src/core/FeatureFlags.ts:55`](../../game/src/core/FeatureFlags.ts#L55) | - |
+| `FeatureFlags.addListener` | `method` | [`game/src/core/FeatureFlags.ts:143`](../../game/src/core/FeatureFlags.ts#L143) | Subscribes to feature flag change events. |
+| `FeatureFlags.clearFlag` | `method` | [`game/src/core/FeatureFlags.ts:106`](../../game/src/core/FeatureFlags.ts#L106) | Clears override for a specific flag, restoring its default value. |
+| `FeatureFlags.getAllFlags` | `method` | [`game/src/core/FeatureFlags.ts:132`](../../game/src/core/FeatureFlags.ts#L132) | Returns snapshot of all feature flag states. |
+| `FeatureFlags.getInstance` | `method` | [`game/src/core/FeatureFlags.ts:68`](../../game/src/core/FeatureFlags.ts#L68) | Returns singleton instance of FeatureFlags. |
+| `FeatureFlags.isEnabled` | `method` | [`game/src/core/FeatureFlags.ts:85`](../../game/src/core/FeatureFlags.ts#L85) | Checks if a given feature flag is enabled. |
+| `FeatureFlags.loadFromStorage` | `method` | [`game/src/core/FeatureFlags.ts:158`](../../game/src/core/FeatureFlags.ts#L158) | - |
+| `FeatureFlags.loadFromUrl` | `method` | [`game/src/core/FeatureFlags.ts:189`](../../game/src/core/FeatureFlags.ts#L189) | - |
+| `FeatureFlags.notifyListeners` | `method` | [`game/src/core/FeatureFlags.ts:148`](../../game/src/core/FeatureFlags.ts#L148) | - |
+| `FeatureFlags.resetInstance` | `method` | [`game/src/core/FeatureFlags.ts:78`](../../game/src/core/FeatureFlags.ts#L78) | Resets singleton instance (useful for unit tests). |
+| `FeatureFlags.resetToDefaults` | `method` | [`game/src/core/FeatureFlags.ts:115`](../../game/src/core/FeatureFlags.ts#L115) | Resets all flags to default values and clears persistence. |
+| `FeatureFlags.saveToStorage` | `method` | [`game/src/core/FeatureFlags.ts:176`](../../game/src/core/FeatureFlags.ts#L176) | - |
+| `FeatureFlags.setFlag` | `method` | [`game/src/core/FeatureFlags.ts:95`](../../game/src/core/FeatureFlags.ts#L95) | Sets a runtime override for a feature flag. |
 | `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
