@@ -205,6 +205,25 @@ export class Engine {
     }
   }
 
+  public snapCamera(playerPos: Vector3): void {
+    this.camera.position.set(
+      playerPos.x + this.cameraOffset.x,
+      playerPos.y + this.cameraOffset.y,
+      playerPos.z + this.cameraOffset.z
+    );
+    this.cameraTarget.copy(playerPos);
+    this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y + 0.6, this.cameraTarget.z);
+    if (this.dirLight) {
+      this.dirLight.position.set(
+        playerPos.x + this.currentLightOffset.x,
+        playerPos.y + this.currentLightOffset.y,
+        playerPos.z + this.currentLightOffset.z
+      );
+      this.dirLight.target.position.copy(playerPos);
+      this.dirLight.target.updateMatrixWorld();
+    }
+  }
+
   private onWindowResize() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();

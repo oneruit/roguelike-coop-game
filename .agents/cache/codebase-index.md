@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-18T17:27:21.355Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1162
+> **Generated:** 2026-10-18T17:54:17.884Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1164
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -80,10 +80,10 @@ Run `npm run index` to refresh this cache.
 | `AssetResolver.getHeroTexture` | `method` | [`game/src/utils/AssetResolver.ts:15`](../../game/src/utils/AssetResolver.ts#L15) | Get hero texture URL for a given action. Path: /textures/heroes/<heroId>/<a... |
 | `AssetResolver.getWeaponIcon` | `method` | [`game/src/utils/AssetResolver.ts:34`](../../game/src/utils/AssetResolver.ts#L34) | Get weapon icon URL. Path: /textures/weapons/weapon_<weaponId>.png |
 | `AssetResolver.normalizeTextureUrl` | `method` | [`game/src/utils/AssetResolver.ts:42`](../../game/src/utils/AssetResolver.ts#L42) | Normalizes legacy URLs to modular structure if applicable. |
-| `AstralStaffWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:269`](../../game/src/combat/weapons/MagicWeapons.ts#L269) | Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high... |
-| `AstralStaffWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:356`](../../game/src/combat/weapons/MagicWeapons.ts#L356) | - |
-| `AstralStaffWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:294`](../../game/src/combat/weapons/MagicWeapons.ts#L294) | - |
-| `AstralStaffWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:349`](../../game/src/combat/weapons/MagicWeapons.ts#L349) | - |
+| `AstralStaffWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:307`](../../game/src/combat/weapons/MagicWeapons.ts#L307) | Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high... |
+| `AstralStaffWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:394`](../../game/src/combat/weapons/MagicWeapons.ts#L394) | - |
+| `AstralStaffWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:332`](../../game/src/combat/weapons/MagicWeapons.ts#L332) | - |
+| `AstralStaffWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:387`](../../game/src/combat/weapons/MagicWeapons.ts#L387) | - |
 | `attachInputListeners` | `function` | [`admin/src/views/controlHelpers.ts:35`](../../admin/src/views/controlHelpers.ts#L35) | - |
 | `AuthListener` | `type` | [`game/src/auth/AuthManager.ts:16`](../../game/src/auth/AuthManager.ts#L16) | - |
 | `AuthManager` | `class` | [`game/src/auth/AuthManager.ts:26`](../../game/src/auth/AuthManager.ts#L26) | Authentication Manager for The Rift. Handles local Guest mode and Supabase ... |
@@ -432,12 +432,13 @@ Run `npm run index` to refresh this cache.
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
-| `Engine.detachRenderer` | `method` | [`game/src/core/Engine.ts:217`](../../game/src/core/Engine.ts#L217) | Safely detaches and disposes the legacy WebGLRenderer to yield ownership to... |
-| `Engine.onWindowResize` | `method` | [`game/src/core/Engine.ts:208`](../../game/src/core/Engine.ts#L208) | - |
-| `Engine.render` | `method` | [`game/src/core/Engine.ts:227`](../../game/src/core/Engine.ts#L227) | - |
+| `Engine.detachRenderer` | `method` | [`game/src/core/Engine.ts:236`](../../game/src/core/Engine.ts#L236) | Safely detaches and disposes the legacy WebGLRenderer to yield ownership to... |
+| `Engine.onWindowResize` | `method` | [`game/src/core/Engine.ts:227`](../../game/src/core/Engine.ts#L227) | - |
+| `Engine.render` | `method` | [`game/src/core/Engine.ts:246`](../../game/src/core/Engine.ts#L246) | - |
 | `Engine.setShadowQuality` | `method` | [`game/src/core/Engine.ts:156`](../../game/src/core/Engine.ts#L156) | Configures shadow map resolution or disables shadows (0, 512, 1024, 2048). |
 | `Engine.setTimeOfDay` | `method` | [`game/src/core/Engine.ts:113`](../../game/src/core/Engine.ts#L113) | Switches lighting between Day (Sun) and Night (Moon). |
 | `Engine.setupLighting` | `method` | [`game/src/core/Engine.ts:83`](../../game/src/core/Engine.ts#L83) | - |
+| `Engine.snapCamera` | `method` | [`game/src/core/Engine.ts:208`](../../game/src/core/Engine.ts#L208) | - |
 | `Engine.updateCamera` | `method` | [`game/src/core/Engine.ts:182`](../../game/src/core/Engine.ts#L182) | - |
 | `exportLeaderboardJson` | `function` | [`admin/src/views/leaderboardsView.ts:280`](../../admin/src/views/leaderboardsView.ts#L280) | Exports current leaderboard entries as a formatted JSON file. |
 | `FEATURE_FLAG_DEFINITIONS` | `const` | [`game/src/core/FeatureFlags.ts:20`](../../game/src/core/FeatureFlags.ts#L20) | - |
@@ -459,17 +460,17 @@ Run `npm run index` to refresh this cache.
 | `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
-| `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:594`](../../game/src/combat/weapons/MagicWeapons.ts#L594) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
-| `FireballWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:690`](../../game/src/combat/weapons/MagicWeapons.ts#L690) | - |
-| `FireballWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:623`](../../game/src/combat/weapons/MagicWeapons.ts#L623) | - |
-| `FireballWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:683`](../../game/src/combat/weapons/MagicWeapons.ts#L683) | - |
-| `FireRingWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:123`](../../game/src/combat/weapons/MagicWeapons.ts#L123) | Fire Ring (Огненное Кольцо) Fiery ring of blazing animated flames surroundi... |
-| `FireRingWeapon.destroy` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:229`](../../game/src/combat/weapons/MagicWeapons.ts#L229) | - |
-| `FireRingWeapon.destroyAll` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:138`](../../game/src/combat/weapons/MagicWeapons.ts#L138) | - |
-| `FireRingWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:253`](../../game/src/combat/weapons/MagicWeapons.ts#L253) | - |
-| `FireRingWeapon.initVisual` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:207`](../../game/src/combat/weapons/MagicWeapons.ts#L207) | - |
-| `FireRingWeapon.setVfxOpacity` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:127`](../../game/src/combat/weapons/MagicWeapons.ts#L127) | - |
-| `FireRingWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:246`](../../game/src/combat/weapons/MagicWeapons.ts#L246) | - |
+| `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:632`](../../game/src/combat/weapons/MagicWeapons.ts#L632) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
+| `FireballWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:728`](../../game/src/combat/weapons/MagicWeapons.ts#L728) | - |
+| `FireballWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:661`](../../game/src/combat/weapons/MagicWeapons.ts#L661) | - |
+| `FireballWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:721`](../../game/src/combat/weapons/MagicWeapons.ts#L721) | - |
+| `FireRingWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:161`](../../game/src/combat/weapons/MagicWeapons.ts#L161) | Fire Ring (Огненное Кольцо) Fiery ring of blazing animated flames surroundi... |
+| `FireRingWeapon.destroy` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:267`](../../game/src/combat/weapons/MagicWeapons.ts#L267) | - |
+| `FireRingWeapon.destroyAll` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:176`](../../game/src/combat/weapons/MagicWeapons.ts#L176) | - |
+| `FireRingWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:291`](../../game/src/combat/weapons/MagicWeapons.ts#L291) | - |
+| `FireRingWeapon.initVisual` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:245`](../../game/src/combat/weapons/MagicWeapons.ts#L245) | - |
+| `FireRingWeapon.setVfxOpacity` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:165`](../../game/src/combat/weapons/MagicWeapons.ts#L165) | - |
+| `FireRingWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:284`](../../game/src/combat/weapons/MagicWeapons.ts#L284) | - |
 | `FlailWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:388`](../../game/src/combat/weapons/MeleeWeapons.ts#L388) | Steel Flail (Боевой Цеп) - Hero 3 Brigitta starting weapon Whirls a heavy b... |
 | `FlailWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:468`](../../game/src/combat/weapons/MeleeWeapons.ts#L468) | - |
 | `FlailWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:410`](../../game/src/combat/weapons/MeleeWeapons.ts#L410) | - |
@@ -703,10 +704,10 @@ Run `npm run index` to refresh this cache.
 | `HUD.updateTeleportButton` | `method` | [`game/src/ui/HUD.ts:1431`](../../game/src/ui/HUD.ts#L1431) | - |
 | `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1479`](../../game/src/ui/HUD.ts#L1479) | - |
 | `HUDOverlay` | `const` | [`game/src/ui/react/hud/HUDOverlay.tsx:5`](../../game/src/ui/react/hud/HUDOverlay.tsx#L5) | - |
-| `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:486`](../../game/src/combat/weapons/MagicWeapons.ts#L486) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
-| `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:572`](../../game/src/combat/weapons/MagicWeapons.ts#L572) | - |
-| `IceSpikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:513`](../../game/src/combat/weapons/MagicWeapons.ts#L513) | - |
-| `IceSpikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:565`](../../game/src/combat/weapons/MagicWeapons.ts#L565) | - |
+| `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:524`](../../game/src/combat/weapons/MagicWeapons.ts#L524) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
+| `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:610`](../../game/src/combat/weapons/MagicWeapons.ts#L610) | - |
+| `IceSpikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:551`](../../game/src/combat/weapons/MagicWeapons.ts#L551) | - |
+| `IceSpikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:603`](../../game/src/combat/weapons/MagicWeapons.ts#L603) | - |
 | `InGameHUDScreen` | `class` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:12`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L12) | Base In-Game HUD Screen. Provides modular Screen lifecycle for the in-comba... |
 | `InGameHUDScreen.bindElements` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:22`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L22) | - |
 | `InGameHUDScreen.bindEvents` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:23`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L23) | - |
@@ -843,10 +844,10 @@ Run `npm run index` to refresh this cache.
 | `LevelUpUI` | `class` | [`game/src/ui/modules/LevelUpUI.ts:18`](../../game/src/ui/modules/LevelUpUI.ts#L18) | - |
 | `LevelUpUIContext` | `type` | [`game/src/ui/modules/LevelUpUI.ts:13`](../../game/src/ui/modules/LevelUpUI.ts#L13) | - |
 | `LevelUpUIElements` | `type` | [`game/src/ui/modules/LevelUpUI.ts:12`](../../game/src/ui/modules/LevelUpUI.ts#L12) | - |
-| `LightningStrikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:378`](../../game/src/combat/weapons/MagicWeapons.ts#L378) | Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from... |
-| `LightningStrikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:464`](../../game/src/combat/weapons/MagicWeapons.ts#L464) | - |
-| `LightningStrikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:405`](../../game/src/combat/weapons/MagicWeapons.ts#L405) | - |
-| `LightningStrikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:457`](../../game/src/combat/weapons/MagicWeapons.ts#L457) | - |
+| `LightningStrikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:416`](../../game/src/combat/weapons/MagicWeapons.ts#L416) | Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from... |
+| `LightningStrikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:502`](../../game/src/combat/weapons/MagicWeapons.ts#L502) | - |
+| `LightningStrikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:443`](../../game/src/combat/weapons/MagicWeapons.ts#L443) | - |
+| `LightningStrikeWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:495`](../../game/src/combat/weapons/MagicWeapons.ts#L495) | - |
 | `LobbyCoordinator` | `class` | [`game/src/net/LobbyCoordinator.ts:6`](../../game/src/net/LobbyCoordinator.ts#L6) | - |
 | `LobbyCoordinator.connectAsGuest` | `method` | [`game/src/net/LobbyCoordinator.ts:139`](../../game/src/net/LobbyCoordinator.ts#L139) | - |
 | `LobbyCoordinator.openHostLobby` | `method` | [`game/src/net/LobbyCoordinator.ts:82`](../../game/src/net/LobbyCoordinator.ts#L82) | - |
@@ -1131,10 +1132,10 @@ Run `npm run index` to refresh this cache.
 | `PlayerStoreState` | `interface` | [`game/src/ui/stores/usePlayerStore.ts:28`](../../game/src/ui/stores/usePlayerStore.ts#L28) | - |
 | `PlayerTargetInfo` | `interface` | [`game/src/entities/EnemyManager.ts:13`](../../game/src/entities/EnemyManager.ts#L13) | - |
 | `PlayerXpPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:23`](../../game/src/mechanics/events/GameEventBus.ts#L23) | - |
-| `PoisonPuddleWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:712`](../../game/src/combat/weapons/MagicWeapons.ts#L712) | Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on... |
-| `PoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:809`](../../game/src/combat/weapons/MagicWeapons.ts#L809) | - |
-| `PoisonPuddleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:741`](../../game/src/combat/weapons/MagicWeapons.ts#L741) | - |
-| `PoisonPuddleWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:802`](../../game/src/combat/weapons/MagicWeapons.ts#L802) | - |
+| `PoisonPuddleWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:750`](../../game/src/combat/weapons/MagicWeapons.ts#L750) | Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on... |
+| `PoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:847`](../../game/src/combat/weapons/MagicWeapons.ts#L847) | - |
+| `PoisonPuddleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:779`](../../game/src/combat/weapons/MagicWeapons.ts#L779) | - |
+| `PoisonPuddleWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:840`](../../game/src/combat/weapons/MagicWeapons.ts#L840) | - |
 | `ProgressionChartState` | `interface` | [`admin/src/types.ts:31`](../../admin/src/types.ts#L31) | - |
 | `ProgressionData` | `interface` | [`game/src/core/ProgressionManager.ts:36`](../../game/src/core/ProgressionManager.ts#L36) | - |
 | `ProgressionManager` | `class` | [`game/src/core/ProgressionManager.ts:84`](../../game/src/core/ProgressionManager.ts#L84) | - |
@@ -1236,9 +1237,10 @@ Run `npm run index` to refresh this cache.
 | `ReactUIRoot` | `const` | [`game/src/ui/react/ReactUIRoot.tsx:36`](../../game/src/ui/react/ReactUIRoot.tsx#L36) | - |
 | `ReactUIRootProps` | `interface` | [`game/src/ui/react/ReactUIRoot.tsx:19`](../../game/src/ui/react/ReactUIRoot.tsx#L19) | - |
 | `ReaperScytheWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:23`](../../game/src/combat/weapons/MagicWeapons.ts#L23) | Reaper's Scythe (Коса Жнеца) Rotating scythes circle the hero, cutting thro... |
-| `ReaperScytheWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:49`](../../game/src/combat/weapons/MagicWeapons.ts#L49) | - |
-| `ReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:103`](../../game/src/combat/weapons/MagicWeapons.ts#L103) | - |
-| `ReaperScytheWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:96`](../../game/src/combat/weapons/MagicWeapons.ts#L96) | - |
+| `ReaperScytheWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:57`](../../game/src/combat/weapons/MagicWeapons.ts#L57) | - |
+| `ReaperScytheWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:141`](../../game/src/combat/weapons/MagicWeapons.ts#L141) | - |
+| `ReaperScytheWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:39`](../../game/src/combat/weapons/MagicWeapons.ts#L39) | - |
+| `ReaperScytheWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:134`](../../game/src/combat/weapons/MagicWeapons.ts#L134) | - |
 | `registerUniqueCharacter` | `function` | [`game/src/shared/UniqueCharacters.ts:72`](../../game/src/shared/UniqueCharacters.ts#L72) | Register a new unique character into the system (for future character addit... |
 | `RemotePlayer` | `class` | [`game/src/entities/RemotePlayer.ts:27`](../../game/src/entities/RemotePlayer.ts#L27) | - |
 | `RemotePlayer.destroy` | `method` | [`game/src/entities/RemotePlayer.ts:592`](../../game/src/entities/RemotePlayer.ts#L592) | - |
@@ -1312,12 +1314,12 @@ Run `npm run index` to refresh this cache.
 | `RoughTerrainManager.toHash` | `method` | [`game/src/world/RoughTerrainManager.ts:53`](../../game/src/world/RoughTerrainManager.ts#L53) | - |
 | `RoughZone` | `interface` | [`game/src/world/RoughTerrainManager.ts:17`](../../game/src/world/RoughTerrainManager.ts#L17) | - |
 | `RUN_SAVE_KEY` | `const` | [`game/src/core/RunSaveManager.ts:4`](../../game/src/core/RunSaveManager.ts#L4) | - |
-| `RunSaveManager` | `class` | [`game/src/core/RunSaveManager.ts:44`](../../game/src/core/RunSaveManager.ts#L44) | - |
-| `RunSaveManager.clearSavedRun` | `method` | [`game/src/core/RunSaveManager.ts:97`](../../game/src/core/RunSaveManager.ts#L97) | - |
-| `RunSaveManager.getSavedRunInfo` | `method` | [`game/src/core/RunSaveManager.ts:57`](../../game/src/core/RunSaveManager.ts#L57) | - |
-| `RunSaveManager.hasSavedRun` | `method` | [`game/src/core/RunSaveManager.ts:45`](../../game/src/core/RunSaveManager.ts#L45) | - |
-| `RunSaveManager.loadRun` | `method` | [`game/src/core/RunSaveManager.ts:85`](../../game/src/core/RunSaveManager.ts#L85) | - |
-| `RunSaveManager.saveRun` | `method` | [`game/src/core/RunSaveManager.ts:74`](../../game/src/core/RunSaveManager.ts#L74) | - |
+| `RunSaveManager` | `class` | [`game/src/core/RunSaveManager.ts:45`](../../game/src/core/RunSaveManager.ts#L45) | - |
+| `RunSaveManager.clearSavedRun` | `method` | [`game/src/core/RunSaveManager.ts:98`](../../game/src/core/RunSaveManager.ts#L98) | - |
+| `RunSaveManager.getSavedRunInfo` | `method` | [`game/src/core/RunSaveManager.ts:58`](../../game/src/core/RunSaveManager.ts#L58) | - |
+| `RunSaveManager.hasSavedRun` | `method` | [`game/src/core/RunSaveManager.ts:46`](../../game/src/core/RunSaveManager.ts#L46) | - |
+| `RunSaveManager.loadRun` | `method` | [`game/src/core/RunSaveManager.ts:86`](../../game/src/core/RunSaveManager.ts#L86) | - |
+| `RunSaveManager.saveRun` | `method` | [`game/src/core/RunSaveManager.ts:75`](../../game/src/core/RunSaveManager.ts#L75) | - |
 | `SafeDOM` | `class` | [`game/src/ui/core/SafeDOM.ts:5`](../../game/src/ui/core/SafeDOM.ts#L5) | SafeDOM utility for resilient UI interaction. Prevents application-wide cra... |
 | `SafeDOM.setText` | `method` | [`game/src/ui/core/SafeDOM.ts:65`](../../game/src/ui/core/SafeDOM.ts#L65) | - |
 | `SafeDOM.setVisible` | `method` | [`game/src/ui/core/SafeDOM.ts:71`](../../game/src/ui/core/SafeDOM.ts#L71) | - |
@@ -1351,25 +1353,25 @@ Run `npm run index` to refresh this cache.
 | `SeededRNG.rangeInt` | `method` | [`game/src/core/SeededRNG.ts:45`](../../game/src/core/SeededRNG.ts#L45) | Generates a deterministic integer in range [min, max] inclusive |
 | `selectWeaponUpgradeOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:5`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L5) | The pool is already shuffled and filtered for ownership, prerequisites and ... |
 | `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:60`](../../game/src/core/SessionDirector.ts#L60) | - |
-| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:705`](../../game/src/core/SessionDirector.ts#L705) | Activates the dimensional rift: summons the stage boss directly from the ri... |
-| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:840`](../../game/src/core/SessionDirector.ts#L840) | - |
-| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:989`](../../game/src/core/SessionDirector.ts#L989) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
-| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:447`](../../game/src/core/SessionDirector.ts#L447) | - |
-| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:563`](../../game/src/core/SessionDirector.ts#L563) | - |
-| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:438`](../../game/src/core/SessionDirector.ts#L438) | - |
-| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:489`](../../game/src/core/SessionDirector.ts#L489) | - |
-| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:430`](../../game/src/core/SessionDirector.ts#L430) | - |
-| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1135`](../../game/src/core/SessionDirector.ts#L1135) | Resumes a previously saved run from localStorage. |
-| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:376`](../../game/src/core/SessionDirector.ts#L376) | - |
-| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1073`](../../game/src/core/SessionDirector.ts#L1073) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
-| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:319`](../../game/src/core/SessionDirector.ts#L319) | - |
-| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:263`](../../game/src/core/SessionDirector.ts#L263) | - |
-| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:368`](../../game/src/core/SessionDirector.ts#L368) | - |
-| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1019`](../../game/src/core/SessionDirector.ts#L1019) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
+| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:707`](../../game/src/core/SessionDirector.ts#L707) | Activates the dimensional rift: summons the stage boss directly from the ri... |
+| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:842`](../../game/src/core/SessionDirector.ts#L842) | - |
+| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:991`](../../game/src/core/SessionDirector.ts#L991) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
+| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:449`](../../game/src/core/SessionDirector.ts#L449) | - |
+| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:565`](../../game/src/core/SessionDirector.ts#L565) | - |
+| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:440`](../../game/src/core/SessionDirector.ts#L440) | - |
+| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:491`](../../game/src/core/SessionDirector.ts#L491) | - |
+| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:432`](../../game/src/core/SessionDirector.ts#L432) | - |
+| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1151`](../../game/src/core/SessionDirector.ts#L1151) | Resumes a previously saved run from localStorage. |
+| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:378`](../../game/src/core/SessionDirector.ts#L378) | - |
+| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1075`](../../game/src/core/SessionDirector.ts#L1075) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
+| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:321`](../../game/src/core/SessionDirector.ts#L321) | - |
+| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:265`](../../game/src/core/SessionDirector.ts#L265) | - |
+| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:370`](../../game/src/core/SessionDirector.ts#L370) | - |
+| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1021`](../../game/src/core/SessionDirector.ts#L1021) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
 | `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:179`](../../game/src/core/SessionDirector.ts#L179) | - |
-| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:918`](../../game/src/core/SessionDirector.ts#L918) | - |
-| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:457`](../../game/src/core/SessionDirector.ts#L457) | - |
-| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:724`](../../game/src/core/SessionDirector.ts#L724) | - |
+| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:920`](../../game/src/core/SessionDirector.ts#L920) | - |
+| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:459`](../../game/src/core/SessionDirector.ts#L459) | - |
+| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:726`](../../game/src/core/SessionDirector.ts#L726) | - |
 | `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:157`](../../game/src/core/SessionDirector.ts#L157) | - |
 | `SettingsModal` | `const` | [`game/src/ui/react/modals/SettingsModal.tsx:10`](../../game/src/ui/react/modals/SettingsModal.tsx#L10) | - |
 | `SettingsModalProps` | `interface` | [`game/src/ui/react/modals/SettingsModal.tsx:5`](../../game/src/ui/react/modals/SettingsModal.tsx#L5) | - |

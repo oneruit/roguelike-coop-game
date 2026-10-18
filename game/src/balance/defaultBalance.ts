@@ -64,7 +64,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       cooldown: 0.0,
       damagePerLevel: 2,
       maxLevel: 12,
-      bleedDps: 8,
+      bleedDps: 24,
       bleedDuration: 3.0,
       orbitRadius: 2.5,
       orbitSpeed: 3.8,

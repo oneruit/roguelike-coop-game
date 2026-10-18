@@ -18,6 +18,7 @@ export interface SavedRunData {
   heroId: CharacterType;
   stageNumber: number;
   seed: number;
+  playerPosition?: { x: number; y: number; z: number };
   gameTime: number;
   stageTime: number;
   kills: number;

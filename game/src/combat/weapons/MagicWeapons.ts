@@ -25,21 +25,29 @@ export class ReaperScytheWeapon extends Weapon {
   private orbs: Projectile[] = [];
   private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
-  private bleedDps: number = 8;
+  private bleedDps: number = 24;
+  private onTriggerAttack?: () => void;
+  private attackAnimTimer: number = 0;
+  private attackAnimInterval: number = 0.85;
 
-  constructor() {
+  constructor(onTriggerAttack?: () => void) {
     super('reaper_scythe', 'Коса Жнеца', '🌙', 0, 16, 2);
+    this.onTriggerAttack = onTriggerAttack;
     this.recalculateStats();
+  }
+
+  public setAttackCallback(cb: () => void) {
+    this.onTriggerAttack = cb;
   }
 
   public override recalculateStats(): void {
     super.recalculateStats();
     const cfg = BalanceManager.getWeaponConfig('reaper_scythe');
-    const baseBleed = cfg?.bleedDps ?? 8;
+    const baseBleed = cfg?.bleedDps ?? 24;
     const baseRadius = cfg?.orbitRadius ?? 2.5;
     const baseSpeed = cfg?.orbitSpeed ?? 3.8;
     const baseCount = cfg?.count ?? 2;
-    this.bleedDps = baseBleed + (this.level - 1) * 3 * this.gradeStatMultiplier;
+    this.bleedDps = baseBleed + (this.level - 1) * 9 * this.gradeStatMultiplier;
     this.orbitRadius = Number((baseRadius + (this.level - 1) * 0.25).toFixed(2));
     this.orbitSpeed = Number((baseSpeed + (this.level - 1) * 0.12).toFixed(2));
     const extra = [3, 5, 7, 9, 11, 12].filter(lvl => this.level >= lvl).length;
@@ -51,12 +59,40 @@ export class ReaperScytheWeapon extends Weapon {
   }
 
   public update(
-    _dt: number,
+    dt: number,
     playerPos: Vector3,
-    _enemies: Enemy[],
+    enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void
   ) {
     this.orbs = this.orbs.filter(o => o.isAlive);
+
+    // Trigger attack animation periodically when enemies are nearby (matching Sorceress)
+    this.attackAnimTimer += dt;
+    const effectiveInterval = Math.max(0.35, this.attackAnimInterval * (1 / Math.max(0.2, this.cooldownMultiplier)));
+    if (this.attackAnimTimer >= effectiveInterval) {
+      const maxRangeSq = (this.orbitRadius + 2.5) * (this.orbitRadius + 2.5);
+      let hasEnemyInRange = false;
+      for (let i = 0; i < enemies.length; i++) {
+        const e = enemies[i];
+        if (!e.isAlive) continue;
+        const dx = e.position.x - playerPos.x;
+        const dz = e.position.z - playerPos.z;
+        if (dx * dx + dz * dz <= maxRangeSq) {
+          hasEnemyInRange = true;
+          break;
+        }
+      }
+
+      if (hasEnemyInRange) {
+        this.attackAnimTimer = 0;
+        if (this.onTriggerAttack) {
+          this.onTriggerAttack();
+        }
+        SoundManager.playSlash?.();
+      } else {
+        this.attackAnimTimer = effectiveInterval;
+      }
+    }
 
     if (this.orbs.length < this.orbCount) {
       const needed = this.orbCount - this.orbs.length;
@@ -68,6 +104,7 @@ export class ReaperScytheWeapon extends Weapon {
           speed: 0,
           damage: this.damage,
           bleedDps: this.bleedDps,
+          sourceWeaponId: this.id,
           pierce: 99999,
           lifetime: 999999,
           radius: Number((0.32 + (this.level - 1) * 0.015).toFixed(3)),
@@ -88,6 +125,7 @@ export class ReaperScytheWeapon extends Weapon {
       orb.orbitSpeed = effectiveOrbitSpeed;
       orb.damage = this.damage;
       orb.bleedDps = this.bleedDps;
+      orb.sourceWeaponId = this.id;
       orb.radius = Number((0.32 + (this.level - 1) * 0.015).toFixed(3));
       orb.mesh.scale.setScalar(orb.radius * 3.4);
     });
@@ -105,7 +143,7 @@ export class ReaperScytheWeapon extends Weapon {
     const nextLvl = this.level + 1;
     const cfg = WEAPON_GRADES[grade];
     const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
-    const bleedBonus = Math.round(3 * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
+    const bleedBonus = Math.round(9 * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
     const perks: string[] = [`+${dmg} к прямому урону`, `+${bleedBonus} к урону кровотечения/с`, '+0.25м радиус'];
     if ([3, 5, 7, 9, 11, 12].includes(nextLvl) || grade === 'rare' || grade === 'legendary') {
       perks.push(`+1 коса (всего ${this.orbCount + 1})`);

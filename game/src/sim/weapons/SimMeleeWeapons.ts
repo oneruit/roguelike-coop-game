@@ -190,7 +190,7 @@ export class SimReaperScytheWeapon extends SimWeapon {
   private orbCount: number = 2;
   private orbitRadius: number = 2.5;
   private orbitSpeed: number = 3.8;
-  private bleedDps: number = 8;
+  private bleedDps: number = 24;
   private activeOrbIds: string[] = [];
 
   constructor() {
@@ -237,7 +237,7 @@ export class SimReaperScytheWeapon extends SimWeapon {
     if (this.level >= this.maxLevel) return;
     this.level++;
     this.damage = Number((this.damage + 1).toFixed(2));
-    this.bleedDps = Number((this.bleedDps + 2).toFixed(2));
+    this.bleedDps = Number((this.bleedDps + 6).toFixed(2));
     this.orbitRadius = Number((this.orbitRadius + 0.20).toFixed(2));
     this.orbitSpeed = Number((this.orbitSpeed + 0.08).toFixed(2));
     if ([3, 6, 9, 12].includes(this.level)) this.orbCount++;
@@ -247,7 +247,7 @@ export class SimReaperScytheWeapon extends SimWeapon {
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
     const nextLvl = this.level + 1;
-    const perks: string[] = ['+1 к прямому урону', '+2 к урону кровотечения/сек', '+0.20м дальность орбиты'];
+    const perks: string[] = ['+1 к прямому урону', '+6 к урону кровотечения/сек', '+0.20м дальность орбиты'];
     if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 коса (всего ${this.orbCount + 1})`);
     return perks.join(', ');
   }

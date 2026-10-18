@@ -248,7 +248,9 @@ export class SessionDirector {
       this.hud.hidePartnerHp();
 
       if (seedInput && seedInput.trim().length > 0) {
-        this.currentSeed = seedInput.trim();
+        const trimmed = seedInput.trim();
+        const parsed = parseInt(trimmed, 10);
+        this.currentSeed = (!isNaN(parsed) && parsed.toString() === trimmed) ? (parsed >>> 0) : trimmed;
       } else {
         this.currentSeed = Math.floor(Math.random() * 1000000);
       }
@@ -1089,9 +1091,18 @@ export class SessionDirector {
       riftItemsRecord[k] = v;
     }
 
-    const numSeed = typeof this.currentSeed === 'number'
-      ? this.currentSeed
-      : SeededRNG.hashString(String(this.currentSeed));
+    let numSeed: number;
+    if (typeof this.currentSeed === 'number') {
+      numSeed = this.currentSeed;
+    } else {
+      const trimmed = String(this.currentSeed).trim();
+      const parsed = parseInt(trimmed, 10);
+      if (!isNaN(parsed) && parsed.toString() === trimmed) {
+        numSeed = parsed >>> 0 || 1337;
+      } else {
+        numSeed = SeededRNG.hashString(trimmed || '1337');
+      }
+    }
 
     const runData: SavedRunData = {
       version: 1,
@@ -1099,6 +1110,11 @@ export class SessionDirector {
       heroId: this.player.charType,
       stageNumber: this.biomeManager.stageNumber,
       seed: numSeed,
+      playerPosition: {
+        x: this.player.position.x,
+        y: this.player.position.y,
+        z: this.player.position.z
+      },
       gameTime: this.gameTime,
       stageTime: this.enemyManager.stageTime,
       kills: this.enemyManager.totalKills,
@@ -1139,6 +1155,8 @@ export class SessionDirector {
     try {
       this.currentSeed = data.seed;
       this.startSinglePlayerWithHero(data.heroId, String(data.seed), false, 'day');
+      this.currentSeed = data.seed;
+      this.devManager.setCurrentSeed(this.currentSeed);
 
       this.gameTime = data.gameTime;
       this.enemyManager.gameTime = data.gameTime;
@@ -1171,6 +1189,9 @@ export class SessionDirector {
           weapon.cooldownBonus = wData.cooldownBonus;
           weapon.upgradeHistory = [...wData.upgradeHistory];
           weapon.recalculateStats();
+          if (typeof (weapon as any).setAttackCallback === 'function') {
+            (weapon as any).setAttackCallback(() => this.player.triggerAttackAnim(0.48, weapon.id));
+          }
           this.player.weapons.push(weapon);
         }
       }
@@ -1193,10 +1214,26 @@ export class SessionDirector {
       this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
       this.hud.updateStageText(data.stageNumber, currentBiome.name);
 
-      const stageSeed = Number(data.seed) + data.stageNumber * 10007;
+      const numSeed = typeof data.seed === 'number' ? data.seed : parseInt(String(data.seed), 10);
+      const stageSeed = data.stageNumber === 1
+        ? numSeed
+        : numSeed + data.stageNumber * 10007;
+
       this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, data.stageNumber, currentBiome.id);
       this.mapManager.setSeed(stageSeed);
       this.mapManager.clear();
+
+      if (data.playerPosition) {
+        const pPos = new Vector3(data.playerPosition.x, data.playerPosition.y, data.playerPosition.z);
+        this.player.position.copy(pPos);
+        this.player.prevPosition.copy(pPos);
+        this.player.renderPosition.copy(pPos);
+        this.player.mesh.position.copy(pPos);
+        this.engine.snapCamera(pPos);
+      }
+
+      this.hud.updatePassivesBar(this.player);
+      this.player.redrawOverhead();
 
       RunSaveManager.clearSavedRun();
 

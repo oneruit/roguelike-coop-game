@@ -258,7 +258,7 @@ export class CombatDirector {
     const pulseStacks = this.player.getItemStacks('pulse_rounds');
     if (pulseStacks > 0 && Math.random() < Math.min(0.8, pulseStacks * 0.15)) {
       const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
-      const bleedDps = (finalDamage * 1.8) / 3.0;
+      const bleedDps = (finalDamage * 5.4) / 3.0;
       enemy.addBleed(bleedDps, 3.0, myId);
     }
 
@@ -575,7 +575,7 @@ export class CombatDirector {
           const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
 
           if (proj.isOrbiting) {
-            const bleedDps = (proj.bleedDps || 8) * this.player.getDamageMultiplier(proj.sourceWeaponId);
+            const bleedDps = (proj.bleedDps || 24) * this.player.getDamageMultiplier(proj.sourceWeaponId);
             enemy.addBleed(bleedDps, 3.0, myId, proj.sourceWeaponId);
           }
 

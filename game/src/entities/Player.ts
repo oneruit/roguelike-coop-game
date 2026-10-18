@@ -442,7 +442,7 @@ export class Player {
     }
     const mainWeapon = this.weapons.find(w => w.id === this.startingWeaponId) || this.weapons[0];
     let duration = baseDuration;
-    if (mainWeapon && mainWeapon.effectiveCooldown !== undefined) {
+    if (mainWeapon && mainWeapon.effectiveCooldown !== undefined && mainWeapon.effectiveCooldown > 0.1) {
       duration = Math.min(baseDuration, Math.max(0.08, mainWeapon.effectiveCooldown * 0.95));
     }
 
@@ -500,7 +500,7 @@ export class Player {
     } else if (this.charType === 'rocket') {
       this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20, 'assault_rifle')));
     } else if (this.charType === 'amazon') {
-      this.weapons.push(new ReaperScytheWeapon());
+      this.weapons.push(new ReaperScytheWeapon(() => this.triggerAttackAnim(0.48, 'reaper_scythe')));
     } else {
       this.weapons.push(new WhirlwindSlashWeapon(() => this.triggerAttackAnim(0.42, 'whirlwind_slash')));
     }
