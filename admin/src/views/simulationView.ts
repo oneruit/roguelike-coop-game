@@ -9,11 +9,11 @@ export class SimulationView {
   private state: BalanceState;
   public sim: SimulationState = {
     slots: [
-      { enabled: true, weaponId: 'fireball', level: 10 },
-      { enabled: true, weaponId: 'bow', level: 8 },
-      { enabled: true, weaponId: 'lightning_strike', level: 6 },
-      { enabled: false, weaponId: 'whirlwind_slash', level: 5 },
-      { enabled: false, weaponId: 'fire_ring', level: 5 }
+      { enabled: true, weaponId: 'fireball', level: 10, tier: 1 },
+      { enabled: true, weaponId: 'bow', level: 8, tier: 1 },
+      { enabled: true, weaponId: 'lightning_strike', level: 6, tier: 1 },
+      { enabled: false, weaponId: 'whirlwind_slash', level: 5, tier: 2 },
+      { enabled: false, weaponId: 'fire_ring', level: 5, tier: 3 }
     ],
     hero: 'valkyrie',
     amplifierStacks: 0,
@@ -21,8 +21,12 @@ export class SimulationView {
     watchStacks: 0,
     injectorStacks: 0,
     critVisorStacks: 0,
+    critDamageStacks: 0,
+    critChanceStacks: 0,
+    bioInjectorStacks: 0,
     cleaveTargets: 3,
-    damageRuneActive: false
+    damageRuneActive: false,
+    bossTarget: false
   };
 
   constructor(state: BalanceState) {
@@ -84,8 +88,9 @@ export class SimulationView {
 
     bindSyncInput('sim-slider-watch', 'sim-num-watch', (val) => {
       this.sim.watchStacks = val;
+      const reduction = Math.min(0.50, 0.50 * (Math.log(val + 1) / Math.log(201)));
       const badge = document.getElementById('sim-val-watch');
-      if (badge) badge.innerText = `${val} стаков (-${Math.min(30, val * 3)}%)`;
+      if (badge) badge.innerText = `${val} ур. (-${Math.round(reduction * 100)}%)`;
     });
 
     bindSyncInput('sim-slider-injector', 'sim-num-injector', (val) => {
@@ -101,6 +106,26 @@ export class SimulationView {
       if (badge) badge.innerText = `${val} стаков (${pct}%)`;
     });
 
+    bindSyncInput('sim-slider-critdamage', 'sim-num-critdamage', (val) => {
+      this.sim.critDamageStacks = val;
+      const badge = document.getElementById('sim-val-critdamage');
+      if (badge) badge.innerText = `${val} стаков (+${val}%)`;
+    });
+
+    bindSyncInput('sim-slider-critchance', 'sim-num-critchance', (val) => {
+      this.sim.critChanceStacks = val;
+      const badge = document.getElementById('sim-val-critchance');
+      if (badge) badge.innerText = `${val} стаков (+${(val * 0.05).toFixed(2)}%)`;
+    });
+
+    bindSyncInput('sim-slider-bioinjector', 'sim-num-bioinjector', (val) => {
+      this.sim.bioInjectorStacks = val;
+      const heroCfg = this.state.draftBalance.heroes[this.sim.hero] || { maxHp: 100 };
+      const regen = (val * (2.5 + heroCfg.maxHp * 0.005)).toFixed(1);
+      const badge = document.getElementById('sim-val-bioinjector');
+      if (badge) badge.innerText = `${val} стаков (+${regen} HP/с)`;
+    });
+
     bindSyncInput('sim-slider-targets', 'sim-num-targets', (val) => {
       this.sim.cleaveTargets = Math.max(1, Math.round(val));
       const badge = document.getElementById('sim-val-targets');
@@ -110,6 +135,12 @@ export class SimulationView {
     const runeCheck = document.getElementById('sim-check-damagerune') as HTMLInputElement;
     runeCheck?.addEventListener('change', (e) => {
       this.sim.damageRuneActive = (e.target as HTMLInputElement).checked;
+      this.render();
+    });
+
+    const bossCheck = document.getElementById('sim-check-bosstarget') as HTMLInputElement;
+    bossCheck?.addEventListener('change', (e) => {
+      this.sim.bossTarget = (e.target as HTMLInputElement).checked;
       this.render();
     });
 
@@ -127,6 +158,12 @@ export class SimulationView {
           const idx = parseInt((target as HTMLSelectElement).dataset.slot || '0');
           if (this.sim.slots[idx]) {
             this.sim.slots[idx].weaponId = (target as HTMLSelectElement).value;
+            this.render();
+          }
+        } else if (target.classList.contains('sim-slot-tier')) {
+          const idx = parseInt((target as HTMLSelectElement).dataset.slot || '0');
+          if (this.sim.slots[idx]) {
+            this.sim.slots[idx].tier = parseInt((target as HTMLSelectElement).value) || 3;
             this.render();
           }
         }
@@ -159,138 +196,170 @@ export class SimulationView {
     if (preset === 'sniper') {
       this.sim.hero = 'archer';
       this.sim.slots = [
-        { enabled: true, weaponId: 'bow', level: 12 },
-        { enabled: true, weaponId: 'chakram', level: 12 },
-        { enabled: true, weaponId: 'ice_spike', level: 10 },
-        { enabled: false, weaponId: 'astral_staff', level: 8 },
-        { enabled: false, weaponId: 'fireball', level: 10 }
+        { enabled: true, weaponId: 'bow', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'chakram', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'ice_spike', level: 10, tier: 2 },
+        { enabled: false, weaponId: 'astral_staff', level: 8, tier: 3 },
+        { enabled: false, weaponId: 'fireball', level: 10, tier: 2 }
       ];
       this.sim.amplifierStacks = 15;
       this.sim.mightElixirStacks = 2;
-      this.sim.watchStacks = 5;
+      this.sim.watchStacks = 80;
       this.sim.injectorStacks = 0;
-      this.sim.critVisorStacks = 4;
+      this.sim.critVisorStacks = 6;
+      this.sim.critDamageStacks = 40;
+      this.sim.critChanceStacks = 100;
+      this.sim.bioInjectorStacks = 2;
       this.sim.cleaveTargets = 2;
       this.sim.damageRuneActive = false;
-      showToast('Пресет «Снайпер дальнего боя» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Снайпер дальнего боя» (Тир 1) активирован.', 'info');
     } else if (preset === 'melee') {
       this.sim.hero = 'ronin';
       this.sim.slots = [
-        { enabled: true, weaponId: 'katana_slash', level: 12 },
-        { enabled: true, weaponId: 'whirlwind_slash', level: 12 },
-        { enabled: true, weaponId: 'greatsword', level: 12 },
-        { enabled: true, weaponId: 'reaper_scythe', level: 10 },
-        { enabled: false, weaponId: 'flail', level: 8 }
+        { enabled: true, weaponId: 'katana_slash', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'whirlwind_slash', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'greatsword', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'reaper_scythe', level: 10, tier: 2 },
+        { enabled: false, weaponId: 'flail', level: 8, tier: 3 }
       ];
       this.sim.amplifierStacks = 20;
       this.sim.mightElixirStacks = 3;
-      this.sim.watchStacks = 6;
+      this.sim.watchStacks = 100;
       this.sim.injectorStacks = 1;
-      this.sim.critVisorStacks = 2;
+      this.sim.critVisorStacks = 4;
+      this.sim.critDamageStacks = 50;
+      this.sim.critChanceStacks = 80;
+      this.sim.bioInjectorStacks = 4;
       this.sim.cleaveTargets = 6;
       this.sim.damageRuneActive = true;
-      showToast('Пресет «Вихревой милишник» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Вихревой милишник» (Тир 1) активирован.', 'info');
     } else if (preset === 'elemental') {
       this.sim.hero = 'sorceress';
       this.sim.slots = [
-        { enabled: true, weaponId: 'fireball', level: 12 },
-        { enabled: true, weaponId: 'lightning_strike', level: 12 },
-        { enabled: true, weaponId: 'fire_ring', level: 12 },
-        { enabled: true, weaponId: 'ice_spike', level: 12 },
-        { enabled: false, weaponId: 'astral_staff', level: 10 }
+        { enabled: true, weaponId: 'fireball', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'lightning_strike', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'fire_ring', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'ice_spike', level: 12, tier: 1 },
+        { enabled: false, weaponId: 'astral_staff', level: 10, tier: 2 }
       ];
       this.sim.amplifierStacks = 25;
       this.sim.mightElixirStacks = 4;
-      this.sim.watchStacks = 8;
+      this.sim.watchStacks = 120;
       this.sim.injectorStacks = 3;
-      this.sim.critVisorStacks = 1;
+      this.sim.critVisorStacks = 3;
+      this.sim.critDamageStacks = 35;
+      this.sim.critChanceStacks = 60;
+      this.sim.bioInjectorStacks = 3;
       this.sim.cleaveTargets = 5;
       this.sim.damageRuneActive = true;
-      showToast('Пресет «Стихийный маг» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Стихийный маг» (Тир 1) активирован.', 'info');
     } else if (preset === 'crit') {
       this.sim.hero = 'archer';
       this.sim.slots = [
-        { enabled: true, weaponId: 'bow', level: 12 },
-        { enabled: true, weaponId: 'chakram', level: 12 },
-        { enabled: true, weaponId: 'katana_slash', level: 12 },
-        { enabled: true, weaponId: 'kukri', level: 12 },
-        { enabled: false, weaponId: 'fireball', level: 10 }
+        { enabled: true, weaponId: 'bow', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'chakram', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'katana_slash', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'kukri', level: 12, tier: 1 },
+        { enabled: false, weaponId: 'fireball', level: 10, tier: 2 }
       ];
       this.sim.amplifierStacks = 15;
       this.sim.mightElixirStacks = 2;
-      this.sim.watchStacks = 5;
+      this.sim.watchStacks = 70;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 8;
+      this.sim.critDamageStacks = 80;
+      this.sim.critChanceStacks = 200;
+      this.sim.bioInjectorStacks = 1;
       this.sim.cleaveTargets = 3;
       this.sim.damageRuneActive = false;
-      showToast('Пресет «Крит-мастер» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Крит-мастер» (Тир 1) активирован.', 'info');
     } else if (preset === 'rocket') {
       this.sim.hero = 'rocket';
       this.sim.slots = [
-        { enabled: true, weaponId: 'assault_rifle', level: 12 },
-        { enabled: true, weaponId: 'bow', level: 12 },
-        { enabled: true, weaponId: 'kukri', level: 12 },
-        { enabled: true, weaponId: 'lightning_strike', level: 10 },
-        { enabled: true, weaponId: 'fireball', level: 8 }
+        { enabled: true, weaponId: 'assault_rifle', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'bow', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'kukri', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'lightning_strike', level: 10, tier: 2 },
+        { enabled: true, weaponId: 'fireball', level: 8, tier: 3 }
       ];
       this.sim.amplifierStacks = 20;
       this.sim.mightElixirStacks = 3;
-      this.sim.watchStacks = 6;
+      this.sim.watchStacks = 90;
       this.sim.injectorStacks = 2;
       this.sim.critVisorStacks = 4;
+      this.sim.critDamageStacks = 45;
+      this.sim.critChanceStacks = 100;
+      this.sim.bioInjectorStacks = 2;
       this.sim.cleaveTargets = 4;
       this.sim.damageRuneActive = true;
-      showToast('Пресет «Штурмовик (Ракета)» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Штурмовик (Ракета)» (Тир 1) активирован.', 'info');
     } else if (preset === 'invoker') {
       this.sim.hero = 'invoker';
       this.sim.slots = [
-        { enabled: true, weaponId: 'invoker_invoke', level: 12 },
-        { enabled: true, weaponId: 'invoker_chaos_meteor', level: 12 },
-        { enabled: true, weaponId: 'invoker_sun_strike', level: 12 },
-        { enabled: true, weaponId: 'invoker_emp', level: 12 },
-        { enabled: true, weaponId: 'invoker_ice_wall', level: 10 }
+        { enabled: true, weaponId: 'invoker_invoke', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'invoker_chaos_meteor', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'invoker_sun_strike', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'invoker_emp', level: 12, tier: 1 },
+        { enabled: true, weaponId: 'invoker_ice_wall', level: 10, tier: 2 }
       ];
       this.sim.amplifierStacks = 25;
       this.sim.mightElixirStacks = 5;
-      this.sim.watchStacks = 8;
+      this.sim.watchStacks = 140;
       this.sim.injectorStacks = 2;
-      this.sim.critVisorStacks = 3;
+      this.sim.critVisorStacks = 4;
+      this.sim.critDamageStacks = 60;
+      this.sim.critChanceStacks = 120;
+      this.sim.bioInjectorStacks = 3;
       this.sim.cleaveTargets = 5;
       this.sim.damageRuneActive = true;
-      showToast('Пресет «Архимаг (Инвокер)» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Архимаг (Инвокер)» (Тир 1) активирован.', 'info');
     } else if (preset === 'starter') {
       this.sim.hero = 'valkyrie';
       this.sim.slots = [
-        { enabled: true, weaponId: 'bow', level: 1 },
-        { enabled: true, weaponId: 'fireball', level: 1 },
-        { enabled: false, weaponId: 'kukri', level: 1 },
-        { enabled: false, weaponId: 'flail', level: 1 },
-        { enabled: false, weaponId: 'fire_ring', level: 1 }
+        { enabled: true, weaponId: 'bow', level: 1, tier: 3 },
+        { enabled: true, weaponId: 'fireball', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'kukri', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'flail', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'fire_ring', level: 1, tier: 3 }
       ];
       this.sim.amplifierStacks = 0;
       this.sim.mightElixirStacks = 0;
       this.sim.watchStacks = 0;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 0;
+      this.sim.critDamageStacks = 0;
+      this.sim.critChanceStacks = 0;
+      this.sim.bioInjectorStacks = 0;
       this.sim.cleaveTargets = 3;
       this.sim.damageRuneActive = false;
-      showToast('Пресет «Стартовый набор» активирован.', 'info');
+      this.sim.bossTarget = false;
+      showToast('Пресет «Стартовый набор» (Тир 3) активирован.', 'info');
     } else if (preset === 'reset') {
       this.sim.hero = 'valkyrie';
       this.sim.slots = [
-        { enabled: true, weaponId: 'fireball', level: 1 },
-        { enabled: false, weaponId: 'bow', level: 1 },
-        { enabled: false, weaponId: 'kukri', level: 1 },
-        { enabled: false, weaponId: 'flail', level: 1 },
-        { enabled: false, weaponId: 'fire_ring', level: 1 }
+        { enabled: true, weaponId: 'fireball', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'bow', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'kukri', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'flail', level: 1, tier: 3 },
+        { enabled: false, weaponId: 'fire_ring', level: 1, tier: 3 }
       ];
       this.sim.amplifierStacks = 0;
       this.sim.mightElixirStacks = 0;
       this.sim.watchStacks = 0;
       this.sim.injectorStacks = 0;
       this.sim.critVisorStacks = 0;
+      this.sim.critDamageStacks = 0;
+      this.sim.critChanceStacks = 0;
+      this.sim.bioInjectorStacks = 0;
       this.sim.cleaveTargets = 3;
       this.sim.damageRuneActive = false;
+      this.sim.bossTarget = false;
       showToast('Параметры симулятора сброшены.', 'info');
     }
 
@@ -349,27 +418,55 @@ export class SimulationView {
       this.sim.mightElixirStacks ?? 0,
       `${this.sim.mightElixirStacks ?? 0} стаков (+${(this.sim.mightElixirStacks ?? 0) * 1}%)`
     );
+    const watchReduction = Math.min(0.50, 0.50 * (Math.log((this.sim.watchStacks || 0) + 1) / Math.log(201)));
     setInputPair(
       'sim-slider-watch',
       'sim-num-watch',
       'sim-val-watch',
-      this.sim.watchStacks,
-      `${this.sim.watchStacks} стаков (-${Math.min(30, this.sim.watchStacks * 3)}%)`
+      this.sim.watchStacks || 0,
+      `${this.sim.watchStacks || 0} ур. (-${Math.round(watchReduction * 100)}%)`
     );
     setInputPair(
       'sim-slider-injector',
       'sim-num-injector',
       'sim-val-injector',
-      this.sim.injectorStacks,
-      `${this.sim.injectorStacks} стаков`
+      this.sim.injectorStacks || 0,
+      `${this.sim.injectorStacks || 0} стаков`
     );
-    const critPct = Math.round((0.05 + this.sim.critVisorStacks * 0.03) * 100);
+    const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
+    const critVisorChance = (this.sim.critVisorStacks || 0) * 0.03;
+    const critDropChance = (this.sim.critChanceStacks || 0) * 0.0005;
+    const totalCritChance = Math.min(1.0, baseCritChance + critVisorChance + critDropChance);
     setInputPair(
       'sim-slider-critvisor',
       'sim-num-critvisor',
       'sim-val-critvisor',
-      this.sim.critVisorStacks,
-      `${this.sim.critVisorStacks} стаков (${critPct}%)`
+      this.sim.critVisorStacks || 0,
+      `${this.sim.critVisorStacks || 0} стаков (${Math.round(totalCritChance * 100)}%)`
+    );
+    setInputPair(
+      'sim-slider-critdamage',
+      'sim-num-critdamage',
+      'sim-val-critdamage',
+      this.sim.critDamageStacks || 0,
+      `${this.sim.critDamageStacks || 0} стаков (+${this.sim.critDamageStacks || 0}%)`
+    );
+    setInputPair(
+      'sim-slider-critchance',
+      'sim-num-critchance',
+      'sim-val-critchance',
+      this.sim.critChanceStacks || 0,
+      `${this.sim.critChanceStacks || 0} стаков (+${((this.sim.critChanceStacks || 0) * 0.05).toFixed(2)}%)`
+    );
+    const bioVal = this.sim.bioInjectorStacks || 0;
+    const heroCfg = this.state.draftBalance.heroes[this.sim.hero] || { maxHp: 100 };
+    const bioRegen = (bioVal * (2.5 + heroCfg.maxHp * 0.005)).toFixed(1);
+    setInputPair(
+      'sim-slider-bioinjector',
+      'sim-num-bioinjector',
+      'sim-val-bioinjector',
+      bioVal,
+      `${bioVal} стаков (+${bioRegen} HP/с)`
     );
     setInputPair(
       'sim-slider-targets',
@@ -380,10 +477,13 @@ export class SimulationView {
     );
 
     const runeCheck = document.getElementById('sim-check-damagerune') as HTMLInputElement;
-    if (runeCheck) runeCheck.checked = this.sim.damageRuneActive;
+    if (runeCheck) runeCheck.checked = Boolean(this.sim.damageRuneActive);
+
+    const bossCheck = document.getElementById('sim-check-bosstarget') as HTMLInputElement;
+    if (bossCheck) bossCheck.checked = Boolean(this.sim.bossTarget);
   }
 
-  public calculateSlotStats(slot: { weaponId: string; level: number }): {
+  public calculateSlotStats(slot: { weaponId: string; level: number; tier?: number }): {
     singleTargetDps: number;
     totalDps: number;
     hitDamage: number;
@@ -407,21 +507,32 @@ export class SimulationView {
 
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.03);
-    const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
+    const critChancePassive = (this.sim.critChanceStacks || 0) * 0.0005;
+    const critDamagePassive = (this.sim.critDamageStacks || 0) * 0.01;
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.03 + critChancePassive);
+    const effectiveCritMult = baseCritMult + critDamagePassive;
+    const expectedCritMult = 1 + effectiveCritChance * (effectiveCritMult - 1);
 
     const globalDmgMult = heroMult * damagePassiveMult * runeMult * expectedCritMult;
-    const baseLvlDmg = w.damage + (slot.level - 1) * w.damagePerLevel;
+
+    // Weapon Tier scaling: Tier 3 = x1.0, Tier 2 = x2.0, Tier 1 = x3.0
+    const tier = slot.tier || 3;
+    const tierMultiplier = tier === 1 ? 3.0 : tier === 2 ? 2.0 : 1.0;
+    const baseLvlDmg = w.damage + (slot.level - 1) * w.damagePerLevel * tierMultiplier;
     const hitDamage = baseLvlDmg * globalDmgMult;
 
-    const watchReduction = Math.max(0.70, 1 - Math.min(0.30, this.sim.watchStacks * 0.03));
+    // Pocket Watch: 50% max CDR at level 200 via logarithmic curve
+    const watchReduction = Math.max(0.50, 1 - Math.min(0.50, 0.50 * (Math.log((this.sim.watchStacks || 0) + 1) / Math.log(201))));
     const injectorReduction = Math.pow(0.90, this.sim.injectorStacks);
-    const cdMult = Math.max(0.15, watchReduction * injectorReduction);
+    const cdMult = Math.max(0.08, watchReduction * injectorReduction);
 
     const baseCd = w.cooldown > 0 ? w.cooldown : 1 / 60;
     const effectiveCooldown = Math.max(0.04, baseCd * cdMult);
     const count = w.count && w.count > 0 ? w.count : 1;
-    const singleTargetDps = (hitDamage * count) / effectiveCooldown;
+
+    // Late-game boss resistance: ~55% average damage resistance against late-game bosses
+    const targetDamageMult = this.sim.bossTarget ? 0.45 : 1.0;
+    const singleTargetDps = ((hitDamage * count) / effectiveCooldown) * targetDamageMult;
 
     let cleaveFactor = 1;
     if (w.explosionRadius || w.splashRadius) {
@@ -491,11 +602,14 @@ export class SimulationView {
     const kpiCritSub = document.getElementById('sim-kpi-crit-sub');
     const baseCritChance = this.state.draftBalance.global.baseCritChance ?? 0.05;
     const baseCritMult = this.state.draftBalance.global.baseCritDamageMult ?? 2.0;
-    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.03);
-    const expectedCritMult = 1 + effectiveCritChance * (baseCritMult - 1);
+    const critChancePassive = (this.sim.critChanceStacks || 0) * 0.0005;
+    const critDamagePassive = (this.sim.critDamageStacks || 0) * 0.01;
+    const effectiveCritChance = Math.min(1.0, baseCritChance + this.sim.critVisorStacks * 0.03 + critChancePassive);
+    const effectiveCritMult = baseCritMult + critDamagePassive;
+    const expectedCritMult = 1 + effectiveCritChance * (effectiveCritMult - 1);
 
     if (kpiCrit) {
-      kpiCrit.innerText = `${Math.round(effectiveCritChance * 100)}% / ${baseCritMult.toFixed(2)}x`;
+      kpiCrit.innerText = `${Math.round(effectiveCritChance * 100)}% / ${effectiveCritMult.toFixed(2)}x`;
     }
     if (kpiCritSub) {
       kpiCritSub.innerText = `средний множитель: ${expectedCritMult.toFixed(2)}x`;
@@ -514,9 +628,11 @@ export class SimulationView {
       const seriesList: ChartSeries[] = [];
       activeSlots.forEach((slot) => {
         const stats = this.calculateSlotStats(slot);
+        const tier = slot.tier || 3;
+        const tierLabel = tier === 1 ? '[T1]' : tier === 2 ? '[T2]' : '[T3]';
         seriesList.push({
           id: slot.weaponId,
-          name: stats.weaponName,
+          name: `${tierLabel} ${stats.weaponName}`,
           color: stats.weaponColor,
           values: seconds.map((s) => Math.round(stats.totalDps * s)),
           unit: 'урон'
@@ -549,13 +665,15 @@ export class SimulationView {
       activeSlots.forEach((slot) => {
         const w = this.state.draftBalance.weapons[slot.weaponId];
         const color = getWeaponColor(slot.weaponId);
+        const tier = slot.tier || 3;
+        const tierLabel = tier === 1 ? '[T1]' : tier === 2 ? '[T2]' : '[T3]';
         const values = levels.map((lvl) => {
-          const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl });
+          const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl, tier });
           return Math.round(stats.totalDps);
         });
         seriesList.push({
           id: slot.weaponId,
-          name: w?.name || slot.weaponId,
+          name: `${tierLabel} ${w?.name || slot.weaponId}`,
           color,
           values,
           unit: 'DPS'
@@ -566,7 +684,7 @@ export class SimulationView {
         const totalBuildValues = levels.map((lvl) => {
           let sum = 0;
           activeSlots.forEach((slot) => {
-            const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl });
+            const stats = this.calculateSlotStats({ weaponId: slot.weaponId, level: lvl, tier: slot.tier });
             sum += stats.totalDps;
           });
           return Math.round(sum);
@@ -632,6 +750,11 @@ export class SimulationView {
         <div class="slot-controls-row">
           <select class="form-input sim-slot-weapon" data-slot="${idx}" ${slot.enabled ? '' : 'disabled'} style="font-weight:600;">
             ${weaponOptions}
+          </select>
+          <select class="form-input sim-slot-tier" data-slot="${idx}" ${slot.enabled ? '' : 'disabled'} style="font-weight:600; font-size:12px;">
+            <option value="3" ${(slot.tier || 3) === 3 ? 'selected' : ''}>Тир 3 (1x)</option>
+            <option value="2" ${(slot.tier || 3) === 2 ? 'selected' : ''}>Тир 2 (2x)</option>
+            <option value="1" ${(slot.tier || 3) === 1 ? 'selected' : ''}>Тир 1 (3x)</option>
           </select>
           <div style="display:flex; align-items:center; gap:6px;">
             <span style="font-size:12px; font-weight:600; color:var(--text-muted); white-space:nowrap;">Ур.</span>

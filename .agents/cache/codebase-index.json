@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-19T00:29:07.356Z",
+  "generatedAt": "2026-10-19T01:36:24.296Z",
   "totalFiles": 186,
   "totalSymbols": 1713,
   "topLevelCount": 547,
@@ -6600,7 +6600,7 @@
       "name": "LeaderboardEntry",
       "kind": "interface",
       "file": "admin/src/types.ts",
-      "line": 43
+      "line": 49
     },
     {
       "name": "LeaderboardManager",
@@ -9057,7 +9057,7 @@
       "name": "ProgressionChartState",
       "kind": "interface",
       "file": "admin/src/types.ts",
-      "line": 31
+      "line": 36
     },
     {
       "name": "ProgressionData",
@@ -9538,7 +9538,7 @@
       "name": "ProgressionView.bindEvents",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 25,
+      "line": 26,
       "className": "ProgressionView",
       "methodName": "bindEvents"
     },
@@ -9546,7 +9546,7 @@
       "name": "ProgressionView.render",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 194,
+      "line": 213,
       "className": "ProgressionView",
       "methodName": "render"
     },
@@ -9554,7 +9554,7 @@
       "name": "ProgressionView.renderHeroesProgression",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 410,
+      "line": 496,
       "className": "ProgressionView",
       "methodName": "renderHeroesProgression"
     },
@@ -9562,7 +9562,7 @@
       "name": "ProgressionView.renderMonstersProgression",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 289,
+      "line": 348,
       "className": "ProgressionView",
       "methodName": "renderMonstersProgression"
     },
@@ -9570,7 +9570,7 @@
       "name": "ProgressionView.renderMonstersProgressionChips",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 372,
+      "line": 458,
       "className": "ProgressionView",
       "methodName": "renderMonstersProgressionChips"
     },
@@ -9578,7 +9578,7 @@
       "name": "ProgressionView.renderWeaponsProgression",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 204,
+      "line": 223,
       "className": "ProgressionView",
       "methodName": "renderWeaponsProgression"
     },
@@ -9586,7 +9586,7 @@
       "name": "ProgressionView.renderWeaponsProgressionChips",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 256,
+      "line": 315,
       "className": "ProgressionView",
       "methodName": "renderWeaponsProgressionChips"
     },
@@ -9594,7 +9594,7 @@
       "name": "ProgressionView.updateTimeSliderUI",
       "kind": "method",
       "file": "admin/src/views/progressionView.ts",
-      "line": 177,
+      "line": 196,
       "className": "ProgressionView",
       "methodName": "updateTimeSliderUI"
     },
@@ -11645,7 +11645,7 @@
       "name": "SimulationState",
       "kind": "interface",
       "file": "admin/src/types.ts",
-      "line": 19
+      "line": 20
     },
     {
       "name": "SimulationView",
@@ -11657,7 +11657,7 @@
       "name": "SimulationView.applyPreset",
       "kind": "method",
       "file": "admin/src/views/simulationView.ts",
-      "line": 158,
+      "line": 195,
       "className": "SimulationView",
       "methodName": "applyPreset"
     },
@@ -11665,7 +11665,7 @@
       "name": "SimulationView.bindEvents",
       "kind": "method",
       "file": "admin/src/views/simulationView.ts",
-      "line": 33,
+      "line": 37,
       "className": "SimulationView",
       "methodName": "bindEvents"
     },
@@ -11673,7 +11673,7 @@
       "name": "SimulationView.render",
       "kind": "method",
       "file": "admin/src/views/simulationView.ts",
-      "line": 456,
+      "line": 567,
       "className": "SimulationView",
       "methodName": "render"
     },
@@ -11681,7 +11681,7 @@
       "name": "SimulationView.renderHeroDropdown",
       "kind": "method",
       "file": "admin/src/views/simulationView.ts",
-      "line": 301,
+      "line": 370,
       "className": "SimulationView",
       "methodName": "renderHeroDropdown"
     },
@@ -11689,7 +11689,7 @@
       "name": "SimulationView.renderSimulationWeaponSlots",
       "kind": "method",
       "file": "admin/src/views/simulationView.ts",
-      "line": 592,
+      "line": 710,
       "className": "SimulationView",
       "methodName": "renderSimulationWeaponSlots"
     },
@@ -11697,7 +11697,7 @@
       "name": "SimulationView.updatePassiveUIValues",
       "kind": "method",
       "file": "admin/src/views/simulationView.ts",
-      "line": 317,
+      "line": 386,
       "className": "SimulationView",
       "methodName": "updatePassiveUIValues"
     },
@@ -13324,7 +13324,7 @@
       "name": "updateOverviewStats",
       "kind": "function",
       "file": "admin/src/views/dashboardView.ts",
-      "line": 160
+      "line": 163
     },
     {
       "name": "UpgradeOption",

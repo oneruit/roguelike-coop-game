@@ -10,14 +10,14 @@ export function renderDashboard(state: BalanceState): void {
       (w) => !w.id.startsWith('invoker_') || w.id === 'invoker_invoke'
     );
 
-    const getWeaponDps = (w: typeof weapons[0], level: number) => {
-      const dmg = w.damage + (level - 1) * w.damagePerLevel;
+    const getWeaponDps = (w: typeof weapons[0], level: number, tierMult: number = 1.0) => {
+      const dmg = w.damage + (level - 1) * w.damagePerLevel * tierMult;
       const cd = w.cooldown > 0 ? w.cooldown : 0.4;
       const count = w.count || 1;
       return (dmg * count) / cd;
     };
 
-    weapons.sort((a, b) => getWeaponDps(b, 12) - getWeaponDps(a, 12));
+    weapons.sort((a, b) => getWeaponDps(b, 12, 3.0) - getWeaponDps(a, 12, 3.0));
 
     const top5 = weapons.slice(0, 5);
     let html = `
@@ -29,15 +29,17 @@ export function renderDashboard(state: BalanceState): void {
             <th>Базовый урон</th>
             <th>Кулдаун</th>
             <th>DPS (L1)</th>
-            <th>DPS (L12)</th>
+            <th>DPS (L12 T3)</th>
+            <th>DPS (L12 T1)</th>
           </tr>
         </thead>
         <tbody>
     `;
 
     top5.forEach((w, idx) => {
-      const baseDps = getWeaponDps(w, 1).toFixed(1);
-      const l12Dps = getWeaponDps(w, 12).toFixed(1);
+      const baseDps = getWeaponDps(w, 1, 1.0).toFixed(1);
+      const l12Dps = getWeaponDps(w, 12, 1.0).toFixed(1);
+      const t1Dps = getWeaponDps(w, 12, 3.0).toFixed(1);
       const cdStr = w.cooldown > 0 ? `${w.cooldown}с` : '0.4с';
       const texture = getEntityTexture('weapons', w.id);
       const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
@@ -54,7 +56,8 @@ export function renderDashboard(state: BalanceState): void {
           <td>${w.damage}${w.count && w.count > 1 ? ` (x${w.count})` : ''}</td>
           <td>${cdStr}</td>
           <td><span class="stat-highlight">${baseDps}</span></td>
-          <td><span class="stat-highlight-gold" style="font-weight:700;">${l12Dps}</span></td>
+          <td><span class="stat-highlight-gold">${l12Dps}</span></td>
+          <td><span class="stat-highlight-gold" style="font-weight:800; color:var(--accent-primary);">${t1Dps}</span></td>
         </tr>
       `;
     });

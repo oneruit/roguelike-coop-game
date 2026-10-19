@@ -9,6 +9,7 @@ export class ProgressionView {
     view: 'weapons',
     weaponMetric: 'damage',
     weaponGrade: 'common',
+    weaponTier: 'tier1',
     selectedWeapons: new Set(['fireball', 'bow', 'greatsword', 'lightning_strike', 'katana_slash']),
     monsterCategory: 'monsters',
     monsterMetric: 'hp',
@@ -80,6 +81,24 @@ export class ProgressionView {
         if (!grade) return;
         this.chartState.weaponGrade = grade;
         gradeButtons.forEach((b) => b.classList.remove('active'));
+        (e.currentTarget as HTMLElement).classList.add('active');
+
+        this.renderWeaponsProgression();
+      });
+    });
+
+    const tierButtons = document.querySelectorAll('#prog-weapon-tier-toggle .segmented-btn');
+    tierButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const tier = (e.currentTarget as HTMLElement).dataset.tier as
+          | 'tier3'
+          | 'tier2'
+          | 'tier1'
+          | 'all'
+          | undefined;
+        if (!tier) return;
+        this.chartState.weaponTier = tier;
+        tierButtons.forEach((b) => b.classList.remove('active'));
         (e.currentTarget as HTMLElement).classList.add('active');
 
         this.renderWeaponsProgression();
@@ -207,8 +226,26 @@ export class ProgressionView {
     const chartContainer = document.getElementById('chart-weapons-progression');
     if (!chartContainer) return;
 
-    const levels = Array.from({ length: 12 }, (_, i) => i + 1);
-    const xLabels = levels.map((lvl) => `L${lvl}`);
+    const tierKey = this.chartState.weaponTier || 'tier1';
+    const isAll = tierKey === 'all';
+    const tierMult = tierKey === 'tier1' ? 3.0 : tierKey === 'tier2' ? 2.0 : 1.0;
+
+    let xLabels: string[];
+    let stepCount: number;
+
+    if (isAll) {
+      stepCount = 36;
+      xLabels = Array.from({ length: 36 }, (_, i) => {
+        const tierNum = i < 12 ? 3 : i < 24 ? 2 : 1;
+        const lvl = (i % 12) + 1;
+        return `T${tierNum}-L${lvl}`;
+      });
+    } else {
+      stepCount = 12;
+      const tierPrefix = tierKey === 'tier1' ? 'T1' : tierKey === 'tier2' ? 'T2' : 'T3';
+      xLabels = Array.from({ length: 12 }, (_, i) => `${tierPrefix}-L${i + 1}`);
+    }
+
     const isDps = this.chartState.weaponMetric === 'dps';
 
     const gradeKey = this.chartState.weaponGrade || 'common';
@@ -220,14 +257,36 @@ export class ProgressionView {
     };
     const gradeCfg = gradeConfigs[gradeKey] || gradeConfigs.common;
 
+    const title = document.getElementById('prog-weapons-chart-title');
+    if (title) {
+      const metricStr = isDps ? 'боевого DPS' : 'урона';
+      const tierDesc = isAll
+        ? 'Сквозная прогрессия до Тир 1 (36 уровней: L1-T3 → L12-T1)'
+        : tierKey === 'tier1'
+        ? 'Тир 1 (Абсолютный, множитель 3.0x, L1-L12)'
+        : tierKey === 'tier2'
+        ? 'Тир 2 (Пробужденный, множитель 2.0x, L1-L12)'
+        : 'Тир 3 (Базовый, множитель 1.0x, L1-L12)';
+      title.textContent = `Прогрессия ${metricStr} оружия: ${tierDesc}`;
+    }
+
     const seriesList: ChartSeries[] = [];
     for (const wid of this.chartState.selectedWeapons) {
       const w = this.state.draftBalance.weapons[wid];
       if (!w) continue;
 
-      const values = levels.map((lvl) => {
-        const bonusSteps = lvl - 1;
-        const dmg = Math.round(w.damage + bonusSteps * w.damagePerLevel * gradeCfg.damageMult);
+      const values = Array.from({ length: stepCount }, (_, i) => {
+        let currentTierMult: number;
+        let bonusSteps: number;
+        if (isAll) {
+          currentTierMult = i < 12 ? 1.0 : i < 24 ? 2.0 : 3.0;
+          bonusSteps = i % 12;
+        } else {
+          currentTierMult = tierMult;
+          bonusSteps = i;
+        }
+
+        const dmg = Math.round(w.damage + bonusSteps * w.damagePerLevel * currentTierMult * gradeCfg.damageMult);
         if (isDps) {
           const baseCd = w.cooldown > 0 ? w.cooldown : 1 / 60;
           const cd = Math.max(0.08, baseCd * Math.pow(1 - gradeCfg.cdRed, bonusSteps));
@@ -249,7 +308,7 @@ export class ProgressionView {
     SvgChartRenderer.renderLineChart(chartContainer, seriesList, {
       xLabels,
       fillArea: false,
-      minWidthPerPoint: 38
+      minWidthPerPoint: isAll ? 28 : 38
     });
   }
 
@@ -322,8 +381,9 @@ export class ProgressionView {
 
     const subtitle = document.querySelector('#prog-view-monsters .chart-card-subtitle');
     if (subtitle) {
-      subtitle.textContent =
-        `Формула движка: базовый рост + пост-15м экспоненциальный штурм (интервал 5 мин, до ${maxMinutes} мин выживания)`;
+      subtitle.textContent = isBosses
+        ? `Формула боссов (EnemyManager): 5-минутные тиры, экспоненциальный штурм на 15+ мин (до ${maxMinutes} мин)`
+        : `Формула монстров (EnemyManager): базовый рост + пост-15м экспоненциальный штурм (интервал 5 мин, до ${maxMinutes} мин)`;
     }
 
     const seriesList: ChartSeries[] = [];
@@ -331,24 +391,50 @@ export class ProgressionView {
       if (!selectedSet.has(ent.id)) continue;
 
       const values = minutes.map((m) => {
-        // Continuous progressive scaling from EnemyManager & DifficultyDirector
-        const hpBase = 1 + (m * 0.35 + Math.pow(m / 4.0, 1.8) * 0.45) * 1.5;
-        const mPost = Math.max(0, m - 15);
-        const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
-        const hpMult = hpBase + hpPostSurge;
+        if (isBosses) {
+          // 5-minute tiered bosses scaling from EnemyManager.ts
+          const tier = Math.max(1, Math.floor(m / 5));
+          const tierPost = Math.max(0, tier - 3);
 
-        const dmgBase = 1 + (m * 0.15 + Math.pow(m / 6.0, 1.5) * 0.30) * 1.5;
-        const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
-        const dmgMult = dmgBase + dmgPostSurge;
-
-        const spdMult = Math.min(1.65, 1 + m * 0.012 * 1.5 + mPost * 0.01);
-
-        if (metric === 'hp') {
-          return Math.round(ent.hp * hpMult);
-        } else if (metric === 'damage') {
-          return Math.round(ent.damage * dmgMult);
+          if (metric === 'hp') {
+            if (ent.id === 'hydra' && tier <= 2) {
+              return Math.round(ent.hp);
+            }
+            let calculatedHp: number;
+            if (tier < 3) {
+              calculatedHp = ent.hp * (1 + (tier - 1) * 2.2);
+            } else {
+              calculatedHp = 350000 * Math.pow(2.2, tierPost) * (1 + tierPost * 0.35);
+            }
+            return Math.round(calculatedHp);
+          } else if (metric === 'damage') {
+            const baseTierDmg = ent.damage * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
+            const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
+            return Math.round(baseTierDmg * postDmgMult);
+          } else {
+            const tierSpd = Math.min(3.8, ent.speed + (tier - 1) * 0.18 * 1.5 + tierPost * 0.1);
+            return Number(tierSpd.toFixed(2));
+          }
         } else {
-          return Number((ent.speed * spdMult).toFixed(2));
+          // Continuous progressive scaling from EnemyManager & DifficultyDirector
+          const hpBase = 1 + (m * 0.35 + Math.pow(m / 4.0, 1.8) * 0.45) * 1.5;
+          const mPost = Math.max(0, m - 15);
+          const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
+          const hpMult = hpBase + hpPostSurge;
+
+          const dmgBase = 1 + (m * 0.15 + Math.pow(m / 6.0, 1.5) * 0.30) * 1.5;
+          const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
+          const dmgMult = dmgBase + dmgPostSurge;
+
+          const spdMult = Math.min(1.65, 1 + m * 0.012 * 1.5 + mPost * 0.01);
+
+          if (metric === 'hp') {
+            return Math.round(ent.hp * hpMult);
+          } else if (metric === 'damage') {
+            return Math.round(ent.damage * dmgMult);
+          } else {
+            return Number((ent.speed * spdMult).toFixed(2));
+          }
         }
       });
 

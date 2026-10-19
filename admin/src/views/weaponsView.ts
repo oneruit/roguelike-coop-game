@@ -118,7 +118,7 @@ export function renderWeapons(
         <div class="drawer-content">
           <div class="drawer-header-info">
             <div class="drawer-desc">${w.notes || 'Боевое оружие персонажа.'}</div>
-            <div class="drawer-scaling-badge">L12: ${w.damage} + 11×${w.damagePerLevel} = ${l12Dmg} dmg</div>
+            <div class="drawer-scaling-badge">L12 (Тир 3): ${l12Dmg} dmg &bull; L12 (Тир 1): ${w.damage + 11 * w.damagePerLevel * 3} dmg (3x)</div>
           </div>
 
           <div class="drawer-controls-grid">
@@ -146,8 +146,12 @@ export function renderWeapons(
                 <span class="dps-value" id="dps-${w.id}-base">${baseDps}</span>
               </div>
               <div class="dps-metric">
-                <span class="dps-label">Max DPS (L12)</span>
+                <span class="dps-label">DPS (L12 Тир 3)</span>
                 <span class="dps-value" id="dps-${w.id}-l12">${l12Dps}</span>
+              </div>
+              <div class="dps-metric">
+                <span class="dps-label">DPS (L12 Тир 1)</span>
+                <span class="dps-value" style="color:var(--accent-primary); font-weight:800;" id="dps-${w.id}-t1">${(((w.damage + 11 * w.damagePerLevel * 3) * count) / cd).toFixed(1)}</span>
               </div>
             </div>
             <button class="btn btn-xs btn-outline-danger btn-reset-item" data-id="${w.id}">

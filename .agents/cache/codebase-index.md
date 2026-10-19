@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-19T00:29:07.356Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1166
+> **Generated:** 2026-10-19T01:36:24.296Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1166
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -811,7 +811,7 @@ Run `npm run index` to refresh this cache.
 | `KukriWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:91`](../../game/src/combat/weapons/MeleeWeapons.ts#L91) | - |
 | `LastRunInfo` | `interface` | [`game/src/core/LeaderboardManager.ts:21`](../../game/src/core/LeaderboardManager.ts#L21) | - |
 | `LeaderboardEntry` | `interface` | [`game/src/core/LeaderboardManager.ts:4`](../../game/src/core/LeaderboardManager.ts#L4) | - |
-| `LeaderboardEntry` | `interface` | [`admin/src/types.ts:43`](../../admin/src/types.ts#L43) | - |
+| `LeaderboardEntry` | `interface` | [`admin/src/types.ts:49`](../../admin/src/types.ts#L49) | - |
 | `LeaderboardManager` | `class` | [`game/src/core/LeaderboardManager.ts:25`](../../game/src/core/LeaderboardManager.ts#L25) | - |
 | `LeaderboardManager.fetchTopScores` | `method` | [`game/src/core/LeaderboardManager.ts:143`](../../game/src/core/LeaderboardManager.ts#L143) | - |
 | `LeaderboardManager.getDefaultEntries` | `method` | [`game/src/core/LeaderboardManager.ts:301`](../../game/src/core/LeaderboardManager.ts#L301) | - |
@@ -1138,7 +1138,7 @@ Run `npm run index` to refresh this cache.
 | `PoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:847`](../../game/src/combat/weapons/MagicWeapons.ts#L847) | - |
 | `PoisonPuddleWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:779`](../../game/src/combat/weapons/MagicWeapons.ts#L779) | - |
 | `PoisonPuddleWeapon.upgrade` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:840`](../../game/src/combat/weapons/MagicWeapons.ts#L840) | - |
-| `ProgressionChartState` | `interface` | [`admin/src/types.ts:31`](../../admin/src/types.ts#L31) | - |
+| `ProgressionChartState` | `interface` | [`admin/src/types.ts:36`](../../admin/src/types.ts#L36) | - |
 | `ProgressionData` | `interface` | [`game/src/core/ProgressionManager.ts:36`](../../game/src/core/ProgressionManager.ts#L36) | - |
 | `ProgressionManager` | `class` | [`game/src/core/ProgressionManager.ts:84`](../../game/src/core/ProgressionManager.ts#L84) | - |
 | `ProgressionManager.addAccountXp` | `method` | [`game/src/core/ProgressionManager.ts:369`](../../game/src/core/ProgressionManager.ts#L369) | - |
@@ -1199,14 +1199,14 @@ Run `npm run index` to refresh this cache.
 | `ProgressionManager.unlockElfByAchievement` | `method` | [`game/src/core/ProgressionManager.ts:660`](../../game/src/core/ProgressionManager.ts#L660) | - |
 | `ProgressionManager.unlockHero` | `method` | [`game/src/core/ProgressionManager.ts:330`](../../game/src/core/ProgressionManager.ts#L330) | - |
 | `ProgressionView` | `class` | [`admin/src/views/progressionView.ts:6`](../../admin/src/views/progressionView.ts#L6) | - |
-| `ProgressionView.bindEvents` | `method` | [`admin/src/views/progressionView.ts:25`](../../admin/src/views/progressionView.ts#L25) | - |
-| `ProgressionView.render` | `method` | [`admin/src/views/progressionView.ts:194`](../../admin/src/views/progressionView.ts#L194) | - |
-| `ProgressionView.renderHeroesProgression` | `method` | [`admin/src/views/progressionView.ts:410`](../../admin/src/views/progressionView.ts#L410) | - |
-| `ProgressionView.renderMonstersProgression` | `method` | [`admin/src/views/progressionView.ts:289`](../../admin/src/views/progressionView.ts#L289) | - |
-| `ProgressionView.renderMonstersProgressionChips` | `method` | [`admin/src/views/progressionView.ts:372`](../../admin/src/views/progressionView.ts#L372) | - |
-| `ProgressionView.renderWeaponsProgression` | `method` | [`admin/src/views/progressionView.ts:204`](../../admin/src/views/progressionView.ts#L204) | - |
-| `ProgressionView.renderWeaponsProgressionChips` | `method` | [`admin/src/views/progressionView.ts:256`](../../admin/src/views/progressionView.ts#L256) | - |
-| `ProgressionView.updateTimeSliderUI` | `method` | [`admin/src/views/progressionView.ts:177`](../../admin/src/views/progressionView.ts#L177) | - |
+| `ProgressionView.bindEvents` | `method` | [`admin/src/views/progressionView.ts:26`](../../admin/src/views/progressionView.ts#L26) | - |
+| `ProgressionView.render` | `method` | [`admin/src/views/progressionView.ts:213`](../../admin/src/views/progressionView.ts#L213) | - |
+| `ProgressionView.renderHeroesProgression` | `method` | [`admin/src/views/progressionView.ts:496`](../../admin/src/views/progressionView.ts#L496) | - |
+| `ProgressionView.renderMonstersProgression` | `method` | [`admin/src/views/progressionView.ts:348`](../../admin/src/views/progressionView.ts#L348) | - |
+| `ProgressionView.renderMonstersProgressionChips` | `method` | [`admin/src/views/progressionView.ts:458`](../../admin/src/views/progressionView.ts#L458) | - |
+| `ProgressionView.renderWeaponsProgression` | `method` | [`admin/src/views/progressionView.ts:223`](../../admin/src/views/progressionView.ts#L223) | - |
+| `ProgressionView.renderWeaponsProgressionChips` | `method` | [`admin/src/views/progressionView.ts:315`](../../admin/src/views/progressionView.ts#L315) | - |
+| `ProgressionView.updateTimeSliderUI` | `method` | [`admin/src/views/progressionView.ts:196`](../../admin/src/views/progressionView.ts#L196) | - |
 | `Projectile` | `class` | [`game/src/combat/Projectile.ts:48`](../../game/src/combat/Projectile.ts#L48) | - |
 | `Projectile.destroy` | `method` | [`game/src/combat/Projectile.ts:919`](../../game/src/combat/Projectile.ts#L919) | - |
 | `Projectile.getOrbMaterial` | `method` | [`game/src/combat/Projectile.ts:253`](../../game/src/combat/Projectile.ts#L253) | - |
@@ -1484,14 +1484,14 @@ Run `npm run index` to refresh this cache.
 | `SimRNG.setState` | `method` | [`game/src/sim/SimRNG.ts:42`](../../game/src/sim/SimRNG.ts#L42) | - |
 | `SimSnapshot` | `interface` | [`game/src/sim/types.ts:187`](../../game/src/sim/types.ts#L187) | - |
 | `SimulationSlot` | `interface` | [`admin/src/types.ts:13`](../../admin/src/types.ts#L13) | - |
-| `SimulationState` | `interface` | [`admin/src/types.ts:19`](../../admin/src/types.ts#L19) | - |
+| `SimulationState` | `interface` | [`admin/src/types.ts:20`](../../admin/src/types.ts#L20) | - |
 | `SimulationView` | `class` | [`admin/src/views/simulationView.ts:8`](../../admin/src/views/simulationView.ts#L8) | - |
-| `SimulationView.applyPreset` | `method` | [`admin/src/views/simulationView.ts:158`](../../admin/src/views/simulationView.ts#L158) | - |
-| `SimulationView.bindEvents` | `method` | [`admin/src/views/simulationView.ts:33`](../../admin/src/views/simulationView.ts#L33) | - |
-| `SimulationView.render` | `method` | [`admin/src/views/simulationView.ts:456`](../../admin/src/views/simulationView.ts#L456) | - |
-| `SimulationView.renderHeroDropdown` | `method` | [`admin/src/views/simulationView.ts:301`](../../admin/src/views/simulationView.ts#L301) | - |
-| `SimulationView.renderSimulationWeaponSlots` | `method` | [`admin/src/views/simulationView.ts:592`](../../admin/src/views/simulationView.ts#L592) | - |
-| `SimulationView.updatePassiveUIValues` | `method` | [`admin/src/views/simulationView.ts:317`](../../admin/src/views/simulationView.ts#L317) | - |
+| `SimulationView.applyPreset` | `method` | [`admin/src/views/simulationView.ts:195`](../../admin/src/views/simulationView.ts#L195) | - |
+| `SimulationView.bindEvents` | `method` | [`admin/src/views/simulationView.ts:37`](../../admin/src/views/simulationView.ts#L37) | - |
+| `SimulationView.render` | `method` | [`admin/src/views/simulationView.ts:567`](../../admin/src/views/simulationView.ts#L567) | - |
+| `SimulationView.renderHeroDropdown` | `method` | [`admin/src/views/simulationView.ts:370`](../../admin/src/views/simulationView.ts#L370) | - |
+| `SimulationView.renderSimulationWeaponSlots` | `method` | [`admin/src/views/simulationView.ts:710`](../../admin/src/views/simulationView.ts#L710) | - |
+| `SimulationView.updatePassiveUIValues` | `method` | [`admin/src/views/simulationView.ts:386`](../../admin/src/views/simulationView.ts#L386) | - |
 | `SimVec3` | `class` | [`game/src/sim/math/SimVector.ts:5`](../../game/src/sim/math/SimVector.ts#L5) | Lightweight, zero-dependency 3D vector for headless deterministic simulatio... |
 | `SimVec3.clone` | `method` | [`game/src/sim/math/SimVector.ts:30`](../../game/src/sim/math/SimVector.ts#L30) | - |
 | `SimVec3.length` | `method` | [`game/src/sim/math/SimVector.ts:66`](../../game/src/sim/math/SimVector.ts#L66) | - |
@@ -1698,7 +1698,7 @@ Run `npm run index` to refresh this cache.
 | `UpdateNotifier.isNewerVersion` | `method` | [`game/src/core/UpdateNotifier.ts:131`](../../game/src/core/UpdateNotifier.ts#L131) | - |
 | `UpdateNotifier.notifyUpdate` | `method` | [`game/src/core/UpdateNotifier.ts:161`](../../game/src/core/UpdateNotifier.ts#L161) | - |
 | `UpdateNotifier.simulateUpdate` | `method` | [`game/src/core/UpdateNotifier.ts:184`](../../game/src/core/UpdateNotifier.ts#L184) | Simulates an update event (useful for UI testing and verification in Dev mo... |
-| `updateOverviewStats` | `function` | [`admin/src/views/dashboardView.ts:160`](../../admin/src/views/dashboardView.ts#L160) | - |
+| `updateOverviewStats` | `function` | [`admin/src/views/dashboardView.ts:163`](../../admin/src/views/dashboardView.ts#L163) | - |
 | `UpgradeOption` | `interface` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:33`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L33) | - |
 | `useGameStore` | `const` | [`game/src/ui/stores/useGameStore.ts:34`](../../game/src/ui/stores/useGameStore.ts#L34) | Global game lifecycle store for game states, timers, and dev mode. Uses sub... |
 | `useLobbyStore` | `const` | [`game/src/ui/stores/useLobbyStore.ts:33`](../../game/src/ui/stores/useLobbyStore.ts#L33) | Co-op Lobby store coordinating network rooms, slots, and peer readiness. |
