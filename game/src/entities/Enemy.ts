@@ -18,8 +18,8 @@ import { TextureManager, SpriteDirection, DirectionalTextures, BossTextures, Mon
 export type EnemyAnimState = 'WALK' | 'ATTACK';
 export type BossAnimState = EnemyAnimState;
 
-import { EnemyType } from '../shared/types';
-export type { EnemyType };
+import { EnemyType, EliteAffix } from '../shared/types';
+export type { EnemyType, EliteAffix };
 
 export interface EnemyConfig {
   type: EnemyType;
@@ -34,7 +34,7 @@ export interface EnemyConfig {
   isBoss?: boolean;
   isImmortal?: boolean;
   animated?: boolean;
-  eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  eliteAffix?: EliteAffix;
   creditsValue?: number;
 }
 
@@ -60,11 +60,27 @@ export class Enemy {
   public gemType: GemType;
   public isBoss: boolean;
   public isImmortal: boolean;
-  public eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  public eliteAffix?: EliteAffix;
   public creditsValue: number = 3;
   public isAlive = true;
+  public isStage5Boss: boolean = false;
+  public isPausedOffScreen: boolean = false;
+  public juggernautShieldHp: number = 0;
+  public juggernautShieldMax: number = 0;
+  public juggernautShieldBroken: boolean = false;
+  private juggernautShieldMesh?: Mesh;
+  public eliteAuraMesh?: Mesh;
+  public vortexTimer: number = 0;
+  public volatileLastThreshold: number = 1.0;
+  public frenzyTimer: number = 0;
+  public onVolatileDischarge?: (enemy: Enemy) => void;
+  public onAvengerDeath?: (enemy: Enemy) => void;
+  public onVortexPull?: (enemy: Enemy, radius: number, pullSpeed: number) => void;
   public readonly spellControl = new SpellControlState();
-  public get canAttack(): boolean { return !this.isFrozen && !this.isStunned && this.spellControl.canAttack; }
+  public get canAttack(): boolean {
+    if (this.isStage5Boss && this.isPausedOffScreen) return false;
+    return !this.isFrozen && !this.isStunned && this.spellControl.canAttack;
+  }
   public lastHitBy: string = 'p1';
   public lastSourceWeaponId?: string;
   public boundingRadius: number;
@@ -80,8 +96,10 @@ export class Enemy {
 
   public get movementFactor(): number {
     if (this.isFrozen || this.isStunned || this.spellControl.movementFactor === 0) return 0;
+    if (this.isStage5Boss && this.isPausedOffScreen) return 0;
     const activeSlow = this.slowTimer > 0 ? this.slowFactor : 1.0;
-    return Math.min(activeSlow, this.spellControl.movementFactor);
+    const frenzyBonus = this.frenzyTimer > 0 ? 1.40 : 1.0;
+    return Math.min(activeSlow, this.spellControl.movementFactor) * frenzyBonus;
   }
 
   public applySlow(factor: number, duration: number): void {
@@ -254,10 +272,14 @@ export class Enemy {
       this.hp = Math.round(this.hp * 2.2);
       this.maxHp = this.hp;
       this.damage = Math.round(this.damage * 1.35);
-      const affixNames = {
+      const affixNames: Record<EliteAffix, string> = {
         blazing: 'Пылающий',
         glacial: 'Ледяной',
-        overloading: 'Перегруженный'
+        overloading: 'Перегруженный',
+        juggernaut: 'Бронированный',
+        vortex: 'Вихревой',
+        volatile: 'Электрический',
+        avenger: 'Мститель'
       };
       this.name = `${affixNames[this.eliteAffix]} ${this.name}`;
     }
@@ -267,10 +289,14 @@ export class Enemy {
     this.mesh = new Group();
 
     if (this.eliteAffix) {
-      const auraColors = {
+      const auraColors: Record<EliteAffix, number> = {
         blazing: 0xef4444,
         glacial: 0x38bdf8,
-        overloading: 0x818cf8
+        overloading: 0x818cf8,
+        juggernaut: 0xf59e0b,
+        vortex: 0x06b6d4,
+        volatile: 0xeab308,
+        avenger: 0xdc2626
       };
       const ringGeom = new RingGeometry(this.width * 0.5, this.width * 0.75, 24);
       ringGeom.rotateX(-Math.PI / 2);
@@ -283,6 +309,23 @@ export class Enemy {
       const aura = new Mesh(ringGeom, ringMat);
       aura.position.y = 0.08;
       this.mesh.add(aura);
+      this.eliteAuraMesh = aura;
+
+      if (this.eliteAffix === 'juggernaut') {
+        this.juggernautShieldMax = Math.round(this.hp * 0.45);
+        this.juggernautShieldHp = this.juggernautShieldMax;
+        const shieldGeom = new RingGeometry(this.width * 0.55, this.width * 0.75, 16, 1, -Math.PI / 3, (2 * Math.PI) / 3);
+        shieldGeom.rotateX(-Math.PI / 2);
+        const shieldMat = new MeshBasicMaterial({
+          color: 0xf59e0b,
+          side: DoubleSide,
+          transparent: true,
+          opacity: 0.9
+        });
+        this.juggernautShieldMesh = new Mesh(shieldGeom, shieldMat);
+        this.juggernautShieldMesh.position.y = 0.12;
+        this.mesh.add(this.juggernautShieldMesh);
+      }
     }
 
     // 1. Load Textures
@@ -597,6 +640,36 @@ export class Enemy {
       }
     }
 
+    // Frenzy timer (from Avenger death buff)
+    if (this.frenzyTimer > 0) {
+      this.frenzyTimer = Math.max(0, this.frenzyTimer - dt);
+      if (this.frenzyTimer === 0) {
+        this.mesh.scale.set(1, 1, 1);
+        this.boundingRadius = Math.max(this.width, this.height) * 0.75 + 0.5;
+      }
+    }
+
+    // Vortex periodic singularity pull trigger
+    if (this.eliteAffix === 'vortex') {
+      this.vortexTimer += dt;
+      if (this.vortexTimer >= 5.5) {
+        this.vortexTimer = 0;
+        if (this.onVortexPull) {
+          this.onVortexPull(this, 14, 5.0);
+        }
+      }
+    }
+
+    // Stage 5 Boss off-screen pause: if the player retreats and boss leaves screen, he pauses
+    if (this.isStage5Boss && this.isPausedOffScreen) {
+      if (this.animState === 'ATTACK') {
+        this.animState = 'WALK';
+        this.attackAnimTimer = 0;
+      }
+      this.pendingAttackHit = false;
+      return;
+    }
+
     // Forced knockback handling (e.g. Time Crystal, pushes both monsters and bosses)
     if (this.forcedKnockbackTimer > 0) {
       const step = Math.min(dt, this.forcedKnockbackTimer);
@@ -723,6 +796,19 @@ export class Enemy {
       }
     }
 
+    if (this.juggernautShieldMesh && !this.juggernautShieldBroken) {
+      const dirAngles: Record<SpriteDirection, number> = {
+        front: 0,
+        back: Math.PI,
+        left: Math.PI / 2,
+        right: -Math.PI / 2
+      };
+      this.juggernautShieldMesh.rotation.y = dirAngles[this.currentDir];
+    }
+    if (this.eliteAffix === 'vortex' && this.eliteAuraMesh) {
+      this.eliteAuraMesh.rotation.z += dt * 3.5;
+    }
+
     // Hit flash / status effect color handling
     if (this.flashTimer > 0) {
       this.spriteMaterial.color.setHex(this.isImmortal ? 0xc084fc : 0xff3333);
@@ -734,9 +820,18 @@ export class Enemy {
       this.spriteMaterial.color.setHex(0x93c5fd); // Electric light blue tint
     } else if (this.isBurning) {
       this.spriteMaterial.color.setHex(0xfb923c); // Warm blazing orange tint
+    } else if (this.frenzyTimer > 0) {
+      this.spriteMaterial.color.setHex(0xf87171); // Enraged frenzy crimson tint
     } else {
       this.spriteMaterial.color.setHex(this.isImmortal ? 0x380949 : 0xffffff);
     }
+  }
+
+  public applyFrenzy(duration: number = 10): void {
+    if (!this.isAlive || this.isBoss || this.isImmortal) return;
+    this.frenzyTimer = duration;
+    this.mesh.scale.set(1.35, 1.35, 1.35);
+    this.boundingRadius = Math.max(this.width, this.height) * 0.75 * 1.35 + 0.5;
   }
 
   public takeDamage(
@@ -756,6 +851,32 @@ export class Enemy {
       this.lastSourceWeaponId = weaponId;
     }
     let incomingAmount = amount;
+
+    // 1. Juggernaut: receives full damage only from behind or after shield break
+    if (this.eliteAffix === 'juggernaut' && !this.juggernautShieldBroken) {
+      let isFrontal = true;
+      if (sourcePos) {
+        let fx = 0, fz = 1;
+        if (this.currentDir === 'back') { fx = 0; fz = -1; }
+        else if (this.currentDir === 'left') { fx = -1; fz = 0; }
+        else if (this.currentDir === 'right') { fx = 1; fz = 0; }
+        const toAttackerX = sourcePos.x - this.position.x;
+        const toAttackerZ = sourcePos.z - this.position.z;
+        if (fx * toAttackerX + fz * toAttackerZ < 0) {
+          isFrontal = false;
+        }
+      }
+      if (isFrontal) {
+        this.juggernautShieldHp -= incomingAmount;
+        incomingAmount = Math.max(1, Math.round(incomingAmount * 0.25));
+        if (this.juggernautShieldHp <= 0) {
+          this.juggernautShieldBroken = true;
+          if (this.juggernautShieldMesh) this.juggernautShieldMesh.visible = false;
+          this.stun(1.8);
+        }
+      }
+    }
+
     if (this.isShocked) {
       incomingAmount = Math.round(incomingAmount * 1.10);
     }
@@ -763,6 +884,19 @@ export class Enemy {
       ? Math.max(1, Math.round(incomingAmount * (1 - this.damageResistance)))
       : incomingAmount;
     this.lastDamageTaken = effectiveDamage;
+
+    // Volatile: discharge ring of lightning when crossing every 20% HP threshold
+    if (this.eliteAffix === 'volatile') {
+      const nextRatio = Math.max(0, (this.hp - effectiveDamage) / this.maxHp);
+      const currentFloor = Math.floor(nextRatio / 0.20) * 0.20;
+      if (nextRatio <= 0.81 && currentFloor < this.volatileLastThreshold) {
+        this.volatileLastThreshold = currentFloor;
+        if (this.onVolatileDischarge) {
+          this.onVolatileDischarge(this);
+        }
+      }
+    }
+
     this.hp -= effectiveDamage;
     this.flashTimer = 0.12;
     this.spriteMaterial.color.setHex(0xff3333);
@@ -781,6 +915,9 @@ export class Enemy {
 
     if (this.hp <= 0) {
       this.isAlive = false;
+      if (this.eliteAffix === 'avenger' && this.onAvengerDeath) {
+        this.onAvengerDeath(this);
+      }
       return true;
     }
     return false;

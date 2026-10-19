@@ -24,8 +24,10 @@ import {
 import { Player, ActiveBuff, BuffType } from '../entities/Player';
 import { SoundManager } from '../core/SoundManager';
 
+export type AltarType = BuffType | 'greed';
+
 export interface AltarConfig {
-  type: BuffType;
+  type: AltarType;
   name: string;
   subtitle: string;
   icon: string;
@@ -34,7 +36,7 @@ export interface AltarConfig {
   buff: ActiveBuff;
 }
 
-export const ALTAR_CONFIGS: Partial<Record<BuffType, AltarConfig>> = {
+export const ALTAR_CONFIGS: Partial<Record<AltarType, AltarConfig>> = {
   damage: {
     type: 'damage',
     name: 'Алтарь Ярости',
@@ -102,6 +104,23 @@ export const ALTAR_CONFIGS: Partial<Record<BuffType, AltarConfig>> = {
       maxDuration: 12,
       value: 1.0
     }
+  },
+  greed: {
+    type: 'greed',
+    name: 'Алтарь Алчности',
+    subtitle: 'Выживите 45с элиток → Легендарный сундук',
+    icon: '💰',
+    colorHex: 0xf59e0b,
+    colorCss: '#f59e0b',
+    buff: {
+      type: 'speed',
+      name: 'Испытание Алчности',
+      icon: '💰',
+      color: '#f59e0b',
+      duration: 45,
+      maxDuration: 45,
+      value: 0
+    }
   }
 };
 
@@ -116,6 +135,14 @@ export class Altar {
   public isSpent = false;
   public rechargeTimer = 0;
   public rechargeDuration = 75; // seconds until reactivation
+
+  // Altar of Greed trial properties
+  public isGreedAltar = false;
+  public trialState: 'idle' | 'active' | 'completed' | 'spent' = 'idle';
+  public trialTimer = 45;
+  public readonly trialDuration = 45;
+  public onTrialStarted?: (altar: Altar) => void;
+  public onTrialCompleted?: (altar: Altar) => void;
 
   private relicMesh: Mesh;
   private light: PointLight;
@@ -136,13 +163,18 @@ export class Altar {
   private animTimer = 0;
   public onCaptured?: (altar: Altar, buff: ActiveBuff) => void;
 
-  constructor(type: BuffType, position: Vector3) {
+  constructor(type: AltarType, position: Vector3) {
     const config = ALTAR_CONFIGS[type];
     if (!config) throw new Error('No altar for buff: ' + type);
     this.config = config;
     this.position = position.clone();
     this.mesh = new Group();
     this.mesh.position.copy(this.position);
+
+    if (type === 'greed') {
+      this.isGreedAltar = true;
+      this.captureTime = 1.8;
+    }
 
     // 1. Stepped Stone Dais
     const stoneMat = new MeshStandardMaterial({
@@ -215,16 +247,18 @@ export class Altar {
       relicGeom.rotateX(Math.PI);
     } else if (type === 'regen') {
       relicGeom = new IcosahedronGeometry(0.44, 0);
+    } else if (type === 'greed') {
+      relicGeom = new OctahedronGeometry(0.55, 0);
     } else {
       relicGeom = new DodecahedronGeometry(0.46, 0);
     }
 
     const relicMat = new MeshStandardMaterial({
-      color: this.config.colorHex,
-      emissive: this.config.colorHex,
-      emissiveIntensity: 1.2,
-      roughness: 0.2,
-      metalness: 0.4
+      color: type === 'greed' ? 0xfbbf24 : this.config.colorHex,
+      emissive: type === 'greed' ? 0xd97706 : this.config.colorHex,
+      emissiveIntensity: type === 'greed' ? 1.4 : 1.2,
+      roughness: type === 'greed' ? 0.15 : 0.2,
+      metalness: type === 'greed' ? 0.85 : 0.4
     });
     this.relicMesh = new Mesh(relicGeom, relicMat);
     this.relicMesh.position.y = 1.95;
@@ -330,7 +364,28 @@ export class Altar {
     if (this.isCaptured || this.isSpent) {
       ctx.font = 'bold 18px "Segoe UI", sans-serif';
       ctx.fillStyle = '#94a3b8';
-      ctx.fillText('[ИСПОЛЬЗОВАНО]', 192, 75);
+      ctx.fillText(this.isGreedAltar ? '[ИСПЫТАНИЕ ПРОЙДЕНО]' : '[ИСПОЛЬЗОВАНО]', 192, 75);
+    } else if (this.isGreedAltar && this.trialState === 'active') {
+      ctx.font = 'bold 18px "Segoe UI", sans-serif';
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText(`ВЫЖИВАЙТЕ: ${Math.max(0, Math.ceil(this.trialTimer))} сек`, 192, 68);
+
+      // Capture Progress Bar showing remaining trial countdown
+      ctx.fillStyle = '#221510';
+      ctx.fillRect(36, 88, 312, 22);
+
+      const ratio = Math.max(0, Math.min(1, this.trialTimer / this.trialDuration));
+      const fillW = ratio * 312;
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(36, 88, fillW, 22);
+
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(36, 88, 312, 22);
+
+      ctx.font = 'bold 14px "Segoe UI", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`ОСТАЛОСЬ: ${Math.max(0, this.trialTimer).toFixed(1)}s`, 192, 104);
     } else {
       // Subtitle perk
       ctx.font = '16px "Segoe UI", sans-serif';
@@ -351,7 +406,9 @@ export class Altar {
 
       ctx.font = 'bold 14px "Segoe UI", sans-serif';
       ctx.fillStyle = '#ffffff';
-      const pctText = progress > 0 ? `ЗАХВАТ: ${Math.round(progress * 100)}%` : 'ВОЙДИТЕ В ЗОНУ ДЛЯ ЗАХВАТА';
+      const pctText = progress > 0
+        ? `${this.isGreedAltar ? 'АКТИВАЦИЯ' : 'ЗАХВАТ'}: ${Math.round(progress * 100)}%`
+        : (this.isGreedAltar ? 'ВОЙДИТЕ ДЛЯ АКТИВАЦИИ' : 'ВОЙДИТЕ В ЗОНУ ДЛЯ ЗАХВАТА');
       ctx.fillText(pctText, 192, 104);
     }
 
@@ -370,6 +427,27 @@ export class Altar {
     allPlayers?: { position: Vector3; isAlive: boolean; isDowned?: boolean }[]
   ) {
     if (this.isCaptured || this.isSpent) {
+      return;
+    }
+
+    if (this.isGreedAltar && this.trialState === 'active') {
+      this.trialTimer -= dt;
+      if (this.trialTimer <= 0) {
+        this.trialTimer = 0;
+        this.trialState = 'completed';
+        this.isCaptured = true;
+        this.isSpent = true;
+        this.rechargeTimer = Infinity;
+
+        this.isShockwaving = true;
+        this.shockwaveTimer = 0;
+        this.shockwaveMat.opacity = 1.0;
+
+        SoundManager.playAltarCaptured();
+        if (this.onTrialCompleted) {
+          this.onTrialCompleted(this);
+        }
+      }
       return;
     }
 
@@ -395,8 +473,24 @@ export class Altar {
       SoundManager.playAltarCapturing(this.captureProgress);
 
       if (this.captureProgress >= 1.0) {
-        // Capture Complete (Single-use)!
         this.captureProgress = 1.0;
+
+        if (this.isGreedAltar) {
+          this.trialState = 'active';
+          this.trialTimer = this.trialDuration;
+
+          this.isShockwaving = true;
+          this.shockwaveTimer = 0;
+          this.shockwaveMat.opacity = 1.0;
+
+          SoundManager.playAltarCaptured();
+          if (this.onTrialStarted) {
+            this.onTrialStarted(this);
+          }
+          return;
+        }
+
+        // Capture Complete (Single-use)!
         this.isCaptured = true;
         this.isSpent = true;
         this.rechargeTimer = Infinity;
@@ -461,6 +555,11 @@ export class Altar {
       this.light.intensity = 0.8 + Math.sin(this.animTimer * 2) * 0.3;
       this.innerZoneMat.opacity = 0.05;
       this.renderBillboard(0);
+    } else if (this.isGreedAltar && this.trialState === 'active') {
+      this.relicMesh.rotation.y += dt * 5.0;
+      this.light.intensity = 3.5 + Math.sin(this.animTimer * 8.0) * 1.5;
+      this.innerZoneMat.opacity = 0.35 + Math.sin(this.animTimer * 6.0) * 0.15;
+      this.renderBillboard(this.trialTimer / this.trialDuration);
     } else {
       this.innerZoneMat.opacity = 0.15 + this.captureProgress * 0.45;
       this.light.intensity = 2.0 + this.captureProgress * 2.5;
@@ -488,6 +587,28 @@ export class Altar {
     this.isCaptured = true;
     this.isSpent = true;
     this.rechargeTimer = Infinity;
+    this.isShockwaving = true;
+    this.shockwaveTimer = 0;
+    this.shockwaveMat.opacity = 1.0;
+    SoundManager.playAltarCaptured();
+  }
+
+  public applyRemoteTrialStart() {
+    if (this.trialState !== 'idle') return;
+    this.trialState = 'active';
+    this.trialTimer = this.trialDuration;
+    this.isShockwaving = true;
+    this.shockwaveTimer = 0;
+    this.shockwaveMat.opacity = 1.0;
+    SoundManager.playAltarCaptured();
+  }
+
+  public applyRemoteTrialComplete() {
+    if (this.trialState === 'completed' || this.isSpent) return;
+    this.trialState = 'completed';
+    this.isCaptured = true;
+    this.isSpent = true;
+    this.trialTimer = 0;
     this.isShockwaving = true;
     this.shockwaveTimer = 0;
     this.shockwaveMat.opacity = 1.0;

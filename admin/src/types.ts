@@ -14,6 +14,7 @@ export interface SimulationSlot {
   enabled: boolean;
   weaponId: string;
   level: number;
+  tier?: number; // 3 (Base x1.0), 2 (Awakened x2.0), 1 (Master x3.0)
 }
 
 export interface SimulationState {
@@ -24,14 +25,19 @@ export interface SimulationState {
   watchStacks: number;
   injectorStacks: number;
   critVisorStacks: number;
+  critDamageStacks?: number;
+  critChanceStacks?: number;
+  bioInjectorStacks?: number;
   cleaveTargets: number;
   damageRuneActive: boolean;
+  bossTarget?: boolean;
 }
 
 export interface ProgressionChartState {
   view: 'weapons' | 'monsters' | 'heroes';
   weaponMetric: 'damage' | 'dps';
   weaponGrade?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  weaponTier?: 'tier3' | 'tier2' | 'tier1' | 'all';
   selectedWeapons: Set<string>;
   monsterCategory: 'monsters' | 'bosses';
   monsterMetric: 'hp' | 'damage' | 'speed';

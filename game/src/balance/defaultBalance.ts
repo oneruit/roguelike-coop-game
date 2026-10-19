@@ -60,11 +60,11 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'reaper_scythe',
       name: 'Коса Жнеца',
       icon: '🌙',
-      damage: 4,
+      damage: 16,
       cooldown: 0.0,
       damagePerLevel: 2,
       maxLevel: 12,
-      bleedDps: 8,
+      bleedDps: 24,
       bleedDuration: 3.0,
       orbitRadius: 2.5,
       orbitSpeed: 3.8,
@@ -390,6 +390,14 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       speed: 2.7,
       damage: 90,
       description: 'Древняя споровая владычица ксено-леса 3 тира'
+    },
+    stage5_boss: {
+      id: 'stage5_boss',
+      name: 'Древний Титан Святилища',
+      hp: 130000,
+      speed: 3.2,
+      damage: 95,
+      description: 'Древний хранитель рунического святилища 5 тира'
     }
   },
   passives: {
@@ -428,12 +436,12 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'stat_magnet',
       name: 'Магнит',
       icon: '🧲',
-      description: '+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м)',
+      description: '+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м на 100 ур.)',
       baseValue: 4,
       perStackValue: 10,
       maxValue: 50,
       scalingType: 'diminishing',
-      notes: 'Базовый 4м, +10% на 1 ур., угасающая эффективность до 50м на 300 ур.'
+      notes: 'Базовый 4м, +10% на 1 ур., угасающая эффективность до 50м на 100 ур.'
     },
     stat_amulet: {
       id: 'stat_amulet',
@@ -460,12 +468,34 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'stat_watch',
       name: 'Карманные Часы',
       icon: '⏱️',
-      description: '-1% к времени перезарядки оружий (угасающая эффективность до 30% на 300 ур., макс. 30%)',
+      description: '-1% к времени перезарядки оружий (угасающая эффективность до 50% на 200 ур., макс. 50%)',
       baseValue: 1,
       perStackValue: 1,
-      maxValue: 30,
+      maxValue: 50,
       scalingType: 'diminishing',
-      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 1%, 300 ур. = 30% (макс. 30%)'
+      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 1%, 200 ур. = 50% (макс. 50%)'
+    },
+    stat_crit_damage: {
+      id: 'stat_crit_damage',
+      name: 'Заточка Клинка',
+      icon: '🗡️',
+      description: '+1% к критическому урону (складывается)',
+      baseValue: 1,
+      perStackValue: 1,
+      maxValue: 1000,
+      scalingType: 'additive',
+      notes: '+1% к критическому урону за каждый стак (макс. 1000%)'
+    },
+    stat_crit_chance: {
+      id: 'stat_crit_chance',
+      name: 'Прицел Разлома',
+      icon: '🎯',
+      description: '+0.05% к шансу критического удара (складывается)',
+      baseValue: 0.05,
+      perStackValue: 0.05,
+      maxValue: 100,
+      scalingType: 'additive',
+      notes: '+0.05% к шансу крита за каждый стак (макс. 100%)'
     }
   },
   items: {
@@ -519,10 +549,10 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       rarity: 'common',
       icon: '🧪',
       color: '#94a3b8',
-      description: '+2.5 HP/сек пассивной регенерации',
-      stackText: '+2.5 HP/сек за стак',
+      description: '+2.5 HP/сек и +0.5% от макс. HP/сек пассивной регенерации',
+      stackText: '+2.5 HP/с и +0.5% макс. HP/с за стак',
       baseValue: 2.5,
-      scaling: '+2.5 HP/сек за стак'
+      scaling: '+2.5 HP/с и +0.5% макс. HP/с за стак'
     },
     chain_lightning: {
       id: 'chain_lightning',

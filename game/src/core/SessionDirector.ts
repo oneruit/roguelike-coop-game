@@ -36,6 +36,7 @@ import { MetaProgression } from '../meta/MetaProgression';
 import { LeaderboardManager } from './LeaderboardManager';
 import { RunSaveManager, type SavedWeaponData, type SavedRunData } from './RunSaveManager';
 import { createWeaponInstanceById } from '../combat/WeaponFactory';
+import { Altar } from '../world/Altar';
 
 export enum GameState {
   MAIN_MENU,
@@ -92,6 +93,13 @@ export class SessionDirector {
   }
   public isWarping = false;
   public lastTime = performance.now();
+
+  // Altar of Greed Trial
+  public isGreedTrialActive = false;
+  public greedTrialTimeRemaining = 0;
+  public greedTrialTotalDuration = 45;
+  private greedWaveSpawnTimer = 0;
+  private activeGreedAltar: Altar | null = null;
 
   constructor(
     engine: Engine,
@@ -174,6 +182,9 @@ export class SessionDirector {
     this.netCoordinator.onWarpRequested = () => {
       this.warpToNextStage();
     };
+    this.netCoordinator.onGreedTrialRequested = (altar) => {
+      this.startGreedTrial(altar);
+    };
   }
 
   public toggleDevMode(): void {
@@ -248,7 +259,9 @@ export class SessionDirector {
       this.hud.hidePartnerHp();
 
       if (seedInput && seedInput.trim().length > 0) {
-        this.currentSeed = seedInput.trim();
+        const trimmed = seedInput.trim();
+        const parsed = parseInt(trimmed, 10);
+        this.currentSeed = (!isNaN(parsed) && parsed.toString() === trimmed) ? (parsed >>> 0) : trimmed;
       } else {
         this.currentSeed = Math.floor(Math.random() * 1000000);
       }
@@ -417,6 +430,10 @@ export class SessionDirector {
     this.resetRewardChoices();
     this.hud.resetBossUI();
     this.hud.resetSessionHUD();
+    this.isGreedTrialActive = false;
+    this.greedTrialTimeRemaining = 0;
+    this.activeGreedAltar = null;
+    this.hud?.hideGreedTrialTimer?.();
     this.gameTime = 0;
     this.isTrainingMode = false;
     ProgressionManager.getInstance().isTrainingMode = false;
@@ -493,6 +510,10 @@ export class SessionDirector {
       this.enemyManager.clear();
       this.dropManager.clear();
       this.engine.chunkManager.clear();
+      this.isGreedTrialActive = false;
+      this.greedTrialTimeRemaining = 0;
+      this.activeGreedAltar = null;
+      this.hud?.hideGreedTrialTimer?.();
 
       if (!keepSeed && this.net.role !== 'client') {
         this.currentSeed = Math.floor(Math.random() * 1000000);
@@ -721,6 +742,75 @@ export class SessionDirector {
     return false;
   }
 
+  public startGreedTrial(altar: Altar): void {
+    if (this.isGreedTrialActive) return;
+    this.isGreedTrialActive = true;
+    this.activeGreedAltar = altar;
+    this.greedTrialTotalDuration = altar.trialDuration || 45;
+    this.greedTrialTimeRemaining = this.greedTrialTotalDuration;
+    this.greedWaveSpawnTimer = 0.5;
+
+    SoundManager.playReaperSpawn();
+    this.hud?.triggerBossWarning?.('ИСПЫТАНИЕ АЛЧНОСТИ (45 СЕК)', 4);
+    this.hud?.showGreedTrialTimer?.(this.greedTrialTimeRemaining, this.greedTrialTotalDuration);
+
+    if (this.net.role === 'host') {
+      this.netCoordinator.pendingNetworkEvents.push({
+        type: 'greed_trial_start' as any,
+        duration: this.greedTrialTotalDuration
+      });
+    }
+  }
+
+  public updateGreedTrial(dt: number): void {
+    if (!this.isGreedTrialActive || !this.activeGreedAltar) return;
+
+    this.greedTrialTimeRemaining -= dt;
+    this.hud?.updateGreedTrialTimer?.(this.greedTrialTimeRemaining, this.greedTrialTotalDuration);
+
+    // Host or single-player handles authoritative wave spawning
+    if (this.net.role !== 'client') {
+      this.greedWaveSpawnTimer -= dt;
+      if (this.greedWaveSpawnTimer <= 0) {
+        this.greedWaveSpawnTimer = 2.0;
+        this.enemyManager.spawnGreedTrialWave(this.activeGreedAltar.position, 4);
+      }
+    }
+  }
+
+  public completeGreedTrial(altar: Altar): void {
+    if (!this.isGreedTrialActive) return;
+    this.isGreedTrialActive = false;
+    this.hud?.hideGreedTrialTimer?.();
+
+    SoundManager.playLevelUp();
+    this.hud?.triggerAltarNotification?.('ИСПЫТАНИЕ ПРОЙДЕНО!', 'Золотой сундук с Легендарным предметом спустился с небес!', '👑', '#f59e0b');
+
+    // Wipe all non-boss trial mobs in 45m radius with holy shockwave
+    this.enemyManager.killNonBossesAround(altar.position, 45, this.engine.camera);
+
+    // Pull all gems to player
+    this.dropManager.attractAllGemsTo(this.player.position);
+
+    // Spawn 0-cost (free) legendary chest
+    this.chestManager.spawnChest(
+      altar.position.x,
+      altar.position.z,
+      'legendary',
+      'greed_reward_chest',
+      0,
+      altar.position.y
+    );
+
+    if (this.net.role === 'host') {
+      this.netCoordinator.pendingNetworkEvents.push({
+        type: 'greed_trial_complete' as any,
+        chestId: 'greed_reward_chest'
+      });
+    }
+    this.activeGreedAltar = null;
+  }
+
   public warpToNextStage(): void {
     if (this.isWarping) return;
     this.isWarping = true;
@@ -766,6 +856,10 @@ export class SessionDirector {
       this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
       this.enemyManager.currentStage = this.biomeManager.stageNumber;
       this.enemyManager.resetStageTime();
+      this.isGreedTrialActive = false;
+      this.greedTrialTimeRemaining = 0;
+      this.activeGreedAltar = null;
+      this.hud?.hideGreedTrialTimer?.();
       this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
 
       // Derive deterministic stage seed
@@ -1089,9 +1183,18 @@ export class SessionDirector {
       riftItemsRecord[k] = v;
     }
 
-    const numSeed = typeof this.currentSeed === 'number'
-      ? this.currentSeed
-      : SeededRNG.hashString(String(this.currentSeed));
+    let numSeed: number;
+    if (typeof this.currentSeed === 'number') {
+      numSeed = this.currentSeed;
+    } else {
+      const trimmed = String(this.currentSeed).trim();
+      const parsed = parseInt(trimmed, 10);
+      if (!isNaN(parsed) && parsed.toString() === trimmed) {
+        numSeed = parsed >>> 0 || 1337;
+      } else {
+        numSeed = SeededRNG.hashString(trimmed || '1337');
+      }
+    }
 
     const runData: SavedRunData = {
       version: 1,
@@ -1099,6 +1202,11 @@ export class SessionDirector {
       heroId: this.player.charType,
       stageNumber: this.biomeManager.stageNumber,
       seed: numSeed,
+      playerPosition: {
+        x: this.player.position.x,
+        y: this.player.position.y,
+        z: this.player.position.z
+      },
       gameTime: this.gameTime,
       stageTime: this.enemyManager.stageTime,
       kills: this.enemyManager.totalKills,
@@ -1116,7 +1224,9 @@ export class SessionDirector {
         amuletCount: (this.player as any).amuletCount || 0,
         vestCount: (this.player as any).vestCount || 0,
         watchCount: (this.player as any).watchCount || 0,
-        amplifierCount: (this.player as any).amplifierCount || 0
+        amplifierCount: (this.player as any).amplifierCount || 0,
+        critDamageCount: (this.player as any).critDamageCount || 0,
+        critChanceCount: (this.player as any).critChanceCount || 0
       },
       riftItems: riftItemsRecord,
       weapons: weaponsData
@@ -1139,6 +1249,8 @@ export class SessionDirector {
     try {
       this.currentSeed = data.seed;
       this.startSinglePlayerWithHero(data.heroId, String(data.seed), false, 'day');
+      this.currentSeed = data.seed;
+      this.devManager.setCurrentSeed(this.currentSeed);
 
       this.gameTime = data.gameTime;
       this.enemyManager.gameTime = data.gameTime;
@@ -1159,6 +1271,8 @@ export class SessionDirector {
       (this.player as any).vestCount = data.passives.vestCount;
       (this.player as any).watchCount = data.passives.watchCount;
       (this.player as any).amplifierCount = data.passives.amplifierCount;
+      (this.player as any).critDamageCount = data.passives.critDamageCount || 0;
+      (this.player as any).critChanceCount = data.passives.critChanceCount || 0;
 
       // Recreate weapons
       this.player.weapons = [];
@@ -1171,6 +1285,9 @@ export class SessionDirector {
           weapon.cooldownBonus = wData.cooldownBonus;
           weapon.upgradeHistory = [...wData.upgradeHistory];
           weapon.recalculateStats();
+          if (typeof (weapon as any).setAttackCallback === 'function') {
+            (weapon as any).setAttackCallback(() => this.player.triggerAttackAnim(0.48, weapon.id));
+          }
           this.player.weapons.push(weapon);
         }
       }
@@ -1193,10 +1310,26 @@ export class SessionDirector {
       this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
       this.hud.updateStageText(data.stageNumber, currentBiome.name);
 
-      const stageSeed = Number(data.seed) + data.stageNumber * 10007;
+      const numSeed = typeof data.seed === 'number' ? data.seed : parseInt(String(data.seed), 10);
+      const stageSeed = data.stageNumber === 1
+        ? numSeed
+        : numSeed + data.stageNumber * 10007;
+
       this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, data.stageNumber, currentBiome.id);
       this.mapManager.setSeed(stageSeed);
       this.mapManager.clear();
+
+      if (data.playerPosition) {
+        const pPos = new Vector3(data.playerPosition.x, data.playerPosition.y, data.playerPosition.z);
+        this.player.position.copy(pPos);
+        this.player.prevPosition.copy(pPos);
+        this.player.renderPosition.copy(pPos);
+        this.player.mesh.position.copy(pPos);
+        this.engine.snapCamera(pPos);
+      }
+
+      this.hud.updatePassivesBar(this.player);
+      this.player.redrawOverhead();
 
       RunSaveManager.clearSavedRun();
 

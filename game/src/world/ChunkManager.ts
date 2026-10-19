@@ -45,6 +45,8 @@ export class ChunkManager {
   public roughTerrainManager: RoughTerrainManager;
   private oasisGroups: Group[] = [];
   private activeChunks = new Map<string, Group>();
+  public isDeclarative: boolean = false;
+  private chunkListeners: Set<(action: 'add' | 'remove' | 'reset', key?: string, group?: Group) => void> = new Set();
 
   constructor(scene: Scene, altarManager: AltarManager, obstacleManager: ObstacleManager) {
     this.scene = scene;
@@ -52,6 +54,29 @@ export class ChunkManager {
     this.obstacleManager = obstacleManager;
     this.roughTerrainManager = new RoughTerrainManager(this.scene);
     TerrainMaterials.init();
+  }
+
+  public addChunkListener(listener: (action: 'add' | 'remove' | 'reset', key?: string, group?: Group) => void): () => void {
+    this.chunkListeners.add(listener);
+    return () => this.chunkListeners.delete(listener);
+  }
+
+  public getActiveChunks(): Map<string, Group> {
+    return this.activeChunks;
+  }
+
+  public setDeclarative(declarative: boolean): void {
+    if (this.isDeclarative === declarative) return;
+    this.isDeclarative = declarative;
+    if (declarative) {
+      for (const group of this.activeChunks.values()) {
+        this.scene.remove(group);
+      }
+    } else {
+      for (const group of this.activeChunks.values()) {
+        this.scene.add(group);
+      }
+    }
   }
 
   /**
@@ -113,11 +138,11 @@ export class ChunkManager {
     // 1. Safe zone around world spawn origin (0, 0)
     occupied.push({ x: 0, z: 0, radius: 15.0 });
 
-    // 2. Teleporter Placement (Stages 1-3 only; on stage 4 Rift Core, transition is disabled)
+    // 2. Teleporter Placement (Stages 1-4; on stage 5 Runic Sanctum, final stage transition is disabled)
     let teleX = 75;
     let teleZ = 75;
     if (riftTeleporter) {
-      if (stageNumber >= 4) {
+      if (stageNumber >= 5) {
         riftTeleporter.disableForFinalStage();
       } else {
         // Pick deterministic sector away from spawn
@@ -127,6 +152,11 @@ export class ChunkManager {
         teleZ = Math.sin(teleAngle) * teleDist;
         riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
         occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
+        if (stageNumber === 4) {
+          // On stage 4, the portal is secretly hidden until all chests are collected
+          riftTeleporter.mesh.visible = false;
+          riftTeleporter.isDiscovered = false;
+        }
       }
     }
 
@@ -156,6 +186,28 @@ export class ChunkManager {
       });
 
       occupied.push({ x: ax, z: az, radius: 9.5 });
+    }
+
+    // 3b. Altar of Greed (Spawns exclusively on Stage 4+ so players have leveled up and prepared)
+    if (stageNumber >= 4) {
+      const greedAngle = rng.range(0, Math.PI * 2);
+      const greedDist = rng.range(75, 120);
+      const gx = Math.cos(greedAngle) * greedDist;
+      const gz = Math.sin(greedAngle) * greedDist;
+
+      const greedAltar = new Altar('greed', new Vector3(gx, 0, gz));
+      this.altarManager.registerAltar(greedAltar);
+
+      const chunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(gx / ChunkManager.CHUNK_SIZE)));
+      const chunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(gz / ChunkManager.CHUNK_SIZE)));
+      const chunkKey = `${chunkX},${chunkZ}`;
+      this.obstacleManager.addObstacle(chunkKey, {
+        x: gx,
+        z: gz,
+        radius: 1.5,
+        type: 'altar'
+      });
+      occupied.push({ x: gx, z: gz, radius: 9.5 });
     }
 
     // 4. Chests Placement (deterministic, non-overlapping)
@@ -230,7 +282,12 @@ export class ChunkManager {
         chunkGroup.add(floorMesh);
 
         this.activeChunks.set(key, chunkGroup);
-        this.scene.add(chunkGroup);
+        if (!this.isDeclarative) {
+          this.scene.add(chunkGroup);
+        }
+        for (const listener of this.chunkListeners) {
+          listener('add', key, chunkGroup);
+        }
       }
     }
 
@@ -288,8 +345,13 @@ export class ChunkManager {
    * Deep cleanup of all chunk geometries and entities.
    */
   public clear() {
-    for (const group of this.activeChunks.values()) {
-      this.scene.remove(group);
+    for (const [key, group] of this.activeChunks.entries()) {
+      if (!this.isDeclarative) {
+        this.scene.remove(group);
+      }
+      for (const listener of this.chunkListeners) {
+        listener('remove', key, group);
+      }
       group.traverse((obj) => {
         if (obj instanceof Mesh) {
           obj.geometry.dispose();
@@ -297,6 +359,9 @@ export class ChunkManager {
       });
     }
     this.activeChunks.clear();
+    for (const listener of this.chunkListeners) {
+      listener('reset');
+    }
 
     for (const oasis of this.oasisGroups) {
       this.scene.remove(oasis);

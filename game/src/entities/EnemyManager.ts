@@ -1,5 +1,5 @@
 import { Vector3, type Scene, type Camera, Sphere, type Frustum } from 'three';
-import { Enemy, EnemyConfig, EnemyType } from './Enemy';
+import { Enemy, EnemyConfig, EnemyType, EliteAffix } from './Enemy';
 import { SpatialGrid } from './SpatialGrid';
 import { DropManager } from '../drops/DropManager';
 import { SoundManager } from '../core/SoundManager';
@@ -33,6 +33,21 @@ export class EnemyManager {
   private spawnTimer = 0;
   private spawnInterval = 1.0;
   public gameTime = 0;
+  public isDeclarative = false;
+
+  public setDeclarative(declarative: boolean): void {
+    if (this.isDeclarative === declarative) return;
+    this.isDeclarative = declarative;
+    if (declarative) {
+      for (const enemy of this.enemies) {
+        this.scene.remove(enemy.mesh);
+      }
+    } else {
+      for (const enemy of this.enemies) {
+        this.scene.add(enemy.mesh);
+      }
+    }
+  }
 
   private configs: Record<EnemyType, EnemyConfig> = {
     coyote: {
@@ -166,6 +181,18 @@ export class EnemyManager {
       height: 10.5,
       gemType: 'red',
       isBoss: true
+    },
+    stage5_boss: {
+      type: 'stage5_boss',
+      name: 'Древний Титан Святилища',
+      texturePrefix: '/textures/bosses/boss_hydra',
+      hp: 130000,
+      speed: 3.2,
+      damage: 95,
+      width: 10.5,
+      height: 10.5,
+      gemType: 'red',
+      isBoss: true
     }
   };
 
@@ -176,6 +203,8 @@ export class EnemyManager {
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
   public onBurnDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
+  public onVolatileRingTrigger?: (pos: Vector3, radius: number, damage: number) => void;
+  public onVortexPullTrigger?: (pos: Vector3, radius: number, pullSpeed: number) => void;
   public camera?: Camera;
 
   public activePlayerCount: number = 1;
@@ -217,6 +246,12 @@ export class EnemyManager {
       this.configs.spore_queen.speed = sporeCfg.speed;
       this.configs.spore_queen.damage = sporeCfg.damage;
     }
+    const titanCfg = BalanceManager.getBossConfig('stage5_boss');
+    if (this.configs.stage5_boss && titanCfg) {
+      this.configs.stage5_boss.hp = titanCfg.hp;
+      this.configs.stage5_boss.speed = titanCfg.speed;
+      this.configs.stage5_boss.damage = titanCfg.damage;
+    }
   }
 
   private registerEnemy(enemy: Enemy): Enemy {
@@ -234,6 +269,29 @@ export class EnemyManager {
       }
       if (this.onBurnDamage) {
         this.onBurnDamage(e, tickDamage, isDead, hitter, sourceWeaponId);
+      }
+    };
+    enemy.onAvengerDeath = (avenger) => {
+      const nearby = this.spatialGrid.queryRadius(avenger.position.x, avenger.position.z, 13);
+      for (const e of nearby) {
+        if (e !== avenger && e.isAlive && !e.isBoss) {
+          e.applyFrenzy(10);
+        }
+      }
+      SoundManager.playReaperSpawn?.();
+    };
+    enemy.onVolatileDischarge = (volatileEnemy) => {
+      if (this.camera) {
+        this.damageNumbers.spawnDamage(volatileEnemy.position, 0, true, this.camera, false, 2, 1, false);
+      }
+      SoundManager.playLightning?.();
+      if (this.onVolatileRingTrigger) {
+        this.onVolatileRingTrigger(volatileEnemy.position, 7.0, volatileEnemy.damage * 0.85);
+      }
+    };
+    enemy.onVortexPull = (vortexEnemy, radius, pullSpeed) => {
+      if (this.onVortexPullTrigger) {
+        this.onVortexPullTrigger(vortexEnemy.position, radius, pullSpeed);
       }
     };
     return enemy;
@@ -304,8 +362,10 @@ export class EnemyManager {
   public getLateGameDamageResistance(isBoss: boolean): number {
     const minute = this.gameTime / 60;
     if (isBoss) {
-      // Bosses have 15% base damage resistance, scaling up to 75% at 60+ min
-      return Math.min(0.75, 0.15 + Math.max(0, minute - 15) * 0.013);
+      const stageBonus = Math.max(0, this.currentStage - 1) * 0.05;
+      const mPost = Math.max(0, minute - 15);
+      // Bosses have 35% base damage resistance from 15m, scaling up to 85% at 60+ min
+      return Math.min(0.85, 0.35 + mPost * 0.015 + stageBonus);
     }
     // Normal mobs have 0% damage resistance before 20 min, scaling up to 55% at 60+ min
     return Math.min(0.55, Math.max(0, minute - 20) * 0.012);
@@ -415,6 +475,13 @@ export class EnemyManager {
       const isTough = enemy.type === 'brute' || enemy.type === 'bison';
       enemy.knockbackResistance = this.getKnockbackResistance(enemy.isBoss, isTough);
 
+      if (enemy.isBoss && enemy.isStage5Boss && this.camera) {
+        const proj = enemy.position.clone().project(this.camera);
+        const margin = 0.20;
+        const onScreen = Math.abs(proj.x) <= 1.0 + margin && Math.abs(proj.y) <= 1.0 + margin && proj.z >= -1.0 && proj.z <= 1.0;
+        enemy.isPausedOffScreen = !onScreen;
+      }
+
       enemy.updateSimulation(dt, closestTargetPos);
 
       // Slide around terrain obstacles (cacti, trees, boulders, altars) for nearby grounded enemies
@@ -485,37 +552,42 @@ export class EnemyManager {
 
         if (enemy.isBoss) {
           if (!enemy.isImmortal) {
-            // Boss drops red gems scaling with boss tier
+            // Boss drops red gems scaling with boss tier & stage
             const tier = Math.max(1, Math.floor(this.gameTime / 300));
-            const gemCount = 5 + tier * 2;
+            const gemCount = 10 + tier * 2;
+            const stageMultiplier = Math.pow(1.25, Math.max(0, this.currentStage - 1));
+            const bossGemXp = Math.round((250 + tier * 180) * stageMultiplier);
+
             for (let g = 0; g < gemCount; g++) {
               const offset = new Vector3(
-                (Math.random() - 0.5) * 3.5,
+                (Math.random() - 0.5) * 4.0,
                 0,
-                (Math.random() - 0.5) * 3.5
+                (Math.random() - 0.5) * 4.0
               );
-              this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
+              const gem = this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
+              if (gem) {
+                gem.xpValue = bossGemXp;
+              }
             }
-            // Boss drops gold passive crystal from global balance config
-            const globalCfg = BalanceManager.getGlobalConfig();
-            const bossGoldChance = globalCfg?.goldGemChanceBoss ?? 0.40;
-            if (Math.random() < bossGoldChance) {
+            // Boss drops 2 guaranteed gold passive crystals
+            const goldCount = 2;
+            for (let gp = 0; gp < goldCount; gp++) {
               const pOffset = new Vector3(
-                (Math.random() - 0.5) * 2.0,
+                (Math.random() - 0.5) * 2.5,
                 0,
-                (Math.random() - 0.5) * 2.0
+                (Math.random() - 0.5) * 2.5
               );
               this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
             }
 
-            // Boss drops Rift Crystals (3-4 crystals + meta bonus)
+            // Boss drops Rift Crystals (5-7 crystals + meta bonus)
             const metaBonus = MetaProgression.getInstance().getBonuses();
-            const crystalDropCount = Math.max(1, Math.round((3 + Math.floor(Math.random() * 2)) * (1 + metaBonus.crystalDropBonus)));
+            const crystalDropCount = Math.max(1, Math.round((5 + Math.floor(Math.random() * 3)) * (1 + metaBonus.crystalDropBonus)));
             for (let c = 0; c < crystalDropCount; c++) {
               const cOffset = new Vector3(
-                (Math.random() - 0.5) * 3.2,
+                (Math.random() - 0.5) * 3.5,
                 0,
-                (Math.random() - 0.5) * 3.2
+                (Math.random() - 0.5) * 3.5
               );
               this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
             }
@@ -582,30 +654,38 @@ export class EnemyManager {
     const baseHp = this.configs.boss.hp; // 7600
     const baseDmg = this.configs.boss.damage; // 90
     const baseSpd = this.configs.boss.speed; // 2.4
+    const stageMult = Math.pow(1.50, Math.max(0, this.currentStage - 1));
 
-    // Tier 1 (5m): 7,600 HP, 90 dmg (Кровавый демон)
-    // Tier 2 (10m): 28,000 HP, 130 dmg (Древняя трехглавая гидра)
-    // Tier 3 (15m): ~50,000 HP, 210 dmg
-    // Tier 4 (20m): ~84,000 HP, 290 dmg
-    // Tier 5 (25m): ~130,000 HP, 380 dmg
+    // Tier 1 (5m): ~12,000 HP, 90 dmg (Кровавый демон)
+    // Tier 2 (10m): Hydra
+    // Tier 3 (15m): ~350,000 * stageMult HP (Stage 4: ~1.2M HP)
+    // Tier 4 (20m): ~900,000 * stageMult HP (Stage 4: ~3M HP)
+    // Tier 5 (25m): ~2,200,000 * stageMult HP (Stage 4: ~7.4M HP)
+    // Tier 6 (30m): ~5,000,000 * stageMult HP (Stage 4: ~16.8M HP)
+    // Tier 8 (40m): ~18,000,000 * stageMult HP (Stage 4: ~60M HP)
+    // Tier 12 (60m): ~65,000,000 * stageMult HP (Stage 4: ~220M HP)
     let bossConfig: EnemyConfig;
     if (tier === 2) {
       bossConfig = {
         ...this.configs.hydra,
         name: 'Древняя трехглавая гидра',
-        hp: this.configs.hydra.hp,
-        damage: this.configs.hydra.damage,
+        hp: Math.round(this.configs.hydra.hp * stageMult),
+        damage: Math.round(this.configs.hydra.damage * stageMult),
         speed: 2.3
       };
     } else {
-      const baseTierHp = baseHp * (1 + ((tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0) * 1.5);
-      const baseTierDmg = baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
       const tierPost = Math.max(0, tier - 3);
-      const postHpMult = 1 + Math.pow(tierPost / 1.5, 2.0) * 0.8;
-      const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
+      let calculatedHp: number;
+      if (tier < 3) {
+        calculatedHp = baseHp * (1 + (tier - 1) * 2.2);
+      } else {
+        calculatedHp = 350000 * Math.pow(2.2, tierPost) * (1 + tierPost * 0.35);
+      }
+      const tierHp = Math.round(calculatedHp * stageMult);
 
-      const tierHp = Math.round(baseTierHp * postHpMult);
-      const tierDmg = Math.round(baseTierDmg * postDmgMult);
+      const baseTierDmg = baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
+      const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
+      const tierDmg = Math.round(baseTierDmg * postDmgMult * stageMult);
       const tierSpd = Number((Math.min(3.8, baseSpd + (tier - 1) * 0.18 * 1.5 + tierPost * 0.1)).toFixed(2));
 
       bossConfig = {
@@ -618,8 +698,13 @@ export class EnemyManager {
     }
 
     const boss = this.registerEnemy(new Enemy(bossConfig, spawnPos));
+    boss.ccResistance = this.getLateGameCcResistance(true);
+    boss.damageResistance = this.getLateGameDamageResistance(true);
+    boss.knockbackResistance = this.getKnockbackResistance(true);
     this.enemies.push(boss);
-    this.scene.add(boss.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(boss.mesh);
+    }
     this.activeBoss = boss;
     this.bossSpawned = true;
 
@@ -645,18 +730,21 @@ export class EnemyManager {
 
     const isHydra = stage === 2;
     const isSporeQueen = stage === 3;
-    const stageBaseConfig = isHydra
-      ? this.configs.hydra
-      : isSporeQueen
-        ? this.configs.spore_queen
-        : this.configs.boss;
+    const isStage5 = stage >= 5;
+    const stageBaseConfig = isStage5
+      ? this.configs.stage5_boss
+      : isHydra
+        ? this.configs.hydra
+        : isSporeQueen
+          ? this.configs.spore_queen
+          : this.configs.boss;
 
     const baseHp = stageBaseConfig.hp;
     const baseDmg = stageBaseConfig.damage;
     const baseSpd = stageBaseConfig.speed;
 
     const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
-    const hpStageMult = isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
+    const hpStageMult = isStage5 ? (1.5 + (stage - 1) * 1.0) : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
     const tierHp = Math.round(baseHp * hpStageMult * diffCoeff);
     const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.35) * (1 + (diffCoeff - 1) * 0.25));
 
@@ -665,7 +753,7 @@ export class EnemyManager {
       'Древняя трёхглавая гидра',
       'Споровая Владычица Ксено-Леса',
       'Магматический Колосс Кальдеры',
-      'Первородный Страж Предтеч',
+      'Древний Титан Рунического Святилища',
       'Архитектор Разлома'
     ];
 
@@ -684,13 +772,20 @@ export class EnemyManager {
     boss.ccResistance = Math.max(0.65, this.getLateGameCcResistance(true));
     boss.damageResistance = Math.max(0.15, this.getLateGameDamageResistance(true));
     boss.knockbackResistance = this.getKnockbackResistance(true);
-    if (isSporeQueen) {
+    if (isStage5) {
+      boss.isStage5Boss = true;
+      boss.ccResistance = Math.max(0.80, boss.ccResistance);
+      boss.damageResistance = Math.max(0.35, boss.damageResistance);
+      boss.knockbackResistance = 0.98;
+    } else if (isSporeQueen) {
       boss.ccResistance = Math.max(0.75, boss.ccResistance);
       boss.damageResistance = Math.max(0.35, boss.damageResistance);
       boss.knockbackResistance = 0.95;
     }
     this.enemies.push(boss);
-    this.scene.add(boss.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(boss.mesh);
+    }
     this.activeBoss = boss;
     this.bossSpawned = true;
 
@@ -728,7 +823,9 @@ export class EnemyManager {
 
     const reaper = this.registerEnemy(new Enemy(reaperConfig, spawnPos));
     this.enemies.push(reaper);
-    this.scene.add(reaper.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(reaper.mesh);
+    }
     this.activeBoss = reaper;
     this.immortalBossSpawned = true;
 
@@ -862,16 +959,23 @@ export class EnemyManager {
     const dmgMult = this.getDamageMultiplier();
     const spdMult = this.getSpeedMultiplier();
 
-    // Check elite spawn chance from Difficulty Director
-    const isElite = Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
-    const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
-    const chosenAffix = isElite ? affixes[Math.floor(Math.random() * affixes.length)] : undefined;
+    // Check elite spawn chance from Difficulty Director (100% on Stage 5)
+    const isStage5 = this.currentStage >= 5;
+    const isElite = isStage5 || Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
+    const stage5Affixes: EliteAffix[] = ['juggernaut', 'vortex', 'volatile', 'avenger'];
+    const standardAffixes: EliteAffix[] = ['blazing', 'glacial', 'overloading'];
+    const chosenAffix = isElite
+      ? (isStage5 ? stage5Affixes[Math.floor(Math.random() * stage5Affixes.length)] : standardAffixes[Math.floor(Math.random() * standardAffixes.length)])
+      : undefined;
+
+    // Stage 5 mobs are more ferocious (+15% extra speed)
+    const effectiveSpeedMult = isStage5 ? spdMult * 1.15 : spdMult;
 
     const scaledConfig: EnemyConfig = {
       ...baseConfig,
       hp: Math.max(1, Math.round(baseConfig.hp * hpMult)),
       damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
-      speed: Number((baseConfig.speed * spdMult).toFixed(2)),
+      speed: Number((baseConfig.speed * effectiveSpeedMult).toFixed(2)),
       eliteAffix: chosenAffix,
       creditsValue: (baseConfig.creditsValue || 1) + Math.max(0, this.currentStage - 1) * 2
     };
@@ -882,7 +986,9 @@ export class EnemyManager {
     enemy.damageResistance = this.getLateGameDamageResistance(false);
     enemy.knockbackResistance = this.getKnockbackResistance(false, isTough);
     this.enemies.push(enemy);
-    this.scene.add(enemy.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(enemy.mesh);
+    }
   }
 
   /**
@@ -918,6 +1024,73 @@ export class EnemyManager {
       const enemy = this.enemies[i];
       if (enemy.isImmortal) continue; // Immortal Reaper cannot be wiped
       this.damageEnemy(enemy, 99999, undefined, camera);
+    }
+  }
+
+  /**
+   * Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position.
+   */
+  public spawnGreedTrialWave(centerPos: Vector3, count: number = 4) {
+    const types: EnemyType[] = ['brute', 'bison', 'scorpion', 'ghost', 'skeleton'];
+    const affixes: EliteAffix[] = this.currentStage >= 5
+      ? ['juggernaut', 'vortex', 'volatile', 'avenger']
+      : ['blazing', 'glacial', 'overloading'];
+
+    if (this.enemies.length >= 120) return;
+
+    for (let i = 0; i < count; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 16 + Math.random() * 8;
+      const spawnPos = new Vector3(
+        Math.max(-219, Math.min(219, centerPos.x + Math.cos(angle) * distance)),
+        0,
+        Math.max(-219, Math.min(219, centerPos.z + Math.sin(angle) * distance))
+      );
+      if (this.getElevation) {
+        spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+      }
+
+      const baseConfig = this.configs[type];
+      const hpMult = this.getHpMultiplier() * 1.25;
+      const dmgMult = this.getDamageMultiplier() * 1.2;
+      const spdMult = this.getSpeedMultiplier() * 1.35; // 35% faster frenzied movement
+
+      // 100% Elite guarantee for the trial!
+      const chosenAffix = affixes[Math.floor(Math.random() * affixes.length)];
+
+      const scaledConfig: EnemyConfig = {
+        ...baseConfig,
+        hp: Math.max(1, Math.round(baseConfig.hp * hpMult)),
+        damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
+        speed: Number((baseConfig.speed * spdMult).toFixed(2)),
+        eliteAffix: chosenAffix,
+        creditsValue: (baseConfig.creditsValue || 1) + 8
+      };
+
+      const enemy = this.registerEnemy(new Enemy(scaledConfig, spawnPos));
+      const isTough = type === 'brute' || type === 'bison';
+      enemy.ccResistance = this.getLateGameCcResistance(false);
+      enemy.damageResistance = this.getLateGameDamageResistance(false);
+      enemy.knockbackResistance = this.getKnockbackResistance(false, isTough);
+      this.enemies.push(enemy);
+      if (!this.isDeclarative) {
+        this.scene.add(enemy.mesh);
+      }
+    }
+  }
+
+  /**
+   * Eliminates non-boss enemies in the specified radius around the center with holy trial clear damage.
+   */
+  public killNonBossesAround(center: Vector3, radius: number = 40, camera?: Camera) {
+    const rSq = radius * radius;
+    for (let i = this.enemies.length - 1; i >= 0; i--) {
+      const enemy = this.enemies[i];
+      if (enemy.isBoss || enemy.isImmortal || !enemy.isAlive) continue;
+      if (enemy.position.distanceToSquared(center) <= rSq) {
+        this.damageEnemy(enemy, 99999, center, camera);
+      }
     }
   }
 
@@ -1023,7 +1196,9 @@ export class EnemyManager {
         enemy = this.registerEnemy(new Enemy(config, new Vector3(s.x, initY, s.z)));
         enemy.id = s.id;
         this.enemies.push(enemy);
-        this.scene.add(enemy.mesh);
+        if (!this.isDeclarative) {
+          this.scene.add(enemy.mesh);
+        }
         if (enemy.isBoss) {
           this.activeBoss = enemy;
         }

@@ -58,6 +58,11 @@ export class InGameOverlayUI extends InGameHUDScreen {
   private buffsTray: HTMLElement;
   private passivesBar: HTMLElement | null;
 
+  // Greed Trial HUD
+  private greedTrialContainer: HTMLElement | null;
+  private greedTrialTimerText: HTMLElement | null;
+  private greedTrialBarFill: HTMLElement | null;
+
   // Co-op In-game HUD
   private coopBadge: HTMLElement;
   private coopRoomName: HTMLElement;
@@ -107,6 +112,10 @@ export class InGameOverlayUI extends InGameHUDScreen {
     this.altarBannerText = getEl('altar-notification-text');
     this.buffsTray = getEl('active-buffs-tray');
     this.passivesBar = SafeDOM.getElementById('active-passives-bar');
+
+    this.greedTrialContainer = SafeDOM.getElementById('greed-trial-container');
+    this.greedTrialTimerText = SafeDOM.getElementById('greed-trial-time-text');
+    this.greedTrialBarFill = SafeDOM.getElementById('greed-trial-bar-fill');
 
     // The Rift Elements
     this.stageText = SafeDOM.getElementById('stage-text');
@@ -889,6 +898,31 @@ export class InGameOverlayUI extends InGameHUDScreen {
     this.buffsTray.innerHTML = '';
     if (this.passivesBar) {
       this.passivesBar.innerHTML = '';
+    }
+    this.hideGreedTrialTimer();
+  }
+
+  public showGreedTrialTimer(timeRemaining: number, totalTime: number) {
+    if (this.greedTrialContainer) {
+      this.greedTrialContainer.classList.remove('hidden');
+    }
+    this.updateGreedTrialTimer(timeRemaining, totalTime);
+  }
+
+  public updateGreedTrialTimer(timeRemaining: number, totalTime: number) {
+    const clamped = Math.max(0, timeRemaining);
+    if (this.greedTrialTimerText) {
+      this.greedTrialTimerText.innerText = `${clamped.toFixed(1)}s`;
+    }
+    if (this.greedTrialBarFill) {
+      const pct = totalTime > 0 ? Math.min(100, Math.max(0, (clamped / totalTime) * 100)) : 0;
+      this.greedTrialBarFill.style.width = `${pct}%`;
+    }
+  }
+
+  public hideGreedTrialTimer() {
+    if (this.greedTrialContainer) {
+      this.greedTrialContainer.classList.add('hidden');
     }
   }
 

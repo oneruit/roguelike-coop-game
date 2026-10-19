@@ -18,6 +18,7 @@ export interface SavedRunData {
   heroId: CharacterType;
   stageNumber: number;
   seed: number;
+  playerPosition?: { x: number; y: number; z: number };
   gameTime: number;
   stageTime: number;
   kills: number;
@@ -36,6 +37,8 @@ export interface SavedRunData {
     vestCount: number;
     watchCount: number;
     amplifierCount: number;
+    critDamageCount?: number;
+    critChanceCount?: number;
   };
   riftItems: Record<string, number>;
   weapons: SavedWeaponData[];

@@ -53,6 +53,8 @@ export class PlayerStats {
       amuletCount: number;
       vestCount: number;
       watchCount: number;
+      critDamageCount?: number;
+      critChanceCount?: number;
     },
     cheats: {
       isSpeedCheat?: boolean;
@@ -96,9 +98,10 @@ export class PlayerStats {
     // Speed: +12% per Adrenaline Dart stack
     speedBonus += adrenalineStacks * 0.12;
 
-    // HP Regen: +2.5 HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, + meta HP regen, NO LIMIT
+    // HP Regen: +2.5 HP/s and +0.5% max HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, + meta HP regen, NO LIMIT
     const amuletScale = amuletCfg?.perStackValue ?? 1.0;
-    const hpRegen = (counts.amuletCount * amuletScale) + (vialStacks * 2.5) + (titanHeartStacks * 15) + (metaBonuses?.hpRegenBonus ?? 0);
+    const vialMaxHpRegen = vialStacks * (_baseMaxHp * 0.005);
+    const hpRegen = (counts.amuletCount * amuletScale) + (vialStacks * 2.5) + vialMaxHpRegen + (titanHeartStacks * 15) + (metaBonuses?.hpRegenBonus ?? 0);
 
     // Max Shield (Armor): 35 base + meta shield + 25 per Phase Carapace stack, capped at (160 + meta)
     const baseShield = globalCfg?.baseShield ?? 35;
@@ -114,14 +117,16 @@ export class PlayerStats {
     // Shield Regen Speed: +15% regen rate per Aegis Exoskeleton stack
     const shieldRegenMultiplier = 1.0 + (exoskeletonStacks * 0.15);
 
-    // Crit Chance: baseCritChance from globalCfg + meta crit + 6% per Crit Lens + 3% per Crit Visor, cap at 1.0 (100%)
+    // Crit Chance: baseCritChance from globalCfg + meta crit + 6% per Crit Lens + 3% per Crit Visor + 0.05% per monster drop critChanceCount, cap at 1.0 (100%)
     const critLensStacks = getItemStacks('crit_lens');
     const baseCritChance = globalCfg?.baseCritChance ?? 0.05;
-    const critChance = Math.min(1.0, baseCritChance + (metaBonuses?.critChanceBonus ?? 0) + critLensStacks * 0.04 + critStacks * 0.03);
+    const critChanceFromDrops = (counts.critChanceCount ?? 0) * 0.0005;
+    const critChance = Math.min(1.0, baseCritChance + (metaBonuses?.critChanceBonus ?? 0) + critLensStacks * 0.04 + critStacks * 0.03 + critChanceFromDrops);
 
-    // Crit Damage: 50% base + meta crit dmg + 20% per Heavy Hollowpoint + 25% per Void Catalyst, cap at 10.0 (1000%)
+    // Crit Damage: 50% base + meta crit dmg + 20% per Heavy Hollowpoint + 25% per Void Catalyst + 1% per monster drop critDamageCount, cap at 10.0 (1000%)
     const hollowStacks = getItemStacks('heavy_hollowpoint');
-    const critDamage = Math.min(10.0, 0.50 + (metaBonuses?.critDamageMultBonus ?? 0) + hollowStacks * 0.20 + voidCatalystStacks * 0.25);
+    const critDamageFromDrops = (counts.critDamageCount ?? 0) * 0.01;
+    const critDamage = Math.min(10.0, 0.50 + (metaBonuses?.critDamageMultBonus ?? 0) + hollowStacks * 0.20 + voidCatalystStacks * 0.25 + critDamageFromDrops);
 
     // Leather Vest % damage reduction: 2% at level 1, diminishing returns up to cap at level 300, capped at maxArmorReduction (+ meta reduction)
     let damageReduction = metaBonuses?.damageReductionBonus ?? 0;
@@ -132,9 +137,9 @@ export class PlayerStats {
     }
     damageReduction = Math.min(maxReduction, damageReduction);
 
-    // Attack Cooldown Multiplier
-    const watchMaxReduction = (watchCfg?.maxValue ?? 30) / 100;
-    const watchReduction = counts.watchCount <= 0 ? 0 : Math.min(watchMaxReduction, 0.01 * Math.pow(counts.watchCount, Math.log(watchMaxReduction * 100) / Math.log(300)));
+    // Attack Cooldown Multiplier: Pocket Watch reaches 50% max at 200 lvl
+    const watchMaxReduction = (watchCfg?.maxValue ?? 50) / 100;
+    const watchReduction = counts.watchCount <= 0 ? 0 : Math.min(watchMaxReduction, 0.01 * Math.pow(counts.watchCount, Math.log(watchMaxReduction * 100) / Math.log(200)));
     const metaCdr = metaBonuses?.cooldownReductionBonus ?? 0;
     const watchMult = Math.max(0.40, 1 - watchReduction - metaCdr);
     const injectorMult = Math.pow(0.90, injectorStacks);
@@ -145,12 +150,12 @@ export class PlayerStats {
       weapon.cooldownMultiplier = cooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
     }
 
-    // Magnet pickup radius: base from globalCfg, diminishing returns up to maxValue at level 300, capped at maxValue (+ meta bonus)
+    // Magnet pickup radius: base from globalCfg, diminishing returns up to maxValue at level 100, capped at maxValue (+ meta bonus)
     const basePickupRadius = globalCfg?.basePickupRadius ?? (magnetCfg?.baseValue ?? 4.0);
     const magnetCap = magnetCfg?.maxValue ?? 50.0;
     let pickupRadius = basePickupRadius;
     if (counts.magnetCount > 0) {
-      pickupRadius = basePickupRadius + 0.4 * Math.pow(counts.magnetCount, Math.log((magnetCap - basePickupRadius) / 0.4) / Math.log(300));
+      pickupRadius = basePickupRadius + 0.4 * Math.pow(counts.magnetCount, Math.log((magnetCap - basePickupRadius) / 0.4) / Math.log(100));
     }
     pickupRadius = Math.min(magnetCap, pickupRadius + (metaBonuses?.pickupRadiusBonus ?? 0));
 

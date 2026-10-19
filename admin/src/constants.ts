@@ -47,7 +47,8 @@ export const TEXTURE_MAP: Record<string, string> = {
   'boss-boss': '/textures/bosses/boss_demon_front.png',
   'boss-demon': '/textures/bosses/boss_demon_front.png',
   'boss-hydra': '/textures/bosses/boss_hydra_front.png',
-  'boss-spore_queen': '/textures/bosses/boss_hydra_front.png'
+  'boss-spore_queen': '/textures/bosses/boss_hydra_front.png',
+  'boss-stage5_boss': '/textures/bosses/boss_hydra_front.png'
 };
 
 export const WEAPON_COLORS: Record<string, string> = {

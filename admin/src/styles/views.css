@@ -670,8 +670,8 @@
 
 .slot-controls-row {
   display: grid;
-  grid-template-columns: 1fr 140px;
-  gap: 12px;
+  grid-template-columns: 1fr 110px 145px;
+  gap: 8px;
   align-items: center;
 }
 

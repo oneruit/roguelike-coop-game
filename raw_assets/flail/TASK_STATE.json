@@ -1,0 +1,47 @@
+{
+  "task": "Brigitte (flail) character appearance redesign",
+  "branch": "development",
+  "character_id": "flail",
+  "character_name": "Бригитта",
+  "created_at": "2026-10-18T20:57:35+03:00",
+  "status": "completed",
+  "visual_spec": {
+    "gender_role": "Armored Guardian Paladin / Female Crusader Knight (Бригитта)",
+    "hair_head": "Lavender/purple bob hair with bangs, two dark curved ram/goat horns on temples, silver tiara with teardrop blue gemstone on forehead, cyan neck scarf/gorget",
+    "attire": "Royal blue armored tunic with belt and silver buckle, royal blue pleated battle skirt with silver swirls, heavy white and silver plate armor with cyan crystal accents",
+    "pauldron": "Left shoulder pauldron is an ornate sculpted silver/white RAM HEAD with curved horns and cyan crystal eyes",
+    "boots": "Heavy white plate greaves and boots styled like armored hooves (split-toe sabatons)",
+    "weapon": "Combat Flail (боевой цеп) with blue wrapped handle, steel chain, and heavy spiked white/silver flail head with cyan crystal core",
+    "proportions": "Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact body, sturdy boots)",
+    "reference_image": "raw_assets/flail/reference.png"
+  },
+  "completed_steps": [
+    {
+      "step": "turnaround_generation",
+      "status": "approved",
+      "file": "raw_assets/flail/turnaround.png",
+      "notes": "5-in-1 Character Reference Turnaround sheet explicitly approved by user. Contains Portrait, Front View, Back View, Right Profile View (strict 90 deg profile), Weapon Preview (combat flail). Pure solid magenta rgb(255,0,255) background."
+    },
+    {
+      "step": "panel_crops",
+      "status": "completed",
+      "files": [
+        "raw_assets/flail/portrait_crop.png",
+        "raw_assets/flail/front_crop.png",
+        "raw_assets/flail/back_crop.png",
+        "raw_assets/flail/right_crop.png",
+        "raw_assets/flail/weapon_crop.png"
+      ]
+    }
+  ],
+  "pending_steps": [],
+  "quota_exhaustion_incident": {
+    "http_status": 429,
+    "error_code": "RESOURCE_EXHAUSTED",
+    "model": "gemini-3.1-flash-image",
+    "incident_timestamp": "2026-10-18T21:02:20+03:00",
+    "estimated_cooldown": "~3 hours 17 minutes",
+    "estimated_reset_time_local": "2026-10-19T00:20:00+03:00"
+  },
+  "resumption_prompt": "Продолжи выполнение задачи редизайна Бригитты из чекпоинта raw_assets/flail/TASK_STATE.json"
+}

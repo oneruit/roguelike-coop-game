@@ -6,26 +6,72 @@ export class AltarManager {
   private scene: Scene;
   public altars: Altar[] = [];
   public onAltarCaptured?: (altar: Altar, buff: ActiveBuff) => void;
+  public onGreedTrialStarted?: (altar: Altar) => void;
+  public onGreedTrialCompleted?: (altar: Altar) => void;
+  public isDeclarative = false;
+  private altarListeners = new Set<(action: 'add' | 'remove' | 'reset', altar?: Altar) => void>();
 
   constructor(scene: Scene) {
     this.scene = scene;
   }
 
-  public registerAltar(altar: Altar) {
-    altar.onCaptured = (a, buff) => {
-      if (this.onAltarCaptured) {
-        this.onAltarCaptured(a, buff);
+  public addAltarListener(listener: (action: 'add' | 'remove' | 'reset', altar?: Altar) => void): () => void {
+    this.altarListeners.add(listener);
+    return () => this.altarListeners.delete(listener);
+  }
+
+  public setDeclarative(declarative: boolean): void {
+    if (this.isDeclarative === declarative) return;
+    this.isDeclarative = declarative;
+    if (declarative) {
+      for (const altar of this.altars) {
+        this.scene.remove(altar.mesh);
       }
-    };
+    } else {
+      for (const altar of this.altars) {
+        this.scene.add(altar.mesh);
+      }
+    }
+  }
+
+  public registerAltar(altar: Altar) {
+    if (altar.isGreedAltar) {
+      altar.onTrialStarted = (a) => {
+        if (this.onGreedTrialStarted) {
+          this.onGreedTrialStarted(a);
+        }
+      };
+      altar.onTrialCompleted = (a) => {
+        if (this.onGreedTrialCompleted) {
+          this.onGreedTrialCompleted(a);
+        }
+      };
+    } else {
+      altar.onCaptured = (a, buff) => {
+        if (this.onAltarCaptured) {
+          this.onAltarCaptured(a, buff);
+        }
+      };
+    }
     this.altars.push(altar);
-    this.scene.add(altar.mesh);
+    if (!this.isDeclarative) {
+      this.scene.add(altar.mesh);
+    }
+    for (const listener of this.altarListeners) {
+      listener('add', altar);
+    }
   }
 
   public unregisterAltar(altar: Altar) {
     const idx = this.altars.indexOf(altar);
     if (idx !== -1) {
       this.altars.splice(idx, 1);
-      altar.destroy(this.scene);
+      if (!this.isDeclarative) {
+        altar.destroy(this.scene);
+      }
+      for (const listener of this.altarListeners) {
+        listener('remove', altar);
+      }
     }
   }
 
@@ -73,10 +119,25 @@ export class AltarManager {
     altar?.applyRemoteCapture();
   }
 
+  public applyRemoteGreedTrialStart() {
+    const greed = this.altars.find((candidate) => candidate.isGreedAltar);
+    greed?.applyRemoteTrialStart();
+  }
+
+  public applyRemoteGreedTrialComplete() {
+    const greed = this.altars.find((candidate) => candidate.isGreedAltar);
+    greed?.applyRemoteTrialComplete();
+  }
+
   public clear() {
     for (const altar of this.altars) {
-      altar.destroy(this.scene);
+      if (!this.isDeclarative) {
+        altar.destroy(this.scene);
+      }
     }
     this.altars = [];
+    for (const listener of this.altarListeners) {
+      listener('reset');
+    }
   }
 }

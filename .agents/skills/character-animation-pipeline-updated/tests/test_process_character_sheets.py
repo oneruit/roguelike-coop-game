@@ -115,6 +115,47 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
             with Image.open(output / "hero_test_hero_portrait.png") as portrait:
                 self.assertEqual(portrait.size, (96, 96))
 
+    def test_process_character_supports_6x3_source_grid(self) -> None:
+        """Verify 6x3 source sheets (FRONT, BACK, RIGHT) are automatically expanded to 4 rows."""
+        sheet_3row = Image.new("RGB", (576, 288), (255, 0, 255))
+        draw = ImageDraw.Draw(sheet_3row)
+        for row in range(3):
+            for col in range(6):
+                x = col * 96
+                y = row * 96
+                if row == 2:  # Right facing profile
+                    draw.rectangle((x + 30, y + 15, x + 69, y + 87), fill=(40, 60, 90), outline=(0, 0, 0), width=3)
+                    draw.rectangle((x + 54, y + 18, x + 67, y + 34), fill=(220, 160, 120))
+                else:
+                    draw.rectangle((x + 30, y + 15, x + 66, y + 87), fill=(40, 60, 90), outline=(0, 0, 0), width=3)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            output = root / "output"
+            source.mkdir()
+            for state in ("idle", "walk", "attack"):
+                sheet_3row.save(source / f"{state}.png")
+
+            process_character(
+                name="hero_3row",
+                idle_path=str(source / "idle.png"),
+                walk_path=str(source / "walk.png"),
+                attack_path=str(source / "attack.png"),
+                out_dir=str(output),
+                rows=3,
+                bg_mode="magenta",
+                row_order="fbrl",
+            )
+
+            # Output must be the standard 576x384 (6 cols x 4 rows)
+            with Image.open(output / "hero_3row_idle.png") as result:
+                self.assertEqual(result.size, (576, 384))
+            with Image.open(output / "hero_3row_portrait.png") as portrait:
+                self.assertEqual(portrait.size, (96, 96))
+
+
 
 if __name__ == "__main__":
     unittest.main()
+

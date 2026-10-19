@@ -1,4 +1,5 @@
 import { Vector3, Vector2, Raycaster, Plane, type Camera } from 'three';
+import { InputBuffer } from './InputBuffer';
 
 export class InputManager {
   private keys: { [key: string]: boolean } = {};
@@ -30,26 +31,31 @@ export class InputManager {
     }
 
     this.keys[e.code] = true;
+    const inputBuffer = InputBuffer.getInstance();
 
     if (e.code === 'KeyE' || e.code === 'KeyF') {
+      inputBuffer.queueAction('interact');
       if (this.onInteract) {
         this.onInteract();
       }
     }
 
     if (e.code === 'KeyT') {
+      inputBuffer.queueAction('teleport_to_rift');
       if (this.onTeleportToRift) {
         this.onTeleportToRift();
       }
     }
 
     if (e.code === 'Space' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+      inputBuffer.queueAction('dash');
       if (this.onDash) {
         this.onDash();
       }
     }
 
     if (e.code === 'KeyI' || e.code === 'KeyC') {
+      inputBuffer.queueAction('toggle_inventory');
       if (this.onToggleInventory) {
         this.onToggleInventory();
       }
@@ -57,6 +63,7 @@ export class InputManager {
 
     if (e.code === 'F3' || e.key === 'F3') {
       e.preventDefault();
+      inputBuffer.queueAction('toggle_debug_hud');
       if (this.onToggleDebugHud) {
         this.onToggleDebugHud();
       }
@@ -65,6 +72,7 @@ export class InputManager {
 
     if (e.code === 'Tab' || e.key === 'Tab') {
       e.preventDefault();
+      inputBuffer.queueAction('toggle_map');
       if (this.onToggleMap) {
         this.onToggleMap();
       }
@@ -72,12 +80,14 @@ export class InputManager {
     }
 
     if (e.code === 'Escape') {
+      inputBuffer.queueAction('toggle_pause');
       if (this.onTogglePause) {
         this.onTogglePause();
       }
     }
 
     if (e.code === 'KeyP') {
+      inputBuffer.queueAction('toggle_dev_mode');
       if (this.onToggleDevMode) {
         this.onToggleDevMode();
       }
@@ -109,5 +119,9 @@ export class InputManager {
 
     this.raycaster.setFromCamera(this.mouse, camera);
     this.raycaster.ray.intersectPlane(this.groundPlane, this.mouseWorldPosition);
+
+    const inputBuffer = InputBuffer.getInstance();
+    inputBuffer.setMoveVector(this.moveDirection.x, this.moveDirection.z);
+    inputBuffer.setAimPosition(this.mouseWorldPosition.x, this.mouseWorldPosition.z);
   }
 }

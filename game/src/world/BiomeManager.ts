@@ -214,6 +214,34 @@ export const BIOMES: BiomeConfig[] = [
       hemiSkyColor: 0xdb2777,
       hemiGroundColor: 0x0d0221
     }
+  },
+  {
+    id: 'runic_sanctuary',
+    stageNumber: 5,
+    name: 'Руническое Святилище',
+    nameEn: 'Runic Sanctum',
+    fogColor: 0x0c1618,
+    fogDensity: 0.018,
+    backgroundColor: 0x0c1618,
+    ambientColor: 0x134e4a,
+    sunColor: 0x5eead4,
+    hemiSkyColor: 0x2dd4bf,
+    hemiGroundColor: 0x042f2e,
+    groundTint: 0x262626,
+    description: 'Древнее руническое святилище Предтеч. Стены и плиты испещрены светящимися символами, а воздух искрится опасной астральной мощью.',
+    roughness: 0.80,
+    metalness: 0.12,
+    rockColor: 0x1e293b,
+    foliageColor: 0x14b8a6,
+    night: {
+      fogColor: 0x060c0e,
+      fogDensity: 0.018,
+      backgroundColor: 0x060c0e,
+      ambientColor: 0x0f3b38,
+      lightColor: 0x2dd4bf,
+      hemiSkyColor: 0x0d9488,
+      hemiGroundColor: 0x021f1e
+    }
   }
 ];
 
@@ -229,10 +257,11 @@ export class BiomeManager {
   }
 
   public initRunBiomes(seed?: number): BiomeConfig[] {
-    const regularBiomes = BIOMES.filter(b => b.id !== 'rift_core');
+    const regularBiomes = BIOMES.filter(b => b.id !== 'rift_core' && b.id !== 'runic_sanctuary');
     const riftCore = BIOMES.find(b => b.id === 'rift_core')!;
+    const runicSanctuary = BIOMES.find(b => b.id === 'runic_sanctuary')!;
 
-    // Seeded or random shuffle of the 5 non-final biomes
+    // Seeded or random shuffle of the non-final biomes
     const shuffled = [...regularBiomes];
     let s = typeof seed === 'number' ? seed : Math.floor(Math.random() * 1000000);
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -243,12 +272,13 @@ export class BiomeManager {
       shuffled[j] = tmp;
     }
 
-    // Pick 3 random biomes and append rift_core as the 4th (final) biome
+    // Pick 3 random biomes, stage 4 rift_core, stage 5 runic_sanctuary
     this.activeRunBiomes = [
       { ...shuffled[0], stageNumber: 1 },
       { ...shuffled[1], stageNumber: 2 },
       { ...shuffled[2], stageNumber: 3 },
-      { ...riftCore, stageNumber: 4 }
+      { ...riftCore, stageNumber: 4 },
+      { ...runicSanctuary, stageNumber: 5 }
     ];
     this.currentStageIndex = 0;
     return this.activeRunBiomes;
@@ -281,7 +311,7 @@ export class BiomeManager {
   }
 
   public isFinalStage(): boolean {
-    return this.stageNumber >= 4;
+    return this.stageNumber >= 5;
   }
 
   /**

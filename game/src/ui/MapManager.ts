@@ -11,7 +11,7 @@ import { MerchantManager } from '../world/MerchantManager';
 import { renderCenterSquareMap as drawCenterSquareMap } from './MapCenterSquareRenderer';
 
 export interface DiscoveredAltar {
-  type: BuffType;
+  type: BuffType | 'greed';
   name: string;
   icon: string;
   color: string;

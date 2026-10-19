@@ -34,6 +34,9 @@ import { SessionDirector, GameState } from './core/SessionDirector';
 import { LobbyCoordinator } from './net/LobbyCoordinator';
 import { MerchantManager } from './world/MerchantManager';
 import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
+import { GameStateBridge } from './ui/stores/GameStateBridge';
+import { initReactUI, disposeReactUI } from './ui/react/mountReactUI';
+import { FeatureFlags } from './core/FeatureFlags';
 
 class Game {
   private engine: Engine;
@@ -73,6 +76,9 @@ class Game {
   private frameTimeEma: number = 0;
   private fpsEma: number = 0;
   private lastTime = performance.now();
+  private animFrameId: number = 0;
+  private accumulator: number = 0;
+  public static readonly FIXED_TIMESTEP: number = 1 / 60;
 
   constructor() {
     this.engine = new Engine('game-container');
@@ -80,6 +86,24 @@ class Game {
     this.damageNumbers = new DamageNumberManager();
     this.dropManager = new DropManager(this.engine.scene);
     this.enemyManager = new EnemyManager(this.engine.scene, this.dropManager, this.damageNumbers);
+    this.enemyManager.camera = this.engine.camera;
+    this.enemyManager.onVolatileRingTrigger = (pos, radius, damage) => {
+      const dist = this.player.position.distanceTo(pos);
+      if (dist <= radius && this.player.isAlive && !this.player.isDowned) {
+        this.player.takeDamage(damage);
+        this.damageNumbers.spawnDamage(this.player.position, damage, false, this.engine.camera, false, 1, 1, false);
+      }
+    };
+    this.enemyManager.onVortexPullTrigger = (pos, radius, pullSpeed) => {
+      const diffX = pos.x - this.player.position.x;
+      const diffZ = pos.z - this.player.position.z;
+      const dist = Math.sqrt(diffX * diffX + diffZ * diffZ);
+      if (dist <= radius && dist > 0.5 && this.player.isAlive && !this.player.isDowned) {
+        const pull = Math.min(dist - 0.5, pullSpeed * (1 / 60));
+        this.player.position.x += (diffX / dist) * pull;
+        this.player.position.z += (diffZ / dist) * pull;
+      }
+    };
     this.player = new Player(this.engine.scene, 'ronin');
     this.net = new NetworkManager();
     UpdateNotifier.getInstance().init();
@@ -321,6 +345,52 @@ class Game {
       // ready
     });
 
+    // Initialize React UI and GameStateBridge
+    GameStateBridge.getInstance().init();
+    GameStateBridge.getInstance().syncGameState('MAIN_MENU');
+
+    const isR3FCanvasActive = FeatureFlags.getInstance().isEnabled('r3f_canvas');
+    if (isR3FCanvasActive) {
+      this.engine.detachRenderer();
+    }
+
+    initReactUI('react-ui-root', {
+      scene: this.engine.scene,
+      chunkManager: this.engine.chunkManager,
+      altarManager: this.engine.altarManager,
+      chestManager: this.chestManager,
+      portalPosition: this.riftTeleporter.position,
+      player: this.player,
+      remotePlayers: this.remotePlayers,
+      enemyManager: this.enemyManager,
+      combatDirector: this.combatDirector,
+      getTargetPosition: () => (this.player.renderPosition || this.player.position),
+      mainMenuProps: {
+        onStartSinglePlayer: () => {
+          this.sessionDirector.gameState = GameState.CHARACTER_SELECT;
+          this.hud.showCharacterSelect();
+          GameStateBridge.getInstance().syncGameState('CHARACTER_SELECT');
+        },
+        onResumeRun: () => this.sessionDirector.resumeSavedRun(),
+        onOpenCoop: () => this.hud.showCoopMenu(),
+        onOpenShop: () => this.hud.showShopModal(),
+        onOpenQuests: () => this.hud.showQuestsModal(),
+        onOpenLeaderboard: () => this.hud.showLeaderboard(),
+        onOpenSettings: () => this.hud.showSettings('main')
+      },
+      settingsProps: {
+        onShadowQualityChange: (q) => this.engine.setShadowQuality(q),
+        onTimeOfDayChange: (mode) => {
+          this.engine.setTimeOfDay(mode);
+          this.biomeManager.applyBiomeToScene(this.engine.scene, mode);
+        }
+      },
+      gameOverProps: {
+        onRestart: () => this.sessionDirector.restartGame(undefined, false),
+        onReturnToMenu: () => this.sessionDirector.returnToMainMenu()
+      }
+    });
+
     this.loop();
   }
 
@@ -505,6 +575,11 @@ class Game {
       if (this.net.role === 'host') {
         this.netCoordinator.pendingNetworkEvents.push({ type: 'boss_defeat' });
       }
+      if (this.biomeManager.stageNumber >= 5) {
+        setTimeout(() => {
+          this.sessionDirector.triggerGameOver(true);
+        }, 3000);
+      }
     };
 
     this.enemyManager.onBleedDamage = (enemy, dmg, isDead, hitter, sourceWeaponId) => {
@@ -569,6 +644,15 @@ class Game {
         this.net.notifyAltarCaptured(altar.config.type);
       }
     };
+
+    // Altar of Greed Trial events
+    this.engine.altarManager.onGreedTrialStarted = (altar) => {
+      this.sessionDirector.startGreedTrial(altar);
+    };
+
+    this.engine.altarManager.onGreedTrialCompleted = (altar) => {
+      this.sessionDirector.completeGreedTrial(altar);
+    };
   }
 
   private updateSimulation(dt: number): void {
@@ -576,6 +660,21 @@ class Game {
       this.sessionDirector.gameTime = this.enemyManager.gameTime;
     }
     this.netCoordinator.gameTime = this.sessionDirector.gameTime;
+
+    // Sync bridge state (throttled)
+    GameStateBridge.getInstance().syncPlayerVitals(
+      this.player.hp,
+      this.player.maxHp,
+      this.player.shield,
+      this.player.maxShield
+    );
+    GameStateBridge.getInstance().syncPlayerProgression(
+      this.player.xp,
+      this.player.xpToNextLevel,
+      this.player.level,
+      this.player.credits
+    );
+    GameStateBridge.getInstance().syncGameTime(this.sessionDirector.gameTime);
 
     if (this.biomeManager?.currentBiome?.id === 'bioluminescent_wilds') {
       ProgressionManager.getInstance().recordForestSurvivalTime(this.sessionDirector.gameTime);
@@ -701,11 +800,23 @@ class Game {
       true,
       allAltarPlayers
     );
+    this.sessionDirector.updateGreedTrial(dt);
 
     // 7. Map & Minimap
     this.mapManager.update(dt);
 
     // 8. The Rift: Teleporter, Chests, Prompts
+    // Stage 4 Secret Rift Teleporter: reveals only after all chests on stage 4 are opened
+    if (this.biomeManager.stageNumber === 4 && !this.riftTeleporter.mesh.visible) {
+      const allOpened = this.chestManager.chests.length > 0 && this.chestManager.chests.every(c => c.isOpened);
+      if (allOpened) {
+        this.riftTeleporter.mesh.visible = true;
+        SulfurSmokeManager.spawn(this.engine.scene, this.riftTeleporter.position);
+        SoundManager.playTeleporterActivate?.();
+        this.hud.triggerAltarNotification('ПРОСТРАНСТВЕННЫЙ РАЗЛОМ', 'В глубине сектора пробудилась древняя аномалия...', '🌀', '#38bdf8');
+      }
+    }
+
     if (this.riftTeleporter.state === 'CHARGING') {
       if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
         this.riftTeleporter.isBossDefeated = true;
@@ -925,17 +1036,21 @@ class Game {
     }
   }
 
-  private updateRendering(rawDt: number, fps: number): void {
+  private updateRendering(rawDt: number, fps: number, alpha: number = 1.0): void {
     this.devManager.updateTelemetry(fps, this.combatDirector.projectiles.length);
     this.hud.updatePerformance(fps, this.player.isCoop ? this.net.ping : undefined);
 
-    this.engine.updateCamera(this.player.position, rawDt);
+    if (this.sessionDirector.gameState === GameState.PLAYING) {
+      this.player.updateVisuals(alpha);
+    }
+
+    this.engine.updateCamera(this.player.renderPosition, rawDt);
     this.projScreenMatrix.multiplyMatrices(this.engine.camera.projectionMatrix, this.engine.camera.matrixWorldInverse);
     this.cameraFrustum.setFromProjectionMatrix(this.projScreenMatrix);
 
     if (this.sessionDirector.gameState === GameState.PLAYING) {
       this.engine.chunkManager.cull(this.cameraFrustum);
-      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum, this.player.position);
+      this.enemyManager.updateVisuals(rawDt, this.cameraFrustum, this.player.renderPosition);
       this.dropManager.updateVisuals(rawDt, this.cameraFrustum);
       this.combatDirector.updateProjectileVisuals(this.cameraFrustum);
       this.engine.altarManager.updateVisuals(rawDt, this.engine.camera, this.cameraFrustum);
@@ -1001,7 +1116,7 @@ class Game {
   }
 
   private loop = (): void => {
-    requestAnimationFrame(this.loop);
+    this.animFrameId = requestAnimationFrame(this.loop);
 
     const now = performance.now();
     const frameTimeMs = now - this.lastTime;
@@ -1013,14 +1128,29 @@ class Game {
 
     const simStart = performance.now();
     if (this.sessionDirector.gameState === GameState.PLAYING) {
-      this.updateSimulation(scaledDt);
+      // Fixed 60 Hz deterministic simulation steps with spiral-of-death clamp
+      this.accumulator += scaledDt;
+      const MAX_SUB_STEPS = 5;
+      let subSteps = 0;
+      while (this.accumulator >= Game.FIXED_TIMESTEP && subSteps < MAX_SUB_STEPS) {
+        this.updateSimulation(Game.FIXED_TIMESTEP);
+        this.accumulator -= Game.FIXED_TIMESTEP;
+        subSteps++;
+      }
+      if (subSteps >= MAX_SUB_STEPS) {
+        this.accumulator = 0;
+      }
     } else if (this.sessionDirector.gameState === GameState.PAUSED && this.mapManager.isOpen) {
       this.mapManager.update(rawDt);
     }
     const simDuration = performance.now() - simStart;
 
+    const alpha = this.sessionDirector.gameState === GameState.PLAYING
+      ? Math.max(0, Math.min(1, this.accumulator / Game.FIXED_TIMESTEP))
+      : 1.0;
+
     const renderStart = performance.now();
-    this.updateRendering(rawDt, fps);
+    this.updateRendering(rawDt, fps, alpha);
     const renderDuration = performance.now() - renderStart;
 
     this.simTimeEma = this.simTimeEma === 0 ? simDuration : this.simTimeEma * 0.85 + simDuration * 0.15;
@@ -1083,6 +1213,23 @@ class Game {
 
     return { total, visible, simulated };
   }
+
+  public destroy(): void {
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = 0;
+    }
+    this.engine.detachRenderer();
+    disposeReactUI();
+    SoundManager.stopAll();
+  }
 }
 
-new Game();
+const gameInstance = new Game();
+
+// Vite Hot Module Replacement (HMR) clean teardown
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    gameInstance.destroy();
+  });
+}

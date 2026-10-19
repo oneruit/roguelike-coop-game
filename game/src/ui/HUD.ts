@@ -1468,6 +1468,18 @@ export class HUD {
     this.inGameOverlayUI.triggerImmortalBossWarning(bossName);
   }
 
+  public showGreedTrialTimer(timeRemaining: number, totalTime: number) {
+    this.inGameOverlayUI.showGreedTrialTimer(timeRemaining, totalTime);
+  }
+
+  public updateGreedTrialTimer(timeRemaining: number, totalTime: number) {
+    this.inGameOverlayUI.updateGreedTrialTimer(timeRemaining, totalTime);
+  }
+
+  public hideGreedTrialTimer() {
+    this.inGameOverlayUI.hideGreedTrialTimer();
+  }
+
   public resetBossUI() {
     this.inGameOverlayUI.resetBossUI();
   }

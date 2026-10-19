@@ -21,6 +21,7 @@ import { LevelUpUI, type LevelUpUIContext } from '../game/src/ui/modules/LevelUp
 import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { PlayerStatusManager } from '../game/src/entities/PlayerStatusManager';
 import { LeaderboardManager } from '../game/src/core/LeaderboardManager';
+import { COMMON_ITEMS, UNCOMMON_ITEMS, LEGENDARY_ITEMS } from '../game/src/items/RiftItemSystem';
 
 if (typeof (globalThis as any).window === 'undefined') {
   (globalThis as any).window = globalThis;
@@ -431,9 +432,9 @@ test('Diminishing returns on speed boots, magnet, and pocket watch', () => {
   player.recalculateStats();
   assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.99) < 1e-4, 'Watch at lvl 1 gives 1% CDR');
 
-  player.watchCount = 300;
+  player.watchCount = 200;
   player.recalculateStats();
-  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.70) < 1e-3, 'Watch at lvl 300 reaches 30% CDR cap (mult 0.70)');
+  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.50) < 1e-3, 'Watch at lvl 200 reaches 50% CDR cap (mult 0.50)');
 });
 
 test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upgrade limit', () => {
@@ -466,6 +467,10 @@ test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upg
     w.level = 1;
   }
 
+  const commonItem = merchant.stock.find(s => s.type === 'rift_item');
+  assert.ok(commonItem, 'Common item is offered');
+  const initialCommonPrice = commonItem.price;
+
   // 1st purchase: price = 500
   const p1 = merchant.buyItem(upgradeStock, player);
   assert.equal(p1.success, true);
@@ -473,12 +478,15 @@ test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upg
   assert.equal(merchant.weaponUpgradePurchases, 1);
   // Next price for upgradeStock: 500 * 1.4^1 = 700
   assert.equal(upgradeStock.price, 700);
+  // Regular item price does NOT change when buying something during visit!
+  assert.equal(commonItem.price, initialCommonPrice);
 
   // 2nd purchase
   merchant.buyItem(upgradeStock, player);
   assert.equal(merchant.purchaseCount, 2);
   // Next price: 500 * 1.4^2 = 980
   assert.equal(upgradeStock.price, 980);
+  assert.equal(commonItem.price, initialCommonPrice);
 
   // 3rd, 4th, 5th purchases
   merchant.buyItem(upgradeStock, player);
@@ -496,6 +504,14 @@ test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upg
   const totalUpgrades = player.weapons.reduce((acc, w) => acc + w.upgradeHistory.length, 0);
   const totalBonusDamage = player.weapons.reduce((acc, w) => acc + w.bonusDamage, 0);
   assert.ok(totalUpgrades > 0 || totalBonusDamage > 0, '5 weapon upgrade purchases improved weapon upgrade rarities');
+
+  // Subsequent visit: merchant items are more expensive on next visit
+  merchant.despawn();
+  merchant.spawn(() => 0);
+  assert.equal(merchant.visitCount, 2);
+  const newUpgradeStock = merchant.stock.find(s => s.id === 'merchant_upgrade_weapon')!;
+  assert.equal(newUpgradeStock.basePrice, Math.round(500 * 1.35), 'Weapon upgrade base price increases on 2nd visit');
+  assert.equal(newUpgradeStock.price, Math.round(500 * 1.35), 'Starting price on 2nd visit is scaled base price');
 });
 
 test('LevelUpUI tier progression milestones and Elixir of Might gate', () => {
@@ -712,6 +728,51 @@ test('Difficulty scaling preserves 15+ minute late-game surge while smoothing 4m
   assert.ok(cc20 > 0, `CC resistance starts scaling after 15m (got ${cc20})`);
   const kb20 = enemyManager.getKnockbackResistance(false, true);
   assert.ok(kb20 > 0.30, `Knockback resistance scales after 15m (got ${kb20})`);
+});
+
+test('Passives progression: Magnet 100 lvl cap, Pocket Watch 50% at 200 lvl, Bio-Injector late game scaling, and monster crit passives', () => {
+  const scene = new Scene();
+  const player = new Player(scene, 'ronin');
+
+  // 1. Magnet reaches 50m cap at level 100
+  player.magnetCount = 100;
+  player.recalculateStats();
+  assert.equal(Math.round(player.pickupRadius), 50, 'Magnet reaches 50m cap at level 100');
+  assert.equal(player.isStatMaxedForItem('stat_magnet'), true, 'Magnet is maxed at level 100');
+
+  // 2. Pocket Watch reaches 50% max reduction at level 200
+  player.watchCount = 200;
+  player.recalculateStats();
+  const watchReduction = 1 - player.passiveCooldownMultiplier;
+  assert.equal(Math.round(watchReduction * 100), 50, 'Pocket Watch reaches 50% reduction at level 200');
+  assert.equal(player.isStatMaxedForItem('stat_watch'), true, 'Pocket Watch is maxed at level 200');
+
+  // 3. Bio-Injector scales with player maxHp
+  player.maxHp = 2000;
+  const initialRegen = player.passiveHpRegen;
+  player.addRiftItem({ id: 'health_vial', name: 'Био-Инжектор', rarity: 'common', icon: '🧪', color: '#94a3b8', description: '', stackText: '' });
+  player.recalculateStats();
+  // 1 stack should give 2.5 + 2000 * 0.005 = 2.5 + 10 = 12.5 HP/s
+  assert.equal(player.passiveHpRegen - initialRegen, 12.5, 'Bio-Injector gives flat 2.5 + 0.5% maxHp regen per stack');
+
+  // 4. Monster drop passives: crit damage (+1%) and crit chance (+0.05%)
+  const baseCritDmg = player.critDamage;
+  const baseCritCh = player.critChance;
+
+  player.applyPassiveBuff('stat_crit_damage');
+  assert.equal(player.critDamageCount, 1);
+  assert.equal(Math.round((player.critDamage - baseCritDmg) * 100), 1, 'Crit damage passive adds 1%');
+
+  player.applyPassiveBuff('stat_crit_chance');
+  assert.equal(player.critChanceCount, 1);
+  assert.ok(Math.abs((player.critChance - baseCritCh) - 0.0005) < 0.00001, 'Crit chance passive adds 0.05%');
+
+  // 5. Missing chest items are present in drop pools
+  assert.ok(COMMON_ITEMS.includes('pulse_rounds'), 'pulse_rounds is in COMMON_ITEMS');
+  assert.ok(UNCOMMON_ITEMS.includes('chain_lightning'), 'chain_lightning is in UNCOMMON_ITEMS');
+  assert.ok(UNCOMMON_ITEMS.includes('plasma_detonator'), 'plasma_detonator is in UNCOMMON_ITEMS');
+  assert.ok(LEGENDARY_ITEMS.includes('singularity_core'), 'singularity_core is in LEGENDARY_ITEMS');
+  assert.ok(LEGENDARY_ITEMS.includes('orbital_strike'), 'orbital_strike is in LEGENDARY_ITEMS');
 });
 
 

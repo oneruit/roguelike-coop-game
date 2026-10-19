@@ -27,6 +27,8 @@ export class Engine {
   private container: HTMLElement;
 
   public timeOfDay: 'day' | 'night' = 'day';
+  public isDetached = false;
+  private onResizeBound!: () => void;
 
   private ambientLight!: AmbientLight;
   private dirLight!: DirectionalLight;
@@ -74,7 +76,8 @@ export class Engine {
     this.chunkManager = new ChunkManager(this.scene, this.altarManager, this.obstacleManager);
     this.chunkManager.update(new Vector3(0, 0, 0));
 
-    window.addEventListener('resize', () => this.onWindowResize());
+    this.onResizeBound = () => this.onWindowResize();
+    window.addEventListener('resize', this.onResizeBound);
   }
 
   private setupLighting() {
@@ -202,13 +205,46 @@ export class Engine {
     }
   }
 
+  public snapCamera(playerPos: Vector3): void {
+    this.camera.position.set(
+      playerPos.x + this.cameraOffset.x,
+      playerPos.y + this.cameraOffset.y,
+      playerPos.z + this.cameraOffset.z
+    );
+    this.cameraTarget.copy(playerPos);
+    this.camera.lookAt(this.cameraTarget.x, this.cameraTarget.y + 0.6, this.cameraTarget.z);
+    if (this.dirLight) {
+      this.dirLight.position.set(
+        playerPos.x + this.currentLightOffset.x,
+        playerPos.y + this.currentLightOffset.y,
+        playerPos.z + this.currentLightOffset.z
+      );
+      this.dirLight.target.position.copy(playerPos);
+      this.dirLight.target.updateMatrixWorld();
+    }
+  }
+
   private onWindowResize() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  /**
+   * Safely detaches and disposes the legacy WebGLRenderer to yield ownership to React Three Fiber.
+   */
+  public detachRenderer(): void {
+    if (this.isDetached) return;
+    this.isDetached = true;
+    window.removeEventListener('resize', this.onResizeBound);
+    if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+      this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+    }
+    this.renderer.dispose();
+  }
+
   public render() {
+    if (this.isDetached) return;
     this.renderer.render(this.scene, this.camera);
   }
 }

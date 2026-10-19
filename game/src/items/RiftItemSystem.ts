@@ -85,8 +85,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'common',
     icon: '🧪',
     color: '#94a3b8',
-    description: '+2.5 HP/сек пассивной регенерации.',
-    stackText: '+2.5 HP/сек за стак'
+    description: '+2.5 HP/сек и +0.5% от макс. HP/сек пассивной регенерации.',
+    stackText: '+2.5 HP/с и +0.5% макс. HP/с за стак'
   },
 
   // --- Uncommon (Необычные) ---
@@ -255,10 +255,13 @@ export const COMMON_ITEMS: RiftItemId[] = [
   'kinetic_injector',
   'nanite_plating',
   'adrenaline_dart',
+  'pulse_rounds',
   'health_vial'
 ];
 
 export const UNCOMMON_ITEMS: RiftItemId[] = [
+  'chain_lightning',
+  'plasma_detonator',
   'crit_visor',
   'aegis_exoskeleton',
   'bio_leech',
@@ -273,6 +276,8 @@ export const RARE_ITEMS: RiftItemId[] = [
 ];
 
 export const LEGENDARY_ITEMS: RiftItemId[] = [
+  'singularity_core',
+  'orbital_strike',
   'chronos_phylactery',
   'titan_heart',
   'void_catalyst'
@@ -326,6 +331,29 @@ export function rollChestDropPair(
   isItemMaxed?: (id: string) => boolean,
   chestTier?: 'small' | 'large' | 'legendary'
 ): [RiftItemDef, RiftItemDef] {
+  // Guaranteed Legendary item selection for legendary tier chests (e.g. Altar of Greed reward)
+  if (chestTier === 'legendary') {
+    let pool = [...LEGENDARY_ITEMS];
+    if (excludeChronos) {
+      pool = pool.filter(id => id !== 'chronos_phylactery');
+    }
+    if (isItemMaxed) {
+      const unmaxed = pool.filter(id => !isItemMaxed(id));
+      if (unmaxed.length > 0) pool = unmaxed;
+    }
+    const id1 = pool[Math.floor(rng() * pool.length)];
+    const item1 = RIFT_ITEMS[id1];
+
+    let pool2 = pool.filter(id => id !== id1);
+    if (pool2.length === 0) {
+      pool2 = [...LEGENDARY_ITEMS].filter(id => id !== id1 && (!excludeChronos || id !== 'chronos_phylactery'));
+    }
+    const id2 = pool2.length > 0 ? pool2[Math.floor(rng() * pool2.length)] : id1;
+    const item2 = RIFT_ITEMS[id2];
+
+    return [item1, item2];
+  }
+
   let item1: RiftItemDef;
   // Large chests grant Phase Carapace to incrementally scale player armor up to 160 max
   if (chestTier === 'large' && isItemMaxed && !isItemMaxed('phase_carapace') && rng() < 0.30) {

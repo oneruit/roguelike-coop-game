@@ -91,22 +91,21 @@ export class LeaderboardManager {
       const supabase = getAuthSupabaseClient();
       if (supabase) {
         const payload = {
-          player_id: entry.playerId,
-          player_name: entry.playerName,
-          hero_id: entry.heroId,
-          stage: entry.stage,
-          survival_time_sec: entry.survivalTimeSec,
+          user_id: entry.playerId,
+          display_name: entry.playerName,
+          hero: entry.heroId,
+          stage_reached: entry.stage,
+          survival_time: Math.round(entry.survivalTimeSec),
           kills: entry.kills,
-          credits: entry.credits,
-          score: entry.score,
-          is_victory: entry.isVictory
+          crystals_collected: entry.credits,
+          score: entry.score
         };
 
         // Query existing entry for this user to check personal best
         const { data: existingRows } = await supabase
           .from('leaderboards')
           .select('id, score')
-          .eq('player_id', entry.playerId)
+          .eq('user_id', entry.playerId)
           .order('score', { ascending: false })
           .limit(1);
 
@@ -115,13 +114,15 @@ export class LeaderboardManager {
         if (existing) {
           // Player already exists in leaderboard: only update if new record is higher!
           if (entry.score > existing.score) {
-            const { error: updateError } = await supabase
+            const { error: updateError, data: updateData } = await supabase
               .from('leaderboards')
               .update(payload)
-              .eq('id', existing.id);
+              .eq('id', existing.id)
+              .select();
 
-            if (updateError) {
-              console.warn('[LeaderboardManager] Supabase update warning:', updateError.message);
+            if (updateError || !updateData || updateData.length === 0) {
+              // If anon update was blocked by RLS, insert new row for the new personal record
+              await supabase.from('leaderboards').insert([payload]);
             }
           }
         } else {

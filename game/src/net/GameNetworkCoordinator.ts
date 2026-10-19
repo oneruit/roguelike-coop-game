@@ -23,7 +23,7 @@ import { MapManager } from '../ui/MapManager';
 import { DevManager } from '../ui/DevManager';
 import { SoundManager } from '../core/SoundManager';
 import { ProgressionManager } from '../core/ProgressionManager';
-import { ALTAR_CONFIGS } from '../world/Altar';
+import { Altar, ALTAR_CONFIGS } from '../world/Altar';
 import { RIFT_ITEMS, RiftItemId } from '../items/RiftItemSystem';
 import { CombatDirector } from '../combat/CombatDirector';
 
@@ -58,6 +58,7 @@ export class GameNetworkCoordinator {
   public onStartCoopGameAsClient?: (seed?: number) => void;
   public onLevelUpTrigger?: (count: number) => void;
   public onWarpRequested?: () => void;
+  public onGreedTrialRequested?: (altar: Altar) => void;
 
   constructor(
     engine: Engine,
@@ -174,6 +175,13 @@ export class GameNetworkCoordinator {
     };
 
     this.net.onAltarCapturedReceived = (altarType, _fromId) => {
+      if (altarType === 'greed') {
+        const greed = this.engine.altarManager.altars.find((a) => a.isGreedAltar);
+        if (greed) {
+          this.onGreedTrialRequested?.(greed);
+        }
+        return;
+      }
       this.engine.altarManager.applyRemoteCapture(altarType);
       const altar = this.engine.altarManager.altars.find((candidate) => candidate.config.type === altarType);
       const cfg = altar?.config || ALTAR_CONFIGS[altarType];
@@ -354,7 +362,7 @@ export class GameNetworkCoordinator {
             remote.redrawOverhead();
           }
         }
-      } else if (event.type === 'altar_captured' && event.altarType) {
+      } else if (event.type === 'altar_captured' && event.altarType && event.altarType !== 'greed') {
         this.engine.altarManager.applyRemoteCapture(event.altarType);
         const altar = this.engine.altarManager.altars.find((candidate) => candidate.config.type === event.altarType);
         if (altar) {
@@ -366,6 +374,16 @@ export class GameNetworkCoordinator {
             event.color || altar.config.colorCss
           );
         }
+      } else if (event.type === 'greed_trial_start') {
+        this.engine.altarManager.applyRemoteGreedTrialStart();
+        SoundManager.playReaperSpawn();
+        this.hud.triggerBossWarning('ИСПЫТАНИЕ АЛЧНОСТИ (45 СЕК)', 4);
+        this.hud.showGreedTrialTimer(event.duration || 45, event.duration || 45);
+      } else if (event.type === 'greed_trial_complete') {
+        this.engine.altarManager.applyRemoteGreedTrialComplete();
+        this.hud.hideGreedTrialTimer();
+        SoundManager.playLevelUp();
+        this.hud.triggerAltarNotification('ИСПЫТАНИЕ ПРОЙДЕНО!', 'Золотой сундук с Легендарным предметом спустился с небес!', '👑', '#f59e0b');
       } else if (event.type === 'spell_control' && event.enemyId && event.control) {
         if (event.killer !== this.net.mySlotId) {
           this.enemyManager.enemies.find(enemy => enemy.id === event.enemyId)?.applySpellControl(event.control);
