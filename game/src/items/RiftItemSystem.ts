@@ -331,6 +331,29 @@ export function rollChestDropPair(
   isItemMaxed?: (id: string) => boolean,
   chestTier?: 'small' | 'large' | 'legendary'
 ): [RiftItemDef, RiftItemDef] {
+  // Guaranteed Legendary item selection for legendary tier chests (e.g. Altar of Greed reward)
+  if (chestTier === 'legendary') {
+    let pool = [...LEGENDARY_ITEMS];
+    if (excludeChronos) {
+      pool = pool.filter(id => id !== 'chronos_phylactery');
+    }
+    if (isItemMaxed) {
+      const unmaxed = pool.filter(id => !isItemMaxed(id));
+      if (unmaxed.length > 0) pool = unmaxed;
+    }
+    const id1 = pool[Math.floor(rng() * pool.length)];
+    const item1 = RIFT_ITEMS[id1];
+
+    let pool2 = pool.filter(id => id !== id1);
+    if (pool2.length === 0) {
+      pool2 = [...LEGENDARY_ITEMS].filter(id => id !== id1 && (!excludeChronos || id !== 'chronos_phylactery'));
+    }
+    const id2 = pool2.length > 0 ? pool2[Math.floor(rng() * pool2.length)] : id1;
+    const item2 = RIFT_ITEMS[id2];
+
+    return [item1, item2];
+  }
+
   let item1: RiftItemDef;
   // Large chests grant Phase Carapace to incrementally scale player armor up to 160 max
   if (chestTier === 'large' && isItemMaxed && !isItemMaxed('phase_carapace') && rng() < 0.30) {

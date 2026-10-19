@@ -113,7 +113,7 @@ export class NetworkManager {
   public onHostDisconnected?: () => void;
   public onConnectionStatusChanged?: (status: string, isSuccess: boolean) => void;
   public onDevActionReceived?: (action: string, value?: any) => void;
-  public onAltarCapturedReceived?: (altarType: BuffType, fromPlayerId: string) => void;
+  public onAltarCapturedReceived?: (altarType: BuffType | 'greed', fromPlayerId: string) => void;
   public onChestOpenedReceived?: (chestId: string, fromPlayerId: string, itemId?: string) => void;
   public onWarpRequestReceived?: () => void;
   public ping: number = 0;
@@ -1033,7 +1033,7 @@ export class NetworkManager {
     }
   }
 
-  public notifyAltarCaptured(altarType: BuffType) {
+  public notifyAltarCaptured(altarType: BuffType | 'greed') {
     if (this.role === 'client') {
       this.send({ type: 'ALTAR_CAPTURED', altarType, playerId: this.mySlotId });
     }

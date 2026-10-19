@@ -33,7 +33,10 @@ function fixture(isCoop = false) {
     resetLevelUpState() {}, triggerAltarNotification() {},
     showMerchant(_merchant: any, _player: Player) { merchantOpens++; },
     hideMerchant() {},
-    setInGameHUDVisible(_visible: boolean) {}
+    setInGameHUDVisible(_visible: boolean) {},
+    hideGreedTrialTimer() {},
+    showGreedTrialTimer() {},
+    updateGreedTrialTimer() {}
   };
   const item = { id: 'test_relic', name: 'Relic', description: '', icon: '', color: '' };
   let opens = 0;
@@ -391,7 +394,8 @@ test('returnToMainMenu comprehensively resets session, training mode, and gameTi
     resetSessionHUD() {},
     setTrainingModeActive() {},
     showMainMenu() {},
-    resetLevelUpState() {}
+    resetLevelUpState() {},
+    hideGreedTrialTimer() {}
   };
 
   f.session.returnToMainMenu();

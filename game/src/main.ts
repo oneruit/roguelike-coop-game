@@ -621,6 +621,15 @@ class Game {
         this.net.notifyAltarCaptured(altar.config.type);
       }
     };
+
+    // Altar of Greed Trial events
+    this.engine.altarManager.onGreedTrialStarted = (altar) => {
+      this.sessionDirector.startGreedTrial(altar);
+    };
+
+    this.engine.altarManager.onGreedTrialCompleted = (altar) => {
+      this.sessionDirector.completeGreedTrial(altar);
+    };
   }
 
   private updateSimulation(dt: number): void {
@@ -768,6 +777,7 @@ class Game {
       true,
       allAltarPlayers
     );
+    this.sessionDirector.updateGreedTrial(dt);
 
     // 7. Map & Minimap
     this.mapManager.update(dt);

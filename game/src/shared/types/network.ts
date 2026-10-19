@@ -130,7 +130,9 @@ export interface NetEvent {
     | 'chest_opened'
     | 'teleporter_activated'
     | 'stage_warp'
-    | 'time_freeze';
+    | 'time_freeze'
+    | 'greed_trial_start'
+    | 'greed_trial_complete';
   x?: number;
   z?: number;
   val?: number | string;
@@ -138,8 +140,9 @@ export interface NetEvent {
   subtitle?: string;
   icon?: string;
   color?: string;
-  altarType?: BuffType;
+  altarType?: BuffType | 'greed';
   buffDuration?: number;
+  duration?: number;
   playerId?: string;
   targetId?: string;
   killer?: string;
@@ -266,7 +269,7 @@ export type NetMessage =
   | { type: 'JOIN_REJECTED'; reason: 'WRONG_PASSWORD' | 'ROOM_FULL' | 'GAME_STARTED'; message: string }
   | { type: 'HERO_SELECT'; playerId: string; hero: CharacterType }
   | { type: 'PLAYER_READY'; playerId: string; isReady: boolean }
-  | { type: 'ALTAR_CAPTURED'; altarType: BuffType; playerId: string }
+  | { type: 'ALTAR_CAPTURED'; altarType: BuffType | 'greed'; playerId: string }
   | { type: 'CHEST_OPENED'; chestId: string; playerId: string; itemId?: string }
   | { type: 'WARP_REQUEST'; playerId?: string }
   | LobbyUpdateMessage

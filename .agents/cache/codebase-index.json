@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-19T01:36:24.296Z",
+  "generatedAt": "2026-10-19T07:40:37.655Z",
   "totalFiles": 186,
-  "totalSymbols": 1713,
-  "topLevelCount": 547,
-  "methodsCount": 1166,
+  "totalSymbols": 1729,
+  "topLevelCount": 548,
+  "methodsCount": 1181,
   "entities": {
     "heroes": [
       {
@@ -829,28 +829,44 @@
       "name": "Altar",
       "kind": "class",
       "file": "game/src/world/Altar.ts",
-      "line": 108
+      "line": 127
     },
     {
       "name": "ALTAR_CONFIGS",
       "kind": "const",
       "file": "game/src/world/Altar.ts",
-      "line": 37
+      "line": 39
     },
     {
       "name": "Altar.applyRemoteCapture",
       "kind": "method",
       "file": "game/src/world/Altar.ts",
-      "line": 485,
+      "line": 584,
       "className": "Altar",
       "methodName": "applyRemoteCapture",
       "doc": "Apply a capture decided by the host without replaying the local capture logic."
     },
     {
+      "name": "Altar.applyRemoteTrialComplete",
+      "kind": "method",
+      "file": "game/src/world/Altar.ts",
+      "line": 606,
+      "className": "Altar",
+      "methodName": "applyRemoteTrialComplete"
+    },
+    {
+      "name": "Altar.applyRemoteTrialStart",
+      "kind": "method",
+      "file": "game/src/world/Altar.ts",
+      "line": 596,
+      "className": "Altar",
+      "methodName": "applyRemoteTrialStart"
+    },
+    {
       "name": "Altar.destroy",
       "kind": "method",
       "file": "game/src/world/Altar.ts",
-      "line": 497,
+      "line": 618,
       "className": "Altar",
       "methodName": "destroy"
     },
@@ -858,7 +874,7 @@
       "name": "Altar.renderBillboard",
       "kind": "method",
       "file": "game/src/world/Altar.ts",
-      "line": 299,
+      "line": 333,
       "className": "Altar",
       "methodName": "renderBillboard"
     },
@@ -866,7 +882,7 @@
       "name": "Altar.updateVisuals",
       "kind": "method",
       "file": "game/src/world/Altar.ts",
-      "line": 431,
+      "line": 525,
       "className": "Altar",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh animations. If inFrustum is false, sets mesh.visible = false and skips all canvas redraws."
@@ -875,7 +891,7 @@
       "name": "AltarConfig",
       "kind": "interface",
       "file": "game/src/world/Altar.ts",
-      "line": 27
+      "line": 29
     },
     {
       "name": "AltarManager",
@@ -887,7 +903,7 @@
       "name": "AltarManager.addAltarListener",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 16,
+      "line": 18,
       "className": "AltarManager",
       "methodName": "addAltarListener"
     },
@@ -895,15 +911,31 @@
       "name": "AltarManager.applyRemoteCapture",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 102,
+      "line": 117,
       "className": "AltarManager",
       "methodName": "applyRemoteCapture"
+    },
+    {
+      "name": "AltarManager.applyRemoteGreedTrialComplete",
+      "kind": "method",
+      "file": "game/src/world/AltarManager.ts",
+      "line": 127,
+      "className": "AltarManager",
+      "methodName": "applyRemoteGreedTrialComplete"
+    },
+    {
+      "name": "AltarManager.applyRemoteGreedTrialStart",
+      "kind": "method",
+      "file": "game/src/world/AltarManager.ts",
+      "line": 122,
+      "className": "AltarManager",
+      "methodName": "applyRemoteGreedTrialStart"
     },
     {
       "name": "AltarManager.clear",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 107,
+      "line": 132,
       "className": "AltarManager",
       "methodName": "clear"
     },
@@ -911,7 +943,7 @@
       "name": "AltarManager.registerAltar",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 35,
+      "line": 37,
       "className": "AltarManager",
       "methodName": "registerAltar"
     },
@@ -919,7 +951,7 @@
       "name": "AltarManager.setDeclarative",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 21,
+      "line": 23,
       "className": "AltarManager",
       "methodName": "setDeclarative"
     },
@@ -927,7 +959,7 @@
       "name": "AltarManager.unregisterAltar",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 50,
+      "line": 65,
       "className": "AltarManager",
       "methodName": "unregisterAltar"
     },
@@ -935,7 +967,7 @@
       "name": "AltarManager.updateVisuals",
       "kind": "method",
       "file": "game/src/world/AltarManager.ts",
-      "line": 78,
+      "line": 93,
       "className": "AltarManager",
       "methodName": "updateVisuals"
     },
@@ -957,6 +989,12 @@
       "kind": "interface",
       "file": "game/src/ui/react/r3f/world/AltarsRenderer.tsx",
       "line": 8
+    },
+    {
+      "name": "AltarType",
+      "kind": "type",
+      "file": "game/src/world/Altar.ts",
+      "line": 27
     },
     {
       "name": "ANIM_LAYOUT_LEGACY",
@@ -1396,7 +1434,7 @@
       "name": "AVAILABLE_SLOT_IDS",
       "kind": "const",
       "file": "game/src/shared/types/network.ts",
-      "line": 174
+      "line": 177
     },
     {
       "name": "BalanceCategory",
@@ -2481,7 +2519,7 @@
       "name": "ChestSyncInfo",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 191
+      "line": 194
     },
     {
       "name": "ChestTier",
@@ -2513,7 +2551,7 @@
       "name": "ChunkManager.clear",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 320,
+      "line": 342,
       "className": "ChunkManager",
       "methodName": "clear",
       "doc": "Deep cleanup of all chunk geometries and entities."
@@ -2522,7 +2560,7 @@
       "name": "ChunkManager.cull",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 308,
+      "line": 330,
       "className": "ChunkManager",
       "methodName": "cull",
       "doc": "Frustum Culling: Hides chunks that are completely outside the camera view. Keeps active rendering to only the 6-9 chunks in front of the camera."
@@ -2574,7 +2612,7 @@
       "name": "ChunkManager.update",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 300,
+      "line": 322,
       "className": "ChunkManager",
       "methodName": "update",
       "doc": "With the fixed preloaded map, update does not need to stream or unload chunks. Runs in 0ms without runtime memory allocation."
@@ -2583,7 +2621,7 @@
       "name": "ClientSyncMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 229
+      "line": 232
     },
     {
       "name": "CloudSyncManager",
@@ -3504,7 +3542,7 @@
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1043,
+      "line": 1108,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -3512,7 +3550,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1153,
+      "line": 1218,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -3570,7 +3608,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1030,
+      "line": 1095,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -3589,6 +3627,15 @@
       "line": 957,
       "className": "EnemyManager",
       "methodName": "killAll"
+    },
+    {
+      "name": "EnemyManager.killNonBossesAround",
+      "kind": "method",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 1019,
+      "className": "EnemyManager",
+      "methodName": "killNonBossesAround",
+      "doc": "Eliminates non-boss enemies in the specified radius around the center with holy trial clear damage."
     },
     {
       "name": "EnemyManager.registerEnemy",
@@ -3618,7 +3665,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1014,
+      "line": 1079,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -3626,15 +3673,24 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1001,
+      "line": 1066,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
+    },
+    {
+      "name": "EnemyManager.spawnGreedTrialWave",
+      "kind": "method",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 968,
+      "className": "EnemyManager",
+      "methodName": "spawnGreedTrialWave",
+      "doc": "Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position."
     },
     {
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1006,
+      "line": 1071,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -3651,7 +3707,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1010,
+      "line": 1075,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -3667,7 +3723,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 985,
+      "line": 1050,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -3709,7 +3765,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1125,
+      "line": 1190,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -4314,7 +4370,7 @@
       "name": "GameNetworkCoordinator.broadcastNetworkState",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 561,
+      "line": 579,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastNetworkState"
     },
@@ -4322,7 +4378,7 @@
       "name": "GameNetworkCoordinator.broadcastTimeFreeze",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 945,
+      "line": 963,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastTimeFreeze"
     },
@@ -4330,7 +4386,7 @@
       "name": "GameNetworkCoordinator.createRemotePlayer",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 99,
+      "line": 100,
       "className": "GameNetworkCoordinator",
       "methodName": "createRemotePlayer"
     },
@@ -4338,7 +4394,7 @@
       "name": "GameNetworkCoordinator.handleClientDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 787,
+      "line": 805,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientDevAction"
     },
@@ -4346,7 +4402,7 @@
       "name": "GameNetworkCoordinator.handleClientSync",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 452,
+      "line": 470,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientSync"
     },
@@ -4354,7 +4410,7 @@
       "name": "GameNetworkCoordinator.handleHostDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 749,
+      "line": 767,
       "className": "GameNetworkCoordinator",
       "methodName": "handleHostDevAction"
     },
@@ -4362,7 +4418,7 @@
       "name": "GameNetworkCoordinator.handleHostSnapshot",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 255,
+      "line": 263,
       "className": "GameNetworkCoordinator",
       "methodName": "handleHostSnapshot"
     },
@@ -4370,7 +4426,7 @@
       "name": "GameNetworkCoordinator.isTeamWiped",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 936,
+      "line": 954,
       "className": "GameNetworkCoordinator",
       "methodName": "isTeamWiped"
     },
@@ -4378,7 +4434,7 @@
       "name": "GameNetworkCoordinator.setupNetworkCallbacks",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 105,
+      "line": 106,
       "className": "GameNetworkCoordinator",
       "methodName": "setupNetworkCallbacks"
     },
@@ -4386,7 +4442,7 @@
       "name": "GameNetworkCoordinator.syncMapManagerPartners",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 94,
+      "line": 95,
       "className": "GameNetworkCoordinator",
       "methodName": "syncMapManagerPartners"
     },
@@ -4394,7 +4450,7 @@
       "name": "GameNetworkCoordinator.updateRevives",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 843,
+      "line": 861,
       "className": "GameNetworkCoordinator",
       "methodName": "updateRevives"
     },
@@ -4464,13 +4520,13 @@
       "name": "GameStartMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 249
+      "line": 252
     },
     {
       "name": "GameState",
       "kind": "enum",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 40
+      "line": 41
     },
     {
       "name": "GameStateBridge",
@@ -4805,13 +4861,13 @@
       "name": "getPlayerSlotDisplayName",
       "kind": "function",
       "file": "game/src/shared/types/network.ts",
-      "line": 186
+      "line": 189
     },
     {
       "name": "getPlayerSlotNumber",
       "kind": "function",
       "file": "game/src/shared/types/network.ts",
-      "line": 176
+      "line": 179
     },
     {
       "name": "getPublicSupabaseClient",
@@ -4984,7 +5040,7 @@
       "name": "HostSnapshotMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 209
+      "line": 212
     },
     {
       "name": "HUD",
@@ -5061,7 +5117,7 @@
       "name": "HUD.getHeroAvatar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1514,
+      "line": 1526,
       "className": "HUD",
       "methodName": "getHeroAvatar"
     },
@@ -5069,7 +5125,7 @@
       "name": "HUD.getHeroIcon",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1506,
+      "line": 1518,
       "className": "HUD",
       "methodName": "getHeroIcon",
       "doc": "--- Hero Info Static / Instance Helpers ---"
@@ -5078,7 +5134,7 @@
       "name": "HUD.getHeroName",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1510,
+      "line": 1522,
       "className": "HUD",
       "methodName": "getHeroName"
     },
@@ -5153,6 +5209,14 @@
       "line": 1358,
       "className": "HUD",
       "methodName": "hideGameOver"
+    },
+    {
+      "name": "HUD.hideGreedTrialTimer",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1479,
+      "className": "HUD",
+      "methodName": "hideGreedTrialTimer"
     },
     {
       "name": "HUD.hideHostLobby",
@@ -5368,7 +5432,7 @@
       "name": "HUD.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1471,
+      "line": 1483,
       "className": "HUD",
       "methodName": "resetBossUI"
     },
@@ -5392,7 +5456,7 @@
       "name": "HUD.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1475,
+      "line": 1487,
       "className": "HUD",
       "methodName": "resetSessionHUD"
     },
@@ -5449,7 +5513,7 @@
       "name": "HUD.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1491,
+      "line": 1503,
       "className": "HUD",
       "methodName": "setTrainingModeActive"
     },
@@ -5500,6 +5564,14 @@
       "line": 868,
       "className": "HUD",
       "methodName": "showExitModal"
+    },
+    {
+      "name": "HUD.showGreedTrialTimer",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1471,
+      "className": "HUD",
+      "methodName": "showGreedTrialTimer"
     },
     {
       "name": "HUD.showHostLobby",
@@ -5699,6 +5771,14 @@
       "methodName": "updateCrystalsCounter"
     },
     {
+      "name": "HUD.updateGreedTrialTimer",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1475,
+      "className": "HUD",
+      "methodName": "updateGreedTrialTimer"
+    },
+    {
       "name": "HUD.updateGuestReadyButtonUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
@@ -5751,7 +5831,7 @@
       "name": "HUD.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1483,
+      "line": 1495,
       "className": "HUD",
       "methodName": "updatePassivesBar"
     },
@@ -5759,7 +5839,7 @@
       "name": "HUD.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1487,
+      "line": 1499,
       "className": "HUD",
       "methodName": "updatePerformance"
     },
@@ -5783,7 +5863,7 @@
       "name": "HUD.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1479,
+      "line": 1491,
       "className": "HUD",
       "methodName": "updateWeaponsBar"
     },
@@ -5871,15 +5951,23 @@
       "name": "InGameOverlayUI.clearTeammates",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 471,
+      "line": 480,
       "className": "InGameOverlayUI",
       "methodName": "clearTeammates"
+    },
+    {
+      "name": "InGameOverlayUI.hideGreedTrialTimer",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 923,
+      "className": "InGameOverlayUI",
+      "methodName": "hideGreedTrialTimer"
     },
     {
       "name": "InGameOverlayUI.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 657,
+      "line": 666,
       "className": "InGameOverlayUI",
       "methodName": "hideInteractionPrompt"
     },
@@ -5887,7 +5975,7 @@
       "name": "InGameOverlayUI.hidePartnerHp",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 498,
+      "line": 507,
       "className": "InGameOverlayUI",
       "methodName": "hidePartnerHp"
     },
@@ -5895,7 +5983,7 @@
       "name": "InGameOverlayUI.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 663,
+      "line": 672,
       "className": "InGameOverlayUI",
       "methodName": "renderItemInventory"
     },
@@ -5903,7 +5991,7 @@
       "name": "InGameOverlayUI.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 876,
+      "line": 885,
       "className": "InGameOverlayUI",
       "methodName": "resetBossUI"
     },
@@ -5911,7 +5999,7 @@
       "name": "InGameOverlayUI.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 972,
+      "line": 1006,
       "className": "InGameOverlayUI",
       "methodName": "resetSessionHUD"
     },
@@ -5919,7 +6007,7 @@
       "name": "InGameOverlayUI.setCoopBadge",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 158,
+      "line": 167,
       "className": "InGameOverlayUI",
       "methodName": "setCoopBadge"
     },
@@ -5927,7 +6015,7 @@
       "name": "InGameOverlayUI.setInGameHUDVisible",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 153,
+      "line": 162,
       "className": "InGameOverlayUI",
       "methodName": "setInGameHUDVisible"
     },
@@ -5935,7 +6023,7 @@
       "name": "InGameOverlayUI.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1004,
+      "line": 1038,
       "className": "InGameOverlayUI",
       "methodName": "setTrainingModeActive"
     },
@@ -5943,15 +6031,23 @@
       "name": "InGameOverlayUI.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 707,
+      "line": 716,
       "className": "InGameOverlayUI",
       "methodName": "showBalanceToast"
+    },
+    {
+      "name": "InGameOverlayUI.showGreedTrialTimer",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 905,
+      "className": "InGameOverlayUI",
+      "methodName": "showGreedTrialTimer"
     },
     {
       "name": "InGameOverlayUI.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 650,
+      "line": 659,
       "className": "InGameOverlayUI",
       "methodName": "showInteractionPrompt"
     },
@@ -5959,7 +6055,7 @@
       "name": "InGameOverlayUI.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 689,
+      "line": 698,
       "className": "InGameOverlayUI",
       "methodName": "triggerAltarNotification"
     },
@@ -5967,7 +6063,7 @@
       "name": "InGameOverlayUI.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 836,
+      "line": 845,
       "className": "InGameOverlayUI",
       "methodName": "triggerBossWarning"
     },
@@ -5975,7 +6071,7 @@
       "name": "InGameOverlayUI.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 821,
+      "line": 830,
       "className": "InGameOverlayUI",
       "methodName": "triggerDamageFlash"
     },
@@ -5983,7 +6079,7 @@
       "name": "InGameOverlayUI.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 856,
+      "line": 865,
       "className": "InGameOverlayUI",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -5991,15 +6087,23 @@
       "name": "InGameOverlayUI.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 754,
+      "line": 763,
       "className": "InGameOverlayUI",
       "methodName": "updateBuffsTray"
+    },
+    {
+      "name": "InGameOverlayUI.updateGreedTrialTimer",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 912,
+      "className": "InGameOverlayUI",
+      "methodName": "updateGreedTrialTimer"
     },
     {
       "name": "InGameOverlayUI.updatePartnerHp",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 481,
+      "line": 490,
       "className": "InGameOverlayUI",
       "methodName": "updatePartnerHp"
     },
@@ -6007,7 +6111,7 @@
       "name": "InGameOverlayUI.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 930,
+      "line": 964,
       "className": "InGameOverlayUI",
       "methodName": "updatePassivesBar"
     },
@@ -6015,7 +6119,7 @@
       "name": "InGameOverlayUI.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 935,
+      "line": 969,
       "className": "InGameOverlayUI",
       "methodName": "updatePerformance"
     },
@@ -6023,7 +6127,7 @@
       "name": "InGameOverlayUI.updateStageText",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 626,
+      "line": 635,
       "className": "InGameOverlayUI",
       "methodName": "updateStageText"
     },
@@ -6031,7 +6135,7 @@
       "name": "InGameOverlayUI.updateTeleportButton",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 633,
+      "line": 642,
       "className": "InGameOverlayUI",
       "methodName": "updateTeleportButton"
     },
@@ -6039,7 +6143,7 @@
       "name": "InGameOverlayUI.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 895,
+      "line": 929,
       "className": "InGameOverlayUI",
       "methodName": "updateWeaponsBar"
     },
@@ -6927,7 +7031,7 @@
       "name": "LobbyPlayerInfo",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 154
+      "line": 157
     },
     {
       "name": "LobbyScreen",
@@ -7183,7 +7287,7 @@
       "name": "LobbyUpdateMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 244
+      "line": 247
     },
     {
       "name": "MainMenuModal",
@@ -7956,7 +8060,7 @@
       "name": "NetMessage",
       "kind": "type",
       "file": "game/src/shared/types/network.ts",
-      "line": 263
+      "line": 266
     },
     {
       "name": "NetRole",
@@ -8332,7 +8436,7 @@
       "name": "PLAYER_COLORS",
       "kind": "const",
       "file": "game/src/shared/types/network.ts",
-      "line": 166
+      "line": 169
     },
     {
       "name": "Player.addAmplifierBonus",
@@ -10059,7 +10163,7 @@
       "name": "ReviveActionMessage",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 255
+      "line": 258
     },
     {
       "name": "RIFT_ITEMS",
@@ -10197,7 +10301,7 @@
       "name": "rollRiftItem",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 371,
+      "line": 394,
       "doc": "Legacy weights roller kept for backwards compatibility."
     },
     {
@@ -10682,13 +10786,13 @@
       "name": "SessionDirector",
       "kind": "class",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 60
+      "line": 61
     },
     {
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 707,
+      "line": 726,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -10697,7 +10801,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 842,
+      "line": 934,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -10705,16 +10809,24 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 991,
+      "line": 1083,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
     },
     {
+      "name": "SessionDirector.completeGreedTrial",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 781,
+      "className": "SessionDirector",
+      "methodName": "completeGreedTrial"
+    },
+    {
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 449,
+      "line": 464,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -10722,7 +10834,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 565,
+      "line": 584,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -10730,7 +10842,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 440,
+      "line": 455,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -10738,7 +10850,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 491,
+      "line": 506,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -10746,7 +10858,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 432,
+      "line": 447,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -10754,7 +10866,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1153,
+      "line": 1245,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -10763,7 +10875,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 378,
+      "line": 389,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -10771,7 +10883,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1075,
+      "line": 1167,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -10780,7 +10892,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 321,
+      "line": 332,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -10788,15 +10900,23 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 265,
+      "line": 276,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
+    },
+    {
+      "name": "SessionDirector.startGreedTrial",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 745,
+      "className": "SessionDirector",
+      "methodName": "startGreedTrial"
     },
     {
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 370,
+      "line": 381,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -10804,7 +10924,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1021,
+      "line": 1113,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -10813,7 +10933,7 @@
       "name": "SessionDirector.toggleDevMode",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 179,
+      "line": 190,
       "className": "SessionDirector",
       "methodName": "toggleDevMode"
     },
@@ -10821,7 +10941,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 920,
+      "line": 1012,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -10829,15 +10949,23 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 459,
+      "line": 474,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
+    },
+    {
+      "name": "SessionDirector.updateGreedTrial",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 765,
+      "className": "SessionDirector",
+      "methodName": "updateGreedTrial"
     },
     {
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 726,
+      "line": 814,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },
@@ -10845,7 +10973,7 @@
       "name": "SessionDirector.wireCoordinatorCallbacks",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 157,
+      "line": 165,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
     },
@@ -12255,7 +12383,7 @@
       "name": "SPAWN_OFFSETS",
       "kind": "const",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 51
+      "line": 52
     },
     {
       "name": "SPECIAL_QUESTS_CONFIG",
@@ -12529,7 +12657,7 @@
       "name": "TeleporterSyncInfo",
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
-      "line": 200
+      "line": 203
     },
     {
       "name": "TerrainElevation",

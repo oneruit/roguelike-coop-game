@@ -36,6 +36,7 @@ import { MetaProgression } from '../meta/MetaProgression';
 import { LeaderboardManager } from './LeaderboardManager';
 import { RunSaveManager, type SavedWeaponData, type SavedRunData } from './RunSaveManager';
 import { createWeaponInstanceById } from '../combat/WeaponFactory';
+import { Altar } from '../world/Altar';
 
 export enum GameState {
   MAIN_MENU,
@@ -92,6 +93,13 @@ export class SessionDirector {
   }
   public isWarping = false;
   public lastTime = performance.now();
+
+  // Altar of Greed Trial
+  public isGreedTrialActive = false;
+  public greedTrialTimeRemaining = 0;
+  public greedTrialTotalDuration = 45;
+  private greedWaveSpawnTimer = 0;
+  private activeGreedAltar: Altar | null = null;
 
   constructor(
     engine: Engine,
@@ -173,6 +181,9 @@ export class SessionDirector {
     };
     this.netCoordinator.onWarpRequested = () => {
       this.warpToNextStage();
+    };
+    this.netCoordinator.onGreedTrialRequested = (altar) => {
+      this.startGreedTrial(altar);
     };
   }
 
@@ -419,6 +430,10 @@ export class SessionDirector {
     this.resetRewardChoices();
     this.hud.resetBossUI();
     this.hud.resetSessionHUD();
+    this.isGreedTrialActive = false;
+    this.greedTrialTimeRemaining = 0;
+    this.activeGreedAltar = null;
+    this.hud?.hideGreedTrialTimer?.();
     this.gameTime = 0;
     this.isTrainingMode = false;
     ProgressionManager.getInstance().isTrainingMode = false;
@@ -495,6 +510,10 @@ export class SessionDirector {
       this.enemyManager.clear();
       this.dropManager.clear();
       this.engine.chunkManager.clear();
+      this.isGreedTrialActive = false;
+      this.greedTrialTimeRemaining = 0;
+      this.activeGreedAltar = null;
+      this.hud?.hideGreedTrialTimer?.();
 
       if (!keepSeed && this.net.role !== 'client') {
         this.currentSeed = Math.floor(Math.random() * 1000000);
@@ -723,6 +742,75 @@ export class SessionDirector {
     return false;
   }
 
+  public startGreedTrial(altar: Altar): void {
+    if (this.isGreedTrialActive) return;
+    this.isGreedTrialActive = true;
+    this.activeGreedAltar = altar;
+    this.greedTrialTotalDuration = altar.trialDuration || 45;
+    this.greedTrialTimeRemaining = this.greedTrialTotalDuration;
+    this.greedWaveSpawnTimer = 0.5;
+
+    SoundManager.playReaperSpawn();
+    this.hud?.triggerBossWarning?.('ИСПЫТАНИЕ АЛЧНОСТИ (45 СЕК)', 4);
+    this.hud?.showGreedTrialTimer?.(this.greedTrialTimeRemaining, this.greedTrialTotalDuration);
+
+    if (this.net.role === 'host') {
+      this.netCoordinator.pendingNetworkEvents.push({
+        type: 'greed_trial_start' as any,
+        duration: this.greedTrialTotalDuration
+      });
+    }
+  }
+
+  public updateGreedTrial(dt: number): void {
+    if (!this.isGreedTrialActive || !this.activeGreedAltar) return;
+
+    this.greedTrialTimeRemaining -= dt;
+    this.hud?.updateGreedTrialTimer?.(this.greedTrialTimeRemaining, this.greedTrialTotalDuration);
+
+    // Host or single-player handles authoritative wave spawning
+    if (this.net.role !== 'client') {
+      this.greedWaveSpawnTimer -= dt;
+      if (this.greedWaveSpawnTimer <= 0) {
+        this.greedWaveSpawnTimer = 2.0;
+        this.enemyManager.spawnGreedTrialWave(this.activeGreedAltar.position, 4);
+      }
+    }
+  }
+
+  public completeGreedTrial(altar: Altar): void {
+    if (!this.isGreedTrialActive) return;
+    this.isGreedTrialActive = false;
+    this.hud?.hideGreedTrialTimer?.();
+
+    SoundManager.playLevelUp();
+    this.hud?.triggerAltarNotification?.('ИСПЫТАНИЕ ПРОЙДЕНО!', 'Золотой сундук с Легендарным предметом спустился с небес!', '👑', '#f59e0b');
+
+    // Wipe all non-boss trial mobs in 45m radius with holy shockwave
+    this.enemyManager.killNonBossesAround(altar.position, 45, this.engine.camera);
+
+    // Pull all gems to player
+    this.dropManager.attractAllGemsTo(this.player.position);
+
+    // Spawn 0-cost (free) legendary chest
+    this.chestManager.spawnChest(
+      altar.position.x,
+      altar.position.z,
+      'legendary',
+      'greed_reward_chest',
+      0,
+      altar.position.y
+    );
+
+    if (this.net.role === 'host') {
+      this.netCoordinator.pendingNetworkEvents.push({
+        type: 'greed_trial_complete' as any,
+        chestId: 'greed_reward_chest'
+      });
+    }
+    this.activeGreedAltar = null;
+  }
+
   public warpToNextStage(): void {
     if (this.isWarping) return;
     this.isWarping = true;
@@ -768,6 +856,10 @@ export class SessionDirector {
       this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
       this.enemyManager.currentStage = this.biomeManager.stageNumber;
       this.enemyManager.resetStageTime();
+      this.isGreedTrialActive = false;
+      this.greedTrialTimeRemaining = 0;
+      this.activeGreedAltar = null;
+      this.hud?.hideGreedTrialTimer?.();
       this.hud.updateStageText(this.biomeManager.stageNumber, nextBiome.name);
 
       // Derive deterministic stage seed

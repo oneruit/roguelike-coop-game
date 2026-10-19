@@ -183,6 +183,28 @@ export class ChunkManager {
       occupied.push({ x: ax, z: az, radius: 9.5 });
     }
 
+    // 3b. Altar of Greed (Spawns exclusively on Stage 4+ so players have leveled up and prepared)
+    if (stageNumber >= 4) {
+      const greedAngle = rng.range(0, Math.PI * 2);
+      const greedDist = rng.range(75, 120);
+      const gx = Math.cos(greedAngle) * greedDist;
+      const gz = Math.sin(greedAngle) * greedDist;
+
+      const greedAltar = new Altar('greed', new Vector3(gx, 0, gz));
+      this.altarManager.registerAltar(greedAltar);
+
+      const chunkX = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(gx / ChunkManager.CHUNK_SIZE)));
+      const chunkZ = Math.max(ChunkManager.MIN_CHUNK, Math.min(ChunkManager.MAX_CHUNK, Math.round(gz / ChunkManager.CHUNK_SIZE)));
+      const chunkKey = `${chunkX},${chunkZ}`;
+      this.obstacleManager.addObstacle(chunkKey, {
+        x: gx,
+        z: gz,
+        radius: 1.5,
+        type: 'altar'
+      });
+      occupied.push({ x: gx, z: gz, radius: 9.5 });
+    }
+
     // 4. Chests Placement (deterministic, non-overlapping)
     if (chestManager) {
       const placedChests = chestManager.generateStageChests(

@@ -963,6 +963,71 @@ export class EnemyManager {
   }
 
   /**
+   * Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position.
+   */
+  public spawnGreedTrialWave(centerPos: Vector3, count: number = 4) {
+    const types: EnemyType[] = ['brute', 'bison', 'scorpion', 'ghost', 'skeleton'];
+    const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
+
+    if (this.enemies.length >= 120) return;
+
+    for (let i = 0; i < count; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 16 + Math.random() * 8;
+      const spawnPos = new Vector3(
+        Math.max(-219, Math.min(219, centerPos.x + Math.cos(angle) * distance)),
+        0,
+        Math.max(-219, Math.min(219, centerPos.z + Math.sin(angle) * distance))
+      );
+      if (this.getElevation) {
+        spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+      }
+
+      const baseConfig = this.configs[type];
+      const hpMult = this.getHpMultiplier() * 1.25;
+      const dmgMult = this.getDamageMultiplier() * 1.2;
+      const spdMult = this.getSpeedMultiplier() * 1.35; // 35% faster frenzied movement
+
+      // 100% Elite guarantee for the trial!
+      const chosenAffix = affixes[Math.floor(Math.random() * affixes.length)];
+
+      const scaledConfig: EnemyConfig = {
+        ...baseConfig,
+        hp: Math.max(1, Math.round(baseConfig.hp * hpMult)),
+        damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
+        speed: Number((baseConfig.speed * spdMult).toFixed(2)),
+        eliteAffix: chosenAffix,
+        creditsValue: (baseConfig.creditsValue || 1) + 8
+      };
+
+      const enemy = this.registerEnemy(new Enemy(scaledConfig, spawnPos));
+      const isTough = type === 'brute' || type === 'bison';
+      enemy.ccResistance = this.getLateGameCcResistance(false);
+      enemy.damageResistance = this.getLateGameDamageResistance(false);
+      enemy.knockbackResistance = this.getKnockbackResistance(false, isTough);
+      this.enemies.push(enemy);
+      if (!this.isDeclarative) {
+        this.scene.add(enemy.mesh);
+      }
+    }
+  }
+
+  /**
+   * Eliminates non-boss enemies in the specified radius around the center with holy trial clear damage.
+   */
+  public killNonBossesAround(center: Vector3, radius: number = 40, camera?: Camera) {
+    const rSq = radius * radius;
+    for (let i = this.enemies.length - 1; i >= 0; i--) {
+      const enemy = this.enemies[i];
+      if (enemy.isBoss || enemy.isImmortal || !enemy.isAlive) continue;
+      if (enemy.position.distanceToSquared(center) <= rSq) {
+        this.damageEnemy(enemy, 99999, center, camera);
+      }
+    }
+  }
+
+  /**
    * Freezes all active monsters and bosses for the given duration, and knocks them back
    * away from the specified center position by the given distance.
    */

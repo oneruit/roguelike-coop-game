@@ -6,6 +6,8 @@ export class AltarManager {
   private scene: Scene;
   public altars: Altar[] = [];
   public onAltarCaptured?: (altar: Altar, buff: ActiveBuff) => void;
+  public onGreedTrialStarted?: (altar: Altar) => void;
+  public onGreedTrialCompleted?: (altar: Altar) => void;
   public isDeclarative = false;
   private altarListeners = new Set<(action: 'add' | 'remove' | 'reset', altar?: Altar) => void>();
 
@@ -33,11 +35,24 @@ export class AltarManager {
   }
 
   public registerAltar(altar: Altar) {
-    altar.onCaptured = (a, buff) => {
-      if (this.onAltarCaptured) {
-        this.onAltarCaptured(a, buff);
-      }
-    };
+    if (altar.isGreedAltar) {
+      altar.onTrialStarted = (a) => {
+        if (this.onGreedTrialStarted) {
+          this.onGreedTrialStarted(a);
+        }
+      };
+      altar.onTrialCompleted = (a) => {
+        if (this.onGreedTrialCompleted) {
+          this.onGreedTrialCompleted(a);
+        }
+      };
+    } else {
+      altar.onCaptured = (a, buff) => {
+        if (this.onAltarCaptured) {
+          this.onAltarCaptured(a, buff);
+        }
+      };
+    }
     this.altars.push(altar);
     if (!this.isDeclarative) {
       this.scene.add(altar.mesh);
@@ -102,6 +117,16 @@ export class AltarManager {
   public applyRemoteCapture(type: ActiveBuff['type']) {
     const altar = this.altars.find((candidate) => candidate.config.type === type);
     altar?.applyRemoteCapture();
+  }
+
+  public applyRemoteGreedTrialStart() {
+    const greed = this.altars.find((candidate) => candidate.isGreedAltar);
+    greed?.applyRemoteTrialStart();
+  }
+
+  public applyRemoteGreedTrialComplete() {
+    const greed = this.altars.find((candidate) => candidate.isGreedAltar);
+    greed?.applyRemoteTrialComplete();
   }
 
   public clear() {

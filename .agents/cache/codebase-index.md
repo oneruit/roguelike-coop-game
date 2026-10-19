@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-19T01:36:24.296Z | **Files:** 186 | **Top-level:** 547 | **Class Methods:** 1166
+> **Generated:** 2026-10-19T07:40:37.655Z | **Files:** 186 | **Top-level:** 548 | **Class Methods:** 1181
 > **Entities Registered:** 10 Heroes, 26 Weapons, 3 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 501 |
+| `game/src` | 502 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -45,24 +45,29 @@ Run `npm run index` to refresh this cache.
 | `AdminController.renderWeapons` | `method` | [`admin/src/admin.ts:676`](../../admin/src/admin.ts#L676) | - |
 | `AdminController.switchTab` | `method` | [`admin/src/admin.ts:342`](../../admin/src/admin.ts#L342) | - |
 | `AdminController.updateSortHeaderUI` | `method` | [`admin/src/admin.ts:508`](../../admin/src/admin.ts#L508) | - |
-| `Altar` | `class` | [`game/src/world/Altar.ts:108`](../../game/src/world/Altar.ts#L108) | - |
-| `ALTAR_CONFIGS` | `const` | [`game/src/world/Altar.ts:37`](../../game/src/world/Altar.ts#L37) | - |
-| `Altar.applyRemoteCapture` | `method` | [`game/src/world/Altar.ts:485`](../../game/src/world/Altar.ts#L485) | Apply a capture decided by the host without replaying the local capture log... |
-| `Altar.destroy` | `method` | [`game/src/world/Altar.ts:497`](../../game/src/world/Altar.ts#L497) | - |
-| `Altar.renderBillboard` | `method` | [`game/src/world/Altar.ts:299`](../../game/src/world/Altar.ts#L299) | - |
-| `Altar.updateVisuals` | `method` | [`game/src/world/Altar.ts:431`](../../game/src/world/Altar.ts#L431) | Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh a... |
-| `AltarConfig` | `interface` | [`game/src/world/Altar.ts:27`](../../game/src/world/Altar.ts#L27) | - |
+| `Altar` | `class` | [`game/src/world/Altar.ts:127`](../../game/src/world/Altar.ts#L127) | - |
+| `ALTAR_CONFIGS` | `const` | [`game/src/world/Altar.ts:39`](../../game/src/world/Altar.ts#L39) | - |
+| `Altar.applyRemoteCapture` | `method` | [`game/src/world/Altar.ts:584`](../../game/src/world/Altar.ts#L584) | Apply a capture decided by the host without replaying the local capture log... |
+| `Altar.applyRemoteTrialComplete` | `method` | [`game/src/world/Altar.ts:606`](../../game/src/world/Altar.ts#L606) | - |
+| `Altar.applyRemoteTrialStart` | `method` | [`game/src/world/Altar.ts:596`](../../game/src/world/Altar.ts#L596) | - |
+| `Altar.destroy` | `method` | [`game/src/world/Altar.ts:618`](../../game/src/world/Altar.ts#L618) | - |
+| `Altar.renderBillboard` | `method` | [`game/src/world/Altar.ts:333`](../../game/src/world/Altar.ts#L333) | - |
+| `Altar.updateVisuals` | `method` | [`game/src/world/Altar.ts:525`](../../game/src/world/Altar.ts#L525) | Rendering phase: Viewport/Frustum culling, billboard canvas updates, mesh a... |
+| `AltarConfig` | `interface` | [`game/src/world/Altar.ts:29`](../../game/src/world/Altar.ts#L29) | - |
 | `AltarManager` | `class` | [`game/src/world/AltarManager.ts:5`](../../game/src/world/AltarManager.ts#L5) | - |
-| `AltarManager.addAltarListener` | `method` | [`game/src/world/AltarManager.ts:16`](../../game/src/world/AltarManager.ts#L16) | - |
-| `AltarManager.applyRemoteCapture` | `method` | [`game/src/world/AltarManager.ts:102`](../../game/src/world/AltarManager.ts#L102) | - |
-| `AltarManager.clear` | `method` | [`game/src/world/AltarManager.ts:107`](../../game/src/world/AltarManager.ts#L107) | - |
-| `AltarManager.registerAltar` | `method` | [`game/src/world/AltarManager.ts:35`](../../game/src/world/AltarManager.ts#L35) | - |
-| `AltarManager.setDeclarative` | `method` | [`game/src/world/AltarManager.ts:21`](../../game/src/world/AltarManager.ts#L21) | - |
-| `AltarManager.unregisterAltar` | `method` | [`game/src/world/AltarManager.ts:50`](../../game/src/world/AltarManager.ts#L50) | - |
-| `AltarManager.updateVisuals` | `method` | [`game/src/world/AltarManager.ts:78`](../../game/src/world/AltarManager.ts#L78) | - |
+| `AltarManager.addAltarListener` | `method` | [`game/src/world/AltarManager.ts:18`](../../game/src/world/AltarManager.ts#L18) | - |
+| `AltarManager.applyRemoteCapture` | `method` | [`game/src/world/AltarManager.ts:117`](../../game/src/world/AltarManager.ts#L117) | - |
+| `AltarManager.applyRemoteGreedTrialComplete` | `method` | [`game/src/world/AltarManager.ts:127`](../../game/src/world/AltarManager.ts#L127) | - |
+| `AltarManager.applyRemoteGreedTrialStart` | `method` | [`game/src/world/AltarManager.ts:122`](../../game/src/world/AltarManager.ts#L122) | - |
+| `AltarManager.clear` | `method` | [`game/src/world/AltarManager.ts:132`](../../game/src/world/AltarManager.ts#L132) | - |
+| `AltarManager.registerAltar` | `method` | [`game/src/world/AltarManager.ts:37`](../../game/src/world/AltarManager.ts#L37) | - |
+| `AltarManager.setDeclarative` | `method` | [`game/src/world/AltarManager.ts:23`](../../game/src/world/AltarManager.ts#L23) | - |
+| `AltarManager.unregisterAltar` | `method` | [`game/src/world/AltarManager.ts:65`](../../game/src/world/AltarManager.ts#L65) | - |
+| `AltarManager.updateVisuals` | `method` | [`game/src/world/AltarManager.ts:93`](../../game/src/world/AltarManager.ts#L93) | - |
 | `AltarNotificationPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:46`](../../game/src/mechanics/events/GameEventBus.ts#L46) | - |
 | `AltarsRenderer` | `const` | [`game/src/ui/react/r3f/world/AltarsRenderer.tsx:16`](../../game/src/ui/react/r3f/world/AltarsRenderer.tsx#L16) | Declarative R3F container for capture altars and interaction zones. Bridges... |
 | `AltarsRendererProps` | `interface` | [`game/src/ui/react/r3f/world/AltarsRenderer.tsx:8`](../../game/src/ui/react/r3f/world/AltarsRenderer.tsx#L8) | - |
+| `AltarType` | `type` | [`game/src/world/Altar.ts:27`](../../game/src/world/Altar.ts#L27) | - |
 | `ANIM_LAYOUT_LEGACY` | `const` | [`game/src/entities/CharacterAnimator.ts:60`](../../game/src/entities/CharacterAnimator.ts#L60) | Legacy 4x4 / Ronin Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3... |
 | `ANIM_LAYOUT_NECROMANCER` | `const` | [`game/src/entities/CharacterAnimator.ts:45`](../../game/src/entities/CharacterAnimator.ts#L45) | Necromancer / Transition Layout: Row 0: FRONT, Row 1: BACK, Row 2: LEFT, Ro... |
 | `ANIM_LAYOUT_V2` | `const` | [`game/src/entities/CharacterAnimator.ts:30`](../../game/src/entities/CharacterAnimator.ts#L30) | V2 Pipeline Standard Layout: Row 0: FRONT (Лицо) Row 1: BACK (Спина) Row 2:... |
@@ -119,7 +124,7 @@ Run `npm run index` to refresh this cache.
 | `AuthModalScreenOptions` | `interface` | [`game/src/ui/screens/Auth/AuthModalScreen.ts:7`](../../game/src/ui/screens/Auth/AuthModalScreen.ts#L7) | - |
 | `AuthType` | `type` | [`game/src/auth/AuthManager.ts:3`](../../game/src/auth/AuthManager.ts#L3) | - |
 | `AuthUser` | `interface` | [`game/src/auth/AuthManager.ts:5`](../../game/src/auth/AuthManager.ts#L5) | - |
-| `AVAILABLE_SLOT_IDS` | `const` | [`game/src/shared/types/network.ts:174`](../../game/src/shared/types/network.ts#L174) | - |
+| `AVAILABLE_SLOT_IDS` | `const` | [`game/src/shared/types/network.ts:177`](../../game/src/shared/types/network.ts#L177) | - |
 | `BalanceCategory` | `type` | [`game/src/balance/BalanceTypes.ts:1`](../../game/src/balance/BalanceTypes.ts#L1) | - |
 | `BalanceChangeEvent` | `interface` | [`game/src/balance/BalanceTypes.ts:141`](../../game/src/balance/BalanceTypes.ts#L141) | - |
 | `BalanceManager` | `const` | [`game/src/balance/BalanceManager.ts:310`](../../game/src/balance/BalanceManager.ts#L310) | - |
@@ -269,20 +274,20 @@ Run `npm run index` to refresh this cache.
 | `ChestManager.update` | `method` | [`game/src/world/ChestManager.ts:436`](../../game/src/world/ChestManager.ts#L436) | Updates floating chest hologram visuals, pulse aura, and opening animations... |
 | `ChestsRenderer` | `const` | [`game/src/ui/react/r3f/world/ChestsRenderer.tsx:13`](../../game/src/ui/react/r3f/world/ChestsRenderer.tsx#L13) | Declarative R3F container for stage chests. Manages chest object lifecycle ... |
 | `ChestsRendererProps` | `interface` | [`game/src/ui/react/r3f/world/ChestsRenderer.tsx:5`](../../game/src/ui/react/r3f/world/ChestsRenderer.tsx#L5) | - |
-| `ChestSyncInfo` | `interface` | [`game/src/shared/types/network.ts:191`](../../game/src/shared/types/network.ts#L191) | - |
+| `ChestSyncInfo` | `interface` | [`game/src/shared/types/network.ts:194`](../../game/src/shared/types/network.ts#L194) | - |
 | `ChestTier` | `type` | [`game/src/shared/types/registry.ts:29`](../../game/src/shared/types/registry.ts#L29) | - |
 | `ChestTier` | `type` | [`game/src/world/ChestManager.ts:26`](../../game/src/world/ChestManager.ts#L26) | - |
 | `ChunkManager` | `class` | [`game/src/world/ChunkManager.ts:28`](../../game/src/world/ChunkManager.ts#L28) | - |
 | `ChunkManager.addChunkListener` | `method` | [`game/src/world/ChunkManager.ts:59`](../../game/src/world/ChunkManager.ts#L59) | - |
-| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:320`](../../game/src/world/ChunkManager.ts#L320) | Deep cleanup of all chunk geometries and entities. |
-| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:308`](../../game/src/world/ChunkManager.ts#L308) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
+| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:342`](../../game/src/world/ChunkManager.ts#L342) | Deep cleanup of all chunk geometries and entities. |
+| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:330`](../../game/src/world/ChunkManager.ts#L330) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
 | `ChunkManager.getActiveChunks` | `method` | [`game/src/world/ChunkManager.ts:64`](../../game/src/world/ChunkManager.ts#L64) | - |
 | `ChunkManager.getElevation` | `method` | [`game/src/world/ChunkManager.ts:85`](../../game/src/world/ChunkManager.ts#L85) | Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5... |
 | `ChunkManager.getNormal` | `method` | [`game/src/world/ChunkManager.ts:99`](../../game/src/world/ChunkManager.ts#L99) | Returns surface normal vector at world coordinate (x, z). |
 | `ChunkManager.getSlowFactor` | `method` | [`game/src/world/ChunkManager.ts:92`](../../game/src/world/ChunkManager.ts#L92) | Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 norma... |
 | `ChunkManager.setDeclarative` | `method` | [`game/src/world/ChunkManager.ts:68`](../../game/src/world/ChunkManager.ts#L68) | - |
-| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:300`](../../game/src/world/ChunkManager.ts#L300) | With the fixed preloaded map, update does not need to stream or unload chun... |
-| `ClientSyncMessage` | `interface` | [`game/src/shared/types/network.ts:229`](../../game/src/shared/types/network.ts#L229) | - |
+| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:322`](../../game/src/world/ChunkManager.ts#L322) | With the fixed preloaded map, update does not need to stream or unload chun... |
+| `ClientSyncMessage` | `interface` | [`game/src/shared/types/network.ts:232`](../../game/src/shared/types/network.ts#L232) | - |
 | `CloudSyncManager` | `class` | [`game/src/meta/CloudSyncManager.ts:24`](../../game/src/meta/CloudSyncManager.ts#L24) | Cloud Synchronization Manager for The Rift. Bridges local client storage (M... |
 | `CloudSyncManager.deleteAccount` | `method` | [`game/src/meta/CloudSyncManager.ts:312`](../../game/src/meta/CloudSyncManager.ts#L312) | Permanently deletes user profile data and unlinks account. |
 | `CloudSyncManager.getInstance` | `method` | [`game/src/meta/CloudSyncManager.ts:34`](../../game/src/meta/CloudSyncManager.ts#L34) | - |
@@ -403,32 +408,34 @@ Run `npm run index` to refresh this cache.
 | `EnemyAnimState` | `type` | [`game/src/entities/Enemy.ts:18`](../../game/src/entities/Enemy.ts#L18) | - |
 | `EnemyConfig` | `interface` | [`game/src/entities/Enemy.ts:24`](../../game/src/entities/Enemy.ts#L24) | - |
 | `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:20`](../../game/src/entities/EnemyManager.ts#L20) | - |
-| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1043`](../../game/src/entities/EnemyManager.ts#L1043) | - |
-| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1153`](../../game/src/entities/EnemyManager.ts#L1153) | - |
+| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1108`](../../game/src/entities/EnemyManager.ts#L1108) | - |
+| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1218`](../../game/src/entities/EnemyManager.ts#L1218) | - |
 | `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:272`](../../game/src/entities/EnemyManager.ts#L272) | - |
 | `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:262`](../../game/src/entities/EnemyManager.ts#L262) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
 | `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:304`](../../game/src/entities/EnemyManager.ts#L304) | - |
 | `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:293`](../../game/src/entities/EnemyManager.ts#L293) | - |
 | `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:319`](../../game/src/entities/EnemyManager.ts#L319) | - |
 | `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:932`](../../game/src/entities/EnemyManager.ts#L932) | Fast query for enemies within radius using the Spatial Grid. |
-| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1030`](../../game/src/entities/EnemyManager.ts#L1030) | - |
+| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1095`](../../game/src/entities/EnemyManager.ts#L1095) | - |
 | `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:282`](../../game/src/entities/EnemyManager.ts#L282) | - |
 | `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:957`](../../game/src/entities/EnemyManager.ts#L957) | - |
+| `EnemyManager.killNonBossesAround` | `method` | [`game/src/entities/EnemyManager.ts:1019`](../../game/src/entities/EnemyManager.ts#L1019) | Eliminates non-boss enemies in the specified radius around the center with ... |
 | `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:237`](../../game/src/entities/EnemyManager.ts#L237) | - |
 | `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:289`](../../game/src/entities/EnemyManager.ts#L289) | - |
 | `EnemyManager.setDeclarative` | `method` | [`game/src/entities/EnemyManager.ts:38`](../../game/src/entities/EnemyManager.ts#L38) | - |
-| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1014`](../../game/src/entities/EnemyManager.ts#L1014) | - |
-| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1001`](../../game/src/entities/EnemyManager.ts#L1001) | - |
-| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1006`](../../game/src/entities/EnemyManager.ts#L1006) | - |
+| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1079`](../../game/src/entities/EnemyManager.ts#L1079) | - |
+| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1066`](../../game/src/entities/EnemyManager.ts#L1066) | - |
+| `EnemyManager.spawnGreedTrialWave` | `method` | [`game/src/entities/EnemyManager.ts:968`](../../game/src/entities/EnemyManager.ts#L968) | Spawns a high-threat frenzied wave of guaranteed elite monsters around the ... |
+| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1071`](../../game/src/entities/EnemyManager.ts#L1071) | - |
 | `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:743`](../../game/src/entities/EnemyManager.ts#L743) | Spawns an endgame rift boss |
-| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1010`](../../game/src/entities/EnemyManager.ts#L1010) | - |
+| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1075`](../../game/src/entities/EnemyManager.ts#L1075) | - |
 | `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:886`](../../game/src/entities/EnemyManager.ts#L886) | - |
-| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:985`](../../game/src/entities/EnemyManager.ts#L985) | - |
+| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1050`](../../game/src/entities/EnemyManager.ts#L1050) | - |
 | `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:669`](../../game/src/entities/EnemyManager.ts#L669) | Spawns a stage boss explicitly when the Teleporter event is activated. |
 | `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:595`](../../game/src/entities/EnemyManager.ts#L595) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
 | `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:779`](../../game/src/entities/EnemyManager.ts#L779) | - |
 | `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:207`](../../game/src/entities/EnemyManager.ts#L207) | - |
-| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1125`](../../game/src/entities/EnemyManager.ts#L1125) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
+| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1190`](../../game/src/entities/EnemyManager.ts#L1190) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
@@ -506,17 +513,17 @@ Run `npm run index` to refresh this cache.
 | `GameEventBus.clear` | `method` | [`game/src/mechanics/events/GameEventBus.ts:90`](../../game/src/mechanics/events/GameEventBus.ts#L90) | - |
 | `GameEventListener` | `type` | [`game/src/mechanics/events/GameEventBus.ts:1`](../../game/src/mechanics/events/GameEventBus.ts#L1) | - |
 | `GameNetworkCoordinator` | `class` | [`game/src/net/GameNetworkCoordinator.ts:30`](../../game/src/net/GameNetworkCoordinator.ts#L30) | - |
-| `GameNetworkCoordinator.broadcastNetworkState` | `method` | [`game/src/net/GameNetworkCoordinator.ts:561`](../../game/src/net/GameNetworkCoordinator.ts#L561) | - |
-| `GameNetworkCoordinator.broadcastTimeFreeze` | `method` | [`game/src/net/GameNetworkCoordinator.ts:945`](../../game/src/net/GameNetworkCoordinator.ts#L945) | - |
-| `GameNetworkCoordinator.createRemotePlayer` | `method` | [`game/src/net/GameNetworkCoordinator.ts:99`](../../game/src/net/GameNetworkCoordinator.ts#L99) | - |
-| `GameNetworkCoordinator.handleClientDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:787`](../../game/src/net/GameNetworkCoordinator.ts#L787) | - |
-| `GameNetworkCoordinator.handleClientSync` | `method` | [`game/src/net/GameNetworkCoordinator.ts:452`](../../game/src/net/GameNetworkCoordinator.ts#L452) | - |
-| `GameNetworkCoordinator.handleHostDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:749`](../../game/src/net/GameNetworkCoordinator.ts#L749) | - |
-| `GameNetworkCoordinator.handleHostSnapshot` | `method` | [`game/src/net/GameNetworkCoordinator.ts:255`](../../game/src/net/GameNetworkCoordinator.ts#L255) | - |
-| `GameNetworkCoordinator.isTeamWiped` | `method` | [`game/src/net/GameNetworkCoordinator.ts:936`](../../game/src/net/GameNetworkCoordinator.ts#L936) | - |
-| `GameNetworkCoordinator.setupNetworkCallbacks` | `method` | [`game/src/net/GameNetworkCoordinator.ts:105`](../../game/src/net/GameNetworkCoordinator.ts#L105) | - |
-| `GameNetworkCoordinator.syncMapManagerPartners` | `method` | [`game/src/net/GameNetworkCoordinator.ts:94`](../../game/src/net/GameNetworkCoordinator.ts#L94) | - |
-| `GameNetworkCoordinator.updateRevives` | `method` | [`game/src/net/GameNetworkCoordinator.ts:843`](../../game/src/net/GameNetworkCoordinator.ts#L843) | - |
+| `GameNetworkCoordinator.broadcastNetworkState` | `method` | [`game/src/net/GameNetworkCoordinator.ts:579`](../../game/src/net/GameNetworkCoordinator.ts#L579) | - |
+| `GameNetworkCoordinator.broadcastTimeFreeze` | `method` | [`game/src/net/GameNetworkCoordinator.ts:963`](../../game/src/net/GameNetworkCoordinator.ts#L963) | - |
+| `GameNetworkCoordinator.createRemotePlayer` | `method` | [`game/src/net/GameNetworkCoordinator.ts:100`](../../game/src/net/GameNetworkCoordinator.ts#L100) | - |
+| `GameNetworkCoordinator.handleClientDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:805`](../../game/src/net/GameNetworkCoordinator.ts#L805) | - |
+| `GameNetworkCoordinator.handleClientSync` | `method` | [`game/src/net/GameNetworkCoordinator.ts:470`](../../game/src/net/GameNetworkCoordinator.ts#L470) | - |
+| `GameNetworkCoordinator.handleHostDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:767`](../../game/src/net/GameNetworkCoordinator.ts#L767) | - |
+| `GameNetworkCoordinator.handleHostSnapshot` | `method` | [`game/src/net/GameNetworkCoordinator.ts:263`](../../game/src/net/GameNetworkCoordinator.ts#L263) | - |
+| `GameNetworkCoordinator.isTeamWiped` | `method` | [`game/src/net/GameNetworkCoordinator.ts:954`](../../game/src/net/GameNetworkCoordinator.ts#L954) | - |
+| `GameNetworkCoordinator.setupNetworkCallbacks` | `method` | [`game/src/net/GameNetworkCoordinator.ts:106`](../../game/src/net/GameNetworkCoordinator.ts#L106) | - |
+| `GameNetworkCoordinator.syncMapManagerPartners` | `method` | [`game/src/net/GameNetworkCoordinator.ts:95`](../../game/src/net/GameNetworkCoordinator.ts#L95) | - |
+| `GameNetworkCoordinator.updateRevives` | `method` | [`game/src/net/GameNetworkCoordinator.ts:861`](../../game/src/net/GameNetworkCoordinator.ts#L861) | - |
 | `GameOverModal` | `const` | [`game/src/ui/react/modals/GameOverModal.tsx:12`](../../game/src/ui/react/modals/GameOverModal.tsx#L12) | - |
 | `GameOverModalProps` | `interface` | [`game/src/ui/react/modals/GameOverModal.tsx:7`](../../game/src/ui/react/modals/GameOverModal.tsx#L7) | - |
 | `GameOverScreen` | `class` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:36`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L36) | - |
@@ -526,8 +533,8 @@ Run `npm run index` to refresh this cache.
 | `GameOverScreen.hideGameOver` | `method` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:343`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L343) | - |
 | `GameOverScreenOptions` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:32`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L32) | - |
 | `GameOverUI` | `class` | [`game/src/ui/modules/GameOverUI.ts:13`](../../game/src/ui/modules/GameOverUI.ts#L13) | - |
-| `GameStartMessage` | `interface` | [`game/src/shared/types/network.ts:249`](../../game/src/shared/types/network.ts#L249) | - |
-| `GameState` | `enum` | [`game/src/core/SessionDirector.ts:40`](../../game/src/core/SessionDirector.ts#L40) | - |
+| `GameStartMessage` | `interface` | [`game/src/shared/types/network.ts:252`](../../game/src/shared/types/network.ts#L252) | - |
+| `GameState` | `enum` | [`game/src/core/SessionDirector.ts:41`](../../game/src/core/SessionDirector.ts#L41) | - |
 | `GameStateBridge` | `class` | [`game/src/ui/stores/GameStateBridge.ts:27`](../../game/src/ui/stores/GameStateBridge.ts#L27) | GameStateBridge decouples headless game simulation from the UI stores. - Ro... |
 | `GameStateBridge.cleanup` | `method` | [`game/src/ui/stores/GameStateBridge.ts:54`](../../game/src/ui/stores/GameStateBridge.ts#L54) | - |
 | `GameStateBridge.emitMinimapSnapshot` | `method` | [`game/src/ui/stores/GameStateBridge.ts:68`](../../game/src/ui/stores/GameStateBridge.ts#L68) | - |
@@ -575,8 +582,8 @@ Run `npm run index` to refresh this cache.
 | `getItemsByGrade` | `function` | [`game/src/items/RiftItemSystem.ts:291`](../../game/src/items/RiftItemSystem.ts#L291) | - |
 | `getMonsterColor` | `function` | [`admin/src/constants.ts:97`](../../admin/src/constants.ts#L97) | - |
 | `getPassiveBuffId` | `function` | [`game/src/drops/PassiveBuffs.ts:92`](../../game/src/drops/PassiveBuffs.ts#L92) | Deterministically pick a passive buff ID based on seed (or random if no see... |
-| `getPlayerSlotDisplayName` | `function` | [`game/src/shared/types/network.ts:186`](../../game/src/shared/types/network.ts#L186) | - |
-| `getPlayerSlotNumber` | `function` | [`game/src/shared/types/network.ts:176`](../../game/src/shared/types/network.ts#L176) | - |
+| `getPlayerSlotDisplayName` | `function` | [`game/src/shared/types/network.ts:189`](../../game/src/shared/types/network.ts#L189) | - |
+| `getPlayerSlotNumber` | `function` | [`game/src/shared/types/network.ts:179`](../../game/src/shared/types/network.ts#L179) | - |
 | `getPublicSupabaseClient` | `function` | [`game/src/balance/supabaseClient.ts:65`](../../game/src/balance/supabaseClient.ts#L65) | Returns read-only (anon) Supabase client for game clients. |
 | `getSpecialQuestDef` | `function` | [`game/src/core/SpecialQuestsConfig.ts:88`](../../game/src/core/SpecialQuestsConfig.ts#L88) | - |
 | `getSpecialQuestsByCategory` | `function` | [`game/src/core/SpecialQuestsConfig.ts:92`](../../game/src/core/SpecialQuestsConfig.ts#L92) | - |
@@ -603,7 +610,7 @@ Run `npm run index` to refresh this cache.
 | `HeroDetails` | `interface` | [`game/src/ui/modules/HeroUIHelpers.ts:42`](../../game/src/ui/modules/HeroUIHelpers.ts#L42) | - |
 | `HeroQuestDefinition` | `interface` | [`game/src/core/ProgressionManager.ts:63`](../../game/src/core/ProgressionManager.ts#L63) | - |
 | `HeroTextureAction` | `type` | [`game/src/utils/AssetResolver.ts:3`](../../game/src/utils/AssetResolver.ts#L3) | - |
-| `HostSnapshotMessage` | `interface` | [`game/src/shared/types/network.ts:209`](../../game/src/shared/types/network.ts#L209) | - |
+| `HostSnapshotMessage` | `interface` | [`game/src/shared/types/network.ts:212`](../../game/src/shared/types/network.ts#L212) | - |
 | `HUD` | `class` | [`game/src/ui/HUD.ts:43`](../../game/src/ui/HUD.ts#L43) | - |
 | `HUD.activateSettingsTab` | `method` | [`game/src/ui/HUD.ts:864`](../../game/src/ui/HUD.ts#L864) | - |
 | `HUD.applyRandomMenuBackground` | `method` | [`game/src/ui/HUD.ts:97`](../../game/src/ui/HUD.ts#L97) | - |
@@ -613,9 +620,9 @@ Run `npm run index` to refresh this cache.
 | `HUD.clearTeammates` | `method` | [`game/src/ui/HUD.ts:1403`](../../game/src/ui/HUD.ts#L1403) | - |
 | `HUD.closeAllPreGameModals` | `method` | [`game/src/ui/HUD.ts:804`](../../game/src/ui/HUD.ts#L804) | - |
 | `HUD.getChapterQuests` | `method` | [`game/src/ui/HUD.ts:1162`](../../game/src/ui/HUD.ts#L1162) | - |
-| `HUD.getHeroAvatar` | `method` | [`game/src/ui/HUD.ts:1514`](../../game/src/ui/HUD.ts#L1514) | - |
-| `HUD.getHeroIcon` | `method` | [`game/src/ui/HUD.ts:1506`](../../game/src/ui/HUD.ts#L1506) | --- Hero Info Static / Instance Helpers --- |
-| `HUD.getHeroName` | `method` | [`game/src/ui/HUD.ts:1510`](../../game/src/ui/HUD.ts#L1510) | - |
+| `HUD.getHeroAvatar` | `method` | [`game/src/ui/HUD.ts:1526`](../../game/src/ui/HUD.ts#L1526) | - |
+| `HUD.getHeroIcon` | `method` | [`game/src/ui/HUD.ts:1518`](../../game/src/ui/HUD.ts#L1518) | --- Hero Info Static / Instance Helpers --- |
+| `HUD.getHeroName` | `method` | [`game/src/ui/HUD.ts:1522`](../../game/src/ui/HUD.ts#L1522) | - |
 | `HUD.handleClaimAllBattlePass` | `method` | [`game/src/ui/HUD.ts:1200`](../../game/src/ui/HUD.ts#L1200) | - |
 | `HUD.handleEscape` | `method` | [`game/src/ui/HUD.ts:970`](../../game/src/ui/HUD.ts#L970) | - |
 | `HUD.hideAuthModal` | `method` | [`game/src/ui/HUD.ts:953`](../../game/src/ui/HUD.ts#L953) | - |
@@ -625,6 +632,7 @@ Run `npm run index` to refresh this cache.
 | `HUD.hideCoopMenu` | `method` | [`game/src/ui/HUD.ts:851`](../../game/src/ui/HUD.ts#L851) | - |
 | `HUD.hideExitModal` | `method` | [`game/src/ui/HUD.ts:876`](../../game/src/ui/HUD.ts#L876) | - |
 | `HUD.hideGameOver` | `method` | [`game/src/ui/HUD.ts:1358`](../../game/src/ui/HUD.ts#L1358) | - |
+| `HUD.hideGreedTrialTimer` | `method` | [`game/src/ui/HUD.ts:1479`](../../game/src/ui/HUD.ts#L1479) | - |
 | `HUD.hideHostLobby` | `method` | [`game/src/ui/HUD.ts:1210`](../../game/src/ui/HUD.ts#L1210) | - |
 | `HUD.hideInteractionPrompt` | `method` | [`game/src/ui/HUD.ts:1439`](../../game/src/ui/HUD.ts#L1439) | - |
 | `HUD.hideInventory` | `method` | [`game/src/ui/HUD.ts:1294`](../../game/src/ui/HUD.ts#L1294) | - |
@@ -651,23 +659,24 @@ Run `npm run index` to refresh this cache.
 | `HUD.renderItemInventory` | `method` | [`game/src/ui/HUD.ts:1443`](../../game/src/ui/HUD.ts#L1443) | - |
 | `HUD.renderJoinRoster` | `method` | [`game/src/ui/HUD.ts:1222`](../../game/src/ui/HUD.ts#L1222) | - |
 | `HUD.renderQuestsModal` | `method` | [`game/src/ui/HUD.ts:1166`](../../game/src/ui/HUD.ts#L1166) | - |
-| `HUD.resetBossUI` | `method` | [`game/src/ui/HUD.ts:1471`](../../game/src/ui/HUD.ts#L1471) | - |
+| `HUD.resetBossUI` | `method` | [`game/src/ui/HUD.ts:1483`](../../game/src/ui/HUD.ts#L1483) | - |
 | `HUD.resetExitModal` | `method` | [`game/src/ui/HUD.ts:747`](../../game/src/ui/HUD.ts#L747) | - |
 | `HUD.resetLevelUpState` | `method` | [`game/src/ui/HUD.ts:1272`](../../game/src/ui/HUD.ts#L1272) | - |
-| `HUD.resetSessionHUD` | `method` | [`game/src/ui/HUD.ts:1475`](../../game/src/ui/HUD.ts#L1475) | - |
+| `HUD.resetSessionHUD` | `method` | [`game/src/ui/HUD.ts:1487`](../../game/src/ui/HUD.ts#L1487) | - |
 | `HUD.selectQuestChapter` | `method` | [`game/src/ui/HUD.ts:1141`](../../game/src/ui/HUD.ts#L1141) | - |
 | `HUD.setCoopBadge` | `method` | [`game/src/ui/HUD.ts:1379`](../../game/src/ui/HUD.ts#L1379) | --- In-Game Overlay & Overlays Methods Forwarding --- |
 | `HUD.setGuestConnectedMode` | `method` | [`game/src/ui/HUD.ts:1254`](../../game/src/ui/HUD.ts#L1254) | - |
 | `HUD.setHostPartnerConnected` | `method` | [`game/src/ui/HUD.ts:1214`](../../game/src/ui/HUD.ts#L1214) | - |
 | `HUD.setInGameHUDVisible` | `method` | [`game/src/ui/HUD.ts:1154`](../../game/src/ui/HUD.ts#L1154) | - |
 | `HUD.setJoinStatus` | `method` | [`game/src/ui/HUD.ts:1250`](../../game/src/ui/HUD.ts#L1250) | - |
-| `HUD.setTrainingModeActive` | `method` | [`game/src/ui/HUD.ts:1491`](../../game/src/ui/HUD.ts#L1491) | - |
+| `HUD.setTrainingModeActive` | `method` | [`game/src/ui/HUD.ts:1503`](../../game/src/ui/HUD.ts#L1503) | - |
 | `HUD.setupExitListeners` | `method` | [`game/src/ui/HUD.ts:717`](../../game/src/ui/HUD.ts#L717) | - |
 | `HUD.showAuthModal` | `method` | [`game/src/ui/HUD.ts:946`](../../game/src/ui/HUD.ts#L946) | - |
 | `HUD.showBalanceToast` | `method` | [`game/src/ui/HUD.ts:1451`](../../game/src/ui/HUD.ts#L1451) | - |
 | `HUD.showCharacterSelect` | `method` | [`game/src/ui/HUD.ts:917`](../../game/src/ui/HUD.ts#L917) | - |
 | `HUD.showCoopMenu` | `method` | [`game/src/ui/HUD.ts:845`](../../game/src/ui/HUD.ts#L845) | - |
 | `HUD.showExitModal` | `method` | [`game/src/ui/HUD.ts:868`](../../game/src/ui/HUD.ts#L868) | - |
+| `HUD.showGreedTrialTimer` | `method` | [`game/src/ui/HUD.ts:1471`](../../game/src/ui/HUD.ts#L1471) | - |
 | `HUD.showHostLobby` | `method` | [`game/src/ui/HUD.ts:1206`](../../game/src/ui/HUD.ts#L1206) | --- Lobby Methods Forwarding --- |
 | `HUD.showInteractionPrompt` | `method` | [`game/src/ui/HUD.ts:1435`](../../game/src/ui/HUD.ts#L1435) | - |
 | `HUD.showInventory` | `method` | [`game/src/ui/HUD.ts:1290`](../../game/src/ui/HUD.ts#L1290) | - |
@@ -692,17 +701,18 @@ Run `npm run index` to refresh this cache.
 | `HUD.updateBuffsTray` | `method` | [`game/src/ui/HUD.ts:1455`](../../game/src/ui/HUD.ts#L1455) | - |
 | `HUD.updateCharacterSelectLockStatus` | `method` | [`game/src/ui/HUD.ts:1170`](../../game/src/ui/HUD.ts#L1170) | - |
 | `HUD.updateCrystalsCounter` | `method` | [`game/src/ui/HUD.ts:838`](../../game/src/ui/HUD.ts#L838) | - |
+| `HUD.updateGreedTrialTimer` | `method` | [`game/src/ui/HUD.ts:1475`](../../game/src/ui/HUD.ts#L1475) | - |
 | `HUD.updateGuestReadyButtonUI` | `method` | [`game/src/ui/HUD.ts:1258`](../../game/src/ui/HUD.ts#L1258) | - |
 | `HUD.updateLobbyHeroesLockStatus` | `method` | [`game/src/ui/HUD.ts:1174`](../../game/src/ui/HUD.ts#L1174) | - |
 | `HUD.updateMainMenuBattlePass` | `method` | [`game/src/ui/HUD.ts:1184`](../../game/src/ui/HUD.ts#L1184) | --- Battle Pass Methods Forwarding --- |
 | `HUD.updateMainMenuQuests` | `method` | [`game/src/ui/HUD.ts:1178`](../../game/src/ui/HUD.ts#L1178) | - |
 | `HUD.updateMerchantTimer` | `method` | [`game/src/ui/HUD.ts:1316`](../../game/src/ui/HUD.ts#L1316) | - |
 | `HUD.updatePartnerHp` | `method` | [`game/src/ui/HUD.ts:1407`](../../game/src/ui/HUD.ts#L1407) | - |
-| `HUD.updatePassivesBar` | `method` | [`game/src/ui/HUD.ts:1483`](../../game/src/ui/HUD.ts#L1483) | - |
-| `HUD.updatePerformance` | `method` | [`game/src/ui/HUD.ts:1487`](../../game/src/ui/HUD.ts#L1487) | - |
+| `HUD.updatePassivesBar` | `method` | [`game/src/ui/HUD.ts:1495`](../../game/src/ui/HUD.ts#L1495) | - |
+| `HUD.updatePerformance` | `method` | [`game/src/ui/HUD.ts:1499`](../../game/src/ui/HUD.ts#L1499) | - |
 | `HUD.updateStageText` | `method` | [`game/src/ui/HUD.ts:1426`](../../game/src/ui/HUD.ts#L1426) | - |
 | `HUD.updateTeleportButton` | `method` | [`game/src/ui/HUD.ts:1431`](../../game/src/ui/HUD.ts#L1431) | - |
-| `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1479`](../../game/src/ui/HUD.ts#L1479) | - |
+| `HUD.updateWeaponsBar` | `method` | [`game/src/ui/HUD.ts:1491`](../../game/src/ui/HUD.ts#L1491) | - |
 | `HUDOverlay` | `const` | [`game/src/ui/react/hud/HUDOverlay.tsx:5`](../../game/src/ui/react/hud/HUDOverlay.tsx#L5) | - |
 | `IceSpikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:524`](../../game/src/combat/weapons/MagicWeapons.ts#L524) | Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the eart... |
 | `IceSpikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:610`](../../game/src/combat/weapons/MagicWeapons.ts#L610) | - |
@@ -714,28 +724,31 @@ Run `npm run index` to refresh this cache.
 | `InGameHUDScreen.getTemplate` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:18`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L18) | - |
 | `InGameHUDScreenOptions` | `interface` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:4`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L4) | - |
 | `InGameOverlayUI` | `class` | [`game/src/ui/modules/InGameOverlayUI.ts:16`](../../game/src/ui/modules/InGameOverlayUI.ts#L16) | - |
-| `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:471`](../../game/src/ui/modules/InGameOverlayUI.ts#L471) | - |
-| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:657`](../../game/src/ui/modules/InGameOverlayUI.ts#L657) | - |
-| `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:498`](../../game/src/ui/modules/InGameOverlayUI.ts#L498) | - |
-| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:663`](../../game/src/ui/modules/InGameOverlayUI.ts#L663) | - |
-| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:876`](../../game/src/ui/modules/InGameOverlayUI.ts#L876) | - |
-| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:972`](../../game/src/ui/modules/InGameOverlayUI.ts#L972) | - |
-| `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:158`](../../game/src/ui/modules/InGameOverlayUI.ts#L158) | - |
-| `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:153`](../../game/src/ui/modules/InGameOverlayUI.ts#L153) | - |
-| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1004`](../../game/src/ui/modules/InGameOverlayUI.ts#L1004) | - |
-| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:707`](../../game/src/ui/modules/InGameOverlayUI.ts#L707) | - |
-| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:650`](../../game/src/ui/modules/InGameOverlayUI.ts#L650) | - |
-| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:689`](../../game/src/ui/modules/InGameOverlayUI.ts#L689) | - |
-| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:836`](../../game/src/ui/modules/InGameOverlayUI.ts#L836) | - |
-| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:821`](../../game/src/ui/modules/InGameOverlayUI.ts#L821) | - |
-| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:856`](../../game/src/ui/modules/InGameOverlayUI.ts#L856) | - |
-| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:754`](../../game/src/ui/modules/InGameOverlayUI.ts#L754) | - |
-| `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:481`](../../game/src/ui/modules/InGameOverlayUI.ts#L481) | - |
-| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:930`](../../game/src/ui/modules/InGameOverlayUI.ts#L930) | - |
-| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:935`](../../game/src/ui/modules/InGameOverlayUI.ts#L935) | - |
-| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:626`](../../game/src/ui/modules/InGameOverlayUI.ts#L626) | - |
-| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:633`](../../game/src/ui/modules/InGameOverlayUI.ts#L633) | - |
-| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:895`](../../game/src/ui/modules/InGameOverlayUI.ts#L895) | - |
+| `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:480`](../../game/src/ui/modules/InGameOverlayUI.ts#L480) | - |
+| `InGameOverlayUI.hideGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:923`](../../game/src/ui/modules/InGameOverlayUI.ts#L923) | - |
+| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:666`](../../game/src/ui/modules/InGameOverlayUI.ts#L666) | - |
+| `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:507`](../../game/src/ui/modules/InGameOverlayUI.ts#L507) | - |
+| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:672`](../../game/src/ui/modules/InGameOverlayUI.ts#L672) | - |
+| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:885`](../../game/src/ui/modules/InGameOverlayUI.ts#L885) | - |
+| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1006`](../../game/src/ui/modules/InGameOverlayUI.ts#L1006) | - |
+| `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:167`](../../game/src/ui/modules/InGameOverlayUI.ts#L167) | - |
+| `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:162`](../../game/src/ui/modules/InGameOverlayUI.ts#L162) | - |
+| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1038`](../../game/src/ui/modules/InGameOverlayUI.ts#L1038) | - |
+| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:716`](../../game/src/ui/modules/InGameOverlayUI.ts#L716) | - |
+| `InGameOverlayUI.showGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:905`](../../game/src/ui/modules/InGameOverlayUI.ts#L905) | - |
+| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:659`](../../game/src/ui/modules/InGameOverlayUI.ts#L659) | - |
+| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:698`](../../game/src/ui/modules/InGameOverlayUI.ts#L698) | - |
+| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:845`](../../game/src/ui/modules/InGameOverlayUI.ts#L845) | - |
+| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:830`](../../game/src/ui/modules/InGameOverlayUI.ts#L830) | - |
+| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:865`](../../game/src/ui/modules/InGameOverlayUI.ts#L865) | - |
+| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:763`](../../game/src/ui/modules/InGameOverlayUI.ts#L763) | - |
+| `InGameOverlayUI.updateGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:912`](../../game/src/ui/modules/InGameOverlayUI.ts#L912) | - |
+| `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:490`](../../game/src/ui/modules/InGameOverlayUI.ts#L490) | - |
+| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:964`](../../game/src/ui/modules/InGameOverlayUI.ts#L964) | - |
+| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:969`](../../game/src/ui/modules/InGameOverlayUI.ts#L969) | - |
+| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:635`](../../game/src/ui/modules/InGameOverlayUI.ts#L635) | - |
+| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:642`](../../game/src/ui/modules/InGameOverlayUI.ts#L642) | - |
+| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:929`](../../game/src/ui/modules/InGameOverlayUI.ts#L929) | - |
 | `initReactUI` | `function` | [`game/src/ui/react/mountReactUI.tsx:9`](../../game/src/ui/react/mountReactUI.tsx#L9) | Initializes and mounts React UI Root into DOM container. |
 | `InputActionType` | `type` | [`game/src/core/InputBuffer.ts:6`](../../game/src/core/InputBuffer.ts#L6) | High-performance, zero-React input buffer for game actions and continuous d... |
 | `InputBuffer` | `class` | [`game/src/core/InputBuffer.ts:25`](../../game/src/core/InputBuffer.ts#L25) | - |
@@ -856,7 +869,7 @@ Run `npm run index` to refresh this cache.
 | `LobbyCoordinator.startRoomPolling` | `method` | [`game/src/net/LobbyCoordinator.ts:116`](../../game/src/net/LobbyCoordinator.ts#L116) | - |
 | `LobbyCoordinator.stopRoomPolling` | `method` | [`game/src/net/LobbyCoordinator.ts:132`](../../game/src/net/LobbyCoordinator.ts#L132) | - |
 | `LobbyPeer` | `interface` | [`game/src/ui/stores/useLobbyStore.ts:4`](../../game/src/ui/stores/useLobbyStore.ts#L4) | - |
-| `LobbyPlayerInfo` | `interface` | [`game/src/shared/types/network.ts:154`](../../game/src/shared/types/network.ts#L154) | - |
+| `LobbyPlayerInfo` | `interface` | [`game/src/shared/types/network.ts:157`](../../game/src/shared/types/network.ts#L157) | - |
 | `LobbyScreen` | `class` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:69`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L69) | - |
 | `LobbyScreen.bindElements` | `method` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:100`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L100) | - |
 | `LobbyScreen.bindEvents` | `method` | [`game/src/ui/screens/Lobby/LobbyScreen.ts:148`](../../game/src/ui/screens/Lobby/LobbyScreen.ts#L148) | - |
@@ -890,7 +903,7 @@ Run `npm run index` to refresh this cache.
 | `LobbyUI` | `class` | [`game/src/ui/modules/LobbyUI.ts:13`](../../game/src/ui/modules/LobbyUI.ts#L13) | - |
 | `LobbyUIContext` | `type` | [`game/src/ui/modules/LobbyUI.ts:8`](../../game/src/ui/modules/LobbyUI.ts#L8) | - |
 | `LobbyUIElements` | `type` | [`game/src/ui/modules/LobbyUI.ts:7`](../../game/src/ui/modules/LobbyUI.ts#L7) | - |
-| `LobbyUpdateMessage` | `interface` | [`game/src/shared/types/network.ts:244`](../../game/src/shared/types/network.ts#L244) | - |
+| `LobbyUpdateMessage` | `interface` | [`game/src/shared/types/network.ts:247`](../../game/src/shared/types/network.ts#L247) | - |
 | `MainMenuModal` | `const` | [`game/src/ui/react/modals/MainMenuModal.tsx:20`](../../game/src/ui/react/modals/MainMenuModal.tsx#L20) | - |
 | `MainMenuModalProps` | `interface` | [`game/src/ui/react/modals/MainMenuModal.tsx:9`](../../game/src/ui/react/modals/MainMenuModal.tsx#L9) | - |
 | `MainMenuScreen` | `class` | [`game/src/ui/screens/MainMenu/MainMenuScreen.ts:27`](../../game/src/ui/screens/MainMenu/MainMenuScreen.ts#L27) | Modular Main Menu Screen (Dark ARPG Rift UI). Coordinates singleplayer star... |
@@ -993,7 +1006,7 @@ Run `npm run index` to refresh this cache.
 | `MonsterTextures` | `interface` | [`game/src/core/TextureManager.ts:39`](../../game/src/core/TextureManager.ts#L39) | - |
 | `NetBuffInfo` | `interface` | [`game/src/shared/types/network.ts:46`](../../game/src/shared/types/network.ts#L46) | - |
 | `NetEvent` | `interface` | [`game/src/shared/types/network.ts:115`](../../game/src/shared/types/network.ts#L115) | - |
-| `NetMessage` | `type` | [`game/src/shared/types/network.ts:263`](../../game/src/shared/types/network.ts#L263) | - |
+| `NetMessage` | `type` | [`game/src/shared/types/network.ts:266`](../../game/src/shared/types/network.ts#L266) | - |
 | `NetRole` | `type` | [`game/src/shared/types/network.ts:19`](../../game/src/shared/types/network.ts#L19) | - |
 | `NetShotInfo` | `interface` | [`game/src/shared/types/network.ts:89`](../../game/src/shared/types/network.ts#L89) | - |
 | `NetWeaponInfo` | `interface` | [`game/src/shared/types/network.ts:39`](../../game/src/shared/types/network.ts#L39) | - |
@@ -1043,7 +1056,7 @@ Run `npm run index` to refresh this cache.
 | `PassiveBuffDef` | `interface` | [`game/src/drops/PassiveBuffs.ts:12`](../../game/src/drops/PassiveBuffs.ts#L12) | - |
 | `PassiveBuffId` | `type` | [`game/src/drops/PassiveBuffs.ts:1`](../../game/src/drops/PassiveBuffs.ts#L1) | - |
 | `Player` | `class` | [`game/src/entities/Player.ts:58`](../../game/src/entities/Player.ts#L58) | - |
-| `PLAYER_COLORS` | `const` | [`game/src/shared/types/network.ts:166`](../../game/src/shared/types/network.ts#L166) | - |
+| `PLAYER_COLORS` | `const` | [`game/src/shared/types/network.ts:169`](../../game/src/shared/types/network.ts#L169) | - |
 | `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:679`](../../game/src/entities/Player.ts#L679) | - |
 | `Player.addBuff` | `method` | [`game/src/entities/Player.ts:551`](../../game/src/entities/Player.ts#L551) | - |
 | `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:698`](../../game/src/entities/Player.ts#L698) | - |
@@ -1272,7 +1285,7 @@ Run `npm run index` to refresh this cache.
 | `renderTalents` | `function` | [`admin/src/views/talentsView.ts:5`](../../admin/src/views/talentsView.ts#L5) | - |
 | `renderWeapons` | `function` | [`admin/src/views/weaponsView.ts:6`](../../admin/src/views/weaponsView.ts#L6) | - |
 | `resetSupabaseClients` | `function` | [`game/src/balance/supabaseClient.ts:140`](../../game/src/balance/supabaseClient.ts#L140) | - |
-| `ReviveActionMessage` | `interface` | [`game/src/shared/types/network.ts:255`](../../game/src/shared/types/network.ts#L255) | - |
+| `ReviveActionMessage` | `interface` | [`game/src/shared/types/network.ts:258`](../../game/src/shared/types/network.ts#L258) | - |
 | `RIFT_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:44`](../../game/src/items/RiftItemSystem.ts#L44) | - |
 | `RiftCanvas` | `const` | [`game/src/ui/react/r3f/RiftCanvas.tsx:42`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L42) | Master React Three Fiber Canvas for The Rift. Enforces WebGL ownership, sha... |
 | `RiftCanvasProps` | `interface` | [`game/src/ui/react/r3f/RiftCanvas.tsx:24`](../../game/src/ui/react/r3f/RiftCanvas.tsx#L24) | - |
@@ -1291,7 +1304,7 @@ Run `npm run index` to refresh this cache.
 | `RiftTeleporter.update` | `method` | [`game/src/world/RiftTeleporter.ts:150`](../../game/src/world/RiftTeleporter.ts#L150) | - |
 | `RiftUpdateResult` | `interface` | [`game/src/world/RiftTeleporter.ts:19`](../../game/src/world/RiftTeleporter.ts#L19) | - |
 | `rollChestDropPair` | `function` | [`game/src/items/RiftItemSystem.ts:327`](../../game/src/items/RiftItemSystem.ts#L327) | Rolls two distinct item drops from a chest (no duplicates allowed). Filters... |
-| `rollRiftItem` | `function` | [`game/src/items/RiftItemSystem.ts:371`](../../game/src/items/RiftItemSystem.ts#L371) | Legacy weights roller kept for backwards compatibility. |
+| `rollRiftItem` | `function` | [`game/src/items/RiftItemSystem.ts:394`](../../game/src/items/RiftItemSystem.ts#L394) | Legacy weights roller kept for backwards compatibility. |
 | `rollRiftItemByStage` | `function` | [`game/src/items/RiftItemSystem.ts:304`](../../game/src/items/RiftItemSystem.ts#L304) | Rolls an item drop based on stage/biome probabilities. Filters out items wh... |
 | `rollWeaponGrade` | `function` | [`game/src/combat/WeaponGrades.ts:86`](../../game/src/combat/WeaponGrades.ts#L86) | - |
 | `RoomDirectory` | `class` | [`game/src/net/RoomDirectory.ts:15`](../../game/src/net/RoomDirectory.ts#L15) | - |
@@ -1354,27 +1367,30 @@ Run `npm run index` to refresh this cache.
 | `SeededRNG.range` | `method` | [`game/src/core/SeededRNG.ts:38`](../../game/src/core/SeededRNG.ts#L38) | Generates a deterministic float in range [min, max) |
 | `SeededRNG.rangeInt` | `method` | [`game/src/core/SeededRNG.ts:45`](../../game/src/core/SeededRNG.ts#L45) | Generates a deterministic integer in range [min, max] inclusive |
 | `selectWeaponUpgradeOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:5`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L5) | The pool is already shuffled and filtered for ownership, prerequisites and ... |
-| `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:60`](../../game/src/core/SessionDirector.ts#L60) | - |
-| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:707`](../../game/src/core/SessionDirector.ts#L707) | Activates the dimensional rift: summons the stage boss directly from the ri... |
-| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:842`](../../game/src/core/SessionDirector.ts#L842) | - |
-| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:991`](../../game/src/core/SessionDirector.ts#L991) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
-| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:449`](../../game/src/core/SessionDirector.ts#L449) | - |
-| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:565`](../../game/src/core/SessionDirector.ts#L565) | - |
-| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:440`](../../game/src/core/SessionDirector.ts#L440) | - |
-| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:491`](../../game/src/core/SessionDirector.ts#L491) | - |
-| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:432`](../../game/src/core/SessionDirector.ts#L432) | - |
-| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1153`](../../game/src/core/SessionDirector.ts#L1153) | Resumes a previously saved run from localStorage. |
-| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:378`](../../game/src/core/SessionDirector.ts#L378) | - |
-| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1075`](../../game/src/core/SessionDirector.ts#L1075) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
-| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:321`](../../game/src/core/SessionDirector.ts#L321) | - |
-| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:265`](../../game/src/core/SessionDirector.ts#L265) | - |
-| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:370`](../../game/src/core/SessionDirector.ts#L370) | - |
-| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1021`](../../game/src/core/SessionDirector.ts#L1021) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
-| `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:179`](../../game/src/core/SessionDirector.ts#L179) | - |
-| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:920`](../../game/src/core/SessionDirector.ts#L920) | - |
-| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:459`](../../game/src/core/SessionDirector.ts#L459) | - |
-| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:726`](../../game/src/core/SessionDirector.ts#L726) | - |
-| `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:157`](../../game/src/core/SessionDirector.ts#L157) | - |
+| `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:61`](../../game/src/core/SessionDirector.ts#L61) | - |
+| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:726`](../../game/src/core/SessionDirector.ts#L726) | Activates the dimensional rift: summons the stage boss directly from the ri... |
+| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:934`](../../game/src/core/SessionDirector.ts#L934) | - |
+| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:1083`](../../game/src/core/SessionDirector.ts#L1083) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
+| `SessionDirector.completeGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:781`](../../game/src/core/SessionDirector.ts#L781) | - |
+| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:464`](../../game/src/core/SessionDirector.ts#L464) | - |
+| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:584`](../../game/src/core/SessionDirector.ts#L584) | - |
+| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:455`](../../game/src/core/SessionDirector.ts#L455) | - |
+| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:506`](../../game/src/core/SessionDirector.ts#L506) | - |
+| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:447`](../../game/src/core/SessionDirector.ts#L447) | - |
+| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1245`](../../game/src/core/SessionDirector.ts#L1245) | Resumes a previously saved run from localStorage. |
+| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:389`](../../game/src/core/SessionDirector.ts#L389) | - |
+| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1167`](../../game/src/core/SessionDirector.ts#L1167) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
+| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:332`](../../game/src/core/SessionDirector.ts#L332) | - |
+| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:276`](../../game/src/core/SessionDirector.ts#L276) | - |
+| `SessionDirector.startGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:745`](../../game/src/core/SessionDirector.ts#L745) | - |
+| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:381`](../../game/src/core/SessionDirector.ts#L381) | - |
+| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1113`](../../game/src/core/SessionDirector.ts#L1113) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
+| `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:190`](../../game/src/core/SessionDirector.ts#L190) | - |
+| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:1012`](../../game/src/core/SessionDirector.ts#L1012) | - |
+| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:474`](../../game/src/core/SessionDirector.ts#L474) | - |
+| `SessionDirector.updateGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:765`](../../game/src/core/SessionDirector.ts#L765) | - |
+| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:814`](../../game/src/core/SessionDirector.ts#L814) | - |
+| `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:165`](../../game/src/core/SessionDirector.ts#L165) | - |
 | `SettingsModal` | `const` | [`game/src/ui/react/modals/SettingsModal.tsx:10`](../../game/src/ui/react/modals/SettingsModal.tsx#L10) | - |
 | `SettingsModalProps` | `interface` | [`game/src/ui/react/modals/SettingsModal.tsx:5`](../../game/src/ui/react/modals/SettingsModal.tsx#L5) | - |
 | `SettingsScreen` | `class` | [`game/src/ui/screens/Settings/SettingsScreen.ts:29`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L29) | Modular Settings Screen. Manages Graphics, Audio, HUD preferences, Controls... |
@@ -1558,7 +1574,7 @@ Run `npm run index` to refresh this cache.
 | `SpatialGrid.separateCellPair` | `method` | [`game/src/entities/SpatialGrid.ts:101`](../../game/src/entities/SpatialGrid.ts#L101) | - |
 | `SpatialGrid.separatePair` | `method` | [`game/src/entities/SpatialGrid.ts:121`](../../game/src/entities/SpatialGrid.ts#L121) | - |
 | `SpatialGrid.toKey` | `method` | [`game/src/entities/SpatialGrid.ts:26`](../../game/src/entities/SpatialGrid.ts#L26) | - |
-| `SPAWN_OFFSETS` | `const` | [`game/src/core/SessionDirector.ts:51`](../../game/src/core/SessionDirector.ts#L51) | - |
+| `SPAWN_OFFSETS` | `const` | [`game/src/core/SessionDirector.ts:52`](../../game/src/core/SessionDirector.ts#L52) | - |
 | `SPECIAL_QUESTS_CONFIG` | `const` | [`game/src/core/SpecialQuestsConfig.ts:19`](../../game/src/core/SpecialQuestsConfig.ts#L19) | - |
 | `SpecialQuestDef` | `interface` | [`game/src/core/SpecialQuestsConfig.ts:1`](../../game/src/core/SpecialQuestsConfig.ts#L1) | - |
 | `SpellContext` | `interface` | [`game/src/shared/InvokerSpellRuntime.ts:20`](../../game/src/shared/InvokerSpellRuntime.ts#L20) | - |
@@ -1597,7 +1613,7 @@ Run `npm run index` to refresh this cache.
 | `TableSort` | `interface` | [`admin/src/types.ts:1`](../../admin/src/types.ts#L1) | - |
 | `TalentBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:3`](../../game/src/balance/BalanceTypes.ts#L3) | - |
 | `TeleporterState` | `type` | [`game/src/world/RiftTeleporter.ts:17`](../../game/src/world/RiftTeleporter.ts#L17) | - |
-| `TeleporterSyncInfo` | `interface` | [`game/src/shared/types/network.ts:200`](../../game/src/shared/types/network.ts#L200) | - |
+| `TeleporterSyncInfo` | `interface` | [`game/src/shared/types/network.ts:203`](../../game/src/shared/types/network.ts#L203) | - |
 | `TerrainElevation` | `class` | [`game/src/world/TerrainElevation.ts:8`](../../game/src/world/TerrainElevation.ts#L8) | Procedural Terrain Elevation Generator. Provides deterministic, continuous,... |
 | `TerrainElevation.getElevation` | `method` | [`game/src/world/TerrainElevation.ts:21`](../../game/src/world/TerrainElevation.ts#L21) | Returns flat ground elevation Y = 0 to preserve 2D/2.5D pixel-art plane con... |
 | `TerrainElevation.getNormal` | `method` | [`game/src/world/TerrainElevation.ts:28`](../../game/src/world/TerrainElevation.ts#L28) | Returns flat ground normal (0, 1, 0). |
