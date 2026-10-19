@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-19T13:14:53.889Z | **Files:** 186 | **Top-level:** 549 | **Class Methods:** 1182
+> **Generated:** 2026-10-19T14:02:28.720Z | **Files:** 187 | **Top-level:** 551 | **Class Methods:** 1191
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 503 |
+| `game/src` | 505 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -191,6 +191,7 @@ Run `npm run index` to refresh this cache.
 | `BossBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:60`](../../game/src/balance/BalanceTypes.ts#L60) | - |
 | `BossHpPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:40`](../../game/src/mechanics/events/GameEventBus.ts#L40) | - |
 | `BossSpawnPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:35`](../../game/src/mechanics/events/GameEventBus.ts#L35) | - |
+| `BossSphere` | `interface` | [`game/src/entities/FinalBossPylonManager.ts:24`](../../game/src/entities/FinalBossPylonManager.ts#L24) | - |
 | `BossTextures` | `interface` | [`game/src/core/TextureManager.ts:34`](../../game/src/core/TextureManager.ts#L34) | - |
 | `BowWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:13`](../../game/src/combat/weapons/RangedWeapons.ts#L13) | Hunting Bow (Охотничий Лук) Long-range sharp piercing arrows cutting throug... |
 | `BowWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:108`](../../game/src/combat/weapons/RangedWeapons.ts#L108) | - |
@@ -279,14 +280,14 @@ Run `npm run index` to refresh this cache.
 | `ChestTier` | `type` | [`game/src/world/ChestManager.ts:26`](../../game/src/world/ChestManager.ts#L26) | - |
 | `ChunkManager` | `class` | [`game/src/world/ChunkManager.ts:28`](../../game/src/world/ChunkManager.ts#L28) | - |
 | `ChunkManager.addChunkListener` | `method` | [`game/src/world/ChunkManager.ts:59`](../../game/src/world/ChunkManager.ts#L59) | - |
-| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:347`](../../game/src/world/ChunkManager.ts#L347) | Deep cleanup of all chunk geometries and entities. |
-| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:335`](../../game/src/world/ChunkManager.ts#L335) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
+| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:343`](../../game/src/world/ChunkManager.ts#L343) | Deep cleanup of all chunk geometries and entities. |
+| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:331`](../../game/src/world/ChunkManager.ts#L331) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
 | `ChunkManager.getActiveChunks` | `method` | [`game/src/world/ChunkManager.ts:64`](../../game/src/world/ChunkManager.ts#L64) | - |
 | `ChunkManager.getElevation` | `method` | [`game/src/world/ChunkManager.ts:85`](../../game/src/world/ChunkManager.ts#L85) | Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5... |
 | `ChunkManager.getNormal` | `method` | [`game/src/world/ChunkManager.ts:99`](../../game/src/world/ChunkManager.ts#L99) | Returns surface normal vector at world coordinate (x, z). |
 | `ChunkManager.getSlowFactor` | `method` | [`game/src/world/ChunkManager.ts:92`](../../game/src/world/ChunkManager.ts#L92) | Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 norma... |
 | `ChunkManager.setDeclarative` | `method` | [`game/src/world/ChunkManager.ts:68`](../../game/src/world/ChunkManager.ts#L68) | - |
-| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:327`](../../game/src/world/ChunkManager.ts#L327) | With the fixed preloaded map, update does not need to stream or unload chun... |
+| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:323`](../../game/src/world/ChunkManager.ts#L323) | With the fixed preloaded map, update does not need to stream or unload chun... |
 | `ClientSyncMessage` | `interface` | [`game/src/shared/types/network.ts:232`](../../game/src/shared/types/network.ts#L232) | - |
 | `CloudSyncManager` | `class` | [`game/src/meta/CloudSyncManager.ts:24`](../../game/src/meta/CloudSyncManager.ts#L24) | Cloud Synchronization Manager for The Rift. Bridges local client storage (M... |
 | `CloudSyncManager.deleteAccount` | `method` | [`game/src/meta/CloudSyncManager.ts:312`](../../game/src/meta/CloudSyncManager.ts#L312) | Permanently deletes user profile data and unlinks account. |
@@ -389,55 +390,55 @@ Run `npm run index` to refresh this cache.
 | `EnemiesRenderer` | `const` | [`game/src/ui/react/r3f/entities/EnemiesRenderer.tsx:24`](../../game/src/ui/react/r3f/entities/EnemiesRenderer.tsx#L24) | High-performance InstancedMesh batch renderer for 100+ enemies. Follows the... |
 | `EnemiesRendererProps` | `interface` | [`game/src/ui/react/r3f/entities/EnemiesRenderer.tsx:15`](../../game/src/ui/react/r3f/entities/EnemiesRenderer.tsx#L15) | - |
 | `Enemy` | `class` | [`game/src/entities/Enemy.ts:48`](../../game/src/entities/Enemy.ts#L48) | - |
-| `Enemy.addBleed` | `method` | [`game/src/entities/Enemy.ts:926`](../../game/src/entities/Enemy.ts#L926) | - |
-| `Enemy.applyBurn` | `method` | [`game/src/entities/Enemy.ts:157`](../../game/src/entities/Enemy.ts#L157) | - |
-| `Enemy.applyFrenzy` | `method` | [`game/src/entities/Enemy.ts:830`](../../game/src/entities/Enemy.ts#L830) | - |
-| `Enemy.applyShock` | `method` | [`game/src/entities/Enemy.ts:169`](../../game/src/entities/Enemy.ts#L169) | - |
-| `Enemy.applySlow` | `method` | [`game/src/entities/Enemy.ts:105`](../../game/src/entities/Enemy.ts#L105) | - |
-| `Enemy.applySpellControl` | `method` | [`game/src/entities/Enemy.ts:440`](../../game/src/entities/Enemy.ts#L440) | - |
-| `Enemy.destroy` | `method` | [`game/src/entities/Enemy.ts:973`](../../game/src/entities/Enemy.ts#L973) | - |
-| `Enemy.freeze` | `method` | [`game/src/entities/Enemy.ts:123`](../../game/src/entities/Enemy.ts#L123) | - |
-| `Enemy.knockbackFrom` | `method` | [`game/src/entities/Enemy.ts:185`](../../game/src/entities/Enemy.ts#L185) | - |
-| `Enemy.setDirection` | `method` | [`game/src/entities/Enemy.ts:448`](../../game/src/entities/Enemy.ts#L448) | - |
-| `Enemy.stun` | `method` | [`game/src/entities/Enemy.ts:138`](../../game/src/entities/Enemy.ts#L138) | - |
-| `Enemy.triggerAttack` | `method` | [`game/src/entities/Enemy.ts:459`](../../game/src/entities/Enemy.ts#L459) | - |
-| `Enemy.update` | `method` | [`game/src/entities/Enemy.ts:752`](../../game/src/entities/Enemy.ts#L752) | - |
-| `Enemy.updateBleed` | `method` | [`game/src/entities/Enemy.ts:934`](../../game/src/entities/Enemy.ts#L934) | - |
-| `Enemy.updateBossAnimation` | `method` | [`game/src/entities/Enemy.ts:472`](../../game/src/entities/Enemy.ts#L472) | - |
-| `Enemy.updateMonsterAnimation` | `method` | [`game/src/entities/Enemy.ts:516`](../../game/src/entities/Enemy.ts#L516) | - |
-| `Enemy.updateSimulation` | `method` | [`game/src/entities/Enemy.ts:564`](../../game/src/entities/Enemy.ts#L564) | Authoritative simulation update: handles movement, knockback, and AI logic.... |
-| `Enemy.updateVisuals` | `method` | [`game/src/entities/Enemy.ts:761`](../../game/src/entities/Enemy.ts#L761) | Rendering phase: Viewport/Frustum culling and visual animations. If inFrust... |
+| `Enemy.addBleed` | `method` | [`game/src/entities/Enemy.ts:929`](../../game/src/entities/Enemy.ts#L929) | - |
+| `Enemy.applyBurn` | `method` | [`game/src/entities/Enemy.ts:160`](../../game/src/entities/Enemy.ts#L160) | - |
+| `Enemy.applyFrenzy` | `method` | [`game/src/entities/Enemy.ts:833`](../../game/src/entities/Enemy.ts#L833) | - |
+| `Enemy.applyShock` | `method` | [`game/src/entities/Enemy.ts:172`](../../game/src/entities/Enemy.ts#L172) | - |
+| `Enemy.applySlow` | `method` | [`game/src/entities/Enemy.ts:108`](../../game/src/entities/Enemy.ts#L108) | - |
+| `Enemy.applySpellControl` | `method` | [`game/src/entities/Enemy.ts:443`](../../game/src/entities/Enemy.ts#L443) | - |
+| `Enemy.destroy` | `method` | [`game/src/entities/Enemy.ts:976`](../../game/src/entities/Enemy.ts#L976) | - |
+| `Enemy.freeze` | `method` | [`game/src/entities/Enemy.ts:126`](../../game/src/entities/Enemy.ts#L126) | - |
+| `Enemy.knockbackFrom` | `method` | [`game/src/entities/Enemy.ts:188`](../../game/src/entities/Enemy.ts#L188) | - |
+| `Enemy.setDirection` | `method` | [`game/src/entities/Enemy.ts:451`](../../game/src/entities/Enemy.ts#L451) | - |
+| `Enemy.stun` | `method` | [`game/src/entities/Enemy.ts:141`](../../game/src/entities/Enemy.ts#L141) | - |
+| `Enemy.triggerAttack` | `method` | [`game/src/entities/Enemy.ts:462`](../../game/src/entities/Enemy.ts#L462) | - |
+| `Enemy.update` | `method` | [`game/src/entities/Enemy.ts:755`](../../game/src/entities/Enemy.ts#L755) | - |
+| `Enemy.updateBleed` | `method` | [`game/src/entities/Enemy.ts:937`](../../game/src/entities/Enemy.ts#L937) | - |
+| `Enemy.updateBossAnimation` | `method` | [`game/src/entities/Enemy.ts:475`](../../game/src/entities/Enemy.ts#L475) | - |
+| `Enemy.updateMonsterAnimation` | `method` | [`game/src/entities/Enemy.ts:519`](../../game/src/entities/Enemy.ts#L519) | - |
+| `Enemy.updateSimulation` | `method` | [`game/src/entities/Enemy.ts:567`](../../game/src/entities/Enemy.ts#L567) | Authoritative simulation update: handles movement, knockback, and AI logic.... |
+| `Enemy.updateVisuals` | `method` | [`game/src/entities/Enemy.ts:764`](../../game/src/entities/Enemy.ts#L764) | Rendering phase: Viewport/Frustum culling and visual animations. If inFrust... |
 | `EnemyAnimState` | `type` | [`game/src/entities/Enemy.ts:18`](../../game/src/entities/Enemy.ts#L18) | - |
 | `EnemyConfig` | `interface` | [`game/src/entities/Enemy.ts:24`](../../game/src/entities/Enemy.ts#L24) | - |
-| `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:20`](../../game/src/entities/EnemyManager.ts#L20) | - |
-| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1175`](../../game/src/entities/EnemyManager.ts#L1175) | - |
-| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1285`](../../game/src/entities/EnemyManager.ts#L1285) | - |
-| `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:315`](../../game/src/entities/EnemyManager.ts#L315) | - |
-| `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:305`](../../game/src/entities/EnemyManager.ts#L305) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
-| `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:347`](../../game/src/entities/EnemyManager.ts#L347) | - |
-| `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:336`](../../game/src/entities/EnemyManager.ts#L336) | - |
-| `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:362`](../../game/src/entities/EnemyManager.ts#L362) | - |
-| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:997`](../../game/src/entities/EnemyManager.ts#L997) | Fast query for enemies within radius using the Spatial Grid. |
-| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1162`](../../game/src/entities/EnemyManager.ts#L1162) | - |
-| `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:325`](../../game/src/entities/EnemyManager.ts#L325) | - |
-| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:1022`](../../game/src/entities/EnemyManager.ts#L1022) | - |
-| `EnemyManager.killNonBossesAround` | `method` | [`game/src/entities/EnemyManager.ts:1086`](../../game/src/entities/EnemyManager.ts#L1086) | Eliminates non-boss enemies in the specified radius around the center with ... |
-| `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:257`](../../game/src/entities/EnemyManager.ts#L257) | - |
-| `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:332`](../../game/src/entities/EnemyManager.ts#L332) | - |
-| `EnemyManager.setDeclarative` | `method` | [`game/src/entities/EnemyManager.ts:38`](../../game/src/entities/EnemyManager.ts#L38) | - |
-| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1146`](../../game/src/entities/EnemyManager.ts#L1146) | - |
-| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1133`](../../game/src/entities/EnemyManager.ts#L1133) | - |
-| `EnemyManager.spawnGreedTrialWave` | `method` | [`game/src/entities/EnemyManager.ts:1033`](../../game/src/entities/EnemyManager.ts#L1033) | Spawns a high-threat frenzied wave of guaranteed elite monsters around the ... |
-| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1138`](../../game/src/entities/EnemyManager.ts#L1138) | - |
-| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:801`](../../game/src/entities/EnemyManager.ts#L801) | Spawns an endgame rift boss |
-| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1142`](../../game/src/entities/EnemyManager.ts#L1142) | - |
-| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:944`](../../game/src/entities/EnemyManager.ts#L944) | - |
-| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1117`](../../game/src/entities/EnemyManager.ts#L1117) | - |
-| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:719`](../../game/src/entities/EnemyManager.ts#L719) | Spawns a stage boss explicitly when the Teleporter event is activated. |
-| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:645`](../../game/src/entities/EnemyManager.ts#L645) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
-| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:837`](../../game/src/entities/EnemyManager.ts#L837) | - |
-| `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:221`](../../game/src/entities/EnemyManager.ts#L221) | - |
-| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1257`](../../game/src/entities/EnemyManager.ts#L1257) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
+| `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:22`](../../game/src/entities/EnemyManager.ts#L22) | - |
+| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1201`](../../game/src/entities/EnemyManager.ts#L1201) | - |
+| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1311`](../../game/src/entities/EnemyManager.ts#L1311) | - |
+| `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:320`](../../game/src/entities/EnemyManager.ts#L320) | - |
+| `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:310`](../../game/src/entities/EnemyManager.ts#L310) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
+| `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:352`](../../game/src/entities/EnemyManager.ts#L352) | - |
+| `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:341`](../../game/src/entities/EnemyManager.ts#L341) | - |
+| `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:367`](../../game/src/entities/EnemyManager.ts#L367) | - |
+| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:1023`](../../game/src/entities/EnemyManager.ts#L1023) | Fast query for enemies within radius using the Spatial Grid. |
+| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1188`](../../game/src/entities/EnemyManager.ts#L1188) | - |
+| `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:330`](../../game/src/entities/EnemyManager.ts#L330) | - |
+| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:1048`](../../game/src/entities/EnemyManager.ts#L1048) | - |
+| `EnemyManager.killNonBossesAround` | `method` | [`game/src/entities/EnemyManager.ts:1112`](../../game/src/entities/EnemyManager.ts#L1112) | Eliminates non-boss enemies in the specified radius around the center with ... |
+| `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:262`](../../game/src/entities/EnemyManager.ts#L262) | - |
+| `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:337`](../../game/src/entities/EnemyManager.ts#L337) | - |
+| `EnemyManager.setDeclarative` | `method` | [`game/src/entities/EnemyManager.ts:40`](../../game/src/entities/EnemyManager.ts#L40) | - |
+| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1172`](../../game/src/entities/EnemyManager.ts#L1172) | - |
+| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1159`](../../game/src/entities/EnemyManager.ts#L1159) | - |
+| `EnemyManager.spawnGreedTrialWave` | `method` | [`game/src/entities/EnemyManager.ts:1059`](../../game/src/entities/EnemyManager.ts#L1059) | Spawns a high-threat frenzied wave of guaranteed elite monsters around the ... |
+| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1164`](../../game/src/entities/EnemyManager.ts#L1164) | - |
+| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:827`](../../game/src/entities/EnemyManager.ts#L827) | Spawns an endgame rift boss |
+| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1168`](../../game/src/entities/EnemyManager.ts#L1168) | - |
+| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:970`](../../game/src/entities/EnemyManager.ts#L970) | - |
+| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1143`](../../game/src/entities/EnemyManager.ts#L1143) | - |
+| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:742`](../../game/src/entities/EnemyManager.ts#L742) | Spawns a stage boss explicitly when the Teleporter event is activated. |
+| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:668`](../../game/src/entities/EnemyManager.ts#L668) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
+| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:863`](../../game/src/entities/EnemyManager.ts#L863) | - |
+| `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:226`](../../game/src/entities/EnemyManager.ts#L226) | - |
+| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1283`](../../game/src/entities/EnemyManager.ts#L1283) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
@@ -467,6 +468,16 @@ Run `npm run index` to refresh this cache.
 | `FeatureFlags.saveToStorage` | `method` | [`game/src/core/FeatureFlags.ts:176`](../../game/src/core/FeatureFlags.ts#L176) | - |
 | `FeatureFlags.setFlag` | `method` | [`game/src/core/FeatureFlags.ts:95`](../../game/src/core/FeatureFlags.ts#L95) | Sets a runtime override for a feature flag. |
 | `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:40`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L40) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
+| `FinalBossPylonManager` | `class` | [`game/src/entities/FinalBossPylonManager.ts:40`](../../game/src/entities/FinalBossPylonManager.ts#L40) | - |
+| `FinalBossPylonManager.bindBoss` | `method` | [`game/src/entities/FinalBossPylonManager.ts:61`](../../game/src/entities/FinalBossPylonManager.ts#L61) | - |
+| `FinalBossPylonManager.breakShield` | `method` | [`game/src/entities/FinalBossPylonManager.ts:382`](../../game/src/entities/FinalBossPylonManager.ts#L382) | - |
+| `FinalBossPylonManager.cleanup` | `method` | [`game/src/entities/FinalBossPylonManager.ts:411`](../../game/src/entities/FinalBossPylonManager.ts#L411) | - |
+| `FinalBossPylonManager.cleanupSpheres` | `method` | [`game/src/entities/FinalBossPylonManager.ts:402`](../../game/src/entities/FinalBossPylonManager.ts#L402) | - |
+| `FinalBossPylonManager.deactivateSphere` | `method` | [`game/src/entities/FinalBossPylonManager.ts:361`](../../game/src/entities/FinalBossPylonManager.ts#L361) | - |
+| `FinalBossPylonManager.destroy` | `method` | [`game/src/entities/FinalBossPylonManager.ts:422`](../../game/src/entities/FinalBossPylonManager.ts#L422) | - |
+| `FinalBossPylonManager.renderBillboard` | `method` | [`game/src/entities/FinalBossPylonManager.ts:302`](../../game/src/entities/FinalBossPylonManager.ts#L302) | - |
+| `FinalBossPylonManager.triggerShieldPhase` | `method` | [`game/src/entities/FinalBossPylonManager.ts:166`](../../game/src/entities/FinalBossPylonManager.ts#L166) | - |
+| `FinalBossPylonManager.update` | `method` | [`game/src/entities/FinalBossPylonManager.ts:70`](../../game/src/entities/FinalBossPylonManager.ts#L70) | - |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
 | `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:632`](../../game/src/combat/weapons/MagicWeapons.ts#L632) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
@@ -727,30 +738,30 @@ Run `npm run index` to refresh this cache.
 | `InGameHUDScreenOptions` | `interface` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:4`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L4) | - |
 | `InGameOverlayUI` | `class` | [`game/src/ui/modules/InGameOverlayUI.ts:16`](../../game/src/ui/modules/InGameOverlayUI.ts#L16) | - |
 | `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:480`](../../game/src/ui/modules/InGameOverlayUI.ts#L480) | - |
-| `InGameOverlayUI.hideGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:923`](../../game/src/ui/modules/InGameOverlayUI.ts#L923) | - |
-| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:666`](../../game/src/ui/modules/InGameOverlayUI.ts#L666) | - |
+| `InGameOverlayUI.hideGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:928`](../../game/src/ui/modules/InGameOverlayUI.ts#L928) | - |
+| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:671`](../../game/src/ui/modules/InGameOverlayUI.ts#L671) | - |
 | `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:507`](../../game/src/ui/modules/InGameOverlayUI.ts#L507) | - |
-| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:672`](../../game/src/ui/modules/InGameOverlayUI.ts#L672) | - |
-| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:885`](../../game/src/ui/modules/InGameOverlayUI.ts#L885) | - |
-| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1006`](../../game/src/ui/modules/InGameOverlayUI.ts#L1006) | - |
+| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:677`](../../game/src/ui/modules/InGameOverlayUI.ts#L677) | - |
+| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:890`](../../game/src/ui/modules/InGameOverlayUI.ts#L890) | - |
+| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1011`](../../game/src/ui/modules/InGameOverlayUI.ts#L1011) | - |
 | `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:167`](../../game/src/ui/modules/InGameOverlayUI.ts#L167) | - |
 | `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:162`](../../game/src/ui/modules/InGameOverlayUI.ts#L162) | - |
-| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1038`](../../game/src/ui/modules/InGameOverlayUI.ts#L1038) | - |
-| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:716`](../../game/src/ui/modules/InGameOverlayUI.ts#L716) | - |
-| `InGameOverlayUI.showGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:905`](../../game/src/ui/modules/InGameOverlayUI.ts#L905) | - |
-| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:659`](../../game/src/ui/modules/InGameOverlayUI.ts#L659) | - |
-| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:698`](../../game/src/ui/modules/InGameOverlayUI.ts#L698) | - |
-| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:845`](../../game/src/ui/modules/InGameOverlayUI.ts#L845) | - |
-| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:830`](../../game/src/ui/modules/InGameOverlayUI.ts#L830) | - |
-| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:865`](../../game/src/ui/modules/InGameOverlayUI.ts#L865) | - |
-| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:763`](../../game/src/ui/modules/InGameOverlayUI.ts#L763) | - |
-| `InGameOverlayUI.updateGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:912`](../../game/src/ui/modules/InGameOverlayUI.ts#L912) | - |
+| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1043`](../../game/src/ui/modules/InGameOverlayUI.ts#L1043) | - |
+| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:721`](../../game/src/ui/modules/InGameOverlayUI.ts#L721) | - |
+| `InGameOverlayUI.showGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:910`](../../game/src/ui/modules/InGameOverlayUI.ts#L910) | - |
+| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:664`](../../game/src/ui/modules/InGameOverlayUI.ts#L664) | - |
+| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:703`](../../game/src/ui/modules/InGameOverlayUI.ts#L703) | - |
+| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:850`](../../game/src/ui/modules/InGameOverlayUI.ts#L850) | - |
+| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:835`](../../game/src/ui/modules/InGameOverlayUI.ts#L835) | - |
+| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:870`](../../game/src/ui/modules/InGameOverlayUI.ts#L870) | - |
+| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:768`](../../game/src/ui/modules/InGameOverlayUI.ts#L768) | - |
+| `InGameOverlayUI.updateGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:917`](../../game/src/ui/modules/InGameOverlayUI.ts#L917) | - |
 | `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:490`](../../game/src/ui/modules/InGameOverlayUI.ts#L490) | - |
-| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:964`](../../game/src/ui/modules/InGameOverlayUI.ts#L964) | - |
-| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:969`](../../game/src/ui/modules/InGameOverlayUI.ts#L969) | - |
-| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:635`](../../game/src/ui/modules/InGameOverlayUI.ts#L635) | - |
-| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:642`](../../game/src/ui/modules/InGameOverlayUI.ts#L642) | - |
-| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:929`](../../game/src/ui/modules/InGameOverlayUI.ts#L929) | - |
+| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:969`](../../game/src/ui/modules/InGameOverlayUI.ts#L969) | - |
+| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:974`](../../game/src/ui/modules/InGameOverlayUI.ts#L974) | - |
+| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:640`](../../game/src/ui/modules/InGameOverlayUI.ts#L640) | - |
+| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:647`](../../game/src/ui/modules/InGameOverlayUI.ts#L647) | - |
+| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:934`](../../game/src/ui/modules/InGameOverlayUI.ts#L934) | - |
 | `initReactUI` | `function` | [`game/src/ui/react/mountReactUI.tsx:9`](../../game/src/ui/react/mountReactUI.tsx#L9) | Initializes and mounts React UI Root into DOM container. |
 | `InputActionType` | `type` | [`game/src/core/InputBuffer.ts:6`](../../game/src/core/InputBuffer.ts#L6) | High-performance, zero-React input buffer for game actions and continuous d... |
 | `InputBuffer` | `class` | [`game/src/core/InputBuffer.ts:25`](../../game/src/core/InputBuffer.ts#L25) | - |
@@ -1147,7 +1158,7 @@ Run `npm run index` to refresh this cache.
 | `PlayerStatusManager.reset` | `method` | [`game/src/entities/PlayerStatusManager.ts:67`](../../game/src/entities/PlayerStatusManager.ts#L67) | - |
 | `PlayerStatusManager.update` | `method` | [`game/src/entities/PlayerStatusManager.ts:42`](../../game/src/entities/PlayerStatusManager.ts#L42) | - |
 | `PlayerStoreState` | `interface` | [`game/src/ui/stores/usePlayerStore.ts:28`](../../game/src/ui/stores/usePlayerStore.ts#L28) | - |
-| `PlayerTargetInfo` | `interface` | [`game/src/entities/EnemyManager.ts:13`](../../game/src/entities/EnemyManager.ts#L13) | - |
+| `PlayerTargetInfo` | `interface` | [`game/src/entities/EnemyManager.ts:15`](../../game/src/entities/EnemyManager.ts#L15) | - |
 | `PlayerXpPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:23`](../../game/src/mechanics/events/GameEventBus.ts#L23) | - |
 | `PoisonPuddleWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:750`](../../game/src/combat/weapons/MagicWeapons.ts#L750) | Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on... |
 | `PoisonPuddleWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:847`](../../game/src/combat/weapons/MagicWeapons.ts#L847) | - |
