@@ -15,20 +15,26 @@ Four full-body standing views arranged horizontally left-to-right on one canvas:
 4. `LEFT` — Strict left-facing profile view.
    **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No 3/4 turn.
 
-### Option B: 5-in-1 Character Reference Canvas (Default Standard)
-A single reference canvas with 5 designated panels arranged horizontally on pure magenta:
-1. `Portrait` (96×96 close-up crop of face and headgear).
-2. `Front Full-Body` (96×96 frontal chibi sprite).
-3. `Back Full-Body` (96×96 rear chibi sprite).
-4. `Right Profile Full-Body` (96×96 profile chibi sprite: body sideways, face in strict profile).
-5. `Weapon Preview` (isolated 96×96 preview of the held weapon/focus — automatically sliced by script into `weapon_<name>.png`).
+### Option B: 4-Column Turnaround with Stacked Focus Column (Default Standard)
+A single reference canvas with 4 vertical columns on pure magenta (`#ff00ff`):
+1. **Column 1: Close-up & Focus Column (Stacked Vertically with >= 40px magenta gutter between them)**:
+   - **Top Panel**: `Portrait` (96×96 close-up bust portrait of head, horns/cowl, face, neck collar/scarf, and pauldron). Centered vertically in top half.
+   - **Bottom Panel**: `Weapon Preview` (isolated 96×96 preview of held weapon/focus, e.g. flail handle, chain, and spiked mace head). Centered vertically in bottom half.
+2. **Column 2: Front Full-Body View**:
+   - `FRONT` (96×96 frontal chibi sprite: 2.0–2.4 heads, massive head wider than shoulders, compact stubby torso, grounded baseline `y ≈ 88`, holding weapon).
+3. **Column 3: Back Full-Body View**:
+   - `BACK` (96×96 rear chibi sprite: 100% rear view of hair, horns, backplate, skirt; NO face, NO eyes).
+4. **Column 4: Right Profile Full-Body View**:
+   - `RIGHT` (96×96 right profile chibi sprite: body strictly turned sideways, face strictly in side profile, holding weapon).
 
 ---
 
 ## 2. Safe Margins & Anti-Overlap Gutter Contract
 
 To prevent adjacent figures or outstretched weapons from bleeding into neighboring panel crops:
-* **Generous Gutter Spacing**: Maintain **at least 40–50 pixels of pure empty solid magenta background** between each of the 5 panels. Figures and weapon tips MUST NEVER touch, overlap, or cross panel boundaries.
+* **Generous Horizontal & Vertical Gutter Spacing**: Maintain **at least 40–50 pixels of pure empty solid magenta background** between each column, and **at least 40–50 pixels between Portrait (top) and Weapon Preview (bottom)** in Column 1.
+* **No Cutoffs**: Entire bust portrait (including ram horns, tips of ears/hair) and weapon head/chain must have at least 15–20px magenta margin from canvas borders to avoid cutoff.
+* **No Text Clutter in Cropped Zones**: Do not place large or duplicate text labels inside the sprite bounding boxes.
 * **Compact Poses**: Characters stand in a compact grounded posture with held weapons oriented vertically or angled close to the body, keeping silhouettes neatly centered within their panel area.
 
 ---

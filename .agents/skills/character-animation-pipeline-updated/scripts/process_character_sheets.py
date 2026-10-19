@@ -582,7 +582,12 @@ def extract_turnaround_assets(
     bg_mode: str = "magenta",
     bg_tolerance: float = 65.0,
 ) -> tuple[Optional[Path], Optional[Path]]:
-    """Extract weapon preview (panel 5) and portrait (panel 1) from 5-in-1 turnaround sheet."""
+    """Extract weapon preview and portrait from turnaround sheet.
+    
+    Supports:
+    - 4-column turnaround (Column 1 contains stacked Portrait on top and Weapon Preview on bottom).
+    - Legacy 5-column turnaround (Panel 1 = Portrait, Panel 5 = Weapon Preview).
+    """
     if not turnaround_path.is_file():
         return None, None
 
@@ -590,39 +595,79 @@ def extract_turnaround_assets(
         rgba = detect_and_clean_background(np.asarray(raw.convert("RGBA")), bg_mode, bg_tolerance)
 
     h, w = rgba.shape[:2]
-    # Standard 5-panel turnaround has 5 horizontal sections
-    panel_w = w // 5
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    # Panel 0: Portrait
-    portrait_panel = rgba[:, 0:panel_w]
-    ys, xs = np.where(portrait_panel[:, :, 3] > ALPHA_THRESHOLD)
     portrait_out: Optional[Path] = None
-    if len(xs):
-        crop = portrait_panel[ys.min():ys.max()+1, xs.min():xs.max()+1]
-        ch, cw = crop.shape[:2]
-        side = max(ch, cw)
-        sq = np.zeros((side, side, 4), dtype=np.uint8)
-        sq[(side - ch) // 2 : (side - ch) // 2 + ch, (side - cw) // 2 : (side - cw) // 2 + cw] = crop
-        res = Image.fromarray(sq, mode="RGBA").resize((96, 96), Image.Resampling.NEAREST)
-        portrait_out = out_dir / f"hero_{character_name}_portrait.png"
-        res.save(portrait_out)
-        _print(f"[OK] Extracted portrait from turnaround panel 1: {portrait_out}")
-
-    # Panel 4: Weapon Preview
-    weapon_panel = rgba[:, panel_w * 4 : w]
-    ys, xs = np.where(weapon_panel[:, :, 3] > ALPHA_THRESHOLD)
     weapon_out: Optional[Path] = None
-    if len(xs):
-        crop = weapon_panel[ys.min():ys.max()+1, xs.min():xs.max()+1]
-        ch, cw = crop.shape[:2]
-        side = max(ch, cw)
-        sq = np.zeros((side, side, 4), dtype=np.uint8)
-        sq[(side - ch) // 2 : (side - ch) // 2 + ch, (side - cw) // 2 : (side - cw) // 2 + cw] = crop
-        res = Image.fromarray(sq, mode="RGBA").resize((96, 96), Image.Resampling.NEAREST)
-        weapon_out = out_dir / f"weapon_{character_name}.png"
-        res.save(weapon_out)
-        _print(f"[OK] Extracted weapon icon from turnaround panel 5: {weapon_out}")
+
+    # Check first column (w // 4 for 4-column or w // 5 for 5-column)
+    col1_w_4 = w // 4
+    col1_w_5 = w // 5
+    
+    # Check if there is weapon content in the last column (5-column legacy layout)
+    panel5_legacy = rgba[:, col1_w_5 * 4 : w]
+    has_legacy_weapon = np.any(panel5_legacy[:, :, 3] > ALPHA_THRESHOLD)
+
+    if not has_legacy_weapon:
+        # Modern 4-column layout: Column 1 (0..w//4) has Portrait (top half) and Weapon (bottom half)
+        col1 = rgba[:, 0:col1_w_4]
+        mid_y = h // 2
+        top_half = col1[:mid_y, :]
+        bot_half = col1[mid_y:, :]
+
+        # Top half: Portrait
+        ys_p, xs_p = np.where(top_half[:, :, 3] > ALPHA_THRESHOLD)
+        if len(xs_p):
+            crop = top_half[ys_p.min():ys_p.max()+1, xs_p.min():xs_p.max()+1]
+            ch, cw = crop.shape[:2]
+            side = max(ch, cw)
+            sq = np.zeros((side, side, 4), dtype=np.uint8)
+            sq[(side - ch) // 2 : (side - ch) // 2 + ch, (side - cw) // 2 : (side - cw) // 2 + cw] = crop
+            res = Image.fromarray(sq, mode="RGBA").resize((96, 96), Image.Resampling.NEAREST)
+            portrait_out = out_dir / f"hero_{character_name}_portrait.png"
+            res.save(portrait_out)
+            _print(f"[OK] Extracted portrait from 4-col turnaround (col 1 top): {portrait_out}")
+
+        # Bottom half: Weapon Preview
+        ys_w, xs_w = np.where(bot_half[:, :, 3] > ALPHA_THRESHOLD)
+        if len(xs_w):
+            crop = bot_half[ys_w.min():ys_w.max()+1, xs_w.min():xs_w.max()+1]
+            ch, cw = crop.shape[:2]
+            side = max(ch, cw)
+            sq = np.zeros((side, side, 4), dtype=np.uint8)
+            sq[(side - ch) // 2 : (side - ch) // 2 + ch, (side - cw) // 2 : (side - cw) // 2 + cw] = crop
+            res = Image.fromarray(sq, mode="RGBA").resize((96, 96), Image.Resampling.NEAREST)
+            weapon_out = out_dir / f"weapon_{character_name}.png"
+            res.save(weapon_out)
+            _print(f"[OK] Extracted weapon icon from 4-col turnaround (col 1 bottom): {weapon_out}")
+
+    else:
+        # Legacy 5-panel layout: Panel 0 = Portrait, Panel 4 = Weapon Preview
+        panel_w = col1_w_5
+        portrait_panel = rgba[:, 0:panel_w]
+        ys, xs = np.where(portrait_panel[:, :, 3] > ALPHA_THRESHOLD)
+        if len(xs):
+            crop = portrait_panel[ys.min():ys.max()+1, xs.min():xs.max()+1]
+            ch, cw = crop.shape[:2]
+            side = max(ch, cw)
+            sq = np.zeros((side, side, 4), dtype=np.uint8)
+            sq[(side - ch) // 2 : (side - ch) // 2 + ch, (side - cw) // 2 : (side - cw) // 2 + cw] = crop
+            res = Image.fromarray(sq, mode="RGBA").resize((96, 96), Image.Resampling.NEAREST)
+            portrait_out = out_dir / f"hero_{character_name}_portrait.png"
+            res.save(portrait_out)
+            _print(f"[OK] Extracted portrait from turnaround panel 1: {portrait_out}")
+
+        weapon_panel = panel5_legacy
+        ys, xs = np.where(weapon_panel[:, :, 3] > ALPHA_THRESHOLD)
+        if len(xs):
+            crop = weapon_panel[ys.min():ys.max()+1, xs.min():xs.max()+1]
+            ch, cw = crop.shape[:2]
+            side = max(ch, cw)
+            sq = np.zeros((side, side, 4), dtype=np.uint8)
+            sq[(side - ch) // 2 : (side - ch) // 2 + ch, (side - cw) // 2 : (side - cw) // 2 + cw] = crop
+            res = Image.fromarray(sq, mode="RGBA").resize((96, 96), Image.Resampling.NEAREST)
+            weapon_out = out_dir / f"weapon_{character_name}.png"
+            res.save(weapon_out)
+            _print(f"[OK] Extracted weapon icon from turnaround panel 5: {weapon_out}")
 
     return portrait_out, weapon_out
 
