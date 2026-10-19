@@ -344,13 +344,13 @@ export class InventoryScreen extends Screen {
           icon: '🥾',
           count: player.speedBootsCount,
           title: 'Ботинки Скорости',
-          desc: `+${player.speedBootsCount * 3}% к скорости бега (x${player.passiveSpeedMultiplier.toFixed(2)}, макс. 3.0x)`
+          desc: `+${((player.passiveSpeedMultiplier - 1) * 100).toFixed(1)}% к скорости бега (x${player.passiveSpeedMultiplier.toFixed(2)}, макс. 3.0x на 300 ур.)`
         },
         {
           id: 'stat_flask',
           icon: '🍶',
           count: player.flaskCount,
-          title: 'Фляга с Виски',
+          title: 'Походная Фляга',
           desc: `+${player.flaskCount * 30} к макс HP (${player.maxHp} HP)`
         },
         {
@@ -358,7 +358,7 @@ export class InventoryScreen extends Screen {
           icon: '🧲',
           count: player.magnetCount,
           title: 'Магнит',
-          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита (макс. 50м)`
+          desc: `${player.pickupRadius.toFixed(1)}м радиус магнита (макс. 50м на 100 ур.)`
         },
         {
           id: 'stat_amulet',
@@ -379,7 +379,21 @@ export class InventoryScreen extends Screen {
           icon: '⏱️',
           count: player.watchCount,
           title: 'Карманные Часы',
-          desc: `-${Math.round((player.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(player.watchCount, Math.log(30) / Math.log(300)))) * 100)}% к времени перезарядки (макс. 30%)`
+          desc: `-${Math.round((player.watchCount <= 0 ? 0 : Math.min(0.50, 0.01 * Math.pow(player.watchCount, Math.log(50) / Math.log(200)))) * 100)}% к времени перезарядки (макс. 50% на 200 ур.)`
+        },
+        {
+          id: 'stat_crit_damage',
+          icon: '🗡️',
+          count: (player as any).critDamageCount || 0,
+          title: 'Заточка Клинка',
+          desc: `+${((player as any).critDamageCount || 0) * 1}% к критическому урону (всего ${(player.critDamage * 100).toFixed(0)}%, макс. 1000%)`
+        },
+        {
+          id: 'stat_crit_chance',
+          icon: '🎯',
+          count: (player as any).critChanceCount || 0,
+          title: 'Прицел Разлома',
+          desc: `+${(((player as any).critChanceCount || 0) * 0.05).toFixed(2)}% к шансу крита (всего ${(player.critChance * 100).toFixed(2)}%, макс. 100%)`
         },
         {
           id: 'stat_might_elixir',

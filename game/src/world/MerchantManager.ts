@@ -41,6 +41,7 @@ export class MerchantManager {
   public boughtItemIds: Set<string> = new Set();
   public weaponUpgradePurchases: number = 0;
   public purchaseCount: number = 0;
+  public visitCount: number = 0;
 
   public mesh: Group;
   private coreMesh!: Mesh;
@@ -184,6 +185,7 @@ export class MerchantManager {
     this.boughtItemIds.clear();
     this.weaponUpgradePurchases = 0;
     this.purchaseCount = 0;
+    this.visitCount++;
 
     // Roll new stock
     this.stock = this.generateStock();
@@ -207,18 +209,19 @@ export class MerchantManager {
 
   public generateStock(): MerchantItemStock[] {
     const cfg = BalanceManager.getGlobalConfig();
+    const visitMultiplier = Math.pow(1.35, Math.max(0, this.visitCount - 1));
     const prices: Record<ItemRarity, number> = {
-      common: cfg.merchantPriceCommon ?? 400,
-      uncommon: cfg.merchantPriceUncommon ?? 800,
-      rare: cfg.merchantPriceRare ?? 1500,
-      legendary: cfg.merchantPriceLegendary ?? 3000,
-      boss: cfg.merchantPriceBoss ?? 5000
+      common: Math.round((cfg.merchantPriceCommon ?? 400) * visitMultiplier),
+      uncommon: Math.round((cfg.merchantPriceUncommon ?? 800) * visitMultiplier),
+      rare: Math.round((cfg.merchantPriceRare ?? 1500) * visitMultiplier),
+      legendary: Math.round((cfg.merchantPriceLegendary ?? 3000) * visitMultiplier),
+      boss: Math.round((cfg.merchantPriceBoss ?? 5000) * visitMultiplier)
     };
-    const weaponUpgradeBasePrice = cfg.merchantPriceWeaponUpgrade ?? 500;
+    const weaponUpgradeBasePrice = Math.round((cfg.merchantPriceWeaponUpgrade ?? 500) * visitMultiplier);
 
     const items: MerchantItemStock[] = [];
 
-    const calcPrice = (base: number) => Math.round(base * Math.pow(1.4, this.purchaseCount));
+    const currentUpgradePrice = Math.round(weaponUpgradeBasePrice * Math.pow(1.4, this.weaponUpgradePurchases));
 
     // Special item: Upgrade Weapon Upgrade Rarity (can purchase up to 5 times per visit)
     items.push({
@@ -229,7 +232,7 @@ export class MerchantManager {
       icon: '⚡',
       color: '#a855f7',
       description: `Повышает редкость улучшения случайного оружия (куплено ${this.weaponUpgradePurchases}/5).`,
-      price: calcPrice(weaponUpgradeBasePrice),
+      price: currentUpgradePrice,
       basePrice: weaponUpgradeBasePrice
     });
 
@@ -251,7 +254,7 @@ export class MerchantManager {
       icon: c1.icon,
       color: c1.color,
       description: c1.description,
-      price: calcPrice(prices[c1.rarity]),
+      price: prices[c1.rarity],
       basePrice: prices[c1.rarity]
     });
     items.push({
@@ -262,7 +265,7 @@ export class MerchantManager {
       icon: c2.icon,
       color: c2.color,
       description: c2.description,
-      price: calcPrice(prices[c2.rarity]),
+      price: prices[c2.rarity],
       basePrice: prices[c2.rarity]
     });
 
@@ -278,7 +281,7 @@ export class MerchantManager {
       icon: u1.icon,
       color: u1.color,
       description: u1.description,
-      price: calcPrice(prices[u1.rarity]),
+      price: prices[u1.rarity],
       basePrice: prices[u1.rarity]
     });
     items.push({
@@ -289,7 +292,7 @@ export class MerchantManager {
       icon: u2.icon,
       color: u2.color,
       description: u2.description,
-      price: calcPrice(prices[u2.rarity]),
+      price: prices[u2.rarity],
       basePrice: prices[u2.rarity]
     });
 
@@ -304,7 +307,7 @@ export class MerchantManager {
       icon: r1.icon,
       color: r1.color,
       description: r1.description,
-      price: calcPrice(prices[r1.rarity]),
+      price: prices[r1.rarity],
       basePrice: prices[r1.rarity]
     });
 
@@ -320,7 +323,7 @@ export class MerchantManager {
       icon: h1.icon,
       color: h1.color,
       description: h1.description,
-      price: calcPrice(prices[h1.rarity]),
+      price: prices[h1.rarity],
       basePrice: prices[h1.rarity]
     });
 
@@ -410,13 +413,16 @@ export class MerchantManager {
       }
     }
 
-    // Every purchase makes subsequent purchases 40% more expensive
     this.purchaseCount++;
     ProgressionManager.getInstance().recordMerchantPurchaseInRun(1);
-    for (const stockItem of this.stock) {
-      stockItem.price = Math.round(stockItem.basePrice * Math.pow(1.4, this.purchaseCount));
-      if (stockItem.id === 'merchant_upgrade_weapon') {
-        stockItem.description = `Повышает редкость улучшения случайного оружия (куплено ${this.weaponUpgradePurchases}/5).`;
+
+    // Only weapon upgrade gets progressively more expensive with each purchase in this visit.
+    // Regular items keep their initial fixed price throughout the visit.
+    if (item.id === 'merchant_upgrade_weapon') {
+      const upgradeStock = this.stock.find(s => s.id === 'merchant_upgrade_weapon');
+      if (upgradeStock) {
+        upgradeStock.price = Math.round(upgradeStock.basePrice * Math.pow(1.4, this.weaponUpgradePurchases));
+        upgradeStock.description = `Повышает редкость улучшения случайного оружия (куплено ${this.weaponUpgradePurchases}/5).`;
       }
     }
 
@@ -426,6 +432,7 @@ export class MerchantManager {
 
   public reset() {
     this.despawn();
+    this.visitCount = 0;
     this.weaponUpgradePurchases = 0;
     this.purchaseCount = 0;
     const cfg = BalanceManager.getGlobalConfig();

@@ -85,8 +85,8 @@ export const RIFT_ITEMS: Record<RiftItemId, RiftItemDef> = {
     rarity: 'common',
     icon: '🧪',
     color: '#94a3b8',
-    description: '+2.5 HP/сек пассивной регенерации.',
-    stackText: '+2.5 HP/сек за стак'
+    description: '+2.5 HP/сек и +0.5% от макс. HP/сек пассивной регенерации.',
+    stackText: '+2.5 HP/с и +0.5% макс. HP/с за стак'
   },
 
   // --- Uncommon (Необычные) ---
@@ -255,10 +255,13 @@ export const COMMON_ITEMS: RiftItemId[] = [
   'kinetic_injector',
   'nanite_plating',
   'adrenaline_dart',
+  'pulse_rounds',
   'health_vial'
 ];
 
 export const UNCOMMON_ITEMS: RiftItemId[] = [
+  'chain_lightning',
+  'plasma_detonator',
   'crit_visor',
   'aegis_exoskeleton',
   'bio_leech',
@@ -273,6 +276,8 @@ export const RARE_ITEMS: RiftItemId[] = [
 ];
 
 export const LEGENDARY_ITEMS: RiftItemId[] = [
+  'singularity_core',
+  'orbital_strike',
   'chronos_phylactery',
   'titan_heart',
   'void_catalyst'

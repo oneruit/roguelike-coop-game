@@ -5,7 +5,9 @@ export type PassiveBuffId =
   | 'stat_magnet'
   | 'stat_amulet'
   | 'stat_vest'
-  | 'stat_watch';
+  | 'stat_watch'
+  | 'stat_crit_damage'
+  | 'stat_crit_chance';
 
 export interface PassiveBuffDef {
   id: PassiveBuffId;
@@ -37,7 +39,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_magnet',
     title: 'Магнит',
     icon: '🧲',
-    description: '+10% к радиусу магнита (базовый 4м, с угасающей эффективностью до 50м на 300 ур., макс. 50м)'
+    description: '+10% к радиусу магнита (базовый 4м, с угасающей эффективностью до 50м на 100 ур., макс. 50м)'
   },
   stat_amulet: {
     id: 'stat_amulet',
@@ -55,7 +57,19 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_watch',
     title: 'Карманные Часы',
     icon: '⏱️',
-    description: '-1% к времени перезарядки оружий (с угасающей эффективностью до 30% на 300 ур., макс. 30%)'
+    description: '-1% к времени перезарядки оружий (с угасающей эффективностью до 50% на 200 ур., макс. 50%)'
+  },
+  stat_crit_damage: {
+    id: 'stat_crit_damage',
+    title: 'Заточка Клинка',
+    icon: '🗡️',
+    description: '+1% к критическому урону (складывается)'
+  },
+  stat_crit_chance: {
+    id: 'stat_crit_chance',
+    title: 'Прицел Разлома',
+    icon: '🎯',
+    description: '+0.05% к шансу критического удара (складывается)'
   }
 };
 
@@ -66,7 +80,9 @@ export const PASSIVE_BUFF_IDS: PassiveBuffId[] = [
   'stat_magnet',
   'stat_amulet',
   'stat_vest',
-  'stat_watch'
+  'stat_watch',
+  'stat_crit_damage',
+  'stat_crit_chance'
 ];
 
 /**

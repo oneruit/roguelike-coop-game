@@ -1132,7 +1132,9 @@ export class SessionDirector {
         amuletCount: (this.player as any).amuletCount || 0,
         vestCount: (this.player as any).vestCount || 0,
         watchCount: (this.player as any).watchCount || 0,
-        amplifierCount: (this.player as any).amplifierCount || 0
+        amplifierCount: (this.player as any).amplifierCount || 0,
+        critDamageCount: (this.player as any).critDamageCount || 0,
+        critChanceCount: (this.player as any).critChanceCount || 0
       },
       riftItems: riftItemsRecord,
       weapons: weaponsData
@@ -1177,6 +1179,8 @@ export class SessionDirector {
       (this.player as any).vestCount = data.passives.vestCount;
       (this.player as any).watchCount = data.passives.watchCount;
       (this.player as any).amplifierCount = data.passives.amplifierCount;
+      (this.player as any).critDamageCount = data.passives.critDamageCount || 0;
+      (this.player as any).critChanceCount = data.passives.critChanceCount || 0;
 
       // Recreate weapons
       this.player.weapons = [];

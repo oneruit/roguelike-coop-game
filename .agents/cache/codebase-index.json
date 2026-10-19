@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T21:59:46.350Z",
+  "generatedAt": "2026-10-19T00:03:10.848Z",
   "totalFiles": 186,
-  "totalSymbols": 1711,
+  "totalSymbols": 1713,
   "topLevelCount": 547,
-  "methodsCount": 1164,
+  "methodsCount": 1166,
   "entities": {
     "heroes": [
       {
@@ -472,7 +472,7 @@
         "id": "health_vial",
         "name": "Био-Инжектор",
         "icon": "🧪",
-        "description": "+2.5 HP/сек пассивной регенерации"
+        "description": "+2.5 HP/сек и +0.5% от макс. HP/сек пассивной регенерации"
       },
       {
         "id": "chain_lightning",
@@ -600,7 +600,7 @@
         "id": "stat_magnet",
         "name": "Магнит",
         "icon": "🧲",
-        "description": "+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м)"
+        "description": "+10% к радиусу притяжения кристаллов (базовый 4м, макс. 50м на 100 ур.)"
       },
       {
         "id": "stat_amulet",
@@ -618,7 +618,19 @@
         "id": "stat_watch",
         "name": "Карманные Часы",
         "icon": "⏱️",
-        "description": "-1% к времени перезарядки оружий (угасающая эффективность до 30% на 300 ур., макс. 30%)"
+        "description": "-1% к времени перезарядки оружий (угасающая эффективность до 50% на 200 ур., макс. 50%)"
+      },
+      {
+        "id": "stat_crit_damage",
+        "name": "Заточка Клинка",
+        "icon": "🗡️",
+        "description": "+1% к критическому урону (складывается)"
+      },
+      {
+        "id": "stat_crit_chance",
+        "name": "Прицел Разлома",
+        "icon": "🎯",
+        "description": "+0.05% к шансу критического удара (складывается)"
       }
     ]
   },
@@ -1839,7 +1851,7 @@
       "name": "BOSS_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 281
+      "line": 286
     },
     {
       "name": "BossAnimState",
@@ -3492,7 +3504,7 @@
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1025,
+      "line": 1043,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -3500,7 +3512,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1135,
+      "line": 1153,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -3549,7 +3561,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 914,
+      "line": 932,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -3558,7 +3570,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1012,
+      "line": 1030,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -3574,7 +3586,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 939,
+      "line": 957,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -3606,7 +3618,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 996,
+      "line": 1014,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -3614,7 +3626,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 983,
+      "line": 1001,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -3622,7 +3634,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 988,
+      "line": 1006,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -3630,7 +3642,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 725,
+      "line": 743,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -3639,7 +3651,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 992,
+      "line": 1010,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -3647,7 +3659,7 @@
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 868,
+      "line": 886,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -3655,7 +3667,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 967,
+      "line": 985,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -3663,7 +3675,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 651,
+      "line": 669,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -3672,7 +3684,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 588,
+      "line": 595,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -3681,7 +3693,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 761,
+      "line": 779,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -3697,7 +3709,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1107,
+      "line": 1125,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -4774,7 +4786,7 @@
       "name": "getItemsByGrade",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 286
+      "line": 291
     },
     {
       "name": "getMonsterColor",
@@ -4786,7 +4798,7 @@
       "name": "getPassiveBuffId",
       "kind": "function",
       "file": "game/src/drops/PassiveBuffs.ts",
-      "line": 76,
+      "line": 92,
       "doc": "Deterministically pick a passive buff ID based on seed (or random if no seed provided). Optionally excludes passives that are already maxed out for the player."
     },
     {
@@ -6221,7 +6233,7 @@
       "name": "InventoryScreen.getWeaponDetailedInventoryStats",
       "kind": "method",
       "file": "game/src/ui/screens/Inventory/InventoryScreen.ts",
-      "line": 640,
+      "line": 654,
       "className": "InventoryScreen",
       "methodName": "getWeaponDetailedInventoryStats"
     },
@@ -6600,7 +6612,7 @@
       "name": "LeaderboardManager.fetchTopScores",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 142,
+      "line": 143,
       "className": "LeaderboardManager",
       "methodName": "fetchTopScores"
     },
@@ -6608,7 +6620,7 @@
       "name": "LeaderboardManager.getDefaultEntries",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 300,
+      "line": 301,
       "className": "LeaderboardManager",
       "methodName": "getDefaultEntries"
     },
@@ -6616,7 +6628,7 @@
       "name": "LeaderboardManager.getLastRun",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 203,
+      "line": 204,
       "className": "LeaderboardManager",
       "methodName": "getLastRun"
     },
@@ -6624,7 +6636,7 @@
       "name": "LeaderboardManager.getLocalEntries",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 228,
+      "line": 229,
       "className": "LeaderboardManager",
       "methodName": "getLocalEntries"
     },
@@ -6632,7 +6644,7 @@
       "name": "LeaderboardManager.saveLastRun",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 214,
+      "line": 215,
       "className": "LeaderboardManager",
       "methodName": "saveLastRun"
     },
@@ -6640,7 +6652,7 @@
       "name": "LeaderboardManager.saveLocalEntry",
       "kind": "method",
       "file": "game/src/core/LeaderboardManager.ts",
-      "line": 261,
+      "line": 262,
       "className": "LeaderboardManager",
       "methodName": "saveLocalEntry"
     },
@@ -6700,7 +6712,7 @@
       "name": "LEGENDARY_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 275
+      "line": 278
     },
     {
       "name": "LevelUpModal",
@@ -7576,7 +7588,7 @@
       "name": "MerchantManager.buyItem",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 359,
+      "line": 362,
       "className": "MerchantManager",
       "methodName": "buyItem"
     },
@@ -7584,7 +7596,7 @@
       "name": "MerchantManager.createVisuals",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 68,
+      "line": 69,
       "className": "MerchantManager",
       "methodName": "createVisuals"
     },
@@ -7592,7 +7604,7 @@
       "name": "MerchantManager.despawn",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 196,
+      "line": 198,
       "className": "MerchantManager",
       "methodName": "despawn"
     },
@@ -7600,7 +7612,7 @@
       "name": "MerchantManager.generateStock",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 208,
+      "line": 210,
       "className": "MerchantManager",
       "methodName": "generateStock"
     },
@@ -7608,7 +7620,7 @@
       "name": "MerchantManager.getInteraction",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 330,
+      "line": 333,
       "className": "MerchantManager",
       "methodName": "getInteraction"
     },
@@ -7616,7 +7628,7 @@
       "name": "MerchantManager.isSold",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 347,
+      "line": 350,
       "className": "MerchantManager",
       "methodName": "isSold"
     },
@@ -7624,7 +7636,7 @@
       "name": "MerchantManager.reset",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 427,
+      "line": 433,
       "className": "MerchantManager",
       "methodName": "reset"
     },
@@ -7632,7 +7644,7 @@
       "name": "MerchantManager.spawn",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 172,
+      "line": 173,
       "className": "MerchantManager",
       "methodName": "spawn"
     },
@@ -7640,7 +7652,7 @@
       "name": "MerchantManager.update",
       "kind": "method",
       "file": "game/src/world/MerchantManager.ts",
-      "line": 132,
+      "line": 133,
       "className": "MerchantManager",
       "methodName": "update"
     },
@@ -8284,13 +8296,13 @@
       "name": "PASSIVE_BUFF_IDS",
       "kind": "const",
       "file": "game/src/drops/PassiveBuffs.ts",
-      "line": 62
+      "line": 76
     },
     {
       "name": "PASSIVE_BUFFS",
       "kind": "const",
       "file": "game/src/drops/PassiveBuffs.ts",
-      "line": 17
+      "line": 19
     },
     {
       "name": "PassiveBalanceConfig",
@@ -8302,7 +8314,7 @@
       "name": "PassiveBuffDef",
       "kind": "interface",
       "file": "game/src/drops/PassiveBuffs.ts",
-      "line": 10
+      "line": 12
     },
     {
       "name": "PassiveBuffId",
@@ -8326,7 +8338,7 @@
       "name": "Player.addAmplifierBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 673,
+      "line": 679,
       "className": "Player",
       "methodName": "addAmplifierBonus"
     },
@@ -8334,7 +8346,7 @@
       "name": "Player.addBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 547,
+      "line": 551,
       "className": "Player",
       "methodName": "addBuff"
     },
@@ -8342,15 +8354,31 @@
       "name": "Player.addCooldownReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 692,
+      "line": 698,
       "className": "Player",
       "methodName": "addCooldownReduction"
+    },
+    {
+      "name": "Player.addCritChanceBonus",
+      "kind": "method",
+      "file": "game/src/entities/Player.ts",
+      "line": 719,
+      "className": "Player",
+      "methodName": "addCritChanceBonus"
+    },
+    {
+      "name": "Player.addCritDamageBonus",
+      "kind": "method",
+      "file": "game/src/entities/Player.ts",
+      "line": 714,
+      "className": "Player",
+      "methodName": "addCritDamageBonus"
     },
     {
       "name": "Player.addDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 690,
+      "line": 696,
       "className": "Player",
       "methodName": "addDamageReduction"
     },
@@ -8358,7 +8386,7 @@
       "name": "Player.addFlaskBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 699,
+      "line": 705,
       "className": "Player",
       "methodName": "addFlaskBonus"
     },
@@ -8366,7 +8394,7 @@
       "name": "Player.addHpRegen",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 689,
+      "line": 695,
       "className": "Player",
       "methodName": "addHpRegen"
     },
@@ -8374,7 +8402,7 @@
       "name": "Player.addLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1208,
+      "line": 1236,
       "className": "Player",
       "methodName": "addLevel"
     },
@@ -8382,7 +8410,7 @@
       "name": "Player.addMagnetBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 706,
+      "line": 712,
       "className": "Player",
       "methodName": "addMagnetBonus"
     },
@@ -8390,7 +8418,7 @@
       "name": "Player.addMightElixirBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 674,
+      "line": 680,
       "className": "Player",
       "methodName": "addMightElixirBonus"
     },
@@ -8398,7 +8426,7 @@
       "name": "Player.addRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 559,
+      "line": 563,
       "className": "Player",
       "methodName": "addRiftItem"
     },
@@ -8406,7 +8434,7 @@
       "name": "Player.addSpeedBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 688,
+      "line": 694,
       "className": "Player",
       "methodName": "addSpeedBonus"
     },
@@ -8414,7 +8442,7 @@
       "name": "Player.addSpeedBootsBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 687,
+      "line": 693,
       "className": "Player",
       "methodName": "addSpeedBootsBonus"
     },
@@ -8422,7 +8450,7 @@
       "name": "Player.applyBurn",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 130,
+      "line": 132,
       "className": "Player",
       "methodName": "applyBurn"
     },
@@ -8430,7 +8458,7 @@
       "name": "Player.applyCharacterPerks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 478,
+      "line": 480,
       "className": "Player",
       "methodName": "applyCharacterPerks"
     },
@@ -8438,7 +8466,7 @@
       "name": "Player.applyPassiveBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 750,
+      "line": 772,
       "className": "Player",
       "methodName": "applyPassiveBuff"
     },
@@ -8446,7 +8474,7 @@
       "name": "Player.applyShock",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 135,
+      "line": 137,
       "className": "Player",
       "methodName": "applyShock"
     },
@@ -8454,7 +8482,7 @@
       "name": "Player.applySlow",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 140,
+      "line": 142,
       "className": "Player",
       "methodName": "applySlow"
     },
@@ -8462,7 +8490,7 @@
       "name": "Player.areAllWeaponsMaxed",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1169,
+      "line": 1197,
       "className": "Player",
       "methodName": "areAllWeaponsMaxed"
     },
@@ -8470,7 +8498,7 @@
       "name": "Player.calculateXpToNextLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1204,
+      "line": 1232,
       "className": "Player",
       "methodName": "calculateXpToNextLevel"
     },
@@ -8478,7 +8506,7 @@
       "name": "Player.clearWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 465,
+      "line": 467,
       "className": "Player",
       "methodName": "clearWeapons"
     },
@@ -8486,7 +8514,7 @@
       "name": "Player.destroy",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1308,
+      "line": 1338,
       "className": "Player",
       "methodName": "destroy"
     },
@@ -8494,7 +8522,7 @@
       "name": "Player.fullHeal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1138,
+      "line": 1166,
       "className": "Player",
       "methodName": "fullHeal"
     },
@@ -8502,7 +8530,7 @@
       "name": "Player.gainXp",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1216,
+      "line": 1244,
       "className": "Player",
       "methodName": "gainXp",
       "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
@@ -8511,7 +8539,7 @@
       "name": "Player.getAwakenedCap",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1165,
+      "line": 1193,
       "className": "Player",
       "methodName": "getAwakenedCap"
     },
@@ -8519,7 +8547,7 @@
       "name": "Player.getBuffsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1341,
+      "line": 1371,
       "className": "Player",
       "methodName": "getBuffsNetState"
     },
@@ -8527,7 +8555,7 @@
       "name": "Player.getCharacterGeometry",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 214,
+      "line": 216,
       "className": "Player",
       "methodName": "getCharacterGeometry"
     },
@@ -8535,7 +8563,7 @@
       "name": "Player.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 660,
+      "line": 666,
       "className": "Player",
       "methodName": "getDamageMultiplier",
       "doc": "Calculates effective damage multiplier for a given weapon. Per rule: initial hero damage bonus applies ONLY to their starting weapon! Other weapons receive 1.0  general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst)."
@@ -8544,7 +8572,7 @@
       "name": "Player.getItemStacks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 555,
+      "line": 559,
       "className": "Player",
       "methodName": "getItemStacks"
     },
@@ -8552,7 +8580,7 @@
       "name": "Player.getNaniteDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 713,
+      "line": 729,
       "className": "Player",
       "methodName": "getNaniteDamageReduction",
       "doc": "Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level 1 gives 5%, diminishing returns up to 60% at level 20, capped at 60%."
@@ -8561,7 +8589,7 @@
       "name": "Player.getWeaponsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1332,
+      "line": 1362,
       "className": "Player",
       "methodName": "getWeaponsNetState"
     },
@@ -8569,7 +8597,7 @@
       "name": "Player.giveAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1174,
+      "line": 1202,
       "className": "Player",
       "methodName": "giveAllWeapons"
     },
@@ -8577,7 +8605,7 @@
       "name": "Player.hasBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 551,
+      "line": 555,
       "className": "Player",
       "methodName": "hasBuff"
     },
@@ -8585,7 +8613,7 @@
       "name": "Player.heal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1133,
+      "line": 1161,
       "className": "Player",
       "methodName": "heal"
     },
@@ -8593,7 +8621,7 @@
       "name": "Player.isAnimatedCharacter",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 359,
+      "line": 361,
       "className": "Player",
       "methodName": "isAnimatedCharacter"
     },
@@ -8601,7 +8629,7 @@
       "name": "Player.isStatMaxedForItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 719,
+      "line": 735,
       "className": "Player",
       "methodName": "isStatMaxedForItem"
     },
@@ -8609,7 +8637,7 @@
       "name": "Player.loadCharacterTextures",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 363,
+      "line": 365,
       "className": "Player",
       "methodName": "loadCharacterTextures"
     },
@@ -8617,7 +8645,7 @@
       "name": "Player.maxAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1196,
+      "line": 1224,
       "className": "Player",
       "methodName": "maxAllWeapons"
     },
@@ -8625,7 +8653,7 @@
       "name": "Player.recalculateStats",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 604,
+      "line": 608,
       "className": "Player",
       "methodName": "recalculateStats"
     },
@@ -8633,7 +8661,7 @@
       "name": "Player.recordWeaponDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 676,
+      "line": 682,
       "className": "Player",
       "methodName": "recordWeaponDamage"
     },
@@ -8641,7 +8669,7 @@
       "name": "Player.redrawOverhead",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1282,
+      "line": 1312,
       "className": "Player",
       "methodName": "redrawOverhead"
     },
@@ -8649,7 +8677,7 @@
       "name": "Player.removeRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 570,
+      "line": 574,
       "className": "Player",
       "methodName": "removeRiftItem"
     },
@@ -8657,7 +8685,7 @@
       "name": "Player.reset",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1233,
+      "line": 1261,
       "className": "Player",
       "methodName": "reset"
     },
@@ -8665,7 +8693,7 @@
       "name": "Player.revive",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1114,
+      "line": 1142,
       "className": "Player",
       "methodName": "revive"
     },
@@ -8673,7 +8701,7 @@
       "name": "Player.setCharacter",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 400,
+      "line": 402,
       "className": "Player",
       "methodName": "setCharacter"
     },
@@ -8681,7 +8709,7 @@
       "name": "Player.setDirection",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 424,
+      "line": 426,
       "className": "Player",
       "methodName": "setDirection"
     },
@@ -8689,7 +8717,7 @@
       "name": "Player.setupAuras",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 303,
+      "line": 305,
       "className": "Player",
       "methodName": "setupAuras"
     },
@@ -8697,7 +8725,7 @@
       "name": "Player.syncBalance",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 525,
+      "line": 529,
       "className": "Player",
       "methodName": "syncBalance"
     },
@@ -8705,7 +8733,7 @@
       "name": "Player.takeDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1039,
+      "line": 1067,
       "className": "Player",
       "methodName": "takeDamage"
     },
@@ -8713,7 +8741,7 @@
       "name": "Player.toggleGodMode",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1142,
+      "line": 1170,
       "className": "Player",
       "methodName": "toggleGodMode"
     },
@@ -8721,7 +8749,7 @@
       "name": "Player.toggleOneHitKill",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1157,
+      "line": 1185,
       "className": "Player",
       "methodName": "toggleOneHitKill"
     },
@@ -8729,7 +8757,7 @@
       "name": "Player.toggleSpeedCheat",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1151,
+      "line": 1179,
       "className": "Player",
       "methodName": "toggleSpeedCheat"
     },
@@ -8737,7 +8765,7 @@
       "name": "Player.triggerAttackAnim",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 436,
+      "line": 438,
       "className": "Player",
       "methodName": "triggerAttackAnim"
     },
@@ -8745,7 +8773,7 @@
       "name": "Player.triggerDash",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 586,
+      "line": 590,
       "className": "Player",
       "methodName": "triggerDash"
     },
@@ -8753,7 +8781,7 @@
       "name": "Player.updateAnimatedCharacterAnimation",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1022,
+      "line": 1050,
       "className": "Player",
       "methodName": "updateAnimatedCharacterAnimation"
     },
@@ -8761,7 +8789,7 @@
       "name": "Player.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1361,
+      "line": 1391,
       "className": "Player",
       "methodName": "updateVisuals",
       "doc": "Smoothly interpolates the player mesh position between the previous and current fixed simulation states. Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+)."
@@ -9779,7 +9807,7 @@
       "name": "RARE_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 268
+      "line": 271
     },
     {
       "name": "ReactUIRoot",
@@ -10162,21 +10190,21 @@
       "name": "rollChestDropPair",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 322,
+      "line": 327,
       "doc": "Rolls two distinct item drops from a chest (no duplicates allowed). Filters out items whose parameters are already maxed out for the player."
     },
     {
       "name": "rollRiftItem",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 366,
+      "line": 371,
       "doc": "Legacy weights roller kept for backwards compatibility."
     },
     {
       "name": "rollRiftItemByStage",
       "kind": "function",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 299,
+      "line": 304,
       "doc": "Rolls an item drop based on stage/biome probabilities. Filters out items whose parameters are already maxed out for the player."
     },
     {
@@ -10360,13 +10388,13 @@
       "name": "RunSaveManager",
       "kind": "class",
       "file": "game/src/core/RunSaveManager.ts",
-      "line": 45
+      "line": 47
     },
     {
       "name": "RunSaveManager.clearSavedRun",
       "kind": "method",
       "file": "game/src/core/RunSaveManager.ts",
-      "line": 98,
+      "line": 100,
       "className": "RunSaveManager",
       "methodName": "clearSavedRun"
     },
@@ -10374,7 +10402,7 @@
       "name": "RunSaveManager.getSavedRunInfo",
       "kind": "method",
       "file": "game/src/core/RunSaveManager.ts",
-      "line": 58,
+      "line": 60,
       "className": "RunSaveManager",
       "methodName": "getSavedRunInfo"
     },
@@ -10382,7 +10410,7 @@
       "name": "RunSaveManager.hasSavedRun",
       "kind": "method",
       "file": "game/src/core/RunSaveManager.ts",
-      "line": 46,
+      "line": 48,
       "className": "RunSaveManager",
       "methodName": "hasSavedRun"
     },
@@ -10390,7 +10418,7 @@
       "name": "RunSaveManager.loadRun",
       "kind": "method",
       "file": "game/src/core/RunSaveManager.ts",
-      "line": 86,
+      "line": 88,
       "className": "RunSaveManager",
       "methodName": "loadRun"
     },
@@ -10398,7 +10426,7 @@
       "name": "RunSaveManager.saveRun",
       "kind": "method",
       "file": "game/src/core/RunSaveManager.ts",
-      "line": 75,
+      "line": 77,
       "className": "RunSaveManager",
       "methodName": "saveRun"
     },
@@ -10726,7 +10754,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1151,
+      "line": 1153,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -12457,7 +12485,7 @@
       "name": "SupabaseService.updateLeaderboardEntry",
       "kind": "method",
       "file": "admin/src/api/supabaseService.ts",
-      "line": 694,
+      "line": 693,
       "className": "SupabaseService",
       "methodName": "updateLeaderboardEntry"
     },
@@ -13043,7 +13071,7 @@
       "name": "UNCOMMON_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
-      "line": 261
+      "line": 262
     },
     {
       "name": "UNIQUE_CHARACTERS",

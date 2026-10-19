@@ -107,6 +107,8 @@ export class Player {
   public vestCount: number = 0;
   public watchCount: number = 0;
   public mightElixirCount: number = 0;
+  public critDamageCount: number = 0;
+  public critChanceCount: number = 0;
   private scene: Scene;
 
   // The Rift: Item Inventory & Economy
@@ -518,6 +520,8 @@ export class Player {
     this.vestCount = 0;
     this.watchCount = 0;
     this.mightElixirCount = 0;
+    this.critDamageCount = 0;
+    this.critChanceCount = 0;
     this.pickupRadius = BalanceManager.getGlobalConfig()?.basePickupRadius ?? 4.0;
     this.recalculateStats();
   }
@@ -604,7 +608,7 @@ export class Player {
   public recalculateStats() {
     const metaBonuses = MetaProgression.getInstance().getBonuses();
     const stats = PlayerStats.recalculate(
-      this.baseMaxHp,
+      this.maxHp,
       this.baseSpeed,
       this.baseDamageMultiplier,
       this.activeBuffs,
@@ -617,7 +621,9 @@ export class Player {
         magnetCount: this.magnetCount,
         amuletCount: this.amuletCount,
         vestCount: this.vestCount,
-        watchCount: this.watchCount
+        watchCount: this.watchCount,
+        critDamageCount: this.critDamageCount,
+        critChanceCount: this.critChanceCount
       },
       {
         isSpeedCheat: this.isSpeedCheat,
@@ -690,7 +696,7 @@ export class Player {
   public addDamageReduction(_pct: number = 0.10) { this.vestCount++; this.recalculateStats(); }
 
   public addCooldownReduction(_pct: number = 0.01) {
-    if (this.watchCount < 300) {
+    if (this.watchCount < 200) {
       this.watchCount++;
       this.recalculateStats();
     }
@@ -704,6 +710,16 @@ export class Player {
   }
 
   public addMagnetBonus(_multiplier: number = 1.10) { this.magnetCount++; this.recalculateStats(); }
+
+  public addCritDamageBonus() {
+    this.critDamageCount++;
+    this.recalculateStats();
+  }
+
+  public addCritChanceBonus() {
+    this.critChanceCount++;
+    this.recalculateStats();
+  }
 
 
   /**
@@ -733,7 +749,7 @@ export class Player {
       return this.critDamage >= 10.0;
     }
     if (itemId === 'stat_watch') {
-      return this.watchCount >= 300 || (this.watchCount > 0 && 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)) >= 0.30);
+      return this.watchCount >= 200 || (this.watchCount > 0 && 0.01 * Math.pow(this.watchCount, Math.log(50) / Math.log(200)) >= 0.50);
     }
     if (itemId === 'stat_vest') {
       return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
@@ -742,7 +758,13 @@ export class Player {
       return this.passiveSpeedMultiplier >= 3.0 || this.speedBootsCount >= 300;
     }
     if (itemId === 'stat_magnet') {
-      return this.pickupRadius >= 50.0 || this.magnetCount >= 300;
+      return this.pickupRadius >= 50.0 || this.magnetCount >= 100;
+    }
+    if (itemId === 'stat_crit_damage') {
+      return this.critDamage >= 10.0;
+    }
+    if (itemId === 'stat_crit_chance') {
+      return this.critChance >= 1.0;
     }
     return false;
   }
@@ -760,7 +782,7 @@ export class Player {
         return `🍶 +30 Макс HP & Исцеление (${this.maxHp} HP)`;
       case 'stat_magnet':
         this.addMagnetBonus(1.10);
-        return `🧲 +10% Радиус магнита (${this.pickupRadius.toFixed(1)}м / макс. 50м)`;
+        return `🧲 +10% Радиус магнита (${this.pickupRadius.toFixed(1)}м / макс. 50м на 100 ур.)`;
       case 'stat_amulet':
         this.addHpRegen(1.0);
         return `🧿 +1 HP/с Реген (+${this.passiveHpRegen.toFixed(1)}/с)`;
@@ -769,8 +791,14 @@ export class Player {
         return `🦺 -${(this.passiveDamageReduction * 100).toFixed(1)}% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
       case 'stat_watch':
         this.addCooldownReduction(0.01);
-        const cdrPct = Math.round((this.watchCount <= 0 ? 0 : Math.min(0.30, 0.01 * Math.pow(this.watchCount, Math.log(30) / Math.log(300)))) * 100);
-        return `⏱️ -1% КД (-${cdrPct}% / макс. 30%)`;
+        const cdrPct = Math.round((this.watchCount <= 0 ? 0 : Math.min(0.50, 0.01 * Math.pow(this.watchCount, Math.log(50) / Math.log(200)))) * 100);
+        return `⏱️ -1% КД (-${cdrPct}% / макс. 50%)`;
+      case 'stat_crit_damage':
+        this.addCritDamageBonus();
+        return `🗡️ +1% Крит. урон (+${Math.round(this.critDamage * 100)}%)`;
+      case 'stat_crit_chance':
+        this.addCritChanceBonus();
+        return `🎯 +0.05% Шанс крита (${(this.critChance * 100).toFixed(2)}%)`;
     }
   }
 
@@ -1254,6 +1282,8 @@ export class Player {
     this.vestCount = 0;
     this.watchCount = 0;
     this.mightElixirCount = 0;
+    this.critDamageCount = 0;
+    this.critChanceCount = 0;
     for (const w of this.weapons) {
       w.damageDealt = 0;
     }

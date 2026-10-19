@@ -663,15 +663,14 @@ export class SupabaseService {
     if (this.client) {
       try {
         const rows = demo.map((e) => ({
-          player_id: e.playerId,
-          player_name: e.playerName,
-          hero_id: e.heroId,
-          stage: e.stage,
-          survival_time_sec: e.survivalTimeSec,
+          user_id: e.playerId,
+          display_name: e.playerName,
+          hero: e.heroId,
+          stage_reached: e.stage,
+          survival_time: Math.round(e.survivalTimeSec),
           kills: e.kills,
-          credits: e.credits,
-          score: e.score,
-          is_victory: e.isVictory ?? false
+          crystals_collected: e.credits,
+          score: e.score
         }));
 
         const { error } = await this.client.from('leaderboards').insert(rows);
@@ -698,14 +697,13 @@ export class SupabaseService {
     if (this.client && id) {
       try {
         const dbUpdates: any = {};
-        if (updates.playerName !== undefined) dbUpdates.player_name = updates.playerName;
+        if (updates.playerName !== undefined) dbUpdates.display_name = updates.playerName;
         if (updates.score !== undefined) dbUpdates.score = updates.score;
-        if (updates.stage !== undefined) dbUpdates.stage = updates.stage;
+        if (updates.stage !== undefined) dbUpdates.stage_reached = updates.stage;
         if (updates.kills !== undefined) dbUpdates.kills = updates.kills;
-        if (updates.heroId !== undefined) dbUpdates.hero_id = updates.heroId;
-        if (updates.credits !== undefined) dbUpdates.credits = updates.credits;
-        if (updates.survivalTimeSec !== undefined) dbUpdates.survival_time_sec = updates.survivalTimeSec;
-        if (updates.isVictory !== undefined) dbUpdates.is_victory = updates.isVictory;
+        if (updates.heroId !== undefined) dbUpdates.hero = updates.heroId;
+        if (updates.credits !== undefined) dbUpdates.crystals_collected = updates.credits;
+        if (updates.survivalTimeSec !== undefined) dbUpdates.survival_time = Math.round(updates.survivalTimeSec);
 
         const { error } = await this.client.from('leaderboards').update(dbUpdates).eq('id', id);
         if (!error) success = true;

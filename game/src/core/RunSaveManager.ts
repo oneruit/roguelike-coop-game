@@ -37,6 +37,8 @@ export interface SavedRunData {
     vestCount: number;
     watchCount: number;
     amplifierCount: number;
+    critDamageCount?: number;
+    critChanceCount?: number;
   };
   riftItems: Record<string, number>;
   weapons: SavedWeaponData[];

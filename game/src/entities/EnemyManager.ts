@@ -319,8 +319,10 @@ export class EnemyManager {
   public getLateGameDamageResistance(isBoss: boolean): number {
     const minute = this.gameTime / 60;
     if (isBoss) {
-      // Bosses have 15% base damage resistance, scaling up to 75% at 60+ min
-      return Math.min(0.75, 0.15 + Math.max(0, minute - 15) * 0.013);
+      const stageBonus = Math.max(0, this.currentStage - 1) * 0.05;
+      const mPost = Math.max(0, minute - 15);
+      // Bosses have 35% base damage resistance from 15m, scaling up to 85% at 60+ min
+      return Math.min(0.85, 0.35 + mPost * 0.015 + stageBonus);
     }
     // Normal mobs have 0% damage resistance before 20 min, scaling up to 55% at 60+ min
     return Math.min(0.55, Math.max(0, minute - 20) * 0.012);
@@ -500,37 +502,42 @@ export class EnemyManager {
 
         if (enemy.isBoss) {
           if (!enemy.isImmortal) {
-            // Boss drops red gems scaling with boss tier
+            // Boss drops red gems scaling with boss tier & stage
             const tier = Math.max(1, Math.floor(this.gameTime / 300));
-            const gemCount = 5 + tier * 2;
+            const gemCount = 10 + tier * 2;
+            const stageMultiplier = Math.pow(1.25, Math.max(0, this.currentStage - 1));
+            const bossGemXp = Math.round((250 + tier * 180) * stageMultiplier);
+
             for (let g = 0; g < gemCount; g++) {
               const offset = new Vector3(
-                (Math.random() - 0.5) * 3.5,
+                (Math.random() - 0.5) * 4.0,
                 0,
-                (Math.random() - 0.5) * 3.5
+                (Math.random() - 0.5) * 4.0
               );
-              this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
+              const gem = this.dropManager.spawnGem(enemy.position.clone().add(offset), 'red');
+              if (gem) {
+                gem.xpValue = bossGemXp;
+              }
             }
-            // Boss drops gold passive crystal from global balance config
-            const globalCfg = BalanceManager.getGlobalConfig();
-            const bossGoldChance = globalCfg?.goldGemChanceBoss ?? 0.40;
-            if (Math.random() < bossGoldChance) {
+            // Boss drops 2 guaranteed gold passive crystals
+            const goldCount = 2;
+            for (let gp = 0; gp < goldCount; gp++) {
               const pOffset = new Vector3(
-                (Math.random() - 0.5) * 2.0,
+                (Math.random() - 0.5) * 2.5,
                 0,
-                (Math.random() - 0.5) * 2.0
+                (Math.random() - 0.5) * 2.5
               );
               this.dropManager.spawnGem(enemy.position.clone().add(pOffset), 'gold');
             }
 
-            // Boss drops Rift Crystals (3-4 crystals + meta bonus)
+            // Boss drops Rift Crystals (5-7 crystals + meta bonus)
             const metaBonus = MetaProgression.getInstance().getBonuses();
-            const crystalDropCount = Math.max(1, Math.round((3 + Math.floor(Math.random() * 2)) * (1 + metaBonus.crystalDropBonus)));
+            const crystalDropCount = Math.max(1, Math.round((5 + Math.floor(Math.random() * 3)) * (1 + metaBonus.crystalDropBonus)));
             for (let c = 0; c < crystalDropCount; c++) {
               const cOffset = new Vector3(
-                (Math.random() - 0.5) * 3.2,
+                (Math.random() - 0.5) * 3.5,
                 0,
-                (Math.random() - 0.5) * 3.2
+                (Math.random() - 0.5) * 3.5
               );
               this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
             }
@@ -597,30 +604,38 @@ export class EnemyManager {
     const baseHp = this.configs.boss.hp; // 7600
     const baseDmg = this.configs.boss.damage; // 90
     const baseSpd = this.configs.boss.speed; // 2.4
+    const stageMult = Math.pow(1.50, Math.max(0, this.currentStage - 1));
 
-    // Tier 1 (5m): 7,600 HP, 90 dmg (Кровавый демон)
-    // Tier 2 (10m): 28,000 HP, 130 dmg (Древняя трехглавая гидра)
-    // Tier 3 (15m): ~50,000 HP, 210 dmg
-    // Tier 4 (20m): ~84,000 HP, 290 dmg
-    // Tier 5 (25m): ~130,000 HP, 380 dmg
+    // Tier 1 (5m): ~12,000 HP, 90 dmg (Кровавый демон)
+    // Tier 2 (10m): Hydra
+    // Tier 3 (15m): ~350,000 * stageMult HP (Stage 4: ~1.2M HP)
+    // Tier 4 (20m): ~900,000 * stageMult HP (Stage 4: ~3M HP)
+    // Tier 5 (25m): ~2,200,000 * stageMult HP (Stage 4: ~7.4M HP)
+    // Tier 6 (30m): ~5,000,000 * stageMult HP (Stage 4: ~16.8M HP)
+    // Tier 8 (40m): ~18,000,000 * stageMult HP (Stage 4: ~60M HP)
+    // Tier 12 (60m): ~65,000,000 * stageMult HP (Stage 4: ~220M HP)
     let bossConfig: EnemyConfig;
     if (tier === 2) {
       bossConfig = {
         ...this.configs.hydra,
         name: 'Древняя трехглавая гидра',
-        hp: this.configs.hydra.hp,
-        damage: this.configs.hydra.damage,
+        hp: Math.round(this.configs.hydra.hp * stageMult),
+        damage: Math.round(this.configs.hydra.damage * stageMult),
         speed: 2.3
       };
     } else {
-      const baseTierHp = baseHp * (1 + ((tier - 1) * 2.2 + Math.pow(tier - 1, 1.6) * 1.0) * 1.5);
-      const baseTierDmg = baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
       const tierPost = Math.max(0, tier - 3);
-      const postHpMult = 1 + Math.pow(tierPost / 1.5, 2.0) * 0.8;
-      const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
+      let calculatedHp: number;
+      if (tier < 3) {
+        calculatedHp = baseHp * (1 + (tier - 1) * 2.2);
+      } else {
+        calculatedHp = 350000 * Math.pow(2.2, tierPost) * (1 + tierPost * 0.35);
+      }
+      const tierHp = Math.round(calculatedHp * stageMult);
 
-      const tierHp = Math.round(baseTierHp * postHpMult);
-      const tierDmg = Math.round(baseTierDmg * postDmgMult);
+      const baseTierDmg = baseDmg * (1 + ((tier - 1) * 0.6 + Math.pow(tier - 1, 1.3) * 0.2) * 1.5);
+      const postDmgMult = 1 + Math.pow(tierPost / 2.0, 1.8) * 0.5;
+      const tierDmg = Math.round(baseTierDmg * postDmgMult * stageMult);
       const tierSpd = Number((Math.min(3.8, baseSpd + (tier - 1) * 0.18 * 1.5 + tierPost * 0.1)).toFixed(2));
 
       bossConfig = {
@@ -633,6 +648,9 @@ export class EnemyManager {
     }
 
     const boss = this.registerEnemy(new Enemy(bossConfig, spawnPos));
+    boss.ccResistance = this.getLateGameCcResistance(true);
+    boss.damageResistance = this.getLateGameDamageResistance(true);
+    boss.knockbackResistance = this.getKnockbackResistance(true);
     this.enemies.push(boss);
     if (!this.isDeclarative) {
       this.scene.add(boss.mesh);
