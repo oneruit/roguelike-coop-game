@@ -24,7 +24,10 @@ export type EnemyType =
   | 'bison'
   | 'boss'
   | 'hydra'
-  | 'spore_queen';
+  | 'spore_queen'
+  | 'stage5_boss';
+
+export type EliteAffix = 'blazing' | 'glacial' | 'overloading' | 'juggernaut' | 'vortex' | 'volatile' | 'avenger';
 
 export interface ActiveBuff {
   type: BuffType;

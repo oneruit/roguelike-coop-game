@@ -148,6 +148,9 @@ export class RiftTeleporter {
   }
 
   public update(dt: number, playerPositions: Vector3[]): RiftUpdateResult {
+    if (!this.mesh.visible) {
+      return { justCompleted: false, justTouched: false };
+    }
     this.animTimer += dt;
 
     // Check discovery radius if not yet discovered

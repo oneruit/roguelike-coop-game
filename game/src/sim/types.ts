@@ -7,7 +7,8 @@ import {
   GemType,
   EnemyType,
   ActiveBuff,
-  PlayerStats
+  PlayerStats,
+  EliteAffix
 } from '../shared/types';
 
 export type {
@@ -18,7 +19,8 @@ export type {
   GemType,
   EnemyType,
   ActiveBuff,
-  PlayerStats
+  PlayerStats,
+  EliteAffix
 };
 
 export interface SimPlayerInput {
@@ -67,7 +69,7 @@ export interface SimEnemyState {
   dir: SpriteDirection;
   isBoss: boolean;
   isImmortal?: boolean;
-  eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  eliteAffix?: EliteAffix;
 }
 
 export interface SimProjectileState {

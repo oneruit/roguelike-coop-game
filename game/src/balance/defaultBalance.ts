@@ -390,6 +390,14 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       speed: 2.7,
       damage: 90,
       description: 'Древняя споровая владычица ксено-леса 3 тира'
+    },
+    stage5_boss: {
+      id: 'stage5_boss',
+      name: 'Древний Титан Святилища',
+      hp: 130000,
+      speed: 3.2,
+      damage: 95,
+      description: 'Древний хранитель рунического святилища 5 тира'
     }
   },
   passives: {

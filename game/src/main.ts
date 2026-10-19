@@ -86,6 +86,24 @@ class Game {
     this.damageNumbers = new DamageNumberManager();
     this.dropManager = new DropManager(this.engine.scene);
     this.enemyManager = new EnemyManager(this.engine.scene, this.dropManager, this.damageNumbers);
+    this.enemyManager.camera = this.engine.camera;
+    this.enemyManager.onVolatileRingTrigger = (pos, radius, damage) => {
+      const dist = this.player.position.distanceTo(pos);
+      if (dist <= radius && this.player.isAlive && !this.player.isDowned) {
+        this.player.takeDamage(damage);
+        this.damageNumbers.spawnDamage(this.player.position, damage, false, this.engine.camera, false, 1, 1, false);
+      }
+    };
+    this.enemyManager.onVortexPullTrigger = (pos, radius, pullSpeed) => {
+      const diffX = pos.x - this.player.position.x;
+      const diffZ = pos.z - this.player.position.z;
+      const dist = Math.sqrt(diffX * diffX + diffZ * diffZ);
+      if (dist <= radius && dist > 0.5 && this.player.isAlive && !this.player.isDowned) {
+        const pull = Math.min(dist - 0.5, pullSpeed * (1 / 60));
+        this.player.position.x += (diffX / dist) * pull;
+        this.player.position.z += (diffZ / dist) * pull;
+      }
+    };
     this.player = new Player(this.engine.scene, 'ronin');
     this.net = new NetworkManager();
     UpdateNotifier.getInstance().init();
@@ -557,6 +575,11 @@ class Game {
       if (this.net.role === 'host') {
         this.netCoordinator.pendingNetworkEvents.push({ type: 'boss_defeat' });
       }
+      if (this.biomeManager.stageNumber >= 5) {
+        setTimeout(() => {
+          this.sessionDirector.triggerGameOver(true);
+        }, 3000);
+      }
     };
 
     this.enemyManager.onBleedDamage = (enemy, dmg, isDead, hitter, sourceWeaponId) => {
@@ -783,6 +806,17 @@ class Game {
     this.mapManager.update(dt);
 
     // 8. The Rift: Teleporter, Chests, Prompts
+    // Stage 4 Secret Rift Teleporter: reveals only after all chests on stage 4 are opened
+    if (this.biomeManager.stageNumber === 4 && !this.riftTeleporter.mesh.visible) {
+      const allOpened = this.chestManager.chests.length > 0 && this.chestManager.chests.every(c => c.isOpened);
+      if (allOpened) {
+        this.riftTeleporter.mesh.visible = true;
+        SulfurSmokeManager.spawn(this.engine.scene, this.riftTeleporter.position);
+        SoundManager.playTeleporterActivate?.();
+        this.hud.triggerAltarNotification('ПРОСТРАНСТВЕННЫЙ РАЗЛОМ', 'В глубине сектора пробудилась древняя аномалия...', '🌀', '#38bdf8');
+      }
+    }
+
     if (this.riftTeleporter.state === 'CHARGING') {
       if (!this.enemyManager.activeBoss || !this.enemyManager.activeBoss.isAlive) {
         this.riftTeleporter.isBossDefeated = true;

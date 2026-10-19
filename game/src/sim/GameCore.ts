@@ -19,7 +19,8 @@ import {
   SimAltarState,
   SimEvent,
   SimSnapshot,
-  SimPlayerStats
+  SimPlayerStats,
+  EliteAffix
 } from './types';
 import {
   SimWeapon,
@@ -48,7 +49,7 @@ export interface SimEnemyConfig {
   gemType: GemType;
   isBoss?: boolean;
   isImmortal?: boolean;
-  eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  eliteAffix?: EliteAffix;
 }
 
 export class SimPlayerInternal {
@@ -159,7 +160,7 @@ export class SimEnemyInternal {
   public gemType: GemType;
   public isBoss: boolean;
   public isImmortal: boolean;
-  public eliteAffix?: 'blazing' | 'glacial' | 'overloading';
+  public eliteAffix?: EliteAffix;
   public isAlive: boolean = true;
   public currentDir: SpriteDirection = 'front';
   public knockback: SimVec3 = new SimVec3();
@@ -354,7 +355,8 @@ export class GameCore {
     bison: { type: 'bison', name: DEFAULT_BALANCE.monsters.bison.name, hp: DEFAULT_BALANCE.monsters.bison.hp, speed: DEFAULT_BALANCE.monsters.bison.speed, damage: DEFAULT_BALANCE.monsters.bison.damage, width: 3.6, height: 3.0, gemType: DEFAULT_BALANCE.monsters.bison.gemType || 'red' },
     boss: { type: 'boss', name: DEFAULT_BALANCE.bosses.boss.name, hp: DEFAULT_BALANCE.bosses.boss.hp, speed: DEFAULT_BALANCE.bosses.boss.speed, damage: DEFAULT_BALANCE.bosses.boss.damage, width: 4.2, height: 4.5, gemType: 'red', isBoss: true },
     hydra: { type: 'hydra', name: DEFAULT_BALANCE.bosses.hydra.name, hp: DEFAULT_BALANCE.bosses.hydra.hp, speed: DEFAULT_BALANCE.bosses.hydra.speed, damage: DEFAULT_BALANCE.bosses.hydra.damage, width: 8.0, height: 8.0, gemType: 'red', isBoss: true },
-    spore_queen: { type: 'spore_queen', name: DEFAULT_BALANCE.bosses.spore_queen.name, hp: DEFAULT_BALANCE.bosses.spore_queen.hp, speed: DEFAULT_BALANCE.bosses.spore_queen.speed, damage: DEFAULT_BALANCE.bosses.spore_queen.damage, width: 8.5, height: 8.5, gemType: 'red', isBoss: true }
+    spore_queen: { type: 'spore_queen', name: DEFAULT_BALANCE.bosses.spore_queen.name, hp: DEFAULT_BALANCE.bosses.spore_queen.hp, speed: DEFAULT_BALANCE.bosses.spore_queen.speed, damage: DEFAULT_BALANCE.bosses.spore_queen.damage, width: 8.5, height: 8.5, gemType: 'red', isBoss: true },
+    stage5_boss: { type: 'stage5_boss', name: DEFAULT_BALANCE.bosses.stage5_boss.name, hp: DEFAULT_BALANCE.bosses.stage5_boss.hp, speed: DEFAULT_BALANCE.bosses.stage5_boss.speed, damage: DEFAULT_BALANCE.bosses.stage5_boss.damage, width: 8.5, height: 8.5, gemType: 'red', isBoss: true }
   };
 
   constructor(config: GameCoreConfig = {}) {

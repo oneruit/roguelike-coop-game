@@ -1,5 +1,5 @@
 import { Vector3, type Scene, type Camera, Sphere, type Frustum } from 'three';
-import { Enemy, EnemyConfig, EnemyType } from './Enemy';
+import { Enemy, EnemyConfig, EnemyType, EliteAffix } from './Enemy';
 import { SpatialGrid } from './SpatialGrid';
 import { DropManager } from '../drops/DropManager';
 import { SoundManager } from '../core/SoundManager';
@@ -181,6 +181,18 @@ export class EnemyManager {
       height: 10.5,
       gemType: 'red',
       isBoss: true
+    },
+    stage5_boss: {
+      type: 'stage5_boss',
+      name: 'Древний Титан Святилища',
+      texturePrefix: '/textures/bosses/boss_hydra',
+      hp: 130000,
+      speed: 3.2,
+      damage: 95,
+      width: 10.5,
+      height: 10.5,
+      gemType: 'red',
+      isBoss: true
     }
   };
 
@@ -191,6 +203,8 @@ export class EnemyManager {
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
   public onBurnDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
+  public onVolatileRingTrigger?: (pos: Vector3, radius: number, damage: number) => void;
+  public onVortexPullTrigger?: (pos: Vector3, radius: number, pullSpeed: number) => void;
   public camera?: Camera;
 
   public activePlayerCount: number = 1;
@@ -232,6 +246,12 @@ export class EnemyManager {
       this.configs.spore_queen.speed = sporeCfg.speed;
       this.configs.spore_queen.damage = sporeCfg.damage;
     }
+    const titanCfg = BalanceManager.getBossConfig('stage5_boss');
+    if (this.configs.stage5_boss && titanCfg) {
+      this.configs.stage5_boss.hp = titanCfg.hp;
+      this.configs.stage5_boss.speed = titanCfg.speed;
+      this.configs.stage5_boss.damage = titanCfg.damage;
+    }
   }
 
   private registerEnemy(enemy: Enemy): Enemy {
@@ -249,6 +269,29 @@ export class EnemyManager {
       }
       if (this.onBurnDamage) {
         this.onBurnDamage(e, tickDamage, isDead, hitter, sourceWeaponId);
+      }
+    };
+    enemy.onAvengerDeath = (avenger) => {
+      const nearby = this.spatialGrid.queryRadius(avenger.position.x, avenger.position.z, 13);
+      for (const e of nearby) {
+        if (e !== avenger && e.isAlive && !e.isBoss) {
+          e.applyFrenzy(10);
+        }
+      }
+      SoundManager.playReaperSpawn?.();
+    };
+    enemy.onVolatileDischarge = (volatileEnemy) => {
+      if (this.camera) {
+        this.damageNumbers.spawnDamage(volatileEnemy.position, 0, true, this.camera, false, 2, 1, false);
+      }
+      SoundManager.playLightning?.();
+      if (this.onVolatileRingTrigger) {
+        this.onVolatileRingTrigger(volatileEnemy.position, 7.0, volatileEnemy.damage * 0.85);
+      }
+    };
+    enemy.onVortexPull = (vortexEnemy, radius, pullSpeed) => {
+      if (this.onVortexPullTrigger) {
+        this.onVortexPullTrigger(vortexEnemy.position, radius, pullSpeed);
       }
     };
     return enemy;
@@ -431,6 +474,13 @@ export class EnemyManager {
       enemy.damageResistance = this.getLateGameDamageResistance(enemy.isBoss);
       const isTough = enemy.type === 'brute' || enemy.type === 'bison';
       enemy.knockbackResistance = this.getKnockbackResistance(enemy.isBoss, isTough);
+
+      if (enemy.isBoss && enemy.isStage5Boss && this.camera) {
+        const proj = enemy.position.clone().project(this.camera);
+        const margin = 0.20;
+        const onScreen = Math.abs(proj.x) <= 1.0 + margin && Math.abs(proj.y) <= 1.0 + margin && proj.z >= -1.0 && proj.z <= 1.0;
+        enemy.isPausedOffScreen = !onScreen;
+      }
 
       enemy.updateSimulation(dt, closestTargetPos);
 
@@ -680,18 +730,21 @@ export class EnemyManager {
 
     const isHydra = stage === 2;
     const isSporeQueen = stage === 3;
-    const stageBaseConfig = isHydra
-      ? this.configs.hydra
-      : isSporeQueen
-        ? this.configs.spore_queen
-        : this.configs.boss;
+    const isStage5 = stage >= 5;
+    const stageBaseConfig = isStage5
+      ? this.configs.stage5_boss
+      : isHydra
+        ? this.configs.hydra
+        : isSporeQueen
+          ? this.configs.spore_queen
+          : this.configs.boss;
 
     const baseHp = stageBaseConfig.hp;
     const baseDmg = stageBaseConfig.damage;
     const baseSpd = stageBaseConfig.speed;
 
     const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
-    const hpStageMult = isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
+    const hpStageMult = isStage5 ? (1.5 + (stage - 1) * 1.0) : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
     const tierHp = Math.round(baseHp * hpStageMult * diffCoeff);
     const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.35) * (1 + (diffCoeff - 1) * 0.25));
 
@@ -700,7 +753,7 @@ export class EnemyManager {
       'Древняя трёхглавая гидра',
       'Споровая Владычица Ксено-Леса',
       'Магматический Колосс Кальдеры',
-      'Первородный Страж Предтеч',
+      'Древний Титан Рунического Святилища',
       'Архитектор Разлома'
     ];
 
@@ -719,7 +772,12 @@ export class EnemyManager {
     boss.ccResistance = Math.max(0.65, this.getLateGameCcResistance(true));
     boss.damageResistance = Math.max(0.15, this.getLateGameDamageResistance(true));
     boss.knockbackResistance = this.getKnockbackResistance(true);
-    if (isSporeQueen) {
+    if (isStage5) {
+      boss.isStage5Boss = true;
+      boss.ccResistance = Math.max(0.80, boss.ccResistance);
+      boss.damageResistance = Math.max(0.35, boss.damageResistance);
+      boss.knockbackResistance = 0.98;
+    } else if (isSporeQueen) {
       boss.ccResistance = Math.max(0.75, boss.ccResistance);
       boss.damageResistance = Math.max(0.35, boss.damageResistance);
       boss.knockbackResistance = 0.95;
@@ -901,16 +959,23 @@ export class EnemyManager {
     const dmgMult = this.getDamageMultiplier();
     const spdMult = this.getSpeedMultiplier();
 
-    // Check elite spawn chance from Difficulty Director
-    const isElite = Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
-    const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
-    const chosenAffix = isElite ? affixes[Math.floor(Math.random() * affixes.length)] : undefined;
+    // Check elite spawn chance from Difficulty Director (100% on Stage 5)
+    const isStage5 = this.currentStage >= 5;
+    const isElite = isStage5 || Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
+    const stage5Affixes: EliteAffix[] = ['juggernaut', 'vortex', 'volatile', 'avenger'];
+    const standardAffixes: EliteAffix[] = ['blazing', 'glacial', 'overloading'];
+    const chosenAffix = isElite
+      ? (isStage5 ? stage5Affixes[Math.floor(Math.random() * stage5Affixes.length)] : standardAffixes[Math.floor(Math.random() * standardAffixes.length)])
+      : undefined;
+
+    // Stage 5 mobs are more ferocious (+15% extra speed)
+    const effectiveSpeedMult = isStage5 ? spdMult * 1.15 : spdMult;
 
     const scaledConfig: EnemyConfig = {
       ...baseConfig,
       hp: Math.max(1, Math.round(baseConfig.hp * hpMult)),
       damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
-      speed: Number((baseConfig.speed * spdMult).toFixed(2)),
+      speed: Number((baseConfig.speed * effectiveSpeedMult).toFixed(2)),
       eliteAffix: chosenAffix,
       creditsValue: (baseConfig.creditsValue || 1) + Math.max(0, this.currentStage - 1) * 2
     };
@@ -967,7 +1032,9 @@ export class EnemyManager {
    */
   public spawnGreedTrialWave(centerPos: Vector3, count: number = 4) {
     const types: EnemyType[] = ['brute', 'bison', 'scorpion', 'ghost', 'skeleton'];
-    const affixes: ('blazing' | 'glacial' | 'overloading')[] = ['blazing', 'glacial', 'overloading'];
+    const affixes: EliteAffix[] = this.currentStage >= 5
+      ? ['juggernaut', 'vortex', 'volatile', 'avenger']
+      : ['blazing', 'glacial', 'overloading'];
 
     if (this.enemies.length >= 120) return;
 

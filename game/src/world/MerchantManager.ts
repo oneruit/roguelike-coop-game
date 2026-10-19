@@ -131,8 +131,8 @@ export class MerchantManager {
   }
 
   public update(dt: number, getElevation?: (x: number, z: number) => number) {
-    // Only active on the final stage
-    if (!this.biomeManager.isFinalStage()) {
+    // Active on stage 4 and stage 5 (endgame sectors)
+    if (this.biomeManager.stageNumber < 4) {
       if (this.isActive) {
         this.despawn();
       }

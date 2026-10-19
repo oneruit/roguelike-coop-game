@@ -35,7 +35,8 @@ export const STAGE_CHEST_DISTRIBUTION: Record<number, StageChestTierCounts> = {
   1: { small: 11, large: 4, legendary: 0 },
   2: { small: 10, large: 5, legendary: 0 },
   3: { small: 0, large: 11, legendary: 4 },
-  4: { small: 0, large: 4, legendary: 11 }
+  4: { small: 0, large: 4, legendary: 11 },
+  5: { small: 0, large: 6, legendary: 10 }
 };
 
 export interface ChestInstance {
