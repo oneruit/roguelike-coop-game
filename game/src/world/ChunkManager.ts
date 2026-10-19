@@ -138,25 +138,21 @@ export class ChunkManager {
     // 1. Safe zone around world spawn origin (0, 0)
     occupied.push({ x: 0, z: 0, radius: 15.0 });
 
-    // 2. Teleporter Placement (Stages 1-4; on stage 5 Runic Sanctum, final stage transition is disabled)
+    // 2. Teleporter Placement (Stages 1-5; on stage 5 summons the final boss)
     let teleX = 75;
     let teleZ = 75;
     if (riftTeleporter) {
-      if (stageNumber >= 5) {
-        riftTeleporter.disableForFinalStage();
-      } else {
-        // Pick deterministic sector away from spawn
-        const teleAngle = rng.range(0, Math.PI * 2);
-        const teleDist = rng.range(110, 165);
-        teleX = Math.cos(teleAngle) * teleDist;
-        teleZ = Math.sin(teleAngle) * teleDist;
-        riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
-        occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
-        if (stageNumber === 4) {
-          // On stage 4, the portal is secretly hidden until all chests are collected
-          riftTeleporter.mesh.visible = false;
-          riftTeleporter.isDiscovered = false;
-        }
+      // Pick deterministic sector away from spawn
+      const teleAngle = rng.range(0, Math.PI * 2);
+      const teleDist = rng.range(110, 165);
+      teleX = Math.cos(teleAngle) * teleDist;
+      teleZ = Math.sin(teleAngle) * teleDist;
+      riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
+      occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
+      if (stageNumber === 4) {
+        // On stage 4, the portal is secretly hidden until all chests are collected
+        riftTeleporter.mesh.visible = false;
+        riftTeleporter.isDiscovered = false;
       }
     }
 
