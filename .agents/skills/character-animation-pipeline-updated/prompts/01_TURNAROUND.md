@@ -35,7 +35,8 @@ To prevent adjacent figures or outstretched weapons from bleeding into neighbori
 
 ## 3. Anatomical & Proportions Contract
 
-* **Chibi Ratio (2.5 to 3 heads tall)**: Large readable head (~30–35% of total height), compact torso, sturdy limbs, chunky boots.
+* **Super-Deformed Chibi Ratio (strictly 2.0 to 2.4 heads tall max)**: Massive readable head (taking **42–45% of total sprite height**). Head dome and hair/cowl width must be **equal to or wider than the shoulder span**.
+* **Ultra-Compact Body**: Stubby torso (< 18% height), short sturdy limbs, and chunky oversized boots. Pauldrons and chestplate must be scaled down to fit the cute stubby chibi proportions rather than expanding into wide adult proportions.
 * **Proportion Equality**: Proportions, eye-level, and scale must be **100% identical across all views** so silhouettes align precisely.
 * **Grounded Baseline**: Lowest foot pixel anchored at consistent baseline (`y ≈ 88` in 96-px cell).
 * **Equipment Continuity**: The character must hold the weapon / focus across **all views**. Unseen details (e.g. back of cloak, rear armor plates, side quivers) must be rendered logically and consistently.
@@ -48,6 +49,7 @@ To prevent adjacent figures or outstretched weapons from bleeding into neighbori
 * **Global Removal & Defringing**: Magenta is removed both outside and inside the character. No magenta aura remains along the edges (defringed with 1px black outline).
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no tile grid**.
 * **Negative Constraints**:
-  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes.`
+  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.`
 * **No Animation**: This is a static reference sheet. Do not create temporal animation frames.
+
 

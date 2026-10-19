@@ -78,11 +78,11 @@ Additional character details to include: [list all extra details the user specif
 
 ## 3. Art Direction & Proportions Contract
 
-- **Anatomy**: **Chibi proportions (2.5 to 3 heads tall)** — large readable head (~30–35% of total height), compact torso, sturdy limbs, chunky boots, and stylized readable weapons. Realistic 7–8 head human proportions are strictly forbidden.
+- **Anatomy**: **Super-Deformed Chibi (2.0 to 2.4 heads tall max)** — massive readable head taking **42–45% of total height**, head and hair/hood volume is **equal to or wider than the shoulder span**, ultra-compact stubby torso (< 18% height), short sturdy limbs, chunky oversized boots, and stylized readable weapons. Realistic 4+ heads adult proportions are strictly forbidden.
 - **Tone**: Serious, battle-hardened, mature dark fantasy roguelike RPG aesthetic.
 - **Facial Features**: Sharp jawline, defined chin, small-to-medium sharp eyes, stern closed mouth or fierce grimace. No anime sparkling eyes, no kawaii blushing cheeks, no baby faces.
 - **Mandatory Negative Constraint Block**:
-  > **`No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.`**
+  > **No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no one-leg gliding, no sliding feet, no frozen hips, no twisted 3/4 torso in front row, no duplicate frame 1 and 6, no static frames 1 2 3.**
 - **Pure Solid Magenta Chromakey**: Every source generation MUST use pure solid magenta background `RGB: 255, 0, 255` (`#ff00ff`).
 - **Global Magenta Removal**: Magenta is NEVER used on characters. Magenta is keyed out globally, **both outside the silhouette and inside any enclosed gaps, holes, and limbs**.
 - **No Magenta Aura (1px Black Outline Defringing)**: The post-processing script converts any boundary pixel touching transparency that has magenta spill/fringe into a crisp 1px black outline `[0, 0, 0, 255]`. This eliminates any purple/magenta halo without painting over or altering inner character textures.

@@ -56,10 +56,11 @@ Every directional row depicts a subtle, rhythmic 6-frame combat idle / breathing
 
 ## 4. Negative & Stylistic Constraints
 
-* **Strict Proportions**: Heroic Chibi (2.5 to 3 heads tall, large head ~30-35% height, compact sturdy body).
+* **Strict Proportions**: Super-Deformed Chibi (strictly 2.0 to 2.4 heads tall max, massive head taking 42–45% of height, head wider than shoulders, ultra-compact stubby torso, oversized chunky boots).
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no tile grid**.
 * **Global Magenta Keying & Defringing**: Magenta is removed globally inside and outside the character. Boundary edges are cleaned with a 1px black outline without any purple/magenta aura.
 * **Weapon Continuity**: Same weapon firmly held across all frames and rows. Weapon never disappears.
 * **Mandatory Negative Constraint**:
-  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes.`
+  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.`
 * **Pixel Art Quality**: Crisp hard pixel edges, limited color palette, strong contrast, 16-bit game sprite aesthetic.
+

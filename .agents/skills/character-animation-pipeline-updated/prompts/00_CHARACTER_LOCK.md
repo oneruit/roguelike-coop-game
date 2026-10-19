@@ -17,15 +17,15 @@ If the user provides a brief description (e.g. *"female amazon in red bikini wit
 
 | Dimension | Default Fallback Value |
 |---|---|
-| **Proportions** | Heroic Chibi (2.5 to 3 heads tall): large head (~30-35% height), compact torso, sturdy limbs, chunky boots, strong readable silhouette |
+| **Proportions** | Super-Deformed Chibi (2.0 to 2.4 heads tall max): massive readable head (42–45% of total sprite height), head and hair/hood dome are equal to or wider than shoulders, ultra-compact stubby torso (< 18% height), short thick limbs, chunky oversized boots, strong readable silhouette |
 | **Face & Head** | Serious focused battle-ready expression, angular jawline, sharp chin, no smile, no cute or adorable expression |
 | **Eyes** | Sharp focused eyes with intense iris color and dark contour, vigilant battle glare |
 | **Hair / Headgear** | Practical battle-ready hair / braids / hood / circlet matching character archetype |
-| **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), crisp pixel-art clusters |
+| **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), compact stylized armor fitted to stubby chibi anatomy, crisp pixel-art clusters |
 | **Held Item / Weapon** | Held with both hands or combat-ready stance, clearly visible beside character. If unarmed, hands raised in ready combat stance. No extra weapons |
 | **Effects** | Faint localized magical motes / energy orbs only if specified by archetype; no oversized clutter |
 | **Background** | Pure solid magenta background rgb(255,0,255), no shadows under feet, no ground line, no floor, no platform |
-| **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.` |
+| **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.` |
 
 ---
 
@@ -34,13 +34,13 @@ If the user provides a brief description (e.g. *"female amazon in red bikini wit
 ```text
 96x96 chibi pixel art portrait of a [gender/species/type] [archetype/class], a [role/description].
 
-Chibi proportions with an intentionally oversized head and compact body, [body type], [limb description], [stance], strong readable silhouette.
+Super-deformed chibi proportions (strictly 2.0 to 2.4 heads tall max) with an intentionally oversized head (42-45% of total height) that is equal to or wider than the shoulders, ultra-compact stubby torso, short sturdy limbs, chunky oversized boots, strong readable silhouette.
 
-[Face/head description], [eye description], [expression details], no smile, no cute or adorable expression.
+[Face/head description], [eye description], serious battle-hardened expression, sharp jawline, no smile, no cute or adorable expression.
 
 [Hair/head details], [optional mane/markings/ornaments].
 
-[Clothing/armor/body description], [optional accessories].
+[Clothing/armor/body description scaled to compact chibi proportions], [optional accessories].
 
 [Held item: Holding a [weapon/tool/focus] with both hands, clearly visible beside the character / Holding no weapon, both hands raised in a ready combat stance], [optional offhand]. No other weapons.
 
@@ -48,9 +48,9 @@ Chibi proportions with an intentionally oversized head and compact body, [body t
 
 Pure solid magenta background rgb(255,0,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
 
-Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite chibi proportions.
+Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite super-deformed chibi proportions.
 
-No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic proportions, no photorealism, no smooth gradients.
+No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.
 
 Additional character details to include: [list all extra details the user specifies].
 ```
@@ -60,7 +60,7 @@ Additional character details to include: [list all extra details the user specif
 ## 3. Strict Negative Constraint String
 
 Every prompt MUST contain this exact negative constraint block:
-> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes.`
+> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.`
 
 ---
 
@@ -85,8 +85,9 @@ The animation pipeline supports both **6×3** (recommended for generation effici
 * **Frame 3 Blink & Frame 4 Eye Normalization**:
   - **Frame 3**: Calm, focused blink (eyelids fully closed) on visible front/side rows (`FRONT`, `RIGHT`).
   - **Frame 4**: Eyes return to normal, steady, calm battle-ready gaze (identical size/shape to Frames 1–2). **NO bulging eyes, NO wide crazy stare, NO anime shocked expression**.
-* **Head Height Anchor**:
-  - Head height must remain strictly **30–35% of total character height** across all frames. Proportions never stretch into realistic human scale during lunges.
+* **Head Height & Width Anchor**:
+  - Head height must remain strictly **42–45% of total character height (2.0 to 2.4 heads tall max)** across all frames.
+  - Head width must remain **equal to or wider than the shoulder span**. Pauldrons and armor must never dwarf the chibi head. Proportions never stretch into realistic adult scale during lunges.
 * **Strict Palette Lock**:
   - All frames and sheets must sample and preserve the exact color palette (armor, hair, skin, metal) established in the approved turnaround sheet.
 
