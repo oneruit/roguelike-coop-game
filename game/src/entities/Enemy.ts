@@ -64,6 +64,8 @@ export class Enemy {
   public creditsValue: number = 3;
   public isAlive = true;
   public isStage5Boss: boolean = false;
+  public isStage5FinalBoss: boolean = false;
+  public isInvulnerable: boolean = false;
   public isPausedOffScreen: boolean = false;
   public juggernautShieldHp: number = 0;
   public juggernautShieldMax: number = 0;
@@ -97,6 +99,7 @@ export class Enemy {
   public get movementFactor(): number {
     if (this.isFrozen || this.isStunned || this.spellControl.movementFactor === 0) return 0;
     if (this.isStage5Boss && this.isPausedOffScreen) return 0;
+    if (this.isStage5FinalBoss && this.isInvulnerable) return 0;
     const activeSlow = this.slowTimer > 0 ? this.slowFactor : 1.0;
     const frenzyBonus = this.frenzyTimer > 0 ? 1.40 : 1.0;
     return Math.min(activeSlow, this.spellControl.movementFactor) * frenzyBonus;
@@ -582,7 +585,7 @@ export class Enemy {
       while (this.burnTickTimer >= 1.0 && this.isAlive) {
         this.burnTickTimer -= 1.0;
         const tickAmount = Math.max(1, Math.round(this.maxHp * 0.02));
-        if (!this.isImmortal) {
+        if (!this.isImmortal && !this.isInvulnerable) {
           this.hp -= tickAmount;
           this.flashTimer = 0.08;
           this.lastHitBy = this.burnHitter;
@@ -840,10 +843,10 @@ export class Enemy {
     hitter: string = 'p1',
     weaponId?: string
   ): boolean {
-    if (this.isImmortal) {
+    if (this.isImmortal || this.isInvulnerable) {
       this.flashTimer = 0.09;
-      this.spriteMaterial.color.setHex(0xc084fc); // Ethereal purple flash
-      return false; // Immortal cannot die or lose HP
+      this.spriteMaterial.color.setHex(0x38bdf8); // Cyan shield flash
+      return false; // Immortal or invulnerable shield cannot take damage
     }
 
     this.lastHitBy = hitter;
@@ -955,7 +958,7 @@ export class Enemy {
       }
 
       const tickAmount = Math.max(1, Math.round(totalDmg));
-      if (!this.isImmortal) {
+      if (!this.isImmortal && !this.isInvulnerable) {
         this.hp -= tickAmount;
         this.flashTimer = 0.08;
         this.lastHitBy = lastHitter;

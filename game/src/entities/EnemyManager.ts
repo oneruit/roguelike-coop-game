@@ -9,6 +9,8 @@ import { EnemySnapshot } from '../net/NetworkManager';
 import { DifficultyDirector } from '../director/DifficultyDirector';
 import { BalanceManager } from '../balance/BalanceManager';
 import { MetaProgression } from '../meta/MetaProgression';
+import { FinalBossPylonManager } from './FinalBossPylonManager';
+import type { HUD } from '../ui/HUD';
 
 export interface PlayerTargetInfo {
   id: string; // 'p1', 'p2', 'p3', 'p4', 'p5'
@@ -199,13 +201,15 @@ export class EnemyManager {
   // Event callbacks
   public onBossSpawn?: (boss: Enemy, tier: number) => void;
   public onImmortalBossSpawn?: (boss: Enemy) => void;
-  public onBossDefeat?: () => void;
+  public onBossDefeat?: (boss?: Enemy) => void;
   public onEnemyKilled?: (enemy: Enemy, killer: string) => void;
   public onBleedDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
   public onBurnDamage?: (enemy: Enemy, damage: number, isDead: boolean, hitter: string, sourceWeaponId?: string) => void;
   public onVolatileRingTrigger?: (pos: Vector3, radius: number, damage: number) => void;
   public onVortexPullTrigger?: (pos: Vector3, radius: number, pullSpeed: number) => void;
   public camera?: Camera;
+  public hud?: HUD;
+  public finalBossPylonManager: FinalBossPylonManager;
 
   public activePlayerCount: number = 1;
   public getElevation?: (x: number, z: number) => number;
@@ -215,6 +219,7 @@ export class EnemyManager {
     this.scene = scene;
     this.dropManager = dropManager;
     this.damageNumbers = damageNumbers;
+    this.finalBossPylonManager = new FinalBossPylonManager(this.scene, this.damageNumbers);
     this.syncBalance();
   }
 
@@ -425,6 +430,24 @@ export class EnemyManager {
     this.spatialGrid.insertAll(this.enemies);
     this.spatialGrid.resolveSeparation();
 
+    // Stage 5 Final Boss 4-Sphere Invulnerability Mechanic
+    const sphereTargetPositions: Vector3[] = [];
+    if (allTargets && allTargets.length > 0) {
+      for (const t of allTargets) {
+        if (t.isAlive && !t.isDowned) {
+          sphereTargetPositions.push(t.position);
+        }
+      }
+    }
+    if (sphereTargetPositions.length === 0) {
+      sphereTargetPositions.push(playerPos);
+      if (partnerPos && isPartnerAlive) {
+        sphereTargetPositions.push(partnerPos);
+      }
+    }
+    this.finalBossPylonManager.camera = this.camera;
+    this.finalBossPylonManager.update(dt, sphereTargetPositions);
+
     // Update enemies
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
@@ -592,7 +615,7 @@ export class EnemyManager {
               this.dropManager.spawnGem(enemy.position.clone().add(cOffset), 'crystal');
             }
 
-            if (this.onBossDefeat) this.onBossDefeat();
+            if (this.onBossDefeat) this.onBossDefeat(enemy);
           }
 
           // Switch activeBoss to another alive boss if one exists
@@ -774,9 +797,12 @@ export class EnemyManager {
     boss.knockbackResistance = this.getKnockbackResistance(true);
     if (isStage5) {
       boss.isStage5Boss = true;
+      boss.isStage5FinalBoss = true;
       boss.ccResistance = Math.max(0.80, boss.ccResistance);
       boss.damageResistance = Math.max(0.35, boss.damageResistance);
       boss.knockbackResistance = 0.98;
+      this.finalBossPylonManager.camera = this.camera;
+      this.finalBossPylonManager.bindBoss(boss, this.hud, this.getElevation);
     } else if (isSporeQueen) {
       boss.ccResistance = Math.max(0.75, boss.ccResistance);
       boss.damageResistance = Math.max(0.35, boss.damageResistance);
@@ -1283,6 +1309,7 @@ export class EnemyManager {
   }
 
   public clear() {
+    this.finalBossPylonManager.cleanup();
     this.spatialGrid.clear();
     for (const enemy of this.enemies) {
       enemy.destroy(this.scene);
