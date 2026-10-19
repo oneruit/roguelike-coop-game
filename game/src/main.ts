@@ -205,7 +205,6 @@ class Game {
       () => this.sessionDirector.resumeGame(),
       () => this.sessionDirector.restartGame(undefined, false)
     );
-    this.enemyManager.hud = this.hud;
     this.player.onDamageTaken = (amount) => this.hud.triggerDamageFlash(amount);
     this.hud.onRestartSameSeed = () => this.sessionDirector.restartGame(undefined, true);
     this.hud.onToggleDevMode = () => this.sessionDirector.toggleDevMode();
@@ -567,7 +566,7 @@ class Game {
       }
     };
 
-    this.enemyManager.onBossDefeat = (boss?: Enemy) => {
+    this.enemyManager.onBossDefeat = () => {
       this.hud.resetBossUI();
       ProgressionManager.getInstance().recordBossKilled();
       ProgressionManager.getInstance().recordTeleporterBossKilled();
@@ -576,7 +575,7 @@ class Game {
       if (this.net.role === 'host') {
         this.netCoordinator.pendingNetworkEvents.push({ type: 'boss_defeat' });
       }
-      if (boss?.isStage5FinalBoss) {
+      if (this.biomeManager.stageNumber >= 5) {
         setTimeout(() => {
           this.sessionDirector.triggerGameOver(true);
         }, 3000);

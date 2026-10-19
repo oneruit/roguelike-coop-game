@@ -588,11 +588,6 @@ export class InGameOverlayUI extends InGameHUDScreen {
         this.bossHpFill.style.width = '100%';
         this.bossHpFill.style.background = 'linear-gradient(90deg, #7e22ce, #c084fc)';
         this.bossHpText.innerText = 'БЕССМЕРТЕН (∞)';
-      } else if (activeBoss.isInvulnerable) {
-        const bossHpPercent = Math.min(100, Math.max(0, (activeBoss.hp / activeBoss.maxHp) * 100));
-        this.bossHpFill.style.width = `${bossHpPercent}%`;
-        this.bossHpFill.style.background = 'linear-gradient(90deg, #0284c7, #38bdf8)';
-        this.bossHpText.innerText = `🛡️ ЩИТ (${Math.max(0, Math.ceil(activeBoss.hp))} / ${activeBoss.maxHp})`;
       } else {
         const bossHpPercent = Math.min(100, Math.max(0, (activeBoss.hp / activeBoss.maxHp) * 100));
         this.bossHpFill.style.width = `${bossHpPercent}%`;
