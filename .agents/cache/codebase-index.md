@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-20T23:05:46.856Z | **Files:** 199 | **Top-level:** 575 | **Class Methods:** 1274
+> **Generated:** 2026-10-20T23:22:06.483Z | **Files:** 199 | **Top-level:** 575 | **Class Methods:** 1275
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -982,10 +982,11 @@ Run `npm run index` to refresh this cache.
 | `MageCutoutRig.update` | `method` | [`game/src/character-lab/MageCutoutRig.ts:228`](../../game/src/character-lab/MageCutoutRig.ts#L228) | - |
 | `MageReal3DSystem` | `class` | [`game/src/character-lab/MageReal3DSystem.ts:10`](../../game/src/character-lab/MageReal3DSystem.ts#L10) | Loads and displays the authentic watertight 3D mesh generated from the 2D t... |
 | `MageReal3DSystem.getModelUrl` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:62`](../../game/src/character-lab/MageReal3DSystem.ts#L62) | - |
-| `MageReal3DSystem.loadModel` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:67`](../../game/src/character-lab/MageReal3DSystem.ts#L67) | - |
-| `MageReal3DSystem.setAnimationState` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:143`](../../game/src/character-lab/MageReal3DSystem.ts#L143) | - |
-| `MageReal3DSystem.setVisible` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:128`](../../game/src/character-lab/MageReal3DSystem.ts#L128) | - |
-| `MageReal3DSystem.update` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:147`](../../game/src/character-lab/MageReal3DSystem.ts#L147) | - |
+| `MageReal3DSystem.isolateFigure1` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:67`](../../game/src/character-lab/MageReal3DSystem.ts#L67) | - |
+| `MageReal3DSystem.loadModel` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:138`](../../game/src/character-lab/MageReal3DSystem.ts#L138) | - |
+| `MageReal3DSystem.setAnimationState` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:221`](../../game/src/character-lab/MageReal3DSystem.ts#L221) | - |
+| `MageReal3DSystem.setVisible` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:206`](../../game/src/character-lab/MageReal3DSystem.ts#L206) | - |
+| `MageReal3DSystem.update` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:225`](../../game/src/character-lab/MageReal3DSystem.ts#L225) | - |
 | `MageTexturedSystem` | `class` | [`game/src/character-lab/MageTexturedSystem.ts:11`](../../game/src/character-lab/MageTexturedSystem.ts#L11) | High-fidelity textured pixel-art system for the Mage. Utilizes 3-view turna... |
 | `MageTexturedSystem.buildMeshes` | `method` | [`game/src/character-lab/MageTexturedSystem.ts:133`](../../game/src/character-lab/MageTexturedSystem.ts#L133) | - |
 | `MageTexturedSystem.configurePixelTexture` | `method` | [`game/src/character-lab/MageTexturedSystem.ts:86`](../../game/src/character-lab/MageTexturedSystem.ts#L86) | - |

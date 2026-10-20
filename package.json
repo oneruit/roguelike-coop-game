@@ -26,7 +26,8 @@
     "test:reroll": "tsx --test tests/weaponReroll.test.ts",
     "test:damage": "tsx --test tests/damageAndWeaponGrades.test.ts",
     "test:coop": "tsx --test tests/lobbyCoop.test.ts",
-    "test:rewards": "node tests/runRewardFlowTests.mjs"
+    "test:rewards": "node tests/runRewardFlowTests.mjs",
+    "download:tripo": "node scripts/download-tripo.cjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-20T23:05:46.856Z",
+  "generatedAt": "2026-10-20T23:22:06.483Z",
   "totalFiles": 199,
-  "totalSymbols": 1849,
+  "totalSymbols": 1850,
   "topLevelCount": 575,
-  "methodsCount": 1274,
+  "methodsCount": 1275,
   "entities": {
     "heroes": [
       {
@@ -7899,10 +7899,18 @@
       "methodName": "getModelUrl"
     },
     {
-      "name": "MageReal3DSystem.loadModel",
+      "name": "MageReal3DSystem.isolateFigure1",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
       "line": 67,
+      "className": "MageReal3DSystem",
+      "methodName": "isolateFigure1"
+    },
+    {
+      "name": "MageReal3DSystem.loadModel",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 138,
       "className": "MageReal3DSystem",
       "methodName": "loadModel"
     },
@@ -7910,7 +7918,7 @@
       "name": "MageReal3DSystem.setAnimationState",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 143,
+      "line": 221,
       "className": "MageReal3DSystem",
       "methodName": "setAnimationState"
     },
@@ -7918,7 +7926,7 @@
       "name": "MageReal3DSystem.setVisible",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 128,
+      "line": 206,
       "className": "MageReal3DSystem",
       "methodName": "setVisible"
     },
@@ -7926,7 +7934,7 @@
       "name": "MageReal3DSystem.update",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 147,
+      "line": 225,
       "className": "MageReal3DSystem",
       "methodName": "update"
     },
