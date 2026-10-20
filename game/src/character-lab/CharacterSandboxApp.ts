@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CharacterRig } from './CharacterRig';
 import { CharacterModularSystem } from './CharacterModularSystem';
 import { CharacterAnimator } from './CharacterAnimator';
+import { MageTexturedSystem, MageViewAngleMode } from './MageTexturedSystem';
 import {
   CharacterClass,
   CharacterColors,
@@ -89,6 +90,8 @@ export class CharacterSandboxApp {
   public rig: CharacterRig;
   public modularSystem: CharacterModularSystem;
   public animator: CharacterAnimator;
+  public mageTexturedSystem: MageTexturedSystem;
+  public mageRenderMode: 'procedural' | 'textured' = 'textured';
 
   // Active configuration
   public currentClass: CharacterClass = 'warrior';
@@ -171,6 +174,7 @@ export class CharacterSandboxApp {
       this.currentConfig.materials
     );
     this.animator = new CharacterAnimator(this.rig);
+    this.mageTexturedSystem = new MageTexturedSystem(this.rig);
 
     this.scene.add(this.rig.root);
     this.applyClass('warrior');
@@ -220,7 +224,16 @@ export class CharacterSandboxApp {
     this.rig.updateColors(this.currentConfig.colors);
     this.modularSystem.updateColors(this.currentConfig.colors);
     this.modularSystem.updateMaterials(this.currentConfig.materials);
-    this.modularSystem.applyClass(classType, this.currentConfig.equipment);
+
+    if (classType === 'mage' && this.mageRenderMode === 'textured') {
+      this.rig.setProceduralMeshesVisible(false);
+      this.modularSystem.clearEquipment();
+      this.mageTexturedSystem.setVisible(true);
+    } else {
+      this.mageTexturedSystem.setVisible(false);
+      this.rig.setProceduralMeshesVisible(true);
+      this.modularSystem.applyClass(classType, this.currentConfig.equipment);
+    }
 
     this.animator.setClass(classType);
     this.animator.setState('idle');
@@ -233,6 +246,15 @@ export class CharacterSandboxApp {
     } else {
       this.rimLight.color.set(0xa855f7); // Violet arcane
     }
+  }
+
+  public setMageRenderMode(mode: 'procedural' | 'textured') {
+    this.mageRenderMode = mode;
+    this.applyClass(this.currentClass);
+  }
+
+  public setMageAngleMode(mode: MageViewAngleMode) {
+    this.mageTexturedSystem.setAngleMode(mode);
   }
 
   public setAnimation(state: 'idle' | 'walk' | 'run' | 'attack') {
@@ -332,7 +354,12 @@ export class CharacterSandboxApp {
 
     this.controls.update();
     this.animator.update(delta);
-    this.modularSystem.updateVFX(elapsedTime);
+
+    if (this.currentClass === 'mage' && this.mageRenderMode === 'textured') {
+      this.mageTexturedSystem.update(this.camera, elapsedTime);
+    } else {
+      this.modularSystem.updateVFX(elapsedTime);
+    }
 
     this.renderer.render(this.scene, this.camera);
   };

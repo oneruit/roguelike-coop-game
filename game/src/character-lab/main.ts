@@ -122,7 +122,43 @@ window.addEventListener('DOMContentLoaded', () => {
     app.toggleWireframe((e.target as HTMLInputElement).checked);
   });
 
+  // Mage Texture Render Mode Toggles
+  const btnMageModeTextured = document.getElementById('btn-mage-mode-textured');
+  const btnMageModeProcedural = document.getElementById('btn-mage-mode-procedural');
+  const mageAnglesContainer = document.getElementById('mage-angles-container');
+
+  btnMageModeTextured?.addEventListener('click', () => {
+    btnMageModeTextured.classList.add('active');
+    btnMageModeProcedural?.classList.remove('active');
+    if (mageAnglesContainer) mageAnglesContainer.style.display = 'block';
+    app.setMageRenderMode('textured');
+  });
+
+  btnMageModeProcedural?.addEventListener('click', () => {
+    btnMageModeProcedural.classList.add('active');
+    btnMageModeTextured?.classList.remove('active');
+    if (mageAnglesContainer) mageAnglesContainer.style.display = 'none';
+    app.setMageRenderMode('procedural');
+  });
+
+  // Mage Angle Buttons
+  const mageAngleButtons = document.querySelectorAll<HTMLButtonElement>('.mage-angle-btn');
+  mageAngleButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      mageAngleButtons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const angle = btn.dataset.angle as any;
+      app.setMageAngleMode(angle);
+    });
+  });
+
   function syncUIWithConfig(classType: CharacterClass) {
+    const mageSection = document.getElementById('mage-texture-section');
+    if (mageSection) {
+      mageSection.style.display = classType === 'mage' ? 'block' : 'none';
+    }
+
     const config = DEFAULT_CLASS_CONFIGS[classType];
     if (primaryColorInput) primaryColorInput.value = config.colors.primaryArmor;
     if (secondaryColorInput) secondaryColorInput.value = config.colors.secondaryArmor;

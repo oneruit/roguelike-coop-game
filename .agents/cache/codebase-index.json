@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-20T22:21:20.564Z",
-  "totalFiles": 196,
-  "totalSymbols": 1823,
-  "topLevelCount": 571,
-  "methodsCount": 1252,
+  "generatedAt": "2026-10-20T22:36:25.286Z",
+  "totalFiles": 197,
+  "totalSymbols": 1836,
+  "topLevelCount": 573,
+  "methodsCount": 1263,
   "entities": {
     "heroes": [
       {
@@ -2487,7 +2487,7 @@
       "name": "CharacterRig.resetPose",
       "kind": "method",
       "file": "game/src/character-lab/CharacterRig.ts",
-      "line": 400,
+      "line": 411,
       "className": "CharacterRig",
       "methodName": "resetPose"
     },
@@ -2500,10 +2500,18 @@
       "methodName": "setDebugVisible"
     },
     {
-      "name": "CharacterRig.updateColors",
+      "name": "CharacterRig.setProceduralMeshesVisible",
       "kind": "method",
       "file": "game/src/character-lab/CharacterRig.ts",
       "line": 395,
+      "className": "CharacterRig",
+      "methodName": "setProceduralMeshesVisible"
+    },
+    {
+      "name": "CharacterRig.updateColors",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 406,
       "className": "CharacterRig",
       "methodName": "updateColors"
     },
@@ -2517,13 +2525,13 @@
       "name": "CharacterSandboxApp",
       "kind": "class",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 81
+      "line": 82
     },
     {
       "name": "CharacterSandboxApp.applyClass",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 216,
+      "line": 220,
       "className": "CharacterSandboxApp",
       "methodName": "applyClass"
     },
@@ -2531,7 +2539,7 @@
       "name": "CharacterSandboxApp.buildPedestal",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 185,
+      "line": 189,
       "className": "CharacterSandboxApp",
       "methodName": "buildPedestal"
     },
@@ -2539,7 +2547,7 @@
       "name": "CharacterSandboxApp.dispose",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 340,
+      "line": 367,
       "className": "CharacterSandboxApp",
       "methodName": "dispose"
     },
@@ -2547,7 +2555,7 @@
       "name": "CharacterSandboxApp.resetCamera",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 299,
+      "line": 321,
       "className": "CharacterSandboxApp",
       "methodName": "resetCamera"
     },
@@ -2555,7 +2563,7 @@
       "name": "CharacterSandboxApp.setAnimation",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 238,
+      "line": 260,
       "className": "CharacterSandboxApp",
       "methodName": "setAnimation"
     },
@@ -2563,15 +2571,31 @@
       "name": "CharacterSandboxApp.setLightingPreset",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 270,
+      "line": 292,
       "className": "CharacterSandboxApp",
       "methodName": "setLightingPreset"
+    },
+    {
+      "name": "CharacterSandboxApp.setMageAngleMode",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 256,
+      "className": "CharacterSandboxApp",
+      "methodName": "setMageAngleMode"
+    },
+    {
+      "name": "CharacterSandboxApp.setMageRenderMode",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 251,
+      "className": "CharacterSandboxApp",
+      "methodName": "setMageRenderMode"
     },
     {
       "name": "CharacterSandboxApp.setPlaybackSpeed",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 246,
+      "line": 268,
       "className": "CharacterSandboxApp",
       "methodName": "setPlaybackSpeed"
     },
@@ -2579,7 +2603,7 @@
       "name": "CharacterSandboxApp.toggleEquipment",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 261,
+      "line": 283,
       "className": "CharacterSandboxApp",
       "methodName": "toggleEquipment"
     },
@@ -2587,7 +2611,7 @@
       "name": "CharacterSandboxApp.toggleWireframe",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 266,
+      "line": 288,
       "className": "CharacterSandboxApp",
       "methodName": "toggleWireframe"
     },
@@ -2595,7 +2619,7 @@
       "name": "CharacterSandboxApp.triggerAttack",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 242,
+      "line": 264,
       "className": "CharacterSandboxApp",
       "methodName": "triggerAttack"
     },
@@ -2603,7 +2627,7 @@
       "name": "CharacterSandboxApp.updateColor",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 250,
+      "line": 272,
       "className": "CharacterSandboxApp",
       "methodName": "updateColor"
     },
@@ -2611,7 +2635,7 @@
       "name": "CharacterSandboxApp.updateMaterialProperty",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 256,
+      "line": 278,
       "className": "CharacterSandboxApp",
       "methodName": "updateMaterialProperty"
     },
@@ -3441,7 +3465,7 @@
       "name": "DEFAULT_CLASS_CONFIGS",
       "kind": "const",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 15
+      "line": 16
     },
     {
       "name": "DEFAULT_DEMO_LEADERBOARDS",
@@ -7803,6 +7827,83 @@
       "kind": "interface",
       "file": "game/src/shared/types/network.ts",
       "line": 247
+    },
+    {
+      "name": "MageTexturedSystem",
+      "kind": "class",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 11,
+      "doc": "High-fidelity textured pixel-art system for the Mage. Utilizes 3-view turnaround sprites (Front, Side, Back) with NearestFilter, directional angle-based perspective matching, and dynamic 3D lighting/particle integration."
+    },
+    {
+      "name": "MageTexturedSystem.buildMeshes",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 123,
+      "className": "MageTexturedSystem",
+      "methodName": "buildMeshes"
+    },
+    {
+      "name": "MageTexturedSystem.configurePixelTexture",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 86,
+      "className": "MageTexturedSystem",
+      "methodName": "configurePixelTexture"
+    },
+    {
+      "name": "MageTexturedSystem.getTextureUrl",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 81,
+      "className": "MageTexturedSystem",
+      "methodName": "getTextureUrl"
+    },
+    {
+      "name": "MageTexturedSystem.loadTextures",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 93,
+      "className": "MageTexturedSystem",
+      "methodName": "loadTextures"
+    },
+    {
+      "name": "MageTexturedSystem.setAngleMode",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 220,
+      "className": "MageTexturedSystem",
+      "methodName": "setAngleMode"
+    },
+    {
+      "name": "MageTexturedSystem.setVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 203,
+      "className": "MageTexturedSystem",
+      "methodName": "setVisible"
+    },
+    {
+      "name": "MageTexturedSystem.update",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 250,
+      "className": "MageTexturedSystem",
+      "methodName": "update"
+    },
+    {
+      "name": "MageTexturedSystem.updateVisibilityByMode",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 225,
+      "className": "MageTexturedSystem",
+      "methodName": "updateVisibilityByMode"
+    },
+    {
+      "name": "MageViewAngleMode",
+      "kind": "type",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 4
     },
     {
       "name": "MainMenuModal",

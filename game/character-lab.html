@@ -406,6 +406,25 @@
           </div>
         </section>
 
+        <!-- Mage Texture Options (Visible when Mage is selected) -->
+        <section id="mage-texture-section" style="display: none; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); padding: 10px; border-radius: 8px;">
+          <div class="section-title" style="color: #c084fc;">Режим Рендеринга Мага</div>
+          <div class="presets-row" style="margin-bottom: 8px;">
+            <button class="preset-btn active" id="btn-mage-mode-textured">🎨 Спрайт-текстура</button>
+            <button class="preset-btn" id="btn-mage-mode-procedural">🔷 Процедурный 3D</button>
+          </div>
+          <div id="mage-angles-container">
+            <div class="field-label" style="margin-bottom: 4px; color: #e9d5ff;">Ракурс проекции:</div>
+            <div class="presets-row" id="mage-angles-buttons">
+              <button class="preset-btn active mage-angle-btn" data-angle="auto">🔄 Авто</button>
+              <button class="preset-btn mage-angle-btn" data-angle="front">Анфас</button>
+              <button class="preset-btn mage-angle-btn" data-angle="side">Профиль</button>
+              <button class="preset-btn mage-angle-btn" data-angle="back">Сзади</button>
+              <button class="preset-btn mage-angle-btn" data-angle="cross3d">3D Крест</button>
+            </div>
+          </div>
+        </section>
+
         <!-- Color Customization -->
         <section>
           <div class="section-title">Цвета и Палитра</div>

@@ -392,6 +392,17 @@ export class CharacterRig {
     });
   }
 
+  public setProceduralMeshesVisible(visible: boolean) {
+    this.pelvisNode.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        // Keep sockets or external objects untouched if they have custom flags
+        if (!child.name.startsWith('Socket_') && !child.name.includes('Mage')) {
+          child.visible = visible;
+        }
+      }
+    });
+  }
+
   public updateColors(colors: CharacterColors) {
     this.skinMaterial.color.set(colors.skin);
     this.hairMaterial.color.set(colors.hair);

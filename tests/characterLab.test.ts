@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { CharacterRig } from '../game/src/character-lab/CharacterRig';
 import { CharacterModularSystem } from '../game/src/character-lab/CharacterModularSystem';
 import { CharacterAnimator } from '../game/src/character-lab/CharacterAnimator';
+import { MageTexturedSystem } from '../game/src/character-lab/MageTexturedSystem';
 import { DEFAULT_CLASS_CONFIGS } from '../game/src/character-lab/CharacterSandboxApp';
 
 test('CharacterRig - creates anatomical hierarchy and sockets', () => {
@@ -148,4 +149,39 @@ test('CharacterRig & ModularSystem - color and material updates propagate', () =
   modularSystem.updateMaterials({ metalness: 0.99, roughness: 0.05 });
   assert.equal(modularSystem.primaryMaterial.metalness, 0.99);
   assert.equal(modularSystem.primaryMaterial.roughness, 0.05);
+});
+
+test('MageTexturedSystem - initializes staff, loads textures and switches angle modes', () => {
+  const mageCfg = DEFAULT_CLASS_CONFIGS.mage;
+  const rig = new CharacterRig(mageCfg.colors, mageCfg.materials);
+  const mageTextured = new MageTexturedSystem(rig);
+
+  assert.ok(mageTextured.root, 'MageTexturedSystem root exists');
+  assert.ok(mageTextured.staffGroup, 'Staff group exists');
+  assert.ok(mageTextured.crystalLight, 'Crystal light exists');
+  assert.equal(mageTextured.angleMode, 'auto');
+
+  // Toggle visibility
+  mageTextured.setVisible(true);
+  assert.equal(mageTextured.isVisible, true);
+  assert.equal(mageTextured.root.visible, true);
+  assert.ok(rig.sockets.rightHand.getObjectByName('Mage3DStaff'));
+
+  // Switch angle modes
+  mageTextured.setAngleMode('front');
+  assert.equal(mageTextured.angleMode, 'front');
+  mageTextured.setAngleMode('back');
+  assert.equal(mageTextured.angleMode, 'back');
+  mageTextured.setAngleMode('side');
+  assert.equal(mageTextured.angleMode, 'side');
+  mageTextured.setAngleMode('cross3d');
+  assert.equal(mageTextured.angleMode, 'cross3d');
+
+  // Run update loop with dummy camera
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0, 1.5, 4);
+  mageTextured.update(camera, 1.5);
+
+  mageTextured.setVisible(false);
+  assert.equal(mageTextured.isVisible, false);
 });
