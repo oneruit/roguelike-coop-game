@@ -21,6 +21,7 @@ import { RemotePlayer } from './entities/RemotePlayer';
 import { SoundManager } from './core/SoundManager';
 import { BiomeManager } from './world/BiomeManager';
 import { ChestManager } from './world/ChestManager';
+import { MobNestManager } from './world/MobNestManager';
 import { RiftTeleporter } from './world/RiftTeleporter';
 import { ProgressionManager } from './core/ProgressionManager';
 import { MetaProgression } from './meta/MetaProgression';
@@ -55,11 +56,13 @@ class Game {
   private chestManager: ChestManager;
   private riftTeleporter: RiftTeleporter;
   private merchantManager: MerchantManager;
+  private mobNestManager: MobNestManager;
 
   private combatDirector: CombatDirector;
   private netCoordinator: GameNetworkCoordinator;
   private sessionDirector: SessionDirector;
   private lobbyCoordinator: LobbyCoordinator;
+  private lastVolatileHitTime: number = 0;
 
   private remotePlayers: Map<string, RemotePlayer> = new Map();
   private scratchNearbyEnemies: Enemy[] = [];
@@ -88,20 +91,47 @@ class Game {
     this.enemyManager = new EnemyManager(this.engine.scene, this.dropManager, this.damageNumbers);
     this.enemyManager.camera = this.engine.camera;
     this.enemyManager.onVolatileRingTrigger = (pos, radius, damage) => {
+      const now = performance.now();
+      const isWithinGracePeriod = now - this.lastVolatileHitTime < 600; // 0.6s grace period against rapid multi-discharge
+      const effectiveDamage = isWithinGracePeriod ? Math.max(1, Math.round(damage * 0.25)) : damage;
+
       const dist = this.player.position.distanceTo(pos);
       if (dist <= radius && this.player.isAlive && !this.player.isDowned) {
-        this.player.takeDamage(damage);
-        this.damageNumbers.spawnDamage(this.player.position, damage, false, this.engine.camera, false, 1, 1, false);
+        this.lastVolatileHitTime = now;
+        this.player.takeDamage(effectiveDamage);
+        this.damageNumbers.spawnDamage(this.player.position, effectiveDamage, false, this.engine.camera, false, 1, 1, false);
+        SoundManager.playPlayerHurt?.();
+      }
+
+      for (const [id, remote] of this.remotePlayers) {
+        if (!remote.isDowned && remote.position.distanceTo(pos) <= radius) {
+          remote.hp = Math.max(0, remote.hp - effectiveDamage);
+          const cur = this.netCoordinator.pendingDamageToClients.get(id) || 0;
+          this.netCoordinator.pendingDamageToClients.set(id, cur + effectiveDamage);
+          remote.redrawOverhead();
+        }
       }
     };
     this.enemyManager.onVortexPullTrigger = (pos, radius, pullSpeed) => {
+      const maxPull = Math.min(pullSpeed || 2.8, 2.8);
       const diffX = pos.x - this.player.position.x;
       const diffZ = pos.z - this.player.position.z;
       const dist = Math.sqrt(diffX * diffX + diffZ * diffZ);
-      if (dist <= radius && dist > 0.5 && this.player.isAlive && !this.player.isDowned) {
-        const pull = Math.min(dist - 0.5, pullSpeed * (1 / 60));
+      if (dist <= radius && dist > 0.8 && this.player.isAlive && !this.player.isDowned) {
+        const pull = Math.min(dist - 0.8, maxPull);
         this.player.position.x += (diffX / dist) * pull;
         this.player.position.z += (diffZ / dist) * pull;
+      }
+      for (const remote of this.remotePlayers.values()) {
+        const rDiffX = pos.x - remote.position.x;
+        const rDiffZ = pos.z - remote.position.z;
+        const rDist = Math.sqrt(rDiffX * rDiffX + rDiffZ * rDiffZ);
+        if (rDist <= radius && rDist > 0.8 && !remote.isDowned) {
+          const rPull = Math.min(rDist - 0.8, maxPull);
+          remote.position.x += (rDiffX / rDist) * rPull;
+          remote.position.z += (rDiffZ / rDist) * rPull;
+          remote.redrawOverhead();
+        }
       }
     };
     this.player = new Player(this.engine.scene, 'ronin');
@@ -113,6 +143,7 @@ class Game {
     this.chestManager = new ChestManager(this.engine.scene);
     this.riftTeleporter = new RiftTeleporter(this.engine.scene, new Vector3(75, 0, 75));
     this.merchantManager = new MerchantManager(this.engine.scene, this.biomeManager);
+    this.mobNestManager = new MobNestManager(this.engine.scene);
     this.merchantManager.onMerchantSpawn = () => {
       this.hud.triggerAltarNotification('ТОРГОВЕЦ РАЗЛОМА', 'Таинственный купец прибыл в сектор!', '💰', '#f59e0b');
     };
@@ -160,6 +191,7 @@ class Game {
       this.riftTeleporter
     );
     this.mapManager.setMerchantManager(this.merchantManager);
+    this.mapManager.setMobNestManager(this.mobNestManager);
 
     this.mapManager.onStateChange = (isOpen) => {
       const isCoop = this.net.role !== 'solo' || this.player.isCoop;
@@ -299,7 +331,8 @@ class Game {
       this.combatDirector,
       this.netCoordinator,
       this.remotePlayers,
-      this.merchantManager
+      this.merchantManager,
+      this.mobNestManager
     );
 
     // Lobby Coordinator
@@ -654,6 +687,26 @@ class Game {
     this.engine.altarManager.onGreedTrialCompleted = (altar) => {
       this.sessionDirector.completeGreedTrial(altar);
     };
+
+    // Mob Nests events (Stage 4)
+    this.mobNestManager.onNestExploded = (_nest, destroyed, total) => {
+      const remaining = total - destroyed;
+      if (remaining > 0) {
+        this.hud.triggerAltarNotification(
+          'ГНЕЗДО БЕЗДНЫ УНИЧТОЖЕНО!',
+          `Осталось уничтожить: ${remaining} из ${total}. Орда пробудилась!`,
+          '💥',
+          '#ef4444'
+        );
+      } else {
+        this.hud.triggerAltarNotification(
+          'ВСЕ ГНЕЗДА УНИЧТОЖЕНЫ!',
+          'Пространственный Разлом стабилизировался! Босс пробуждается!',
+          '🌀',
+          '#38bdf8'
+        );
+      }
+    };
   }
 
   private updateSimulation(dt: number): void {
@@ -808,13 +861,13 @@ class Game {
 
     // 8. The Rift: Teleporter, Chests, Prompts
     // Stage 4 Secret Rift Teleporter: reveals only after all chests on stage 4 are opened
+    // Stage 4 Secret Rift Teleporter: reveals only after all 4 mob nests on stage 4 are destroyed
     if (this.biomeManager.stageNumber === 4 && !this.riftTeleporter.mesh.visible) {
-      const allOpened = this.chestManager.chests.length > 0 && this.chestManager.chests.every(c => c.isOpened);
-      if (allOpened) {
+      if (this.mobNestManager.isAllNestsDestroyed()) {
         this.riftTeleporter.mesh.visible = true;
         SulfurSmokeManager.spawn(this.engine.scene, this.riftTeleporter.position);
         SoundManager.playTeleporterActivate?.();
-        this.hud.triggerAltarNotification('ПРОСТРАНСТВЕННЫЙ РАЗЛОМ', 'В глубине сектора пробудилась древняя аномалия...', '🌀', '#38bdf8');
+        this.hud.triggerAltarNotification('ПРОСТРАНСТВЕННЫЙ РАЗЛОМ', 'Гнезда Бездны уничтожены! Портал стабилизировался!', '🌀', '#38bdf8');
       }
     }
 
@@ -843,6 +896,17 @@ class Game {
 
     this.chestManager.update(dt);
 
+    // 8c. Mob Nests simulation
+    this.mobNestManager.update(
+      dt,
+      this.player,
+      this.remotePlayers,
+      this.input.isInteractHeld(),
+      this.enemyManager,
+      this.damageNumbers,
+      this.engine.camera
+    );
+
     // 8b. Merchant simulation & HUD timer
     this.merchantManager.update(dt, (x, z) => this.engine.chunkManager.getElevation(x, z));
     if (this.hud.isMerchantOpen()) {
@@ -850,7 +914,10 @@ class Game {
     }
 
     const merchantPrompt = this.merchantManager.getInteraction(this.player.position);
-    if (merchantPrompt.canInteract) {
+    const nestPrompt = this.mobNestManager.getInteraction(this.player.position);
+    if (nestPrompt.prompt) {
+      this.hud.showInteractionPrompt(nestPrompt.prompt);
+    } else if (merchantPrompt.canInteract) {
       this.hud.showInteractionPrompt(merchantPrompt.prompt);
     } else {
       const telePrompt = this.riftTeleporter.getInteraction(this.player.position);

@@ -54,7 +54,7 @@ export const ANIM_LAYOUT_NECROMANCER: CharacterAnimLayout = {
 };
 
 /**
- * Legacy 4x4 / Ronin Standard:
+ * Legacy 4x4 Standard:
  * Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK
  */
 export const ANIM_LAYOUT_LEGACY: CharacterAnimLayout = {
@@ -80,8 +80,8 @@ export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLa
     case 'sorceress':
     case 'chakram':
     case 'flail':
-      return ANIM_LAYOUT_V2;
     case 'ronin':
+      return ANIM_LAYOUT_V2;
     case 'invoker':
     case 'archer':
     case 'rocket':

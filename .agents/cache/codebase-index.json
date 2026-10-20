@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-19T14:44:52.739Z",
-  "totalFiles": 187,
-  "totalSymbols": 1742,
-  "topLevelCount": 551,
-  "methodsCount": 1191,
+  "generatedAt": "2026-10-20T06:27:39.091Z",
+  "totalFiles": 190,
+  "totalSymbols": 1774,
+  "topLevelCount": 558,
+  "methodsCount": 1216,
   "entities": {
     "heroes": [
       {
@@ -1009,7 +1009,7 @@
       "kind": "const",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 60,
-      "doc": "Legacy 4x4 / Ronin Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK"
+      "doc": "Legacy 4x4 Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK"
     },
     {
       "name": "ANIM_LAYOUT_NECROMANCER",
@@ -2058,7 +2058,7 @@
       "name": "CenterSquareMapRenderContext",
       "kind": "interface",
       "file": "game/src/ui/MapCenterSquareRenderer.ts",
-      "line": 10
+      "line": 11
     },
     {
       "name": "ChakramWeapon",
@@ -2551,13 +2551,13 @@
       "name": "ChunkManager",
       "kind": "class",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 28
+      "line": 29
     },
     {
       "name": "ChunkManager.addChunkListener",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 59,
+      "line": 60,
       "className": "ChunkManager",
       "methodName": "addChunkListener"
     },
@@ -2565,7 +2565,7 @@
       "name": "ChunkManager.clear",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 343,
+      "line": 358,
       "className": "ChunkManager",
       "methodName": "clear",
       "doc": "Deep cleanup of all chunk geometries and entities."
@@ -2574,7 +2574,7 @@
       "name": "ChunkManager.cull",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 331,
+      "line": 346,
       "className": "ChunkManager",
       "methodName": "cull",
       "doc": "Frustum Culling: Hides chunks that are completely outside the camera view. Keeps active rendering to only the 6-9 chunks in front of the camera."
@@ -2583,7 +2583,7 @@
       "name": "ChunkManager.getActiveChunks",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 64,
+      "line": 65,
       "className": "ChunkManager",
       "methodName": "getActiveChunks"
     },
@@ -2591,7 +2591,7 @@
       "name": "ChunkManager.getElevation",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 85,
+      "line": 86,
       "className": "ChunkManager",
       "methodName": "getElevation",
       "doc": "Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5D pixel art consistency)."
@@ -2600,7 +2600,7 @@
       "name": "ChunkManager.getNormal",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 99,
+      "line": 100,
       "className": "ChunkManager",
       "methodName": "getNormal",
       "doc": "Returns surface normal vector at world coordinate (x, z)."
@@ -2609,7 +2609,7 @@
       "name": "ChunkManager.getSlowFactor",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 92,
+      "line": 93,
       "className": "ChunkManager",
       "methodName": "getSlowFactor",
       "doc": "Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 normally)."
@@ -2618,7 +2618,7 @@
       "name": "ChunkManager.setDeclarative",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 68,
+      "line": 69,
       "className": "ChunkManager",
       "methodName": "setDeclarative"
     },
@@ -2626,7 +2626,7 @@
       "name": "ChunkManager.update",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 323,
+      "line": 338,
       "className": "ChunkManager",
       "methodName": "update",
       "doc": "With the fixed preloaded map, update does not need to stream or unload chunks. Runs in 0ms without runtime memory allocation."
@@ -3077,7 +3077,7 @@
       "name": "DEFAULT_DEMO_LEADERBOARDS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 210
+      "line": 214
     },
     {
       "name": "DetailedPlayerResult",
@@ -3253,7 +3253,7 @@
       "name": "DiscoveredAltar",
       "kind": "interface",
       "file": "game/src/ui/MapManager.ts",
-      "line": 13
+      "line": 14
     },
     {
       "name": "disposeReactUI",
@@ -3406,7 +3406,7 @@
       "name": "Enemy.addBleed",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 929,
+      "line": 935,
       "className": "Enemy",
       "methodName": "addBleed"
     },
@@ -3414,7 +3414,7 @@
       "name": "Enemy.applyBurn",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 160,
+      "line": 161,
       "className": "Enemy",
       "methodName": "applyBurn"
     },
@@ -3422,7 +3422,7 @@
       "name": "Enemy.applyFrenzy",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 833,
+      "line": 838,
       "className": "Enemy",
       "methodName": "applyFrenzy"
     },
@@ -3430,7 +3430,7 @@
       "name": "Enemy.applyShock",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 172,
+      "line": 173,
       "className": "Enemy",
       "methodName": "applyShock"
     },
@@ -3438,7 +3438,7 @@
       "name": "Enemy.applySlow",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 108,
+      "line": 109,
       "className": "Enemy",
       "methodName": "applySlow"
     },
@@ -3446,7 +3446,7 @@
       "name": "Enemy.applySpellControl",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 443,
+      "line": 444,
       "className": "Enemy",
       "methodName": "applySpellControl"
     },
@@ -3454,7 +3454,7 @@
       "name": "Enemy.destroy",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 976,
+      "line": 982,
       "className": "Enemy",
       "methodName": "destroy"
     },
@@ -3462,7 +3462,7 @@
       "name": "Enemy.freeze",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 126,
+      "line": 127,
       "className": "Enemy",
       "methodName": "freeze"
     },
@@ -3470,7 +3470,7 @@
       "name": "Enemy.knockbackFrom",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 188,
+      "line": 189,
       "className": "Enemy",
       "methodName": "knockbackFrom"
     },
@@ -3478,7 +3478,7 @@
       "name": "Enemy.setDirection",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 451,
+      "line": 452,
       "className": "Enemy",
       "methodName": "setDirection"
     },
@@ -3486,7 +3486,7 @@
       "name": "Enemy.stun",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 141,
+      "line": 142,
       "className": "Enemy",
       "methodName": "stun"
     },
@@ -3494,7 +3494,7 @@
       "name": "Enemy.triggerAttack",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 462,
+      "line": 463,
       "className": "Enemy",
       "methodName": "triggerAttack"
     },
@@ -3502,7 +3502,7 @@
       "name": "Enemy.update",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 755,
+      "line": 760,
       "className": "Enemy",
       "methodName": "update"
     },
@@ -3510,7 +3510,7 @@
       "name": "Enemy.updateBleed",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 937,
+      "line": 943,
       "className": "Enemy",
       "methodName": "updateBleed"
     },
@@ -3518,7 +3518,7 @@
       "name": "Enemy.updateBossAnimation",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 475,
+      "line": 476,
       "className": "Enemy",
       "methodName": "updateBossAnimation"
     },
@@ -3526,7 +3526,7 @@
       "name": "Enemy.updateMonsterAnimation",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 519,
+      "line": 520,
       "className": "Enemy",
       "methodName": "updateMonsterAnimation"
     },
@@ -3534,7 +3534,7 @@
       "name": "Enemy.updateSimulation",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 567,
+      "line": 568,
       "className": "Enemy",
       "methodName": "updateSimulation",
       "doc": "Authoritative simulation update: handles movement, knockback, and AI logic. Completely decoupled from rendering and Three.js draw cycles."
@@ -3543,7 +3543,7 @@
       "name": "Enemy.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 764,
+      "line": 769,
       "className": "Enemy",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling and visual animations. If inFrustum is false, skips all bobbing math, matrix copies, and sets mesh.visible = false."
@@ -3564,13 +3564,13 @@
       "name": "EnemyManager",
       "kind": "class",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 22
+      "line": 23
     },
     {
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1201,
+      "line": 1279,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -3578,15 +3578,24 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1311,
+      "line": 1389,
       "className": "EnemyManager",
       "methodName": "clear"
+    },
+    {
+      "name": "EnemyManager.damageEnemiesInRadius",
+      "kind": "method",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 1176,
+      "className": "EnemyManager",
+      "methodName": "damageEnemiesInRadius",
+      "doc": "Deals friendly fire blast wave damage to all non-immortal monsters in radius."
     },
     {
       "name": "EnemyManager.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 320,
+      "line": 328,
       "className": "EnemyManager",
       "methodName": "getDamageMultiplier"
     },
@@ -3594,7 +3603,7 @@
       "name": "EnemyManager.getHpMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 310,
+      "line": 318,
       "className": "EnemyManager",
       "methodName": "getHpMultiplier",
       "doc": "Continuous progressive scaling multipliers with endless scaling, stage progression, and biome overstay penalties."
@@ -3603,7 +3612,7 @@
       "name": "EnemyManager.getKnockbackResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 352,
+      "line": 360,
       "className": "EnemyManager",
       "methodName": "getKnockbackResistance"
     },
@@ -3611,7 +3620,7 @@
       "name": "EnemyManager.getLateGameCcResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 341,
+      "line": 349,
       "className": "EnemyManager",
       "methodName": "getLateGameCcResistance"
     },
@@ -3619,7 +3628,7 @@
       "name": "EnemyManager.getLateGameDamageResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 367,
+      "line": 375,
       "className": "EnemyManager",
       "methodName": "getLateGameDamageResistance"
     },
@@ -3627,7 +3636,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1023,
+      "line": 1032,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -3636,7 +3645,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1188,
+      "line": 1266,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -3644,7 +3653,7 @@
       "name": "EnemyManager.getSpeedMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 330,
+      "line": 338,
       "className": "EnemyManager",
       "methodName": "getSpeedMultiplier"
     },
@@ -3652,7 +3661,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1048,
+      "line": 1057,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -3660,16 +3669,15 @@
       "name": "EnemyManager.killNonBossesAround",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1112,
+      "line": 1190,
       "className": "EnemyManager",
-      "methodName": "killNonBossesAround",
-      "doc": "Eliminates non-boss enemies in the specified radius around the center with holy trial clear damage."
+      "methodName": "killNonBossesAround"
     },
     {
       "name": "EnemyManager.registerEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 262,
+      "line": 263,
       "className": "EnemyManager",
       "methodName": "registerEnemy"
     },
@@ -3677,7 +3685,7 @@
       "name": "EnemyManager.resetStageTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 337,
+      "line": 345,
       "className": "EnemyManager",
       "methodName": "resetStageTime"
     },
@@ -3685,7 +3693,7 @@
       "name": "EnemyManager.setDeclarative",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 40,
+      "line": 41,
       "className": "EnemyManager",
       "methodName": "setDeclarative"
     },
@@ -3693,7 +3701,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1172,
+      "line": 1250,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -3701,7 +3709,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1159,
+      "line": 1237,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -3709,7 +3717,7 @@
       "name": "EnemyManager.spawnGreedTrialWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1059,
+      "line": 1068,
       "className": "EnemyManager",
       "methodName": "spawnGreedTrialWave",
       "doc": "Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position."
@@ -3718,7 +3726,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1164,
+      "line": 1242,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -3726,7 +3734,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 827,
+      "line": 836,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -3735,15 +3743,24 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1168,
+      "line": 1246,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
+    },
+    {
+      "name": "EnemyManager.spawnNestSwarm",
+      "kind": "method",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 1124,
+      "className": "EnemyManager",
+      "methodName": "spawnNestSwarm",
+      "doc": "Spawns a furious swarm of volcanic/void monsters bursting out from a detonated mob nest."
     },
     {
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 970,
+      "line": 979,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -3751,7 +3768,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1143,
+      "line": 1221,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -3759,7 +3776,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 742,
+      "line": 751,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -3768,7 +3785,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 668,
+      "line": 677,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -3777,7 +3794,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 863,
+      "line": 872,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -3785,7 +3802,7 @@
       "name": "EnemyManager.syncBalance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 226,
+      "line": 227,
       "className": "EnemyManager",
       "methodName": "syncBalance"
     },
@@ -3793,7 +3810,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1283,
+      "line": 1361,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -4632,7 +4649,7 @@
       "name": "GameState",
       "kind": "enum",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 41
+      "line": 42
     },
     {
       "name": "GameStateBridge",
@@ -4874,7 +4891,7 @@
       "name": "getEntityTexture",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 166
+      "line": 170
     },
     {
       "name": "getExclusiveWeaponOwner",
@@ -4954,7 +4971,7 @@
       "name": "getMonsterColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 98
+      "line": 102
     },
     {
       "name": "getPassiveBuffId",
@@ -5023,7 +5040,7 @@
       "name": "getWeaponColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 88
+      "line": 92
     },
     {
       "name": "getWeaponEffectiveCap",
@@ -5098,7 +5115,7 @@
       "name": "HERO_NAMES",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 197
+      "line": 201
     },
     {
       "name": "HERO_ORDER",
@@ -6378,6 +6395,22 @@
       "line": 4
     },
     {
+      "name": "InputManager.isInteractHeld",
+      "kind": "method",
+      "file": "game/src/core/InputManager.ts",
+      "line": 131,
+      "className": "InputManager",
+      "methodName": "isInteractHeld"
+    },
+    {
+      "name": "InputManager.isKeyDown",
+      "kind": "method",
+      "file": "game/src/core/InputManager.ts",
+      "line": 127,
+      "className": "InputManager",
+      "methodName": "isKeyDown"
+    },
+    {
       "name": "InputManager.onKeyDown",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
@@ -7496,13 +7529,13 @@
       "name": "MapManager",
       "kind": "class",
       "file": "game/src/ui/MapManager.ts",
-      "line": 22
+      "line": 23
     },
     {
       "name": "MapManager.applyOverlayMode",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 122,
+      "line": 124,
       "className": "MapManager",
       "methodName": "applyOverlayMode"
     },
@@ -7510,7 +7543,7 @@
       "name": "MapManager.bindEvents",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 144,
+      "line": 146,
       "className": "MapManager",
       "methodName": "bindEvents"
     },
@@ -7518,7 +7551,7 @@
       "name": "MapManager.clear",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 1161,
+      "line": 1168,
       "className": "MapManager",
       "methodName": "clear"
     },
@@ -7526,7 +7559,7 @@
       "name": "MapManager.close",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 230,
+      "line": 232,
       "className": "MapManager",
       "methodName": "close"
     },
@@ -7534,7 +7567,7 @@
       "name": "MapManager.open",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 219,
+      "line": 221,
       "className": "MapManager",
       "methodName": "open"
     },
@@ -7542,7 +7575,7 @@
       "name": "MapManager.renderCenterSquareMap",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 685,
+      "line": 691,
       "className": "MapManager",
       "methodName": "renderCenterSquareMap",
       "doc": "Renders the square full-world interactive overlay map (Diablo / PoE TAB style). Displays all 10x10 chunks across the 500x500 world bounds without bezel or round border. Shrouds unexplored chunks in Fog of War (туман войны). Displays all discovered altars, teleporter, chests, bosses, teammates, and player."
@@ -7551,7 +7584,7 @@
       "name": "MapManager.renderFullMap",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 708,
+      "line": 715,
       "className": "MapManager",
       "methodName": "renderFullMap",
       "doc": "Renders the full-screen vintage parchment surveyor map (TAB)."
@@ -7560,7 +7593,7 @@
       "name": "MapManager.renderMinimap",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 311,
+      "line": 317,
       "className": "MapManager",
       "methodName": "renderMinimap",
       "doc": "Renders the real-time circular Minimap in the corner of the screen."
@@ -7569,7 +7602,7 @@
       "name": "MapManager.setChestManager",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 239,
+      "line": 241,
       "className": "MapManager",
       "methodName": "setChestManager"
     },
@@ -7577,15 +7610,23 @@
       "name": "MapManager.setMerchantManager",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 247,
+      "line": 249,
       "className": "MapManager",
       "methodName": "setMerchantManager"
+    },
+    {
+      "name": "MapManager.setMobNestManager",
+      "kind": "method",
+      "file": "game/src/ui/MapManager.ts",
+      "line": 253,
+      "className": "MapManager",
+      "methodName": "setMobNestManager"
     },
     {
       "name": "MapManager.setRiftTeleporter",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 243,
+      "line": 245,
       "className": "MapManager",
       "methodName": "setRiftTeleporter"
     },
@@ -7593,7 +7634,7 @@
       "name": "MapManager.setSeed",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 39,
+      "line": 41,
       "className": "MapManager",
       "methodName": "setSeed"
     },
@@ -7601,7 +7642,7 @@
       "name": "MapManager.toggle",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 210,
+      "line": 212,
       "className": "MapManager",
       "methodName": "toggle"
     },
@@ -7609,7 +7650,7 @@
       "name": "MapManager.toggleCenterOverlay",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 116,
+      "line": 118,
       "className": "MapManager",
       "methodName": "toggleCenterOverlay"
     },
@@ -7617,7 +7658,7 @@
       "name": "MapManager.update",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 251,
+      "line": 257,
       "className": "MapManager",
       "methodName": "update"
     },
@@ -8097,6 +8138,99 @@
       "line": 13
     },
     {
+      "name": "MobNest",
+      "kind": "class",
+      "file": "game/src/world/MobNest.ts",
+      "line": 27
+    },
+    {
+      "name": "MobNest.createOverheadUI",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 169,
+      "className": "MobNest",
+      "methodName": "createOverheadUI"
+    },
+    {
+      "name": "MobNest.createVisuals",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 102,
+      "className": "MobNest",
+      "methodName": "createVisuals"
+    },
+    {
+      "name": "MobNest.dispose",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 376,
+      "className": "MobNest",
+      "methodName": "dispose"
+    },
+    {
+      "name": "MobNest.getCraterTexture",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 90,
+      "className": "MobNest",
+      "methodName": "getCraterTexture"
+    },
+    {
+      "name": "MobNest.getNestTexture",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 78,
+      "className": "MobNest",
+      "methodName": "getNestTexture"
+    },
+    {
+      "name": "MobNest.redrawOverhead",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 195,
+      "className": "MobNest",
+      "methodName": "redrawOverhead"
+    },
+    {
+      "name": "MobNestManager",
+      "kind": "class",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 15
+    },
+    {
+      "name": "MobNestManager.clear",
+      "kind": "method",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 207,
+      "className": "MobNestManager",
+      "methodName": "clear"
+    },
+    {
+      "name": "MobNestManager.getInteraction",
+      "kind": "method",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 162,
+      "className": "MobNestManager",
+      "methodName": "getInteraction",
+      "doc": "Returns interaction prompt details when the player is near a nest."
+    },
+    {
+      "name": "MobNestManager.isAllNestsDestroyed",
+      "kind": "method",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 203,
+      "className": "MobNestManager",
+      "methodName": "isAllNestsDestroyed"
+    },
+    {
+      "name": "MobNestManager.setDeclarative",
+      "kind": "method",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 26,
+      "className": "MobNestManager",
+      "methodName": "setDeclarative"
+    },
+    {
       "name": "ModalManager",
       "kind": "class",
       "file": "admin/src/ui/modal.ts",
@@ -8136,7 +8270,7 @@
       "name": "MONSTER_COLORS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 74
+      "line": 78
     },
     {
       "name": "MonsterBalanceConfig",
@@ -8149,6 +8283,12 @@
       "kind": "interface",
       "file": "game/src/core/TextureManager.ts",
       "line": 39
+    },
+    {
+      "name": "NestState",
+      "kind": "type",
+      "file": "game/src/world/MobNest.ts",
+      "line": 25
     },
     {
       "name": "NetBuffInfo",
@@ -8487,7 +8627,13 @@
       "name": "OccupiedArea",
       "kind": "interface",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 22
+      "line": 23
+    },
+    {
+      "name": "OccupiedArea",
+      "kind": "interface",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 9
     },
     {
       "name": "ONE_MONTH_MS",
@@ -9224,7 +9370,7 @@
       "name": "PlayerTargetInfo",
       "kind": "interface",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 15
+      "line": 16
     },
     {
       "name": "PlayerXpPayload",
@@ -10178,7 +10324,7 @@
       "name": "renderCenterSquareMap",
       "kind": "function",
       "file": "game/src/ui/MapCenterSquareRenderer.ts",
-      "line": 34,
+      "line": 36,
       "doc": "Renders the square full-world interactive overlay map (Diablo / PoE TAB style). Displays all 10x10 chunks across the 500x500 world bounds without bezel or round border. Shrouds unexplored chunks in Fog of War (туман войны). Displays all discovered altars, teleporter, chests, bosses, teammates, and player."
     },
     {
@@ -10892,13 +11038,13 @@
       "name": "SessionDirector",
       "kind": "class",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 61
+      "line": 62
     },
     {
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 726,
+      "line": 731,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -10907,7 +11053,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 934,
+      "line": 939,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -10915,7 +11061,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1083,
+      "line": 1088,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -10924,7 +11070,7 @@
       "name": "SessionDirector.completeGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 781,
+      "line": 786,
       "className": "SessionDirector",
       "methodName": "completeGreedTrial"
     },
@@ -10932,7 +11078,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 464,
+      "line": 469,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -10940,7 +11086,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 584,
+      "line": 589,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -10948,7 +11094,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 455,
+      "line": 460,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -10956,7 +11102,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 506,
+      "line": 511,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -10964,7 +11110,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 447,
+      "line": 452,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -10972,7 +11118,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1245,
+      "line": 1250,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -10981,7 +11127,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 389,
+      "line": 393,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -10989,7 +11135,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1167,
+      "line": 1172,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -10998,7 +11144,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 332,
+      "line": 336,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -11006,7 +11152,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 276,
+      "line": 280,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -11014,7 +11160,7 @@
       "name": "SessionDirector.startGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 745,
+      "line": 750,
       "className": "SessionDirector",
       "methodName": "startGreedTrial"
     },
@@ -11022,7 +11168,7 @@
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 381,
+      "line": 385,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -11030,7 +11176,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1113,
+      "line": 1118,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -11039,7 +11185,7 @@
       "name": "SessionDirector.toggleDevMode",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 190,
+      "line": 194,
       "className": "SessionDirector",
       "methodName": "toggleDevMode"
     },
@@ -11047,7 +11193,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1012,
+      "line": 1017,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -11055,7 +11201,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 474,
+      "line": 479,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -11063,7 +11209,7 @@
       "name": "SessionDirector.updateGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 765,
+      "line": 770,
       "className": "SessionDirector",
       "methodName": "updateGreedTrial"
     },
@@ -11071,7 +11217,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 814,
+      "line": 819,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },
@@ -11079,7 +11225,7 @@
       "name": "SessionDirector.wireCoordinatorCallbacks",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 165,
+      "line": 169,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
     },
@@ -12102,6 +12248,42 @@
       "methodName": "playAltarCapturing"
     },
     {
+      "name": "SoundManager.playBombArmed",
+      "kind": "method",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 1031,
+      "className": "SoundManager",
+      "methodName": "playBombArmed",
+      "doc": "Mechanical latch and arming beep once charge is locked onto nest"
+    },
+    {
+      "name": "SoundManager.playBombExplosion",
+      "kind": "method",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 1073,
+      "className": "SoundManager",
+      "methodName": "playBombExplosion",
+      "doc": "Massive detonation boom with deep sub-bass rumble and blast shockwave"
+    },
+    {
+      "name": "SoundManager.playBombPlanting",
+      "kind": "method",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 1010,
+      "className": "SoundManager",
+      "methodName": "playBombPlanting",
+      "doc": "Rhythmic high-tech pulse sound while holding to plant explosive charge on a mob nest"
+    },
+    {
+      "name": "SoundManager.playBombTick",
+      "kind": "method",
+      "file": "game/src/core/SoundManager.ts",
+      "line": 1053,
+      "className": "SoundManager",
+      "methodName": "playBombTick",
+      "doc": "Sharp countdown beeping sound (5... 4... 3... 2... 1...)"
+    },
+    {
       "name": "SoundManager.playBowShoot",
       "kind": "method",
       "file": "game/src/core/SoundManager.ts",
@@ -12489,7 +12671,7 @@
       "name": "SPAWN_OFFSETS",
       "kind": "const",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 52
+      "line": 53
     },
     {
       "name": "SPECIAL_QUESTS_CONFIG",
@@ -13213,13 +13395,13 @@
       "name": "toPluralCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 137
+      "line": 141
     },
     {
       "name": "toSingularCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 108
+      "line": 112
     },
     {
       "name": "TreeManager",
@@ -13614,6 +13796,74 @@
       "line": 11
     },
     {
+      "name": "VolatileRingInstance",
+      "kind": "class",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 23,
+      "doc": "Visual effect instance for the Volatile elite affix lightning discharge. Displays a 0.65s ground telegraph circle before detonating an expanding electric shockwave."
+    },
+    {
+      "name": "VolatileRingInstance.dispose",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 187,
+      "className": "VolatileRingInstance",
+      "methodName": "dispose"
+    },
+    {
+      "name": "VolatileRingInstance.initTelegraph",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 66,
+      "className": "VolatileRingInstance",
+      "methodName": "initTelegraph"
+    },
+    {
+      "name": "VolatileRingInstance.triggerDetonation",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 141,
+      "className": "VolatileRingInstance",
+      "methodName": "triggerDetonation"
+    },
+    {
+      "name": "VolatileRingInstance.update",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 96,
+      "className": "VolatileRingInstance",
+      "methodName": "update"
+    },
+    {
+      "name": "VolatileRingManager",
+      "kind": "class",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 221,
+      "doc": "Global manager for Volatile elite affix lightning telegraphs and shockwave detonations."
+    },
+    {
+      "name": "VolatileRingManager.clear",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 244,
+      "className": "VolatileRingManager",
+      "methodName": "clear"
+    },
+    {
+      "name": "VolatileRingManager.update",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 234,
+      "className": "VolatileRingManager",
+      "methodName": "update"
+    },
+    {
+      "name": "VolatileRingOptions",
+      "kind": "interface",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 12
+    },
+    {
       "name": "Weapon",
       "kind": "class",
       "file": "game/src/combat/WeaponBase.ts",
@@ -13623,7 +13873,7 @@
       "name": "WEAPON_COLORS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 54
+      "line": 58
     },
     {
       "name": "WEAPON_GRADES",

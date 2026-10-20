@@ -1004,5 +1004,102 @@ export class SoundManager {
       chimeOsc.stop(ctx.currentTime + idx * 0.05 + 0.85);
     });
   }
-}
+  /**
+   * Rhythmic high-tech pulse sound while holding to plant explosive charge on a mob nest
+   */
+  public static playBombPlanting(progress: number) {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    const freq = 220 + Math.min(1, Math.max(0, progress)) * 440;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq + 60, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  }
 
+  /**
+   * Mechanical latch and arming beep once charge is locked onto nest
+   */
+  public static playBombArmed() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    [520, 780, 1040].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      const t = ctx.currentTime + idx * 0.08;
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      osc.connect(gain);
+      gain.connect(this.getMasterGain());
+      osc.start(t);
+      osc.stop(t + 0.13);
+    });
+  }
+
+  /**
+   * Sharp countdown beeping sound (5... 4... 3... 2... 1...)
+   */
+  public static playBombTick(fuseTimer: number) {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    const baseFreq = fuseTimer <= 1.5 ? 1200 : (fuseTimer <= 3.0 ? 880 : 660);
+    osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+    osc.connect(gain);
+    gain.connect(this.getMasterGain());
+    osc.start();
+    osc.stop(ctx.currentTime + 0.07);
+  }
+
+  /**
+   * Massive detonation boom with deep sub-bass rumble and blast shockwave
+   */
+  public static playBombExplosion() {
+    this.init();
+    if (this.isMuted || !this.ctx) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // Sub-bass detonation
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'triangle';
+    subOsc.frequency.setValueAtTime(160, now);
+    subOsc.frequency.exponentialRampToValueAtTime(28, now + 0.8);
+    subGain.gain.setValueAtTime(0.65, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+    subOsc.connect(subGain);
+    subGain.connect(this.getMasterGain());
+    subOsc.start(now);
+    subOsc.stop(now + 0.95);
+
+    // Mid-range punch puncher
+    const punchOsc = ctx.createOscillator();
+    const punchGain = ctx.createGain();
+    punchOsc.type = 'sawtooth';
+    punchOsc.frequency.setValueAtTime(260, now);
+    punchOsc.frequency.exponentialRampToValueAtTime(45, now + 0.4);
+    punchGain.gain.setValueAtTime(0.35, now);
+    punchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    punchOsc.connect(punchGain);
+    punchGain.connect(this.getMasterGain());
+    punchOsc.start(now);
+    punchOsc.stop(now + 0.5);
+  }
+}

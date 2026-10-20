@@ -48,7 +48,11 @@ export const TEXTURE_MAP: Record<string, string> = {
   'boss-demon': '/textures/bosses/boss_demon_front.png',
   'boss-hydra': '/textures/bosses/boss_hydra_front.png',
   'boss-spore_queen': '/textures/bosses/boss_hydra_front.png',
-  'boss-stage5_boss': '/textures/bosses/boss_hydra_front.png'
+  'boss-stage5_boss': '/textures/bosses/boss_hydra_front.png',
+
+  // Props & Nests
+  'prop-void_nest': '/textures/props/void_nest.png',
+  'prop-void_nest_crater': '/textures/props/void_nest_crater.png'
 };
 
 export const WEAPON_COLORS: Record<string, string> = {

@@ -18,6 +18,7 @@ import { RiftTeleporter } from './RiftTeleporter';
 import { TerrainElevation } from './TerrainElevation';
 import { RoughTerrainManager } from './RoughTerrainManager';
 import { TreeManager } from './TreeManager';
+import type { MobNestManager } from './MobNestManager';
 
 export interface OccupiedArea {
   x: number;
@@ -109,7 +110,8 @@ export class ChunkManager {
     chestManager?: ChestManager,
     riftTeleporter?: RiftTeleporter,
     stageNumber: number = 1,
-    biomeId?: string
+    biomeId?: string,
+    mobNestManager?: MobNestManager
   ) {
     this.clear();
 
@@ -219,6 +221,19 @@ export class ChunkManager {
       );
       for (const c of placedChests) {
         occupied.push(c);
+      }
+    }
+
+    // 4b. Mob Nests on Stage 4 (exactly 4 quadrant bases)
+    if (mobNestManager) {
+      const placedNests = mobNestManager.generateStageNests(
+        stageNumber,
+        rng,
+        occupied,
+        (x, z) => this.elevation.getElevation(x, z)
+      );
+      for (const n of placedNests) {
+        occupied.push(n);
       }
     }
 

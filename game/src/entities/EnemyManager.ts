@@ -10,6 +10,7 @@ import { DifficultyDirector } from '../director/DifficultyDirector';
 import { BalanceManager } from '../balance/BalanceManager';
 import { MetaProgression } from '../meta/MetaProgression';
 import { FinalBossPylonManager } from './FinalBossPylonManager';
+import { VolatileRingManager } from '../vfx/VolatileRingVfx';
 import type { HUD } from '../ui/HUD';
 
 export interface PlayerTargetInfo {
@@ -286,13 +287,20 @@ export class EnemyManager {
       SoundManager.playReaperSpawn?.();
     };
     enemy.onVolatileDischarge = (volatileEnemy) => {
-      if (this.camera) {
-        this.damageNumbers.spawnDamage(volatileEnemy.position, 0, true, this.camera, false, 2, 1, false);
-      }
-      SoundManager.playLightning?.();
-      if (this.onVolatileRingTrigger) {
-        this.onVolatileRingTrigger(volatileEnemy.position, 7.0, volatileEnemy.damage * 0.85);
-      }
+      // 0.65s ground telegraph with reduced danger radius (4.2m) and capped non-lethal damage ratio (30%)
+      const dischargeRadius = 4.2;
+      const dischargeDamage = Math.min(65, Math.max(15, Math.round(volatileEnemy.damage * 0.30)));
+      VolatileRingManager.spawn(this.scene, volatileEnemy.position.clone(), {
+        radius: dischargeRadius,
+        telegraphDuration: 0.65,
+        damage: dischargeDamage,
+        onDetonate: (detonatePos, radius, damage) => {
+          SoundManager.playLightning?.();
+          if (this.onVolatileRingTrigger) {
+            this.onVolatileRingTrigger(detonatePos, radius, damage);
+          }
+        }
+      });
     };
     enemy.onVortexPull = (vortexEnemy, radius, pullSpeed) => {
       if (this.onVortexPullTrigger) {
@@ -390,6 +398,7 @@ export class EnemyManager {
     this.gameTime += dt;
     this.stageTime += dt;
     this.spawnTimer += dt;
+    VolatileRingManager.update(dt);
 
     // 1. Spawning Boss every 5 minutes only starting from minute 15 (minute 15, 20, 25, 30, 35, 40...)
     const currentMinute = Math.floor(this.gameTime / 60);
@@ -1109,6 +1118,75 @@ export class EnemyManager {
   /**
    * Eliminates non-boss enemies in the specified radius around the center with holy trial clear damage.
    */
+  /**
+   * Spawns a furious swarm of volcanic/void monsters bursting out from a detonated mob nest.
+   */
+  public spawnNestSwarm(centerPos: Vector3, count: number = 14): Enemy[] {
+    const types: EnemyType[] = ['crawler', 'scorpion', 'coyote', 'skeleton'];
+    const affixes: EliteAffix[] = ['blazing', 'volatile', 'vortex', 'juggernaut'];
+    const spawned: Enemy[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const distance = 2.5 + Math.random() * 4.5;
+      const spawnPos = new Vector3(
+        Math.max(-219, Math.min(219, centerPos.x + Math.cos(angle) * distance)),
+        0,
+        Math.max(-219, Math.min(219, centerPos.z + Math.sin(angle) * distance))
+      );
+      if (this.getElevation) {
+        spawnPos.y = this.getElevation(spawnPos.x, spawnPos.z);
+      }
+
+      const baseConfig = this.configs[type] || this.configs.crawler;
+      const hpMult = this.getHpMultiplier() * 1.3;
+      const dmgMult = this.getDamageMultiplier() * 1.15;
+      const spdMult = this.getSpeedMultiplier() * 1.4; // rapid burst from nest
+
+      // 1 guaranteed elite per swarm (first mob), or 15% chance for others
+      const isElite = i === 0 || Math.random() < 0.15;
+      const chosenAffix = isElite ? affixes[Math.floor(Math.random() * affixes.length)] : undefined;
+
+      const scaledConfig: EnemyConfig = {
+        ...baseConfig,
+        hp: Math.max(1, Math.round(baseConfig.hp * hpMult * (isElite ? 1.8 : 1.0))),
+        damage: Math.max(1, Math.round(baseConfig.damage * dmgMult)),
+        speed: Number((baseConfig.speed * spdMult).toFixed(2)),
+        eliteAffix: chosenAffix,
+        creditsValue: (baseConfig.creditsValue || 1) + (isElite ? 10 : 3)
+      };
+
+      const enemy = this.registerEnemy(new Enemy(scaledConfig, spawnPos));
+      enemy.ccResistance = this.getLateGameCcResistance(isElite);
+      enemy.damageResistance = this.getLateGameDamageResistance(isElite);
+      enemy.knockbackResistance = this.getKnockbackResistance(isElite, isElite);
+      this.enemies.push(enemy);
+      spawned.push(enemy);
+      if (!this.isDeclarative) {
+        this.scene.add(enemy.mesh);
+      }
+    }
+    return spawned;
+  }
+
+  /**
+   * Deals friendly fire blast wave damage to all non-immortal monsters in radius.
+   */
+  public damageEnemiesInRadius(center: Vector3, radius: number, damage: number, camera?: Camera): number {
+    const rSq = radius * radius;
+    let hitCount = 0;
+    for (let i = this.enemies.length - 1; i >= 0; i--) {
+      const enemy = this.enemies[i];
+      if (enemy.isImmortal || !enemy.isAlive) continue;
+      if (enemy.position.distanceToSquared(center) <= rSq) {
+        this.damageEnemy(enemy, damage, center, camera, 'bomb', true, true, 2, 2.0);
+        hitCount++;
+      }
+    }
+    return hitCount;
+  }
+
   public killNonBossesAround(center: Vector3, radius: number = 40, camera?: Camera) {
     const rSq = radius * radius;
     for (let i = this.enemies.length - 1; i >= 0; i--) {
@@ -1310,6 +1388,7 @@ export class EnemyManager {
 
   public clear() {
     this.finalBossPylonManager.cleanup();
+    VolatileRingManager.clear();
     this.spatialGrid.clear();
     for (const enemy of this.enemies) {
       enemy.destroy(this.scene);

@@ -30,6 +30,7 @@ import { LobbyCoordinator } from '../net/LobbyCoordinator';
 import { RIFT_ITEMS, type RiftItemDef, type RiftItemId } from '../items/RiftItemSystem';
 import { getPassiveBuffId } from '../drops/PassiveBuffs';
 import { MerchantManager } from '../world/MerchantManager';
+import type { MobNestManager } from '../world/MobNestManager';
 import { FireRingWeapon } from '../combat/weapons/MagicWeapons';
 import { SulfurSmokeManager } from '../vfx/SulfurSmokeVfx';
 import { MetaProgression } from '../meta/MetaProgression';
@@ -77,6 +78,7 @@ export class SessionDirector {
   public lobbyCoordinator?: LobbyCoordinator;
   private remotePlayers: Map<string, RemotePlayer>;
   public merchantManager: MerchantManager;
+  public mobNestManager?: MobNestManager;
 
   public gameState: GameState = GameState.MAIN_MENU;
   public gameTime = 0;
@@ -118,7 +120,8 @@ export class SessionDirector {
     combatDirector: CombatDirector,
     netCoordinator: GameNetworkCoordinator,
     remotePlayers: Map<string, RemotePlayer>,
-    merchantManager: MerchantManager
+    merchantManager: MerchantManager,
+    mobNestManager?: MobNestManager
   ) {
     this.engine = engine;
     this.player = player;
@@ -137,6 +140,7 @@ export class SessionDirector {
     this.netCoordinator = netCoordinator;
     this.remotePlayers = remotePlayers;
     this.merchantManager = merchantManager;
+    this.mobNestManager = mobNestManager;
 
     this.player.onLevelGained = (levels: number) => {
       this.pendingLevelUps += levels;
@@ -416,6 +420,7 @@ export class SessionDirector {
     this.mapManager.clear();
     this.mapManager.close();
     this.merchantManager.reset();
+    this.mobNestManager?.clear();
 
     this.player.reset();
     this.devManager.reset();
@@ -537,9 +542,9 @@ export class SessionDirector {
       this.biomeManager.applyBiomeToScene(this.engine.scene, this.engine.timeOfDay);
 
       if (this.net.role !== 'client') {
-        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1, this.biomeManager.currentBiome.id);
+        this.engine.chunkManager.generateMap(this.currentSeed, this.chestManager, this.riftTeleporter, 1, this.biomeManager.currentBiome.id, this.mobNestManager);
       } else {
-        this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1, this.biomeManager.currentBiome.id);
+        this.engine.chunkManager.generateMap(this.currentSeed, undefined, this.riftTeleporter, 1, this.biomeManager.currentBiome.id, this.mobNestManager);
       }
 
       const spawnY = this.engine.chunkManager.getElevation(myOffset[0], myOffset[1]);
@@ -870,7 +875,7 @@ export class SessionDirector {
 
       // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
       AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${nextBiome.name.toUpperCase()}`);
-      this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber, nextBiome.id);
+      this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber, nextBiome.id, this.mobNestManager);
       this.mapManager.setSeed(stageSeed);
       this.mapManager.clear();
 
@@ -974,7 +979,7 @@ export class SessionDirector {
         : SeededRNG.hashString(this.currentSeed.toString());
       const stageSeed = numBase + stageNumber * 10007;
       AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${(biomeName || nextBiome.name).toUpperCase()}`);
-      this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber, nextBiome.id);
+      this.engine.chunkManager.generateMap(stageSeed, undefined, this.riftTeleporter, stageNumber, nextBiome.id, this.mobNestManager);
       this.mapManager.setSeed(stageSeed);
       this.mapManager.clear();
 
@@ -1315,7 +1320,7 @@ export class SessionDirector {
         ? numSeed
         : numSeed + data.stageNumber * 10007;
 
-      this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, data.stageNumber, currentBiome.id);
+      this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, data.stageNumber, currentBiome.id, this.mobNestManager);
       this.mapManager.setSeed(stageSeed);
       this.mapManager.clear();
 

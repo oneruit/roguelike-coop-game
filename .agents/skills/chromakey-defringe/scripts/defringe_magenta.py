@@ -55,16 +55,25 @@ def remove_magenta_and_defringe(
     # 1. Detect background pixels
     dist_to_bg = np.sqrt(np.sum((rgb - bg_rgb) ** 2, axis=2))
 
-    # Characteristic magenta hue check: high R, high B, low G
-    is_magenta_hue = (
-        (rgb[:, :, 0] > 95.0)
-        & (rgb[:, :, 2] > 95.0)
-        & (rgb[:, :, 1] < 140.0)
-        & ((rgb[:, :, 0] - rgb[:, :, 1]) > 30.0)
-        & ((rgb[:, :, 2] - rgb[:, :, 1]) > 30.0)
-    )
+    is_green = (bg_rgb[1] > 180.0 and bg_rgb[0] < 70.0 and bg_rgb[2] < 70.0)
+    if is_green:
+        is_hue = (
+            (rgb[:, :, 1] > 95.0)
+            & (rgb[:, :, 0] < 140.0)
+            & (rgb[:, :, 2] < 140.0)
+            & ((rgb[:, :, 1] - rgb[:, :, 0]) > 30.0)
+            & ((rgb[:, :, 1] - rgb[:, :, 2]) > 30.0)
+        )
+    else:
+        # Characteristic magenta hue check: high R, high B, low G
+        is_hue = (
+            (rgb[:, :, 0] > 50.0)
+            & (rgb[:, :, 2] > 50.0)
+            & ((rgb[:, :, 0] - rgb[:, :, 1]) > 18.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 18.0)
+        )
 
-    bg_candidate = (dist_to_bg <= bg_tolerance) | (is_magenta_hue & (dist_to_bg <= 145.0))
+    bg_candidate = (dist_to_bg <= bg_tolerance) | is_hue
 
     if flood_fill:
         # Connect only from image borders
@@ -117,42 +126,61 @@ def remove_magenta_and_defringe(
     g = rgb[:, :, 1]
     b = rgb[:, :, 2]
 
-    # Calculate excess magenta: min(R-G, B-G)
-    excess_magenta = np.maximum(0.0, np.minimum(r - g, b - g))
+    if is_green:
+        excess = np.maximum(0.0, g - np.maximum(r, b))
+    else:
+        # Calculate excess magenta: min(R-G, B-G)
+        excess = np.maximum(0.0, np.minimum(r - g, b - g))
 
     # Spill exists where excess exceeds threshold on edge pixels
-    spill_mask = edge_mask & (excess_magenta > spill_threshold)
+    spill_mask = edge_mask & (excess > spill_threshold)
 
     out_rgb = rgb.copy()
 
     if despill_mode == "cut":
-        # Make pixels with strong magenta spill transparent
-        out_alpha[spill_mask & (excess_magenta > 40.0)] = 0
-        # Light despill on the rest
+        out_alpha[spill_mask & (excess > 40.0)] = 0
         remain_spill = spill_mask & (out_alpha > 0)
-        out_rgb[remain_spill, 0] = np.clip(r[remain_spill] - excess_magenta[remain_spill], 0, 255)
-        out_rgb[remain_spill, 2] = np.clip(b[remain_spill] - excess_magenta[remain_spill], 0, 255)
+        if is_green:
+            out_rgb[remain_spill, 1] = np.clip(g[remain_spill] - excess[remain_spill], 0, 255)
+        else:
+            out_rgb[remain_spill, 0] = np.clip(r[remain_spill] - excess[remain_spill], 0, 255)
+            out_rgb[remain_spill, 2] = np.clip(b[remain_spill] - excess[remain_spill], 0, 255)
 
     elif despill_mode == "dark-outline":
-        # Neutralize to dark outline tones (ideal for pixel art sprites with dark borders)
         strong_spill = spill_mask & (dist_to_bg < 180.0)
-        out_rgb[strong_spill, 0] = np.clip(g[strong_spill] * 0.9, 0, 255)
-        out_rgb[strong_spill, 1] = np.clip(g[strong_spill] * 0.9, 0, 255)
-        out_rgb[strong_spill, 2] = np.clip(g[strong_spill] * 0.9, 0, 255)
-        # Any residual spill
+        base = np.maximum(r[strong_spill], b[strong_spill]) if is_green else g[strong_spill]
+        out_rgb[strong_spill, 0] = np.clip(base * 0.9, 0, 255)
+        out_rgb[strong_spill, 1] = np.clip(base * 0.9, 0, 255)
+        out_rgb[strong_spill, 2] = np.clip(base * 0.9, 0, 255)
         other_spill = spill_mask & ~strong_spill
-        out_rgb[other_spill, 0] = np.clip(r[other_spill] - excess_magenta[other_spill], 0, 255)
-        out_rgb[other_spill, 2] = np.clip(b[other_spill] - excess_magenta[other_spill], 0, 255)
+        if is_green:
+            out_rgb[other_spill, 1] = np.clip(g[other_spill] - excess[other_spill], 0, 255)
+        else:
+            out_rgb[other_spill, 0] = np.clip(r[other_spill] - excess[other_spill], 0, 255)
+            out_rgb[other_spill, 2] = np.clip(b[other_spill] - excess[other_spill], 0, 255)
 
     else:  # default: "despill" (mathematical color decontamination)
-        # Boundary pixels with very high magenta blend and minimal green are essentially background
-        mostly_background = spill_mask & (dist_to_bg < 90.0) & (g < 35.0)
+        mostly_background = spill_mask & (dist_to_bg < 90.0) & ((r < 35.0) if is_green else (g < 35.0))
         out_alpha[mostly_background] = 0
 
-        # Decontaminate all remaining edge pixels: subtract magenta spill
         active_spill = spill_mask & ~mostly_background
-        out_rgb[active_spill, 0] = np.clip(r[active_spill] - excess_magenta[active_spill], 0, 255)
-        out_rgb[active_spill, 2] = np.clip(b[active_spill] - excess_magenta[active_spill], 0, 255)
+        if is_green:
+            out_rgb[active_spill, 1] = np.clip(g[active_spill] - excess[active_spill], 0, 255)
+        else:
+            excess_b = np.maximum(0.0, b[active_spill] - g[active_spill])
+            excess_r = np.maximum(0.0, r[active_spill] - g[active_spill])
+            excess_both = np.minimum(excess_r, excess_b)
+            is_red = (r[active_spill] - b[active_spill] > 30.0) & (b[active_spill] > g[active_spill] + 10.0)
+            is_blue = (b[active_spill] - r[active_spill] > 30.0) & (r[active_spill] > g[active_spill] + 10.0)
+            is_mag = (~is_red) & (~is_blue)
+            
+            # Red pixels: only remove excess blue
+            out_rgb[active_spill, 2] = np.where(is_red, np.clip(b[active_spill] - excess_b, 0, 255), out_rgb[active_spill, 2])
+            # Blue pixels: only remove excess red
+            out_rgb[active_spill, 0] = np.where(is_blue, np.clip(r[active_spill] - excess_r, 0, 255), out_rgb[active_spill, 0])
+            # Balanced magenta: remove excess from both
+            out_rgb[active_spill, 0] = np.where(is_mag, np.clip(r[active_spill] - excess_both, 0, 255), out_rgb[active_spill, 0])
+            out_rgb[active_spill, 2] = np.where(is_mag, np.clip(b[active_spill] - excess_both, 0, 255), out_rgb[active_spill, 2])
 
     # 5. Assemble final RGBA image
     result = np.zeros((h, w, 4), dtype=np.uint8)

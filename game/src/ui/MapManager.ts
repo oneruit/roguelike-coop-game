@@ -8,6 +8,7 @@ import { RemotePlayer } from '../entities/RemotePlayer';
 import { ChestManager } from '../world/ChestManager';
 import { RiftTeleporter } from '../world/RiftTeleporter';
 import { MerchantManager } from '../world/MerchantManager';
+import { MobNestManager } from '../world/MobNestManager';
 import { renderCenterSquareMap as drawCenterSquareMap } from './MapCenterSquareRenderer';
 
 export interface DiscoveredAltar {
@@ -28,6 +29,7 @@ export class MapManager {
   public chestManager?: ChestManager;
   public riftTeleporter?: RiftTeleporter;
   public merchantManager?: MerchantManager;
+  public mobNestManager?: MobNestManager;
   public partner: RemotePlayer | null = null;
   public partners: RemotePlayer[] = [];
 
@@ -246,6 +248,10 @@ export class MapManager {
 
   public setMerchantManager(merchantManager: MerchantManager) {
     this.merchantManager = merchantManager;
+  }
+
+  public setMobNestManager(mobNestManager: MobNestManager) {
+    this.mobNestManager = mobNestManager;
   }
 
   public update(dt: number) {
@@ -694,6 +700,7 @@ export class MapManager {
       chestManager: this.chestManager,
       discoveredAltars: this.discoveredAltars,
       riftTeleporter: this.riftTeleporter,
+      mobNestManager: this.mobNestManager,
       merchantManager: this.merchantManager,
       enemyManager: this.enemyManager,
       partners: this.partners.length > 0 ? this.partners : this.partner ? [this.partner] : [],
