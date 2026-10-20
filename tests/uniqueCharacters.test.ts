@@ -10,6 +10,7 @@ import {
 } from '../game/src/shared/UniqueCharacters';
 import { INVOKER_SPELL_IDS, invokerWeaponId } from '../game/src/shared/InvokerSpells';
 import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
+import { getCharacterAnimLayout, ANIM_LAYOUT_V2 } from '../game/src/entities/CharacterAnimator';
 
 test('Unique Character System - Invoker is unique and isolated', () => {
   assert.equal(isUniqueCharacter('invoker'), true);
@@ -141,4 +142,22 @@ test('Unique Character System - Extensibility for future unique characters', () 
   assert.equal(canCharacterAcquireWeapon('invoker', 'test_fire_blast', [{ id: 'invoker_invoke' }]), false);
   // Ronin cannot acquire test mage weapon
   assert.equal(canCharacterAcquireWeapon('ronin', 'test_fire_blast', []), false);
+});
+
+
+test('Character Animation Layout - Ronin and V2 heroes use ANIM_LAYOUT_V2', () => {
+  assert.equal(getCharacterAnimLayout('ronin'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('valkyrie'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('flail'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('chakram'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('sorceress'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('amazon'), ANIM_LAYOUT_V2);
+  assert.equal(ANIM_LAYOUT_V2.cols, 6);
+  assert.equal(ANIM_LAYOUT_V2.rows, 4);
+  assert.deepEqual(ANIM_LAYOUT_V2.rowMap, {
+    front: 0,
+    back: 1,
+    right: 2,
+    left: 3
+  });
 });

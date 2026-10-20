@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T00:34:55.073Z",
+  "generatedAt": "2026-10-20T00:51:14.290Z",
   "totalFiles": 187,
   "totalSymbols": 1742,
   "topLevelCount": 551,
@@ -1009,7 +1009,7 @@
       "kind": "const",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 60,
-      "doc": "Legacy 4x4 / Ronin Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK"
+      "doc": "Legacy 4x4 Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK"
     },
     {
       "name": "ANIM_LAYOUT_NECROMANCER",

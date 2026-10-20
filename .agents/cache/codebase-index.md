@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-20T00:34:55.073Z | **Files:** 187 | **Top-level:** 551 | **Class Methods:** 1191
+> **Generated:** 2026-10-20T00:51:14.290Z | **Files:** 187 | **Top-level:** 551 | **Class Methods:** 1191
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -68,7 +68,7 @@ Run `npm run index` to refresh this cache.
 | `AltarsRenderer` | `const` | [`game/src/ui/react/r3f/world/AltarsRenderer.tsx:16`](../../game/src/ui/react/r3f/world/AltarsRenderer.tsx#L16) | Declarative R3F container for capture altars and interaction zones. Bridges... |
 | `AltarsRendererProps` | `interface` | [`game/src/ui/react/r3f/world/AltarsRenderer.tsx:8`](../../game/src/ui/react/r3f/world/AltarsRenderer.tsx#L8) | - |
 | `AltarType` | `type` | [`game/src/world/Altar.ts:27`](../../game/src/world/Altar.ts#L27) | - |
-| `ANIM_LAYOUT_LEGACY` | `const` | [`game/src/entities/CharacterAnimator.ts:60`](../../game/src/entities/CharacterAnimator.ts#L60) | Legacy 4x4 / Ronin Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3... |
+| `ANIM_LAYOUT_LEGACY` | `const` | [`game/src/entities/CharacterAnimator.ts:60`](../../game/src/entities/CharacterAnimator.ts#L60) | Legacy 4x4 Standard: Row 0: FRONT, Row 1: LEFT, Row 2: RIGHT, Row 3: BACK |
 | `ANIM_LAYOUT_NECROMANCER` | `const` | [`game/src/entities/CharacterAnimator.ts:45`](../../game/src/entities/CharacterAnimator.ts#L45) | Necromancer / Transition Layout: Row 0: FRONT, Row 1: BACK, Row 2: LEFT, Ro... |
 | `ANIM_LAYOUT_V2` | `const` | [`game/src/entities/CharacterAnimator.ts:30`](../../game/src/entities/CharacterAnimator.ts#L30) | V2 Pipeline Standard Layout: Row 0: FRONT (Лицо) Row 1: BACK (Спина) Row 2:... |
 | `ANIM_STATES` | `const` | [`game/src/shared/types/registry.ts:13`](../../game/src/shared/types/registry.ts#L13) | - |
