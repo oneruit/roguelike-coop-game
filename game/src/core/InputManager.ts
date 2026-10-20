@@ -124,4 +124,11 @@ export class InputManager {
     inputBuffer.setMoveVector(this.moveDirection.x, this.moveDirection.z);
     inputBuffer.setAimPosition(this.mouseWorldPosition.x, this.mouseWorldPosition.z);
   }
+  public isKeyDown(code: string): boolean {
+    return !!this.keys[code];
+  }
+
+  public isInteractHeld(): boolean {
+    return !!(this.keys['KeyE'] || this.keys['KeyF']);
+  }
 }

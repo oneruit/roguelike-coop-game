@@ -6,6 +6,7 @@ import type { RiftTeleporter } from '../world/RiftTeleporter';
 import type { MerchantManager } from '../world/MerchantManager';
 import type { RemotePlayer } from '../entities/RemotePlayer';
 import type { DiscoveredAltar } from './MapManager';
+import type { MobNestManager } from '../world/MobNestManager';
 
 export interface CenterSquareMapRenderContext {
   ctx: CanvasRenderingContext2D;
@@ -17,6 +18,7 @@ export interface CenterSquareMapRenderContext {
   dropManager: DropManager;
   chestManager?: ChestManager;
   discoveredAltars: Map<string, DiscoveredAltar>;
+  mobNestManager?: MobNestManager;
   riftTeleporter?: RiftTeleporter;
   merchantManager?: MerchantManager;
   enemyManager: EnemyManager;
@@ -42,6 +44,7 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
     dropManager,
     chestManager,
     discoveredAltars,
+    mobNestManager,
     riftTeleporter,
     merchantManager,
     enemyManager,
@@ -221,6 +224,75 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
       ctx.font = 'bold 9px Montserrat, sans-serif';
       ctx.fillStyle = '#fef08a';
       ctx.fillText('ТОРГОВЕЦ', mx, mz + 15);
+    }
+  }
+
+  // 6c. Mob Nests on Stage 4
+  if (mobNestManager && mobNestManager.nests.length > 0) {
+    for (const nest of mobNestManager.nests) {
+      const nx = toScreenX(nest.position.x);
+      const nz = toScreenZ(nest.position.z);
+      if (nx >= 0 && nx <= w && nz >= 0 && nz <= h) {
+        if (nest.state === 'DESTROYED') {
+          // Dimmed crater mark
+          ctx.fillStyle = 'rgba(75, 85, 99, 0.7)';
+          ctx.beginPath();
+          ctx.arc(nx, nz, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#374151';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('✕', nx, nz);
+        } else if (nest.state === 'ARMED') {
+          // Blinking warning beacon & 1-cell blast danger ring on map (radius 25m)
+          const pulse = Math.sin(animTimer * 12) * 2;
+          const cellRadiusPx = (25 / worldSize) * w; // 25m radius = 1 full cell across
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.55)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(nx, nz, cellRadiusPx, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(nx, nz, 9 + pulse, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.font = '11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('💣', nx, nz);
+
+          ctx.font = 'bold 8px Montserrat, sans-serif';
+          ctx.fillStyle = '#ef4444';
+          ctx.fillText(`${Math.ceil(nest.fuseTimer)}с`, nx, nz + 13);
+        } else {
+          // IDLE or PLANTING: purple abyss nest maw
+          const pulse = Math.sin(animTimer * 3) * 1.5;
+          ctx.fillStyle = nest.state === 'PLANTING' ? '#f59e0b' : '#7c3aed';
+          ctx.beginPath();
+          ctx.arc(nx, nz, 9 + pulse, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#c084fc';
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+
+          ctx.font = '11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(nest.state === 'PLANTING' ? '⚙️' : '🕳️', nx, nz);
+
+          ctx.font = 'bold 8px Montserrat, sans-serif';
+          ctx.fillStyle = '#c084fc';
+          ctx.fillText('ГНЕЗДО', nx, nz + 13);
+        }
+      }
     }
   }
 
