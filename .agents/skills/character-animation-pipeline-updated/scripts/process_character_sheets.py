@@ -231,13 +231,13 @@ def detect_and_clean_background(
         dist_blue = float(np.linalg.norm(inferred - np.array([0.0, 0.0, 255.0], dtype=np.float32)))
         brightness = float(np.mean(inferred))
 
-        if dist_magenta <= 45.0 or (inferred[0] > 180 and inferred[2] > 180 and inferred[1] < 70):
+        if dist_magenta <= 120.0 or (inferred[0] > 120 and inferred[2] > 120 and (inferred[0] - inferred[1] > 30) and (inferred[2] - inferred[1] > 30)):
             target_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
             chroma_type = "magenta"
-        elif dist_green <= 45.0 or (inferred[1] > 180 and inferred[0] < 70 and inferred[2] < 70):
+        elif dist_green <= 120.0 or (inferred[1] > 120 and (inferred[1] - inferred[0] > 30) and (inferred[1] - inferred[2] > 30)):
             target_color = np.array([0.0, 255.0, 0.0], dtype=np.float32)
             chroma_type = "green"
-        elif dist_blue <= 45.0 or (inferred[2] > 180 and inferred[0] < 70 and inferred[1] < 70):
+        elif dist_blue <= 120.0 or (inferred[2] > 120 and (inferred[2] - inferred[0] > 30) and (inferred[2] - inferred[1] > 30)):
             target_color = np.array([0.0, 0.0, 255.0], dtype=np.float32)
             chroma_type = "blue"
         elif brightness >= 225:
@@ -253,34 +253,30 @@ def detect_and_clean_background(
         raise ValueError(f"Unsupported background mode: {bg_mode}")
 
     distance = np.sqrt(np.sum((rgb - target_color) ** 2, axis=2))
+    dist_inferred = np.sqrt(np.sum((rgb - inferred) ** 2, axis=2))
 
     if chroma_type == "magenta":
         is_magenta_hue = (
-            (rgb[:, :, 0] > 100.0)
-            & (rgb[:, :, 2] > 100.0)
-            & (rgb[:, :, 1] < 120.0)
-            & ((rgb[:, :, 0] - rgb[:, :, 1]) > 35.0)
-            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 35.0)
+            (rgb[:, :, 0] > 50.0)
+            & (rgb[:, :, 2] > 50.0)
+            & ((rgb[:, :, 0] - rgb[:, :, 1]) > 18.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 18.0)
         )
-        background = (distance <= float(tolerance)) | (is_magenta_hue & (distance <= 140.0))
+        background = (distance <= float(tolerance)) | (dist_inferred <= float(tolerance)) | is_magenta_hue
     elif chroma_type == "green":
         is_green_hue = (
-            (rgb[:, :, 1] > 100.0)
-            & (rgb[:, :, 0] < 140.0)
-            & (rgb[:, :, 2] < 140.0)
-            & ((rgb[:, :, 1] - rgb[:, :, 0]) > 35.0)
-            & ((rgb[:, :, 1] - rgb[:, :, 2]) > 35.0)
+            (rgb[:, :, 1] > 50.0)
+            & ((rgb[:, :, 1] - rgb[:, :, 0]) > 20.0)
+            & ((rgb[:, :, 1] - rgb[:, :, 2]) > 20.0)
         )
-        background = (distance <= float(tolerance)) | (is_green_hue & (distance <= 140.0))
+        background = (distance <= float(tolerance)) | (dist_inferred <= float(tolerance)) | is_green_hue
     elif chroma_type == "blue":
         is_blue_hue = (
-            (rgb[:, :, 2] > 100.0)
-            & (rgb[:, :, 0] < 140.0)
-            & (rgb[:, :, 1] < 140.0)
-            & ((rgb[:, :, 2] - rgb[:, :, 0]) > 35.0)
-            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 35.0)
+            (rgb[:, :, 2] > 50.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 0]) > 20.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 20.0)
         )
-        background = (distance <= float(tolerance)) | (is_blue_hue & (distance <= 140.0))
+        background = (distance <= float(tolerance)) | (dist_inferred <= float(tolerance)) | is_blue_hue
     else:
         candidate = distance <= float(tolerance)
         background = _connected_to_border(candidate)
@@ -297,12 +293,15 @@ def detect_and_clean_background(
     if chroma_type in ("magenta", "green", "blue"):
         mask = rgba[:, :, 3] > 0
         pad = np.pad(mask, 1, mode="constant", constant_values=False)
-        neighbor_has_bg = (~pad[:-2, 1:-1]) | (~pad[2:, 1:-1]) | (~pad[1:-1, :-2]) | (~pad[1:-1, 2:])
-        is_boundary = mask & neighbor_has_bg
+        is_boundary = mask & ((~pad[:-2, 1:-1]) | (~pad[2:, 1:-1]) | (~pad[1:-1, :-2]) | (~pad[1:-1, 2:]))
 
         pad2 = np.pad(mask & ~is_boundary, 1, mode="constant", constant_values=False)
         is_boundary_2 = (mask & ~is_boundary) & ((~pad2[:-2, 1:-1]) | (~pad2[2:, 1:-1]) | (~pad2[1:-1, :-2]) | (~pad2[1:-1, 2:]))
-        edge_mask = is_boundary | is_boundary_2
+
+        pad3 = np.pad(mask & ~(is_boundary | is_boundary_2), 1, mode="constant", constant_values=False)
+        is_boundary_3 = (mask & ~(is_boundary | is_boundary_2)) & ((~pad3[:-2, 1:-1]) | (~pad3[2:, 1:-1]) | (~pad3[1:-1, :-2]) | (~pad3[1:-1, 2:]))
+
+        edge_mask = is_boundary | is_boundary_2 | is_boundary_3
 
         boundary_rgb = rgba[:, :, :3].astype(np.float32)
         r_edge = boundary_rgb[:, :, 0]
@@ -310,10 +309,23 @@ def detect_and_clean_background(
         b_edge = boundary_rgb[:, :, 2]
 
         if chroma_type == "magenta":
-            excess = np.maximum(0.0, np.minimum(r_edge - g_edge, b_edge - g_edge))
-            has_spill = edge_mask & (excess > 18.0)
-            rgba[has_spill, 0] = np.clip(r_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
-            rgba[has_spill, 2] = np.clip(b_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+            excess_b = np.maximum(0.0, b_edge - g_edge)
+            excess_r = np.maximum(0.0, r_edge - g_edge)
+            excess_both = np.minimum(excess_r, excess_b)
+
+            is_red = (r_edge - b_edge > 30) & (b_edge > g_edge + 10)
+            is_blue = (b_edge - r_edge > 30) & (r_edge > g_edge + 10)
+            is_mag = (~is_red) & (~is_blue) & (excess_both > 10.0)
+
+            # Red pixels with blue/magenta spill: only remove excess blue!
+            rgba[edge_mask & is_red, 2] = np.clip(b_edge[edge_mask & is_red] - excess_b[edge_mask & is_red], 0, 255).astype(np.uint8)
+
+            # Blue pixels with red/magenta spill: only remove excess red!
+            rgba[edge_mask & is_blue, 0] = np.clip(r_edge[edge_mask & is_blue] - excess_r[edge_mask & is_blue], 0, 255).astype(np.uint8)
+
+            # Balanced magenta: remove excess from both!
+            rgba[edge_mask & is_mag, 0] = np.clip(r_edge[edge_mask & is_mag] - excess_both[edge_mask & is_mag], 0, 255).astype(np.uint8)
+            rgba[edge_mask & is_mag, 2] = np.clip(b_edge[edge_mask & is_mag] - excess_both[edge_mask & is_mag], 0, 255).astype(np.uint8)
         elif chroma_type == "green":
             excess = np.maximum(0.0, g_edge - np.maximum(r_edge, b_edge))
             has_spill = edge_mask & (excess > 18.0)
@@ -322,6 +334,8 @@ def detect_and_clean_background(
             excess = np.maximum(0.0, b_edge - np.maximum(r_edge, g_edge))
             has_spill = edge_mask & (excess > 18.0)
             rgba[has_spill, 2] = np.clip(b_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+
+    rgba[rgba[:, :, 3] == 0, :3] = 0
 
     return rgba
 

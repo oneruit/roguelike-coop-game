@@ -67,14 +67,13 @@ def remove_magenta_and_defringe(
     else:
         # Characteristic magenta hue check: high R, high B, low G
         is_hue = (
-            (rgb[:, :, 0] > 95.0)
-            & (rgb[:, :, 2] > 95.0)
-            & (rgb[:, :, 1] < 140.0)
-            & ((rgb[:, :, 0] - rgb[:, :, 1]) > 30.0)
-            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 30.0)
+            (rgb[:, :, 0] > 50.0)
+            & (rgb[:, :, 2] > 50.0)
+            & ((rgb[:, :, 0] - rgb[:, :, 1]) > 18.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 18.0)
         )
 
-    bg_candidate = (dist_to_bg <= bg_tolerance) | (is_hue & (dist_to_bg <= 145.0))
+    bg_candidate = (dist_to_bg <= bg_tolerance) | is_hue
 
     if flood_fill:
         # Connect only from image borders
@@ -168,8 +167,20 @@ def remove_magenta_and_defringe(
         if is_green:
             out_rgb[active_spill, 1] = np.clip(g[active_spill] - excess[active_spill], 0, 255)
         else:
-            out_rgb[active_spill, 0] = np.clip(r[active_spill] - excess[active_spill], 0, 255)
-            out_rgb[active_spill, 2] = np.clip(b[active_spill] - excess[active_spill], 0, 255)
+            excess_b = np.maximum(0.0, b[active_spill] - g[active_spill])
+            excess_r = np.maximum(0.0, r[active_spill] - g[active_spill])
+            excess_both = np.minimum(excess_r, excess_b)
+            is_red = (r[active_spill] - b[active_spill] > 30.0) & (b[active_spill] > g[active_spill] + 10.0)
+            is_blue = (b[active_spill] - r[active_spill] > 30.0) & (r[active_spill] > g[active_spill] + 10.0)
+            is_mag = (~is_red) & (~is_blue)
+            
+            # Red pixels: only remove excess blue
+            out_rgb[active_spill, 2] = np.where(is_red, np.clip(b[active_spill] - excess_b, 0, 255), out_rgb[active_spill, 2])
+            # Blue pixels: only remove excess red
+            out_rgb[active_spill, 0] = np.where(is_blue, np.clip(r[active_spill] - excess_r, 0, 255), out_rgb[active_spill, 0])
+            # Balanced magenta: remove excess from both
+            out_rgb[active_spill, 0] = np.where(is_mag, np.clip(r[active_spill] - excess_both, 0, 255), out_rgb[active_spill, 0])
+            out_rgb[active_spill, 2] = np.where(is_mag, np.clip(b[active_spill] - excess_both, 0, 255), out_rgb[active_spill, 2])
 
     # 5. Assemble final RGBA image
     result = np.zeros((h, w, 4), dtype=np.uint8)
