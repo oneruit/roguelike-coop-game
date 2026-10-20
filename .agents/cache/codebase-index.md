@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-20T22:44:52.529Z | **Files:** 198 | **Top-level:** 574 | **Class Methods:** 1269
+> **Generated:** 2026-10-20T23:05:46.856Z | **Files:** 199 | **Top-level:** 575 | **Class Methods:** 1274
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 528 |
+| `game/src` | 529 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -273,21 +273,21 @@ Run `npm run index` to refresh this cache.
 | `CharacterRig.setProceduralMeshesVisible` | `method` | [`game/src/character-lab/CharacterRig.ts:395`](../../game/src/character-lab/CharacterRig.ts#L395) | - |
 | `CharacterRig.updateColors` | `method` | [`game/src/character-lab/CharacterRig.ts:406`](../../game/src/character-lab/CharacterRig.ts#L406) | - |
 | `CHARACTERS` | `const` | [`game/src/shared/types/registry.ts:15`](../../game/src/shared/types/registry.ts#L15) | - |
-| `CharacterSandboxApp` | `class` | [`game/src/character-lab/CharacterSandboxApp.ts:83`](../../game/src/character-lab/CharacterSandboxApp.ts#L83) | - |
-| `CharacterSandboxApp.applyClass` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:223`](../../game/src/character-lab/CharacterSandboxApp.ts#L223) | - |
-| `CharacterSandboxApp.buildPedestal` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:192`](../../game/src/character-lab/CharacterSandboxApp.ts#L192) | - |
-| `CharacterSandboxApp.dispose` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:390`](../../game/src/character-lab/CharacterSandboxApp.ts#L390) | - |
-| `CharacterSandboxApp.resetCamera` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:338`](../../game/src/character-lab/CharacterSandboxApp.ts#L338) | - |
-| `CharacterSandboxApp.setAnimation` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:277`](../../game/src/character-lab/CharacterSandboxApp.ts#L277) | - |
-| `CharacterSandboxApp.setLightingPreset` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:309`](../../game/src/character-lab/CharacterSandboxApp.ts#L309) | - |
-| `CharacterSandboxApp.setMageAngleMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:273`](../../game/src/character-lab/CharacterSandboxApp.ts#L273) | - |
-| `CharacterSandboxApp.setMageRenderMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:268`](../../game/src/character-lab/CharacterSandboxApp.ts#L268) | - |
-| `CharacterSandboxApp.setPlaybackSpeed` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:285`](../../game/src/character-lab/CharacterSandboxApp.ts#L285) | - |
-| `CharacterSandboxApp.toggleEquipment` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:300`](../../game/src/character-lab/CharacterSandboxApp.ts#L300) | - |
-| `CharacterSandboxApp.toggleWireframe` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:305`](../../game/src/character-lab/CharacterSandboxApp.ts#L305) | - |
-| `CharacterSandboxApp.triggerAttack` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:281`](../../game/src/character-lab/CharacterSandboxApp.ts#L281) | - |
-| `CharacterSandboxApp.updateColor` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:289`](../../game/src/character-lab/CharacterSandboxApp.ts#L289) | - |
-| `CharacterSandboxApp.updateMaterialProperty` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:295`](../../game/src/character-lab/CharacterSandboxApp.ts#L295) | - |
+| `CharacterSandboxApp` | `class` | [`game/src/character-lab/CharacterSandboxApp.ts:84`](../../game/src/character-lab/CharacterSandboxApp.ts#L84) | - |
+| `CharacterSandboxApp.applyClass` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:226`](../../game/src/character-lab/CharacterSandboxApp.ts#L226) | - |
+| `CharacterSandboxApp.buildPedestal` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:195`](../../game/src/character-lab/CharacterSandboxApp.ts#L195) | - |
+| `CharacterSandboxApp.dispose` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:409`](../../game/src/character-lab/CharacterSandboxApp.ts#L409) | - |
+| `CharacterSandboxApp.resetCamera` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:355`](../../game/src/character-lab/CharacterSandboxApp.ts#L355) | - |
+| `CharacterSandboxApp.setAnimation` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:291`](../../game/src/character-lab/CharacterSandboxApp.ts#L291) | - |
+| `CharacterSandboxApp.setLightingPreset` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:326`](../../game/src/character-lab/CharacterSandboxApp.ts#L326) | - |
+| `CharacterSandboxApp.setMageAngleMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:287`](../../game/src/character-lab/CharacterSandboxApp.ts#L287) | - |
+| `CharacterSandboxApp.setMageRenderMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:282`](../../game/src/character-lab/CharacterSandboxApp.ts#L282) | - |
+| `CharacterSandboxApp.setPlaybackSpeed` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:301`](../../game/src/character-lab/CharacterSandboxApp.ts#L301) | - |
+| `CharacterSandboxApp.toggleEquipment` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:317`](../../game/src/character-lab/CharacterSandboxApp.ts#L317) | - |
+| `CharacterSandboxApp.toggleWireframe` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:322`](../../game/src/character-lab/CharacterSandboxApp.ts#L322) | - |
+| `CharacterSandboxApp.triggerAttack` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:296`](../../game/src/character-lab/CharacterSandboxApp.ts#L296) | - |
+| `CharacterSandboxApp.updateColor` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:306`](../../game/src/character-lab/CharacterSandboxApp.ts#L306) | - |
+| `CharacterSandboxApp.updateMaterialProperty` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:312`](../../game/src/character-lab/CharacterSandboxApp.ts#L312) | - |
 | `CharacterSelectScreen` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:39`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L39) | Modular Character Selection Screen (Rift ARPG UI). Manages carousel track, ... |
 | `CharacterSelectScreen.attemptLaunch` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:274`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L274) | - |
 | `CharacterSelectScreen.bindElements` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:66`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L66) | - |
@@ -396,7 +396,7 @@ Run `npm run index` to refresh this cache.
 | `DedicatedGameServer.tick` | `method` | [`server/dedicatedServer.ts:201`](../../server/dedicatedServer.ts#L201) | Authoritative tick: updates mobs, bullets, collisions, drops, altars, reviv... |
 | `DedicatedServerOptions` | `interface` | [`server/dedicatedServer.ts:18`](../../server/dedicatedServer.ts#L18) | - |
 | `DEFAULT_BALANCE` | `const` | [`game/src/balance/defaultBalance.ts:4`](../../game/src/balance/defaultBalance.ts#L4) | - |
-| `DEFAULT_CLASS_CONFIGS` | `const` | [`game/src/character-lab/CharacterSandboxApp.ts:17`](../../game/src/character-lab/CharacterSandboxApp.ts#L17) | - |
+| `DEFAULT_CLASS_CONFIGS` | `const` | [`game/src/character-lab/CharacterSandboxApp.ts:18`](../../game/src/character-lab/CharacterSandboxApp.ts#L18) | - |
 | `DEFAULT_DEMO_LEADERBOARDS` | `const` | [`admin/src/constants.ts:214`](../../admin/src/constants.ts#L214) | - |
 | `DetailedPlayerResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:14`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L14) | - |
 | `DevManager` | `class` | [`game/src/ui/DevManager.ts:8`](../../game/src/ui/DevManager.ts#L8) | - |
@@ -980,6 +980,12 @@ Run `npm run index` to refresh this cache.
 | `MageCutoutRig.loadTextures` | `method` | [`game/src/character-lab/MageCutoutRig.ts:73`](../../game/src/character-lab/MageCutoutRig.ts#L73) | - |
 | `MageCutoutRig.setVisible` | `method` | [`game/src/character-lab/MageCutoutRig.ts:202`](../../game/src/character-lab/MageCutoutRig.ts#L202) | - |
 | `MageCutoutRig.update` | `method` | [`game/src/character-lab/MageCutoutRig.ts:228`](../../game/src/character-lab/MageCutoutRig.ts#L228) | - |
+| `MageReal3DSystem` | `class` | [`game/src/character-lab/MageReal3DSystem.ts:10`](../../game/src/character-lab/MageReal3DSystem.ts#L10) | Loads and displays the authentic watertight 3D mesh generated from the 2D t... |
+| `MageReal3DSystem.getModelUrl` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:62`](../../game/src/character-lab/MageReal3DSystem.ts#L62) | - |
+| `MageReal3DSystem.loadModel` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:67`](../../game/src/character-lab/MageReal3DSystem.ts#L67) | - |
+| `MageReal3DSystem.setAnimationState` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:143`](../../game/src/character-lab/MageReal3DSystem.ts#L143) | - |
+| `MageReal3DSystem.setVisible` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:128`](../../game/src/character-lab/MageReal3DSystem.ts#L128) | - |
+| `MageReal3DSystem.update` | `method` | [`game/src/character-lab/MageReal3DSystem.ts:147`](../../game/src/character-lab/MageReal3DSystem.ts#L147) | - |
 | `MageTexturedSystem` | `class` | [`game/src/character-lab/MageTexturedSystem.ts:11`](../../game/src/character-lab/MageTexturedSystem.ts#L11) | High-fidelity textured pixel-art system for the Mage. Utilizes 3-view turna... |
 | `MageTexturedSystem.buildMeshes` | `method` | [`game/src/character-lab/MageTexturedSystem.ts:133`](../../game/src/character-lab/MageTexturedSystem.ts#L133) | - |
 | `MageTexturedSystem.configurePixelTexture` | `method` | [`game/src/character-lab/MageTexturedSystem.ts:86`](../../game/src/character-lab/MageTexturedSystem.ts#L86) | - |

@@ -123,22 +123,22 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Mage Texture Render Mode Toggles
-  const btnMageModeCutout = document.getElementById('btn-mage-mode-cutout');
+  const btnMageModeReal3d = document.getElementById('btn-mage-mode-real3d');
   const btnMageModeTextured = document.getElementById('btn-mage-mode-textured');
   const btnMageModeProcedural = document.getElementById('btn-mage-mode-procedural');
   const mageAnglesContainer = document.getElementById('mage-angles-container');
 
-  btnMageModeCutout?.addEventListener('click', () => {
-    btnMageModeCutout.classList.add('active');
+  btnMageModeReal3d?.addEventListener('click', () => {
+    btnMageModeReal3d.classList.add('active');
     btnMageModeTextured?.classList.remove('active');
     btnMageModeProcedural?.classList.remove('active');
     if (mageAnglesContainer) mageAnglesContainer.style.display = 'none';
-    app.setMageRenderMode('cutout');
+    app.setMageRenderMode('real3d');
   });
 
   btnMageModeTextured?.addEventListener('click', () => {
     btnMageModeTextured.classList.add('active');
-    btnMageModeCutout?.classList.remove('active');
+    btnMageModeReal3d?.classList.remove('active');
     btnMageModeProcedural?.classList.remove('active');
     if (mageAnglesContainer) mageAnglesContainer.style.display = 'block';
     app.setMageRenderMode('textured');
@@ -146,7 +146,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   btnMageModeProcedural?.addEventListener('click', () => {
     btnMageModeProcedural.classList.add('active');
-    btnMageModeCutout?.classList.remove('active');
+    btnMageModeReal3d?.classList.remove('active');
     btnMageModeTextured?.classList.remove('active');
     if (mageAnglesContainer) mageAnglesContainer.style.display = 'none';
     app.setMageRenderMode('procedural');

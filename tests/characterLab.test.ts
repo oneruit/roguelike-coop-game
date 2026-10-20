@@ -6,6 +6,7 @@ import { CharacterModularSystem } from '../game/src/character-lab/CharacterModul
 import { CharacterAnimator } from '../game/src/character-lab/CharacterAnimator';
 import { MageTexturedSystem } from '../game/src/character-lab/MageTexturedSystem';
 import { MageCutoutRig } from '../game/src/character-lab/MageCutoutRig';
+import { MageReal3DSystem } from '../game/src/character-lab/MageReal3DSystem';
 import { DEFAULT_CLASS_CONFIGS } from '../game/src/character-lab/CharacterSandboxApp';
 
 test('CharacterRig - creates anatomical hierarchy and sockets', () => {
@@ -231,4 +232,38 @@ test('MageCutoutRig - mounts 9 anatomical cutout planes to skeleton joints and a
   assert.equal(cutoutRig.isVisible, false);
   assert.equal(cutoutRig.hatMesh.parent, null);
   assert.equal(cutoutRig.staffArmMesh.parent, null);
+});
+
+test('MageReal3DSystem - loads authentic 3D model with PBR and kinematic motion', () => {
+  const mageCfg = DEFAULT_CLASS_CONFIGS.mage;
+  const rig = new CharacterRig(mageCfg.colors, mageCfg.materials);
+  const real3D = new MageReal3DSystem(rig);
+
+  assert.ok(real3D.root, 'Real 3D root exists');
+  assert.ok(real3D.crystalLight, 'Crystal light exists');
+  assert.ok(real3D.particlesGroup, 'Particles group exists');
+  assert.equal(real3D.currentAnimState, 'idle');
+
+  // Toggle visibility
+  real3D.setVisible(true);
+  assert.equal(real3D.isVisible, true);
+  assert.equal(real3D.root.visible, true);
+  assert.equal(real3D.root.parent, rig.root);
+
+  // Switch animation states
+  real3D.setAnimationState('walk');
+  assert.equal(real3D.currentAnimState, 'walk');
+  real3D.update(0.016);
+
+  real3D.setAnimationState('run');
+  assert.equal(real3D.currentAnimState, 'run');
+  real3D.update(0.016);
+
+  real3D.setAnimationState('attack');
+  assert.equal(real3D.currentAnimState, 'attack');
+  real3D.update(0.016);
+
+  real3D.setVisible(false);
+  assert.equal(real3D.isVisible, false);
+  assert.equal(real3D.root.parent, null);
 });

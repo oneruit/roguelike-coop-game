@@ -5,6 +5,7 @@ import { CharacterModularSystem } from './CharacterModularSystem';
 import { CharacterAnimator } from './CharacterAnimator';
 import { MageTexturedSystem, MageViewAngleMode } from './MageTexturedSystem';
 import { MageCutoutRig } from './MageCutoutRig';
+import { MageReal3DSystem } from './MageReal3DSystem';
 import {
   CharacterClass,
   CharacterColors,
@@ -93,7 +94,8 @@ export class CharacterSandboxApp {
   public animator: CharacterAnimator;
   public mageTexturedSystem: MageTexturedSystem;
   public mageCutoutRig: MageCutoutRig;
-  public mageRenderMode: 'cutout' | 'textured' | 'procedural' = 'cutout';
+  public mageReal3DSystem: MageReal3DSystem;
+  public mageRenderMode: 'real3d' | 'cutout' | 'textured' | 'procedural' = 'real3d';
 
   // Active configuration
   public currentClass: CharacterClass = 'warrior';
@@ -178,6 +180,7 @@ export class CharacterSandboxApp {
     this.animator = new CharacterAnimator(this.rig);
     this.mageTexturedSystem = new MageTexturedSystem(this.rig);
     this.mageCutoutRig = new MageCutoutRig(this.rig);
+    this.mageReal3DSystem = new MageReal3DSystem(this.rig);
 
     this.scene.add(this.rig.root);
     this.applyClass('warrior');
@@ -229,23 +232,33 @@ export class CharacterSandboxApp {
     this.modularSystem.updateMaterials(this.currentConfig.materials);
 
     if (classType === 'mage') {
-      if (this.mageRenderMode === 'cutout') {
+      if (this.mageRenderMode === 'real3d') {
         this.rig.setProceduralMeshesVisible(false);
         this.modularSystem.clearEquipment();
+        this.mageCutoutRig.setVisible(false);
+        this.mageTexturedSystem.setVisible(false);
+        this.mageReal3DSystem.setVisible(true);
+      } else if (this.mageRenderMode === 'cutout') {
+        this.rig.setProceduralMeshesVisible(false);
+        this.modularSystem.clearEquipment();
+        this.mageReal3DSystem.setVisible(false);
         this.mageTexturedSystem.setVisible(false);
         this.mageCutoutRig.setVisible(true);
       } else if (this.mageRenderMode === 'textured') {
         this.rig.setProceduralMeshesVisible(false);
         this.modularSystem.clearEquipment();
+        this.mageReal3DSystem.setVisible(false);
         this.mageCutoutRig.setVisible(false);
         this.mageTexturedSystem.setVisible(true);
       } else {
+        this.mageReal3DSystem.setVisible(false);
         this.mageCutoutRig.setVisible(false);
         this.mageTexturedSystem.setVisible(false);
         this.rig.setProceduralMeshesVisible(true);
         this.modularSystem.applyClass('mage', this.currentConfig.equipment);
       }
     } else {
+      this.mageReal3DSystem.setVisible(false);
       this.mageCutoutRig.setVisible(false);
       this.mageTexturedSystem.setVisible(false);
       this.rig.setProceduralMeshesVisible(true);
@@ -254,6 +267,7 @@ export class CharacterSandboxApp {
 
     this.animator.setClass(classType);
     this.animator.setState('idle');
+    this.mageReal3DSystem.setAnimationState('idle');
 
     // Accent rim light per class
     if (classType === 'warrior') {
@@ -265,7 +279,7 @@ export class CharacterSandboxApp {
     }
   }
 
-  public setMageRenderMode(mode: 'cutout' | 'textured' | 'procedural') {
+  public setMageRenderMode(mode: 'real3d' | 'cutout' | 'textured' | 'procedural') {
     this.mageRenderMode = mode;
     this.applyClass(this.currentClass);
   }
@@ -276,14 +290,17 @@ export class CharacterSandboxApp {
 
   public setAnimation(state: 'idle' | 'walk' | 'run' | 'attack') {
     this.animator.setState(state);
+    this.mageReal3DSystem.setAnimationState(state);
   }
 
   public triggerAttack() {
     this.animator.triggerAttack();
+    this.mageReal3DSystem.setAnimationState('attack');
   }
 
   public setPlaybackSpeed(speed: number) {
     this.animator.playbackSpeed = speed;
+    this.mageReal3DSystem.playbackSpeed = speed;
   }
 
   public updateColor(slot: keyof CharacterColors, value: string) {
@@ -373,7 +390,9 @@ export class CharacterSandboxApp {
     this.animator.update(delta);
 
     if (this.currentClass === 'mage') {
-      if (this.mageRenderMode === 'cutout') {
+      if (this.mageRenderMode === 'real3d') {
+        this.mageReal3DSystem.update(delta);
+      } else if (this.mageRenderMode === 'cutout') {
         this.mageCutoutRig.update(elapsedTime);
       } else if (this.mageRenderMode === 'textured') {
         this.mageTexturedSystem.update(this.camera, elapsedTime);
