@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-20T06:09:43.700Z",
-  "totalFiles": 189,
-  "totalSymbols": 1765,
-  "topLevelCount": 555,
-  "methodsCount": 1210,
+  "generatedAt": "2026-10-20T06:27:39.091Z",
+  "totalFiles": 190,
+  "totalSymbols": 1774,
+  "topLevelCount": 558,
+  "methodsCount": 1216,
   "entities": {
     "heroes": [
       {
@@ -3406,7 +3406,7 @@
       "name": "Enemy.addBleed",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 929,
+      "line": 935,
       "className": "Enemy",
       "methodName": "addBleed"
     },
@@ -3414,7 +3414,7 @@
       "name": "Enemy.applyBurn",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 160,
+      "line": 161,
       "className": "Enemy",
       "methodName": "applyBurn"
     },
@@ -3422,7 +3422,7 @@
       "name": "Enemy.applyFrenzy",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 833,
+      "line": 838,
       "className": "Enemy",
       "methodName": "applyFrenzy"
     },
@@ -3430,7 +3430,7 @@
       "name": "Enemy.applyShock",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 172,
+      "line": 173,
       "className": "Enemy",
       "methodName": "applyShock"
     },
@@ -3438,7 +3438,7 @@
       "name": "Enemy.applySlow",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 108,
+      "line": 109,
       "className": "Enemy",
       "methodName": "applySlow"
     },
@@ -3446,7 +3446,7 @@
       "name": "Enemy.applySpellControl",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 443,
+      "line": 444,
       "className": "Enemy",
       "methodName": "applySpellControl"
     },
@@ -3454,7 +3454,7 @@
       "name": "Enemy.destroy",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 976,
+      "line": 982,
       "className": "Enemy",
       "methodName": "destroy"
     },
@@ -3462,7 +3462,7 @@
       "name": "Enemy.freeze",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 126,
+      "line": 127,
       "className": "Enemy",
       "methodName": "freeze"
     },
@@ -3470,7 +3470,7 @@
       "name": "Enemy.knockbackFrom",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 188,
+      "line": 189,
       "className": "Enemy",
       "methodName": "knockbackFrom"
     },
@@ -3478,7 +3478,7 @@
       "name": "Enemy.setDirection",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 451,
+      "line": 452,
       "className": "Enemy",
       "methodName": "setDirection"
     },
@@ -3486,7 +3486,7 @@
       "name": "Enemy.stun",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 141,
+      "line": 142,
       "className": "Enemy",
       "methodName": "stun"
     },
@@ -3494,7 +3494,7 @@
       "name": "Enemy.triggerAttack",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 462,
+      "line": 463,
       "className": "Enemy",
       "methodName": "triggerAttack"
     },
@@ -3502,7 +3502,7 @@
       "name": "Enemy.update",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 755,
+      "line": 760,
       "className": "Enemy",
       "methodName": "update"
     },
@@ -3510,7 +3510,7 @@
       "name": "Enemy.updateBleed",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 937,
+      "line": 943,
       "className": "Enemy",
       "methodName": "updateBleed"
     },
@@ -3518,7 +3518,7 @@
       "name": "Enemy.updateBossAnimation",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 475,
+      "line": 476,
       "className": "Enemy",
       "methodName": "updateBossAnimation"
     },
@@ -3526,7 +3526,7 @@
       "name": "Enemy.updateMonsterAnimation",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 519,
+      "line": 520,
       "className": "Enemy",
       "methodName": "updateMonsterAnimation"
     },
@@ -3534,7 +3534,7 @@
       "name": "Enemy.updateSimulation",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 567,
+      "line": 568,
       "className": "Enemy",
       "methodName": "updateSimulation",
       "doc": "Authoritative simulation update: handles movement, knockback, and AI logic. Completely decoupled from rendering and Three.js draw cycles."
@@ -3543,7 +3543,7 @@
       "name": "Enemy.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Enemy.ts",
-      "line": 764,
+      "line": 769,
       "className": "Enemy",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling and visual animations. If inFrustum is false, skips all bobbing math, matrix copies, and sets mesh.visible = false."
@@ -3564,13 +3564,13 @@
       "name": "EnemyManager",
       "kind": "class",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 22
+      "line": 23
     },
     {
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1270,
+      "line": 1279,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -3578,7 +3578,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1380,
+      "line": 1389,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -3586,7 +3586,7 @@
       "name": "EnemyManager.damageEnemiesInRadius",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1167,
+      "line": 1176,
       "className": "EnemyManager",
       "methodName": "damageEnemiesInRadius",
       "doc": "Deals friendly fire blast wave damage to all non-immortal monsters in radius."
@@ -3595,7 +3595,7 @@
       "name": "EnemyManager.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 320,
+      "line": 328,
       "className": "EnemyManager",
       "methodName": "getDamageMultiplier"
     },
@@ -3603,7 +3603,7 @@
       "name": "EnemyManager.getHpMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 310,
+      "line": 318,
       "className": "EnemyManager",
       "methodName": "getHpMultiplier",
       "doc": "Continuous progressive scaling multipliers with endless scaling, stage progression, and biome overstay penalties."
@@ -3612,7 +3612,7 @@
       "name": "EnemyManager.getKnockbackResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 352,
+      "line": 360,
       "className": "EnemyManager",
       "methodName": "getKnockbackResistance"
     },
@@ -3620,7 +3620,7 @@
       "name": "EnemyManager.getLateGameCcResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 341,
+      "line": 349,
       "className": "EnemyManager",
       "methodName": "getLateGameCcResistance"
     },
@@ -3628,7 +3628,7 @@
       "name": "EnemyManager.getLateGameDamageResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 367,
+      "line": 375,
       "className": "EnemyManager",
       "methodName": "getLateGameDamageResistance"
     },
@@ -3636,7 +3636,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1023,
+      "line": 1032,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -3645,7 +3645,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1257,
+      "line": 1266,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -3653,7 +3653,7 @@
       "name": "EnemyManager.getSpeedMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 330,
+      "line": 338,
       "className": "EnemyManager",
       "methodName": "getSpeedMultiplier"
     },
@@ -3661,7 +3661,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1048,
+      "line": 1057,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -3669,7 +3669,7 @@
       "name": "EnemyManager.killNonBossesAround",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1181,
+      "line": 1190,
       "className": "EnemyManager",
       "methodName": "killNonBossesAround"
     },
@@ -3677,7 +3677,7 @@
       "name": "EnemyManager.registerEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 262,
+      "line": 263,
       "className": "EnemyManager",
       "methodName": "registerEnemy"
     },
@@ -3685,7 +3685,7 @@
       "name": "EnemyManager.resetStageTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 337,
+      "line": 345,
       "className": "EnemyManager",
       "methodName": "resetStageTime"
     },
@@ -3693,7 +3693,7 @@
       "name": "EnemyManager.setDeclarative",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 40,
+      "line": 41,
       "className": "EnemyManager",
       "methodName": "setDeclarative"
     },
@@ -3701,7 +3701,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1241,
+      "line": 1250,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -3709,7 +3709,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1228,
+      "line": 1237,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -3717,7 +3717,7 @@
       "name": "EnemyManager.spawnGreedTrialWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1059,
+      "line": 1068,
       "className": "EnemyManager",
       "methodName": "spawnGreedTrialWave",
       "doc": "Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position."
@@ -3726,7 +3726,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1233,
+      "line": 1242,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -3734,7 +3734,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 827,
+      "line": 836,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -3743,7 +3743,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1237,
+      "line": 1246,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -3751,7 +3751,7 @@
       "name": "EnemyManager.spawnNestSwarm",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1115,
+      "line": 1124,
       "className": "EnemyManager",
       "methodName": "spawnNestSwarm",
       "doc": "Spawns a furious swarm of volcanic/void monsters bursting out from a detonated mob nest."
@@ -3760,7 +3760,7 @@
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 970,
+      "line": 979,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -3768,7 +3768,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1212,
+      "line": 1221,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -3776,7 +3776,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 742,
+      "line": 751,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -3785,7 +3785,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 668,
+      "line": 677,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -3794,7 +3794,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 863,
+      "line": 872,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -3802,7 +3802,7 @@
       "name": "EnemyManager.syncBalance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 226,
+      "line": 227,
       "className": "EnemyManager",
       "methodName": "syncBalance"
     },
@@ -3810,7 +3810,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1352,
+      "line": 1361,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -9370,7 +9370,7 @@
       "name": "PlayerTargetInfo",
       "kind": "interface",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 15
+      "line": 16
     },
     {
       "name": "PlayerXpPayload",
@@ -13794,6 +13794,74 @@
       "kind": "interface",
       "file": "game/src/ui/react/r3f/world/VfxEnvironment.tsx",
       "line": 11
+    },
+    {
+      "name": "VolatileRingInstance",
+      "kind": "class",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 23,
+      "doc": "Visual effect instance for the Volatile elite affix lightning discharge. Displays a 0.65s ground telegraph circle before detonating an expanding electric shockwave."
+    },
+    {
+      "name": "VolatileRingInstance.dispose",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 187,
+      "className": "VolatileRingInstance",
+      "methodName": "dispose"
+    },
+    {
+      "name": "VolatileRingInstance.initTelegraph",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 66,
+      "className": "VolatileRingInstance",
+      "methodName": "initTelegraph"
+    },
+    {
+      "name": "VolatileRingInstance.triggerDetonation",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 141,
+      "className": "VolatileRingInstance",
+      "methodName": "triggerDetonation"
+    },
+    {
+      "name": "VolatileRingInstance.update",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 96,
+      "className": "VolatileRingInstance",
+      "methodName": "update"
+    },
+    {
+      "name": "VolatileRingManager",
+      "kind": "class",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 221,
+      "doc": "Global manager for Volatile elite affix lightning telegraphs and shockwave detonations."
+    },
+    {
+      "name": "VolatileRingManager.clear",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 244,
+      "className": "VolatileRingManager",
+      "methodName": "clear"
+    },
+    {
+      "name": "VolatileRingManager.update",
+      "kind": "method",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 234,
+      "className": "VolatileRingManager",
+      "methodName": "update"
+    },
+    {
+      "name": "VolatileRingOptions",
+      "kind": "interface",
+      "file": "game/src/vfx/VolatileRingVfx.ts",
+      "line": 12
     },
     {
       "name": "Weapon",

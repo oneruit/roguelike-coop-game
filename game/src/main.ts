@@ -62,6 +62,7 @@ class Game {
   private netCoordinator: GameNetworkCoordinator;
   private sessionDirector: SessionDirector;
   private lobbyCoordinator: LobbyCoordinator;
+  private lastVolatileHitTime: number = 0;
 
   private remotePlayers: Map<string, RemotePlayer> = new Map();
   private scratchNearbyEnemies: Enemy[] = [];
@@ -90,20 +91,47 @@ class Game {
     this.enemyManager = new EnemyManager(this.engine.scene, this.dropManager, this.damageNumbers);
     this.enemyManager.camera = this.engine.camera;
     this.enemyManager.onVolatileRingTrigger = (pos, radius, damage) => {
+      const now = performance.now();
+      const isWithinGracePeriod = now - this.lastVolatileHitTime < 600; // 0.6s grace period against rapid multi-discharge
+      const effectiveDamage = isWithinGracePeriod ? Math.max(1, Math.round(damage * 0.25)) : damage;
+
       const dist = this.player.position.distanceTo(pos);
       if (dist <= radius && this.player.isAlive && !this.player.isDowned) {
-        this.player.takeDamage(damage);
-        this.damageNumbers.spawnDamage(this.player.position, damage, false, this.engine.camera, false, 1, 1, false);
+        this.lastVolatileHitTime = now;
+        this.player.takeDamage(effectiveDamage);
+        this.damageNumbers.spawnDamage(this.player.position, effectiveDamage, false, this.engine.camera, false, 1, 1, false);
+        SoundManager.playPlayerHurt?.();
+      }
+
+      for (const [id, remote] of this.remotePlayers) {
+        if (!remote.isDowned && remote.position.distanceTo(pos) <= radius) {
+          remote.hp = Math.max(0, remote.hp - effectiveDamage);
+          const cur = this.netCoordinator.pendingDamageToClients.get(id) || 0;
+          this.netCoordinator.pendingDamageToClients.set(id, cur + effectiveDamage);
+          remote.redrawOverhead();
+        }
       }
     };
     this.enemyManager.onVortexPullTrigger = (pos, radius, pullSpeed) => {
+      const maxPull = Math.min(pullSpeed || 2.8, 2.8);
       const diffX = pos.x - this.player.position.x;
       const diffZ = pos.z - this.player.position.z;
       const dist = Math.sqrt(diffX * diffX + diffZ * diffZ);
-      if (dist <= radius && dist > 0.5 && this.player.isAlive && !this.player.isDowned) {
-        const pull = Math.min(dist - 0.5, pullSpeed * (1 / 60));
+      if (dist <= radius && dist > 0.8 && this.player.isAlive && !this.player.isDowned) {
+        const pull = Math.min(dist - 0.8, maxPull);
         this.player.position.x += (diffX / dist) * pull;
         this.player.position.z += (diffZ / dist) * pull;
+      }
+      for (const remote of this.remotePlayers.values()) {
+        const rDiffX = pos.x - remote.position.x;
+        const rDiffZ = pos.z - remote.position.z;
+        const rDist = Math.sqrt(rDiffX * rDiffX + rDiffZ * rDiffZ);
+        if (rDist <= radius && rDist > 0.8 && !remote.isDowned) {
+          const rPull = Math.min(rDist - 0.8, maxPull);
+          remote.position.x += (rDiffX / rDist) * rPull;
+          remote.position.z += (rDiffZ / rDist) * rPull;
+          remote.redrawOverhead();
+        }
       }
     };
     this.player = new Player(this.engine.scene, 'ronin');

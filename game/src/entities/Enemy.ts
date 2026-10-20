@@ -74,6 +74,7 @@ export class Enemy {
   public eliteAuraMesh?: Mesh;
   public vortexTimer: number = 0;
   public volatileLastThreshold: number = 1.0;
+  public volatileCooldownTimer: number = 0;
   public frenzyTimer: number = 0;
   public onVolatileDischarge?: (enemy: Enemy) => void;
   public onAvengerDeath?: (enemy: Enemy) => void;
@@ -652,6 +653,10 @@ export class Enemy {
       }
     }
 
+    if (this.volatileCooldownTimer > 0) {
+      this.volatileCooldownTimer = Math.max(0, this.volatileCooldownTimer - dt);
+    }
+
     // Vortex periodic singularity pull trigger
     if (this.eliteAffix === 'vortex') {
       this.vortexTimer += dt;
@@ -888,12 +893,13 @@ export class Enemy {
       : incomingAmount;
     this.lastDamageTaken = effectiveDamage;
 
-    // Volatile: discharge ring of lightning when crossing every 20% HP threshold
-    if (this.eliteAffix === 'volatile') {
+    // Volatile: discharge ring of lightning when crossing every 20% HP threshold with internal cooldown
+    if (this.eliteAffix === 'volatile' && this.volatileCooldownTimer <= 0) {
       const nextRatio = Math.max(0, (this.hp - effectiveDamage) / this.maxHp);
       const currentFloor = Math.floor(nextRatio / 0.20) * 0.20;
       if (nextRatio <= 0.81 && currentFloor < this.volatileLastThreshold) {
         this.volatileLastThreshold = currentFloor;
+        this.volatileCooldownTimer = 1.2;
         if (this.onVolatileDischarge) {
           this.onVolatileDischarge(this);
         }

@@ -10,6 +10,7 @@ import { DifficultyDirector } from '../director/DifficultyDirector';
 import { BalanceManager } from '../balance/BalanceManager';
 import { MetaProgression } from '../meta/MetaProgression';
 import { FinalBossPylonManager } from './FinalBossPylonManager';
+import { VolatileRingManager } from '../vfx/VolatileRingVfx';
 import type { HUD } from '../ui/HUD';
 
 export interface PlayerTargetInfo {
@@ -286,13 +287,20 @@ export class EnemyManager {
       SoundManager.playReaperSpawn?.();
     };
     enemy.onVolatileDischarge = (volatileEnemy) => {
-      if (this.camera) {
-        this.damageNumbers.spawnDamage(volatileEnemy.position, 0, true, this.camera, false, 2, 1, false);
-      }
-      SoundManager.playLightning?.();
-      if (this.onVolatileRingTrigger) {
-        this.onVolatileRingTrigger(volatileEnemy.position, 7.0, volatileEnemy.damage * 0.85);
-      }
+      // 0.65s ground telegraph with reduced danger radius (4.2m) and capped non-lethal damage ratio (30%)
+      const dischargeRadius = 4.2;
+      const dischargeDamage = Math.min(65, Math.max(15, Math.round(volatileEnemy.damage * 0.30)));
+      VolatileRingManager.spawn(this.scene, volatileEnemy.position.clone(), {
+        radius: dischargeRadius,
+        telegraphDuration: 0.65,
+        damage: dischargeDamage,
+        onDetonate: (detonatePos, radius, damage) => {
+          SoundManager.playLightning?.();
+          if (this.onVolatileRingTrigger) {
+            this.onVolatileRingTrigger(detonatePos, radius, damage);
+          }
+        }
+      });
     };
     enemy.onVortexPull = (vortexEnemy, radius, pullSpeed) => {
       if (this.onVortexPullTrigger) {
@@ -390,6 +398,7 @@ export class EnemyManager {
     this.gameTime += dt;
     this.stageTime += dt;
     this.spawnTimer += dt;
+    VolatileRingManager.update(dt);
 
     // 1. Spawning Boss every 5 minutes only starting from minute 15 (minute 15, 20, 25, 30, 35, 40...)
     const currentMinute = Math.floor(this.gameTime / 60);
@@ -1379,6 +1388,7 @@ export class EnemyManager {
 
   public clear() {
     this.finalBossPylonManager.cleanup();
+    VolatileRingManager.clear();
     this.spatialGrid.clear();
     for (const enemy of this.enemies) {
       enemy.destroy(this.scene);
