@@ -724,17 +724,15 @@ def extract_turnaround_assets(
     # Check first column (w // 4 for 4-column or w // 5 for 5-column)
     col1_w_4 = w // 4
     col1_w_5 = w // 5
-    
-    # Check if there is weapon content in the last column (5-column legacy layout)
-    panel5_legacy = rgba[:, col1_w_5 * 4 : w]
-    has_legacy_weapon = np.any(panel5_legacy[:, :, 3] > ALPHA_THRESHOLD)
 
-    if not has_legacy_weapon:
-        # Modern 4-column layout: Column 1 (0..w//4) has Portrait (top half) and Weapon (bottom half)
-        col1 = rgba[:, 0:col1_w_4]
-        mid_y = h // 2
-        top_half = col1[:mid_y, :]
-        bot_half = col1[mid_y:, :]
+    # Check if modern 4-column layout is used: Column 1 (0..w//4) has Portrait (top half) and Weapon (bottom half)
+    col1 = rgba[:, 0:col1_w_4]
+    mid_y = h // 2
+    top_half = col1[:mid_y, :]
+    bot_half = col1[mid_y:, :]
+    has_stacked_weapon = np.any(bot_half[:, :, 3] > ALPHA_THRESHOLD)
+
+    if has_stacked_weapon:
 
         # Top half: Portrait
         ys_p, xs_p = np.where(top_half[:, :, 3] > ALPHA_THRESHOLD)
