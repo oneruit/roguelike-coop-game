@@ -234,7 +234,7 @@ test('MageCutoutRig - mounts 9 anatomical cutout planes to skeleton joints and a
   assert.equal(cutoutRig.staffArmMesh.parent, null);
 });
 
-test('MageReal3DSystem - loads authentic 3D model with PBR and kinematic motion', () => {
+test('MageReal3DSystem - loads authentic 3D model with PBR, turnaround figure isolation and kinematic motion', () => {
   const mageCfg = DEFAULT_CLASS_CONFIGS.mage;
   const rig = new CharacterRig(mageCfg.colors, mageCfg.materials);
   const real3D = new MageReal3DSystem(rig);
@@ -243,6 +243,35 @@ test('MageReal3DSystem - loads authentic 3D model with PBR and kinematic motion'
   assert.ok(real3D.crystalLight, 'Crystal light exists');
   assert.ok(real3D.particlesGroup, 'Particles group exists');
   assert.equal(real3D.currentAnimState, 'idle');
+  assert.equal(real3D.currentFigureIndex, 3, 'Default figure is 3 (front)');
+
+  // Test rotation and figure switching methods
+  real3D.rotate90();
+  assert.ok(Math.abs(real3D.facingRotation - Math.PI) < 0.01);
+  real3D.toggleRotate180();
+  assert.ok(Math.abs(real3D.facingRotation - 0) < 0.01);
+
+  real3D.setFigureIndex(1);
+  assert.equal(real3D.currentFigureIndex, 1);
+  real3D.setFigureIndex(3);
+  assert.equal(real3D.currentFigureIndex, 3);
+
+  // Test isolateFigure algorithm on synthetic multi-figure geometry
+  const testGeo = new THREE.BufferGeometry();
+  // 3 triangles: fig1 (z = -0.3), fig2 (z = 0), fig3 (z = 0.3)
+  const pos = new Float32Array([
+    0, 0, -0.4,   0, 1, -0.4,   0, 0, -0.3, // Fig 1
+    0, 0, -0.05,  0, 1, 0.0,    0, 0, 0.05, // Fig 2
+    0, 0, 0.25,   0, 1, 0.35,   0, 0, 0.45, // Fig 3
+  ]);
+  testGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  testGeo.setIndex([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  const testMesh = new THREE.Mesh(testGeo, new THREE.MeshBasicMaterial());
+
+  real3D.isolateFigure(testMesh, 3);
+  assert.equal(testMesh.geometry.index!.count, 3, 'Retained exactly 1 triangle for Fig 3');
+  const posFig3 = testMesh.geometry.attributes.position;
+  assert.equal(posFig3.count, 3);
 
   // Toggle visibility
   real3D.setVisible(true);

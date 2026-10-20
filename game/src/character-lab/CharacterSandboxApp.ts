@@ -288,6 +288,18 @@ export class CharacterSandboxApp {
     this.mageTexturedSystem.setAngleMode(mode);
   }
 
+  public setMageTripoFigure(figIndex: 1 | 2 | 3) {
+    this.mageReal3DSystem.setFigureIndex(figIndex);
+  }
+
+  public toggleMageTripoRotate180() {
+    this.mageReal3DSystem.toggleRotate180();
+  }
+
+  public rotateMageTripo90() {
+    this.mageReal3DSystem.rotate90();
+  }
+
   public setAnimation(state: 'idle' | 'walk' | 'run' | 'attack') {
     this.animator.setState(state);
     this.mageReal3DSystem.setAnimationState(state);

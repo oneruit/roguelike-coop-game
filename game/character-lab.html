@@ -424,6 +424,22 @@
               <button class="preset-btn mage-angle-btn" data-angle="cross3d">3D Крест</button>
             </div>
           </div>
+          <div id="mage-real3d-container" style="display: block;">
+            <div class="field-label" style="margin-bottom: 4px; color: #e9d5ff;">Выбор фигуры из Turnaround:</div>
+            <div class="presets-row" id="mage-tripo-fig-buttons" style="margin-bottom: 8px;">
+              <button class="preset-btn active tripo-fig-btn" data-fig="3">✨ Фигура 3 (Анфас)</button>
+              <button class="preset-btn tripo-fig-btn" data-fig="1">Фигура 1 (Спина)</button>
+              <button class="preset-btn tripo-fig-btn" data-fig="2">Фигура 2 (Центр)</button>
+            </div>
+            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+              <button class="preset-btn" id="btn-tripo-rotate-180" style="flex: 1;">🔄 Развернуть 180°</button>
+              <button class="preset-btn" id="btn-tripo-rotate-90" style="flex: 1;">↻ Повернуть 90°</button>
+            </div>
+            <div style="font-size: 0.72rem; color: #d8b4fe; line-height: 1.35; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px;">
+              💡 <b>Статус анимации:</b> <span id="tripo-anim-status" style="color: #facc15;">Кинематика (статический меш)</span>.<br/>
+              Для естественного сгибания рук и ног модели нужен скелет (Rig) из Tripo / Mixamo.
+            </div>
+          </div>
         </section>
 
         <!-- Color Customization -->

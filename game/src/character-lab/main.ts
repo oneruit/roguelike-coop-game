@@ -127,12 +127,14 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnMageModeTextured = document.getElementById('btn-mage-mode-textured');
   const btnMageModeProcedural = document.getElementById('btn-mage-mode-procedural');
   const mageAnglesContainer = document.getElementById('mage-angles-container');
+  const mageReal3DContainer = document.getElementById('mage-real3d-container');
 
   btnMageModeReal3d?.addEventListener('click', () => {
     btnMageModeReal3d.classList.add('active');
     btnMageModeTextured?.classList.remove('active');
     btnMageModeProcedural?.classList.remove('active');
     if (mageAnglesContainer) mageAnglesContainer.style.display = 'none';
+    if (mageReal3DContainer) mageReal3DContainer.style.display = 'block';
     app.setMageRenderMode('real3d');
   });
 
@@ -141,6 +143,7 @@ window.addEventListener('DOMContentLoaded', () => {
     btnMageModeReal3d?.classList.remove('active');
     btnMageModeProcedural?.classList.remove('active');
     if (mageAnglesContainer) mageAnglesContainer.style.display = 'block';
+    if (mageReal3DContainer) mageReal3DContainer.style.display = 'none';
     app.setMageRenderMode('textured');
   });
 
@@ -149,7 +152,30 @@ window.addEventListener('DOMContentLoaded', () => {
     btnMageModeReal3d?.classList.remove('active');
     btnMageModeTextured?.classList.remove('active');
     if (mageAnglesContainer) mageAnglesContainer.style.display = 'none';
+    if (mageReal3DContainer) mageReal3DContainer.style.display = 'none';
     app.setMageRenderMode('procedural');
+  });
+
+  // Tripo Turnaround Figure Buttons
+  const tripoFigButtons = document.querySelectorAll<HTMLButtonElement>('.tripo-fig-btn');
+  tripoFigButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tripoFigButtons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const fig = parseInt(btn.dataset.fig || '3', 10) as 1 | 2 | 3;
+      app.setMageTripoFigure(fig);
+    });
+  });
+
+  // Tripo Rotation Buttons
+  const btnRotate180 = document.getElementById('btn-tripo-rotate-180');
+  btnRotate180?.addEventListener('click', () => {
+    app.toggleMageTripoRotate180();
+  });
+
+  const btnRotate90 = document.getElementById('btn-tripo-rotate-90');
+  btnRotate90?.addEventListener('click', () => {
+    app.rotateMageTripo90();
   });
 
   // Mage Angle Buttons

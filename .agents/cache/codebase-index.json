@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-20T23:22:06.483Z",
+  "generatedAt": "2026-10-20T23:35:03.260Z",
   "totalFiles": 199,
-  "totalSymbols": 1850,
+  "totalSymbols": 1858,
   "topLevelCount": 575,
-  "methodsCount": 1275,
+  "methodsCount": 1283,
   "entities": {
     "heroes": [
       {
@@ -2547,7 +2547,7 @@
       "name": "CharacterSandboxApp.dispose",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 409,
+      "line": 421,
       "className": "CharacterSandboxApp",
       "methodName": "dispose"
     },
@@ -2555,15 +2555,23 @@
       "name": "CharacterSandboxApp.resetCamera",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 355,
+      "line": 367,
       "className": "CharacterSandboxApp",
       "methodName": "resetCamera"
+    },
+    {
+      "name": "CharacterSandboxApp.rotateMageTripo90",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 299,
+      "className": "CharacterSandboxApp",
+      "methodName": "rotateMageTripo90"
     },
     {
       "name": "CharacterSandboxApp.setAnimation",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 291,
+      "line": 303,
       "className": "CharacterSandboxApp",
       "methodName": "setAnimation"
     },
@@ -2571,7 +2579,7 @@
       "name": "CharacterSandboxApp.setLightingPreset",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 326,
+      "line": 338,
       "className": "CharacterSandboxApp",
       "methodName": "setLightingPreset"
     },
@@ -2592,10 +2600,18 @@
       "methodName": "setMageRenderMode"
     },
     {
+      "name": "CharacterSandboxApp.setMageTripoFigure",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 291,
+      "className": "CharacterSandboxApp",
+      "methodName": "setMageTripoFigure"
+    },
+    {
       "name": "CharacterSandboxApp.setPlaybackSpeed",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 301,
+      "line": 313,
       "className": "CharacterSandboxApp",
       "methodName": "setPlaybackSpeed"
     },
@@ -2603,15 +2619,23 @@
       "name": "CharacterSandboxApp.toggleEquipment",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 317,
+      "line": 329,
       "className": "CharacterSandboxApp",
       "methodName": "toggleEquipment"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleMageTripoRotate180",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 295,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleMageTripoRotate180"
     },
     {
       "name": "CharacterSandboxApp.toggleWireframe",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 322,
+      "line": 334,
       "className": "CharacterSandboxApp",
       "methodName": "toggleWireframe"
     },
@@ -2619,7 +2643,7 @@
       "name": "CharacterSandboxApp.triggerAttack",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 296,
+      "line": 308,
       "className": "CharacterSandboxApp",
       "methodName": "triggerAttack"
     },
@@ -2627,7 +2651,7 @@
       "name": "CharacterSandboxApp.updateColor",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 306,
+      "line": 318,
       "className": "CharacterSandboxApp",
       "methodName": "updateColor"
     },
@@ -2635,7 +2659,7 @@
       "name": "CharacterSandboxApp.updateMaterialProperty",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 312,
+      "line": 324,
       "className": "CharacterSandboxApp",
       "methodName": "updateMaterialProperty"
     },
@@ -7887,54 +7911,96 @@
       "name": "MageReal3DSystem",
       "kind": "class",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 10,
-      "doc": "Loads and displays the authentic watertight 3D mesh generated from the 2D turnaround art. Features PBR materials, Meshopt decompression, ground alignment, and dynamic arcane lighting/particles."
+      "line": 11,
+      "doc": "Loads and displays the authentic watertight 3D mesh generated from the 2D turnaround art. Features PBR materials, Meshopt decompression, turnaround figure extraction (Figure 3 front / Figure 1 back / Figure 2 center), ground alignment, dynamic arcane lighting/particles, and support for Skeletal AnimationMixer (Tripo/Mixamo rigs)."
+    },
+    {
+      "name": "MageReal3DSystem.buildMeshFromRaw",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 174,
+      "className": "MageReal3DSystem",
+      "methodName": "buildMeshFromRaw",
+      "doc": "Builds or rebuilds the isolated model from rawScene"
     },
     {
       "name": "MageReal3DSystem.getModelUrl",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 62,
+      "line": 77,
       "className": "MageReal3DSystem",
       "methodName": "getModelUrl"
     },
     {
-      "name": "MageReal3DSystem.isolateFigure1",
+      "name": "MageReal3DSystem.isolateFigure",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 67,
+      "line": 88,
       "className": "MageReal3DSystem",
-      "methodName": "isolateFigure1"
+      "methodName": "isolateFigure",
+      "doc": "Slices out a single figure from a multi-figure turnaround 3D model. - Figure 1: Leftmost figure (Z < -0.15) - Figure 2: Center figure (-0.15 <= Z <= 0.15) - Figure 3: Rightmost figure (Z > 0.15)"
     },
     {
       "name": "MageReal3DSystem.loadModel",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 138,
+      "line": 254,
       "className": "MageReal3DSystem",
       "methodName": "loadModel"
+    },
+    {
+      "name": "MageReal3DSystem.playSkeletalAnimation",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 289,
+      "className": "MageReal3DSystem",
+      "methodName": "playSkeletalAnimation"
+    },
+    {
+      "name": "MageReal3DSystem.rotate90",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 249,
+      "className": "MageReal3DSystem",
+      "methodName": "rotate90"
     },
     {
       "name": "MageReal3DSystem.setAnimationState",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 221,
+      "line": 326,
       "className": "MageReal3DSystem",
       "methodName": "setAnimationState"
+    },
+    {
+      "name": "MageReal3DSystem.setFigureIndex",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 239,
+      "className": "MageReal3DSystem",
+      "methodName": "setFigureIndex"
     },
     {
       "name": "MageReal3DSystem.setVisible",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 206,
+      "line": 311,
       "className": "MageReal3DSystem",
       "methodName": "setVisible"
+    },
+    {
+      "name": "MageReal3DSystem.toggleRotate180",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 244,
+      "className": "MageReal3DSystem",
+      "methodName": "toggleRotate180"
     },
     {
       "name": "MageReal3DSystem.update",
       "kind": "method",
       "file": "game/src/character-lab/MageReal3DSystem.ts",
-      "line": 225,
+      "line": 333,
       "className": "MageReal3DSystem",
       "methodName": "update"
     },
