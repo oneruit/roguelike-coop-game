@@ -26,6 +26,7 @@ A single reference canvas with 4 vertical columns on pure magenta (`#ff00ff`):
    - `BACK` (96×96 rear chibi sprite: 100% rear view of hair, horns, backplate, skirt; NO face, NO eyes).
 4. **Column 4: Right Profile Full-Body View**:
    - `RIGHT` (96×96 right profile chibi sprite: body strictly turned sideways, face strictly in side profile, holding weapon).
+   - **COMPACT PROFILE HEAD RULE**: Cranial depth (nose to back of hair) must be compact (~28–32px, $\approx 80–85\%$ of front view width, NEVER wider than front view). Head must NOT be an inflated horizontal sphere, balloon, or basketball.
 
 ---
 
@@ -51,7 +52,8 @@ To prevent adjacent figures or outstretched weapons from bleeding into neighbori
 
 ## 4. Mandatory Constraints & Cleanliness
 
-* **Background**: **Pure solid magenta background `rgb(255,0,255)` (`#ff00ff`)**.
+* **Background / Chromakey**: **Pure solid magenta background `rgb(255,0,255)` (`#ff00ff`) by default**.
+  - **MANDATORY Green Chromakey (`#00ff00`)**: If the character has purple, lavender, pink, or magenta elements, use **Pure Solid Green `RGB(0, 255, 0)`** to preserve 100% of hair/clothing details without chromakey erosion.
 * **Global Removal & Defringing**: Magenta is removed both outside and inside the character. No magenta aura remains along the edges (defringed with 1px black outline).
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no tile grid**.
 * **Negative Constraints**:

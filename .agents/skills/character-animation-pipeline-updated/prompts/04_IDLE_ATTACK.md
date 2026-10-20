@@ -13,7 +13,7 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 | Grid Dimensions | **6 columns × 3 rows** (18 source cells; Row 3 LEFT is auto-mirrored by script) |
 | Cell Dimensions | 96 × 96 px (or native square cells e.g. 200×200 / 256×256) |
 | Total Resolution | 576 × 288 px (or 1536 × 768 px high-res source) |
-| Background | Pure solid magenta chromakey `rgb(255,0,255)` (`#ff00ff`) |
+| Background | Pure solid magenta `rgb(255,0,255)` (`#ff00ff`) by default; **Pure Green `rgb(0,255,0)` (`#00ff00`) if character contains purple/pink/magenta** |
 | Direction Rows (Top to Bottom) | Row 0: `FRONT` (attacking toward camera)<br>Row 1: `BACK` (attacking away — 100% rear view, no eyes/face)<br>Row 2: `RIGHT` (attacking to right, body sideways, face in 90° profile)<br>*(Row 3 LEFT is automatically generated via script mirroring)* |
 
 ---
@@ -110,6 +110,6 @@ Select the appropriate kinematic profile based on the character's equipped weapo
 * **Cell Clearance**: Weapon tips, heads, and boots must stay completely within each cell without edge clipping.
 * **Global Magenta Keying & Defringing**: Magenta is removed globally inside and outside the character. Boundary edges are cleaned with a 1px black outline without any purple/magenta aura.
 * **Mandatory Negative Constraint**:
-  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no duplicate frame 1 and 6, no static frames 1 2 3.`
+  > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no giant spherical profile head, no balloon head, no basketball head, no elongated horizontal skull, head horizontal depth must not exceed frontal width, no duplicate frame 1 and 6, no static frames 1 2 3.`
 * **Pixel Art Quality**: Crisp hard pixel edges, limited color palette, strong contrast, 16-bit game sprite aesthetic.
 

@@ -24,8 +24,8 @@ If the user provides a brief description (e.g. *"female amazon in red bikini wit
 | **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), compact stylized armor fitted to stubby chibi anatomy, crisp pixel-art clusters |
 | **Held Item / Weapon** | Held with both hands or combat-ready stance, clearly visible beside character. If unarmed, hands raised in ready combat stance. No extra weapons |
 | **Effects** | Faint localized magical motes / energy orbs only if specified by archetype; no oversized clutter |
-| **Background** | Pure solid magenta background rgb(255,0,255), no shadows under feet, no ground line, no floor, no platform |
-| **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.` |
+| **Background / Chromakey** | Pure solid magenta background rgb(255,0,255) by default. **MANDATORY Green Chromakey RGB(0,255,0) (#00ff00)** if character has purple, lavender, pink, or magenta elements (hair, clothes, gems) to preserve 100% of colors. No shadows under feet, no ground line, no floor, no platform |
+| **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no giant spherical profile head, no balloon head, no basketball head, no elongated horizontal skull, head horizontal depth must not exceed frontal width.` |
 
 ---
 
@@ -50,7 +50,7 @@ Pure solid magenta background rgb(255,0,255), clean 16-bit pixel art game sprite
 
 Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite super-deformed chibi proportions.
 
-No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.
+No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, [specific exclusions], no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no giant spherical profile head, no balloon head, no basketball head, no elongated horizontal skull, head horizontal depth must not exceed frontal width.
 
 Additional character details to include: [list all extra details the user specifies].
 ```
@@ -60,7 +60,7 @@ Additional character details to include: [list all extra details the user specif
 ## 3. Strict Negative Constraint String
 
 Every prompt MUST contain this exact negative constraint block:
-> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.`
+> `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no giant spherical profile head, no balloon head, no basketball head, no elongated horizontal skull, head horizontal depth must not exceed frontal width.`
 
 ---
 
@@ -72,6 +72,10 @@ The animation pipeline supports both **6×3** (recommended for generation effici
   - **BACK VIEW PROTECTION RULE**: The back of head, hair, hood, and armor MUST face 100% away from camera across **ALL 6 frames**. **NO face, NO eyes, and NO head turning on Frame 3**. On Frame 3, the neck/head merely dips 1px with breath/stride.
 * **Row 2 (3rd row)**: `RIGHT` — Character faces to the RIGHT.
   - **MANDATORY PROFILE RULE**: When drawn facing RIGHT, the character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No three-quarters (3/4) views, no torso or head angled towards camera.
+  - **COMPACT PROFILE HEAD DEPTH (ANTI-SPHERE RULE)**:
+    - In Front view (Row 0), the head is wide ear-to-ear (~36–40px) including hair volume on both sides and spreading horns.
+    - In Profile view (Row 2), the horizontal head depth (tip of nose to back of hair) MUST be **compact and streamlined** (~28–32px max, $\approx 80–85\%$ of frontal width, **never exceeding front width**).
+    - The profile head must **NEVER be an inflated horizontal sphere, round balloon, or basketball**. The face profile (brow, small chibi nose, lips/chin) projects neatly forward; the cranium and hair curve smoothly downward along the nape of the neck without bulging 40px backwards.
 * **Row 3 (4th row — Optional in Source)**: `LEFT` — Character faces to the LEFT.
   - **AUTOMATED SCRIPT MIRRORING**: To prevent token waste and asymmetric AI hallucinations, Row 3 (LEFT) is **automatically derived by horizontally mirroring Row 2** in `process_character_sheets.py`. Generation prompts only need to produce 3 rows (`FRONT`, `BACK`, `RIGHT`).
 

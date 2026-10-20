@@ -28,15 +28,15 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
                 # Main character body with realistic directional profile reach
                 if row == 2:  # Row 2 (3rd row) facing RIGHT: asymmetric reach to the right
                     draw.rectangle((x + 30, y + 15, x + 69, y + 87), fill=color, outline=(0, 0, 0), width=3)
-                    draw.rectangle((x + 41, y + 37, x + 52, y + 49), fill=(255, 0, 255))
+                    draw.rectangle((x + 41, y + 37, x + 52, y + 49), fill=bg_color)
                     draw.rectangle((x + 54, y + 18, x + 67, y + 34), fill=(220, 160, 120))
                 elif row == 3:  # Row 3 (4th row) facing LEFT: asymmetric reach to the left
                     draw.rectangle((x + 27, y + 15, x + 66, y + 87), fill=color, outline=(0, 0, 0), width=3)
-                    draw.rectangle((x + 43, y + 37, x + 55, y + 49), fill=(255, 0, 255))
+                    draw.rectangle((x + 43, y + 37, x + 55, y + 49), fill=bg_color)
                     draw.rectangle((x + 28, y + 18, x + 42, y + 34), fill=(220, 160, 120))
                 else:
                     draw.rectangle((x + 30, y + 15, x + 66, y + 87), fill=color, outline=(0, 0, 0), width=3)
-                    draw.rectangle((x + 37, y + 37, x + 49, y + 49), fill=(255, 0, 255))
+                    draw.rectangle((x + 37, y + 37, x + 49, y + 49), fill=bg_color)
         return sheet
 
     def test_magenta_removed_globally_inside_and_outside_and_aura_defringed(self) -> None:
@@ -62,6 +62,47 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
         self.assertEqual(int(fringe_pixel[3]), 255)
         # Should be converted to black outline [0, 0, 0], no magenta tint!
         self.assertTrue(fringe_pixel[0] == 0 and fringe_pixel[2] == 0)
+
+    def test_green_chromakey_removed_globally_and_purple_elements_preserved(self) -> None:
+        # Create sheet on pure green chromakey with lavender/purple character body
+        lavender_color = (180, 100, 220)
+        sheet = self.make_sheet(color=lavender_color, bg_color=(0, 255, 0))
+        sheet_arr = np.array(sheet)
+        sheet_arr[14, 30:66] = [30, 180, 30]  # Green fringe right above character
+
+        rgba = detect_and_clean_background(sheet_arr, "green", tolerance=65.0)
+
+        # 1. Outer green background is removed
+        self.assertEqual(int(rgba[5, 5, 3]), 0)
+
+        # 2. Inner enclosed green hole is also removed
+        self.assertEqual(int(rgba[40, 40, 3]), 0)
+
+        # 3. Lavender/purple body is 100% preserved (not stripped or eroded!)
+        self.assertEqual(int(rgba[25, 38, 3]), 255)
+        self.assertEqual(tuple(rgba[25, 38, :3]), lavender_color)
+
+        # 4. Green fringe along boundary was despilled (green excess neutralized)
+        fringe_pixel = rgba[15, 38]
+        self.assertEqual(int(fringe_pixel[3]), 255)
+        self.assertTrue(fringe_pixel[1] <= 30)
+
+    def test_auto_detect_green_and_magenta_background(self) -> None:
+        sheet_mag = self.make_sheet(bg_color=(255, 0, 255))
+        rgba_mag = detect_and_clean_background(np.array(sheet_mag), bg_mode="auto")
+        self.assertEqual(int(rgba_mag[0, 0, 3]), 0)
+
+        sheet_grn = self.make_sheet(bg_color=(0, 255, 0))
+        rgba_grn = detect_and_clean_background(np.array(sheet_grn), bg_mode="auto")
+        self.assertEqual(int(rgba_grn[0, 0, 3]), 0)
+
+    def test_custom_bg_color_hex(self) -> None:
+        sheet_grn = self.make_sheet(bg_color=(0, 255, 0))
+        rgba_hex = detect_and_clean_background(np.array(sheet_grn), bg_color="#00ff00")
+        self.assertEqual(int(rgba_hex[0, 0, 3]), 0)
+
+        rgba_str = detect_and_clean_background(np.array(sheet_grn), bg_color="green")
+        self.assertEqual(int(rgba_str[0, 0, 3]), 0)
 
     def test_pack_sheet_has_standard_dimensions_and_transparency(self) -> None:
         rgba = detect_and_clean_background(np.asarray(self.make_sheet().convert("RGBA")), "magenta")

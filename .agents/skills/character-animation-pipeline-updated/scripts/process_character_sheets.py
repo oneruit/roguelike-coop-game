@@ -87,16 +87,69 @@ def _connected_to_border(candidate: np.ndarray) -> np.ndarray:
     return visited
 
 
+def parse_bg_color(
+    color_spec: Optional[Union[str, tuple, list, np.ndarray]]
+) -> Optional[tuple[float, float, float]]:
+    """Parse color string, hex code, or tuple into (R, G, B) float tuple."""
+    if color_spec is None:
+        return None
+    if isinstance(color_spec, (tuple, list, np.ndarray)):
+        if len(color_spec) >= 3:
+            return float(color_spec[0]), float(color_spec[1]), float(color_spec[2])
+        return None
+    if isinstance(color_spec, str):
+        c = color_spec.strip().lower()
+        if c in ("magenta", "fuchsia"):
+            return (255.0, 0.0, 255.0)
+        if c in ("green", "lime"):
+            return (0.0, 255.0, 0.0)
+        if c == "blue":
+            return (0.0, 0.0, 255.0)
+        if c in ("cyan", "aqua"):
+            return (0.0, 255.0, 255.0)
+        if c == "white":
+            return (255.0, 255.0, 255.0)
+        if c == "black":
+            return (0.0, 0.0, 0.0)
+        if c.startswith("#"):
+            c = c[1:]
+        if len(c) == 6:
+            try:
+                r = float(int(c[0:2], 16))
+                g = float(int(c[2:4], 16))
+                b = float(int(c[4:6], 16))
+                return (r, g, b)
+            except ValueError:
+                pass
+        if len(c) == 3:
+            try:
+                r = float(int(c[0] * 2, 16))
+                g = float(int(c[1] * 2, 16))
+                b = float(int(c[2] * 2, 16))
+                return (r, g, b)
+            except ValueError:
+                pass
+        if "," in c:
+            parts = [p.strip() for p in c.split(",")]
+            if len(parts) >= 3:
+                try:
+                    return float(parts[0]), float(parts[1]), float(parts[2])
+                except ValueError:
+                    pass
+    return None
+
+
 def detect_and_clean_background(
     img_arr: np.ndarray,
     bg_mode: str = "auto",
     tolerance: float = 36.0,
+    bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> np.ndarray:
     """Convert RGB/RGBA image to RGBA and remove edge-connected background.
 
-    Unlike a global white color key, this removes near-background pixels only
-    when they are connected to the canvas border, preserving enclosed white
-    pixels in a white hood, hair highlights, armor, etc.
+    Supports pure magenta (#ff00ff), pure green (#00ff00), pure blue (#0000ff),
+    auto-detected chromakey, or custom RGB/hex backgrounds with mathematical
+    color despill/defringing.
     """
     arr = np.asarray(img_arr)
     if arr.ndim != 3 or arr.shape[2] not in (3, 4):
@@ -104,9 +157,6 @@ def detect_and_clean_background(
 
     arr = arr.astype(np.uint8, copy=True)
     if arr.shape[2] == 4:
-        # Trust an existing alpha channel only when transparency is substantial and
-        # actually reaches the canvas border. This avoids skipping white-background
-        # cleanup because of a few transparent pixels inside an otherwise opaque PNG.
         alpha_in = arr[:, :, 3]
         border_alpha = np.concatenate((alpha_in[0, :], alpha_in[-1, :], alpha_in[:, 0], alpha_in[:, -1]))
         mostly_transparent = np.count_nonzero(alpha_in == 0) > alpha_in.size * 0.01
@@ -135,39 +185,76 @@ def detect_and_clean_background(
     )
     inferred = np.median(corners, axis=0)
 
-    is_magenta = False
-    if bg_mode == "magenta":
-        bg_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
-        is_magenta = True
-    elif bg_mode == "white":
-        bg_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
-    elif bg_mode == "black":
-        bg_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
-    elif bg_mode == "chroma":
-        bg_color = inferred
-        dist_mag = float(np.linalg.norm(inferred - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
+    chroma_type = "custom"
+    parsed_bg = parse_bg_color(bg_color)
+
+    if parsed_bg is not None:
+        target_color = np.array(parsed_bg, dtype=np.float32)
+        dist_mag = float(np.linalg.norm(target_color - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
+        dist_grn = float(np.linalg.norm(target_color - np.array([0.0, 255.0, 0.0], dtype=np.float32)))
+        dist_blu = float(np.linalg.norm(target_color - np.array([0.0, 0.0, 255.0], dtype=np.float32)))
         if dist_mag <= 45.0:
-            is_magenta = True
+            chroma_type = "magenta"
+        elif dist_grn <= 45.0:
+            chroma_type = "green"
+        elif dist_blu <= 45.0:
+            chroma_type = "blue"
+    elif bg_mode == "magenta":
+        target_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
+        chroma_type = "magenta"
+    elif bg_mode == "green":
+        target_color = np.array([0.0, 255.0, 0.0], dtype=np.float32)
+        chroma_type = "green"
+    elif bg_mode == "blue":
+        target_color = np.array([0.0, 0.0, 255.0], dtype=np.float32)
+        chroma_type = "blue"
+    elif bg_mode == "white":
+        target_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
+        chroma_type = "white"
+    elif bg_mode == "black":
+        target_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+        chroma_type = "black"
+    elif bg_mode == "chroma":
+        target_color = inferred
+        dist_mag = float(np.linalg.norm(inferred - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
+        dist_grn = float(np.linalg.norm(inferred - np.array([0.0, 255.0, 0.0], dtype=np.float32)))
+        dist_blu = float(np.linalg.norm(inferred - np.array([0.0, 0.0, 255.0], dtype=np.float32)))
+        if dist_mag <= 45.0:
+            chroma_type = "magenta"
+        elif dist_grn <= 45.0:
+            chroma_type = "green"
+        elif dist_blu <= 45.0:
+            chroma_type = "blue"
     elif bg_mode == "auto":
         dist_magenta = float(np.linalg.norm(inferred - np.array([255.0, 0.0, 255.0], dtype=np.float32)))
+        dist_green = float(np.linalg.norm(inferred - np.array([0.0, 255.0, 0.0], dtype=np.float32)))
+        dist_blue = float(np.linalg.norm(inferred - np.array([0.0, 0.0, 255.0], dtype=np.float32)))
         brightness = float(np.mean(inferred))
-        if dist_magenta <= 45.0:
-            bg_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
-            is_magenta = True
+
+        if dist_magenta <= 45.0 or (inferred[0] > 180 and inferred[2] > 180 and inferred[1] < 70):
+            target_color = np.array([255.0, 0.0, 255.0], dtype=np.float32)
+            chroma_type = "magenta"
+        elif dist_green <= 45.0 or (inferred[1] > 180 and inferred[0] < 70 and inferred[2] < 70):
+            target_color = np.array([0.0, 255.0, 0.0], dtype=np.float32)
+            chroma_type = "green"
+        elif dist_blue <= 45.0 or (inferred[2] > 180 and inferred[0] < 70 and inferred[1] < 70):
+            target_color = np.array([0.0, 0.0, 255.0], dtype=np.float32)
+            chroma_type = "blue"
         elif brightness >= 225:
-            bg_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
+            target_color = np.array([255.0, 255.0, 255.0], dtype=np.float32)
+            chroma_type = "white"
         elif brightness <= 30:
-            bg_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+            target_color = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+            chroma_type = "black"
         else:
-            bg_color = inferred
+            target_color = inferred
+            chroma_type = "custom"
     else:
         raise ValueError(f"Unsupported background mode: {bg_mode}")
 
-    distance = np.sqrt(np.sum((rgb - bg_color) ** 2, axis=2))
+    distance = np.sqrt(np.sum((rgb - target_color) ** 2, axis=2))
 
-    if is_magenta:
-        # Magenta chromakey is removed globally: both outside the character and inside
-        # any enclosed holes/gaps within limbs and equipment.
+    if chroma_type == "magenta":
         is_magenta_hue = (
             (rgb[:, :, 0] > 100.0)
             & (rgb[:, :, 2] > 100.0)
@@ -176,6 +263,24 @@ def detect_and_clean_background(
             & ((rgb[:, :, 2] - rgb[:, :, 1]) > 35.0)
         )
         background = (distance <= float(tolerance)) | (is_magenta_hue & (distance <= 140.0))
+    elif chroma_type == "green":
+        is_green_hue = (
+            (rgb[:, :, 1] > 100.0)
+            & (rgb[:, :, 0] < 140.0)
+            & (rgb[:, :, 2] < 140.0)
+            & ((rgb[:, :, 1] - rgb[:, :, 0]) > 35.0)
+            & ((rgb[:, :, 1] - rgb[:, :, 2]) > 35.0)
+        )
+        background = (distance <= float(tolerance)) | (is_green_hue & (distance <= 140.0))
+    elif chroma_type == "blue":
+        is_blue_hue = (
+            (rgb[:, :, 2] > 100.0)
+            & (rgb[:, :, 0] < 140.0)
+            & (rgb[:, :, 1] < 140.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 0]) > 35.0)
+            & ((rgb[:, :, 2] - rgb[:, :, 1]) > 35.0)
+        )
+        background = (distance <= float(tolerance)) | (is_blue_hue & (distance <= 140.0))
     else:
         candidate = distance <= float(tolerance)
         background = _connected_to_border(candidate)
@@ -189,9 +294,7 @@ def detect_and_clean_background(
     rgba[background, 3] = 0
     rgba[rgba[:, :, 3] < 12, 3] = 0
 
-    # Defringe / color despill: eliminate any magenta aura along boundary pixels
-    # without touching or overwriting interior character textures.
-    if is_magenta:
+    if chroma_type in ("magenta", "green", "blue"):
         mask = rgba[:, :, 3] > 0
         pad = np.pad(mask, 1, mode="constant", constant_values=False)
         neighbor_has_bg = (~pad[:-2, 1:-1]) | (~pad[2:, 1:-1]) | (~pad[1:-1, :-2]) | (~pad[1:-1, 2:])
@@ -205,11 +308,20 @@ def detect_and_clean_background(
         r_edge = boundary_rgb[:, :, 0]
         g_edge = boundary_rgb[:, :, 1]
         b_edge = boundary_rgb[:, :, 2]
-        excess = np.maximum(0.0, np.minimum(r_edge - g_edge, b_edge - g_edge))
 
-        has_spill = edge_mask & (excess > 18.0)
-        rgba[has_spill, 0] = np.clip(r_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
-        rgba[has_spill, 2] = np.clip(b_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+        if chroma_type == "magenta":
+            excess = np.maximum(0.0, np.minimum(r_edge - g_edge, b_edge - g_edge))
+            has_spill = edge_mask & (excess > 18.0)
+            rgba[has_spill, 0] = np.clip(r_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+            rgba[has_spill, 2] = np.clip(b_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+        elif chroma_type == "green":
+            excess = np.maximum(0.0, g_edge - np.maximum(r_edge, b_edge))
+            has_spill = edge_mask & (excess > 18.0)
+            rgba[has_spill, 1] = np.clip(g_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
+        elif chroma_type == "blue":
+            excess = np.maximum(0.0, b_edge - np.maximum(r_edge, g_edge))
+            has_spill = edge_mask & (excess > 18.0)
+            rgba[has_spill, 2] = np.clip(b_edge[has_spill] - excess[has_spill], 0, 255).astype(np.uint8)
 
     return rgba
 
@@ -257,6 +369,7 @@ def pad_grid_cells_to_square(
     cols: int = COLS,
     rows: int = ROWS,
     bg_mode: str = "magenta",
+    bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> np.ndarray:
     """If cells are non-square, pad each cell individually with background to make it square.
     
@@ -272,14 +385,21 @@ def pad_grid_cells_to_square(
         return img_arr
 
     # Determine background color to pad with
-    if bg_mode == "magenta":
+    parsed_bg = parse_bg_color(bg_color)
+    if parsed_bg is not None:
+        r, g, b = [int(round(v)) for v in parsed_bg]
+        bg_val = [r, g, b, 255] if img_arr.shape[2] == 4 else [r, g, b]
+    elif bg_mode == "magenta":
         bg_val = [255, 0, 255, 255] if img_arr.shape[2] == 4 else [255, 0, 255]
+    elif bg_mode == "green":
+        bg_val = [0, 255, 0, 255] if img_arr.shape[2] == 4 else [0, 255, 0]
+    elif bg_mode == "blue":
+        bg_val = [0, 0, 255, 255] if img_arr.shape[2] == 4 else [0, 0, 255]
     elif bg_mode == "white":
         bg_val = [255, 255, 255, 255] if img_arr.shape[2] == 4 else [255, 255, 255]
     elif bg_mode == "black":
         bg_val = [0, 0, 0, 255] if img_arr.shape[2] == 4 else [0, 0, 0]
     else:
-        # Sample edge pixel
         bg_val = list(img_arr[0, 0])
 
     target_cell_side = int(round(max(cell_w, cell_h)))
@@ -543,6 +663,7 @@ def process_portrait(
     fallback_idle_sheet: Optional[Image.Image] = None,
     bg_mode: str = "auto",
     bg_tolerance: float = 36.0,
+    bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> None:
     """Write a 96x96 portrait; use IDLE front frame if no separate image is supplied."""
     if portrait_input:
@@ -550,7 +671,7 @@ def process_portrait(
         if not source_path.is_file():
             raise FileNotFoundError(f"Portrait image not found: {source_path}")
         with Image.open(source_path) as raw:
-            rgba = detect_and_clean_background(np.asarray(raw.convert("RGBA")), bg_mode, bg_tolerance)
+            rgba = detect_and_clean_background(np.asarray(raw.convert("RGBA")), bg_mode, bg_tolerance, bg_color=bg_color)
         ys, xs = np.where(rgba[:, :, 3] > ALPHA_THRESHOLD)
         if len(xs):
             min_x, max_x = int(xs.min()), int(xs.max())
@@ -581,6 +702,7 @@ def extract_turnaround_assets(
     character_name: str,
     bg_mode: str = "magenta",
     bg_tolerance: float = 65.0,
+    bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> tuple[Optional[Path], Optional[Path]]:
     """Extract weapon preview and portrait from turnaround sheet.
     
@@ -592,7 +714,7 @@ def extract_turnaround_assets(
         return None, None
 
     with Image.open(turnaround_path) as raw:
-        rgba = detect_and_clean_background(np.asarray(raw.convert("RGBA")), bg_mode, bg_tolerance)
+        rgba = detect_and_clean_background(np.asarray(raw.convert("RGBA")), bg_mode, bg_tolerance, bg_color=bg_color)
 
     h, w = rgba.shape[:2]
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -828,6 +950,7 @@ def process_character(
     mirror_right: bool = False,
     bg_mode: str = "magenta",
     bg_tolerance: float = 65.0,
+    bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
     legacy_front_portrait: bool = False,
     row_order: str = "fbrl",
     strict_facing: bool = False,
@@ -867,8 +990,8 @@ def process_character(
         with Image.open(source_path) as raw:
             raw_arr = np.asarray(raw.convert("RGBA"))
             if auto_square:
-                raw_arr = pad_grid_cells_to_square(raw_arr, cols=cols, rows=rows, bg_mode=bg_mode)
-            rgba = detect_and_clean_background(raw_arr, bg_mode, bg_tolerance)
+                raw_arr = pad_grid_cells_to_square(raw_arr, cols=cols, rows=rows, bg_mode=bg_mode, bg_color=bg_color)
+            rgba = detect_and_clean_background(raw_arr, bg_mode, bg_tolerance, bg_color=bg_color)
         rgba_sources[state] = rgba
         analyses[state] = analyze_sheet(
             rgba,
@@ -951,7 +1074,7 @@ def process_character(
     if turnaround_path:
         t_path = Path(turnaround_path)
         extracted_portrait, _extracted_weapon = extract_turnaround_assets(
-            t_path, output_dir, raw_name, bg_mode=bg_mode, bg_tolerance=bg_tolerance
+            t_path, output_dir, raw_name, bg_mode=bg_mode, bg_tolerance=bg_tolerance, bg_color=bg_color
         )
 
     portrait_suffix = "front" if legacy_front_portrait else "portrait"
@@ -964,6 +1087,7 @@ def process_character(
         fallback_idle_sheet=processed.get("idle"),
         bg_mode=bg_mode,
         bg_tolerance=bg_tolerance,
+        bg_color=bg_color,
     )
 
     if generate_previews:
@@ -991,7 +1115,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--feet-y", type=int, default=88, help="Target foot baseline (default: 88; 8px bottom buffer)")
     parser.add_argument("--char-h", type=float, default=68.0, help="Target estimated body height in output pixels (default: 68)")
     parser.add_argument("--max-h", type=float, default=72.0, help="Maximum estimated body height in output pixels (default: 72)")
-    parser.add_argument("--bg-mode", choices=("magenta", "auto", "white", "black", "chroma", "none"), default="magenta", help="Background to remove (default: magenta RGB(255,0,255)); auto detects from corners")
+    parser.add_argument("--bg-mode", choices=("magenta", "green", "blue", "auto", "white", "black", "chroma", "none"), default="magenta", help="Background to remove (default: magenta RGB(255,0,255); green RGB(0,255,0) recommended for characters with pink/purple/magenta elements); auto detects from corners")
+    parser.add_argument("--bg-color", help="Explicit background color to remove, e.g. '#00ff00', 'green', 'magenta', or '0,255,0'. Overrides --bg-mode")
     parser.add_argument("--bg-tolerance", type=float, default=65.0, help="Euclidean RGB background tolerance (default: 65.0)")
     parser.add_argument("--row-order", choices=("fbrl", "fblr"), default="fbrl", help="Row order: fbrl (FRONT, BACK, RIGHT, LEFT) or fblr (FRONT, BACK, LEFT, RIGHT). Default: fbrl")
     parser.add_argument("--mirror-left", action="store_true", help="Mirror right row into left row; default enabled for --rows 3")
@@ -1035,6 +1160,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             mirror_right=args.mirror_right,
             bg_mode=args.bg_mode,
             bg_tolerance=args.bg_tolerance,
+            bg_color=args.bg_color,
             legacy_front_portrait=args.legacy_front_portrait,
             row_order=args.row_order,
             strict_facing=args.strict_facing,
