@@ -4,6 +4,7 @@ import { CharacterRig } from './CharacterRig';
 import { CharacterModularSystem } from './CharacterModularSystem';
 import { CharacterAnimator } from './CharacterAnimator';
 import { MageTexturedSystem, MageViewAngleMode } from './MageTexturedSystem';
+import { MageCutoutRig } from './MageCutoutRig';
 import {
   CharacterClass,
   CharacterColors,
@@ -91,7 +92,8 @@ export class CharacterSandboxApp {
   public modularSystem: CharacterModularSystem;
   public animator: CharacterAnimator;
   public mageTexturedSystem: MageTexturedSystem;
-  public mageRenderMode: 'procedural' | 'textured' = 'textured';
+  public mageCutoutRig: MageCutoutRig;
+  public mageRenderMode: 'cutout' | 'textured' | 'procedural' = 'cutout';
 
   // Active configuration
   public currentClass: CharacterClass = 'warrior';
@@ -175,6 +177,7 @@ export class CharacterSandboxApp {
     );
     this.animator = new CharacterAnimator(this.rig);
     this.mageTexturedSystem = new MageTexturedSystem(this.rig);
+    this.mageCutoutRig = new MageCutoutRig(this.rig);
 
     this.scene.add(this.rig.root);
     this.applyClass('warrior');
@@ -225,11 +228,25 @@ export class CharacterSandboxApp {
     this.modularSystem.updateColors(this.currentConfig.colors);
     this.modularSystem.updateMaterials(this.currentConfig.materials);
 
-    if (classType === 'mage' && this.mageRenderMode === 'textured') {
-      this.rig.setProceduralMeshesVisible(false);
-      this.modularSystem.clearEquipment();
-      this.mageTexturedSystem.setVisible(true);
+    if (classType === 'mage') {
+      if (this.mageRenderMode === 'cutout') {
+        this.rig.setProceduralMeshesVisible(false);
+        this.modularSystem.clearEquipment();
+        this.mageTexturedSystem.setVisible(false);
+        this.mageCutoutRig.setVisible(true);
+      } else if (this.mageRenderMode === 'textured') {
+        this.rig.setProceduralMeshesVisible(false);
+        this.modularSystem.clearEquipment();
+        this.mageCutoutRig.setVisible(false);
+        this.mageTexturedSystem.setVisible(true);
+      } else {
+        this.mageCutoutRig.setVisible(false);
+        this.mageTexturedSystem.setVisible(false);
+        this.rig.setProceduralMeshesVisible(true);
+        this.modularSystem.applyClass('mage', this.currentConfig.equipment);
+      }
     } else {
+      this.mageCutoutRig.setVisible(false);
       this.mageTexturedSystem.setVisible(false);
       this.rig.setProceduralMeshesVisible(true);
       this.modularSystem.applyClass(classType, this.currentConfig.equipment);
@@ -248,7 +265,7 @@ export class CharacterSandboxApp {
     }
   }
 
-  public setMageRenderMode(mode: 'procedural' | 'textured') {
+  public setMageRenderMode(mode: 'cutout' | 'textured' | 'procedural') {
     this.mageRenderMode = mode;
     this.applyClass(this.currentClass);
   }
@@ -355,8 +372,14 @@ export class CharacterSandboxApp {
     this.controls.update();
     this.animator.update(delta);
 
-    if (this.currentClass === 'mage' && this.mageRenderMode === 'textured') {
-      this.mageTexturedSystem.update(this.camera, elapsedTime);
+    if (this.currentClass === 'mage') {
+      if (this.mageRenderMode === 'cutout') {
+        this.mageCutoutRig.update(elapsedTime);
+      } else if (this.mageRenderMode === 'textured') {
+        this.mageTexturedSystem.update(this.camera, elapsedTime);
+      } else {
+        this.modularSystem.updateVFX(elapsedTime);
+      }
     } else {
       this.modularSystem.updateVFX(elapsedTime);
     }

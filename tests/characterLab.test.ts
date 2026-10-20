@@ -5,6 +5,7 @@ import { CharacterRig } from '../game/src/character-lab/CharacterRig';
 import { CharacterModularSystem } from '../game/src/character-lab/CharacterModularSystem';
 import { CharacterAnimator } from '../game/src/character-lab/CharacterAnimator';
 import { MageTexturedSystem } from '../game/src/character-lab/MageTexturedSystem';
+import { MageCutoutRig } from '../game/src/character-lab/MageCutoutRig';
 import { DEFAULT_CLASS_CONFIGS } from '../game/src/character-lab/CharacterSandboxApp';
 
 test('CharacterRig - creates anatomical hierarchy and sockets', () => {
@@ -184,4 +185,50 @@ test('MageTexturedSystem - initializes staff, loads textures and switches angle 
 
   mageTextured.setVisible(false);
   assert.equal(mageTextured.isVisible, false);
+});
+
+test('MageCutoutRig - mounts 9 anatomical cutout planes to skeleton joints and animates', () => {
+  const mageCfg = DEFAULT_CLASS_CONFIGS.mage;
+  const rig = new CharacterRig(mageCfg.colors, mageCfg.materials);
+  const cutoutRig = new MageCutoutRig(rig);
+
+  assert.ok(cutoutRig.root, 'Cutout rig root exists');
+  assert.ok(cutoutRig.crystalLight, 'Crystal light exists');
+  assert.ok(cutoutRig.particlesGroup, 'Particles group exists');
+
+  // Verify meshes were constructed
+  assert.ok(cutoutRig.hatMesh, 'Hat mesh exists');
+  assert.ok(cutoutRig.headMesh, 'Head mesh exists');
+  assert.ok(cutoutRig.torsoMesh, 'Torso mesh exists');
+  assert.ok(cutoutRig.skirtMesh, 'Skirt mesh exists');
+  assert.ok(cutoutRig.capeMesh, 'Cape mesh exists');
+  assert.ok(cutoutRig.leftArmMesh, 'Left arm mesh exists');
+  assert.ok(cutoutRig.staffArmMesh, 'Staff arm mesh exists');
+  assert.ok(cutoutRig.leftLegMesh, 'Left leg mesh exists');
+  assert.ok(cutoutRig.rightLegMesh, 'Right leg mesh exists');
+
+  // Mount to joints
+  cutoutRig.setVisible(true);
+  assert.equal(cutoutRig.isVisible, true);
+
+  // Check parent nodes
+  assert.equal(cutoutRig.hatMesh.parent, rig.headNode);
+  assert.equal(cutoutRig.headMesh.parent, rig.headNode);
+  assert.equal(cutoutRig.torsoMesh.parent, rig.chestNode);
+  assert.equal(cutoutRig.skirtMesh.parent, rig.pelvisNode);
+  assert.equal(cutoutRig.capeMesh.parent, rig.sockets.back);
+  assert.equal(cutoutRig.leftArmMesh.parent, rig.leftArm);
+  assert.equal(cutoutRig.staffArmMesh.parent, rig.rightArm);
+  assert.equal(cutoutRig.leftLegMesh.parent, rig.leftThigh);
+  assert.equal(cutoutRig.rightLegMesh.parent, rig.rightThigh);
+
+  // Run update for secondary motion
+  cutoutRig.update(1.25);
+  assert.ok(cutoutRig.crystalLight.intensity > 0);
+
+  // Unmount
+  cutoutRig.setVisible(false);
+  assert.equal(cutoutRig.isVisible, false);
+  assert.equal(cutoutRig.hatMesh.parent, null);
+  assert.equal(cutoutRig.staffArmMesh.parent, null);
 });
