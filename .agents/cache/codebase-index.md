@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-20T17:18:26.559Z | **Files:** 190 | **Top-level:** 558 | **Class Methods:** 1216
+> **Generated:** 2026-10-20T22:21:20.564Z | **Files:** 196 | **Top-level:** 571 | **Class Methods:** 1252
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 512 |
+| `game/src` | 525 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -186,6 +186,7 @@ Run `npm run index` to refresh this cache.
 | `BIOMES` | `const` | [`game/src/world/BiomeManager.ts:49`](../../game/src/world/BiomeManager.ts#L49) | - |
 | `BiomeTextureElement` | `type` | [`game/src/utils/AssetResolver.ts:4`](../../game/src/utils/AssetResolver.ts#L4) | - |
 | `BleedStack` | `interface` | [`game/src/entities/Enemy.ts:41`](../../game/src/entities/Enemy.ts#L41) | - |
+| `BoneSocketMap` | `interface` | [`game/src/character-lab/types.ts:37`](../../game/src/character-lab/types.ts#L37) | - |
 | `BOSS_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:286`](../../game/src/items/RiftItemSystem.ts#L286) | - |
 | `BossAnimState` | `type` | [`game/src/entities/Enemy.ts:19`](../../game/src/entities/Enemy.ts#L19) | - |
 | `BossBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:60`](../../game/src/balance/BalanceTypes.ts#L60) | - |
@@ -221,13 +222,40 @@ Run `npm run index` to refresh this cache.
 | `ChapterQuestItem` | `interface` | [`game/src/ui/screens/Quests/QuestsScreen.ts:10`](../../game/src/ui/screens/Quests/QuestsScreen.ts#L10) | - |
 | `ChapterQuestProgress` | `interface` | [`game/src/core/ProgressionManager.ts:30`](../../game/src/core/ProgressionManager.ts#L30) | - |
 | `CHAPTERS_CONFIG` | `const` | [`game/src/core/ChapterQuestsConfig.ts:25`](../../game/src/core/ChapterQuestsConfig.ts#L25) | - |
+| `CharacterAnimationState` | `type` | [`game/src/character-lab/types.ts:5`](../../game/src/character-lab/types.ts#L5) | - |
+| `CharacterAnimator` | `class` | [`game/src/character-lab/CharacterAnimator.ts:9`](../../game/src/character-lab/CharacterAnimator.ts#L9) | Procedural kinematic animation controller for realistic and natural charact... |
 | `CharacterAnimator` | `class` | [`game/src/entities/CharacterAnimator.ts:102`](../../game/src/entities/CharacterAnimator.ts#L102) | Modular Character Animator Handles directional sprite state machines, UV re... |
+| `CharacterAnimator.animateArcherShoot` | `method` | [`game/src/character-lab/CharacterAnimator.ts:237`](../../game/src/character-lab/CharacterAnimator.ts#L237) | - |
+| `CharacterAnimator.animateAttack` | `method` | [`game/src/character-lab/CharacterAnimator.ts:189`](../../game/src/character-lab/CharacterAnimator.ts#L189) | ========================================== |
+| `CharacterAnimator.animateIdle` | `method` | [`game/src/character-lab/CharacterAnimator.ts:103`](../../game/src/character-lab/CharacterAnimator.ts#L103) | ========================================== |
+| `CharacterAnimator.animateLocomotion` | `method` | [`game/src/character-lab/CharacterAnimator.ts:154`](../../game/src/character-lab/CharacterAnimator.ts#L154) | ========================================== |
+| `CharacterAnimator.animateMageCast` | `method` | [`game/src/character-lab/CharacterAnimator.ts:270`](../../game/src/character-lab/CharacterAnimator.ts#L270) | - |
+| `CharacterAnimator.animateWarriorSlash` | `method` | [`game/src/character-lab/CharacterAnimator.ts:199`](../../game/src/character-lab/CharacterAnimator.ts#L199) | - |
+| `CharacterAnimator.buildWeaponTrail` | `method` | [`game/src/character-lab/CharacterAnimator.ts:34`](../../game/src/character-lab/CharacterAnimator.ts#L34) | - |
 | `CharacterAnimator.getActiveTexture` | `method` | [`game/src/entities/CharacterAnimator.ts:147`](../../game/src/entities/CharacterAnimator.ts#L147) | - |
+| `CharacterAnimator.setClass` | `method` | [`game/src/character-lab/CharacterAnimator.ts:50`](../../game/src/character-lab/CharacterAnimator.ts#L50) | - |
 | `CharacterAnimator.setDirection` | `method` | [`game/src/entities/CharacterAnimator.ts:125`](../../game/src/entities/CharacterAnimator.ts#L125) | - |
+| `CharacterAnimator.setState` | `method` | [`game/src/character-lab/CharacterAnimator.ts:54`](../../game/src/character-lab/CharacterAnimator.ts#L54) | - |
 | `CharacterAnimator.setState` | `method` | [`game/src/entities/CharacterAnimator.ts:140`](../../game/src/entities/CharacterAnimator.ts#L140) | - |
+| `CharacterAnimator.triggerAttack` | `method` | [`game/src/character-lab/CharacterAnimator.ts:62`](../../game/src/character-lab/CharacterAnimator.ts#L62) | - |
 | `CharacterAnimator.triggerAttack` | `method` | [`game/src/entities/CharacterAnimator.ts:129`](../../game/src/entities/CharacterAnimator.ts#L129) | - |
+| `CharacterAnimator.update` | `method` | [`game/src/character-lab/CharacterAnimator.ts:68`](../../game/src/character-lab/CharacterAnimator.ts#L68) | - |
 | `CharacterAnimLayout` | `interface` | [`game/src/entities/CharacterAnimator.ts:8`](../../game/src/entities/CharacterAnimator.ts#L8) | Grid layout specification for directional spritesheets. |
 | `CharacterAnimStateConfig` | `interface` | [`game/src/entities/CharacterAnimator.ts:17`](../../game/src/entities/CharacterAnimator.ts#L17) | State configuration for animation timing and playback. |
+| `CharacterClass` | `type` | [`game/src/character-lab/types.ts:3`](../../game/src/character-lab/types.ts#L3) | - |
+| `CharacterColors` | `interface` | [`game/src/character-lab/types.ts:9`](../../game/src/character-lab/types.ts#L9) | - |
+| `CharacterConfig` | `interface` | [`game/src/character-lab/types.ts:30`](../../game/src/character-lab/types.ts#L30) | - |
+| `CharacterEquipmentToggles` | `interface` | [`game/src/character-lab/types.ts:23`](../../game/src/character-lab/types.ts#L23) | - |
+| `CharacterMaterialsConfig` | `interface` | [`game/src/character-lab/types.ts:18`](../../game/src/character-lab/types.ts#L18) | - |
+| `CharacterModularSystem` | `class` | [`game/src/character-lab/CharacterModularSystem.ts:8`](../../game/src/character-lab/CharacterModularSystem.ts#L8) | Modular equipment and class visual identity builder for Warrior, Archer, an... |
+| `CharacterModularSystem.applyClass` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:73`](../../game/src/character-lab/CharacterModularSystem.ts#L73) | - |
+| `CharacterModularSystem.buildArcher` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:253`](../../game/src/character-lab/CharacterModularSystem.ts#L253) | ========================================== |
+| `CharacterModularSystem.buildMage` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:364`](../../game/src/character-lab/CharacterModularSystem.ts#L364) | ========================================== |
+| `CharacterModularSystem.buildWarrior` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:116`](../../game/src/character-lab/CharacterModularSystem.ts#L116) | ========================================== |
+| `CharacterModularSystem.clearEquipment` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:90`](../../game/src/character-lab/CharacterModularSystem.ts#L90) | - |
+| `CharacterModularSystem.updateColors` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:498`](../../game/src/character-lab/CharacterModularSystem.ts#L498) | - |
+| `CharacterModularSystem.updateMaterials` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:509`](../../game/src/character-lab/CharacterModularSystem.ts#L509) | - |
+| `CharacterModularSystem.updateVFX` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:485`](../../game/src/character-lab/CharacterModularSystem.ts#L485) | VFX Update loop (spins crystal and particles) |
 | `CharacterPreviewRenderer` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:8`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L8) | Renders an animated 2.5D chibi hero preview on the character selection dais... |
 | `CharacterPreviewRenderer.dispose` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:135`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L135) | - |
 | `CharacterPreviewRenderer.getFrameDimensions` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:60`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L60) | - |
@@ -237,7 +265,26 @@ Run `npm run index` to refresh this cache.
 | `CharacterPreviewRenderer.setCanvas` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:25`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L25) | - |
 | `CharacterPreviewRenderer.startAnimation` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:71`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L71) | - |
 | `CharacterPreviewRenderer.stopAnimation` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:88`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L88) | - |
+| `CharacterRig` | `class` | [`game/src/character-lab/CharacterRig.ts:8`](../../game/src/character-lab/CharacterRig.ts#L8) | Procedural stylized humanoid rig and anatomy builder. Uses hierarchical Thr... |
+| `CharacterRig.buildAnatomy` | `method` | [`game/src/character-lab/CharacterRig.ts:214`](../../game/src/character-lab/CharacterRig.ts#L214) | - |
+| `CharacterRig.buildDebugAxes` | `method` | [`game/src/character-lab/CharacterRig.ts:351`](../../game/src/character-lab/CharacterRig.ts#L351) | - |
+| `CharacterRig.resetPose` | `method` | [`game/src/character-lab/CharacterRig.ts:400`](../../game/src/character-lab/CharacterRig.ts#L400) | - |
+| `CharacterRig.setDebugVisible` | `method` | [`game/src/character-lab/CharacterRig.ts:378`](../../game/src/character-lab/CharacterRig.ts#L378) | - |
+| `CharacterRig.updateColors` | `method` | [`game/src/character-lab/CharacterRig.ts:395`](../../game/src/character-lab/CharacterRig.ts#L395) | - |
 | `CHARACTERS` | `const` | [`game/src/shared/types/registry.ts:15`](../../game/src/shared/types/registry.ts#L15) | - |
+| `CharacterSandboxApp` | `class` | [`game/src/character-lab/CharacterSandboxApp.ts:81`](../../game/src/character-lab/CharacterSandboxApp.ts#L81) | - |
+| `CharacterSandboxApp.applyClass` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:216`](../../game/src/character-lab/CharacterSandboxApp.ts#L216) | - |
+| `CharacterSandboxApp.buildPedestal` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:185`](../../game/src/character-lab/CharacterSandboxApp.ts#L185) | - |
+| `CharacterSandboxApp.dispose` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:340`](../../game/src/character-lab/CharacterSandboxApp.ts#L340) | - |
+| `CharacterSandboxApp.resetCamera` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:299`](../../game/src/character-lab/CharacterSandboxApp.ts#L299) | - |
+| `CharacterSandboxApp.setAnimation` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:238`](../../game/src/character-lab/CharacterSandboxApp.ts#L238) | - |
+| `CharacterSandboxApp.setLightingPreset` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:270`](../../game/src/character-lab/CharacterSandboxApp.ts#L270) | - |
+| `CharacterSandboxApp.setPlaybackSpeed` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:246`](../../game/src/character-lab/CharacterSandboxApp.ts#L246) | - |
+| `CharacterSandboxApp.toggleEquipment` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:261`](../../game/src/character-lab/CharacterSandboxApp.ts#L261) | - |
+| `CharacterSandboxApp.toggleWireframe` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:266`](../../game/src/character-lab/CharacterSandboxApp.ts#L266) | - |
+| `CharacterSandboxApp.triggerAttack` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:242`](../../game/src/character-lab/CharacterSandboxApp.ts#L242) | - |
+| `CharacterSandboxApp.updateColor` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:250`](../../game/src/character-lab/CharacterSandboxApp.ts#L250) | - |
+| `CharacterSandboxApp.updateMaterialProperty` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:256`](../../game/src/character-lab/CharacterSandboxApp.ts#L256) | - |
 | `CharacterSelectScreen` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:39`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L39) | Modular Character Selection Screen (Rift ARPG UI). Manages carousel track, ... |
 | `CharacterSelectScreen.attemptLaunch` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:274`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L274) | - |
 | `CharacterSelectScreen.bindElements` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:66`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L66) | - |
@@ -346,6 +393,7 @@ Run `npm run index` to refresh this cache.
 | `DedicatedGameServer.tick` | `method` | [`server/dedicatedServer.ts:201`](../../server/dedicatedServer.ts#L201) | Authoritative tick: updates mobs, bullets, collisions, drops, altars, reviv... |
 | `DedicatedServerOptions` | `interface` | [`server/dedicatedServer.ts:18`](../../server/dedicatedServer.ts#L18) | - |
 | `DEFAULT_BALANCE` | `const` | [`game/src/balance/defaultBalance.ts:4`](../../game/src/balance/defaultBalance.ts#L4) | - |
+| `DEFAULT_CLASS_CONFIGS` | `const` | [`game/src/character-lab/CharacterSandboxApp.ts:15`](../../game/src/character-lab/CharacterSandboxApp.ts#L15) | - |
 | `DEFAULT_DEMO_LEADERBOARDS` | `const` | [`admin/src/constants.ts:214`](../../admin/src/constants.ts#L214) | - |
 | `DetailedPlayerResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:14`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L14) | - |
 | `DevManager` | `class` | [`game/src/ui/DevManager.ts:8`](../../game/src/ui/DevManager.ts#L8) | - |
@@ -874,6 +922,7 @@ Run `npm run index` to refresh this cache.
 | `LevelUpUI` | `class` | [`game/src/ui/modules/LevelUpUI.ts:18`](../../game/src/ui/modules/LevelUpUI.ts#L18) | - |
 | `LevelUpUIContext` | `type` | [`game/src/ui/modules/LevelUpUI.ts:13`](../../game/src/ui/modules/LevelUpUI.ts#L13) | - |
 | `LevelUpUIElements` | `type` | [`game/src/ui/modules/LevelUpUI.ts:12`](../../game/src/ui/modules/LevelUpUI.ts#L12) | - |
+| `LightingPreset` | `type` | [`game/src/character-lab/types.ts:7`](../../game/src/character-lab/types.ts#L7) | - |
 | `LightningStrikeWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:416`](../../game/src/combat/weapons/MagicWeapons.ts#L416) | Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from... |
 | `LightningStrikeWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:502`](../../game/src/combat/weapons/MagicWeapons.ts#L502) | - |
 | `LightningStrikeWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:443`](../../game/src/combat/weapons/MagicWeapons.ts#L443) | - |

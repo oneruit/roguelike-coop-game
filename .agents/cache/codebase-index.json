@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-20T17:18:26.559Z",
-  "totalFiles": 190,
-  "totalSymbols": 1774,
-  "topLevelCount": 558,
-  "methodsCount": 1216,
+  "generatedAt": "2026-10-20T22:21:20.564Z",
+  "totalFiles": 196,
+  "totalSymbols": 1823,
+  "topLevelCount": 571,
+  "methodsCount": 1252,
   "entities": {
     "heroes": [
       {
@@ -1894,6 +1894,12 @@
       "line": 41
     },
     {
+      "name": "BoneSocketMap",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 37
+    },
+    {
       "name": "BOSS_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
@@ -2122,11 +2128,83 @@
       "line": 25
     },
     {
+      "name": "CharacterAnimationState",
+      "kind": "type",
+      "file": "game/src/character-lab/types.ts",
+      "line": 5
+    },
+    {
+      "name": "CharacterAnimator",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 9,
+      "doc": "Procedural kinematic animation controller for realistic and natural character movement. Features smooth state cross-fading, biomechanical walk/run cycles, and class-specific combat attacks."
+    },
+    {
       "name": "CharacterAnimator",
       "kind": "class",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 102,
       "doc": "Modular Character Animator Handles directional sprite state machines, UV repeat/offset calculations, and Three.js material bindings across 4 animation states: - IDLE: состояние покоя - WALK: состояние движения - IDLE_ATTACK: состояние атаки в покое - WALK_ATTACK: атака в движении"
+    },
+    {
+      "name": "CharacterAnimator.animateArcherShoot",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 237,
+      "className": "CharacterAnimator",
+      "methodName": "animateArcherShoot"
+    },
+    {
+      "name": "CharacterAnimator.animateAttack",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 189,
+      "className": "CharacterAnimator",
+      "methodName": "animateAttack",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterAnimator.animateIdle",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 103,
+      "className": "CharacterAnimator",
+      "methodName": "animateIdle",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterAnimator.animateLocomotion",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 154,
+      "className": "CharacterAnimator",
+      "methodName": "animateLocomotion",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterAnimator.animateMageCast",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 270,
+      "className": "CharacterAnimator",
+      "methodName": "animateMageCast"
+    },
+    {
+      "name": "CharacterAnimator.animateWarriorSlash",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 199,
+      "className": "CharacterAnimator",
+      "methodName": "animateWarriorSlash"
+    },
+    {
+      "name": "CharacterAnimator.buildWeaponTrail",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 34,
+      "className": "CharacterAnimator",
+      "methodName": "buildWeaponTrail"
     },
     {
       "name": "CharacterAnimator.getActiveTexture",
@@ -2135,6 +2213,14 @@
       "line": 147,
       "className": "CharacterAnimator",
       "methodName": "getActiveTexture"
+    },
+    {
+      "name": "CharacterAnimator.setClass",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 50,
+      "className": "CharacterAnimator",
+      "methodName": "setClass"
     },
     {
       "name": "CharacterAnimator.setDirection",
@@ -2147,6 +2233,14 @@
     {
       "name": "CharacterAnimator.setState",
       "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 54,
+      "className": "CharacterAnimator",
+      "methodName": "setState"
+    },
+    {
+      "name": "CharacterAnimator.setState",
+      "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 140,
       "className": "CharacterAnimator",
@@ -2155,10 +2249,26 @@
     {
       "name": "CharacterAnimator.triggerAttack",
       "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 62,
+      "className": "CharacterAnimator",
+      "methodName": "triggerAttack"
+    },
+    {
+      "name": "CharacterAnimator.triggerAttack",
+      "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 129,
       "className": "CharacterAnimator",
       "methodName": "triggerAttack"
+    },
+    {
+      "name": "CharacterAnimator.update",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 68,
+      "className": "CharacterAnimator",
+      "methodName": "update"
     },
     {
       "name": "CharacterAnimLayout",
@@ -2173,6 +2283,111 @@
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 17,
       "doc": "State configuration for animation timing and playback."
+    },
+    {
+      "name": "CharacterClass",
+      "kind": "type",
+      "file": "game/src/character-lab/types.ts",
+      "line": 3
+    },
+    {
+      "name": "CharacterColors",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 9
+    },
+    {
+      "name": "CharacterConfig",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 30
+    },
+    {
+      "name": "CharacterEquipmentToggles",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 23
+    },
+    {
+      "name": "CharacterMaterialsConfig",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 18
+    },
+    {
+      "name": "CharacterModularSystem",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 8,
+      "doc": "Modular equipment and class visual identity builder for Warrior, Archer, and Mage."
+    },
+    {
+      "name": "CharacterModularSystem.applyClass",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 73,
+      "className": "CharacterModularSystem",
+      "methodName": "applyClass"
+    },
+    {
+      "name": "CharacterModularSystem.buildArcher",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 253,
+      "className": "CharacterModularSystem",
+      "methodName": "buildArcher",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterModularSystem.buildMage",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 364,
+      "className": "CharacterModularSystem",
+      "methodName": "buildMage",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterModularSystem.buildWarrior",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 116,
+      "className": "CharacterModularSystem",
+      "methodName": "buildWarrior",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterModularSystem.clearEquipment",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 90,
+      "className": "CharacterModularSystem",
+      "methodName": "clearEquipment"
+    },
+    {
+      "name": "CharacterModularSystem.updateColors",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 498,
+      "className": "CharacterModularSystem",
+      "methodName": "updateColors"
+    },
+    {
+      "name": "CharacterModularSystem.updateMaterials",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 509,
+      "className": "CharacterModularSystem",
+      "methodName": "updateMaterials"
+    },
+    {
+      "name": "CharacterModularSystem.updateVFX",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 485,
+      "className": "CharacterModularSystem",
+      "methodName": "updateVFX",
+      "doc": "VFX Update loop (spins crystal and particles)"
     },
     {
       "name": "CharacterPreviewRenderer",
@@ -2246,10 +2461,159 @@
       "methodName": "stopAnimation"
     },
     {
+      "name": "CharacterRig",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 8,
+      "doc": "Procedural stylized humanoid rig and anatomy builder. Uses hierarchical Three.js Object3D nodes representing bones and smooth anatomical geometry."
+    },
+    {
+      "name": "CharacterRig.buildAnatomy",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 214,
+      "className": "CharacterRig",
+      "methodName": "buildAnatomy"
+    },
+    {
+      "name": "CharacterRig.buildDebugAxes",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 351,
+      "className": "CharacterRig",
+      "methodName": "buildDebugAxes"
+    },
+    {
+      "name": "CharacterRig.resetPose",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 400,
+      "className": "CharacterRig",
+      "methodName": "resetPose"
+    },
+    {
+      "name": "CharacterRig.setDebugVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 378,
+      "className": "CharacterRig",
+      "methodName": "setDebugVisible"
+    },
+    {
+      "name": "CharacterRig.updateColors",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 395,
+      "className": "CharacterRig",
+      "methodName": "updateColors"
+    },
+    {
       "name": "CHARACTERS",
       "kind": "const",
       "file": "game/src/shared/types/registry.ts",
       "line": 15
+    },
+    {
+      "name": "CharacterSandboxApp",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 81
+    },
+    {
+      "name": "CharacterSandboxApp.applyClass",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 216,
+      "className": "CharacterSandboxApp",
+      "methodName": "applyClass"
+    },
+    {
+      "name": "CharacterSandboxApp.buildPedestal",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 185,
+      "className": "CharacterSandboxApp",
+      "methodName": "buildPedestal"
+    },
+    {
+      "name": "CharacterSandboxApp.dispose",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 340,
+      "className": "CharacterSandboxApp",
+      "methodName": "dispose"
+    },
+    {
+      "name": "CharacterSandboxApp.resetCamera",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 299,
+      "className": "CharacterSandboxApp",
+      "methodName": "resetCamera"
+    },
+    {
+      "name": "CharacterSandboxApp.setAnimation",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 238,
+      "className": "CharacterSandboxApp",
+      "methodName": "setAnimation"
+    },
+    {
+      "name": "CharacterSandboxApp.setLightingPreset",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 270,
+      "className": "CharacterSandboxApp",
+      "methodName": "setLightingPreset"
+    },
+    {
+      "name": "CharacterSandboxApp.setPlaybackSpeed",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 246,
+      "className": "CharacterSandboxApp",
+      "methodName": "setPlaybackSpeed"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleEquipment",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 261,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleEquipment"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleWireframe",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 266,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleWireframe"
+    },
+    {
+      "name": "CharacterSandboxApp.triggerAttack",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 242,
+      "className": "CharacterSandboxApp",
+      "methodName": "triggerAttack"
+    },
+    {
+      "name": "CharacterSandboxApp.updateColor",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 250,
+      "className": "CharacterSandboxApp",
+      "methodName": "updateColor"
+    },
+    {
+      "name": "CharacterSandboxApp.updateMaterialProperty",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 256,
+      "className": "CharacterSandboxApp",
+      "methodName": "updateMaterialProperty"
     },
     {
       "name": "CharacterSelectScreen",
@@ -3072,6 +3436,12 @@
       "kind": "const",
       "file": "game/src/balance/defaultBalance.ts",
       "line": 4
+    },
+    {
+      "name": "DEFAULT_CLASS_CONFIGS",
+      "kind": "const",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 15
     },
     {
       "name": "DEFAULT_DEMO_LEADERBOARDS",
@@ -7074,6 +7444,12 @@
       "kind": "type",
       "file": "game/src/ui/modules/LevelUpUI.ts",
       "line": 12
+    },
+    {
+      "name": "LightingPreset",
+      "kind": "type",
+      "file": "game/src/character-lab/types.ts",
+      "line": 7
     },
     {
       "name": "LightningStrikeWeapon",
