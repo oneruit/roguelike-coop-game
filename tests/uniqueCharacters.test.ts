@@ -54,6 +54,7 @@ import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { getCharacterAnimLayout, ANIM_LAYOUT_V2 } from '../game/src/entities/CharacterAnimator';
 import { ChunkManager } from '../game/src/world/ChunkManager';
 import { SummonUndeadWeapon } from '../game/src/combat/weapons/SummonUndeadWeapon';
+import { BloodBatsWeapon } from '../game/src/combat/weapons/BloodBatsWeapon';
 import { Vector3, Scene } from 'three';
 import { Player } from '../game/src/entities/Player';
 
@@ -110,7 +111,8 @@ test('Unique Character System - Invoker weapon acquisition rules', () => {
     'ice_spike',
     'fireball',
     'assault_rifle',
-    'poison_puddle'
+    'poison_puddle',
+    'blood_bats'
   ];
 
   for (const wId of genericWeapons) {
@@ -123,7 +125,7 @@ test('Unique Character System - Invoker weapon acquisition rules', () => {
 });
 
 test('Unique Character System - Other characters CANNOT acquire Invoker abilities', () => {
-  const otherHeroes = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer', 'rocket', 'necromancer', 'amazon'] as const;
+  const otherHeroes = ['ronin', 'valkyrie', 'flail', 'sorceress', 'chakram', 'archer', 'rocket', 'necromancer', 'amazon', 'vampire'] as const;
 
   for (const hero of otherHeroes) {
     // Cannot acquire invoke
@@ -199,6 +201,7 @@ test('Character Animation Layout - Ronin and V2 heroes use ANIM_LAYOUT_V2', () =
   assert.equal(getCharacterAnimLayout('amazon'), ANIM_LAYOUT_V2);
   assert.equal(getCharacterAnimLayout('archer'), ANIM_LAYOUT_V2);
   assert.equal(getCharacterAnimLayout('necromancer'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('vampire'), ANIM_LAYOUT_V2);
   assert.equal(ANIM_LAYOUT_V2.cols, 6);
   assert.equal(ANIM_LAYOUT_V2.rows, 4);
   assert.deepEqual(ANIM_LAYOUT_V2.rowMap, {
@@ -274,3 +277,60 @@ test('Player (Necromancer) - initializes SummonUndeadWeapon with visual scene an
   player.destroy(scene);
 });
 
+
+
+test('Hero Starting Weapons - Vampire Carmilla is properly configured', () => {
+  assert.equal(DEFAULT_BALANCE.heroes.vampire.startingWeapon, 'blood_bats');
+  assert.equal(DEFAULT_BALANCE.heroes.vampire.maxHp, 110);
+  assert.equal(DEFAULT_BALANCE.heroes.vampire.damageMultiplier, 1.35);
+  assert.equal(DEFAULT_BALANCE.heroes.vampire.baseSpeed, 8.8);
+});
+
+test('BloodBatsWeapon - scaling up to 24 bats, random target selection, and bleed', async () => {
+  const batsWeapon = new BloodBatsWeapon();
+  assert.equal(batsWeapon.id, 'blood_bats');
+  assert.equal(batsWeapon.level, 1);
+  assert.equal(batsWeapon.projectileCount, 4);
+  assert.equal(batsWeapon.bleedDps, 14);
+
+  // Upgrade through level 8
+  for (let lvl = 2; lvl <= 8; lvl++) {
+    batsWeapon.upgrade();
+  }
+  assert.equal(batsWeapon.level, 8);
+  assert.equal(batsWeapon.projectileCount, 24, 'Bats weapon must reach exactly 24 projectiles at level 8');
+
+  // Verify firing at random targets
+  const dummyEnemies = [
+    { id: 'e1', isAlive: true, position: new Vector3(5, 0, 0), width: 1, height: 1 },
+    { id: 'e2', isAlive: true, position: new Vector3(-5, 0, 0), width: 1, height: 1 },
+    { id: 'e3', isAlive: true, position: new Vector3(0, 0, 5), width: 1, height: 1 }
+  ];
+
+  const spawnedProjectiles: any[] = [];
+  batsWeapon.update(
+    2.0, // trigger attack cooldown
+    new Vector3(0, 0, 0),
+    dummyEnemies as any,
+    (proj) => spawnedProjectiles.push(proj)
+  );
+
+  // Wait for burst delay timers to complete
+  await new Promise(r => setTimeout(r, 24 * 35 + 150));
+
+  assert.equal(spawnedProjectiles.length, 24);
+  for (const p of spawnedProjectiles) {
+    assert.equal(p.isBat, true);
+    assert.equal(p.bleedDps, batsWeapon.bleedDps);
+  }
+});
+
+test('Player (Vampire) - initializes with BloodBatsWeapon and Carmilla overhead name', () => {
+  const scene = new Scene();
+  const player = new Player(scene, 'vampire');
+
+  const batsWeapon = player.weapons.find(w => w.id === 'blood_bats');
+  assert.ok(batsWeapon, 'Vampire should start with blood_bats');
+  assert.equal(player.charType, 'vampire');
+  player.destroy(scene);
+});

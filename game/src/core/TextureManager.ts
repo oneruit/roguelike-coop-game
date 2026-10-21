@@ -288,6 +288,14 @@ export class TextureManager {
     '/textures/heroes/necromancer/attack.png',
     '/textures/heroes/necromancer/walk_attack.png',
 
+    '/textures/heroes/vampire/front.png',
+    '/textures/heroes/vampire/portrait.png',
+    '/textures/heroes/vampire/idle.png',
+    '/textures/heroes/vampire/walk.png',
+    '/textures/heroes/vampire/attack.png',
+    '/textures/heroes/vampire/walk_attack.png',
+    '/textures/weapons/weapon_blood_bats.png',
+
     '/textures/heroes/amazon/front.png',
     '/textures/heroes/amazon/portrait.png',
     '/textures/heroes/amazon/idle.png',
@@ -569,6 +577,10 @@ export class TextureManager {
 
   public static loadNecromancerTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_necromancer', renderer);
+  }
+
+  public static loadVampireTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_vampire', renderer);
   }
 
   public static loadAmazonTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {

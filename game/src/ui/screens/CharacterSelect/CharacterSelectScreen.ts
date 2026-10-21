@@ -16,7 +16,8 @@ export const HERO_ORDER: CharacterType[] = [
   'flail',
   'chakram',
   'rocket',
-  'amazon'
+  'amazon',
+  'vampire'
 ];
 
 export interface CharacterSelectScreenOptions {

@@ -574,8 +574,11 @@ export class CombatDirector {
           );
           const myId = this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2');
 
-          if (proj.isOrbiting) {
-            const bleedDps = (proj.bleedDps || 24) * this.player.getDamageMultiplier(proj.sourceWeaponId);
+          if (proj.bleedDps && proj.bleedDps > 0) {
+            const bleedDps = proj.bleedDps * this.player.getDamageMultiplier(proj.sourceWeaponId);
+            enemy.addBleed(bleedDps, 3.0, myId, proj.sourceWeaponId);
+          } else if (proj.isOrbiting) {
+            const bleedDps = 24 * this.player.getDamageMultiplier(proj.sourceWeaponId);
             enemy.addBleed(bleedDps, 3.0, myId, proj.sourceWeaponId);
           }
 

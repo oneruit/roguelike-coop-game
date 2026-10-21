@@ -42,6 +42,8 @@ export interface ProjectileOptions {
   isFireball?: boolean;
   isKineticBeam?: boolean;
   isPoisonPuddle?: boolean;
+  isBat?: boolean;
+  wobblePhase?: number;
   bleedDps?: number;
   sourceWeaponId?: string;
   critChance?: number;
@@ -66,6 +68,10 @@ export class Projectile {
   public isFireball = false;
   public isKineticBeam = false;
   public isPoisonPuddle = false;
+  public isBat = false;
+  public wobblePhase = 0;
+  private batWingLeft?: Mesh;
+  private batWingRight?: Mesh;
   public isStar = false;
   private starGroup?: Group;
   private starOuterMesh?: Mesh;
@@ -398,6 +404,8 @@ export class Projectile {
     this.isFireball = !!options.isFireball;
     this.isKineticBeam = !!options.isKineticBeam;
     this.isPoisonPuddle = !!options.isPoisonPuddle;
+    this.isBat = !!options.isBat;
+    this.wobblePhase = options.wobblePhase ?? (Math.random() * Math.PI * 2);
     this.curveSign = options.curveSign ?? 1;
     this.bleedDps = options.bleedDps ?? 0;
     this.sourceWeaponId = options.sourceWeaponId;
@@ -658,6 +666,44 @@ export class Projectile {
       this.mesh.add(scytheMesh);
       const scale = this.radius * 3.4;
       this.mesh.scale.set(scale, scale, scale);
+    } else if (this.isBat) {
+      // Procedural gothic bat mesh
+      const bodyGeom = new SphereGeometry(0.20, 6, 6);
+      bodyGeom.scale(1.2, 0.65, 0.65);
+      const bodyMat = new MeshBasicMaterial({ color: 0x1f1625 }); // deep obsidian-purple
+      const bodyMesh = new Mesh(bodyGeom, bodyMat);
+      this.mesh.add(bodyMesh);
+
+      // Glowing ruby eyes
+      const eyeGeom = new SphereGeometry(0.04, 4, 4);
+      const eyeMat = new MeshBasicMaterial({ color: 0xff1535 });
+      const eyeL = new Mesh(eyeGeom, eyeMat);
+      eyeL.position.set(0.18, 0.04, 0.07);
+      const eyeR = new Mesh(eyeGeom, eyeMat);
+      eyeR.position.set(0.18, 0.04, -0.07);
+      this.mesh.add(eyeL);
+      this.mesh.add(eyeR);
+
+      // Left & right bat wings
+      const wingGeom = new PlaneGeometry(0.48, 0.32);
+      wingGeom.translate(0.24, 0, 0); // pivot at wing joint
+      const wingMat = new MeshBasicMaterial({ color: 0x3b1220, side: DoubleSide });
+
+      this.batWingLeft = new Mesh(wingGeom, wingMat);
+      this.batWingLeft.position.set(-0.02, 0.04, 0.08);
+      this.batWingLeft.rotation.x = Math.PI / 2;
+      this.mesh.add(this.batWingLeft);
+
+      this.batWingRight = new Mesh(wingGeom, wingMat);
+      this.batWingRight.position.set(-0.02, 0.04, -0.08);
+      this.batWingRight.rotation.x = -Math.PI / 2;
+      this.batWingRight.rotation.y = Math.PI;
+      this.mesh.add(this.batWingRight);
+
+      const scale = this.radius * 3.2;
+      this.mesh.scale.set(scale, scale, scale);
+      const angle = Math.atan2(this.direction.z, this.direction.x);
+      this.mesh.rotation.y = -angle;
     } else if (this.isKineticBeam) {
       const beamGeomA = new PlaneGeometry(0.45, 3.4);
       beamGeomA.rotateX(Math.PI / 2);
@@ -1025,6 +1071,27 @@ export class Projectile {
         }
       }
       this.mesh.position.copy(this.position);
+    } else if (this.isBat) {
+      const flutterTime = this.elapsedTime * 16 + this.wobblePhase;
+      // Chaotic lateral flutter steering
+      const flutterAngle = Math.sin(flutterTime) * 3.8 * dt;
+      this.direction.applyAxisAngle(new Vector3(0, 1, 0), flutterAngle);
+
+      // Vertical wave bobbing
+      const bobbing = Math.cos(flutterTime * 0.9) * 0.035;
+      this.position.y += bobbing;
+      this.position.addScaledVector(this.direction, this.speed * dt);
+      this.mesh.position.copy(this.position);
+
+      const angle = Math.atan2(this.direction.z, this.direction.x);
+      this.mesh.rotation.y = -angle;
+
+      // Animate wing flap
+      if (this.batWingLeft && this.batWingRight) {
+        const flap = Math.sin(flutterTime * 1.8) * 0.75;
+        this.batWingLeft.rotation.z = flap;
+        this.batWingRight.rotation.z = flap;
+      }
     } else if (this.isKukri) {
       this.mesh.rotation.y += dt * 25;
       this.position.addScaledVector(this.direction, this.speed * dt);

@@ -33,7 +33,8 @@ import {
   FireRingWeapon,
   KatanaSlashWeapon,
   AssaultRifleWeapon,
-  SummonUndeadWeapon
+  SummonUndeadWeapon,
+  BloodBatsWeapon
 } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { Enemy } from './Enemy';
@@ -387,6 +388,8 @@ export class Player {
         ? TextureManager.loadArcherTextures()
         : charType === 'rocket'
         ? TextureManager.loadRocketTextures()
+        : charType === 'vampire'
+        ? TextureManager.loadVampireTextures()
         : charType === 'necromancer'
         ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();
@@ -514,6 +517,8 @@ export class Player {
       this.weapons.push(new BowWeapon(() => this.triggerAttackAnim(0.40, 'bow')));
     } else if (this.charType === 'rocket') {
       this.weapons.push(new AssaultRifleWeapon(() => this.triggerAttackAnim(0.20, 'assault_rifle')));
+    } else if (this.charType === 'vampire') {
+      this.weapons.push(new BloodBatsWeapon(() => this.triggerAttackAnim(0.44, 'blood_bats')));
     } else if (this.charType === 'amazon') {
       this.weapons.push(new ReaperScytheWeapon(() => this.triggerAttackAnim(0.48, 'reaper_scythe')));
     } else {

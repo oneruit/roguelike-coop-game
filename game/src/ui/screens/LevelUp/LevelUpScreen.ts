@@ -20,7 +20,8 @@ import {
   FireballWeapon,
   AssaultRifleWeapon,
   PoisonPuddleWeapon,
-  SummonUndeadWeapon
+  SummonUndeadWeapon,
+  BloodBatsWeapon
 } from '../../../combat/Weapon';
 import { InvokerQuasWeapon, InvokerWexWeapon, InvokerExortWeapon } from '../../../combat/InvokerWeapons';
 import { canCharacterAcquireWeapon } from '../../../shared/UniqueCharacters';
@@ -59,6 +60,7 @@ export function getWeaponIconUrl(weaponId: string): string {
     assault_rifle: '/textures/weapons/weapon_assault_rifle.png',
     poison_puddle: '/textures/weapons/weapon_poison_puddle.png',
     summon_undead: '/textures/weapons/weapon_summon_undead.png',
+    blood_bats: '/textures/weapons/weapon_blood_bats.png',
     invoker_invoke: '/textures/weapons/weapon_invoker_invoke.png'
   };
   const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
@@ -653,6 +655,10 @@ export class LevelUpScreen extends Screen {
             w.initVisual(this.ctx.getScene(), player.position);
             return w;
           });
+        }
+        const hasBloodBats = player.weapons.some(w => w.id === 'blood_bats');
+        if (!hasBloodBats) {
+          addGenericOption('blood_bats', 'Стая летучих мышей', '🦇', 'Выпускает стаю хаотичных кровожадных мышей, накладывающих кровотечение и исцеляющих героя', () => new BloodBatsWeapon());
         }
       }
     }

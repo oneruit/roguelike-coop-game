@@ -24,6 +24,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   'weapon-assault_rifle': '/textures/weapons/weapon_assault_rifle.png',
   'weapon-poison_puddle': '/textures/weapons/weapon_poison_puddle.png',
   'weapon-summon_undead': '/textures/weapons/weapon_summon_undead.png',
+  'weapon-blood_bats': '/textures/weapons/weapon_blood_bats.png',
 
   // Heroes
   'hero-ronin': '/textures/heroes/ronin/front.png',
@@ -36,6 +37,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   'hero-necromancer': '/textures/heroes/necromancer/front.png',
   'hero-amazon': '/textures/heroes/amazon/front.png',
   'hero-invoker': '/textures/heroes/invoker/front.png',
+  'hero-vampire': '/textures/heroes/vampire/front.png',
 
   // Monsters
   'monster-coyote': '/textures/monsters/monster_coyote_front.png',
@@ -80,7 +82,8 @@ export const WEAPON_COLORS: Record<string, string> = {
   ice_spike: '#3b82f6',
   assault_rifle: '#f97316',
   poison_puddle: '#22c55e',
-  summon_undead: '#a855f7'
+  summon_undead: '#a855f7',
+  blood_bats: '#be123c'
 };
 
 export const MONSTER_COLORS: Record<string, string> = {
@@ -216,7 +219,8 @@ export const HERO_NAMES: Record<string, string> = {
   rocket: 'Ракетчик',
   necromancer: 'Некромант',
   amazon: 'Амазонка',
-  invoker: 'Инвокер'
+  invoker: 'Инвокер',
+  vampire: 'Вампир'
 };
 
 export const DEFAULT_DEMO_LEADERBOARDS = [

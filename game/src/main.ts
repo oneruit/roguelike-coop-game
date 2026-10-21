@@ -622,6 +622,9 @@ class Game {
         this.player.totalDamageDealt += dmg;
         if (sourceWeaponId) {
           this.player.recordWeaponDamage(sourceWeaponId, dmg);
+          if (sourceWeaponId === 'blood_bats') {
+            this.player.heal(dmg * 0.01);
+          }
         }
       }
       if (this.net.role === 'client') {
@@ -641,6 +644,9 @@ class Game {
         this.player.totalDamageDealt += dmg;
         if (sourceWeaponId) {
           this.player.recordWeaponDamage(sourceWeaponId, dmg);
+          if (sourceWeaponId === 'blood_bats') {
+            this.player.heal(dmg * 0.01);
+          }
         }
       }
       if (this.net.role === 'client') {

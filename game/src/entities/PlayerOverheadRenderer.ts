@@ -29,6 +29,8 @@ export function getHeroRussianName(charType: CharacterType): string {
       return 'Эльф';
     case 'rocket':
       return 'Ракета';
+    case 'vampire':
+      return 'Кармилла';
     case 'necromancer':
       return 'Мортис';
     case 'amazon':

@@ -23,6 +23,7 @@ import {
   SimPoisonPuddleWeapon,
   SimSummonUndeadWeapon
 } from './SimMagicWeapons';
+import { SimBloodBatsWeapon } from './SimBloodBatsWeapon';
 import { SimInvokerWeapon, SimInvokerQuasWeapon, SimInvokerWexWeapon, SimInvokerExortWeapon } from './SimInvokerWeapon';
 
 /** Creates the starting weapon for character selection. */
@@ -47,6 +48,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'amazon':
       return new SimReaperScytheWeapon();
     case 'ronin':
+      return new SimKatanaSlashWeapon();
+    case 'vampire':
+      return new SimBloodBatsWeapon();
     default:
       return new SimWhirlwindSlashWeapon();
   }
@@ -99,6 +103,8 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimPoisonPuddleWeapon();
     case 'summon_undead':
       return new SimSummonUndeadWeapon();
+    case 'blood_bats':
+      return new SimBloodBatsWeapon();
     default:
       return null;
   }

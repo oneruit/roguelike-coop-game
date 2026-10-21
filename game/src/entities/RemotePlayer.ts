@@ -250,6 +250,8 @@ export class RemotePlayer {
         ? TextureManager.loadArcherTextures()
         : charType === 'rocket'
         ? TextureManager.loadRocketTextures()
+        : charType === 'vampire'
+        ? TextureManager.loadVampireTextures()
         : charType === 'necromancer'
         ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();
@@ -497,6 +499,8 @@ export class RemotePlayer {
           ? 'Эльф'
           : this.charType === 'rocket'
           ? 'Ракета'
+          : this.charType === 'vampire'
+          ? TextureManager.loadVampireTextures()
           : this.charType === 'necromancer'
           ? 'Мортис'
           : this.charType === 'amazon'

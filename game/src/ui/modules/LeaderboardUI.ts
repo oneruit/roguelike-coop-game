@@ -137,7 +137,8 @@ export class LeaderboardUI extends Screen {
       amazon: '🏹 Амазонка',
       flail: '🛡️ Храмовник',
       sorceress: '🔮 Чародейка',
-      chakram: '💫 Танцор с Чакрамами'
+      chakram: '💫 Танцор с Чакрамами',
+      vampire: '🦇 Вампир'
     };
 
     const lastRun = LeaderboardManager.getLastRun();

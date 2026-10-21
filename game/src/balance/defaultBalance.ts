@@ -221,6 +221,22 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       count: 1,
       notes: 'Токсичные пузырящиеся лужи кислоты, наносящие периодический урон и замедляющие врагов'
     },
+    blood_bats: {
+      id: 'blood_bats',
+      name: 'Стая летучих мышей',
+      icon: '🦇',
+      damage: 18,
+      damagePerLevel: 5,
+      maxLevel: 8,
+      cooldown: 1.6,
+      count: 4,
+      bleedDps: 14,
+      bleedDuration: 3.0,
+      speed: 15,
+      pierce: 1,
+      range: 26,
+      notes: 'Хаотичный полет к случайным целям, наложение кровотечения, 1% вампиризм от тиков кровотечения, до 24 мышей на 8-м уровне.'
+    },
     summon_undead: {
       id: 'summon_undead',
       name: 'Призыв мёртвых',
@@ -309,6 +325,15 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       damageMultiplier: 1.40,
       startingWeapon: 'summon_undead',
       role: 'Повелитель нежити: призывает свирепых скелетов-воинов и сокрушает врагов тёмной магией'
+    },
+    vampire: {
+      id: 'vampire',
+      name: 'Кармилла (Вампир)',
+      maxHp: 110,
+      baseSpeed: 8.8,
+      damageMultiplier: 1.35,
+      startingWeapon: 'blood_bats',
+      role: 'Повелительница ночи: призывает стаи кровожадных мышей и восстанавливает здоровье от кровотечений'
     },
     amazon: {
       id: 'amazon',

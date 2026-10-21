@@ -15,6 +15,7 @@ export function getHeroName(charType: CharacterType): string {
   if (charType === 'invoker') return 'Инвокер «Маг стихий»';
   if (charType === 'necromancer') return 'Мортис «Некромант»';
   if (charType === 'amazon') return 'Амазонка «Воительница»';
+  if (charType === 'vampire') return 'Кармилла «Вампир»';
   return charType === 'ronin'
     ? 'Рен «Ронин»'
     : charType === 'valkyrie'
@@ -170,6 +171,19 @@ export function getHeroDetails(charType: CharacterType): HeroDetails {
       difficulty: 'Экстремальная',
       difficultyPercent: 95
     },
+    vampire: {
+      title: 'КАРМИЛЛА — ВАМПИР',
+      role: 'Класс: Вампир / Маг Крови',
+      passiveTrait: { name: 'Вампиризм Крови', icon: 'blood_leech' },
+      activeAbilities: [
+        { name: 'Стая Мышей' },
+        { name: 'Кровавая Жатва' },
+        { name: 'Теневой Полёт' },
+        { name: 'Багровый Прилив' }
+      ],
+      difficulty: 'Средняя',
+      difficultyPercent: 65
+    },
     rocket: {
       title: 'РАКЕТА — КОММАНДОС',
       role: 'Класс: Артиллерист / Стрелок',
@@ -205,7 +219,8 @@ export function getWeaponIconUrl(weaponId: string): string {
     fireball: '/textures/weapons/weapon_fireball.png',
     assault_rifle: '/textures/weapons/weapon_assault_rifle.png',
     poison_puddle: '/textures/weapons/weapon_poison_puddle.png',
-    summon_undead: '/textures/weapons/weapon_summon_undead.png'
+    summon_undead: '/textures/weapons/weapon_summon_undead.png',
+    blood_bats: '/textures/weapons/weapon_blood_bats.png'
   };
   const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
   return TextureManager.getWeaponBlobUrl(path);
