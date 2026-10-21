@@ -19,11 +19,21 @@ def remove_bg_rembg(image_path: Path, alpha_thresh: int = 128) -> Image.Image:
     arr[arr[:, :, 3] >= alpha_thresh, 3] = 255
     return Image.fromarray(arr, mode="RGBA")
 
+def find_row_splits(alpha_arr: np.ndarray) -> tuple[int, int]:
+    """Find the exact gutters (local minima) between rows 0-1 and rows 1-2."""
+    row_sums = (alpha_arr > 20).sum(axis=1)
+    H = len(row_sums)
+    s1_min, s1_max = int(H * 0.28), int(H * 0.40)
+    s2_min, s2_max = int(H * 0.62), int(H * 0.74)
+    smoothed = np.convolve(row_sums, np.ones(7) / 7, mode="same")
+    y_split_1 = s1_min + int(np.argmin(smoothed[s1_min:s1_max]))
+    y_split_2 = s2_min + int(np.argmin(smoothed[s2_min:s2_max]))
+    return y_split_1, y_split_2
+
 def extract_row_sprites(row_sub: np.ndarray, row_idx: int, cols: int = 6) -> list[tuple[slice, slice]]:
     """Detect contiguous whole-character components in a row without splitting bodies."""
     labeled, num = label(row_sub[:, :, 3] > 20)
     objs = find_objects(labeled)
-    # Filter out tiny noise
     large = sorted(
         [o for o in objs if (o[0].stop - o[0].start) > 60 and (o[1].stop - o[1].start) > 40],
         key=lambda o: o[1].start,
@@ -32,24 +42,18 @@ def extract_row_sprites(row_sub: np.ndarray, row_idx: int, cols: int = 6) -> lis
     if len(large) == cols:
         return large
     elif len(large) == cols + 1:
-        # 7 sprites found instead of 6: pick the 6 that form the best 6-frame cycle
         print(f"[INFO] Row {row_idx} has 7 sprites. Selecting 6 complete frames to maintain intact characters.")
         if row_idx == 1:
-            # Row 1 (Back view): skip index 3
             return [large[i] for i in [0, 1, 2, 4, 5, 6]]
         elif row_idx == 2:
-            # Row 2 (Right profile): skip index 2
             return [large[i] for i in [0, 1, 3, 4, 5, 6]]
         else:
-            # Row 0: skip index 1 or 2
             return [large[i] for i in [0, 1, 3, 4, 5, 6]]
     elif len(large) > cols + 1:
-        # Sort by width/area and take top 6 in order of appearance
         areas = [(o, (row_sub[o[0], o[1], 3] > 20).sum()) for o in large]
         top6 = sorted(sorted(areas, key=lambda x: x[1], reverse=True)[:cols], key=lambda x: x[0][1].start)
         return [x[0] for x in top6]
     else:
-        # Fewer than 6: pad by repeating middle frames
         while len(large) < cols:
             large.append(large[-1])
         return large
@@ -63,18 +67,21 @@ def process_sheet_rembg(
     rows: int = 3,
     alpha_thresh: int = 128,
 ) -> Image.Image:
-    """Process a 6x3 white-background sheet into a 6x4 576x384 RGBA spritesheet with intact characters."""
+    """Process a 6x3 white-background sheet into a 6x4 576x384 RGBA spritesheet with intact characters and full feet."""
     clean_im = remove_bg_rembg(src_path, alpha_thresh=alpha_thresh)
     arr = np.array(clean_im)
     H, W = arr.shape[:2]
 
-    row_h = H / float(rows)
+    # Find true row gutters dynamically so feet are never cut off
+    y_split_1, y_split_2 = find_row_splits(arr[:, :, 3])
+    row_bounds = [(0, y_split_1), (y_split_1, y_split_2), (y_split_2, H)]
+    print(f"[{src_path.name}] Dynamic row bounds: Row 0=(0..{y_split_1}), Row 1=({y_split_1}..{y_split_2}), Row 2=({y_split_2}..{H})")
+
     row_sprites = {}
     all_heights = []
 
     for r_idx in range(rows):
-        y0 = int(round(r_idx * row_h))
-        y1 = int(round((r_idx + 1) * row_h))
+        y0, y1 = row_bounds[r_idx]
         row_sub = arr[y0:y1, :]
         sprites = extract_row_sprites(row_sub, r_idx, cols=cols)
 
