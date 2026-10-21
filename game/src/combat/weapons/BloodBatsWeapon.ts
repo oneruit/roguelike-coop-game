@@ -7,13 +7,24 @@ import { BalanceManager } from '../../balance/BalanceManager';
 import { type WeaponGrade, WEAPON_GRADES } from '../WeaponGrades';
 
 /**
+ * Helper to calculate bat projectile count across levels 1..12.
+ * Levels 1 to 8 previously scaled from 4 up to 24 bats.
+ * Now smoothly stretched across levels 1 to 12 reaching 24 bats at max level 12!
+ */
+export function getBloodBatsCount(level: number, baseCount: number = 4): number {
+  const boundedLevel = Math.max(1, Math.min(12, Math.floor(level)));
+  return Math.min(24, Math.round(baseCount + ((24 - baseCount) * (boundedLevel - 1)) / 11));
+}
+
+/**
  * Blood Bats Weapon (Стая летучих мышей)
  *
  * Summons swarms of ravenous shadowy blood bats with glowing crimson eyes.
  * Unlike other weapons, bats target random living enemies in range (not closest),
  * and fly in erratic, chaotic sinusoidal flutter paths.
  * Deals impact damage and applies stacking bleed; 1% of bleed damage heals the hero.
- * Scales from 4 bats at level 1 up to 24 bats at max level (level 8).
+ * Scales from 4 bats at level 1 up to 24 bats at max level (level 12).
+ * Supports Tier 2 (x2 damage & bleed) and Tier 1 (x3 damage & bleed) awakenings.
  */
 export class BloodBatsWeapon extends Weapon {
   public projectileCount: number = 4;
@@ -23,7 +34,8 @@ export class BloodBatsWeapon extends Weapon {
   private onTriggerAttack?: () => void;
 
   constructor(onTriggerAttack?: () => void) {
-    super('blood_bats', 'Стая летучих мышей', '🦇', 1.6, 18, 6);
+    super('blood_bats', 'Стая летучих мышей', '🦇', 1.6, 18, 3.18);
+    this.maxLevel = 12;
     this.onTriggerAttack = onTriggerAttack;
     this.recalculateStats();
   }
@@ -37,15 +49,21 @@ export class BloodBatsWeapon extends Weapon {
     const cfg = BalanceManager.getWeaponConfig('blood_bats');
     const baseCount = cfg?.count ?? 4;
 
-    // Bat scaling: +3 bats per level from lvl 2 to 7, +2 bats at lvl 8 -> exactly 24 bats at max level 8!
-    // Lvl 1: 4 | Lvl 2: 7 | Lvl 3: 10 | Lvl 4: 13 | Lvl 5: 16 | Lvl 6: 19 | Lvl 7: 22 | Lvl 8: 24
-    const extraBatSteps = [2, 3, 4, 5, 6, 7].filter(lvl => this.level >= lvl).length;
-    const finalStep = this.level >= 8 ? 2 : 0;
-    this.projectileCount = Math.min(24, baseCount + extraBatSteps * 3 + finalStep);
-
+    // Bat count scaling: 4 bats at lvl 1 -> 24 bats at lvl 12
+    this.projectileCount = getBloodBatsCount(this.level, baseCount);
     this.projectileSpeed = cfg?.speed ?? 15;
+
+    // Direct impact damage: scales from 18 at lvl 1 to 53 at lvl 12 (equivalent of old lvl 8)
+    // Tiers increase damage by x2 (Tier 2) and x3 (Tier 1) respectively via gradeStatMultiplier!
+    const baseDmg = cfg?.damage ?? 18;
+    const dmgGain = (35 * (this.level - 1)) / 11;
+    this.damage = Math.round((baseDmg + dmgGain) * this.gradeStatMultiplier + this.bonusDamage);
+
+    // Bleed DPS: scales from 14 at lvl 1 to 42 at lvl 12 (equivalent of old lvl 8)
+    // Tiers also increase bleed damage by x2 (Tier 2) and x3 (Tier 1) respectively!
     const baseBleed = cfg?.bleedDps ?? 14;
-    this.bleedDps = Math.round((baseBleed + (this.level - 1) * 4) * this.gradeStatMultiplier);
+    const bleedGain = (28 * (this.level - 1)) / 11;
+    this.bleedDps = Math.round((baseBleed + bleedGain) * this.gradeStatMultiplier);
     this.bleedDuration = cfg?.bleedDuration ?? 3.0;
 
     const cdSteps = [2, 4, 6, 8, 10, 12].filter(lvl => this.level >= lvl).length;
@@ -151,14 +169,27 @@ export class BloodBatsWeapon extends Weapon {
     if (this.level >= this.maxLevel) return `Максимальный уровень (${this.maxLevel})`;
     const nextLvl = this.level + 1;
     const cfg = WEAPON_GRADES[grade];
-    const dmg = Math.round(this.damagePerLevel * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
-    const addedBats = nextLvl >= 8 ? 2 : 3;
+
+    const currentBats = getBloodBatsCount(this.level, 4);
+    const nextBats = getBloodBatsCount(nextLvl, 4);
+    const addedBats = nextBats - currentBats;
+
+    const baseDmg = 18;
+    const currentBaseDmg = baseDmg + (35 * (this.level - 1)) / 11;
+    const nextBaseDmg = baseDmg + (35 * (nextLvl - 1)) / 11;
+    const dmg = Math.round((nextBaseDmg - currentBaseDmg) * cfg.damageMultiplierBonus * this.gradeStatMultiplier);
+
+    const baseBleed = 14;
+    const currentBleed = Math.round((baseBleed + (28 * (this.level - 1)) / 11) * this.gradeStatMultiplier);
+    const nextBleed = Math.round((baseBleed + (28 * (nextLvl - 1)) / 11) * this.gradeStatMultiplier);
+    const addedBleed = Math.max(1, nextBleed - currentBleed);
+
     const perks: string[] = [
       `+${dmg} к урону`,
-      `+${addedBats} мышей (всего ${this.projectileCount + addedBats})`,
-      `+4 к урону кровотечения`
+      `+${addedBats} мышей (всего ${nextBats})`,
+      `+${addedBleed} к урону кровотечения`
     ];
     if (cfg.cooldownReductionBonus > 0) perks.push(`-${Math.round(cfg.cooldownReductionBonus * 100)}% кд`);
-    return perks.join(', ');
+    return `${this.getGradePrefix()}[${cfg.name.toUpperCase()}] ${perks.join(', ')}`;
   }
 }

@@ -2,20 +2,31 @@ import { SimWeapon, SimPlayerRef, SimEnemyRef, SimProjectileData } from './SimWe
 import { SimVec3 } from '../math/SimVector';
 
 export class SimBloodBatsWeapon extends SimWeapon {
-  private projectileCount: number = 4;
-  private projectileSpeed: number = 15;
-  private bleedDps: number = 14;
+  public projectileCount: number = 4;
+  public projectileSpeed: number = 15;
+  public bleedDps: number = 14;
+  public awakenedGrade: number = 0;
+  public gradeStatMultiplier: number = 1.0;
 
   constructor() {
     super('blood_bats', 'Стая летучих мышей', '🦇', 1.6, 18);
+    this.maxLevel = 12;
+    this.recalculateBatStats();
+  }
+
+  public awakenGrade(): void {
+    this.awakenedGrade++;
+    this.gradeStatMultiplier = this.awakenedGrade === 1 ? 2.0 : this.awakenedGrade >= 2 ? 3.0 : 1.0;
+    this.level = 1;
     this.recalculateBatStats();
   }
 
   private recalculateBatStats(): void {
-    const extraBatSteps = [2, 3, 4, 5, 6, 7].filter(lvl => this.level >= lvl).length;
-    const finalStep = this.level >= 8 ? 2 : 0;
-    this.projectileCount = Math.min(24, 4 + extraBatSteps * 3 + finalStep);
-    this.bleedDps = 14 + (this.level - 1) * 4;
+    const baseCount = 4;
+    this.projectileCount = Math.min(24, Math.round(baseCount + ((24 - baseCount) * (this.level - 1)) / 11));
+    this.bleedDps = Math.round((14 + (28 * (this.level - 1)) / 11) * this.gradeStatMultiplier);
+    const baseDmg = 18;
+    this.damage = Math.round((baseDmg + (35 * (this.level - 1)) / 11) * this.gradeStatMultiplier);
   }
 
   public update(
@@ -62,14 +73,21 @@ export class SimBloodBatsWeapon extends SimWeapon {
   public upgrade(): void {
     if (this.level >= this.maxLevel) return;
     this.level++;
-    this.damage += 6;
     this.recalculateBatStats();
   }
 
   public getNextUpgradeDescription(): string {
     if (this.level >= this.maxLevel) return `Максимальный уровень (${this.maxLevel})`;
     const nextLvl = this.level + 1;
-    const addedBats = nextLvl >= 8 ? 2 : 3;
-    return `+6 к урону, +${addedBats} мышей, +4 к урону кровотечения`;
+    const currentBats = Math.min(24, Math.round(4 + (20 * (this.level - 1)) / 11));
+    const nextBats = Math.min(24, Math.round(4 + (20 * (nextLvl - 1)) / 11));
+    const addedBats = nextBats - currentBats;
+    const currentBleed = Math.round((14 + (28 * (this.level - 1)) / 11) * this.gradeStatMultiplier);
+    const nextBleed = Math.round((14 + (28 * (nextLvl - 1)) / 11) * this.gradeStatMultiplier);
+    const addedBleed = Math.max(1, nextBleed - currentBleed);
+    const currentDmg = Math.round((18 + (35 * (this.level - 1)) / 11) * this.gradeStatMultiplier);
+    const nextDmg = Math.round((18 + (35 * (nextLvl - 1)) / 11) * this.gradeStatMultiplier);
+    const addedDmg = Math.max(1, nextDmg - currentDmg);
+    return `+${addedDmg} к урону, +${addedBats} мышей, +${addedBleed} к урону кровотечения`;
   }
 }

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-21T23:19:26.657Z",
+  "generatedAt": "2026-10-21T23:52:28.664Z",
   "totalFiles": 204,
-  "totalSymbols": 1923,
-  "topLevelCount": 599,
-  "methodsCount": 1324,
+  "totalSymbols": 1925,
+  "topLevelCount": 600,
+  "methodsCount": 1325,
   "entities": {
     "heroes": [
       {
@@ -403,9 +403,9 @@
         "icon": "🦇",
         "damage": 18,
         "cooldown": 1.6,
-        "maxLevel": 8,
+        "maxLevel": 12,
         "range": 26,
-        "notes": "Хаотичный полет к случайным целям, наложение кровотечения, 1% вампиризм от тиков кровотечения, до 24 мышей на 8-м уровне."
+        "notes": "Хаотичный полет к случайным целям, наложение кровотечения, 1% вампиризм от тиков кровотечения, до 24 мышей на 12-м уровне."
       },
       {
         "id": "summon_undead",
@@ -1956,14 +1956,14 @@
       "name": "BloodBatsWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/BloodBatsWeapon.ts",
-      "line": 18,
-      "doc": "Blood Bats Weapon (Стая летучих мышей) Summons swarms of ravenous shadowy blood bats with glowing crimson eyes. Unlike other weapons, bats target random living enemies in range (not closest), and fly in erratic, chaotic sinusoidal flutter paths. Deals impact damage and applies stacking bleed; 1% of bleed damage heals the hero. Scales from 4 bats at level 1 up to 24 bats at max level (level 8)."
+      "line": 29,
+      "doc": "Blood Bats Weapon (Стая летучих мышей) Summons swarms of ravenous shadowy blood bats with glowing crimson eyes. Unlike other weapons, bats target random living enemies in range (not closest), and fly in erratic, chaotic sinusoidal flutter paths. Deals impact damage and applies stacking bleed; 1% of bleed damage heals the hero. Scales from 4 bats at level 1 up to 24 bats at max level (level 12). Supports Tier 2 (x2 damage & bleed) and Tier 1 (x3 damage & bleed) awakenings."
     },
     {
       "name": "BloodBatsWeapon.getBleedDps",
       "kind": "method",
       "file": "game/src/combat/weapons/BloodBatsWeapon.ts",
-      "line": 56,
+      "line": 74,
       "className": "BloodBatsWeapon",
       "methodName": "getBleedDps"
     },
@@ -1971,7 +1971,7 @@
       "name": "BloodBatsWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/BloodBatsWeapon.ts",
-      "line": 150,
+      "line": 168,
       "className": "BloodBatsWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -1979,7 +1979,7 @@
       "name": "BloodBatsWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/BloodBatsWeapon.ts",
-      "line": 31,
+      "line": 43,
       "className": "BloodBatsWeapon",
       "methodName": "setAttackCallback"
     },
@@ -1987,7 +1987,7 @@
       "name": "BloodBatsWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/BloodBatsWeapon.ts",
-      "line": 143,
+      "line": 161,
       "className": "BloodBatsWeapon",
       "methodName": "upgrade"
     },
@@ -5391,6 +5391,13 @@
       "kind": "function",
       "file": "game/src/combat/WeaponGrades.ts",
       "line": 81
+    },
+    {
+      "name": "getBloodBatsCount",
+      "kind": "function",
+      "file": "game/src/combat/weapons/BloodBatsWeapon.ts",
+      "line": 14,
+      "doc": "Helper to calculate bat projectile count across levels 1..12. Levels 1 to 8 previously scaled from 4 up to 24 bats. Now smoothly stretched across levels 1 to 12 reaching 24 bats at max level 12!"
     },
     {
       "name": "getChapterDef",
@@ -12497,10 +12504,18 @@
       "line": 4
     },
     {
+      "name": "SimBloodBatsWeapon.awakenGrade",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimBloodBatsWeapon.ts",
+      "line": 17,
+      "className": "SimBloodBatsWeapon",
+      "methodName": "awakenGrade"
+    },
+    {
       "name": "SimBloodBatsWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/sim/weapons/SimBloodBatsWeapon.ts",
-      "line": 69,
+      "line": 79,
       "className": "SimBloodBatsWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -12508,7 +12523,7 @@
       "name": "SimBloodBatsWeapon.recalculateBatStats",
       "kind": "method",
       "file": "game/src/sim/weapons/SimBloodBatsWeapon.ts",
-      "line": 14,
+      "line": 24,
       "className": "SimBloodBatsWeapon",
       "methodName": "recalculateBatStats"
     },
@@ -12516,7 +12531,7 @@
       "name": "SimBloodBatsWeapon.upgrade",
       "kind": "method",
       "file": "game/src/sim/weapons/SimBloodBatsWeapon.ts",
-      "line": 62,
+      "line": 73,
       "className": "SimBloodBatsWeapon",
       "methodName": "upgrade"
     },

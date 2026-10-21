@@ -226,8 +226,8 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       name: 'Стая летучих мышей',
       icon: '🦇',
       damage: 18,
-      damagePerLevel: 5,
-      maxLevel: 8,
+      damagePerLevel: 3,
+      maxLevel: 12,
       cooldown: 1.6,
       count: 4,
       bleedDps: 14,
@@ -235,7 +235,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       speed: 15,
       pierce: 1,
       range: 26,
-      notes: 'Хаотичный полет к случайным целям, наложение кровотечения, 1% вампиризм от тиков кровотечения, до 24 мышей на 8-м уровне.'
+      notes: 'Хаотичный полет к случайным целям, наложение кровотечения, 1% вампиризм от тиков кровотечения, до 24 мышей на 12-м уровне.'
     },
     summon_undead: {
       id: 'summon_undead',

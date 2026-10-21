@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-21T23:19:26.657Z | **Files:** 204 | **Top-level:** 599 | **Class Methods:** 1324
+> **Generated:** 2026-10-21T23:52:28.664Z | **Files:** 204 | **Top-level:** 600 | **Class Methods:** 1325
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 553 |
+| `game/src` | 554 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -186,11 +186,11 @@ Run `npm run index` to refresh this cache.
 | `BIOMES` | `const` | [`game/src/world/BiomeManager.ts:49`](../../game/src/world/BiomeManager.ts#L49) | - |
 | `BiomeTextureElement` | `type` | [`game/src/utils/AssetResolver.ts:4`](../../game/src/utils/AssetResolver.ts#L4) | - |
 | `BleedStack` | `interface` | [`game/src/entities/Enemy.ts:41`](../../game/src/entities/Enemy.ts#L41) | - |
-| `BloodBatsWeapon` | `class` | [`game/src/combat/weapons/BloodBatsWeapon.ts:18`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L18) | Blood Bats Weapon (Стая летучих мышей) Summons swarms of ravenous shadowy b... |
-| `BloodBatsWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:56`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L56) | - |
-| `BloodBatsWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:150`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L150) | - |
-| `BloodBatsWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:31`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L31) | - |
-| `BloodBatsWeapon.upgrade` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:143`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L143) | - |
+| `BloodBatsWeapon` | `class` | [`game/src/combat/weapons/BloodBatsWeapon.ts:29`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L29) | Blood Bats Weapon (Стая летучих мышей) Summons swarms of ravenous shadowy b... |
+| `BloodBatsWeapon.getBleedDps` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:74`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L74) | - |
+| `BloodBatsWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:168`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L168) | - |
+| `BloodBatsWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:43`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L43) | - |
+| `BloodBatsWeapon.upgrade` | `method` | [`game/src/combat/weapons/BloodBatsWeapon.ts:161`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L161) | - |
 | `BoneSocketMap` | `interface` | [`game/src/character-lab/types.ts:37`](../../game/src/character-lab/types.ts#L37) | - |
 | `BOSS_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:286`](../../game/src/items/RiftItemSystem.ts#L286) | - |
 | `BossAnimState` | `type` | [`game/src/entities/Enemy.ts:19`](../../game/src/entities/Enemy.ts#L19) | - |
@@ -639,6 +639,7 @@ Run `npm run index` to refresh this cache.
 | `getAssetUrl` | `function` | [`game/src/utils/assetPath.ts:5`](../../game/src/utils/assetPath.ts#L5) | Resolves a public asset path against Vite's base URL (e.g. for GitHub Pages... |
 | `getAuthSupabaseClient` | `function` | [`game/src/balance/supabaseClient.ts:117`](../../game/src/balance/supabaseClient.ts#L117) | Returns Supabase client configured for user authentication with session per... |
 | `getBiomeGradeChances` | `function` | [`game/src/combat/WeaponGrades.ts:81`](../../game/src/combat/WeaponGrades.ts#L81) | - |
+| `getBloodBatsCount` | `function` | [`game/src/combat/weapons/BloodBatsWeapon.ts:14`](../../game/src/combat/weapons/BloodBatsWeapon.ts#L14) | Helper to calculate bat projectile count across levels 1..12. Levels 1 to 8... |
 | `getChapterDef` | `function` | [`game/src/core/ChapterQuestsConfig.ts:258`](../../game/src/core/ChapterQuestsConfig.ts#L258) | - |
 | `getChapterQuestDef` | `function` | [`game/src/core/ChapterQuestsConfig.ts:262`](../../game/src/core/ChapterQuestsConfig.ts#L262) | - |
 | `getCharacterAnimLayout` | `function` | [`game/src/entities/CharacterAnimator.ts:74`](../../game/src/entities/CharacterAnimator.ts#L74) | Resolves standard row layouts for all playable characters. |
@@ -1583,9 +1584,10 @@ Run `npm run index` to refresh this cache.
 | `SimAstralStaffWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:87`](../../game/src/sim/weapons/SimMagicWeapons.ts#L87) | - |
 | `SimAstralStaffWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimMagicWeapons.ts:76`](../../game/src/sim/weapons/SimMagicWeapons.ts#L76) | - |
 | `SimBloodBatsWeapon` | `class` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:4`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L4) | - |
-| `SimBloodBatsWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:69`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L69) | - |
-| `SimBloodBatsWeapon.recalculateBatStats` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:14`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L14) | - |
-| `SimBloodBatsWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:62`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L62) | - |
+| `SimBloodBatsWeapon.awakenGrade` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:17`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L17) | - |
+| `SimBloodBatsWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:79`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L79) | - |
+| `SimBloodBatsWeapon.recalculateBatStats` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:24`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L24) | - |
+| `SimBloodBatsWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimBloodBatsWeapon.ts:73`](../../game/src/sim/weapons/SimBloodBatsWeapon.ts#L73) | - |
 | `SimBowWeapon` | `class` | [`game/src/sim/weapons/SimRangedWeapons.ts:13`](../../game/src/sim/weapons/SimRangedWeapons.ts#L13) | Hunting Bow (Охотничий Лук) |
 | `SimBowWeapon.getNextUpgradeDescription` | `method` | [`game/src/sim/weapons/SimRangedWeapons.ts:90`](../../game/src/sim/weapons/SimRangedWeapons.ts#L90) | - |
 | `SimBowWeapon.upgrade` | `method` | [`game/src/sim/weapons/SimRangedWeapons.ts:79`](../../game/src/sim/weapons/SimRangedWeapons.ts#L79) | - |

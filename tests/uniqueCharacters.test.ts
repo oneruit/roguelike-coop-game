@@ -294,11 +294,11 @@ test('BloodBatsWeapon - scaling up to 24 bats, random target selection, and blee
   assert.equal(batsWeapon.bleedDps, 14);
 
   // Upgrade through level 8
-  for (let lvl = 2; lvl <= 8; lvl++) {
+  for (let lvl = 2; lvl <= 12; lvl++) {
     batsWeapon.upgrade();
   }
-  assert.equal(batsWeapon.level, 8);
-  assert.equal(batsWeapon.projectileCount, 24, 'Bats weapon must reach exactly 24 projectiles at level 8');
+  assert.equal(batsWeapon.level, 12);
+  assert.equal(batsWeapon.projectileCount, 24, 'Bats weapon must reach exactly 24 projectiles at level 12');
 
   // Verify firing at random targets
   const dummyEnemies = [
