@@ -428,6 +428,7 @@ export class SessionDirector {
     this.hud.setCoopBadge(null);
     this.player.isCoop = false;
 
+    FireRingWeapon.destroyAll(this.engine.scene);
     this.combatDirector.clear();
     this.enemyManager.clear();
     this.dropManager.clear();

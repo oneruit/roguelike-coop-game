@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-21T19:31:44.190Z",
+  "generatedAt": "2026-10-21T19:46:55.276Z",
   "totalFiles": 202,
-  "totalSymbols": 1889,
+  "totalSymbols": 1890,
   "topLevelCount": 585,
-  "methodsCount": 1304,
+  "methodsCount": 1305,
   "entities": {
     "heroes": [
       {
@@ -1147,14 +1147,14 @@
       "name": "AstralStaffWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 307,
+      "line": 335,
       "doc": "Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high-speed astral energy bolts and starlight orbs that pierce through foes at long range."
     },
     {
       "name": "AstralStaffWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 394,
+      "line": 424,
       "className": "AstralStaffWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -1162,7 +1162,7 @@
       "name": "AstralStaffWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 332,
+      "line": 360,
       "className": "AstralStaffWeapon",
       "methodName": "setAttackCallback"
     },
@@ -1170,7 +1170,7 @@
       "name": "AstralStaffWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 387,
+      "line": 417,
       "className": "AstralStaffWeapon",
       "methodName": "upgrade"
     },
@@ -4574,14 +4574,14 @@
       "name": "FireballWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 632,
+      "line": 662,
       "doc": "Fireball (Огненный Шар) Calls down flaming meteors from the sky that plummet and detonate on monsters with a fiery explosion."
     },
     {
       "name": "FireballWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 728,
+      "line": 758,
       "className": "FireballWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -4589,7 +4589,7 @@
       "name": "FireballWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 661,
+      "line": 691,
       "className": "FireballWeapon",
       "methodName": "setAttackCallback"
     },
@@ -4597,7 +4597,7 @@
       "name": "FireballWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 721,
+      "line": 751,
       "className": "FireballWeapon",
       "methodName": "upgrade"
     },
@@ -4612,7 +4612,7 @@
       "name": "FireRingWeapon.destroy",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 267,
+      "line": 294,
       "className": "FireRingWeapon",
       "methodName": "destroy"
     },
@@ -4620,7 +4620,7 @@
       "name": "FireRingWeapon.destroyAll",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 176,
+      "line": 177,
       "className": "FireRingWeapon",
       "methodName": "destroyAll"
     },
@@ -4628,7 +4628,7 @@
       "name": "FireRingWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 291,
+      "line": 319,
       "className": "FireRingWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -4636,7 +4636,7 @@
       "name": "FireRingWeapon.initVisual",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 245,
+      "line": 259,
       "className": "FireRingWeapon",
       "methodName": "initVisual"
     },
@@ -4644,7 +4644,7 @@
       "name": "FireRingWeapon.setVfxOpacity",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 165,
+      "line": 166,
       "className": "FireRingWeapon",
       "methodName": "setVfxOpacity"
     },
@@ -4652,7 +4652,7 @@
       "name": "FireRingWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 284,
+      "line": 312,
       "className": "FireRingWeapon",
       "methodName": "upgrade"
     },
@@ -6453,14 +6453,14 @@
       "name": "IceSpikeWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 524,
+      "line": 554,
       "doc": "Ice Spike (Ледяной Шип) Piercing glacial spikes erupt from beneath the earth under monsters, impaling them from below."
     },
     {
       "name": "IceSpikeWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 610,
+      "line": 640,
       "className": "IceSpikeWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -6468,7 +6468,7 @@
       "name": "IceSpikeWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 551,
+      "line": 581,
       "className": "IceSpikeWeapon",
       "methodName": "setAttackCallback"
     },
@@ -6476,7 +6476,7 @@
       "name": "IceSpikeWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 603,
+      "line": 633,
       "className": "IceSpikeWeapon",
       "methodName": "upgrade"
     },
@@ -7666,14 +7666,14 @@
       "name": "LightningStrikeWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 416,
+      "line": 446,
       "doc": "Lightning Strike (Удар Молнии) Calls down devastating bolts of thunder from the sky onto enemies, triggering vertical electric strikes with splash damage."
     },
     {
       "name": "LightningStrikeWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 502,
+      "line": 532,
       "className": "LightningStrikeWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -7681,7 +7681,7 @@
       "name": "LightningStrikeWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 443,
+      "line": 473,
       "className": "LightningStrikeWeapon",
       "methodName": "setAttackCallback"
     },
@@ -7689,7 +7689,7 @@
       "name": "LightningStrikeWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 495,
+      "line": 525,
       "className": "LightningStrikeWeapon",
       "methodName": "upgrade"
     },
@@ -9574,7 +9574,7 @@
       "name": "Player.addLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1265,
+      "line": 1266,
       "className": "Player",
       "methodName": "addLevel"
     },
@@ -9662,7 +9662,7 @@
       "name": "Player.areAllWeaponsMaxed",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1219,
+      "line": 1220,
       "className": "Player",
       "methodName": "areAllWeaponsMaxed"
     },
@@ -9670,7 +9670,7 @@
       "name": "Player.calculateXpToNextLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1261,
+      "line": 1262,
       "className": "Player",
       "methodName": "calculateXpToNextLevel"
     },
@@ -9686,7 +9686,7 @@
       "name": "Player.destroy",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1367,
+      "line": 1368,
       "className": "Player",
       "methodName": "destroy"
     },
@@ -9694,7 +9694,7 @@
       "name": "Player.fullHeal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1188,
+      "line": 1189,
       "className": "Player",
       "methodName": "fullHeal"
     },
@@ -9702,7 +9702,7 @@
       "name": "Player.gainXp",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1273,
+      "line": 1274,
       "className": "Player",
       "methodName": "gainXp",
       "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
@@ -9711,7 +9711,7 @@
       "name": "Player.getAwakenedCap",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1215,
+      "line": 1216,
       "className": "Player",
       "methodName": "getAwakenedCap"
     },
@@ -9719,7 +9719,7 @@
       "name": "Player.getBuffsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1400,
+      "line": 1401,
       "className": "Player",
       "methodName": "getBuffsNetState"
     },
@@ -9761,7 +9761,7 @@
       "name": "Player.getWeaponsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1391,
+      "line": 1392,
       "className": "Player",
       "methodName": "getWeaponsNetState"
     },
@@ -9769,7 +9769,7 @@
       "name": "Player.giveAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1224,
+      "line": 1225,
       "className": "Player",
       "methodName": "giveAllWeapons"
     },
@@ -9785,7 +9785,7 @@
       "name": "Player.heal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1183,
+      "line": 1184,
       "className": "Player",
       "methodName": "heal"
     },
@@ -9817,7 +9817,7 @@
       "name": "Player.maxAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1253,
+      "line": 1254,
       "className": "Player",
       "methodName": "maxAllWeapons"
     },
@@ -9841,7 +9841,7 @@
       "name": "Player.redrawOverhead",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1341,
+      "line": 1342,
       "className": "Player",
       "methodName": "redrawOverhead"
     },
@@ -9857,7 +9857,7 @@
       "name": "Player.reset",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1290,
+      "line": 1291,
       "className": "Player",
       "methodName": "reset"
     },
@@ -9865,7 +9865,7 @@
       "name": "Player.revive",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1163,
+      "line": 1164,
       "className": "Player",
       "methodName": "revive"
     },
@@ -9905,7 +9905,7 @@
       "name": "Player.takeDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1084,
+      "line": 1085,
       "className": "Player",
       "methodName": "takeDamage"
     },
@@ -9913,7 +9913,7 @@
       "name": "Player.toggleGodMode",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1192,
+      "line": 1193,
       "className": "Player",
       "methodName": "toggleGodMode"
     },
@@ -9921,7 +9921,7 @@
       "name": "Player.toggleOneHitKill",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1207,
+      "line": 1208,
       "className": "Player",
       "methodName": "toggleOneHitKill"
     },
@@ -9929,7 +9929,7 @@
       "name": "Player.toggleSpeedCheat",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1201,
+      "line": 1202,
       "className": "Player",
       "methodName": "toggleSpeedCheat"
     },
@@ -9953,7 +9953,7 @@
       "name": "Player.updateAnimatedCharacterAnimation",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1067,
+      "line": 1068,
       "className": "Player",
       "methodName": "updateAnimatedCharacterAnimation"
     },
@@ -9961,7 +9961,7 @@
       "name": "Player.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1420,
+      "line": 1421,
       "className": "Player",
       "methodName": "updateVisuals",
       "doc": "Smoothly interpolates the player mesh position between the previous and current fixed simulation states. Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+)."
@@ -10198,14 +10198,14 @@
       "name": "PoisonPuddleWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 750,
+      "line": 780,
       "doc": "Poison Puddle (Ядовитая лужа) Spawns caustic bubbling toxic sludge pools on the ground that deal continuous acid damage and slow enemies within the mire."
     },
     {
       "name": "PoisonPuddleWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 847,
+      "line": 877,
       "className": "PoisonPuddleWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -10213,7 +10213,7 @@
       "name": "PoisonPuddleWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 779,
+      "line": 809,
       "className": "PoisonPuddleWeapon",
       "methodName": "setAttackCallback"
     },
@@ -10221,7 +10221,7 @@
       "name": "PoisonPuddleWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/weapons/MagicWeapons.ts",
-      "line": 840,
+      "line": 870,
       "className": "PoisonPuddleWeapon",
       "methodName": "upgrade"
     },
@@ -10774,13 +10774,13 @@
       "name": "Projectile",
       "kind": "class",
       "file": "game/src/combat/Projectile.ts",
-      "line": 48
+      "line": 51
     },
     {
       "name": "Projectile.destroy",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 919,
+      "line": 1064,
       "className": "Projectile",
       "methodName": "destroy"
     },
@@ -10788,15 +10788,23 @@
       "name": "Projectile.getOrbMaterial",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 253,
+      "line": 359,
       "className": "Projectile",
       "methodName": "getOrbMaterial"
+    },
+    {
+      "name": "Projectile.initStarAssets",
+      "kind": "method",
+      "file": "game/src/combat/Projectile.ts",
+      "line": 239,
+      "className": "Projectile",
+      "methodName": "initStarAssets"
     },
     {
       "name": "Projectile.onHit",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 902,
+      "line": 1047,
       "className": "Projectile",
       "methodName": "onHit"
     },
@@ -10804,7 +10812,7 @@
       "name": "Projectile.setVfxOpacity",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 121,
+      "line": 130,
       "className": "Projectile",
       "methodName": "setVfxOpacity"
     },
@@ -10812,7 +10820,7 @@
       "name": "Projectile.update",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 693,
+      "line": 828,
       "className": "Projectile",
       "methodName": "update"
     },
@@ -10820,7 +10828,7 @@
       "name": "Projectile.updateVisuals",
       "kind": "method",
       "file": "game/src/combat/Projectile.ts",
-      "line": 911,
+      "line": 1056,
       "className": "Projectile",
       "methodName": "updateVisuals"
     },
@@ -10828,7 +10836,7 @@
       "name": "ProjectileOptions",
       "kind": "interface",
       "file": "game/src/combat/Projectile.ts",
-      "line": 18
+      "line": 20
     },
     {
       "name": "PublicRoomInfo",
@@ -11860,7 +11868,7 @@
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 748,
+      "line": 749,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -11869,7 +11877,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 957,
+      "line": 958,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -11877,7 +11885,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1152,
+      "line": 1153,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -11886,7 +11894,7 @@
       "name": "SessionDirector.completeGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 803,
+      "line": 804,
       "className": "SessionDirector",
       "methodName": "completeGreedTrial"
     },
@@ -11894,7 +11902,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 484,
+      "line": 485,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -11902,7 +11910,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 606,
+      "line": 607,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -11910,7 +11918,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 475,
+      "line": 476,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -11918,7 +11926,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 526,
+      "line": 527,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -11926,7 +11934,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 467,
+      "line": 468,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -11934,7 +11942,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1314,
+      "line": 1315,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -11951,7 +11959,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1236,
+      "line": 1237,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -11976,7 +11984,7 @@
       "name": "SessionDirector.startGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 767,
+      "line": 768,
       "className": "SessionDirector",
       "methodName": "startGreedTrial"
     },
@@ -11992,7 +12000,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1182,
+      "line": 1183,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -12009,7 +12017,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1035,
+      "line": 1036,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -12017,7 +12025,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 494,
+      "line": 495,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -12033,7 +12041,7 @@
       "name": "SessionDirector.updateGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 787,
+      "line": 788,
       "className": "SessionDirector",
       "methodName": "updateGreedTrial"
     },
@@ -12041,7 +12049,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 836,
+      "line": 837,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },

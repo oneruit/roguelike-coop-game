@@ -1012,6 +1012,7 @@ export class Player {
     for (const weapon of this.weapons) {
       if (typeof (weapon as any).initVisual === 'function' && !(weapon as any).hasInitVisual && this.scene) {
         (weapon as any).initVisual(this.scene, this.position);
+        (weapon as any).hasInitVisual = true;
       }
       const damageEnemyWithMultiplier = damageEnemy
         ? (enemy: Enemy, amount: number, sourcePos?: Vector3, critChanceBonus = 0, critDamageBonus = 0) => {
