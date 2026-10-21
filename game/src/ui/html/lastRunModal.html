@@ -1,0 +1,115 @@
+      <!-- Last Run Summary Modal -->
+      <div id="last-run-modal" class="modal hidden">
+        <div class="modal-backdrop menu-scenic-backdrop" id="last-run-backdrop"></div>
+        <div class="modal-card last-run-card modern-glass-modal">
+          <div class="last-run-header">
+            <div>
+              <div class="sub-title menu-badge-blue">СВОДКА ЭКСПЕДИЦИИ</div>
+              <h2 class="modern-menu-title" style="font-size: 24px; margin: 4px 0 0 0;">ПОСЛЕДНИЙ ЗАБЕГ</h2>
+            </div>
+            <button id="last-run-btn-close" class="leaderboard-close-btn" type="button" title="Закрыть">✕</button>
+          </div>
+
+          <!-- Empty State (shown if no run saved yet) -->
+          <div id="last-run-empty" class="last-run-empty hidden">
+            <div class="last-run-empty-icon">📜</div>
+            <h3 class="last-run-empty-title">НЕТ СОХРАНЕННЫХ ЗАБЕГОВ</h3>
+            <p class="last-run-empty-hint">Вы еще не завершили ни одной экспедиции в Разлом. Отправляйтесь в бой, чтобы зафиксировать свои рекорды!</p>
+          </div>
+
+          <!-- Active Content (shown if run exists) -->
+          <div id="last-run-content" class="last-run-content">
+            <!-- Status & Outcome Banner -->
+            <div id="last-run-status-banner" class="last-run-status-banner defeat-banner">
+              <div class="status-badge-wrap">
+                <span id="last-run-status-badge" class="last-run-badge badge-defeat">ПОРАЖЕНИЕ</span>
+                <span id="last-run-date-text" class="last-run-date">--</span>
+              </div>
+              <!-- Killer Info (shown only if defeat) -->
+              <div id="last-run-killer-box" class="last-run-killer-box hidden">
+                <span class="killer-skull">💀</span>
+                <span class="killer-label">Причина гибели:</span>
+                <strong id="last-run-killer-name" class="killer-name">--</strong>
+                <span class="killer-dmg-separator">•</span>
+                <span class="killer-dmg-label">Роковой урон:</span>
+                <strong id="last-run-killer-damage" class="killer-damage">--</strong>
+              </div>
+            </div>
+
+            <!-- Hero & Seed Card -->
+            <div class="last-run-hero-card">
+              <div class="last-run-avatar-box">
+                <img id="last-run-hero-avatar" class="last-run-avatar" src="" alt="Герой" />
+              </div>
+              <div class="last-run-hero-info">
+                <div class="last-run-hero-title-row">
+                  <span id="last-run-hero-name" class="last-run-hero-name">Рыцарь</span>
+                  <span id="last-run-hero-level" class="last-run-hero-level">Ур. 1</span>
+                </div>
+                <div class="last-run-hero-meta">
+                  <span id="last-run-stage-biome" class="last-run-stage-biome">Этап 1: Пепельные пустыни</span>
+                  <span class="meta-sep">•</span>
+                  <span>Seed: <strong id="last-run-seed" class="last-run-seed">#1337</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Stats Grid -->
+            <div class="last-run-stats-grid">
+              <div class="last-run-stat-card">
+                <span class="stat-icon">⏱</span>
+                <span class="stat-title">ВРЕМЯ</span>
+                <strong id="last-run-time" class="stat-value">00:00</strong>
+              </div>
+              <div class="last-run-stat-card">
+                <span class="stat-icon">💀</span>
+                <span class="stat-title">УБИЙСТВА</span>
+                <strong id="last-run-kills" class="stat-value">0</strong>
+              </div>
+              <div class="last-run-stat-card">
+                <span class="stat-icon">⚔️</span>
+                <span class="stat-title">УРОН</span>
+                <strong id="last-run-damage" class="stat-value">0</strong>
+              </div>
+              <div class="last-run-stat-card">
+                <span class="stat-icon">📦</span>
+                <span class="stat-title">СУНДУКИ</span>
+                <strong id="last-run-chests" class="stat-value">0</strong>
+              </div>
+              <div class="last-run-stat-card">
+                <span class="stat-icon">🪙</span>
+                <span class="stat-title">КРЕДИТЫ</span>
+                <strong id="last-run-credits" class="stat-value">0</strong>
+              </div>
+              <div class="last-run-stat-card">
+                <span class="stat-icon">🌟</span>
+                <span class="stat-title">ЭТАП</span>
+                <strong id="last-run-stage-num" class="stat-value">1</strong>
+              </div>
+            </div>
+
+            <!-- Weapon Damage Distribution Section -->
+            <div class="last-run-weapons-section">
+              <div class="last-run-section-header">
+                <span>АРСЕНАЛ И УРОН ОРУЖИЯ</span>
+              </div>
+              <div id="last-run-weapons-list" class="last-run-weapons-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Co-op Results (if co-op) -->
+            <div id="last-run-coop-section" class="last-run-coop-section hidden">
+              <div class="last-run-section-header">
+                <span>СОСТАВ ОТРЯДА (КООП)</span>
+              </div>
+              <div id="last-run-coop-list" class="last-run-coop-list"></div>
+            </div>
+          </div>
+
+          <div class="last-run-footer">
+            <button id="last-run-btn-back" class="action-btn modern-back-btn" type="button">Назад</button>
+            <button id="last-run-btn-copy-seed" class="action-btn select-btn" style="background: rgba(245, 158, 11, 0.25); border-color: #f59e0b; color: #fde68a;" type="button">📋 Скопировать Seed</button>
+          </div>
+        </div>
+      </div>

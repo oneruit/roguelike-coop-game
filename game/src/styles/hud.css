@@ -115,6 +115,35 @@
   color: #c084fc;
 }
 
+.chests-badge {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.1);
+  color: #fde68a;
+  cursor: help;
+  transition: all 0.25s ease;
+}
+
+.chests-badge .stat-label {
+  color: #f59e0b;
+}
+
+.chests-badge #stage-chests-count {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.chests-badge.all-opened {
+  border-color: rgba(16, 185, 129, 0.6);
+  background: rgba(16, 185, 129, 0.18);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+
+.chests-badge.all-opened #stage-chests-count {
+  color: #34d399;
+}
+
 .kill-badge {
   background: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.45);

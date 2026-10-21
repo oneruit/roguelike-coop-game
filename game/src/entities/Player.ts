@@ -47,6 +47,10 @@ import type { MeleeAttackInfo } from '../shared/types';
 
 import { CharacterType, HeroAnimState, BuffType, ActiveBuff } from '../shared/types';
 export type { CharacterType, HeroAnimState, BuffType, ActiveBuff };
+export interface KillerInfo {
+  name: string;
+  damage: number;
+}
 import { CharacterAnimator, getCharacterAnimLayout } from './CharacterAnimator';
 import { PlayerStatusManager } from './PlayerStatusManager';
 import { renderPlayerOverhead } from './PlayerOverheadRenderer';
@@ -184,6 +188,7 @@ export class Player {
   // Movement & Animation
   private animTimer: number = 0;
   public isAlive: boolean = true;
+  public killerInfo: KillerInfo | null = null;
   private flashTimer: number = 0;
 
   // Co-op and Downed mechanics
@@ -911,7 +916,7 @@ export class Player {
     if (this.isGodMode) {
       this.statusManager.reset();
     } else {
-      this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, false), this.maxHp);
+      this.statusManager.update(dt, (burnDmg) => this.takeDamage(burnDmg, false, 'Ожог'), this.maxHp);
     }
     const isAttacking = this.attackAnimTimer > 0;
 
@@ -1064,7 +1069,7 @@ export class Player {
     }
   }
 
-  public takeDamage(amount: number, ignoreInvuln = false): boolean {
+  public takeDamage(amount: number, ignoreInvuln = false, sourceName?: string): boolean {
     if (this.isGodMode) return false;
     if (!this.isAlive || this.isDashing || (!ignoreInvuln && (this.activeBuffs.has('invulnerable') || this.activeBuffs.has('ghost'))) || this.isDowned) {
       return false;
@@ -1126,6 +1131,10 @@ export class Player {
     }
 
     if (this.hp <= 0) {
+      this.killerInfo = {
+        name: sourceName || 'Монстр Разлома',
+        damage: Math.round(finalAmount)
+      };
       if (this.isCoop && !ignoreInvuln) {
         this.isDowned = true;
         this.hp = 0;
@@ -1141,6 +1150,7 @@ export class Player {
 
   public revive(percent = 0.45) {
     if (!this.isDowned) return;
+    this.killerInfo = null;
     this.isDowned = false;
     this.hp = Math.round(this.maxHp * percent);
     this.spriteMesh.rotation.z = 0;

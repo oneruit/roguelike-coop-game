@@ -175,7 +175,8 @@ export default defineConfig(({ command }) => {
       rollupOptions: {
         input: {
           main: path.resolve(process.cwd(), 'index.html'),
-          game: path.resolve(process.cwd(), 'game/index.html')
+          game: path.resolve(process.cwd(), 'game/index.html'),
+          characterLab: path.resolve(process.cwd(), 'game/character-lab.html')
         },
         output: {
           manualChunks(id) {

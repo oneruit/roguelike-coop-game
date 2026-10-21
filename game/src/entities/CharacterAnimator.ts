@@ -81,9 +81,9 @@ export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLa
     case 'chakram':
     case 'flail':
     case 'ronin':
+    case 'archer':
       return ANIM_LAYOUT_V2;
     case 'invoker':
-    case 'archer':
     case 'rocket':
     default:
       return ANIM_LAYOUT_LEGACY;

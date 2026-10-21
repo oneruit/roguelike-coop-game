@@ -344,7 +344,7 @@ export class MobNest {
     // 3. Player damage check (deals non-lethal but noticeable 35 damage if inside 25m cell radius)
     const pDist = player.position.distanceTo(this.position);
     if (pDist <= this.blastRadius && player.isAlive && !player.isDowned) {
-      player.takeDamage(MobNest.BLAST_DAMAGE);
+      player.takeDamage(MobNest.BLAST_DAMAGE, false, 'Взрыв логова');
       if (damageNumbers && camera) {
         damageNumbers.spawnDamage(player.position, MobNest.BLAST_DAMAGE, false, camera);
       }

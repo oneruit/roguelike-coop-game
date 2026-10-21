@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-20T06:27:39.091Z",
-  "totalFiles": 190,
-  "totalSymbols": 1774,
-  "topLevelCount": 558,
-  "methodsCount": 1216,
+  "generatedAt": "2026-10-21T06:18:14.326Z",
+  "totalFiles": 201,
+  "totalSymbols": 1880,
+  "topLevelCount": 583,
+  "methodsCount": 1297,
   "entities": {
     "heroes": [
       {
@@ -1894,6 +1894,12 @@
       "line": 41
     },
     {
+      "name": "BoneSocketMap",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 37
+    },
+    {
       "name": "BOSS_ITEMS",
       "kind": "const",
       "file": "game/src/items/RiftItemSystem.ts",
@@ -2122,11 +2128,83 @@
       "line": 25
     },
     {
+      "name": "CharacterAnimationState",
+      "kind": "type",
+      "file": "game/src/character-lab/types.ts",
+      "line": 5
+    },
+    {
+      "name": "CharacterAnimator",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 9,
+      "doc": "Procedural kinematic animation controller for realistic and natural character movement. Features smooth state cross-fading, biomechanical walk/run cycles, and class-specific combat attacks."
+    },
+    {
       "name": "CharacterAnimator",
       "kind": "class",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 102,
       "doc": "Modular Character Animator Handles directional sprite state machines, UV repeat/offset calculations, and Three.js material bindings across 4 animation states: - IDLE: состояние покоя - WALK: состояние движения - IDLE_ATTACK: состояние атаки в покое - WALK_ATTACK: атака в движении"
+    },
+    {
+      "name": "CharacterAnimator.animateArcherShoot",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 237,
+      "className": "CharacterAnimator",
+      "methodName": "animateArcherShoot"
+    },
+    {
+      "name": "CharacterAnimator.animateAttack",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 189,
+      "className": "CharacterAnimator",
+      "methodName": "animateAttack",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterAnimator.animateIdle",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 103,
+      "className": "CharacterAnimator",
+      "methodName": "animateIdle",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterAnimator.animateLocomotion",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 154,
+      "className": "CharacterAnimator",
+      "methodName": "animateLocomotion",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterAnimator.animateMageCast",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 270,
+      "className": "CharacterAnimator",
+      "methodName": "animateMageCast"
+    },
+    {
+      "name": "CharacterAnimator.animateWarriorSlash",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 199,
+      "className": "CharacterAnimator",
+      "methodName": "animateWarriorSlash"
+    },
+    {
+      "name": "CharacterAnimator.buildWeaponTrail",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 34,
+      "className": "CharacterAnimator",
+      "methodName": "buildWeaponTrail"
     },
     {
       "name": "CharacterAnimator.getActiveTexture",
@@ -2135,6 +2213,14 @@
       "line": 147,
       "className": "CharacterAnimator",
       "methodName": "getActiveTexture"
+    },
+    {
+      "name": "CharacterAnimator.setClass",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 50,
+      "className": "CharacterAnimator",
+      "methodName": "setClass"
     },
     {
       "name": "CharacterAnimator.setDirection",
@@ -2147,6 +2233,14 @@
     {
       "name": "CharacterAnimator.setState",
       "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 54,
+      "className": "CharacterAnimator",
+      "methodName": "setState"
+    },
+    {
+      "name": "CharacterAnimator.setState",
+      "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 140,
       "className": "CharacterAnimator",
@@ -2155,10 +2249,26 @@
     {
       "name": "CharacterAnimator.triggerAttack",
       "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 62,
+      "className": "CharacterAnimator",
+      "methodName": "triggerAttack"
+    },
+    {
+      "name": "CharacterAnimator.triggerAttack",
+      "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 129,
       "className": "CharacterAnimator",
       "methodName": "triggerAttack"
+    },
+    {
+      "name": "CharacterAnimator.update",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 68,
+      "className": "CharacterAnimator",
+      "methodName": "update"
     },
     {
       "name": "CharacterAnimLayout",
@@ -2173,6 +2283,111 @@
       "file": "game/src/entities/CharacterAnimator.ts",
       "line": 17,
       "doc": "State configuration for animation timing and playback."
+    },
+    {
+      "name": "CharacterClass",
+      "kind": "type",
+      "file": "game/src/character-lab/types.ts",
+      "line": 3
+    },
+    {
+      "name": "CharacterColors",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 9
+    },
+    {
+      "name": "CharacterConfig",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 30
+    },
+    {
+      "name": "CharacterEquipmentToggles",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 23
+    },
+    {
+      "name": "CharacterMaterialsConfig",
+      "kind": "interface",
+      "file": "game/src/character-lab/types.ts",
+      "line": 18
+    },
+    {
+      "name": "CharacterModularSystem",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 8,
+      "doc": "Modular equipment and class visual identity builder for Warrior, Archer, and Mage."
+    },
+    {
+      "name": "CharacterModularSystem.applyClass",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 73,
+      "className": "CharacterModularSystem",
+      "methodName": "applyClass"
+    },
+    {
+      "name": "CharacterModularSystem.buildArcher",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 253,
+      "className": "CharacterModularSystem",
+      "methodName": "buildArcher",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterModularSystem.buildMage",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 364,
+      "className": "CharacterModularSystem",
+      "methodName": "buildMage",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterModularSystem.buildWarrior",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 116,
+      "className": "CharacterModularSystem",
+      "methodName": "buildWarrior",
+      "doc": "=========================================="
+    },
+    {
+      "name": "CharacterModularSystem.clearEquipment",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 90,
+      "className": "CharacterModularSystem",
+      "methodName": "clearEquipment"
+    },
+    {
+      "name": "CharacterModularSystem.updateColors",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 498,
+      "className": "CharacterModularSystem",
+      "methodName": "updateColors"
+    },
+    {
+      "name": "CharacterModularSystem.updateMaterials",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 509,
+      "className": "CharacterModularSystem",
+      "methodName": "updateMaterials"
+    },
+    {
+      "name": "CharacterModularSystem.updateVFX",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterModularSystem.ts",
+      "line": 485,
+      "className": "CharacterModularSystem",
+      "methodName": "updateVFX",
+      "doc": "VFX Update loop (spins crystal and particles)"
     },
     {
       "name": "CharacterPreviewRenderer",
@@ -2246,10 +2461,207 @@
       "methodName": "stopAnimation"
     },
     {
+      "name": "CharacterRig",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 8,
+      "doc": "Procedural stylized humanoid rig and anatomy builder. Uses hierarchical Three.js Object3D nodes representing bones and smooth anatomical geometry."
+    },
+    {
+      "name": "CharacterRig.buildAnatomy",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 214,
+      "className": "CharacterRig",
+      "methodName": "buildAnatomy"
+    },
+    {
+      "name": "CharacterRig.buildDebugAxes",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 351,
+      "className": "CharacterRig",
+      "methodName": "buildDebugAxes"
+    },
+    {
+      "name": "CharacterRig.resetPose",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 411,
+      "className": "CharacterRig",
+      "methodName": "resetPose"
+    },
+    {
+      "name": "CharacterRig.setDebugVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 378,
+      "className": "CharacterRig",
+      "methodName": "setDebugVisible"
+    },
+    {
+      "name": "CharacterRig.setProceduralMeshesVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 395,
+      "className": "CharacterRig",
+      "methodName": "setProceduralMeshesVisible"
+    },
+    {
+      "name": "CharacterRig.updateColors",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterRig.ts",
+      "line": 406,
+      "className": "CharacterRig",
+      "methodName": "updateColors"
+    },
+    {
       "name": "CHARACTERS",
       "kind": "const",
       "file": "game/src/shared/types/registry.ts",
       "line": 15
+    },
+    {
+      "name": "CharacterSandboxApp",
+      "kind": "class",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 84
+    },
+    {
+      "name": "CharacterSandboxApp.applyClass",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 226,
+      "className": "CharacterSandboxApp",
+      "methodName": "applyClass"
+    },
+    {
+      "name": "CharacterSandboxApp.buildPedestal",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 195,
+      "className": "CharacterSandboxApp",
+      "methodName": "buildPedestal"
+    },
+    {
+      "name": "CharacterSandboxApp.dispose",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 421,
+      "className": "CharacterSandboxApp",
+      "methodName": "dispose"
+    },
+    {
+      "name": "CharacterSandboxApp.resetCamera",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 367,
+      "className": "CharacterSandboxApp",
+      "methodName": "resetCamera"
+    },
+    {
+      "name": "CharacterSandboxApp.rotateMageTripo90",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 299,
+      "className": "CharacterSandboxApp",
+      "methodName": "rotateMageTripo90"
+    },
+    {
+      "name": "CharacterSandboxApp.setAnimation",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 303,
+      "className": "CharacterSandboxApp",
+      "methodName": "setAnimation"
+    },
+    {
+      "name": "CharacterSandboxApp.setLightingPreset",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 338,
+      "className": "CharacterSandboxApp",
+      "methodName": "setLightingPreset"
+    },
+    {
+      "name": "CharacterSandboxApp.setMageAngleMode",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 287,
+      "className": "CharacterSandboxApp",
+      "methodName": "setMageAngleMode"
+    },
+    {
+      "name": "CharacterSandboxApp.setMageRenderMode",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 282,
+      "className": "CharacterSandboxApp",
+      "methodName": "setMageRenderMode"
+    },
+    {
+      "name": "CharacterSandboxApp.setMageTripoFigure",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 291,
+      "className": "CharacterSandboxApp",
+      "methodName": "setMageTripoFigure"
+    },
+    {
+      "name": "CharacterSandboxApp.setPlaybackSpeed",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 313,
+      "className": "CharacterSandboxApp",
+      "methodName": "setPlaybackSpeed"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleEquipment",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 329,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleEquipment"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleMageTripoRotate180",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 295,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleMageTripoRotate180"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleWireframe",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 334,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleWireframe"
+    },
+    {
+      "name": "CharacterSandboxApp.triggerAttack",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 308,
+      "className": "CharacterSandboxApp",
+      "methodName": "triggerAttack"
+    },
+    {
+      "name": "CharacterSandboxApp.updateColor",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 318,
+      "className": "CharacterSandboxApp",
+      "methodName": "updateColor"
+    },
+    {
+      "name": "CharacterSandboxApp.updateMaterialProperty",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 324,
+      "className": "CharacterSandboxApp",
+      "methodName": "updateMaterialProperty"
     },
     {
       "name": "CharacterSelectScreen",
@@ -2446,7 +2858,7 @@
       "name": "ChestManager.clear",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 534,
+      "line": 577,
       "className": "ChestManager",
       "methodName": "clear"
     },
@@ -2454,15 +2866,23 @@
       "name": "ChestManager.getChestGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 98,
+      "line": 132,
       "className": "ChestManager",
       "methodName": "getChestGeometry"
+    },
+    {
+      "name": "ChestManager.getChestStats",
+      "kind": "method",
+      "file": "game/src/world/ChestManager.ts",
+      "line": 75,
+      "className": "ChestManager",
+      "methodName": "getChestStats"
     },
     {
       "name": "ChestManager.getShadowGeometry",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 108,
+      "line": 142,
       "className": "ChestManager",
       "methodName": "getShadowGeometry"
     },
@@ -2470,7 +2890,7 @@
       "name": "ChestManager.getShadowTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 117,
+      "line": 151,
       "className": "ChestManager",
       "methodName": "getShadowTexture"
     },
@@ -2478,7 +2898,7 @@
       "name": "ChestManager.getSheetTexture",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 131,
+      "line": 165,
       "className": "ChestManager",
       "methodName": "getSheetTexture"
     },
@@ -2486,7 +2906,7 @@
       "name": "ChestManager.getSnapshot",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 547,
+      "line": 590,
       "className": "ChestManager",
       "methodName": "getSnapshot"
     },
@@ -2494,7 +2914,7 @@
       "name": "ChestManager.getStageChestTiers",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 320,
+      "line": 354,
       "className": "ChestManager",
       "methodName": "getStageChestTiers",
       "doc": "Returns a deterministic list of chest tiers for the given stage and count, shuffled with the provided PRNG. Stage 1: 11 small, 4 large, 0 legendary Stage 2: 10 small, 5 large, 0 legendary Stage 3: 0 small, 11 large, 4 legendary Stage 4+: 0 small, 4 large, 11 legendary"
@@ -2503,7 +2923,7 @@
       "name": "ChestManager.setDeclarative",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 75,
+      "line": 109,
       "className": "ChestManager",
       "methodName": "setDeclarative"
     },
@@ -2511,7 +2931,7 @@
       "name": "ChestManager.update",
       "kind": "method",
       "file": "game/src/world/ChestManager.ts",
-      "line": 437,
+      "line": 471,
       "className": "ChestManager",
       "methodName": "update",
       "doc": "Updates floating chest hologram visuals, pulse aura, and opening animations."
@@ -3072,6 +3492,12 @@
       "kind": "const",
       "file": "game/src/balance/defaultBalance.ts",
       "line": 4
+    },
+    {
+      "name": "DEFAULT_CLASS_CONFIGS",
+      "kind": "const",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 18
     },
     {
       "name": "DEFAULT_DEMO_LEADERBOARDS",
@@ -4493,7 +4919,7 @@
       "name": "GameNetworkCoordinator.broadcastNetworkState",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 579,
+      "line": 580,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastNetworkState"
     },
@@ -4501,7 +4927,7 @@
       "name": "GameNetworkCoordinator.broadcastTimeFreeze",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 963,
+      "line": 964,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastTimeFreeze"
     },
@@ -4517,7 +4943,7 @@
       "name": "GameNetworkCoordinator.handleClientDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 805,
+      "line": 806,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientDevAction"
     },
@@ -4525,7 +4951,7 @@
       "name": "GameNetworkCoordinator.handleClientSync",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 470,
+      "line": 471,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientSync"
     },
@@ -4533,7 +4959,7 @@
       "name": "GameNetworkCoordinator.handleHostDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 767,
+      "line": 768,
       "className": "GameNetworkCoordinator",
       "methodName": "handleHostDevAction"
     },
@@ -4549,7 +4975,7 @@
       "name": "GameNetworkCoordinator.isTeamWiped",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 954,
+      "line": 955,
       "className": "GameNetworkCoordinator",
       "methodName": "isTeamWiped"
     },
@@ -4573,7 +4999,7 @@
       "name": "GameNetworkCoordinator.updateRevives",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 861,
+      "line": 862,
       "className": "GameNetworkCoordinator",
       "methodName": "updateRevives"
     },
@@ -4649,7 +5075,7 @@
       "name": "GameState",
       "kind": "enum",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 42
+      "line": 43
     },
     {
       "name": "GameStateBridge",
@@ -5169,13 +5595,13 @@
       "name": "HUD",
       "kind": "class",
       "file": "game/src/ui/HUD.ts",
-      "line": 43
+      "line": 44
     },
     {
       "name": "HUD.activateSettingsTab",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 864,
+      "line": 876,
       "className": "HUD",
       "methodName": "activateSettingsTab"
     },
@@ -5183,7 +5609,7 @@
       "name": "HUD.applyRandomMenuBackground",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 97,
+      "line": 99,
       "className": "HUD",
       "methodName": "applyRandomMenuBackground"
     },
@@ -5191,7 +5617,7 @@
       "name": "HUD.bindMainMenuListeners",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 507,
+      "line": 516,
       "className": "HUD",
       "methodName": "bindMainMenuListeners",
       "doc": "--- Main Menu & Navigation Listeners ---"
@@ -5200,7 +5626,7 @@
       "name": "HUD.bindPauseListeners",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 580,
+      "line": 592,
       "className": "HUD",
       "methodName": "bindPauseListeners"
     },
@@ -5208,7 +5634,7 @@
       "name": "HUD.clearMenuStack",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 800,
+      "line": 812,
       "className": "HUD",
       "methodName": "clearMenuStack"
     },
@@ -5216,7 +5642,7 @@
       "name": "HUD.clearTeammates",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1403,
+      "line": 1429,
       "className": "HUD",
       "methodName": "clearTeammates"
     },
@@ -5224,7 +5650,7 @@
       "name": "HUD.closeAllPreGameModals",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 804,
+      "line": 816,
       "className": "HUD",
       "methodName": "closeAllPreGameModals"
     },
@@ -5232,7 +5658,7 @@
       "name": "HUD.getChapterQuests",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1162,
+      "line": 1174,
       "className": "HUD",
       "methodName": "getChapterQuests"
     },
@@ -5240,7 +5666,7 @@
       "name": "HUD.getHeroAvatar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1526,
+      "line": 1560,
       "className": "HUD",
       "methodName": "getHeroAvatar"
     },
@@ -5248,7 +5674,7 @@
       "name": "HUD.getHeroIcon",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1518,
+      "line": 1552,
       "className": "HUD",
       "methodName": "getHeroIcon",
       "doc": "--- Hero Info Static / Instance Helpers ---"
@@ -5257,7 +5683,7 @@
       "name": "HUD.getHeroName",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1522,
+      "line": 1556,
       "className": "HUD",
       "methodName": "getHeroName"
     },
@@ -5265,7 +5691,7 @@
       "name": "HUD.handleClaimAllBattlePass",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1200,
+      "line": 1212,
       "className": "HUD",
       "methodName": "handleClaimAllBattlePass"
     },
@@ -5273,7 +5699,7 @@
       "name": "HUD.handleEscape",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 970,
+      "line": 982,
       "className": "HUD",
       "methodName": "handleEscape"
     },
@@ -5281,7 +5707,7 @@
       "name": "HUD.hideAuthModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 953,
+      "line": 965,
       "className": "HUD",
       "methodName": "hideAuthModal"
     },
@@ -5289,7 +5715,7 @@
       "name": "HUD.hideBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1196,
+      "line": 1208,
       "className": "HUD",
       "methodName": "hideBattlePassModal"
     },
@@ -5297,7 +5723,7 @@
       "name": "HUD.hideCharacterSelect",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 936,
+      "line": 948,
       "className": "HUD",
       "methodName": "hideCharacterSelect"
     },
@@ -5305,7 +5731,7 @@
       "name": "HUD.hideChestChoice",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1328,
+      "line": 1340,
       "className": "HUD",
       "methodName": "hideChestChoice"
     },
@@ -5313,7 +5739,7 @@
       "name": "HUD.hideCoopMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 851,
+      "line": 863,
       "className": "HUD",
       "methodName": "hideCoopMenu"
     },
@@ -5321,7 +5747,7 @@
       "name": "HUD.hideExitModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 876,
+      "line": 888,
       "className": "HUD",
       "methodName": "hideExitModal"
     },
@@ -5329,7 +5755,7 @@
       "name": "HUD.hideGameOver",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1358,
+      "line": 1370,
       "className": "HUD",
       "methodName": "hideGameOver"
     },
@@ -5337,7 +5763,7 @@
       "name": "HUD.hideGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1479,
+      "line": 1513,
       "className": "HUD",
       "methodName": "hideGreedTrialTimer"
     },
@@ -5345,7 +5771,7 @@
       "name": "HUD.hideHostLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1210,
+      "line": 1222,
       "className": "HUD",
       "methodName": "hideHostLobby"
     },
@@ -5353,7 +5779,7 @@
       "name": "HUD.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1439,
+      "line": 1473,
       "className": "HUD",
       "methodName": "hideInteractionPrompt"
     },
@@ -5361,7 +5787,7 @@
       "name": "HUD.hideInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1294,
+      "line": 1306,
       "className": "HUD",
       "methodName": "hideInventory"
     },
@@ -5369,15 +5795,23 @@
       "name": "HUD.hideJoinLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1246,
+      "line": 1258,
       "className": "HUD",
       "methodName": "hideJoinLobby"
+    },
+    {
+      "name": "HUD.hideLastRun",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1398,
+      "className": "HUD",
+      "methodName": "hideLastRun"
     },
     {
       "name": "HUD.hideLeaderboard",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1372,
+      "line": 1384,
       "className": "HUD",
       "methodName": "hideLeaderboard"
     },
@@ -5385,7 +5819,7 @@
       "name": "HUD.hideLevelUp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1276,
+      "line": 1288,
       "className": "HUD",
       "methodName": "hideLevelUp"
     },
@@ -5393,7 +5827,7 @@
       "name": "HUD.hideMainMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 792,
+      "line": 804,
       "className": "HUD",
       "methodName": "hideMainMenu"
     },
@@ -5401,7 +5835,7 @@
       "name": "HUD.hideMerchant",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1312,
+      "line": 1324,
       "className": "HUD",
       "methodName": "hideMerchant"
     },
@@ -5409,7 +5843,7 @@
       "name": "HUD.hidePartnerHp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1411,
+      "line": 1437,
       "className": "HUD",
       "methodName": "hidePartnerHp"
     },
@@ -5417,7 +5851,7 @@
       "name": "HUD.hidePasswordPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1230,
+      "line": 1242,
       "className": "HUD",
       "methodName": "hidePasswordPrompt"
     },
@@ -5425,7 +5859,7 @@
       "name": "HUD.hidePause",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 901,
+      "line": 913,
       "className": "HUD",
       "methodName": "hidePause"
     },
@@ -5433,7 +5867,7 @@
       "name": "HUD.hideQuestsModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1158,
+      "line": 1170,
       "className": "HUD",
       "methodName": "hideQuestsModal"
     },
@@ -5441,7 +5875,7 @@
       "name": "HUD.hideSettings",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 860,
+      "line": 872,
       "className": "HUD",
       "methodName": "hideSettings"
     },
@@ -5449,7 +5883,7 @@
       "name": "HUD.hideShopModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 829,
+      "line": 841,
       "className": "HUD",
       "methodName": "hideShopModal"
     },
@@ -5457,7 +5891,7 @@
       "name": "HUD.isAnyMenuOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 962,
+      "line": 974,
       "className": "HUD",
       "methodName": "isAnyMenuOpen"
     },
@@ -5465,7 +5899,7 @@
       "name": "HUD.isAuthModalOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 958,
+      "line": 970,
       "className": "HUD",
       "methodName": "isAuthModalOpen"
     },
@@ -5473,7 +5907,7 @@
       "name": "HUD.isInventoryOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1282,
+      "line": 1294,
       "className": "HUD",
       "methodName": "isInventoryOpen",
       "doc": "--- Inventory Methods Forwarding ---"
@@ -5482,7 +5916,7 @@
       "name": "HUD.isMerchantOpen",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1304,
+      "line": 1316,
       "className": "HUD",
       "methodName": "isMerchantOpen",
       "doc": "--- Merchant & Chest Methods Forwarding ---"
@@ -5491,7 +5925,7 @@
       "name": "HUD.openBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1192,
+      "line": 1204,
       "className": "HUD",
       "methodName": "openBattlePassModal"
     },
@@ -5499,7 +5933,7 @@
       "name": "HUD.renderAvailableRooms",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1238,
+      "line": 1250,
       "className": "HUD",
       "methodName": "renderAvailableRooms"
     },
@@ -5507,7 +5941,7 @@
       "name": "HUD.renderBattlePassModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1188,
+      "line": 1200,
       "className": "HUD",
       "methodName": "renderBattlePassModal"
     },
@@ -5515,7 +5949,7 @@
       "name": "HUD.renderHostRoster",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1218,
+      "line": 1230,
       "className": "HUD",
       "methodName": "renderHostRoster"
     },
@@ -5523,7 +5957,7 @@
       "name": "HUD.renderInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1298,
+      "line": 1310,
       "className": "HUD",
       "methodName": "renderInventory"
     },
@@ -5531,7 +5965,7 @@
       "name": "HUD.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1443,
+      "line": 1477,
       "className": "HUD",
       "methodName": "renderItemInventory"
     },
@@ -5539,7 +5973,7 @@
       "name": "HUD.renderJoinRoster",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1222,
+      "line": 1234,
       "className": "HUD",
       "methodName": "renderJoinRoster"
     },
@@ -5547,7 +5981,7 @@
       "name": "HUD.renderQuestsModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1166,
+      "line": 1178,
       "className": "HUD",
       "methodName": "renderQuestsModal"
     },
@@ -5555,7 +5989,7 @@
       "name": "HUD.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1483,
+      "line": 1517,
       "className": "HUD",
       "methodName": "resetBossUI"
     },
@@ -5563,7 +5997,7 @@
       "name": "HUD.resetExitModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 747,
+      "line": 759,
       "className": "HUD",
       "methodName": "resetExitModal"
     },
@@ -5571,7 +6005,7 @@
       "name": "HUD.resetLevelUpState",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1272,
+      "line": 1284,
       "className": "HUD",
       "methodName": "resetLevelUpState"
     },
@@ -5579,7 +6013,7 @@
       "name": "HUD.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1487,
+      "line": 1521,
       "className": "HUD",
       "methodName": "resetSessionHUD"
     },
@@ -5587,7 +6021,7 @@
       "name": "HUD.selectQuestChapter",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1141,
+      "line": 1153,
       "className": "HUD",
       "methodName": "selectQuestChapter"
     },
@@ -5595,7 +6029,7 @@
       "name": "HUD.setCoopBadge",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1379,
+      "line": 1405,
       "className": "HUD",
       "methodName": "setCoopBadge",
       "doc": "--- In-Game Overlay & Overlays Methods Forwarding ---"
@@ -5604,7 +6038,7 @@
       "name": "HUD.setGuestConnectedMode",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1254,
+      "line": 1266,
       "className": "HUD",
       "methodName": "setGuestConnectedMode"
     },
@@ -5612,7 +6046,7 @@
       "name": "HUD.setHostPartnerConnected",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1214,
+      "line": 1226,
       "className": "HUD",
       "methodName": "setHostPartnerConnected"
     },
@@ -5620,7 +6054,7 @@
       "name": "HUD.setInGameHUDVisible",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1154,
+      "line": 1166,
       "className": "HUD",
       "methodName": "setInGameHUDVisible"
     },
@@ -5628,7 +6062,7 @@
       "name": "HUD.setJoinStatus",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1250,
+      "line": 1262,
       "className": "HUD",
       "methodName": "setJoinStatus"
     },
@@ -5636,7 +6070,7 @@
       "name": "HUD.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1503,
+      "line": 1537,
       "className": "HUD",
       "methodName": "setTrainingModeActive"
     },
@@ -5644,7 +6078,7 @@
       "name": "HUD.setupExitListeners",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 717,
+      "line": 729,
       "className": "HUD",
       "methodName": "setupExitListeners"
     },
@@ -5652,7 +6086,7 @@
       "name": "HUD.showAuthModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 946,
+      "line": 958,
       "className": "HUD",
       "methodName": "showAuthModal"
     },
@@ -5660,7 +6094,7 @@
       "name": "HUD.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1451,
+      "line": 1485,
       "className": "HUD",
       "methodName": "showBalanceToast"
     },
@@ -5668,7 +6102,7 @@
       "name": "HUD.showCharacterSelect",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 917,
+      "line": 929,
       "className": "HUD",
       "methodName": "showCharacterSelect"
     },
@@ -5676,7 +6110,7 @@
       "name": "HUD.showCoopMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 845,
+      "line": 857,
       "className": "HUD",
       "methodName": "showCoopMenu"
     },
@@ -5684,7 +6118,7 @@
       "name": "HUD.showExitModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 868,
+      "line": 880,
       "className": "HUD",
       "methodName": "showExitModal"
     },
@@ -5692,7 +6126,7 @@
       "name": "HUD.showGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1471,
+      "line": 1505,
       "className": "HUD",
       "methodName": "showGreedTrialTimer"
     },
@@ -5700,7 +6134,7 @@
       "name": "HUD.showHostLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1206,
+      "line": 1218,
       "className": "HUD",
       "methodName": "showHostLobby",
       "doc": "--- Lobby Methods Forwarding ---"
@@ -5709,7 +6143,7 @@
       "name": "HUD.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1435,
+      "line": 1469,
       "className": "HUD",
       "methodName": "showInteractionPrompt"
     },
@@ -5717,7 +6151,7 @@
       "name": "HUD.showInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1290,
+      "line": 1302,
       "className": "HUD",
       "methodName": "showInventory"
     },
@@ -5725,15 +6159,24 @@
       "name": "HUD.showJoinLobby",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1242,
+      "line": 1254,
       "className": "HUD",
       "methodName": "showJoinLobby"
+    },
+    {
+      "name": "HUD.showLastRun",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1391,
+      "className": "HUD",
+      "methodName": "showLastRun",
+      "doc": "--- Last Run Methods Forwarding ---"
     },
     {
       "name": "HUD.showLeaderboard",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1365,
+      "line": 1377,
       "className": "HUD",
       "methodName": "showLeaderboard",
       "doc": "--- Leaderboard Methods Forwarding ---"
@@ -5742,7 +6185,7 @@
       "name": "HUD.showLevelUp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1268,
+      "line": 1280,
       "className": "HUD",
       "methodName": "showLevelUp",
       "doc": "--- Level Up Methods Forwarding ---"
@@ -5751,7 +6194,7 @@
       "name": "HUD.showMainMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 762,
+      "line": 774,
       "className": "HUD",
       "methodName": "showMainMenu",
       "doc": "--- Modal Navigation Methods ---"
@@ -5760,7 +6203,7 @@
       "name": "HUD.showMerchant",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1308,
+      "line": 1320,
       "className": "HUD",
       "methodName": "showMerchant"
     },
@@ -5768,7 +6211,7 @@
       "name": "HUD.showPasswordPrompt",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1226,
+      "line": 1238,
       "className": "HUD",
       "methodName": "showPasswordPrompt"
     },
@@ -5776,7 +6219,7 @@
       "name": "HUD.showPasswordPromptError",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1234,
+      "line": 1246,
       "className": "HUD",
       "methodName": "showPasswordPromptError"
     },
@@ -5784,7 +6227,7 @@
       "name": "HUD.showPause",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 881,
+      "line": 893,
       "className": "HUD",
       "methodName": "showPause"
     },
@@ -5792,7 +6235,7 @@
       "name": "HUD.showSettings",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 856,
+      "line": 868,
       "className": "HUD",
       "methodName": "showSettings"
     },
@@ -5800,7 +6243,7 @@
       "name": "HUD.showShopModal",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 818,
+      "line": 830,
       "className": "HUD",
       "methodName": "showShopModal"
     },
@@ -5808,7 +6251,7 @@
       "name": "HUD.switchJoinTab",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1262,
+      "line": 1274,
       "className": "HUD",
       "methodName": "switchJoinTab"
     },
@@ -5816,7 +6259,7 @@
       "name": "HUD.toggleInventory",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1286,
+      "line": 1298,
       "className": "HUD",
       "methodName": "toggleInventory"
     },
@@ -5824,7 +6267,7 @@
       "name": "HUD.togglePause",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 907,
+      "line": 919,
       "className": "HUD",
       "methodName": "togglePause"
     },
@@ -5832,7 +6275,7 @@
       "name": "HUD.toggleQuestsInMainMenu",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1137,
+      "line": 1149,
       "className": "HUD",
       "methodName": "toggleQuestsInMainMenu",
       "doc": "--- Quests Methods Forwarding ---"
@@ -5841,7 +6284,7 @@
       "name": "HUD.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1447,
+      "line": 1481,
       "className": "HUD",
       "methodName": "triggerAltarNotification"
     },
@@ -5849,7 +6292,7 @@
       "name": "HUD.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1463,
+      "line": 1497,
       "className": "HUD",
       "methodName": "triggerBossWarning"
     },
@@ -5857,7 +6300,7 @@
       "name": "HUD.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1459,
+      "line": 1493,
       "className": "HUD",
       "methodName": "triggerDamageFlash"
     },
@@ -5865,7 +6308,7 @@
       "name": "HUD.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1467,
+      "line": 1501,
       "className": "HUD",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -5873,7 +6316,7 @@
       "name": "HUD.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1455,
+      "line": 1489,
       "className": "HUD",
       "methodName": "updateBuffsTray"
     },
@@ -5881,7 +6324,7 @@
       "name": "HUD.updateCharacterSelectLockStatus",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1170,
+      "line": 1182,
       "className": "HUD",
       "methodName": "updateCharacterSelectLockStatus"
     },
@@ -5889,7 +6332,7 @@
       "name": "HUD.updateCrystalsCounter",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 838,
+      "line": 850,
       "className": "HUD",
       "methodName": "updateCrystalsCounter"
     },
@@ -5897,7 +6340,7 @@
       "name": "HUD.updateGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1475,
+      "line": 1509,
       "className": "HUD",
       "methodName": "updateGreedTrialTimer"
     },
@@ -5905,7 +6348,7 @@
       "name": "HUD.updateGuestReadyButtonUI",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1258,
+      "line": 1270,
       "className": "HUD",
       "methodName": "updateGuestReadyButtonUI"
     },
@@ -5913,7 +6356,7 @@
       "name": "HUD.updateLobbyHeroesLockStatus",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1174,
+      "line": 1186,
       "className": "HUD",
       "methodName": "updateLobbyHeroesLockStatus"
     },
@@ -5921,7 +6364,7 @@
       "name": "HUD.updateMainMenuBattlePass",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1184,
+      "line": 1196,
       "className": "HUD",
       "methodName": "updateMainMenuBattlePass",
       "doc": "--- Battle Pass Methods Forwarding ---"
@@ -5930,7 +6373,7 @@
       "name": "HUD.updateMainMenuQuests",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1178,
+      "line": 1190,
       "className": "HUD",
       "methodName": "updateMainMenuQuests"
     },
@@ -5938,7 +6381,7 @@
       "name": "HUD.updateMerchantTimer",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1316,
+      "line": 1328,
       "className": "HUD",
       "methodName": "updateMerchantTimer"
     },
@@ -5946,7 +6389,7 @@
       "name": "HUD.updatePartnerHp",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1407,
+      "line": 1433,
       "className": "HUD",
       "methodName": "updatePartnerHp"
     },
@@ -5954,7 +6397,7 @@
       "name": "HUD.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1495,
+      "line": 1529,
       "className": "HUD",
       "methodName": "updatePassivesBar"
     },
@@ -5962,7 +6405,7 @@
       "name": "HUD.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1499,
+      "line": 1533,
       "className": "HUD",
       "methodName": "updatePerformance"
     },
@@ -5970,7 +6413,7 @@
       "name": "HUD.updateStageText",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1426,
+      "line": 1452,
       "className": "HUD",
       "methodName": "updateStageText"
     },
@@ -5978,7 +6421,7 @@
       "name": "HUD.updateTeleportButton",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1431,
+      "line": 1465,
       "className": "HUD",
       "methodName": "updateTeleportButton"
     },
@@ -5986,7 +6429,7 @@
       "name": "HUD.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1491,
+      "line": 1525,
       "className": "HUD",
       "methodName": "updateWeaponsBar"
     },
@@ -6074,7 +6517,7 @@
       "name": "InGameOverlayUI.clearTeammates",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 480,
+      "line": 484,
       "className": "InGameOverlayUI",
       "methodName": "clearTeammates"
     },
@@ -6082,7 +6525,7 @@
       "name": "InGameOverlayUI.hideGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 928,
+      "line": 967,
       "className": "InGameOverlayUI",
       "methodName": "hideGreedTrialTimer"
     },
@@ -6090,7 +6533,7 @@
       "name": "InGameOverlayUI.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 671,
+      "line": 710,
       "className": "InGameOverlayUI",
       "methodName": "hideInteractionPrompt"
     },
@@ -6098,7 +6541,7 @@
       "name": "InGameOverlayUI.hidePartnerHp",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 507,
+      "line": 511,
       "className": "InGameOverlayUI",
       "methodName": "hidePartnerHp"
     },
@@ -6106,7 +6549,7 @@
       "name": "InGameOverlayUI.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 677,
+      "line": 716,
       "className": "InGameOverlayUI",
       "methodName": "renderItemInventory"
     },
@@ -6114,7 +6557,7 @@
       "name": "InGameOverlayUI.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 890,
+      "line": 929,
       "className": "InGameOverlayUI",
       "methodName": "resetBossUI"
     },
@@ -6122,7 +6565,7 @@
       "name": "InGameOverlayUI.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1011,
+      "line": 1050,
       "className": "InGameOverlayUI",
       "methodName": "resetSessionHUD"
     },
@@ -6130,7 +6573,7 @@
       "name": "InGameOverlayUI.setCoopBadge",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 167,
+      "line": 171,
       "className": "InGameOverlayUI",
       "methodName": "setCoopBadge"
     },
@@ -6138,7 +6581,7 @@
       "name": "InGameOverlayUI.setInGameHUDVisible",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 162,
+      "line": 166,
       "className": "InGameOverlayUI",
       "methodName": "setInGameHUDVisible"
     },
@@ -6146,7 +6589,7 @@
       "name": "InGameOverlayUI.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1043,
+      "line": 1082,
       "className": "InGameOverlayUI",
       "methodName": "setTrainingModeActive"
     },
@@ -6154,7 +6597,7 @@
       "name": "InGameOverlayUI.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 721,
+      "line": 760,
       "className": "InGameOverlayUI",
       "methodName": "showBalanceToast"
     },
@@ -6162,7 +6605,7 @@
       "name": "InGameOverlayUI.showGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 910,
+      "line": 949,
       "className": "InGameOverlayUI",
       "methodName": "showGreedTrialTimer"
     },
@@ -6170,7 +6613,7 @@
       "name": "InGameOverlayUI.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 664,
+      "line": 703,
       "className": "InGameOverlayUI",
       "methodName": "showInteractionPrompt"
     },
@@ -6178,7 +6621,7 @@
       "name": "InGameOverlayUI.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 703,
+      "line": 742,
       "className": "InGameOverlayUI",
       "methodName": "triggerAltarNotification"
     },
@@ -6186,7 +6629,7 @@
       "name": "InGameOverlayUI.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 850,
+      "line": 889,
       "className": "InGameOverlayUI",
       "methodName": "triggerBossWarning"
     },
@@ -6194,7 +6637,7 @@
       "name": "InGameOverlayUI.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 835,
+      "line": 874,
       "className": "InGameOverlayUI",
       "methodName": "triggerDamageFlash"
     },
@@ -6202,7 +6645,7 @@
       "name": "InGameOverlayUI.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 870,
+      "line": 909,
       "className": "InGameOverlayUI",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -6210,7 +6653,7 @@
       "name": "InGameOverlayUI.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 768,
+      "line": 807,
       "className": "InGameOverlayUI",
       "methodName": "updateBuffsTray"
     },
@@ -6218,7 +6661,7 @@
       "name": "InGameOverlayUI.updateGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 917,
+      "line": 956,
       "className": "InGameOverlayUI",
       "methodName": "updateGreedTrialTimer"
     },
@@ -6226,7 +6669,7 @@
       "name": "InGameOverlayUI.updatePartnerHp",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 490,
+      "line": 494,
       "className": "InGameOverlayUI",
       "methodName": "updatePartnerHp"
     },
@@ -6234,7 +6677,7 @@
       "name": "InGameOverlayUI.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 969,
+      "line": 1008,
       "className": "InGameOverlayUI",
       "methodName": "updatePassivesBar"
     },
@@ -6242,7 +6685,7 @@
       "name": "InGameOverlayUI.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 974,
+      "line": 1013,
       "className": "InGameOverlayUI",
       "methodName": "updatePerformance"
     },
@@ -6250,7 +6693,7 @@
       "name": "InGameOverlayUI.updateStageText",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 640,
+      "line": 644,
       "className": "InGameOverlayUI",
       "methodName": "updateStageText"
     },
@@ -6258,7 +6701,7 @@
       "name": "InGameOverlayUI.updateTeleportButton",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 647,
+      "line": 686,
       "className": "InGameOverlayUI",
       "methodName": "updateTeleportButton"
     },
@@ -6266,7 +6709,7 @@
       "name": "InGameOverlayUI.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 934,
+      "line": 973,
       "className": "InGameOverlayUI",
       "methodName": "updateWeaponsBar"
     },
@@ -6805,6 +7248,12 @@
       "methodName": "upgrade"
     },
     {
+      "name": "KillerInfo",
+      "kind": "interface",
+      "file": "game/src/entities/Player.ts",
+      "line": 50
+    },
+    {
       "name": "KukriWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/MeleeWeapons.ts",
@@ -6828,10 +7277,132 @@
       "methodName": "upgrade"
     },
     {
+      "name": "LAST_RUN_STORAGE_KEY",
+      "kind": "const",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 3
+    },
+    {
+      "name": "LastRunData",
+      "kind": "interface",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 23
+    },
+    {
       "name": "LastRunInfo",
       "kind": "interface",
       "file": "game/src/core/LeaderboardManager.ts",
       "line": 21
+    },
+    {
+      "name": "LastRunManager",
+      "kind": "class",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 48
+    },
+    {
+      "name": "LastRunManager.clearLastRun",
+      "kind": "method",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 90,
+      "className": "LastRunManager",
+      "methodName": "clearLastRun"
+    },
+    {
+      "name": "LastRunManager.formatDate",
+      "kind": "method",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 99,
+      "className": "LastRunManager",
+      "methodName": "formatDate"
+    },
+    {
+      "name": "LastRunManager.getLastRun",
+      "kind": "method",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 63,
+      "className": "LastRunManager",
+      "methodName": "getLastRun"
+    },
+    {
+      "name": "LastRunManager.hasLastRun",
+      "kind": "method",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 51,
+      "className": "LastRunManager",
+      "methodName": "hasLastRun"
+    },
+    {
+      "name": "LastRunManager.saveLastRun",
+      "kind": "method",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 77,
+      "className": "LastRunManager",
+      "methodName": "saveLastRun"
+    },
+    {
+      "name": "LastRunPlayerData",
+      "kind": "interface",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 14
+    },
+    {
+      "name": "LastRunUI",
+      "kind": "class",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 12
+    },
+    {
+      "name": "LastRunUI.bindElements",
+      "kind": "method",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 67,
+      "className": "LastRunUI",
+      "methodName": "bindElements"
+    },
+    {
+      "name": "LastRunUI.bindEvents",
+      "kind": "method",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 104,
+      "className": "LastRunUI",
+      "methodName": "bindEvents"
+    },
+    {
+      "name": "LastRunUI.getTemplate",
+      "kind": "method",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 63,
+      "className": "LastRunUI",
+      "methodName": "getTemplate"
+    },
+    {
+      "name": "LastRunUI.render",
+      "kind": "method",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 141,
+      "className": "LastRunUI",
+      "methodName": "render"
+    },
+    {
+      "name": "LastRunUI.showLastRun",
+      "kind": "method",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 136,
+      "className": "LastRunUI",
+      "methodName": "showLastRun"
+    },
+    {
+      "name": "LastRunUIOptions",
+      "kind": "interface",
+      "file": "game/src/ui/modules/LastRunUI.ts",
+      "line": 7
+    },
+    {
+      "name": "LastRunWeaponData",
+      "kind": "interface",
+      "file": "game/src/core/LastRunManager.ts",
+      "line": 5
     },
     {
       "name": "LeaderboardEntry",
@@ -7074,6 +7645,12 @@
       "kind": "type",
       "file": "game/src/ui/modules/LevelUpUI.ts",
       "line": 12
+    },
+    {
+      "name": "LightingPreset",
+      "kind": "type",
+      "file": "game/src/character-lab/types.ts",
+      "line": 7
     },
     {
       "name": "LightningStrikeWeapon",
@@ -7429,6 +8006,235 @@
       "line": 247
     },
     {
+      "name": "MageCutoutRig",
+      "kind": "class",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 9,
+      "doc": "Skeletal Cutout / Paperdoll Rig for the Mage. Mounts 9 segmented pixel-art textured planes directly to the corresponding joints of CharacterRig. Fully animated by CharacterAnimator (Idle breathing, Walking strides, Running, Casting)."
+    },
+    {
+      "name": "MageCutoutRig.buildMeshes",
+      "kind": "method",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 115,
+      "className": "MageCutoutRig",
+      "methodName": "buildMeshes"
+    },
+    {
+      "name": "MageCutoutRig.configurePixelTexture",
+      "kind": "method",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 66,
+      "className": "MageCutoutRig",
+      "methodName": "configurePixelTexture"
+    },
+    {
+      "name": "MageCutoutRig.getTextureUrl",
+      "kind": "method",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 61,
+      "className": "MageCutoutRig",
+      "methodName": "getTextureUrl"
+    },
+    {
+      "name": "MageCutoutRig.loadTextures",
+      "kind": "method",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 73,
+      "className": "MageCutoutRig",
+      "methodName": "loadTextures"
+    },
+    {
+      "name": "MageCutoutRig.setVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 202,
+      "className": "MageCutoutRig",
+      "methodName": "setVisible"
+    },
+    {
+      "name": "MageCutoutRig.update",
+      "kind": "method",
+      "file": "game/src/character-lab/MageCutoutRig.ts",
+      "line": 228,
+      "className": "MageCutoutRig",
+      "methodName": "update"
+    },
+    {
+      "name": "MageReal3DSystem",
+      "kind": "class",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 11,
+      "doc": "Loads and displays the authentic watertight 3D mesh generated from the 2D turnaround art. Features PBR materials, Meshopt decompression, turnaround figure extraction (Figure 3 front / Figure 1 back / Figure 2 center), ground alignment, dynamic arcane lighting/particles, and support for Skeletal AnimationMixer (Tripo/Mixamo rigs)."
+    },
+    {
+      "name": "MageReal3DSystem.buildMeshFromRaw",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 174,
+      "className": "MageReal3DSystem",
+      "methodName": "buildMeshFromRaw",
+      "doc": "Builds or rebuilds the isolated model from rawScene"
+    },
+    {
+      "name": "MageReal3DSystem.getModelUrl",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 77,
+      "className": "MageReal3DSystem",
+      "methodName": "getModelUrl"
+    },
+    {
+      "name": "MageReal3DSystem.isolateFigure",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 88,
+      "className": "MageReal3DSystem",
+      "methodName": "isolateFigure",
+      "doc": "Slices out a single figure from a multi-figure turnaround 3D model. - Figure 1: Leftmost figure (Z < -0.15) - Figure 2: Center figure (-0.15 <= Z <= 0.15) - Figure 3: Rightmost figure (Z > 0.15)"
+    },
+    {
+      "name": "MageReal3DSystem.loadModel",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 254,
+      "className": "MageReal3DSystem",
+      "methodName": "loadModel"
+    },
+    {
+      "name": "MageReal3DSystem.playSkeletalAnimation",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 289,
+      "className": "MageReal3DSystem",
+      "methodName": "playSkeletalAnimation"
+    },
+    {
+      "name": "MageReal3DSystem.rotate90",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 249,
+      "className": "MageReal3DSystem",
+      "methodName": "rotate90"
+    },
+    {
+      "name": "MageReal3DSystem.setAnimationState",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 326,
+      "className": "MageReal3DSystem",
+      "methodName": "setAnimationState"
+    },
+    {
+      "name": "MageReal3DSystem.setFigureIndex",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 239,
+      "className": "MageReal3DSystem",
+      "methodName": "setFigureIndex"
+    },
+    {
+      "name": "MageReal3DSystem.setVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 311,
+      "className": "MageReal3DSystem",
+      "methodName": "setVisible"
+    },
+    {
+      "name": "MageReal3DSystem.toggleRotate180",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 244,
+      "className": "MageReal3DSystem",
+      "methodName": "toggleRotate180"
+    },
+    {
+      "name": "MageReal3DSystem.update",
+      "kind": "method",
+      "file": "game/src/character-lab/MageReal3DSystem.ts",
+      "line": 333,
+      "className": "MageReal3DSystem",
+      "methodName": "update"
+    },
+    {
+      "name": "MageTexturedSystem",
+      "kind": "class",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 11,
+      "doc": "High-fidelity textured pixel-art system for the Mage. Utilizes 3-view turnaround sprites (Front, Side, Back) with NearestFilter, directional angle-based perspective matching, and dynamic 3D lighting/particle integration."
+    },
+    {
+      "name": "MageTexturedSystem.buildMeshes",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 133,
+      "className": "MageTexturedSystem",
+      "methodName": "buildMeshes"
+    },
+    {
+      "name": "MageTexturedSystem.configurePixelTexture",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 86,
+      "className": "MageTexturedSystem",
+      "methodName": "configurePixelTexture"
+    },
+    {
+      "name": "MageTexturedSystem.getTextureUrl",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 81,
+      "className": "MageTexturedSystem",
+      "methodName": "getTextureUrl"
+    },
+    {
+      "name": "MageTexturedSystem.loadTextures",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 93,
+      "className": "MageTexturedSystem",
+      "methodName": "loadTextures"
+    },
+    {
+      "name": "MageTexturedSystem.setAngleMode",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 230,
+      "className": "MageTexturedSystem",
+      "methodName": "setAngleMode"
+    },
+    {
+      "name": "MageTexturedSystem.setVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 213,
+      "className": "MageTexturedSystem",
+      "methodName": "setVisible"
+    },
+    {
+      "name": "MageTexturedSystem.update",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 260,
+      "className": "MageTexturedSystem",
+      "methodName": "update"
+    },
+    {
+      "name": "MageTexturedSystem.updateVisibilityByMode",
+      "kind": "method",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 235,
+      "className": "MageTexturedSystem",
+      "methodName": "updateVisibilityByMode"
+    },
+    {
+      "name": "MageViewAngleMode",
+      "kind": "type",
+      "file": "game/src/character-lab/MageTexturedSystem.ts",
+      "line": 4
+    },
+    {
       "name": "MainMenuModal",
       "kind": "const",
       "file": "game/src/ui/react/modals/MainMenuModal.tsx",
@@ -7444,14 +8250,14 @@
       "name": "MainMenuScreen",
       "kind": "class",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 27,
+      "line": 28,
       "doc": "Modular Main Menu Screen (Dark ARPG Rift UI). Coordinates singleplayer start, multiplayer lobby, quests toggle, talents shop, settings, and exit."
     },
     {
       "name": "MainMenuScreen.bindElements",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 53,
+      "line": 54,
       "className": "MainMenuScreen",
       "methodName": "bindElements"
     },
@@ -7459,7 +8265,7 @@
       "name": "MainMenuScreen.bindEvents",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 55,
+      "line": 56,
       "className": "MainMenuScreen",
       "methodName": "bindEvents"
     },
@@ -7467,7 +8273,7 @@
       "name": "MainMenuScreen.destroy",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 190,
+      "line": 196,
       "className": "MainMenuScreen",
       "methodName": "destroy"
     },
@@ -7475,7 +8281,7 @@
       "name": "MainMenuScreen.getTemplate",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 49,
+      "line": 50,
       "className": "MainMenuScreen",
       "methodName": "getTemplate"
     },
@@ -7483,7 +8289,7 @@
       "name": "MainMenuScreen.onHide",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 186,
+      "line": 192,
       "className": "MainMenuScreen",
       "methodName": "onHide"
     },
@@ -7491,7 +8297,7 @@
       "name": "MainMenuScreen.onShow",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 178,
+      "line": 184,
       "className": "MainMenuScreen",
       "methodName": "onShow"
     },
@@ -7499,7 +8305,7 @@
       "name": "MainMenuScreen.updateAuthDisplay",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 148,
+      "line": 154,
       "className": "MainMenuScreen",
       "methodName": "updateAuthDisplay"
     },
@@ -7507,7 +8313,7 @@
       "name": "MainMenuScreen.updateCrystalsDisplay",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 140,
+      "line": 146,
       "className": "MainMenuScreen",
       "methodName": "updateCrystalsDisplay"
     },
@@ -7515,7 +8321,7 @@
       "name": "MainMenuScreen.updateResumeRunButton",
       "kind": "method",
       "file": "game/src/ui/screens/MainMenu/MainMenuScreen.ts",
-      "line": 117,
+      "line": 123,
       "className": "MainMenuScreen",
       "methodName": "updateResumeRunButton"
     },
@@ -7551,7 +8357,7 @@
       "name": "MapManager.clear",
       "kind": "method",
       "file": "game/src/ui/MapManager.ts",
-      "line": 1168,
+      "line": 1173,
       "className": "MapManager",
       "methodName": "clear"
     },
@@ -8682,7 +9488,7 @@
       "name": "Player",
       "kind": "class",
       "file": "game/src/entities/Player.ts",
-      "line": 58
+      "line": 62
     },
     {
       "name": "PLAYER_COLORS",
@@ -8694,7 +9500,7 @@
       "name": "Player.addAmplifierBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 679,
+      "line": 684,
       "className": "Player",
       "methodName": "addAmplifierBonus"
     },
@@ -8702,7 +9508,7 @@
       "name": "Player.addBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 551,
+      "line": 556,
       "className": "Player",
       "methodName": "addBuff"
     },
@@ -8710,7 +9516,7 @@
       "name": "Player.addCooldownReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 698,
+      "line": 703,
       "className": "Player",
       "methodName": "addCooldownReduction"
     },
@@ -8718,7 +9524,7 @@
       "name": "Player.addCritChanceBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 719,
+      "line": 724,
       "className": "Player",
       "methodName": "addCritChanceBonus"
     },
@@ -8726,7 +9532,7 @@
       "name": "Player.addCritDamageBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 714,
+      "line": 719,
       "className": "Player",
       "methodName": "addCritDamageBonus"
     },
@@ -8734,7 +9540,7 @@
       "name": "Player.addDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 696,
+      "line": 701,
       "className": "Player",
       "methodName": "addDamageReduction"
     },
@@ -8742,7 +9548,7 @@
       "name": "Player.addFlaskBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 705,
+      "line": 710,
       "className": "Player",
       "methodName": "addFlaskBonus"
     },
@@ -8750,7 +9556,7 @@
       "name": "Player.addHpRegen",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 695,
+      "line": 700,
       "className": "Player",
       "methodName": "addHpRegen"
     },
@@ -8758,7 +9564,7 @@
       "name": "Player.addLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1236,
+      "line": 1246,
       "className": "Player",
       "methodName": "addLevel"
     },
@@ -8766,7 +9572,7 @@
       "name": "Player.addMagnetBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 712,
+      "line": 717,
       "className": "Player",
       "methodName": "addMagnetBonus"
     },
@@ -8774,7 +9580,7 @@
       "name": "Player.addMightElixirBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 680,
+      "line": 685,
       "className": "Player",
       "methodName": "addMightElixirBonus"
     },
@@ -8782,7 +9588,7 @@
       "name": "Player.addRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 563,
+      "line": 568,
       "className": "Player",
       "methodName": "addRiftItem"
     },
@@ -8790,7 +9596,7 @@
       "name": "Player.addSpeedBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 694,
+      "line": 699,
       "className": "Player",
       "methodName": "addSpeedBonus"
     },
@@ -8798,7 +9604,7 @@
       "name": "Player.addSpeedBootsBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 693,
+      "line": 698,
       "className": "Player",
       "methodName": "addSpeedBootsBonus"
     },
@@ -8806,7 +9612,7 @@
       "name": "Player.applyBurn",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 132,
+      "line": 136,
       "className": "Player",
       "methodName": "applyBurn"
     },
@@ -8814,7 +9620,7 @@
       "name": "Player.applyCharacterPerks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 480,
+      "line": 485,
       "className": "Player",
       "methodName": "applyCharacterPerks"
     },
@@ -8822,7 +9628,7 @@
       "name": "Player.applyPassiveBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 772,
+      "line": 777,
       "className": "Player",
       "methodName": "applyPassiveBuff"
     },
@@ -8830,7 +9636,7 @@
       "name": "Player.applyShock",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 137,
+      "line": 141,
       "className": "Player",
       "methodName": "applyShock"
     },
@@ -8838,7 +9644,7 @@
       "name": "Player.applySlow",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 142,
+      "line": 146,
       "className": "Player",
       "methodName": "applySlow"
     },
@@ -8846,7 +9652,7 @@
       "name": "Player.areAllWeaponsMaxed",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1197,
+      "line": 1207,
       "className": "Player",
       "methodName": "areAllWeaponsMaxed"
     },
@@ -8854,7 +9660,7 @@
       "name": "Player.calculateXpToNextLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1232,
+      "line": 1242,
       "className": "Player",
       "methodName": "calculateXpToNextLevel"
     },
@@ -8862,7 +9668,7 @@
       "name": "Player.clearWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 467,
+      "line": 472,
       "className": "Player",
       "methodName": "clearWeapons"
     },
@@ -8870,7 +9676,7 @@
       "name": "Player.destroy",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1338,
+      "line": 1348,
       "className": "Player",
       "methodName": "destroy"
     },
@@ -8878,7 +9684,7 @@
       "name": "Player.fullHeal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1166,
+      "line": 1176,
       "className": "Player",
       "methodName": "fullHeal"
     },
@@ -8886,7 +9692,7 @@
       "name": "Player.gainXp",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1244,
+      "line": 1254,
       "className": "Player",
       "methodName": "gainXp",
       "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
@@ -8895,7 +9701,7 @@
       "name": "Player.getAwakenedCap",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1193,
+      "line": 1203,
       "className": "Player",
       "methodName": "getAwakenedCap"
     },
@@ -8903,7 +9709,7 @@
       "name": "Player.getBuffsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1371,
+      "line": 1381,
       "className": "Player",
       "methodName": "getBuffsNetState"
     },
@@ -8911,7 +9717,7 @@
       "name": "Player.getCharacterGeometry",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 216,
+      "line": 221,
       "className": "Player",
       "methodName": "getCharacterGeometry"
     },
@@ -8919,7 +9725,7 @@
       "name": "Player.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 666,
+      "line": 671,
       "className": "Player",
       "methodName": "getDamageMultiplier",
       "doc": "Calculates effective damage multiplier for a given weapon. Per rule: initial hero damage bonus applies ONLY to their starting weapon! Other weapons receive 1.0  general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst)."
@@ -8928,7 +9734,7 @@
       "name": "Player.getItemStacks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 559,
+      "line": 564,
       "className": "Player",
       "methodName": "getItemStacks"
     },
@@ -8936,7 +9742,7 @@
       "name": "Player.getNaniteDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 729,
+      "line": 734,
       "className": "Player",
       "methodName": "getNaniteDamageReduction",
       "doc": "Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level 1 gives 5%, diminishing returns up to 60% at level 20, capped at 60%."
@@ -8945,7 +9751,7 @@
       "name": "Player.getWeaponsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1362,
+      "line": 1372,
       "className": "Player",
       "methodName": "getWeaponsNetState"
     },
@@ -8953,7 +9759,7 @@
       "name": "Player.giveAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1202,
+      "line": 1212,
       "className": "Player",
       "methodName": "giveAllWeapons"
     },
@@ -8961,7 +9767,7 @@
       "name": "Player.hasBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 555,
+      "line": 560,
       "className": "Player",
       "methodName": "hasBuff"
     },
@@ -8969,7 +9775,7 @@
       "name": "Player.heal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1161,
+      "line": 1171,
       "className": "Player",
       "methodName": "heal"
     },
@@ -8977,7 +9783,7 @@
       "name": "Player.isAnimatedCharacter",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 361,
+      "line": 366,
       "className": "Player",
       "methodName": "isAnimatedCharacter"
     },
@@ -8985,7 +9791,7 @@
       "name": "Player.isStatMaxedForItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 735,
+      "line": 740,
       "className": "Player",
       "methodName": "isStatMaxedForItem"
     },
@@ -8993,7 +9799,7 @@
       "name": "Player.loadCharacterTextures",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 365,
+      "line": 370,
       "className": "Player",
       "methodName": "loadCharacterTextures"
     },
@@ -9001,7 +9807,7 @@
       "name": "Player.maxAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1224,
+      "line": 1234,
       "className": "Player",
       "methodName": "maxAllWeapons"
     },
@@ -9009,7 +9815,7 @@
       "name": "Player.recalculateStats",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 608,
+      "line": 613,
       "className": "Player",
       "methodName": "recalculateStats"
     },
@@ -9017,7 +9823,7 @@
       "name": "Player.recordWeaponDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 682,
+      "line": 687,
       "className": "Player",
       "methodName": "recordWeaponDamage"
     },
@@ -9025,7 +9831,7 @@
       "name": "Player.redrawOverhead",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1312,
+      "line": 1322,
       "className": "Player",
       "methodName": "redrawOverhead"
     },
@@ -9033,7 +9839,7 @@
       "name": "Player.removeRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 574,
+      "line": 579,
       "className": "Player",
       "methodName": "removeRiftItem"
     },
@@ -9041,7 +9847,7 @@
       "name": "Player.reset",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1261,
+      "line": 1271,
       "className": "Player",
       "methodName": "reset"
     },
@@ -9049,7 +9855,7 @@
       "name": "Player.revive",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1142,
+      "line": 1151,
       "className": "Player",
       "methodName": "revive"
     },
@@ -9057,7 +9863,7 @@
       "name": "Player.setCharacter",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 402,
+      "line": 407,
       "className": "Player",
       "methodName": "setCharacter"
     },
@@ -9065,7 +9871,7 @@
       "name": "Player.setDirection",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 426,
+      "line": 431,
       "className": "Player",
       "methodName": "setDirection"
     },
@@ -9073,7 +9879,7 @@
       "name": "Player.setupAuras",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 305,
+      "line": 310,
       "className": "Player",
       "methodName": "setupAuras"
     },
@@ -9081,7 +9887,7 @@
       "name": "Player.syncBalance",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 529,
+      "line": 534,
       "className": "Player",
       "methodName": "syncBalance"
     },
@@ -9089,7 +9895,7 @@
       "name": "Player.takeDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1067,
+      "line": 1072,
       "className": "Player",
       "methodName": "takeDamage"
     },
@@ -9097,7 +9903,7 @@
       "name": "Player.toggleGodMode",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1170,
+      "line": 1180,
       "className": "Player",
       "methodName": "toggleGodMode"
     },
@@ -9105,7 +9911,7 @@
       "name": "Player.toggleOneHitKill",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1185,
+      "line": 1195,
       "className": "Player",
       "methodName": "toggleOneHitKill"
     },
@@ -9113,7 +9919,7 @@
       "name": "Player.toggleSpeedCheat",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1179,
+      "line": 1189,
       "className": "Player",
       "methodName": "toggleSpeedCheat"
     },
@@ -9121,7 +9927,7 @@
       "name": "Player.triggerAttackAnim",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 438,
+      "line": 443,
       "className": "Player",
       "methodName": "triggerAttackAnim"
     },
@@ -9129,7 +9935,7 @@
       "name": "Player.triggerDash",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 590,
+      "line": 595,
       "className": "Player",
       "methodName": "triggerDash"
     },
@@ -9137,7 +9943,7 @@
       "name": "Player.updateAnimatedCharacterAnimation",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1050,
+      "line": 1055,
       "className": "Player",
       "methodName": "updateAnimatedCharacterAnimation"
     },
@@ -9145,7 +9951,7 @@
       "name": "Player.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1391,
+      "line": 1401,
       "className": "Player",
       "methodName": "updateVisuals",
       "doc": "Smoothly interpolates the player mesh position between the previous and current fixed simulation states. Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+)."
@@ -11038,13 +11844,13 @@
       "name": "SessionDirector",
       "kind": "class",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 62
+      "line": 63
     },
     {
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 731,
+      "line": 747,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -11053,7 +11859,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 939,
+      "line": 956,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -11061,7 +11867,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1088,
+      "line": 1151,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -11070,7 +11876,7 @@
       "name": "SessionDirector.completeGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 786,
+      "line": 802,
       "className": "SessionDirector",
       "methodName": "completeGreedTrial"
     },
@@ -11078,7 +11884,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 469,
+      "line": 483,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -11086,7 +11892,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 589,
+      "line": 605,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -11094,7 +11900,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 460,
+      "line": 474,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -11102,7 +11908,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 511,
+      "line": 525,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -11110,7 +11916,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 452,
+      "line": 466,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -11118,7 +11924,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1250,
+      "line": 1313,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -11127,7 +11933,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 393,
+      "line": 407,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -11135,7 +11941,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1172,
+      "line": 1235,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -11144,7 +11950,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 336,
+      "line": 350,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -11152,7 +11958,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 280,
+      "line": 294,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -11160,7 +11966,7 @@
       "name": "SessionDirector.startGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 750,
+      "line": 766,
       "className": "SessionDirector",
       "methodName": "startGreedTrial"
     },
@@ -11168,7 +11974,7 @@
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 385,
+      "line": 399,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -11176,7 +11982,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1118,
+      "line": 1181,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -11185,7 +11991,7 @@
       "name": "SessionDirector.toggleDevMode",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 194,
+      "line": 208,
       "className": "SessionDirector",
       "methodName": "toggleDevMode"
     },
@@ -11193,7 +11999,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1017,
+      "line": 1034,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -11201,15 +12007,23 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 479,
+      "line": 493,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
+    },
+    {
+      "name": "SessionDirector.updateChestsHUD",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 178,
+      "className": "SessionDirector",
+      "methodName": "updateChestsHUD"
     },
     {
       "name": "SessionDirector.updateGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 770,
+      "line": 786,
       "className": "SessionDirector",
       "methodName": "updateGreedTrial"
     },
@@ -11217,7 +12031,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 819,
+      "line": 835,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },
@@ -11225,7 +12039,7 @@
       "name": "SessionDirector.wireCoordinatorCallbacks",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 169,
+      "line": 183,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
     },
@@ -12671,7 +13485,7 @@
       "name": "SPAWN_OFFSETS",
       "kind": "const",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 53
+      "line": 54
     },
     {
       "name": "SPECIAL_QUESTS_CONFIG",

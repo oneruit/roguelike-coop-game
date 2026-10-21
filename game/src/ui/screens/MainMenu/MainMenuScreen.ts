@@ -15,6 +15,7 @@ export interface MainMenuScreenOptions {
   onOpenRiftPath?: () => void;
   onOpenWeeklyQuests?: () => void;
   onLeaderboard?: () => void;
+  onLastRun?: () => void;
   onSettings?: () => void;
   onAuth?: () => void;
   onExit?: () => void;
@@ -101,6 +102,11 @@ export class MainMenuScreen extends Screen {
     SafeDOM.query(this.container, '#menu-btn-leaderboard')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onLeaderboard?.();
+    });
+
+    SafeDOM.query(this.container, '#menu-btn-last-run')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onLastRun?.();
     });
 
     SafeDOM.query(this.container, '#menu-btn-settings')?.addEventListener('click', () => {

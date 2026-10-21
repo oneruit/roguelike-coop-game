@@ -1139,9 +1139,14 @@ export class MapManager {
     if (this.elFullMapStats) {
       const exploredAreaM2 = this.exploredChunks.size * 2500;
       const percent = Math.min(100, Math.round((this.exploredChunks.size / 81) * 100));
+      const chestStats = this.chestManager?.getChestStats();
+      const chestsHtml = chestStats
+        ? `<div class="map-stat-item">Сундуки: <strong>${chestStats.opened} / ${chestStats.total}</strong></div>`
+        : '';
       this.elFullMapStats.innerHTML = `
         <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} / 81 чанков</strong> (${percent}%, ${exploredAreaM2} м²)</div>
         <div class="map-stat-item">Алтари: <strong>${this.discoveredAltars.size} / 6</strong></div>
+        ${chestsHtml}
         <div class="map-stat-item">Предметов: <strong>${this.dropManager.gems.length}</strong></div>
         <div class="map-stat-item" id="btn-copy-seed-stat" style="cursor: pointer; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); padding: 2px 8px; border-radius: 4px;" title="Нажмите, чтобы скопировать seed карты">Seed: <strong style="color: #f59e0b;">#${this.currentSeed}</strong> 📋</div>
         <div class="map-stat-item">Координаты: <strong>${Math.round(px)}, ${Math.round(pz)}</strong></div>

@@ -36,6 +36,7 @@ import { AuthModalScreen } from './screens/Auth/AuthModalScreen';
 import { AuthManager } from '../auth/AuthManager';
 import { CloudSyncManager } from '../meta/CloudSyncManager';
 import { LeaderboardUI } from './modules/LeaderboardUI';
+import { LastRunUI } from './modules/LastRunUI';
 
 export type { UpgradeOption, DetailedPlayerResult };
 export { getWeaponIconUrl };
@@ -76,6 +77,7 @@ export class HUD {
   private characterSelectScreen?: CharacterSelectScreen;
   private authModalScreen?: AuthModalScreen;
   private leaderboardUI: LeaderboardUI;
+  private lastRunUI: LastRunUI;
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
@@ -323,6 +325,13 @@ export class HUD {
     });
     ScreenManager.getInstance().register(this.leaderboardUI);
 
+    this.lastRunUI = new LastRunUI({
+      onClose: () => {
+        this.menuStack = this.menuStack.filter((s) => s !== 'last-run');
+      }
+    });
+    ScreenManager.getInstance().register(this.lastRunUI);
+
     document.getElementById('btn-teleport-to-rift')?.addEventListener('click', () => {
       this.onTeleportToRift?.();
     });
@@ -546,6 +555,9 @@ export class HUD {
       },
       onLeaderboard: () => {
         this.showLeaderboard();
+      },
+      onLastRun: () => {
+        this.showLastRun();
       },
       onSettings: () => {
         this.hideQuestsModal();
@@ -1374,6 +1386,20 @@ export class HUD {
     this.menuStack = this.menuStack.filter((s) => s !== 'leaderboard');
   }
 
+  // --- Last Run Methods Forwarding ---
+
+  public showLastRun(): void {
+    if (!this.menuStack.includes('last-run')) {
+      this.menuStack.push('last-run');
+    }
+    this.lastRunUI.showLastRun();
+  }
+
+  public hideLastRun(): void {
+    this.lastRunUI.hide();
+    this.menuStack = this.menuStack.filter((s) => s !== 'last-run');
+  }
+
   // --- In-Game Overlay & Overlays Methods Forwarding ---
 
   public setCoopBadge(roomCode: string | null) {
@@ -1426,6 +1452,14 @@ export class HUD {
   public updateStageText(stageNum: number, biomeName: string) {
     this.currentStageNumber = stageNum;
     this.inGameOverlayUI.updateStageText(stageNum, biomeName);
+  }
+
+  public updateChestsCount(
+    opened: number,
+    total: number,
+    byTier?: Record<string, { total: number; opened: number }>
+  ) {
+    this.inGameOverlayUI.updateChestsCount(opened, total, byTier);
   }
 
   public updateTeleportButton(canTeleport: boolean, reason?: string) {
