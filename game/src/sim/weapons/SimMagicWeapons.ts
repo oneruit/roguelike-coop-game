@@ -569,3 +569,68 @@ export class SimPoisonPuddleWeapon extends SimWeapon {
     return perks.join(', ');
   }
 }
+
+/**
+ * Summon Undead (Призыв мёртвых) - Necromancer
+ */
+export class SimSummonUndeadWeapon extends SimWeapon {
+  private minionCount: number = 2;
+  private minionTimers: number[] = [0, 0.35];
+
+  constructor() {
+    super('summon_undead', 'Призыв мёртвых', '💀', 0.75, 22);
+  }
+
+  public update(
+    dt: number,
+    player: SimPlayerRef,
+    enemies: SimEnemyRef[],
+    _spawnProjectile: (p: SimProjectileData) => void,
+    onAreaDamage: (enemyId: string, damage: number, sourcePos: SimVec3, knockbackDist?: number) => void,
+    triggerAnim?: (duration: number) => void,
+    emitSound?: (sound: 'shoot' | 'slash' | 'magic') => void
+  ) {
+    while (this.minionTimers.length < this.minionCount) {
+      this.minionTimers.push(Math.random() * 0.4);
+    }
+
+    if (enemies.length === 0) return;
+
+    for (let i = 0; i < this.minionCount; i++) {
+      this.minionTimers[i] += dt;
+      if (this.minionTimers[i] >= this.effectiveCooldown) {
+        this.minionTimers[i] = 0;
+        const targets = findClosestSimEnemies(enemies, player.position, 1, 16 * 16);
+        if (targets.length > 0) {
+          const target = targets[0];
+          onAreaDamage(target.id, this.damage * player.damageMultiplier, player.position, 0.2);
+          triggerAnim?.(0.35);
+          emitSound?.('slash');
+        }
+      }
+    }
+  }
+
+  public upgrade() {
+    if (this.level >= this.maxLevel) return;
+    this.level++;
+    this.damage += 6;
+    if ([3, 6, 9, 12].includes(this.level)) {
+      this.minionCount++;
+      this.minionTimers.push(0);
+    }
+    if ([2, 5, 8, 11].includes(this.level)) {
+      this.cooldown = Math.max(0.35, Number((this.cooldown * 0.92).toFixed(3)));
+    }
+  }
+
+  public getNextUpgradeDescription(): string {
+    if (this.level >= this.maxLevel) return 'Максимальный уровень (12)';
+    const nextLvl = this.level + 1;
+    const perks: string[] = ['+6 к урону скелетов'];
+    if ([3, 6, 9, 12].includes(nextLvl)) perks.push(`+1 скелет-воин (всего ${this.minionCount + 1})`);
+    if ([2, 5, 8, 11].includes(nextLvl)) perks.push('-8% кд атак');
+    return perks.join(', ');
+  }
+}
+

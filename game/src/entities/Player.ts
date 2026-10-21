@@ -32,7 +32,8 @@ import {
   ReaperScytheWeapon,
   FireRingWeapon,
   KatanaSlashWeapon,
-  AssaultRifleWeapon
+  AssaultRifleWeapon,
+  SummonUndeadWeapon
 } from '../combat/Weapon';
 import { Projectile } from '../combat/Projectile';
 import { Enemy } from './Enemy';
@@ -58,6 +59,7 @@ import { PlayerMotor } from '../mechanics/player/PlayerMotor';
 import { PlayerStats } from '../mechanics/player/PlayerStats';
 import { PlayerAnimation } from '../mechanics/player/PlayerAnimation';
 import { GameEventBus } from '../mechanics/events/GameEventBus';
+import { ChunkManager } from '../world/ChunkManager';
 
 export class Player {
   public mesh: Group;
@@ -498,7 +500,9 @@ export class Player {
       this.weapons.push(new GreatswordWeapon(() => this.triggerAttackAnim(0.5, 'greatsword')));
     } else if (this.charType === 'flail') {
       this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45, 'flail')));
-    } else if (this.charType === 'sorceress' || this.charType === 'necromancer') {
+    } else if (this.charType === 'necromancer') {
+      this.weapons.push(new SummonUndeadWeapon(() => this.triggerAttackAnim(0.48, 'summon_undead')));
+    } else if (this.charType === 'sorceress') {
       this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48, 'astral_staff')));
     } else if (this.charType === 'chakram') {
       this.weapons.push(new ChakramWeapon(() => this.triggerAttackAnim(0.44, 'chakram')));
@@ -973,9 +977,10 @@ export class Player {
       obstacleManager.resolveEntityCollision(this.position, 0.45);
     }
 
-    // Clamp to 450x450 map bounds (-218 to 218)
-    this.position.x = Math.max(-218, Math.min(218, this.position.x));
-    this.position.z = Math.max(-218, Math.min(218, this.position.z));
+    // Clamp to map bounds (-168 to 168)
+    const mapBound = ChunkManager.HALF_MAP - 7;
+    this.position.x = Math.max(-mapBound, Math.min(mapBound, this.position.x));
+    this.position.z = Math.max(-mapBound, Math.min(mapBound, this.position.z));
     this.position.y = 0;
 
     this.mesh.position.copy(this.position);

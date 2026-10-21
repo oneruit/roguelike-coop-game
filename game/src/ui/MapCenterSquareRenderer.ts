@@ -7,6 +7,7 @@ import type { MerchantManager } from '../world/MerchantManager';
 import type { RemotePlayer } from '../entities/RemotePlayer';
 import type { DiscoveredAltar } from './MapManager';
 import type { MobNestManager } from '../world/MobNestManager';
+import { ChunkManager } from '../world/ChunkManager';
 
 export interface CenterSquareMapRenderContext {
   ctx: CanvasRenderingContext2D;
@@ -60,7 +61,8 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
   const px = Math.round(player.position.x);
   const pz = Math.round(player.position.z);
   if (elMinimapCoords) {
-    elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${exploredChunks.size}/81 зон`;
+    const totalChunks = ChunkManager.GRID_SIZE * ChunkManager.GRID_SIZE;
+    elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${exploredChunks.size}/${totalChunks} зон`;
   }
 
   // 1. Semi-transparent dark tactical backdrop
@@ -68,16 +70,16 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
   ctx.fillRect(0, 0, w, h);
 
   // 2. World Coordinate Transform for 9x9 chunks (450x450m bounds, -225 to +225)
-  const halfWorld = 225;
-  const worldSize = 450;
+  const halfWorld = ChunkManager.HALF_MAP;
+  const worldSize = ChunkManager.MAP_SIZE;
   const toScreenX = (worldX: number) => ((worldX + halfWorld) / worldSize) * w;
   const toScreenZ = (worldZ: number) => ((worldZ + halfWorld) / worldSize) * h;
   const chunkScreenW = (50 / worldSize) * w;
   const chunkScreenH = (50 / worldSize) * h;
 
   // Chunks & Fog of War (9x9 chunks, 50m each from cx = -4..4, cz = -4..4)
-  for (let cx = -4; cx <= 4; cx++) {
-    for (let cz = -4; cz <= 4; cz++) {
+  for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
+    for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
       const chunkX = toScreenX(cx * 50 - 25);
       const chunkZ = toScreenZ(cz * 50 - 25);
       const key = `${cx},${cz}`;
@@ -411,7 +413,7 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
   ctx.textAlign = 'left';
   ctx.fillText('ИНТЕРАКТИВНАЯ КАРТА [TAB]', 8, 14);
 
-  const exploredPct = Math.min(100, Math.round((exploredChunks.size / 81) * 100));
+  const exploredPct = Math.min(100, Math.round((exploredChunks.size / (ChunkManager.GRID_SIZE * ChunkManager.GRID_SIZE)) * 100));
   ctx.textAlign = 'right';
   ctx.fillStyle = '#38bdf8';
   ctx.fillText(`ТУМАН ВОЙНЫ: ${exploredPct}% ОТКРЫТО`, 492, 14);

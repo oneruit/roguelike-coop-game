@@ -1193,11 +1193,11 @@ export class ProgressionManager {
           hero: 'necromancer',
           heroName: 'Мортис',
           heroSubtitle: '«Повелитель Нежити»',
-          weaponIcon: getAssetUrl('/textures/weapons/weapon_astral_staff.png'),
-          weaponName: 'Астральный посох',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_summon_undead.png'),
+          weaponName: 'Призыв мёртвых',
           avatarIcon: AssetResolver.getHeroTexture('necromancer', 'front'),
           questTitle: 'Зов Тёмных Душ',
-          questDesc: 'Могущественный маг смерти с посохом душ, поражающий врагов тёмной магией.',
+          questDesc: 'Могущественный маг смерти, призывающий орду верных скелетов-воинов.',
           steps: [
             'Доступен сразу всем защитникам Рифта.'
           ],

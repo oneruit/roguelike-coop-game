@@ -14,7 +14,8 @@ import {
   LightningStrikeWeapon,
   IceSpikeWeapon,
   FireballWeapon,
-  PoisonPuddleWeapon
+  PoisonPuddleWeapon,
+  SummonUndeadWeapon
 } from './weapons';
 import { InvokerWeapon } from './InvokerWeapons';
 import { INVOKER_SPELL_IDS, type InvokerSpellId } from '../shared/InvokerSpells';
@@ -51,6 +52,8 @@ export function createWeaponInstanceById(id: string): Weapon | null {
       return new FireballWeapon();
     case 'poison_puddle':
       return new PoisonPuddleWeapon();
+    case 'summon_undead':
+      return new SummonUndeadWeapon();
     default:
       if (id === 'invoker_invoke') {
         return new InvokerWeapon(null);

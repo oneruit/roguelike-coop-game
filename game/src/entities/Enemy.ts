@@ -752,9 +752,9 @@ export class Enemy {
       }
     }
 
-    // Clamp to 500x500 map bounds (-246 to 246)
-    this.position.x = Math.max(-246, Math.min(246, this.position.x));
-    this.position.z = Math.max(-246, Math.min(246, this.position.z));
+    // Clamp to map bounds (-172 to 172)
+    this.position.x = Math.max(-172, Math.min(172, this.position.x));
+    this.position.z = Math.max(-172, Math.min(172, this.position.z));
   }
 
   public update(dt: number, playerPos: Vector3) {

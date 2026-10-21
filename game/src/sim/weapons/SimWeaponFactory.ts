@@ -20,7 +20,8 @@ import {
   SimLightningStrikeWeapon,
   SimIceSpikeWeapon,
   SimFireballWeapon,
-  SimPoisonPuddleWeapon
+  SimPoisonPuddleWeapon,
+  SimSummonUndeadWeapon
 } from './SimMagicWeapons';
 import { SimInvokerWeapon } from './SimInvokerWeapon';
 
@@ -34,8 +35,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'flail':
       return new SimFlailWeapon();
     case 'sorceress':
-    case 'necromancer':
       return new SimAstralStaffWeapon();
+    case 'necromancer':
+      return new SimSummonUndeadWeapon();
     case 'chakram':
       return new SimChakramWeapon();
     case 'archer':
@@ -92,6 +94,8 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimKatanaSlashWeapon();
     case 'poison_puddle':
       return new SimPoisonPuddleWeapon();
+    case 'summon_undead':
+      return new SimSummonUndeadWeapon();
     default:
       return null;
   }

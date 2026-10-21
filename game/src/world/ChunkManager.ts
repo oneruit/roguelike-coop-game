@@ -31,13 +31,13 @@ export class ChunkManager {
   private altarManager: AltarManager;
   private obstacleManager: ObstacleManager;
 
-  // Fixed World Dimensions: 450x450 meters (9x9 chunks of 50m each)
+  // Fixed World Dimensions: 350x350 meters (7x7 chunks of 50m each)
   public static readonly CHUNK_SIZE = 50;
-  public static readonly GRID_SIZE = 9;
-  public static readonly MAP_SIZE = 450;
-  public static readonly HALF_MAP = 225;
-  public static readonly MIN_CHUNK = -4;
-  public static readonly MAX_CHUNK = 4; // -4 to 4 inclusive = 9 chunks
+  public static readonly GRID_SIZE = 7;
+  public static readonly MAP_SIZE = 350;
+  public static readonly HALF_MAP = 175;
+  public static readonly MIN_CHUNK = -3;
+  public static readonly MAX_CHUNK = 3; // -3 to 3 inclusive = 7 chunks
 
   public currentSeed: number = 1337;
   public currentSeedString: string = '1337';
@@ -146,7 +146,7 @@ export class ChunkManager {
     if (riftTeleporter) {
       // Pick deterministic sector away from spawn
       const teleAngle = rng.range(0, Math.PI * 2);
-      const teleDist = rng.range(110, 165);
+      const teleDist = rng.range(85, 130);
       teleX = Math.cos(teleAngle) * teleDist;
       teleZ = Math.sin(teleAngle) * teleDist;
       riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
@@ -166,7 +166,7 @@ export class ChunkManager {
     const baseAltarAngle = rng.range(0, Math.PI * 2);
     for (let i = 0; i < 6; i++) {
       const sectorAngle = baseAltarAngle + (i * (Math.PI * 2 / 6)) + rng.range(-0.20, 0.20);
-      const dist = rng.range(65, 145);
+      const dist = rng.range(45, 115);
       const ax = Math.cos(sectorAngle) * dist;
       const az = Math.sin(sectorAngle) * dist;
 
@@ -189,7 +189,7 @@ export class ChunkManager {
     // 3b. Altar of Greed (Spawns exclusively on Stage 4+ so players have leveled up and prepared)
     if (stageNumber >= 4) {
       const greedAngle = rng.range(0, Math.PI * 2);
-      const greedDist = rng.range(75, 120);
+      const greedDist = rng.range(55, 95);
       const gx = Math.cos(greedAngle) * greedDist;
       const gz = Math.sin(greedAngle) * greedDist;
 
@@ -237,7 +237,7 @@ export class ChunkManager {
       }
     }
 
-    // 5. Build terrain chunks across all 100 chunks
+    // 5. Build terrain chunks across all 49 chunks (7x7)
 
     for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
       for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {

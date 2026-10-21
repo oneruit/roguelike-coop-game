@@ -9,6 +9,7 @@ import { ChestManager } from '../world/ChestManager';
 import { RiftTeleporter } from '../world/RiftTeleporter';
 import { MerchantManager } from '../world/MerchantManager';
 import { MobNestManager } from '../world/MobNestManager';
+import { ChunkManager } from '../world/ChunkManager';
 import { renderCenterSquareMap as drawCenterSquareMap } from './MapCenterSquareRenderer';
 
 export interface DiscoveredAltar {
@@ -1138,13 +1139,14 @@ export class MapManager {
     // 11. Update Header Stats Bar
     if (this.elFullMapStats) {
       const exploredAreaM2 = this.exploredChunks.size * 2500;
-      const percent = Math.min(100, Math.round((this.exploredChunks.size / 81) * 100));
+      const totalChunks = ChunkManager.GRID_SIZE * ChunkManager.GRID_SIZE;
+      const percent = Math.min(100, Math.round((this.exploredChunks.size / totalChunks) * 100));
       const chestStats = this.chestManager?.getChestStats();
       const chestsHtml = chestStats
         ? `<div class="map-stat-item">Сундуки: <strong>${chestStats.opened} / ${chestStats.total}</strong></div>`
         : '';
       this.elFullMapStats.innerHTML = `
-        <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} / 81 чанков</strong> (${percent}%, ${exploredAreaM2} м²)</div>
+        <div class="map-stat-item">Исследовано: <strong>${this.exploredChunks.size} / ${totalChunks} чанков</strong> (${percent}%, ${exploredAreaM2} м²)</div>
         <div class="map-stat-item">Алтари: <strong>${this.discoveredAltars.size} / 6</strong></div>
         ${chestsHtml}
         <div class="map-stat-item">Предметов: <strong>${this.dropManager.gems.length}</strong></div>

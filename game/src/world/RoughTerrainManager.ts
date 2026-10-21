@@ -11,7 +11,7 @@ import {
   PlaneGeometry
 } from 'three';
 import { SeededRNG } from '../core/SeededRNG';
-import { OccupiedArea } from './ChunkManager';
+import { ChunkManager, OccupiedArea } from './ChunkManager';
 import { getAssetUrl } from '../utils/assetPath';
 
 export interface RoughZone {
@@ -163,9 +163,9 @@ export class RoughTerrainManager {
         })
       : null;
 
-    // Scatter 1-2 rough patches per chunk across the 9x9 world (-4 to 4 chunks)
-    for (let cx = -4; cx <= 4; cx++) {
-      for (let cz = -4; cz <= 4; cz++) {
+    // Scatter 1-2 rough patches per chunk across the 7x7 world (-3 to 3 chunks)
+    for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
+      for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
         const chunkKey = `${cx},${cz}`;
         const patchCount = rng.next() < 0.8 ? (rng.next() < 0.5 ? 2 : 1) : 0;
 

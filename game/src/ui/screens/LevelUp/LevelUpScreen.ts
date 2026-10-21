@@ -19,7 +19,8 @@ import {
   IceSpikeWeapon,
   FireballWeapon,
   AssaultRifleWeapon,
-  PoisonPuddleWeapon
+  PoisonPuddleWeapon,
+  SummonUndeadWeapon
 } from '../../../combat/Weapon';
 import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../../../combat/InvokerWeapons';
 import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../../shared/InvokerSpells';
@@ -58,6 +59,7 @@ export function getWeaponIconUrl(weaponId: string): string {
     fireball: '/textures/weapons/weapon_fireball.png',
     assault_rifle: '/textures/weapons/weapon_assault_rifle.png',
     poison_puddle: '/textures/weapons/weapon_poison_puddle.png',
+    summon_undead: '/textures/weapons/weapon_summon_undead.png',
     invoker_invoke: '/textures/weapons/weapon_invoker_invoke.png'
   };
   const path = map[weaponId] || `/textures/weapons/weapon_${weaponId}.png`;
@@ -644,6 +646,15 @@ export class LevelUpScreen extends Screen {
         const hasPoisonPuddle = player.weapons.some(w => w.id === 'poison_puddle');
         if (!hasPoisonPuddle) {
           addGenericOption('poison_puddle', 'Ядовитая лужа', '🧪', 'Создаёт на земле едкие пузырящиеся лужи токсичной кислоты, непрерывно сжигающие и замедляющие монстров', () => new PoisonPuddleWeapon());
+        }
+
+        const hasSummonUndead = player.weapons.some(w => w.id === 'summon_undead');
+        if (!hasSummonUndead) {
+          addGenericOption('summon_undead', 'Призыв мёртвых', '💀', 'Призывает верных скелетов-воинов, которые преследуют и сокрушают врагов в ближнем бою', () => {
+            const w = new SummonUndeadWeapon();
+            w.initVisual(this.ctx.getScene(), player.position);
+            return w;
+          });
         }
       }
     }

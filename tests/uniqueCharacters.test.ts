@@ -11,6 +11,9 @@ import {
 import { INVOKER_SPELL_IDS, invokerWeaponId } from '../game/src/shared/InvokerSpells';
 import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { getCharacterAnimLayout, ANIM_LAYOUT_V2 } from '../game/src/entities/CharacterAnimator';
+import { ChunkManager } from '../game/src/world/ChunkManager';
+import { SummonUndeadWeapon } from '../game/src/combat/weapons/SummonUndeadWeapon';
+import { Vector3 } from 'three';
 
 test('Unique Character System - Invoker is unique and isolated', () => {
   assert.equal(isUniqueCharacter('invoker'), true);
@@ -113,7 +116,7 @@ test('Unique Character System - Other characters CANNOT acquire Invoker abilitie
 });
 
 test('Hero Starting Weapons - Necromancer and Amazon are properly configured', () => {
-  assert.equal(DEFAULT_BALANCE.heroes.necromancer.startingWeapon, 'astral_staff');
+  assert.equal(DEFAULT_BALANCE.heroes.necromancer.startingWeapon, 'summon_undead');
   assert.equal(DEFAULT_BALANCE.heroes.amazon.startingWeapon, 'reaper_scythe');
 });
 
@@ -163,3 +166,50 @@ test('Character Animation Layout - Ronin and V2 heroes use ANIM_LAYOUT_V2', () =
     left: 3
   });
 });
+
+test('ChunkManager - 7x7 map grid and bounds verification', () => {
+  assert.equal(ChunkManager.GRID_SIZE, 7, 'Grid size should be 7x7');
+  assert.equal(ChunkManager.MAP_SIZE, 350, 'Map size should be 350m');
+  assert.equal(ChunkManager.HALF_MAP, 175, 'Half map should be 175m');
+  assert.equal(ChunkManager.MIN_CHUNK, -3);
+  assert.equal(ChunkManager.MAX_CHUNK, 3);
+});
+
+test('SummonUndeadWeapon - minion scaling and combat engagement', () => {
+  const weapon = new SummonUndeadWeapon();
+  assert.equal(weapon.id, 'summon_undead');
+  assert.equal(weapon.level, 1);
+  assert.equal(weapon.damage, 22);
+
+  // Upgrade through levels
+  weapon.upgrade(); // lv 2
+  assert.equal(weapon.level, 2);
+  weapon.upgrade(); // lv 3 -> adds minion
+  assert.equal(weapon.level, 3);
+
+  let damagedEnemyId = '';
+  let dealtDamage = 0;
+  const dummyEnemy = {
+    id: 'e1',
+    isAlive: true,
+    position: new Vector3(1, 0, 1),
+    width: 1,
+    height: 1
+  };
+
+  weapon.update(
+    0.8,
+    new Vector3(0, 0, 0),
+    [dummyEnemy as any],
+    () => {},
+    (enemy, dmg) => {
+      damagedEnemyId = enemy.id;
+      dealtDamage = dmg;
+    }
+  );
+
+  assert.equal(damagedEnemyId, 'e1');
+  assert.ok(dealtDamage > 0, 'Minions should deal damage to target enemy');
+  weapon.destroy();
+});
+

@@ -205,6 +205,19 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       splashRadius: 2.2,
       count: 1,
       notes: 'Токсичные пузырящиеся лужи кислоты, наносящие периодический урон и замедляющие врагов'
+    },
+    summon_undead: {
+      id: 'summon_undead',
+      name: 'Призыв мёртвых',
+      icon: '💀',
+      damage: 22,
+      cooldown: 0.75,
+      damagePerLevel: 6,
+      maxLevel: 12,
+      count: 2,
+      range: 16,
+      speed: 7.5,
+      notes: 'Призывает верных скелетов-воинов, которые преследуют и сокрушают врагов в ближнем бою'
     }
   },
   heroes: {
@@ -279,8 +292,8 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       maxHp: 110,
       baseSpeed: 8.6,
       damageMultiplier: 1.40,
-      startingWeapon: 'astral_staff',
-      role: 'Маг смерти: дальнобойные мистические снаряды и контроль поля боя'
+      startingWeapon: 'summon_undead',
+      role: 'Повелитель нежити: призывает свирепых скелетов-воинов и сокрушает врагов тёмной магией'
     },
     amazon: {
       id: 'amazon',
