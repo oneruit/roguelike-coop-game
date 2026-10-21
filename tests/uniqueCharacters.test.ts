@@ -153,6 +153,7 @@ test('Character Animation Layout - Ronin and V2 heroes use ANIM_LAYOUT_V2', () =
   assert.equal(getCharacterAnimLayout('sorceress'), ANIM_LAYOUT_V2);
   assert.equal(getCharacterAnimLayout('amazon'), ANIM_LAYOUT_V2);
   assert.equal(getCharacterAnimLayout('archer'), ANIM_LAYOUT_V2);
+  assert.equal(getCharacterAnimLayout('necromancer'), ANIM_LAYOUT_V2);
   assert.equal(ANIM_LAYOUT_V2.cols, 6);
   assert.equal(ANIM_LAYOUT_V2.rows, 4);
   assert.deepEqual(ANIM_LAYOUT_V2.rowMap, {

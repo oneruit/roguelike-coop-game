@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-21T16:06:48.163Z",
+  "generatedAt": "2026-10-21T16:55:00.309Z",
   "totalFiles": 201,
   "totalSymbols": 1880,
   "topLevelCount": 583,
@@ -2144,7 +2144,7 @@
       "name": "CharacterAnimator",
       "kind": "class",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 102,
+      "line": 101,
       "doc": "Modular Character Animator Handles directional sprite state machines, UV repeat/offset calculations, and Three.js material bindings across 4 animation states: - IDLE: состояние покоя - WALK: состояние движения - IDLE_ATTACK: состояние атаки в покое - WALK_ATTACK: атака в движении"
     },
     {
@@ -2210,7 +2210,7 @@
       "name": "CharacterAnimator.getActiveTexture",
       "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 147,
+      "line": 146,
       "className": "CharacterAnimator",
       "methodName": "getActiveTexture"
     },
@@ -2226,7 +2226,7 @@
       "name": "CharacterAnimator.setDirection",
       "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 125,
+      "line": 124,
       "className": "CharacterAnimator",
       "methodName": "setDirection"
     },
@@ -2242,7 +2242,7 @@
       "name": "CharacterAnimator.setState",
       "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 140,
+      "line": 139,
       "className": "CharacterAnimator",
       "methodName": "setState"
     },
@@ -2258,7 +2258,7 @@
       "name": "CharacterAnimator.triggerAttack",
       "kind": "method",
       "file": "game/src/entities/CharacterAnimator.ts",
-      "line": 129,
+      "line": 128,
       "className": "CharacterAnimator",
       "methodName": "triggerAttack"
     },

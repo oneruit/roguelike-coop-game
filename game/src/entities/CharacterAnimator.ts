@@ -74,7 +74,6 @@ export const ANIM_LAYOUT_LEGACY: CharacterAnimLayout = {
 export function getCharacterAnimLayout(charType: CharacterType): CharacterAnimLayout {
   switch (charType) {
     case 'necromancer':
-      return ANIM_LAYOUT_NECROMANCER;
     case 'amazon':
     case 'valkyrie':
     case 'sorceress':

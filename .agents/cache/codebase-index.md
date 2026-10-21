@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-21T16:06:48.163Z | **Files:** 201 | **Top-level:** 583 | **Class Methods:** 1297
+> **Generated:** 2026-10-21T16:55:00.309Z | **Files:** 201 | **Top-level:** 583 | **Class Methods:** 1297
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -224,7 +224,7 @@ Run `npm run index` to refresh this cache.
 | `CHAPTERS_CONFIG` | `const` | [`game/src/core/ChapterQuestsConfig.ts:25`](../../game/src/core/ChapterQuestsConfig.ts#L25) | - |
 | `CharacterAnimationState` | `type` | [`game/src/character-lab/types.ts:5`](../../game/src/character-lab/types.ts#L5) | - |
 | `CharacterAnimator` | `class` | [`game/src/character-lab/CharacterAnimator.ts:9`](../../game/src/character-lab/CharacterAnimator.ts#L9) | Procedural kinematic animation controller for realistic and natural charact... |
-| `CharacterAnimator` | `class` | [`game/src/entities/CharacterAnimator.ts:102`](../../game/src/entities/CharacterAnimator.ts#L102) | Modular Character Animator Handles directional sprite state machines, UV re... |
+| `CharacterAnimator` | `class` | [`game/src/entities/CharacterAnimator.ts:101`](../../game/src/entities/CharacterAnimator.ts#L101) | Modular Character Animator Handles directional sprite state machines, UV re... |
 | `CharacterAnimator.animateArcherShoot` | `method` | [`game/src/character-lab/CharacterAnimator.ts:237`](../../game/src/character-lab/CharacterAnimator.ts#L237) | - |
 | `CharacterAnimator.animateAttack` | `method` | [`game/src/character-lab/CharacterAnimator.ts:189`](../../game/src/character-lab/CharacterAnimator.ts#L189) | ========================================== |
 | `CharacterAnimator.animateIdle` | `method` | [`game/src/character-lab/CharacterAnimator.ts:103`](../../game/src/character-lab/CharacterAnimator.ts#L103) | ========================================== |
@@ -232,13 +232,13 @@ Run `npm run index` to refresh this cache.
 | `CharacterAnimator.animateMageCast` | `method` | [`game/src/character-lab/CharacterAnimator.ts:270`](../../game/src/character-lab/CharacterAnimator.ts#L270) | - |
 | `CharacterAnimator.animateWarriorSlash` | `method` | [`game/src/character-lab/CharacterAnimator.ts:199`](../../game/src/character-lab/CharacterAnimator.ts#L199) | - |
 | `CharacterAnimator.buildWeaponTrail` | `method` | [`game/src/character-lab/CharacterAnimator.ts:34`](../../game/src/character-lab/CharacterAnimator.ts#L34) | - |
-| `CharacterAnimator.getActiveTexture` | `method` | [`game/src/entities/CharacterAnimator.ts:147`](../../game/src/entities/CharacterAnimator.ts#L147) | - |
+| `CharacterAnimator.getActiveTexture` | `method` | [`game/src/entities/CharacterAnimator.ts:146`](../../game/src/entities/CharacterAnimator.ts#L146) | - |
 | `CharacterAnimator.setClass` | `method` | [`game/src/character-lab/CharacterAnimator.ts:50`](../../game/src/character-lab/CharacterAnimator.ts#L50) | - |
-| `CharacterAnimator.setDirection` | `method` | [`game/src/entities/CharacterAnimator.ts:125`](../../game/src/entities/CharacterAnimator.ts#L125) | - |
+| `CharacterAnimator.setDirection` | `method` | [`game/src/entities/CharacterAnimator.ts:124`](../../game/src/entities/CharacterAnimator.ts#L124) | - |
 | `CharacterAnimator.setState` | `method` | [`game/src/character-lab/CharacterAnimator.ts:54`](../../game/src/character-lab/CharacterAnimator.ts#L54) | - |
-| `CharacterAnimator.setState` | `method` | [`game/src/entities/CharacterAnimator.ts:140`](../../game/src/entities/CharacterAnimator.ts#L140) | - |
+| `CharacterAnimator.setState` | `method` | [`game/src/entities/CharacterAnimator.ts:139`](../../game/src/entities/CharacterAnimator.ts#L139) | - |
 | `CharacterAnimator.triggerAttack` | `method` | [`game/src/character-lab/CharacterAnimator.ts:62`](../../game/src/character-lab/CharacterAnimator.ts#L62) | - |
-| `CharacterAnimator.triggerAttack` | `method` | [`game/src/entities/CharacterAnimator.ts:129`](../../game/src/entities/CharacterAnimator.ts#L129) | - |
+| `CharacterAnimator.triggerAttack` | `method` | [`game/src/entities/CharacterAnimator.ts:128`](../../game/src/entities/CharacterAnimator.ts#L128) | - |
 | `CharacterAnimator.update` | `method` | [`game/src/character-lab/CharacterAnimator.ts:68`](../../game/src/character-lab/CharacterAnimator.ts#L68) | - |
 | `CharacterAnimLayout` | `interface` | [`game/src/entities/CharacterAnimator.ts:8`](../../game/src/entities/CharacterAnimator.ts#L8) | Grid layout specification for directional spritesheets. |
 | `CharacterAnimStateConfig` | `interface` | [`game/src/entities/CharacterAnimator.ts:17`](../../game/src/entities/CharacterAnimator.ts#L17) | State configuration for animation timing and playback. |
