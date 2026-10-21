@@ -197,6 +197,27 @@ class ProcessCharacterSheetsTests(unittest.TestCase):
 
 
 
+    def test_rembg_background_removal(self) -> None:
+        # Create a test sprite on pure white background
+        img = Image.new("RGB", (96, 96), (255, 255, 255))
+        draw = ImageDraw.Draw(img)
+        # Draw character body
+        draw.rectangle((30, 20, 66, 80), fill=(40, 60, 90), outline=(0, 0, 0), width=2)
+        # Draw purple/magenta jewel on chest to verify it is NOT eroded like in chromakey
+        draw.rectangle((44, 40, 52, 48), fill=(220, 30, 220))
+        arr = np.array(img)
+
+        rgba = detect_and_clean_background(arr, bg_mode="rembg")
+
+        # 1. Outer background is transparent
+        self.assertEqual(int(rgba[5, 5, 3]), 0)
+        # 2. Character body is preserved with solid alpha
+        self.assertGreater(int(rgba[50, 50, 3]), 200)
+        # 3. Purple/magenta jewel is 100% preserved
+        self.assertGreater(int(rgba[44, 48, 3]), 200)
+        self.assertEqual(tuple(rgba[44, 48, :3]), (220, 30, 220))
+
+
 if __name__ == "__main__":
     unittest.main()
 

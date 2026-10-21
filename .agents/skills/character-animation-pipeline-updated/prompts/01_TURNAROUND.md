@@ -16,8 +16,8 @@ Four full-body standing views arranged horizontally left-to-right on one canvas:
    **MANDATORY PROFILE RULE**: The character's **body is ALWAYS turned sideways**, and the **face is strictly in profile**. No 3/4 turn.
 
 ### Option B: 4-Column Turnaround with Stacked Focus Column (Default Standard)
-A single reference canvas with 4 vertical columns on pure magenta (`#ff00ff`):
-1. **Column 1: Close-up & Focus Column (Stacked Vertically with >= 40px magenta gutter between them)**:
+A single reference canvas with 4 vertical columns on pure solid flat white (`#ffffff`):
+1. **Column 1: Close-up & Focus Column (Stacked Vertically with >= 40px white gutter between them)**:
    - **Top Panel**: `Portrait` (96×96 close-up bust portrait of head, horns/cowl, face, neck collar/scarf, and pauldron). Centered vertically in top half.
    - **Bottom Panel**: `Weapon Preview` (isolated 96×96 preview of held weapon/focus, e.g. flail handle, chain, and spiked mace head). Centered vertically in bottom half.
 2. **Column 2: Front Full-Body View**:
@@ -33,8 +33,8 @@ A single reference canvas with 4 vertical columns on pure magenta (`#ff00ff`):
 ## 2. Safe Margins & Anti-Overlap Gutter Contract
 
 To prevent adjacent figures or outstretched weapons from bleeding into neighboring panel crops:
-* **Generous Horizontal & Vertical Gutter Spacing**: Maintain **at least 40–50 pixels of pure empty solid magenta background** between each column, and **at least 40–50 pixels between Portrait (top) and Weapon Preview (bottom)** in Column 1.
-* **No Cutoffs**: Entire bust portrait (including ram horns, tips of ears/hair) and weapon head/chain must have at least 15–20px magenta margin from canvas borders to avoid cutoff.
+* **Generous Horizontal & Vertical Gutter Spacing**: Maintain **at least 40–50 pixels of pure empty solid flat white background** between each column, and **at least 40–50 pixels between Portrait (top) and Weapon Preview (bottom)** in Column 1.
+* **No Cutoffs**: Entire bust portrait (including ram horns, tips of ears/hair) and weapon head/chain must have at least 15–20px white margin from canvas borders to avoid cutoff.
 * **No Text Clutter in Cropped Zones**: Do not place large or duplicate text labels inside the sprite bounding boxes.
 * **Compact Poses**: Characters stand in a compact grounded posture with held weapons oriented vertically or angled close to the body, keeping silhouettes neatly centered within their panel area.
 
@@ -52,9 +52,8 @@ To prevent adjacent figures or outstretched weapons from bleeding into neighbori
 
 ## 4. Mandatory Constraints & Cleanliness
 
-* **Background / Chromakey**: **Pure solid magenta background `rgb(255,0,255)` (`#ff00ff`) by default**.
-  - **MANDATORY Green Chromakey (`#00ff00`)**: If the character has purple, lavender, pink, or magenta elements, use **Pure Solid Green `RGB(0, 255, 0)`** to preserve 100% of hair/clothing details without chromakey erosion.
-* **Global Removal & Defringing**: Magenta is removed both outside and inside the character. No magenta aura remains along the edges (defringed with 1px black outline).
+* **Background / Canvas**: **Pure solid flat white background `rgb(255,255,255)` (`#ffffff`)**.
+* **AI Matting via `rembg`**: Background is cleanly extracted using `rembg`, preserving 100% of character colors (including purple, magenta, pink, green, and white) with zero color halos or fringing.
 * **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no floor line, no platform, no pedestal, no tile grid**.
 * **Negative Constraints**:
   > `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head.`

@@ -6,7 +6,7 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
 
 1. **Direct Mode (Ready prompt or reference image)**:
    - When the user provides a complete prompt or reference image, generation runs directly without questionnaires.
-   - The agent strictly enforces key technical requirements: pure magenta background `RGB: 255, 0, 255` (`#ff00ff`), chibi proportions 2.5–3 heads tall, strict side profile in right/left rows, no cast shadows under feet, and the negative constraints block.
+   - The agent strictly enforces key technical requirements: pure solid flat white background `RGB: 255, 255, 255` (`#ffffff`) with `rembg` AI matting, chibi proportions 2.5–3 heads tall, strict side profile in right/left rows, no cast shadows under feet, and the negative constraints block.
 2. **Auto-Enrichment via Defaults (Brief character description)**:
    - When the user provides a brief or incomplete description (e.g. *"amazon girl in red bikini without weapon with magic spheres"*), the agent automatically fills in missing parameters using defaults from the master template (`prompts/00_CHARACTER_LOCK.md`).
 
@@ -19,8 +19,8 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
   > **`No realistic proportions, no tall proportions, no 3 heads tall, no 4 heads tall, no wide adult shoulders, no elongated torso, no long legs, no anime style, no kawaii style, no cute smile, no blushing cheeks, no soft pastel colors, no photorealism, no smooth gradients, no stiff mannequin pose, no frozen torso, no bulging eyes, no wide crazy stare.`**
   > Categorically prohibited: realistic athletic proportions, broad adult shoulders, anime glossy eyes, kawaii blush, juvenile cute smiles, candy pastel tones, blurry gradients, and photorealism.
 - **Color Palette and Pixel Art**: Deep saturated dark fantasy tones (steel, leather, crimson, emerald, obsidian, runes), stepped cluster shading, crisp dark pixel outlines.
-- **Magenta Chromakey Background & Global Removal**: Pure magenta `RGB(255, 0, 255)` (`#ff00ff`). Magenta is removed **both outside and inside the character** (between limbs, weapons, etc.), as magenta is never used on characters.
-- **Defringing & Magenta Aura Elimination (1px Black Outline)**: Boundary pixels touching transparent background are cleaned and receive a crisp 1px black outline `[0, 0, 0, 255]`. Interior sprite textures remain 100% untouched.
+- **Pure Solid Flat White Background & AI Matting (`rembg`)**: Pure solid flat white `RGB(255, 255, 255)` (`#ffffff`). Background is removed using neural AI matting (`rembg` with alpha thresholding), eliminating all color fringes (no pink/magenta halos) and preserving character colors (purple hair, pink armor, white robes) with 100% fidelity.
+- **Clean Natural Alpha Edges**: Preserves crisp 16-bit pixel clusters without color contamination or artificial outline erosion.
 - **Clean Ground Beneath Feet**: **No ground shadows, circular decals, platforms, floor lines, or pedestals**.
 - **Source Grid: 6 Columns × 3 Rows Standard**:
   - Row 0: `FRONT`
@@ -52,7 +52,7 @@ Updated skill for generating pixel-art characters in the **Chibi Dark Fantasy** 
 1. On task receipt:
    - If a complete prompt / reference is given — use directly.
    - If description is brief — enrich with default values via master template `00_CHARACTER_LOCK.md`.
-2. Generate and approve turnaround reference from 5 panels with 40px gutters on pure magenta `rgb(255,0,255)`.
+2. Generate and approve turnaround reference from 5 panels with 40px gutters on pure solid flat white `rgb(255,255,255)`.
 3. For each state, compose prompt using the **6×3 standard grid** (`FRONT`, `BACK`, `RIGHT`):
    - Row 0 FRONT, Row 1 BACK (no eyes/face), Row 2 RIGHT (strict profile).
    - Frame 3: closed eyes on visible faces. Frame 4: normal calm vigilant eyes.
