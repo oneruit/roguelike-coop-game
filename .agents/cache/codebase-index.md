@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-21T06:18:14.326Z | **Files:** 201 | **Top-level:** 583 | **Class Methods:** 1297
+> **Generated:** 2026-10-21T16:06:48.163Z | **Files:** 201 | **Top-level:** 583 | **Class Methods:** 1297
 > **Entities Registered:** 10 Heroes, 26 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -1505,30 +1505,30 @@ Run `npm run index` to refresh this cache.
 | `SeededRNG.rangeInt` | `method` | [`game/src/core/SeededRNG.ts:45`](../../game/src/core/SeededRNG.ts#L45) | Generates a deterministic integer in range [min, max] inclusive |
 | `selectWeaponUpgradeOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:5`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L5) | The pool is already shuffled and filtered for ownership, prerequisites and ... |
 | `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:63`](../../game/src/core/SessionDirector.ts#L63) | - |
-| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:747`](../../game/src/core/SessionDirector.ts#L747) | Activates the dimensional rift: summons the stage boss directly from the ri... |
-| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:956`](../../game/src/core/SessionDirector.ts#L956) | - |
-| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:1151`](../../game/src/core/SessionDirector.ts#L1151) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
-| `SessionDirector.completeGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:802`](../../game/src/core/SessionDirector.ts#L802) | - |
-| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:483`](../../game/src/core/SessionDirector.ts#L483) | - |
-| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:605`](../../game/src/core/SessionDirector.ts#L605) | - |
-| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:474`](../../game/src/core/SessionDirector.ts#L474) | - |
-| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:525`](../../game/src/core/SessionDirector.ts#L525) | - |
-| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:466`](../../game/src/core/SessionDirector.ts#L466) | - |
-| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1313`](../../game/src/core/SessionDirector.ts#L1313) | Resumes a previously saved run from localStorage. |
-| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:407`](../../game/src/core/SessionDirector.ts#L407) | - |
-| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1235`](../../game/src/core/SessionDirector.ts#L1235) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
-| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:350`](../../game/src/core/SessionDirector.ts#L350) | - |
-| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:294`](../../game/src/core/SessionDirector.ts#L294) | - |
-| `SessionDirector.startGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:766`](../../game/src/core/SessionDirector.ts#L766) | - |
-| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:399`](../../game/src/core/SessionDirector.ts#L399) | - |
-| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1181`](../../game/src/core/SessionDirector.ts#L1181) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
-| `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:208`](../../game/src/core/SessionDirector.ts#L208) | - |
-| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:1034`](../../game/src/core/SessionDirector.ts#L1034) | - |
-| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:493`](../../game/src/core/SessionDirector.ts#L493) | - |
+| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:748`](../../game/src/core/SessionDirector.ts#L748) | Activates the dimensional rift: summons the stage boss directly from the ri... |
+| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:957`](../../game/src/core/SessionDirector.ts#L957) | - |
+| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:1152`](../../game/src/core/SessionDirector.ts#L1152) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
+| `SessionDirector.completeGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:803`](../../game/src/core/SessionDirector.ts#L803) | - |
+| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:484`](../../game/src/core/SessionDirector.ts#L484) | - |
+| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:606`](../../game/src/core/SessionDirector.ts#L606) | - |
+| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:475`](../../game/src/core/SessionDirector.ts#L475) | - |
+| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:526`](../../game/src/core/SessionDirector.ts#L526) | - |
+| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:467`](../../game/src/core/SessionDirector.ts#L467) | - |
+| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1314`](../../game/src/core/SessionDirector.ts#L1314) | Resumes a previously saved run from localStorage. |
+| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:408`](../../game/src/core/SessionDirector.ts#L408) | - |
+| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1236`](../../game/src/core/SessionDirector.ts#L1236) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
+| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:351`](../../game/src/core/SessionDirector.ts#L351) | - |
+| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:295`](../../game/src/core/SessionDirector.ts#L295) | - |
+| `SessionDirector.startGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:767`](../../game/src/core/SessionDirector.ts#L767) | - |
+| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:400`](../../game/src/core/SessionDirector.ts#L400) | - |
+| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1182`](../../game/src/core/SessionDirector.ts#L1182) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
+| `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:209`](../../game/src/core/SessionDirector.ts#L209) | - |
+| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:1035`](../../game/src/core/SessionDirector.ts#L1035) | - |
+| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:494`](../../game/src/core/SessionDirector.ts#L494) | - |
 | `SessionDirector.updateChestsHUD` | `method` | [`game/src/core/SessionDirector.ts:178`](../../game/src/core/SessionDirector.ts#L178) | - |
-| `SessionDirector.updateGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:786`](../../game/src/core/SessionDirector.ts#L786) | - |
-| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:835`](../../game/src/core/SessionDirector.ts#L835) | - |
-| `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:183`](../../game/src/core/SessionDirector.ts#L183) | - |
+| `SessionDirector.updateGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:787`](../../game/src/core/SessionDirector.ts#L787) | - |
+| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:836`](../../game/src/core/SessionDirector.ts#L836) | - |
+| `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:184`](../../game/src/core/SessionDirector.ts#L184) | - |
 | `SettingsModal` | `const` | [`game/src/ui/react/modals/SettingsModal.tsx:10`](../../game/src/ui/react/modals/SettingsModal.tsx#L10) | - |
 | `SettingsModalProps` | `interface` | [`game/src/ui/react/modals/SettingsModal.tsx:5`](../../game/src/ui/react/modals/SettingsModal.tsx#L5) | - |
 | `SettingsScreen` | `class` | [`game/src/ui/screens/Settings/SettingsScreen.ts:29`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L29) | Modular Settings Screen. Manages Graphics, Audio, HUD preferences, Controls... |

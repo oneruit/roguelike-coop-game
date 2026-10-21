@@ -1,6 +1,6 @@
 ---
 name: boss-animation-pipeline
-description: Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) in menacing 16-bit dark fantasy pixel art style (strictly NO anime/chibi/cute) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine.
+description: "Comprehensive pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated boss monsters (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 160x160px per cell) in menacing 16-bit dark fantasy pixel art style (strictly NO anime/chibi/cute) with 3rd frame hit registration, contact ground shadows, and ground anchoring into the game engine."
 ---
 
 # Boss Animation Pipeline Skill

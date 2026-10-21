@@ -1,6 +1,6 @@
 ---
-description: Mandatory rule: when adding a new character, weapon, monster, or boss to the game, always register them in the default balance and admin panel
-globs: ["game/src/**/*", "admin/**/*"]
+description: "Mandatory rule: when adding a new character, weapon, monster, or boss to the game, always register them in the default balance and admin panel"
+globs: "game/src/**/*, admin/**/*"
 ---
 
 # Entity & Admin Panel Synchronization Rule

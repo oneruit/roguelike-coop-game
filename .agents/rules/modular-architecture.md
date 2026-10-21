@@ -1,6 +1,6 @@
 ---
-description: Mandatory modular and structured architecture rule for UI, game mechanics, and assets
-globs: ["game/**/*", "admin/**/*", "public/**/*"]
+description: "Mandatory modular and structured architecture rule for UI, game mechanics, and assets"
+globs: "game/**/*, admin/**/*, public/**/*"
 ---
 
 # Modular and Structured Architecture Rule

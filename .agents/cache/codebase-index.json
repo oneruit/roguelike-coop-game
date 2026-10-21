@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-21T06:18:14.326Z",
+  "generatedAt": "2026-10-21T16:06:48.163Z",
   "totalFiles": 201,
   "totalSymbols": 1880,
   "topLevelCount": 583,
@@ -11850,7 +11850,7 @@
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 747,
+      "line": 748,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -11859,7 +11859,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 956,
+      "line": 957,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -11867,7 +11867,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1151,
+      "line": 1152,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -11876,7 +11876,7 @@
       "name": "SessionDirector.completeGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 802,
+      "line": 803,
       "className": "SessionDirector",
       "methodName": "completeGreedTrial"
     },
@@ -11884,7 +11884,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 483,
+      "line": 484,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -11892,7 +11892,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 605,
+      "line": 606,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -11900,7 +11900,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 474,
+      "line": 475,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -11908,7 +11908,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 525,
+      "line": 526,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -11916,7 +11916,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 466,
+      "line": 467,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -11924,7 +11924,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1313,
+      "line": 1314,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -11933,7 +11933,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 407,
+      "line": 408,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -11941,7 +11941,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1235,
+      "line": 1236,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -11950,7 +11950,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 350,
+      "line": 351,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -11958,7 +11958,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 294,
+      "line": 295,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -11966,7 +11966,7 @@
       "name": "SessionDirector.startGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 766,
+      "line": 767,
       "className": "SessionDirector",
       "methodName": "startGreedTrial"
     },
@@ -11974,7 +11974,7 @@
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 399,
+      "line": 400,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -11982,7 +11982,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1181,
+      "line": 1182,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -11991,7 +11991,7 @@
       "name": "SessionDirector.toggleDevMode",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 208,
+      "line": 209,
       "className": "SessionDirector",
       "methodName": "toggleDevMode"
     },
@@ -11999,7 +11999,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1034,
+      "line": 1035,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -12007,7 +12007,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 493,
+      "line": 494,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -12023,7 +12023,7 @@
       "name": "SessionDirector.updateGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 786,
+      "line": 787,
       "className": "SessionDirector",
       "methodName": "updateGreedTrial"
     },
@@ -12031,7 +12031,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 835,
+      "line": 836,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },
@@ -12039,7 +12039,7 @@
       "name": "SessionDirector.wireCoordinatorCallbacks",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 183,
+      "line": 184,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
     },
