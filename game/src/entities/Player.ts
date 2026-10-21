@@ -708,7 +708,7 @@ export class Player {
   public addHpRegen(_amount: number = 1.0) { this.amuletCount++; this.recalculateStats(); }
   public addDamageReduction(_pct: number = 0.10) { this.vestCount++; this.recalculateStats(); }
 
-  public addCooldownReduction(_pct: number = 0.01) {
+  public addCooldownReduction(_pct: number = 0.005) {
     if (this.watchCount < 200) {
       this.watchCount++;
       this.recalculateStats();
@@ -762,7 +762,7 @@ export class Player {
       return this.critDamage >= 10.0;
     }
     if (itemId === 'stat_watch') {
-      return this.watchCount >= 200 || (this.watchCount > 0 && 0.01 * Math.pow(this.watchCount, Math.log(50) / Math.log(200)) >= 0.50);
+      return this.watchCount >= 200 || (this.watchCount > 0 && 0.005 * Math.pow(this.watchCount, Math.log(50) / Math.log(200)) >= 0.25);
     }
     if (itemId === 'stat_vest') {
       return this.passiveDamageReduction >= 0.70 || this.vestCount >= 300;
@@ -803,9 +803,9 @@ export class Player {
         this.addDamageReduction(0.10);
         return `🦺 -${(this.passiveDamageReduction * 100).toFixed(1)}% Урон от мобов (${Math.round(this.passiveDamageReduction * 100)}%)`;
       case 'stat_watch':
-        this.addCooldownReduction(0.01);
-        const cdrPct = Math.round((this.watchCount <= 0 ? 0 : Math.min(0.50, 0.01 * Math.pow(this.watchCount, Math.log(50) / Math.log(200)))) * 100);
-        return `⏱️ -1% КД (-${cdrPct}% / макс. 50%)`;
+        this.addCooldownReduction(0.005);
+        const cdrPct = Math.round((this.watchCount <= 0 ? 0 : Math.min(0.25, 0.005 * Math.pow(this.watchCount, Math.log(50) / Math.log(200)))) * 100);
+        return `⏱️ -0.5% КД (-${cdrPct}% / макс. 25%)`;
       case 'stat_crit_damage':
         this.addCritDamageBonus();
         return `🗡️ +1% Крит. урон (+${Math.round(this.critDamage * 100)}%)`;
@@ -1036,6 +1036,7 @@ export class Player {
 
       if (weapon instanceof InvokerWeapon) {
         weapon.setInvokeSource(invokeSource instanceof InvokerWeapon ? invokeSource : undefined);
+        weapon.setOwnerWeapons(this.weapons);
         weapon.onSpellCast = cast => {
           if (Math.hypot(cast.dx, cast.dz) > .01) {
             this.setDirection(Math.abs(cast.dx) >= Math.abs(cast.dz) ?

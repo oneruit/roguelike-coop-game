@@ -23,7 +23,7 @@ import {
   SimPoisonPuddleWeapon,
   SimSummonUndeadWeapon
 } from './SimMagicWeapons';
-import { SimInvokerWeapon } from './SimInvokerWeapon';
+import { SimInvokerWeapon, SimInvokerQuasWeapon, SimInvokerWexWeapon, SimInvokerExortWeapon } from './SimInvokerWeapon';
 
 /** Creates the starting weapon for character selection. */
 export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon {
@@ -57,6 +57,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
  */
 export function createSimWeaponById(id: string): SimWeapon | null {
   if (id === 'invoker_invoke') return new SimInvokerWeapon();
+  if (id === 'invoker_quas') return new SimInvokerQuasWeapon();
+  if (id === 'invoker_wex') return new SimInvokerWexWeapon();
+  if (id === 'invoker_exort') return new SimInvokerExortWeapon();
   const spell = invokerSpellFromWeaponId(id);
   if (spell) return new SimInvokerWeapon(spell);
   switch (id) {

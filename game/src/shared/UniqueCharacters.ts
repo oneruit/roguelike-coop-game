@@ -1,10 +1,6 @@
 import type { CharacterType } from './types/entities';
 
-/**
- * All exclusive weapon IDs belonging to Invoker.
- */
-export const INVOKER_EXCLUSIVE_WEAPONS = [
-  'invoker_invoke',
+const INVOKER_LEGACY_SPELL_WEAPONS = [
   'invoker_cold_snap',
   'invoker_ghost_walk',
   'invoker_ice_wall',
@@ -15,6 +11,17 @@ export const INVOKER_EXCLUSIVE_WEAPONS = [
   'invoker_forge_spirit',
   'invoker_chaos_meteor',
   'invoker_deafening_blast'
+] as const;
+
+/**
+ * All exclusive weapon IDs belonging to Invoker.
+ */
+export const INVOKER_EXCLUSIVE_WEAPONS = [
+  'invoker_invoke',
+  'invoker_quas',
+  'invoker_wex',
+  'invoker_exort',
+  ...INVOKER_LEGACY_SPELL_WEAPONS
 ] as const;
 
 /**
@@ -59,9 +66,17 @@ export const UNIQUE_CHARACTERS: Record<string, UniqueCharacterConfig> = {
     exclusiveWeaponIds: INVOKER_EXCLUSIVE_WEAPONS,
     allowGenericWeapons: false,
     canAcquireExclusiveWeapon: (weaponId, currentWeapons) => {
-      // Must have the base Invoke weapon to acquire separate standalone spells
+      // Must have the base Invoke weapon to acquire Quas, Wex, Exort or legacy spells
       if (weaponId === 'invoker_invoke') return true;
-      return currentWeapons.some(w => w.id === 'invoker_invoke');
+      if (
+        weaponId === 'invoker_quas' ||
+        weaponId === 'invoker_wex' ||
+        weaponId === 'invoker_exort' ||
+        (INVOKER_EXCLUSIVE_WEAPONS as readonly string[]).includes(weaponId)
+      ) {
+        return currentWeapons.some(w => w.id === 'invoker_invoke');
+      }
+      return false;
     }
   }
 };

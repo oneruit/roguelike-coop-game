@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-21T19:46:55.276Z",
+  "generatedAt": "2026-10-21T21:12:24.624Z",
   "totalFiles": 202,
-  "totalSymbols": 1890,
-  "topLevelCount": 585,
-  "methodsCount": 1305,
+  "totalSymbols": 1913,
+  "topLevelCount": 597,
+  "methodsCount": 1316,
   "entities": {
     "heroes": [
       {
@@ -107,6 +107,36 @@
         "maxLevel": 12,
         "range": 22,
         "notes": "При каждом срабатывании равновероятно выбирает одно из десяти заклинаний Инвокера."
+      },
+      {
+        "id": "invoker_quas",
+        "name": "Quas — Сфера Льда",
+        "icon": "❄️",
+        "damage": 15,
+        "cooldown": 1,
+        "maxLevel": 12,
+        "range": 4.5,
+        "notes": "+1.5 HP/с регенерации за уровень. Усиливает контроль и заморозку Quas-заклинаний."
+      },
+      {
+        "id": "invoker_wex",
+        "name": "Wex — Сфера Бури",
+        "icon": "⚡",
+        "damage": 15,
+        "cooldown": 1,
+        "maxLevel": 12,
+        "range": 9,
+        "notes": "+3% скорости бега и +2% скорости атаки за уровень. Усиливает скорость и радиус Wex-заклинаний."
+      },
+      {
+        "id": "invoker_exort",
+        "name": "Exort — Сфера Огня",
+        "icon": "🔥",
+        "damage": 20,
+        "cooldown": 1,
+        "maxLevel": 12,
+        "range": 6,
+        "notes": "+6% общего урона за уровень. Усиливает разрушительный урон Exort-заклинаний."
       },
       {
         "id": "invoker_cold_snap",
@@ -636,7 +666,7 @@
         "id": "stat_watch",
         "name": "Карманные Часы",
         "icon": "⏱️",
-        "description": "-1% к времени перезарядки оружий (угасающая эффективность до 50% на 200 ур., макс. 50%)"
+        "description": "-0.5% к времени перезарядки оружий (угасающая эффективность до 25% на 200 ур., макс. 25%)"
       },
       {
         "id": "stat_crit_damage",
@@ -2053,21 +2083,21 @@
       "name": "canAcquireInvokerWeapon",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 160,
+      "line": 218,
       "doc": "Separate spell weapons require Invoke in the same inventory, and hero must be allowed to acquire."
     },
     {
       "name": "canCharacterAcquireWeapon",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 122,
+      "line": 137,
       "doc": "The single source of truth for whether a hero is allowed to acquire or upgrade a weapon. Rules: 1. If weapon is exclusive to hero X, only hero X can acquire it. 2. If hero is a unique character (e.g. Invoker): - They can only acquire weapons from their exclusive list. - They CANNOT acquire generic weapons (bow, katana, etc.) unless allowGenericWeapons is explicitly true. - Sub-prerequisites (like having invoker_invoke) are evaluated. 3. If hero is a non-unique character (Ronin, Valkyrie, Archer, etc.): - They CANNOT acquire any exclusive weapon (like invoker_invoke or any invoker spell). - They can acquire any generic non-exclusive weapon."
     },
     {
       "name": "canRerollWeaponOptions",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 29,
+      "line": 36,
       "doc": "Determines whether the current weapon selection qualifies for a reroll. Per rule: reroll is allowed if and only if all three choices are new weapons."
     },
     {
@@ -3252,7 +3282,7 @@
       "name": "createInvokerBuff",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 273
+      "line": 331
     },
     {
       "name": "createSimWeaponById",
@@ -3513,7 +3543,7 @@
       "name": "DEFAULT_DEMO_LEADERBOARDS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 216
+      "line": 222
     },
     {
       "name": "DetailedPlayerResult",
@@ -4476,7 +4506,7 @@
       "name": "filterAndShuffleForReroll",
       "kind": "function",
       "file": "game/src/ui/selectWeaponUpgradeOptions.ts",
-      "line": 40,
+      "line": 47,
       "doc": "Partitions and shuffles the pool for reroll: Options not in `excludedIds` are prioritized first (in random order), followed by options in `excludedIds` (in random order)."
     },
     {
@@ -4710,14 +4740,14 @@
       "name": "GameCore",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 322,
+      "line": 323,
       "doc": "Headless Deterministic GameCore Simulation Engine Manages all authoritative game state, math, collisions, spawns, and drops. Decoupled from WebGL / Three.js / DOM."
     },
     {
       "name": "GameCore.addPlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 388,
+      "line": 389,
       "className": "GameCore",
       "methodName": "addPlayer",
       "doc": "-------------------------------------------------------------"
@@ -4726,7 +4756,7 @@
       "name": "GameCore.collectDrop",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1062,
+      "line": 1064,
       "className": "GameCore",
       "methodName": "collectDrop"
     },
@@ -4734,7 +4764,7 @@
       "name": "GameCore.damagePlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 759,
+      "line": 761,
       "className": "GameCore",
       "methodName": "damagePlayer"
     },
@@ -4742,7 +4772,7 @@
       "name": "GameCore.freezeAndKnockbackAll",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 436,
+      "line": 437,
       "className": "GameCore",
       "methodName": "freezeAndKnockbackAll"
     },
@@ -4750,7 +4780,7 @@
       "name": "GameCore.getSnapshot",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1185,
+      "line": 1187,
       "className": "GameCore",
       "methodName": "getSnapshot",
       "doc": "-------------------------------------------------------------"
@@ -4759,7 +4789,7 @@
       "name": "GameCore.grantTeamAltarBuff",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1109,
+      "line": 1111,
       "className": "GameCore",
       "methodName": "grantTeamAltarBuff"
     },
@@ -4767,7 +4797,7 @@
       "name": "GameCore.isGameOver",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1168,
+      "line": 1170,
       "className": "GameCore",
       "methodName": "isGameOver"
     },
@@ -4775,7 +4805,7 @@
       "name": "GameCore.killEnemy",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 985,
+      "line": 987,
       "className": "GameCore",
       "methodName": "killEnemy"
     },
@@ -4783,7 +4813,7 @@
       "name": "GameCore.removePlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 395,
+      "line": 396,
       "className": "GameCore",
       "methodName": "removePlayer"
     },
@@ -4791,7 +4821,7 @@
       "name": "GameCore.revivePlayer",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 419,
+      "line": 420,
       "className": "GameCore",
       "methodName": "revivePlayer"
     },
@@ -4799,7 +4829,7 @@
       "name": "GameCore.setPlayerInput",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 399,
+      "line": 400,
       "className": "GameCore",
       "methodName": "setPlayerInput"
     },
@@ -4807,7 +4837,7 @@
       "name": "GameCore.spawnBoss",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 646,
+      "line": 648,
       "className": "GameCore",
       "methodName": "spawnBoss"
     },
@@ -4815,7 +4845,7 @@
       "name": "GameCore.spawnEnemyWave",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 611,
+      "line": 613,
       "className": "GameCore",
       "methodName": "spawnEnemyWave"
     },
@@ -4823,7 +4853,7 @@
       "name": "GameCore.tick",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 448,
+      "line": 449,
       "className": "GameCore",
       "methodName": "tick",
       "doc": "-------------------------------------------------------------"
@@ -4832,7 +4862,7 @@
       "name": "GameCore.updateAltars",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1092,
+      "line": 1094,
       "className": "GameCore",
       "methodName": "updateAltars"
     },
@@ -4840,7 +4870,7 @@
       "name": "GameCore.updateDrops",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1021,
+      "line": 1023,
       "className": "GameCore",
       "methodName": "updateDrops"
     },
@@ -4848,7 +4878,7 @@
       "name": "GameCore.updateEnemies",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 671,
+      "line": 673,
       "className": "GameCore",
       "methodName": "updateEnemies"
     },
@@ -4856,7 +4886,7 @@
       "name": "GameCore.updatePlayers",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 479,
+      "line": 480,
       "className": "GameCore",
       "methodName": "updatePlayers"
     },
@@ -4864,7 +4894,7 @@
       "name": "GameCore.updateProjectiles",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 790,
+      "line": 792,
       "className": "GameCore",
       "methodName": "updateProjectiles"
     },
@@ -4872,7 +4902,7 @@
       "name": "GameCore.updateRevives",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 1133,
+      "line": 1135,
       "className": "GameCore",
       "methodName": "updateRevives"
     },
@@ -4880,7 +4910,7 @@
       "name": "GameCore.updateWaves",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 590,
+      "line": 592,
       "className": "GameCore",
       "methodName": "updateWaves"
     },
@@ -4888,7 +4918,7 @@
       "name": "GameCore.upgradePlayerWeapon",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 406,
+      "line": 407,
       "className": "GameCore",
       "methodName": "upgradePlayerWeapon"
     },
@@ -5327,13 +5357,13 @@
       "name": "getEntityTexture",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 172
+      "line": 178
     },
     {
       "name": "getExclusiveWeaponOwner",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 100,
+      "line": 115,
       "doc": "Returns the character type that owns the given weapon ID, or null if it's a generic weapon."
     },
     {
@@ -5388,14 +5418,20 @@
       "name": "getInvokerScaling",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 172,
+      "line": 230,
       "doc": "Shared mastery curve for browser and deterministic simulation. Ghost duration stays fixed."
     },
     {
       "name": "getInvokerSpellDuration",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 182
+      "line": 240
+    },
+    {
+      "name": "getInvokerSphereScaling",
+      "kind": "function",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 46
     },
     {
       "name": "getItemsByGrade",
@@ -5407,7 +5443,7 @@
       "name": "getMonsterColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 104
+      "line": 110
     },
     {
       "name": "getPassiveBuffId",
@@ -5469,14 +5505,14 @@
       "name": "getUniqueCharacterConfig",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 86,
+      "line": 101,
       "doc": "Returns configuration for a unique character, if registered."
     },
     {
       "name": "getWeaponColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 94
+      "line": 100
     },
     {
       "name": "getWeaponEffectiveCap",
@@ -5495,7 +5531,7 @@
       "name": "getWeaponIconUrl",
       "kind": "function",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 45
+      "line": 44
     },
     {
       "name": "GlobalBalanceConfig",
@@ -5551,7 +5587,7 @@
       "name": "HERO_NAMES",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 203
+      "line": 209
     },
     {
       "name": "HERO_ORDER",
@@ -6997,25 +7033,25 @@
       "name": "INVOKE_BASE_DAMAGE",
       "kind": "const",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 167
+      "line": 225
     },
     {
       "name": "INVOKE_COOLDOWN_FACTOR",
       "kind": "const",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 169
+      "line": 227
     },
     {
       "name": "INVOKE_DAMAGE_PER_LEVEL",
       "kind": "const",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 168
+      "line": 226
     },
     {
       "name": "INVOKER_EXCLUSIVE_WEAPONS",
       "kind": "const",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 6,
+      "line": 19,
       "doc": "All exclusive weapon IDs belonging to Invoker."
     },
     {
@@ -7028,25 +7064,61 @@
       "name": "INVOKER_SPELLS",
       "kind": "const",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 27
+      "line": 85
+    },
+    {
+      "name": "INVOKER_SPHERE_IDS",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 16
+    },
+    {
+      "name": "InvokerExortWeapon",
+      "kind": "class",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 418,
+      "doc": "Exort (Сфера Огня) Grants +6% total damage per level, burns nearby enemies, and powers Exort-based spells."
+    },
+    {
+      "name": "InvokerExortWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 448,
+      "className": "InvokerExortWeapon",
+      "methodName": "getNextUpgradeDescription"
     },
     {
       "name": "InvokerInvokeWeapon",
       "kind": "class",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 167
+      "line": 217
+    },
+    {
+      "name": "InvokerQuasWeapon",
+      "kind": "class",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 313,
+      "doc": "Quas (Сфера Льда) Grants +1.5 HP/s per level, chills nearby monsters, and powers Quas-based spells."
+    },
+    {
+      "name": "InvokerQuasWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 346,
+      "className": "InvokerQuasWeapon",
+      "methodName": "getNextUpgradeDescription"
     },
     {
       "name": "InvokerSpellCast",
       "kind": "interface",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 197
+      "line": 255
     },
     {
       "name": "InvokerSpellDefinition",
       "kind": "interface",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 16
+      "line": 74
     },
     {
       "name": "InvokerSpellEffects",
@@ -7107,26 +7179,26 @@
       "name": "invokerSpellFromWeaponId",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 153
+      "line": 211
     },
     {
       "name": "InvokerSpellId",
       "kind": "type",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 15
+      "line": 73
     },
     {
       "name": "InvokerSpellRuntime",
       "kind": "class",
       "file": "game/src/shared/InvokerSpellRuntime.ts",
-      "line": 36,
+      "line": 38,
       "doc": "Spell rules are independent of rendering: remote visual events cannot deal damage."
     },
     {
       "name": "InvokerSpellRuntime.clear",
       "kind": "method",
       "file": "game/src/shared/InvokerSpellRuntime.ts",
-      "line": 38,
+      "line": 40,
       "className": "InvokerSpellRuntime",
       "methodName": "clear"
     },
@@ -7134,7 +7206,7 @@
       "name": "InvokerSpellRuntime.update",
       "kind": "method",
       "file": "game/src/shared/InvokerSpellRuntime.ts",
-      "line": 83,
+      "line": 89,
       "className": "InvokerSpellRuntime",
       "methodName": "update"
     },
@@ -7142,20 +7214,32 @@
       "name": "InvokerSpellWeapon",
       "kind": "class",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 172
+      "line": 223
+    },
+    {
+      "name": "InvokerSphereId",
+      "kind": "type",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 17
+    },
+    {
+      "name": "InvokerSphereMastery",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 39
     },
     {
       "name": "InvokerWeapon",
       "kind": "class",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 25,
-      "doc": "Invoke powers random casts and any separately acquired spell weapons."
+      "line": 33,
+      "doc": "Invoke powers random casts and scales dynamically with Quas, Wex, and Exort spheres."
     },
     {
       "name": "InvokerWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 145,
+      "line": 194,
       "className": "InvokerWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -7163,15 +7247,23 @@
       "name": "InvokerWeapon.setInvokeSource",
       "kind": "method",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 34,
+      "line": 44,
       "className": "InvokerWeapon",
       "methodName": "setInvokeSource"
+    },
+    {
+      "name": "InvokerWeapon.setOwnerWeapons",
+      "kind": "method",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 48,
+      "className": "InvokerWeapon",
+      "methodName": "setOwnerWeapons"
     },
     {
       "name": "InvokerWeapon.upgrade",
       "kind": "method",
       "file": "game/src/combat/InvokerWeapons.ts",
-      "line": 138,
+      "line": 182,
       "className": "InvokerWeapon",
       "methodName": "upgrade"
     },
@@ -7179,7 +7271,22 @@
       "name": "invokerWeaponId",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 150
+      "line": 208
+    },
+    {
+      "name": "InvokerWexWeapon",
+      "kind": "class",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 364,
+      "doc": "Wex (Сфера Бури) Grants +3% move speed, +2% attack speed / CDR per level, periodic electric shock, and powers Wex-based spells."
+    },
+    {
+      "name": "InvokerWexWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/combat/InvokerWeapons.ts",
+      "line": 400,
+      "className": "InvokerWexWeapon",
+      "methodName": "getNextUpgradeDescription"
     },
     {
       "name": "isBinarySnapshot",
@@ -7192,20 +7299,20 @@
       "name": "isExclusiveWeapon",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 93,
+      "line": 108,
       "doc": "Checks whether a given weapon ID is exclusive to any registered unique character."
     },
     {
       "name": "isInvokerSpellId",
       "kind": "function",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 147
+      "line": 205
     },
     {
       "name": "isUniqueCharacter",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 79,
+      "line": 94,
       "doc": "Checks if a character is defined as a unique character."
     },
     {
@@ -7560,13 +7667,13 @@
       "name": "LevelUpScreen",
       "kind": "class",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 89
+      "line": 88
     },
     {
       "name": "LevelUpScreen.bindElements",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 115,
+      "line": 114,
       "className": "LevelUpScreen",
       "methodName": "bindElements"
     },
@@ -7574,7 +7681,7 @@
       "name": "LevelUpScreen.bindEvents",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 123,
+      "line": 122,
       "className": "LevelUpScreen",
       "methodName": "bindEvents"
     },
@@ -7582,7 +7689,7 @@
       "name": "LevelUpScreen.generateWeaponOptions",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 366,
+      "line": 365,
       "className": "LevelUpScreen",
       "methodName": "generateWeaponOptions"
     },
@@ -7590,7 +7697,7 @@
       "name": "LevelUpScreen.getTemplate",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 111,
+      "line": 110,
       "className": "LevelUpScreen",
       "methodName": "getTemplate"
     },
@@ -7598,7 +7705,7 @@
       "name": "LevelUpScreen.hideLevelUp",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 354,
+      "line": 353,
       "className": "LevelUpScreen",
       "methodName": "hideLevelUp"
     },
@@ -7606,7 +7713,7 @@
       "name": "LevelUpScreen.resetLevelUpState",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 125,
+      "line": 124,
       "className": "LevelUpScreen",
       "methodName": "resetLevelUpState"
     },
@@ -7614,7 +7721,7 @@
       "name": "LevelUpScreen.selectAutoLevelUpOption",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 184,
+      "line": 183,
       "className": "LevelUpScreen",
       "methodName": "selectAutoLevelUpOption"
     },
@@ -7622,7 +7729,7 @@
       "name": "LevelUpScreen.showLevelUp",
       "kind": "method",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 131,
+      "line": 130,
       "className": "LevelUpScreen",
       "methodName": "showLevelUp"
     },
@@ -7630,13 +7737,13 @@
       "name": "LevelUpScreenElements",
       "kind": "interface",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 69
+      "line": 68
     },
     {
       "name": "LevelUpScreenOptions",
       "kind": "interface",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 78
+      "line": 77
     },
     {
       "name": "LevelUpUI",
@@ -9086,7 +9193,7 @@
       "name": "MONSTER_COLORS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 80
+      "line": 86
     },
     {
       "name": "MonsterBalanceConfig",
@@ -9574,7 +9681,7 @@
       "name": "Player.addLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1266,
+      "line": 1267,
       "className": "Player",
       "methodName": "addLevel"
     },
@@ -9662,7 +9769,7 @@
       "name": "Player.areAllWeaponsMaxed",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1220,
+      "line": 1221,
       "className": "Player",
       "methodName": "areAllWeaponsMaxed"
     },
@@ -9670,7 +9777,7 @@
       "name": "Player.calculateXpToNextLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1262,
+      "line": 1263,
       "className": "Player",
       "methodName": "calculateXpToNextLevel"
     },
@@ -9686,7 +9793,7 @@
       "name": "Player.destroy",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1368,
+      "line": 1369,
       "className": "Player",
       "methodName": "destroy"
     },
@@ -9694,7 +9801,7 @@
       "name": "Player.fullHeal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1189,
+      "line": 1190,
       "className": "Player",
       "methodName": "fullHeal"
     },
@@ -9702,7 +9809,7 @@
       "name": "Player.gainXp",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1274,
+      "line": 1275,
       "className": "Player",
       "methodName": "gainXp",
       "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
@@ -9711,7 +9818,7 @@
       "name": "Player.getAwakenedCap",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1216,
+      "line": 1217,
       "className": "Player",
       "methodName": "getAwakenedCap"
     },
@@ -9719,7 +9826,7 @@
       "name": "Player.getBuffsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1401,
+      "line": 1402,
       "className": "Player",
       "methodName": "getBuffsNetState"
     },
@@ -9761,7 +9868,7 @@
       "name": "Player.getWeaponsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1392,
+      "line": 1393,
       "className": "Player",
       "methodName": "getWeaponsNetState"
     },
@@ -9769,7 +9876,7 @@
       "name": "Player.giveAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1225,
+      "line": 1226,
       "className": "Player",
       "methodName": "giveAllWeapons"
     },
@@ -9785,7 +9892,7 @@
       "name": "Player.heal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1184,
+      "line": 1185,
       "className": "Player",
       "methodName": "heal"
     },
@@ -9817,7 +9924,7 @@
       "name": "Player.maxAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1254,
+      "line": 1255,
       "className": "Player",
       "methodName": "maxAllWeapons"
     },
@@ -9841,7 +9948,7 @@
       "name": "Player.redrawOverhead",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1342,
+      "line": 1343,
       "className": "Player",
       "methodName": "redrawOverhead"
     },
@@ -9857,7 +9964,7 @@
       "name": "Player.reset",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1291,
+      "line": 1292,
       "className": "Player",
       "methodName": "reset"
     },
@@ -9865,7 +9972,7 @@
       "name": "Player.revive",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1164,
+      "line": 1165,
       "className": "Player",
       "methodName": "revive"
     },
@@ -9905,7 +10012,7 @@
       "name": "Player.takeDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1085,
+      "line": 1086,
       "className": "Player",
       "methodName": "takeDamage"
     },
@@ -9913,7 +10020,7 @@
       "name": "Player.toggleGodMode",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1193,
+      "line": 1194,
       "className": "Player",
       "methodName": "toggleGodMode"
     },
@@ -9921,7 +10028,7 @@
       "name": "Player.toggleOneHitKill",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1208,
+      "line": 1209,
       "className": "Player",
       "methodName": "toggleOneHitKill"
     },
@@ -9929,7 +10036,7 @@
       "name": "Player.toggleSpeedCheat",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1202,
+      "line": 1203,
       "className": "Player",
       "methodName": "toggleSpeedCheat"
     },
@@ -9953,7 +10060,7 @@
       "name": "Player.updateAnimatedCharacterAnimation",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1068,
+      "line": 1069,
       "className": "Player",
       "methodName": "updateAnimatedCharacterAnimation"
     },
@@ -9961,7 +10068,7 @@
       "name": "Player.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1421,
+      "line": 1422,
       "className": "Player",
       "methodName": "updateVisuals",
       "doc": "Smoothly interpolates the player mesh position between the previous and current fixed simulation states. Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+)."
@@ -11044,7 +11151,7 @@
       "name": "registerUniqueCharacter",
       "kind": "function",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 72,
+      "line": 87,
       "doc": "Register a new unique character into the system (for future character additions/mods)."
     },
     {
@@ -12271,7 +12378,7 @@
       "name": "SimAltarInternal",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 298
+      "line": 299
     },
     {
       "name": "SimAltarState",
@@ -12375,7 +12482,7 @@
       "name": "SimDropInternal",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 283
+      "line": 284
     },
     {
       "name": "SimDropState",
@@ -12405,13 +12512,13 @@
       "name": "SimEnemyInternal",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 149
+      "line": 150
     },
     {
       "name": "SimEnemyInternal.addBleed",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 215,
+      "line": 216,
       "className": "SimEnemyInternal",
       "methodName": "addBleed"
     },
@@ -12419,7 +12526,7 @@
       "name": "SimEnemyInternal.freeze",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 193,
+      "line": 194,
       "className": "SimEnemyInternal",
       "methodName": "freeze"
     },
@@ -12427,7 +12534,7 @@
       "name": "SimEnemyInternal.knockbackFrom",
       "kind": "method",
       "file": "game/src/sim/GameCore.ts",
-      "line": 197,
+      "line": 198,
       "className": "SimEnemyInternal",
       "methodName": "knockbackFrom"
     },
@@ -12577,16 +12684,60 @@
       "methodName": "upgrade"
     },
     {
+      "name": "SimInvokerExortWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 183
+    },
+    {
+      "name": "SimInvokerExortWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 202,
+      "className": "SimInvokerExortWeapon",
+      "methodName": "getNextUpgradeDescription"
+    },
+    {
+      "name": "SimInvokerExortWeapon.upgrade",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 199,
+      "className": "SimInvokerExortWeapon",
+      "methodName": "upgrade"
+    },
+    {
+      "name": "SimInvokerQuasWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 135
+    },
+    {
+      "name": "SimInvokerQuasWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 154,
+      "className": "SimInvokerQuasWeapon",
+      "methodName": "getNextUpgradeDescription"
+    },
+    {
+      "name": "SimInvokerQuasWeapon.upgrade",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 151,
+      "className": "SimInvokerQuasWeapon",
+      "methodName": "upgrade"
+    },
+    {
       "name": "SimInvokerWeapon",
       "kind": "class",
       "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
-      "line": 22
+      "line": 23
     },
     {
       "name": "SimInvokerWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
-      "line": 106,
+      "line": 130,
       "className": "SimInvokerWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -12594,16 +12745,46 @@
       "name": "SimInvokerWeapon.setInvokeSource",
       "kind": "method",
       "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
-      "line": 26,
+      "line": 28,
       "className": "SimInvokerWeapon",
       "methodName": "setInvokeSource"
+    },
+    {
+      "name": "SimInvokerWeapon.setOwnerWeapons",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 32,
+      "className": "SimInvokerWeapon",
+      "methodName": "setOwnerWeapons"
     },
     {
       "name": "SimInvokerWeapon.upgrade",
       "kind": "method",
       "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
-      "line": 99,
+      "line": 123,
       "className": "SimInvokerWeapon",
+      "methodName": "upgrade"
+    },
+    {
+      "name": "SimInvokerWexWeapon",
+      "kind": "class",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 159
+    },
+    {
+      "name": "SimInvokerWexWeapon.getNextUpgradeDescription",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 178,
+      "className": "SimInvokerWexWeapon",
+      "methodName": "getNextUpgradeDescription"
+    },
+    {
+      "name": "SimInvokerWexWeapon.upgrade",
+      "kind": "method",
+      "file": "game/src/sim/weapons/SimInvokerWeapon.ts",
+      "line": 175,
+      "className": "SimInvokerWexWeapon",
       "methodName": "upgrade"
     },
     {
@@ -12760,7 +12941,7 @@
       "name": "SimProjectileInternal",
       "kind": "class",
       "file": "game/src/sim/GameCore.ts",
-      "line": 220
+      "line": 221
     },
     {
       "name": "SimProjectileState",
@@ -13541,6 +13722,13 @@
       "line": 1
     },
     {
+      "name": "SPELL_SPHERE_RECIPES",
+      "kind": "const",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 26,
+      "doc": "Formula combinations for each of the 10 spells matching authentic Dota 2 / Invoker lore"
+    },
+    {
       "name": "SpellContext",
       "kind": "interface",
       "file": "game/src/shared/InvokerSpellRuntime.ts",
@@ -13550,20 +13738,20 @@
       "name": "SpellControl",
       "kind": "interface",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 213
+      "line": 271
     },
     {
       "name": "SpellControlState",
       "kind": "class",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 223,
+      "line": 281,
       "doc": "Countdown state shared by the browser and dedicated simulation."
     },
     {
       "name": "SpellControlState.update",
       "kind": "method",
       "file": "game/src/shared/InvokerSpells.ts",
-      "line": 235,
+      "line": 293,
       "className": "SpellControlState",
       "methodName": "update"
     },
@@ -13578,6 +13766,12 @@
       "kind": "interface",
       "file": "game/src/shared/InvokerSpellRuntime.ts",
       "line": 10
+    },
+    {
+      "name": "SphereWeights",
+      "kind": "interface",
+      "file": "game/src/shared/InvokerSpells.ts",
+      "line": 19
     },
     {
       "name": "SpriteDirection",
@@ -14297,13 +14491,13 @@
       "name": "toPluralCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 143
+      "line": 149
     },
     {
       "name": "toSingularCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 114
+      "line": 120
     },
     {
       "name": "TreeManager",
@@ -14395,14 +14589,14 @@
       "name": "UNIQUE_CHARACTERS",
       "kind": "const",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 54,
+      "line": 61,
       "doc": "Registry of unique characters. Easily extensible for future unique characters."
     },
     {
       "name": "UniqueCharacterConfig",
       "kind": "interface",
       "file": "game/src/shared/UniqueCharacters.ts",
-      "line": 24,
+      "line": 31,
       "doc": "Unique Character Specification. Defines exclusive weapons, restriction rules, and future expansion properties."
     },
     {
@@ -14648,7 +14842,7 @@
       "name": "UpgradeOption",
       "kind": "interface",
       "file": "game/src/ui/screens/LevelUp/LevelUpScreen.ts",
-      "line": 34
+      "line": 33
     },
     {
       "name": "useGameStore",
@@ -14775,7 +14969,7 @@
       "name": "WEAPON_COLORS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 59
+      "line": 62
     },
     {
       "name": "WEAPON_GRADES",

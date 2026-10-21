@@ -139,7 +139,8 @@ export class SimPlayerInternal {
     if (dmgBuff) dmgBonus += dmgBuff.value;
 
     for (const weapon of this.weapons) {
-      weapon.cooldownMultiplier = this.passiveCooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
+      const totalReduction = (1 - this.passiveCooldownMultiplier) + (alacrityBuff?.value ?? 0);
+      weapon.cooldownMultiplier = Math.max(0.15, 1 - totalReduction);
     }
     this.speed = this.baseSpeed * this.passiveSpeedMultiplier * (1 + speedBonus);
     this.damageMultiplier = this.baseDamageMultiplier * (this.passiveDamageMultiplier + this.mightElixirCount * 0.01) * (1 + dmgBonus);
@@ -531,6 +532,7 @@ export class GameCore {
       for (const weapon of player.weapons) {
         if (weapon instanceof SimInvokerWeapon) {
           weapon.setInvokeSource(invokeSource instanceof SimInvokerWeapon ? invokeSource : undefined);
+          weapon.setOwnerWeapons(player.weapons);
           weapon.random = () => this.rng.nextFloat();
           weapon.onSpellBuff = (spell, level) => {
             const buff = createInvokerBuff(spell, level);

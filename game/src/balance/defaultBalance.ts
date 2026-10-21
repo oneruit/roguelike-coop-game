@@ -8,6 +8,21 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       cooldown: 1.4, damagePerLevel: INVOKE_DAMAGE_PER_LEVEL, maxLevel: 12, range: 22,
       notes: 'При каждом срабатывании равновероятно выбирает одно из десяти заклинаний Инвокера.'
     },
+    invoker_quas: {
+      id: 'invoker_quas', name: 'Quas — Сфера Льда', icon: '❄️', damage: 15,
+      cooldown: 1.0, damagePerLevel: 5, maxLevel: 12, range: 4.5,
+      notes: '+1.5 HP/с регенерации за уровень. Усиливает контроль и заморозку Quas-заклинаний.'
+    },
+    invoker_wex: {
+      id: 'invoker_wex', name: 'Wex — Сфера Бури', icon: '⚡', damage: 15,
+      cooldown: 1.0, damagePerLevel: 5, maxLevel: 12, range: 9.0,
+      notes: '+3% скорости бега и +2% скорости атаки за уровень. Усиливает скорость и радиус Wex-заклинаний.'
+    },
+    invoker_exort: {
+      id: 'invoker_exort', name: 'Exort — Сфера Огня', icon: '🔥', damage: 20,
+      cooldown: 1.0, damagePerLevel: 6, maxLevel: 12, range: 6.0,
+      notes: '+6% общего урона за уровень. Усиливает разрушительный урон Exort-заклинаний.'
+    },
     ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => {
       const def = INVOKER_SPELLS[spell];
       const id = invokerWeaponId(spell);
@@ -481,12 +496,12 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'stat_watch',
       name: 'Карманные Часы',
       icon: '⏱️',
-      description: '-1% к времени перезарядки оружий (угасающая эффективность до 50% на 200 ур., макс. 50%)',
-      baseValue: 1,
-      perStackValue: 1,
-      maxValue: 50,
+      description: '-0.5% к времени перезарядки оружий (угасающая эффективность до 25% на 200 ур., макс. 25%)',
+      baseValue: 0.5,
+      perStackValue: 0.5,
+      maxValue: 25,
       scalingType: 'diminishing',
-      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 1%, 200 ур. = 50% (макс. 50%)'
+      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 0.5%, 200 ур. = 25% (макс. 25%)'
     },
     stat_crit_damage: {
       id: 'stat_crit_damage',

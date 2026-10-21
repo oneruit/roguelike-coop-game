@@ -430,11 +430,11 @@ test('Diminishing returns on speed boots, magnet, and pocket watch', () => {
 
   player.watchCount = 1;
   player.recalculateStats();
-  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.99) < 1e-4, 'Watch at lvl 1 gives 1% CDR');
+  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.995) < 1e-4, 'Watch at lvl 1 gives 0.5% CDR');
 
   player.watchCount = 200;
   player.recalculateStats();
-  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.50) < 1e-3, 'Watch at lvl 200 reaches 50% CDR cap (mult 0.50)');
+  assert.ok(Math.abs(player.passiveCooldownMultiplier - 0.75) < 1e-3, 'Watch at lvl 200 reaches 25% CDR cap (mult 0.75)');
 });
 
 test('MerchantManager 10x base prices, 40% compounding inflation, and weapon upgrade limit', () => {
@@ -744,7 +744,7 @@ test('Passives progression: Magnet 100 lvl cap, Pocket Watch 50% at 200 lvl, Bio
   player.watchCount = 200;
   player.recalculateStats();
   const watchReduction = 1 - player.passiveCooldownMultiplier;
-  assert.equal(Math.round(watchReduction * 100), 50, 'Pocket Watch reaches 50% reduction at level 200');
+  assert.equal(Math.round(watchReduction * 100), 25, 'Pocket Watch reaches 25% reduction at level 200');
   assert.equal(player.isStatMaxedForItem('stat_watch'), true, 'Pocket Watch is maxed at level 200');
 
   // 3. Bio-Injector scales with player maxHp

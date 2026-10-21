@@ -4,6 +4,7 @@ import {
   INVOKE_BASE_DAMAGE,
   INVOKE_COOLDOWN_FACTOR,
   invokerWeaponId,
+  getInvokerSphereScaling,
   type InvokerSpellId,
   type InvokerSpellCast,
   type SpellControl
@@ -22,9 +23,14 @@ import {
 export class SimInvokerWeapon extends SimWeapon {
   private runtime = new InvokerSpellRuntime<SimEnemyRef>();
   private invokeSource?: SimInvokerWeapon;
+  public ownerWeapons: SimWeapon[] = [];
 
   public setInvokeSource(invoke?: SimInvokerWeapon): void {
     this.invokeSource = invoke?.spell === null ? invoke : undefined;
+  }
+
+  public setOwnerWeapons(weapons: SimWeapon[]): void {
+    this.ownerWeapons = weapons;
   }
 
   public get spellLevel(): number {
@@ -42,7 +48,7 @@ export class SimInvokerWeapon extends SimWeapon {
 
   constructor(public readonly spell: InvokerSpellId | null = null) {
     const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
-    const config = DEFAULT_BALANCE.weapons[id];
+    const config = DEFAULT_BALANCE.weapons[id] || { name: 'Invoke', icon: '🔮', cooldown: 1.4, damage: INVOKE_BASE_DAMAGE, damagePerLevel: 9 };
     super(id, config.name, config.icon, config.cooldown, config.damage);
     this.baseDamage = config.damage;
     this.baseCooldown = config.cooldown;
@@ -84,13 +90,31 @@ export class SimInvokerWeapon extends SimWeapon {
     if (!target) return;
     const index = Math.max(0, Math.min(9, Math.floor(this.random() * INVOKER_SPELL_IDS.length)));
     const spell = this.spell ?? INVOKER_SPELL_IDS[index];
+
+    const quasW = this.ownerWeapons.find(w => w.id === 'invoker_quas');
+    const wexW = this.ownerWeapons.find(w => w.id === 'invoker_wex');
+    const exortW = this.ownerWeapons.find(w => w.id === 'invoker_exort');
+    const qLevel = quasW ? quasW.level : 0;
+    const wLevel = wexW ? wexW.level : 0;
+    const eLevel = exortW ? exortW.level : 0;
+
+    const scaling = getInvokerSphereScaling(spell, {
+      qLevel, wLevel, eLevel, invokeLevel: this.invokeSource?.level ?? this.level
+    });
+
+    const baseDmg = this.spell
+      ? this.damage * (this.invokeSource!.damage / INVOKE_BASE_DAMAGE)
+      : INVOKER_SPELLS[spell].damage * (this.damage / INVOKE_BASE_DAMAGE);
+
+    const finalDmg = baseDmg * scaling.damageMult;
+    const effLvl = Math.max(this.spellLevel, scaling.compositeLevel);
+
     this.timer = 0;
     this.lastSpell = spell;
     this.runtime.cast(
-      spell, this.spellLevel,
-      this.spell ? this.damage * (this.invokeSource!.damage / INVOKE_BASE_DAMAGE)
-        : INVOKER_SPELLS[spell].damage * (this.damage / INVOKE_BASE_DAMAGE),
-      target, context
+      spell, effLvl, finalDmg, target, context,
+      INVOKER_SPELLS[spell].radius,
+      scaling.controlMult, scaling.radiusSpeedMult
     );
     triggerAnim?.(0.5);
     emitSound?.('magic');
@@ -105,5 +129,77 @@ export class SimInvokerWeapon extends SimWeapon {
 
   public getNextUpgradeDescription(): string {
     return this.spell ? 'Усиливает заклинание; −2.5% перезарядки' : '+25% базового урона заклинаний; −4% перезарядки; сильнее область, контроль и усиления';
+  }
+}
+
+export class SimInvokerQuasWeapon extends SimWeapon {
+  constructor() {
+    super('invoker_quas', 'Quas — Сфера Льда', '❄️', 1.0, 15);
+  }
+  public update(
+    dt: number, player: SimPlayerRef, enemies: SimEnemyRef[],
+    _spawn: (p: SimProjectileData) => void,
+    damage: (enemyId: string, damage: number, source: SimVec3) => void
+  ): void {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      this.timer = 0;
+      const target = findClosestSimEnemies(enemies, player.position, 1, 4.5 * 4.5)[0];
+      if (target) damage(target.id, this.damage * player.damageMultiplier, player.position);
+    }
+  }
+  public upgrade(): void {
+    if (this.level < this.maxLevel) this.level++;
+  }
+  public getNextUpgradeDescription(): string {
+    return '+1.5 HP/с регенерации; усиливает Quas-заклинания';
+  }
+}
+
+export class SimInvokerWexWeapon extends SimWeapon {
+  constructor() {
+    super('invoker_wex', 'Wex — Сфера Бури', '⚡', 1.0, 15);
+  }
+  public update(
+    dt: number, player: SimPlayerRef, enemies: SimEnemyRef[],
+    _spawn: (p: SimProjectileData) => void,
+    damage: (enemyId: string, damage: number, source: SimVec3) => void
+  ): void {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      this.timer = 0;
+      const targets = findClosestSimEnemies(enemies, player.position, 2, 9 * 9);
+      for (const t of targets) damage(t.id, this.damage * player.damageMultiplier, player.position);
+    }
+  }
+  public upgrade(): void {
+    if (this.level < this.maxLevel) this.level++;
+  }
+  public getNextUpgradeDescription(): string {
+    return '+3% скорости бега, +2% скорости атаки; усиливает Wex-заклинания';
+  }
+}
+
+export class SimInvokerExortWeapon extends SimWeapon {
+  constructor() {
+    super('invoker_exort', 'Exort — Сфера Огня', '🔥', 1.0, 20);
+  }
+  public update(
+    dt: number, player: SimPlayerRef, enemies: SimEnemyRef[],
+    _spawn: (p: SimProjectileData) => void,
+    damage: (enemyId: string, damage: number, source: SimVec3) => void
+  ): void {
+    this.timer += dt;
+    if (this.timer >= this.effectiveCooldown) {
+      this.timer = 0;
+      const target = findClosestSimEnemies(enemies, player.position, 1, 6 * 6)[0];
+      if (target) damage(target.id, this.damage * player.damageMultiplier, player.position);
+    }
+  }
+  public upgrade(): void {
+    if (this.level < this.maxLevel) this.level++;
+  }
+  public getNextUpgradeDescription(): string {
+    return '+6% общего урона; усиливает Exort-заклинания';
   }
 }

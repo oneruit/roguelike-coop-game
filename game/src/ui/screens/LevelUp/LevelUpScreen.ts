@@ -22,8 +22,7 @@ import {
   PoisonPuddleWeapon,
   SummonUndeadWeapon
 } from '../../../combat/Weapon';
-import { InvokerInvokeWeapon, InvokerSpellWeapon } from '../../../combat/InvokerWeapons';
-import { INVOKER_SPELL_IDS, INVOKER_SPELLS, invokerWeaponId } from '../../../shared/InvokerSpells';
+import { InvokerQuasWeapon, InvokerWexWeapon, InvokerExortWeapon } from '../../../combat/InvokerWeapons';
 import { canCharacterAcquireWeapon } from '../../../shared/UniqueCharacters';
 import { selectWeaponUpgradeOptions, filterAndShuffleForReroll, canRerollWeaponOptions } from '../../selectWeaponUpgradeOptions';
 import { rollWeaponGrade, getGradeLabel, type WeaponGrade } from '../../../combat/WeaponGrades';
@@ -514,31 +513,30 @@ export class LevelUpScreen extends Screen {
     }
 
     if (player.weapons.length < 4) {
-      const invokerWeapons = [null, ...INVOKER_SPELL_IDS] as const;
-      for (const spell of invokerWeapons) {
-        const id = spell ? invokerWeaponId(spell) : 'invoker_invoke';
-        if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) continue;
-        if (player.weapons.some(weapon => weapon.id === id)) continue;
-        const def = spell ? INVOKER_SPELLS[spell] : null;
-        pool.push({
-          id: 'new_' + id,
-          title: 'Новое: ' + (def?.name ?? 'Invoke'),
-          icon: def?.icon ?? '🔮',
-          iconImage: getWeaponIconUrl(id),
-          levelTag: 'НОВОЕ ОРУЖИЕ',
-          description: def?.description ?? 'Каждая атака случайно выбирает одно из десяти заклинаний Инвокера.',
-          apply: () => {
-            if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
-            const triggerAttack = player.charType === 'invoker'
-              ? () => player.triggerAttackAnim(0.5, id)
-              : undefined;
-            const w = spell
-              ? new InvokerSpellWeapon(spell, triggerAttack)
-              : new InvokerInvokeWeapon(triggerAttack);
-            player.weapons.push(w);
-            player.recalculateStats();
-          }
-        });
+      if (player.charType === 'invoker') {
+        const sphereIds = ['invoker_quas', 'invoker_wex', 'invoker_exort'] as const;
+        for (const id of sphereIds) {
+          if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) continue;
+          if (player.weapons.some(weapon => weapon.id === id)) continue;
+          const cfg = BalanceManager.getWeaponConfig(id);
+          pool.push({
+            id: 'new_' + id,
+            title: 'Сфера: ' + (cfg?.name ?? id),
+            icon: cfg?.icon ?? '🔮',
+            iconImage: getWeaponIconUrl(id),
+            levelTag: 'НОВАЯ СФЕРА',
+            description: cfg?.notes ?? 'Сфера Инвокера',
+            apply: () => {
+              if (!canCharacterAcquireWeapon(player.charType, id, player.weapons)) return;
+              let w: Weapon;
+              if (id === 'invoker_quas') w = new InvokerQuasWeapon();
+              else if (id === 'invoker_wex') w = new InvokerWexWeapon();
+              else w = new InvokerExortWeapon();
+              player.weapons.push(w);
+              player.recalculateStats();
+            }
+          });
+        }
       }
 
       const canUseGenericWeapons = canCharacterAcquireWeapon(player.charType, 'bow', player.weapons);

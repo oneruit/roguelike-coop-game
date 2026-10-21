@@ -10,6 +10,8 @@ import {
   createInvokerBuff,
   getInvokerScaling,
   getInvokerSpellDuration,
+  SPELL_SPHERE_RECIPES,
+  getInvokerSphereScaling,
   type InvokerSpellCast,
 } from "../game/src/shared/InvokerSpells";
 import {
@@ -20,9 +22,14 @@ import {
 import {
   InvokerInvokeWeapon,
   InvokerSpellWeapon,
+  InvokerQuasWeapon,
+  InvokerWexWeapon,
+  InvokerExortWeapon,
 } from "../game/src/combat/InvokerWeapons";
+import { PlayerStats } from "../game/src/mechanics/player/PlayerStats";
 import { InvokerSpellEffects } from "../game/src/combat/InvokerSpellEffects";
 import { CombatDirector } from "../game/src/combat/CombatDirector";
+import { Player } from "../game/src/entities/Player";
 import {
   packHostSnapshot,
   unpackHostSnapshot,
@@ -570,4 +577,104 @@ test("Invoker gets three randomized new spells when all existing weapons are max
   const pool = [{ id: "new_bow" }, { id: "new_invoker_tornado" }, { id: "new_invoker_emp" }, { id: "new_invoker_alacrity" }];
   assert.deepEqual(selectWeaponUpgradeOptions(pool, "invoker").map(option => option.id),
     ["new_invoker_tornado", "new_invoker_emp", "new_invoker_alacrity"]);
+});
+
+test("Invoker Spheres: Quas, Wex, Exort weapons initialize and scale bonuses", () => {
+  const quas = new InvokerQuasWeapon();
+  assert.equal(quas.id, "invoker_quas");
+  assert.equal(quas.level, 1);
+  assert.equal(quas.hpRegenBonus, 1.5);
+  quas.upgrade();
+  assert.equal(quas.level, 2);
+  assert.equal(quas.hpRegenBonus, 3.0);
+
+  const wex = new InvokerWexWeapon();
+  assert.equal(wex.id, "invoker_wex");
+  assert.equal(wex.level, 1);
+  assert.equal(wex.speedBonus, 0.03);
+  assert.equal(wex.cdrBonus, 0.02);
+  wex.upgrade();
+  assert.equal(wex.level, 2);
+  assert.equal(wex.speedBonus, 0.06);
+  assert.equal(wex.cdrBonus, 0.04);
+
+  const exort = new InvokerExortWeapon();
+  assert.equal(exort.id, "invoker_exort");
+  assert.equal(exort.level, 1);
+  assert.equal(exort.damageBonus, 0.06);
+  exort.upgrade();
+  assert.equal(exort.level, 2);
+  assert.equal(exort.damageBonus, 0.12);
+});
+
+test("Invoker Spell Scaling: Spells scale damage, control, and radius from sphere levels according to recipes", () => {
+  // Cold Snap: 3 Quas, 0 Wex, 0 Exort
+  const coldSnapBase = getInvokerSphereScaling("cold_snap", { qLevel: 1, wLevel: 1, eLevel: 1, invokeLevel: 1 });
+  assert.equal(coldSnapBase.damageMult, 1.0);
+  assert.equal(coldSnapBase.controlMult, 1 + 3 * 1 * 0.14);
+
+  // Upgrade Quas to level 5: controlMult increases to 1 + 3 * 5 * 0.14 = 3.10
+  const coldSnapQuas5 = getInvokerSphereScaling("cold_snap", { qLevel: 5, wLevel: 1, eLevel: 1, invokeLevel: 1 });
+  assert.equal(coldSnapQuas5.controlMult, 1 + 3 * 5 * 0.14);
+  assert.equal(coldSnapQuas5.damageMult, 1.0, "Quas has no effect on Cold Snap damage");
+
+  // Sun Strike: 0 Quas, 0 Wex, 3 Exort
+  // Upgrade Exort to level 5: damage increases to 1 + 3 * 5 * 0.20 = 4.0
+  const sunStrikeExort5 = getInvokerSphereScaling("sun_strike", { qLevel: 1, wLevel: 1, eLevel: 5, invokeLevel: 1 });
+  assert.equal(sunStrikeExort5.damageMult, 1 + 3 * 5 * 0.20);
+  assert.equal(sunStrikeExort5.controlMult, 1.0);
+
+  // EMP: 0 Quas, 3 Wex, 0 Exort
+  // Upgrade Wex to level 5: radiusSpeedMult = 1 + 3 * 5 * 0.12 = 2.80
+  const empWex5 = getInvokerSphereScaling("emp", { qLevel: 1, wLevel: 5, eLevel: 1, invokeLevel: 1 });
+  assert.equal(empWex5.radiusSpeedMult, 1 + 3 * 5 * 0.12);
+  assert.equal(empWex5.damageMult, 1.0);
+
+  // Deafening Blast: 1 Quas, 1 Wex, 1 Exort
+  const blastTri5 = getInvokerSphereScaling("deafening_blast", { qLevel: 5, wLevel: 5, eLevel: 5, invokeLevel: 1 });
+  assert.equal(blastTri5.damageMult, 1 + 1 * 5 * 0.20);
+  assert.equal(blastTri5.controlMult, 1 + 1 * 5 * 0.14);
+  assert.equal(blastTri5.radiusSpeedMult, 1 + 1 * 5 * 0.12);
+});
+
+test("Attack Speed and CDR: All bonuses stack additively without multiplication", () => {
+  // Test baseline (no buffs/items)
+  const baseStats = PlayerStats.recalculate(
+    100, 5, 1,
+    new Map(),
+    () => 0,
+    { amplifierCount: 0, mightElixirCount: 0, speedBootsCount: 0, flaskCount: 0, magnetCount: 0, amuletCount: 0, vestCount: 0, watchCount: 0 },
+    {},
+    []
+  );
+  assert.equal(baseStats.cooldownMultiplier, 1.0);
+
+  // Test full additive stacking:
+  // - Pocket Watch: 10 stacks (base 0.5% with diminishing returns)
+  // - Meta CDR: 5% (0.05)
+  // - Kinetic Injector: 2 stacks = +20% (0.20)
+  // - Overclock Module: 1 stack = +18% (0.18)
+  // - Wex level 3: +6% (0.06)
+  // - Alacrity buff: +30% (0.30)
+  const wexWeapon = new InvokerWexWeapon();
+  wexWeapon.level = 3;
+
+  const stackedStats = PlayerStats.recalculate(
+    100, 5, 1,
+    new Map([['alacrity', { type: 'alacrity', duration: 10, value: 0.30 }]]),
+    (id) => (id === 'kinetic_injector' ? 2 : id === 'overclock_module' ? 1 : 0),
+    { amplifierCount: 0, mightElixirCount: 0, speedBootsCount: 0, flaskCount: 0, magnetCount: 0, amuletCount: 0, vestCount: 0, watchCount: 10 },
+    {},
+    [wexWeapon],
+    { cooldownReductionBonus: 0.05 }
+  );
+
+  const watchReduction = 0.005 * Math.pow(10, Math.log(50) / Math.log(200));
+  const expectedTotalReduction = watchReduction + 0.05 + 0.20 + 0.18 + 0.06 + 0.30;
+  const expectedCooldownMult = Math.max(0.15, 1 - expectedTotalReduction);
+
+  assert.ok(
+    Math.abs(stackedStats.cooldownMultiplier - expectedCooldownMult) < 1e-4,
+    "Cooldown multiplier should be strictly additive (got " + stackedStats.cooldownMultiplier + ", expected " + expectedCooldownMult + ")"
+  );
 });

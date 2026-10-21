@@ -3,6 +3,9 @@ import { GameBalanceState } from '../../game/src/balance/BalanceTypes';
 
 export const TEXTURE_MAP: Record<string, string> = {
   'weapon-invoker_invoke':'/textures/weapons/weapon_invoker_invoke.png',
+  'weapon-invoker_quas':'/textures/weapons/weapon_invoker_quas.png',
+  'weapon-invoker_wex':'/textures/weapons/weapon_invoker_wex.png',
+  'weapon-invoker_exort':'/textures/weapons/weapon_invoker_exort.png',
   ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => ['weapon-'+invokerWeaponId(spell),'/textures/weapons/weapon_'+invokerWeaponId(spell)+'.png'])),
   // Weapons
   'weapon-fireball': '/textures/weapons/weapon_fireball.png',
@@ -58,6 +61,9 @@ export const TEXTURE_MAP: Record<string, string> = {
 
 export const WEAPON_COLORS: Record<string, string> = {
   invoker_invoke:'#a78bfa',
+  invoker_quas:'#38bdf8',
+  invoker_wex:'#c084fc',
+  invoker_exort:'#f97316',
   ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => [invokerWeaponId(spell),'#'+INVOKER_SPELLS[spell].color.toString(16).padStart(6,'0')])),
   fireball: '#ef4444',
   bow: '#10b981',

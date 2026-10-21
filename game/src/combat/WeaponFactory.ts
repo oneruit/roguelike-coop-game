@@ -17,7 +17,7 @@ import {
   PoisonPuddleWeapon,
   SummonUndeadWeapon
 } from './weapons';
-import { InvokerWeapon } from './InvokerWeapons';
+import { InvokerWeapon, InvokerQuasWeapon, InvokerWexWeapon, InvokerExortWeapon } from './InvokerWeapons';
 import { INVOKER_SPELL_IDS, type InvokerSpellId } from '../shared/InvokerSpells';
 
 export function createWeaponInstanceById(id: string): Weapon | null {
@@ -57,6 +57,15 @@ export function createWeaponInstanceById(id: string): Weapon | null {
     default:
       if (id === 'invoker_invoke') {
         return new InvokerWeapon(null);
+      }
+      if (id === 'invoker_quas') {
+        return new InvokerQuasWeapon();
+      }
+      if (id === 'invoker_wex') {
+        return new InvokerWexWeapon();
+      }
+      if (id === 'invoker_exort') {
+        return new InvokerExortWeapon();
       }
       if (id.startsWith('invoker_')) {
         const spellKey = id.replace('invoker_', '');
