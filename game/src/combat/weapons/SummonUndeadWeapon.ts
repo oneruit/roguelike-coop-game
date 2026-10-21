@@ -21,7 +21,7 @@ import { type WeaponGrade, WEAPON_GRADES } from '../WeaponGrades';
 
 interface SkeletonMinion {
   id: string;
-  group: Mesh | Group;
+  group: Group;
   spriteMesh: Mesh;
   auraMesh: Mesh;
   texture: Texture;
@@ -40,6 +40,7 @@ interface SkeletonMinion {
  * that pursue and slash enemies in melee combat, protecting their master.
  */
 export class SummonUndeadWeapon extends Weapon {
+  public hasInitVisual: boolean = false;
   private minions: SkeletonMinion[] = [];
   private minionCount: number = 2;
   private minionSpeed: number = 7.5;
@@ -73,39 +74,46 @@ export class SummonUndeadWeapon extends Weapon {
     const group = new Group();
 
     // Load skeleton spritesheet (512x512 with 4x4 frames of 128x128)
-    const baseTex = TextureManager.load('/textures/monsters/monster_skeleton_walk.png');
-    const tex = baseTex.clone();
+    const raw = TextureManager.loadMonsterTextures('monster_skeleton');
+    const tex = raw.walk.clone();
     tex.magFilter = NearestFilter;
     tex.minFilter = NearestFilter;
     tex.repeat.set(0.25, 0.25);
     tex.offset.set(0, 0.75); // Front row by default
     tex.needsUpdate = true;
 
-    // Sprite mesh standing upright (facing camera / 2.5D tilt)
-    const spriteGeom = new PlaneGeometry(1.35, 1.7);
+    // Sprite mesh standing upright anchored at feet matching monster_skeleton standards
+    const width = 1.5;
+    const height = 1.9;
+    const spriteGeom = new PlaneGeometry(width, height);
+    // Anchor feet cleanly on ground: (88/96 - 0.5) = 5/12 = 0.416667
+    spriteGeom.translate(0, height * 0.416667, 0);
+
     const spriteMat = new MeshBasicMaterial({
       map: tex,
       transparent: true,
-      alphaTest: 0.1,
+      alphaTest: 0.08,
       side: DoubleSide
     });
     const spriteMesh = new Mesh(spriteGeom, spriteMat);
-    spriteMesh.position.y = 0.85;
-    spriteMesh.rotation.x = -Math.PI / 8; // slight 2.5D tilt
+    // Standard 2.5D camera tilt (-Math.PI / 4.8) used across all players and enemies
+    spriteMesh.rotation.x = -Math.PI / 4.8;
+    spriteMesh.renderOrder = 0;
+    spriteMesh.castShadow = true;
     group.add(spriteMesh);
 
     // Friendly glowing necromantic aura disc beneath feet (emerald-purple glow)
-    const auraGeom = new CircleGeometry(0.75, 16);
+    const auraGeom = new CircleGeometry(0.85, 20);
     auraGeom.rotateX(-Math.PI / 2);
     const auraMat = new MeshBasicMaterial({
       color: 0xa855f7, // Necromantic purple
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.75,
       blending: AdditiveBlending,
       depthWrite: false
     });
     const auraMesh = new Mesh(auraGeom, auraMat);
-    auraMesh.position.y = 0.03;
+    auraMesh.position.y = 0.04;
     group.add(auraMesh);
 
     const pos = spawnPos.clone().add(new Vector3((Math.random() - 0.5) * 2, 0, (Math.random() - 0.5) * 2));
@@ -153,6 +161,15 @@ export class SummonUndeadWeapon extends Weapon {
         (removed.spriteMesh.material as MeshBasicMaterial).dispose();
         (removed.auraMesh.material as MeshBasicMaterial).dispose();
         removed.texture.dispose();
+      }
+    }
+
+    // Ensure all minions are added to scene once sharedScene is available
+    if (this.sharedScene) {
+      for (const minion of this.minions) {
+        if (!minion.group.parent) {
+          this.sharedScene.add(minion.group);
+        }
       }
     }
 
@@ -248,12 +265,13 @@ export class SummonUndeadWeapon extends Weapon {
 
   public initVisual(scene: Scene, initialPos?: Vector3) {
     this.sharedScene = scene;
+    this.hasInitVisual = true;
     for (const m of this.minions) {
       if (initialPos && m.pos.lengthSq() === 0) {
         m.pos.copy(initialPos);
         m.group.position.copy(m.pos);
       }
-      if (!scene.children.includes(m.group)) {
+      if (!m.group.parent && scene) {
         scene.add(m.group);
       }
     }

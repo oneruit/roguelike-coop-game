@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-21T18:48:38.572Z",
+  "generatedAt": "2026-10-21T19:31:44.190Z",
   "totalFiles": 202,
   "totalSymbols": 1889,
   "topLevelCount": 585,
@@ -9510,7 +9510,7 @@
       "name": "Player.addAmplifierBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 688,
+      "line": 692,
       "className": "Player",
       "methodName": "addAmplifierBonus"
     },
@@ -9518,7 +9518,7 @@
       "name": "Player.addBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 560,
+      "line": 564,
       "className": "Player",
       "methodName": "addBuff"
     },
@@ -9526,7 +9526,7 @@
       "name": "Player.addCooldownReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 707,
+      "line": 711,
       "className": "Player",
       "methodName": "addCooldownReduction"
     },
@@ -9534,7 +9534,7 @@
       "name": "Player.addCritChanceBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 728,
+      "line": 732,
       "className": "Player",
       "methodName": "addCritChanceBonus"
     },
@@ -9542,7 +9542,7 @@
       "name": "Player.addCritDamageBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 723,
+      "line": 727,
       "className": "Player",
       "methodName": "addCritDamageBonus"
     },
@@ -9550,7 +9550,7 @@
       "name": "Player.addDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 705,
+      "line": 709,
       "className": "Player",
       "methodName": "addDamageReduction"
     },
@@ -9558,7 +9558,7 @@
       "name": "Player.addFlaskBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 714,
+      "line": 718,
       "className": "Player",
       "methodName": "addFlaskBonus"
     },
@@ -9566,7 +9566,7 @@
       "name": "Player.addHpRegen",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 704,
+      "line": 708,
       "className": "Player",
       "methodName": "addHpRegen"
     },
@@ -9574,7 +9574,7 @@
       "name": "Player.addLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1251,
+      "line": 1265,
       "className": "Player",
       "methodName": "addLevel"
     },
@@ -9582,7 +9582,7 @@
       "name": "Player.addMagnetBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 721,
+      "line": 725,
       "className": "Player",
       "methodName": "addMagnetBonus"
     },
@@ -9590,7 +9590,7 @@
       "name": "Player.addMightElixirBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 689,
+      "line": 693,
       "className": "Player",
       "methodName": "addMightElixirBonus"
     },
@@ -9598,7 +9598,7 @@
       "name": "Player.addRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 572,
+      "line": 576,
       "className": "Player",
       "methodName": "addRiftItem"
     },
@@ -9606,7 +9606,7 @@
       "name": "Player.addSpeedBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 703,
+      "line": 707,
       "className": "Player",
       "methodName": "addSpeedBonus"
     },
@@ -9614,7 +9614,7 @@
       "name": "Player.addSpeedBootsBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 702,
+      "line": 706,
       "className": "Player",
       "methodName": "addSpeedBootsBonus"
     },
@@ -9638,7 +9638,7 @@
       "name": "Player.applyPassiveBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 781,
+      "line": 785,
       "className": "Player",
       "methodName": "applyPassiveBuff"
     },
@@ -9662,7 +9662,7 @@
       "name": "Player.areAllWeaponsMaxed",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1212,
+      "line": 1219,
       "className": "Player",
       "methodName": "areAllWeaponsMaxed"
     },
@@ -9670,7 +9670,7 @@
       "name": "Player.calculateXpToNextLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1247,
+      "line": 1261,
       "className": "Player",
       "methodName": "calculateXpToNextLevel"
     },
@@ -9686,7 +9686,7 @@
       "name": "Player.destroy",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1353,
+      "line": 1367,
       "className": "Player",
       "methodName": "destroy"
     },
@@ -9694,7 +9694,7 @@
       "name": "Player.fullHeal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1181,
+      "line": 1188,
       "className": "Player",
       "methodName": "fullHeal"
     },
@@ -9702,7 +9702,7 @@
       "name": "Player.gainXp",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1259,
+      "line": 1273,
       "className": "Player",
       "methodName": "gainXp",
       "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
@@ -9711,7 +9711,7 @@
       "name": "Player.getAwakenedCap",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1208,
+      "line": 1215,
       "className": "Player",
       "methodName": "getAwakenedCap"
     },
@@ -9719,7 +9719,7 @@
       "name": "Player.getBuffsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1386,
+      "line": 1400,
       "className": "Player",
       "methodName": "getBuffsNetState"
     },
@@ -9735,7 +9735,7 @@
       "name": "Player.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 675,
+      "line": 679,
       "className": "Player",
       "methodName": "getDamageMultiplier",
       "doc": "Calculates effective damage multiplier for a given weapon. Per rule: initial hero damage bonus applies ONLY to their starting weapon! Other weapons receive 1.0  general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst)."
@@ -9744,7 +9744,7 @@
       "name": "Player.getItemStacks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 568,
+      "line": 572,
       "className": "Player",
       "methodName": "getItemStacks"
     },
@@ -9752,7 +9752,7 @@
       "name": "Player.getNaniteDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 738,
+      "line": 742,
       "className": "Player",
       "methodName": "getNaniteDamageReduction",
       "doc": "Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level 1 gives 5%, diminishing returns up to 60% at level 20, capped at 60%."
@@ -9761,7 +9761,7 @@
       "name": "Player.getWeaponsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1377,
+      "line": 1391,
       "className": "Player",
       "methodName": "getWeaponsNetState"
     },
@@ -9769,7 +9769,7 @@
       "name": "Player.giveAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1217,
+      "line": 1224,
       "className": "Player",
       "methodName": "giveAllWeapons"
     },
@@ -9777,7 +9777,7 @@
       "name": "Player.hasBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 564,
+      "line": 568,
       "className": "Player",
       "methodName": "hasBuff"
     },
@@ -9785,7 +9785,7 @@
       "name": "Player.heal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1176,
+      "line": 1183,
       "className": "Player",
       "methodName": "heal"
     },
@@ -9801,7 +9801,7 @@
       "name": "Player.isStatMaxedForItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 744,
+      "line": 748,
       "className": "Player",
       "methodName": "isStatMaxedForItem"
     },
@@ -9817,7 +9817,7 @@
       "name": "Player.maxAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1239,
+      "line": 1253,
       "className": "Player",
       "methodName": "maxAllWeapons"
     },
@@ -9825,7 +9825,7 @@
       "name": "Player.recalculateStats",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 617,
+      "line": 621,
       "className": "Player",
       "methodName": "recalculateStats"
     },
@@ -9833,7 +9833,7 @@
       "name": "Player.recordWeaponDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 691,
+      "line": 695,
       "className": "Player",
       "methodName": "recordWeaponDamage"
     },
@@ -9841,7 +9841,7 @@
       "name": "Player.redrawOverhead",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1327,
+      "line": 1341,
       "className": "Player",
       "methodName": "redrawOverhead"
     },
@@ -9849,7 +9849,7 @@
       "name": "Player.removeRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 583,
+      "line": 587,
       "className": "Player",
       "methodName": "removeRiftItem"
     },
@@ -9857,7 +9857,7 @@
       "name": "Player.reset",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1276,
+      "line": 1290,
       "className": "Player",
       "methodName": "reset"
     },
@@ -9865,7 +9865,7 @@
       "name": "Player.revive",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1156,
+      "line": 1163,
       "className": "Player",
       "methodName": "revive"
     },
@@ -9897,7 +9897,7 @@
       "name": "Player.syncBalance",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 538,
+      "line": 542,
       "className": "Player",
       "methodName": "syncBalance"
     },
@@ -9905,7 +9905,7 @@
       "name": "Player.takeDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1077,
+      "line": 1084,
       "className": "Player",
       "methodName": "takeDamage"
     },
@@ -9913,7 +9913,7 @@
       "name": "Player.toggleGodMode",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1185,
+      "line": 1192,
       "className": "Player",
       "methodName": "toggleGodMode"
     },
@@ -9921,7 +9921,7 @@
       "name": "Player.toggleOneHitKill",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1200,
+      "line": 1207,
       "className": "Player",
       "methodName": "toggleOneHitKill"
     },
@@ -9929,7 +9929,7 @@
       "name": "Player.toggleSpeedCheat",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1194,
+      "line": 1201,
       "className": "Player",
       "methodName": "toggleSpeedCheat"
     },
@@ -9945,7 +9945,7 @@
       "name": "Player.triggerDash",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 599,
+      "line": 603,
       "className": "Player",
       "methodName": "triggerDash"
     },
@@ -9953,7 +9953,7 @@
       "name": "Player.updateAnimatedCharacterAnimation",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1060,
+      "line": 1067,
       "className": "Player",
       "methodName": "updateAnimatedCharacterAnimation"
     },
@@ -9961,7 +9961,7 @@
       "name": "Player.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1406,
+      "line": 1420,
       "className": "Player",
       "methodName": "updateVisuals",
       "doc": "Smoothly interpolates the player mesh position between the previous and current fixed simulation states. Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+)."
@@ -13652,7 +13652,7 @@
       "name": "SummonUndeadWeapon.createMinion",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 71,
+      "line": 72,
       "className": "SummonUndeadWeapon",
       "methodName": "createMinion"
     },
@@ -13660,7 +13660,7 @@
       "name": "SummonUndeadWeapon.destroy",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 285,
+      "line": 303,
       "className": "SummonUndeadWeapon",
       "methodName": "destroy"
     },
@@ -13668,7 +13668,7 @@
       "name": "SummonUndeadWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 269,
+      "line": 287,
       "className": "SummonUndeadWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -13676,7 +13676,7 @@
       "name": "SummonUndeadWeapon.initVisual",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 249,
+      "line": 266,
       "className": "SummonUndeadWeapon",
       "methodName": "initVisual"
     },
@@ -13684,7 +13684,7 @@
       "name": "SummonUndeadWeapon.setAttackCallback",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 58,
+      "line": 59,
       "className": "SummonUndeadWeapon",
       "methodName": "setAttackCallback"
     },

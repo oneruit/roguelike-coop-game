@@ -1357,6 +1357,9 @@ export class SessionDirector {
           if (typeof (weapon as any).setAttackCallback === 'function') {
             (weapon as any).setAttackCallback(() => this.player.triggerAttackAnim(0.48, weapon.id));
           }
+          if (typeof (weapon as any).initVisual === 'function' && this.engine.scene) {
+            (weapon as any).initVisual(this.engine.scene, this.player.position);
+          }
           this.player.weapons.push(weapon);
         }
       }

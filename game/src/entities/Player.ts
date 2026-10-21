@@ -501,7 +501,11 @@ export class Player {
     } else if (this.charType === 'flail') {
       this.weapons.push(new FlailWeapon(() => this.triggerAttackAnim(0.45, 'flail')));
     } else if (this.charType === 'necromancer') {
-      this.weapons.push(new SummonUndeadWeapon(() => this.triggerAttackAnim(0.48, 'summon_undead')));
+      const undead = new SummonUndeadWeapon(() => this.triggerAttackAnim(0.48, 'summon_undead'));
+      if (this.scene) {
+        undead.initVisual(this.scene, this.position);
+      }
+      this.weapons.push(undead);
     } else if (this.charType === 'sorceress') {
       this.weapons.push(new AstralStaffWeapon(() => this.triggerAttackAnim(0.48, 'astral_staff')));
     } else if (this.charType === 'chakram') {
@@ -1006,6 +1010,9 @@ export class Player {
     // Update weapons
     const invokeSource = this.weapons.find(weapon => weapon.id === 'invoker_invoke');
     for (const weapon of this.weapons) {
+      if (typeof (weapon as any).initVisual === 'function' && !(weapon as any).hasInitVisual && this.scene) {
+        (weapon as any).initVisual(this.scene, this.position);
+      }
       const damageEnemyWithMultiplier = damageEnemy
         ? (enemy: Enemy, amount: number, sourcePos?: Vector3, critChanceBonus = 0, critDamageBonus = 0) => {
             damageEnemy(
@@ -1233,6 +1240,13 @@ export class Player {
 
     const hasKatana = this.weapons.some(w => w.id === 'katana_slash');
     if (!hasKatana && this.weapons.length < Player.MAX_WEAPONS) this.weapons.push(new KatanaSlashWeapon());
+
+    const hasUndead = this.weapons.some(w => w.id === 'summon_undead');
+    if (!hasUndead && this.weapons.length < Player.MAX_WEAPONS) {
+      const undead = new SummonUndeadWeapon();
+      undead.initVisual(scene, this.position);
+      this.weapons.push(undead);
+    }
     this.recalculateStats();
   }
 

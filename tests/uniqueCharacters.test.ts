@@ -1,3 +1,44 @@
+if (typeof (globalThis as any).document === 'undefined') {
+  (globalThis as any).document = {
+    createElementNS: () => ({
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      src: '',
+      style: {}
+    }),
+    createElement: () => ({
+      getContext: () => ({
+        clearRect: () => {},
+        fillRect: () => {},
+        fillText: () => {},
+        measureText: () => ({ width: 50 }),
+        beginPath: () => {},
+        arc: () => {},
+        roundRect: () => {},
+        fill: () => {},
+        stroke: () => {},
+        save: () => {},
+        restore: () => {},
+        scale: () => {},
+        translate: () => {},
+        rotate: () => {}
+      }),
+      style: {},
+      width: 100,
+      height: 100,
+      appendChild: () => {},
+      addEventListener: () => {},
+      classList: {
+        contains: () => false,
+        add: () => {},
+        remove: () => {}
+      }
+    }),
+    getElementById: () => null,
+    querySelectorAll: () => []
+  };
+}
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -13,7 +54,8 @@ import { DEFAULT_BALANCE } from '../game/src/balance/defaultBalance';
 import { getCharacterAnimLayout, ANIM_LAYOUT_V2 } from '../game/src/entities/CharacterAnimator';
 import { ChunkManager } from '../game/src/world/ChunkManager';
 import { SummonUndeadWeapon } from '../game/src/combat/weapons/SummonUndeadWeapon';
-import { Vector3 } from 'three';
+import { Vector3, Scene } from 'three';
+import { Player } from '../game/src/entities/Player';
 
 test('Unique Character System - Invoker is unique and isolated', () => {
   assert.equal(isUniqueCharacter('invoker'), true);
@@ -211,5 +253,24 @@ test('SummonUndeadWeapon - minion scaling and combat engagement', () => {
   assert.equal(damagedEnemyId, 'e1');
   assert.ok(dealtDamage > 0, 'Minions should deal damage to target enemy');
   weapon.destroy();
+});
+
+test('Player (Necromancer) - initializes SummonUndeadWeapon with visual scene and adds minion groups', () => {
+  const scene = new Scene();
+  const player = new Player(scene, 'necromancer');
+
+  const undeadWeapon = player.weapons.find(w => w.id === 'summon_undead') as any;
+  assert.ok(undeadWeapon, 'Necromancer should start with summon_undead');
+  assert.equal(undeadWeapon.hasInitVisual, true, 'Weapon should be visually initialized with player scene');
+
+  // Update player to populate minions
+  player.update(0.1, new Vector3(), [], () => {});
+
+  // Scene should now contain minion groups
+  assert.ok(undeadWeapon.minions.length >= 2, 'Should have at least 2 minions');
+  for (const m of undeadWeapon.minions) {
+    assert.ok(m.group.parent === scene, 'Minion group must be added to the scene');
+  }
+  player.destroy(scene);
 });
 
