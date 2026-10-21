@@ -966,7 +966,7 @@ class Game {
         this.player.position,
         (damage: number, isImmortalHit?: boolean, attacker?: Enemy) => {
           const isVictoryDeath = Boolean(isImmortalHit);
-          const died = this.player.takeDamage(damage, isVictoryDeath);
+          const died = this.player.takeDamage(damage, isVictoryDeath, attacker?.name);
           if (!this.player.isGodMode) {
             if (attacker?.eliteAffix === 'blazing') {
               this.player.applyBurn(3.0);
@@ -1017,7 +1017,7 @@ class Game {
             if (dx * dx + dz * dz < collisionRadius * collisionRadius) {
               this.lastClientLocalHitTime = now;
               const isVictoryDeath = Boolean(enemy.isImmortal);
-              const died = this.player.takeDamage(enemy.damage, isVictoryDeath);
+              const died = this.player.takeDamage(enemy.damage, isVictoryDeath, enemy.name);
               if (!this.player.isGodMode) {
                 if (enemy.eliteAffix === 'blazing') {
                   this.player.applyBurn(3.0);

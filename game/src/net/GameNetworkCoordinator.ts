@@ -435,7 +435,8 @@ export class GameNetworkCoordinator {
       if (now - this.lastClientLocalHitTime > 320) {
         this.lastClientLocalHitTime = now;
         const isVictoryDeath = this.gameTime >= 2400 || (this.enemyManager.activeBoss?.isImmortal ?? false);
-        const died = this.player.takeDamage(myDamageTaken, isVictoryDeath);
+        const attackerName = this.enemyManager.activeBoss?.name || 'Монстр Разлома';
+        const died = this.player.takeDamage(myDamageTaken, isVictoryDeath, attackerName);
         SoundManager.playPlayerHurt();
         if (died) {
           this.onGameOver?.(isVictoryDeath);

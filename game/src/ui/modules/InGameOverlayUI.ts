@@ -39,6 +39,8 @@ export class InGameOverlayUI extends InGameHUDScreen {
   private stageText: HTMLElement | null;
   public currentStageNumber: number = 1;
   private plasmaCreditsText: HTMLElement | null;
+  private chestsBadge: HTMLElement | null = null;
+  private stageChestsCountText: HTMLElement | null = null;
   private diffTierLabel: HTMLElement | null;
   private diffBarFill: HTMLElement | null;
   private interactionPrompt: HTMLElement | null;
@@ -120,6 +122,8 @@ export class InGameOverlayUI extends InGameHUDScreen {
     // The Rift Elements
     this.stageText = SafeDOM.getElementById('stage-text');
     this.plasmaCreditsText = SafeDOM.getElementById('plasma-credits');
+    this.chestsBadge = SafeDOM.getElementById('chests-badge');
+    this.stageChestsCountText = SafeDOM.getElementById('stage-chests-count');
     this.diffTierLabel = SafeDOM.getElementById('diff-tier-label');
     this.diffBarFill = SafeDOM.getElementById('diff-bar-fill');
     this.interactionPrompt = SafeDOM.getElementById('interaction-prompt');
@@ -641,6 +645,41 @@ export class InGameOverlayUI extends InGameHUDScreen {
     this.currentStageNumber = stageNum;
     if (this.stageText) {
       this.stageText.innerText = `${stageNum}: ${biomeName.toUpperCase()}`;
+    }
+  }
+
+  public updateChestsCount(
+    opened: number,
+    total: number,
+    byTier?: Record<string, { total: number; opened: number }>
+  ): void {
+    if (!this.stageChestsCountText) {
+      this.stageChestsCountText = SafeDOM.getElementById('stage-chests-count');
+    }
+    if (!this.chestsBadge) {
+      this.chestsBadge = SafeDOM.getElementById('chests-badge');
+    }
+    if (this.stageChestsCountText) {
+      this.stageChestsCountText.innerText = `${opened} / ${total}`;
+    }
+    if (this.chestsBadge) {
+      if (total > 0 && opened >= total) {
+        this.chestsBadge.classList.add('all-opened');
+      } else {
+        this.chestsBadge.classList.remove('all-opened');
+      }
+      if (byTier) {
+        const small = byTier['small'] || { opened: 0, total: 0 };
+        const large = byTier['large'] || { opened: 0, total: 0 };
+        const legendary = byTier['legendary'] || { opened: 0, total: 0 };
+        const lines = [
+          `Сундуки на этапе: ${opened} из ${total}`,
+          `• Обычные: ${small.opened}/${small.total}`,
+          `• Большие: ${large.opened}/${large.total}`,
+          `• Легендарные: ${legendary.opened}/${legendary.total}`
+        ];
+        this.chestsBadge.setAttribute('title', lines.join('\n'));
+      }
     }
   }
 

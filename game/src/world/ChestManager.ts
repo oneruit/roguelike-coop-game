@@ -65,11 +65,45 @@ export class ChestManager {
   public chronosDroppedInCurrentBiome: boolean = false;
   private static nextId = 1;
   public isDeclarative = false;
-  private chestListeners = new Set<(action: 'add' | 'remove' | 'reset', chest?: ChestInstance) => void>();
+  private chestListeners = new Set<(action: 'add' | 'remove' | 'reset' | 'open', chest?: ChestInstance) => void>();
 
-  public addChestListener(listener: (action: 'add' | 'remove' | 'reset', chest?: ChestInstance) => void): () => void {
+  public addChestListener(listener: (action: 'add' | 'remove' | 'reset' | 'open', chest?: ChestInstance) => void): () => void {
     this.chestListeners.add(listener);
     return () => this.chestListeners.delete(listener);
+  }
+
+  public getChestStats(): {
+    total: number;
+    opened: number;
+    remaining: number;
+    byTier: Record<ChestTier, { total: number; opened: number }>;
+  } {
+    const total = this.chests.length;
+    let opened = 0;
+    const byTier: Record<ChestTier, { total: number; opened: number }> = {
+      small: { total: 0, opened: 0 },
+      large: { total: 0, opened: 0 },
+      legendary: { total: 0, opened: 0 }
+    };
+
+    for (const c of this.chests) {
+      const tier = c.tier || 'small';
+      if (!byTier[tier]) {
+        byTier[tier] = { total: 0, opened: 0 };
+      }
+      byTier[tier].total++;
+      if (c.isOpened) {
+        opened++;
+        byTier[tier].opened++;
+      }
+    }
+
+    return {
+      total,
+      opened,
+      remaining: Math.max(0, total - opened),
+      byTier
+    };
   }
 
   public setDeclarative(declarative: boolean): void {
@@ -528,6 +562,15 @@ export class ChestManager {
     if (pair[0].id === 'chronos_phylactery' || pair[1].id === 'chronos_phylactery') {
       this.chronosDroppedInCurrentBiome = true;
     }
+
+    for (const listener of this.chestListeners) {
+      try {
+        listener('open', chest);
+      } catch (err) {
+        console.error('[ChestManager] Listener error on open:', err);
+      }
+    }
+
     return pair;
   }
 

@@ -36,6 +36,7 @@ import { SulfurSmokeManager } from '../vfx/SulfurSmokeVfx';
 import { MetaProgression } from '../meta/MetaProgression';
 import { LeaderboardManager } from './LeaderboardManager';
 import { RunSaveManager, type SavedWeaponData, type SavedRunData } from './RunSaveManager';
+import { LastRunManager } from './LastRunManager';
 import { createWeaponInstanceById } from '../combat/WeaponFactory';
 import { Altar } from '../world/Altar';
 
@@ -102,6 +103,7 @@ export class SessionDirector {
   public greedTrialTotalDuration = 45;
   private greedWaveSpawnTimer = 0;
   private activeGreedAltar: Altar | null = null;
+  public totalChestsOpenedInRun = 0;
 
   constructor(
     engine: Engine,
@@ -163,7 +165,20 @@ export class SessionDirector {
       return false;
     };
 
+    this.chestManager?.addChestListener?.((action) => {
+      this.updateChestsHUD();
+      if (action === 'open') {
+        this.totalChestsOpenedInRun++;
+      }
+    });
+
     this.wireCoordinatorCallbacks();
+  }
+
+  public updateChestsHUD(): void {
+    if (!this.chestManager?.getChestStats) return;
+    const stats = this.chestManager.getChestStats();
+    this.hud?.updateChestsCount?.(stats.opened, stats.total, stats.byTier);
   }
 
   private wireCoordinatorCallbacks(): void {
@@ -563,6 +578,8 @@ export class SessionDirector {
       this.player.recalculateStats();
       this.enemyManager.currentStage = 1;
       this.hud.updateStageText(1, this.biomeManager.currentBiome.name);
+      this.totalChestsOpenedInRun = 0;
+      this.updateChestsHUD();
 
       this.mapManager.setSeed(this.currentSeed);
       this.mapManager.clear();
@@ -876,6 +893,7 @@ export class SessionDirector {
       // Generate fixed 500x500 map, altars, teleporter, and chests for new stage
       AssetPreloader.showMapLoadingProgress(`ПЕРЕХОД: ${nextBiome.name.toUpperCase()}`);
       this.engine.chunkManager.generateMap(stageSeed, this.chestManager, this.riftTeleporter, this.biomeManager.stageNumber, nextBiome.id, this.mobNestManager);
+      this.updateChestsHUD();
       this.mapManager.setSeed(stageSeed);
       this.mapManager.clear();
 
@@ -1066,6 +1084,52 @@ export class SessionDirector {
 
     // Clear any saved run since this game session has concluded
     RunSaveManager.clearSavedRun();
+
+    // Save last completed run summary (including killer info on defeat)
+    const killer = isVictory
+      ? undefined
+      : (this.player.killerInfo || { name: 'Монстры Разлома', damage: 0 });
+
+    const weaponsData = this.player.weapons.map((w) => ({
+      id: w.id,
+      name: w.name,
+      level: w.level,
+      damageDealt: Math.round(w.damageDealt || 0),
+      awakenedGrade: w.awakenedGrade,
+      icon: w.icon
+    }));
+
+    const coopPlayers = this.player.isCoop
+      ? allPlayersResults.map((p) => ({
+          name: p.name,
+          charType: p.charType,
+          kills: p.stats.kills,
+          damageDealt: p.stats.damageDealt,
+          colorCss: p.colorCss,
+          isLocal: p.isLocal
+        }))
+      : undefined;
+
+    LastRunManager.saveLastRun({
+      timestamp: Date.now(),
+      dateFormatted: LastRunManager.formatDate(Date.now()),
+      isVictory,
+      stageNumber: this.biomeManager.stageNumber,
+      biomeName: this.biomeManager.currentBiome.name,
+      seed: typeof this.currentSeed === 'number' ? this.currentSeed : SeededRNG.hashString(String(this.currentSeed)),
+      gameTime: this.gameTime,
+      timeFormatted: timeStr,
+      heroId: this.player.charType,
+      heroLevel: this.player.level,
+      kills: this.player.kills,
+      damageDealt: Math.round(this.player.totalDamageDealt),
+      creditsEarned: this.player.credits,
+      chestsOpened: this.totalChestsOpenedInRun,
+      killer,
+      weapons: weaponsData,
+      isCoop: this.player.isCoop,
+      coopPlayers
+    });
 
     // Automatically submit score to Hall of Fame / Leaderboard & DB
     LeaderboardManager.submitScore({
