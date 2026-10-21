@@ -9,18 +9,50 @@ import rembg
 def remove_bg_rembg(image_path: Path, alpha_thresh: int = 128) -> Image.Image:
     """Use rembg to remove white background and apply crisp alpha threshold for pixel art."""
     im = Image.open(image_path).convert("RGBA")
-    # If image already has alpha channel with transparent background, return directly
     arr = np.array(im)
     if (arr[:, :, 3] < 50).sum() > 1000:
         return im
 
-    # Run rembg
     no_bg = rembg.remove(im)
     arr = np.array(no_bg)
-    # Threshold alpha for clean 16-bit pixel edges
     arr[arr[:, :, 3] < alpha_thresh, 3] = 0
     arr[arr[:, :, 3] >= alpha_thresh, 3] = 255
     return Image.fromarray(arr, mode="RGBA")
+
+def extract_row_sprites(row_sub: np.ndarray, row_idx: int, cols: int = 6) -> list[tuple[slice, slice]]:
+    """Detect contiguous whole-character components in a row without splitting bodies."""
+    labeled, num = label(row_sub[:, :, 3] > 20)
+    objs = find_objects(labeled)
+    # Filter out tiny noise
+    large = sorted(
+        [o for o in objs if (o[0].stop - o[0].start) > 60 and (o[1].stop - o[1].start) > 40],
+        key=lambda o: o[1].start,
+    )
+
+    if len(large) == cols:
+        return large
+    elif len(large) == cols + 1:
+        # 7 sprites found instead of 6: pick the 6 that form the best 6-frame cycle
+        print(f"[INFO] Row {row_idx} has 7 sprites. Selecting 6 complete frames to maintain intact characters.")
+        if row_idx == 1:
+            # Row 1 (Back view): skip index 3
+            return [large[i] for i in [0, 1, 2, 4, 5, 6]]
+        elif row_idx == 2:
+            # Row 2 (Right profile): skip index 2
+            return [large[i] for i in [0, 1, 3, 4, 5, 6]]
+        else:
+            # Row 0: skip index 1 or 2
+            return [large[i] for i in [0, 1, 3, 4, 5, 6]]
+    elif len(large) > cols + 1:
+        # Sort by width/area and take top 6 in order of appearance
+        areas = [(o, (row_sub[o[0], o[1], 3] > 20).sum()) for o in large]
+        top6 = sorted(sorted(areas, key=lambda x: x[1], reverse=True)[:cols], key=lambda x: x[0][1].start)
+        return [x[0] for x in top6]
+    else:
+        # Fewer than 6: pad by repeating middle frames
+        while len(large) < cols:
+            large.append(large[-1])
+        return large
 
 def process_sheet_rembg(
     src_path: Path,
@@ -31,12 +63,11 @@ def process_sheet_rembg(
     rows: int = 3,
     alpha_thresh: int = 128,
 ) -> Image.Image:
-    """Process a 6x3 white-background sheet into a 6x4 576x384 RGBA spritesheet."""
+    """Process a 6x3 white-background sheet into a 6x4 576x384 RGBA spritesheet with intact characters."""
     clean_im = remove_bg_rembg(src_path, alpha_thresh=alpha_thresh)
     arr = np.array(clean_im)
     H, W = arr.shape[:2]
 
-    # Row vertical divisions approximately
     row_h = H / float(rows)
     row_sprites = {}
     all_heights = []
@@ -45,35 +76,16 @@ def process_sheet_rembg(
         y0 = int(round(r_idx * row_h))
         y1 = int(round((r_idx + 1) * row_h))
         row_sub = arr[y0:y1, :]
-        labeled, num = label(row_sub[:, :, 3] > 20)
-        objs = find_objects(labeled)
-        # Filter out tiny noise and border tags
-        sprites = sorted(
-            [o for o in objs if (o[0].stop - o[0].start) > 40 and (o[1].stop - o[1].start) > 30],
-            key=lambda o: o[1].start,
-        )
-        if len(sprites) != cols:
-            print(f"[WARN] {src_path.name} Row {r_idx} found {len(sprites)} sprites instead of {cols}. Trying fallback gutter split.")
-            # Fallback: slice by column gutters
-            sprites = []
-            col_w = W / float(cols)
-            for c in range(cols):
-                cx0 = int(round(c * col_w))
-                cx1 = int(round((c + 1) * col_w))
-                cell_sub = row_sub[:, cx0:cx1]
-                m_ys, m_xs = np.where(cell_sub[:, :, 3] > 20)
-                if len(m_xs):
-                    sprites.append((slice(m_ys.min(), m_ys.max() + 1), slice(cx0 + m_xs.min(), cx0 + m_xs.max() + 1)))
+        sprites = extract_row_sprites(row_sub, r_idx, cols=cols)
 
         for s in sprites:
             all_heights.append(s[0].stop - s[0].start)
         row_sprites[r_idx] = (sprites, y0)
 
-    ref_h = float(np.median(all_heights)) if all_heights else 240.0
+    ref_h = float(np.median(all_heights)) if all_heights else 235.0
     scale = target_char_h / ref_h
     print(f"[{src_path.name}] ref_h={ref_h:.1f}, scale={scale:.4f}")
 
-    # Output 4 rows x 6 cols
     output = np.zeros((4 * cell_size, cols * cell_size, 4), dtype=np.uint8)
 
     for r in range(4):
@@ -111,7 +123,6 @@ def process_sheet_rembg(
             cell_y0 = r * cell_size
 
             res_arr = np.array(res)
-            # Clip bounds
             out_y0 = max(cell_y0, cell_y0 + dy)
             out_y1 = min(cell_y0 + cell_size, cell_y0 + dy + nh)
             out_x0 = max(cell_x0, cell_x0 + dx)
@@ -148,7 +159,7 @@ def main():
     for src_name, raw_name, pub_name in sheet_names:
         src_path = raw_dir / src_name
         if not src_path.exists():
-            print(f"[SKIP] {src_path} not found yet")
+            print(f"[SKIP] {src_path} not found")
             continue
         print(f"\nProcessing {src_name}...")
         processed_im = process_sheet_rembg(src_path)
@@ -176,7 +187,6 @@ def main():
             exact_p = p_crop[m_ys.min():m_ys.max()+1, m_xs.min():m_xs.max()+1]
             p_im = Image.fromarray(exact_p, mode="RGBA")
             p_sq = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
-            # Fit inside 96x96 with aspect ratio
             p_im.thumbnail((88, 88), Image.Resampling.NEAREST)
             off_x = (96 - p_im.width) // 2
             off_y = (96 - p_im.height) // 2
