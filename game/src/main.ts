@@ -149,6 +149,21 @@ class Game {
       this.hud.triggerAltarNotification('ТОРГОВЕЦ РАЗЛОМА', 'Таинственный купец прибыл в сектор!', '💰', '#f59e0b');
     };
 
+    this.riftTeleporter.onCloseWarning = (secondsLeft: number) => {
+      this.hud.triggerAltarNotification('ПОРТАЛ ЗАКРЫВАЕТСЯ', `До закрытия портала осталось ${secondsLeft} секунд!`, '🌀', '#38bdf8');
+    };
+
+    this.riftTeleporter.onCloseExpired = () => {
+      SulfurSmokeManager.spawn(this.engine.scene, this.riftTeleporter.position);
+      SoundManager.playTeleporterComplete?.();
+      this.hud.triggerAltarNotification(
+        'РАЗЛОМ ЗАКРЫЛСЯ',
+        'Портал исчез! Выживайте на Арене сколько сможете!',
+        '💀',
+        '#ef4444'
+      );
+    };
+
     // Live Game Balance sync with Supabase
     BalanceManager.init()
       .then(() => {
@@ -611,13 +626,15 @@ class Game {
         this.netCoordinator.pendingNetworkEvents.push({ type: 'boss_defeat' });
       }
       if (boss?.isStage5FinalBoss) {
-        this.sessionDirector.isVictoryAchieved = true;
+        // Defeat if player dies in arena; victory ONLY if entering portal
+        this.sessionDirector.isVictoryAchieved = false;
         this.enemyManager.activateEndlessHorde();
+        this.riftTeleporter.startStage5CloseTimer(60);
         SoundManager.playVictory?.();
         this.hud.triggerAltarNotification(
-          'ХРАНИТЕЛЬ ПОВЕРЖЕН!',
-          'Войдите в Разлом [E] для завершения экспедиции или сразитесь с Бесконечной Ордой!',
-          '👑',
+          'АРЕНА ВЫЖИВАНИЯ',
+          'Босс повержен! Портал закроется через 60 сек. Войдите в Разлом [E] для ПОБЕДЫ или останьтесь выживать!',
+          '⚔️',
           '#f59e0b'
         );
       }

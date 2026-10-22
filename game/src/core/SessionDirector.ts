@@ -1046,7 +1046,7 @@ export class SessionDirector {
   }
 
   public triggerGameOver(isVictory: boolean = false): void {
-    const effectiveVictory = isVictory || this.isVictoryAchieved;
+    const effectiveVictory = isVictory;
     this.resetRewardChoices();
     this.gameState = GameState.GAME_OVER;
     this.updateUI.onRunEnded();
@@ -1101,8 +1101,8 @@ export class SessionDirector {
 
     // Save last completed run summary (including killer info on defeat)
     const killer = effectiveVictory
-      ? (this.isVictoryAchieved && !isVictory ? { name: 'Бесконечная Орда', damage: 0 } : undefined)
-      : (this.player.killerInfo || { name: 'Монстры Разлома', damage: 0 });
+      ? undefined
+      : (this.player.killerInfo || { name: 'Монстры Арены Разлома', damage: 0 });
 
     const weaponsData = this.player.weapons.map((w) => ({
       id: w.id,

@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-22T05:37:52.373Z | **Files:** 206 | **Top-level:** 606 | **Class Methods:** 1345
+> **Generated:** 2026-10-22T06:52:57.004Z | **Files:** 206 | **Top-level:** 606 | **Class Methods:** 1347
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -487,31 +487,31 @@ Run `npm run index` to refresh this cache.
 | `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1316`](../../game/src/entities/EnemyManager.ts#L1316) | - |
 | `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1426`](../../game/src/entities/EnemyManager.ts#L1426) | - |
 | `EnemyManager.damageEnemiesInRadius` | `method` | [`game/src/entities/EnemyManager.ts:1213`](../../game/src/entities/EnemyManager.ts#L1213) | Deals friendly fire blast wave damage to all non-immortal monsters in radiu... |
-| `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:339`](../../game/src/entities/EnemyManager.ts#L339) | - |
+| `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:340`](../../game/src/entities/EnemyManager.ts#L340) | - |
 | `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:326`](../../game/src/entities/EnemyManager.ts#L326) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
-| `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:380`](../../game/src/entities/EnemyManager.ts#L380) | - |
-| `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:369`](../../game/src/entities/EnemyManager.ts#L369) | - |
-| `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:395`](../../game/src/entities/EnemyManager.ts#L395) | - |
+| `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:383`](../../game/src/entities/EnemyManager.ts#L383) | - |
+| `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:372`](../../game/src/entities/EnemyManager.ts#L372) | - |
+| `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:398`](../../game/src/entities/EnemyManager.ts#L398) | - |
 | `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:1069`](../../game/src/entities/EnemyManager.ts#L1069) | Fast query for enemies within radius using the Spatial Grid. |
 | `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1303`](../../game/src/entities/EnemyManager.ts#L1303) | - |
-| `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:352`](../../game/src/entities/EnemyManager.ts#L352) | - |
+| `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:354`](../../game/src/entities/EnemyManager.ts#L354) | - |
 | `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:1094`](../../game/src/entities/EnemyManager.ts#L1094) | - |
 | `EnemyManager.killNonBossesAround` | `method` | [`game/src/entities/EnemyManager.ts:1227`](../../game/src/entities/EnemyManager.ts#L1227) | - |
 | `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:263`](../../game/src/entities/EnemyManager.ts#L263) | - |
-| `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:363`](../../game/src/entities/EnemyManager.ts#L363) | - |
+| `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:366`](../../game/src/entities/EnemyManager.ts#L366) | - |
 | `EnemyManager.setDeclarative` | `method` | [`game/src/entities/EnemyManager.ts:41`](../../game/src/entities/EnemyManager.ts#L41) | - |
 | `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1287`](../../game/src/entities/EnemyManager.ts#L1287) | - |
 | `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1274`](../../game/src/entities/EnemyManager.ts#L1274) | - |
 | `EnemyManager.spawnGreedTrialWave` | `method` | [`game/src/entities/EnemyManager.ts:1105`](../../game/src/entities/EnemyManager.ts#L1105) | Spawns a high-threat frenzied wave of guaranteed elite monsters around the ... |
 | `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1279`](../../game/src/entities/EnemyManager.ts#L1279) | - |
-| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:869`](../../game/src/entities/EnemyManager.ts#L869) | Spawns an endgame rift boss |
+| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:868`](../../game/src/entities/EnemyManager.ts#L868) | Spawns an endgame rift boss |
 | `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1283`](../../game/src/entities/EnemyManager.ts#L1283) | - |
 | `EnemyManager.spawnNestSwarm` | `method` | [`game/src/entities/EnemyManager.ts:1161`](../../game/src/entities/EnemyManager.ts#L1161) | Spawns a furious swarm of volcanic/void monsters bursting out from a detona... |
 | `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1016`](../../game/src/entities/EnemyManager.ts#L1016) | - |
 | `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1258`](../../game/src/entities/EnemyManager.ts#L1258) | - |
 | `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:784`](../../game/src/entities/EnemyManager.ts#L784) | Spawns a stage boss explicitly when the Teleporter event is activated. |
 | `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:710`](../../game/src/entities/EnemyManager.ts#L710) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
-| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:905`](../../game/src/entities/EnemyManager.ts#L905) | - |
+| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:904`](../../game/src/entities/EnemyManager.ts#L904) | - |
 | `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:227`](../../game/src/entities/EnemyManager.ts#L227) | - |
 | `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1398`](../../game/src/entities/EnemyManager.ts#L1398) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
@@ -601,17 +601,17 @@ Run `npm run index` to refresh this cache.
 | `GameEventBus.clear` | `method` | [`game/src/mechanics/events/GameEventBus.ts:90`](../../game/src/mechanics/events/GameEventBus.ts#L90) | - |
 | `GameEventListener` | `type` | [`game/src/mechanics/events/GameEventBus.ts:1`](../../game/src/mechanics/events/GameEventBus.ts#L1) | - |
 | `GameNetworkCoordinator` | `class` | [`game/src/net/GameNetworkCoordinator.ts:30`](../../game/src/net/GameNetworkCoordinator.ts#L30) | - |
-| `GameNetworkCoordinator.broadcastNetworkState` | `method` | [`game/src/net/GameNetworkCoordinator.ts:589`](../../game/src/net/GameNetworkCoordinator.ts#L589) | - |
-| `GameNetworkCoordinator.broadcastTimeFreeze` | `method` | [`game/src/net/GameNetworkCoordinator.ts:973`](../../game/src/net/GameNetworkCoordinator.ts#L973) | - |
+| `GameNetworkCoordinator.broadcastNetworkState` | `method` | [`game/src/net/GameNetworkCoordinator.ts:590`](../../game/src/net/GameNetworkCoordinator.ts#L590) | - |
+| `GameNetworkCoordinator.broadcastTimeFreeze` | `method` | [`game/src/net/GameNetworkCoordinator.ts:974`](../../game/src/net/GameNetworkCoordinator.ts#L974) | - |
 | `GameNetworkCoordinator.createRemotePlayer` | `method` | [`game/src/net/GameNetworkCoordinator.ts:100`](../../game/src/net/GameNetworkCoordinator.ts#L100) | - |
-| `GameNetworkCoordinator.handleClientDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:815`](../../game/src/net/GameNetworkCoordinator.ts#L815) | - |
-| `GameNetworkCoordinator.handleClientSync` | `method` | [`game/src/net/GameNetworkCoordinator.ts:480`](../../game/src/net/GameNetworkCoordinator.ts#L480) | - |
-| `GameNetworkCoordinator.handleHostDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:777`](../../game/src/net/GameNetworkCoordinator.ts#L777) | - |
+| `GameNetworkCoordinator.handleClientDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:816`](../../game/src/net/GameNetworkCoordinator.ts#L816) | - |
+| `GameNetworkCoordinator.handleClientSync` | `method` | [`game/src/net/GameNetworkCoordinator.ts:481`](../../game/src/net/GameNetworkCoordinator.ts#L481) | - |
+| `GameNetworkCoordinator.handleHostDevAction` | `method` | [`game/src/net/GameNetworkCoordinator.ts:778`](../../game/src/net/GameNetworkCoordinator.ts#L778) | - |
 | `GameNetworkCoordinator.handleHostSnapshot` | `method` | [`game/src/net/GameNetworkCoordinator.ts:263`](../../game/src/net/GameNetworkCoordinator.ts#L263) | - |
-| `GameNetworkCoordinator.isTeamWiped` | `method` | [`game/src/net/GameNetworkCoordinator.ts:964`](../../game/src/net/GameNetworkCoordinator.ts#L964) | - |
+| `GameNetworkCoordinator.isTeamWiped` | `method` | [`game/src/net/GameNetworkCoordinator.ts:965`](../../game/src/net/GameNetworkCoordinator.ts#L965) | - |
 | `GameNetworkCoordinator.setupNetworkCallbacks` | `method` | [`game/src/net/GameNetworkCoordinator.ts:106`](../../game/src/net/GameNetworkCoordinator.ts#L106) | - |
 | `GameNetworkCoordinator.syncMapManagerPartners` | `method` | [`game/src/net/GameNetworkCoordinator.ts:95`](../../game/src/net/GameNetworkCoordinator.ts#L95) | - |
-| `GameNetworkCoordinator.updateRevives` | `method` | [`game/src/net/GameNetworkCoordinator.ts:871`](../../game/src/net/GameNetworkCoordinator.ts#L871) | - |
+| `GameNetworkCoordinator.updateRevives` | `method` | [`game/src/net/GameNetworkCoordinator.ts:872`](../../game/src/net/GameNetworkCoordinator.ts#L872) | - |
 | `GameOverModal` | `const` | [`game/src/ui/react/modals/GameOverModal.tsx:12`](../../game/src/ui/react/modals/GameOverModal.tsx#L12) | - |
 | `GameOverModalProps` | `interface` | [`game/src/ui/react/modals/GameOverModal.tsx:7`](../../game/src/ui/react/modals/GameOverModal.tsx#L7) | - |
 | `GameOverScreen` | `class` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:36`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L36) | - |
@@ -1461,15 +1461,17 @@ Run `npm run index` to refresh this cache.
 | `RiftItemId` | `type` | [`game/src/items/RiftItemSystem.ts:5`](../../game/src/items/RiftItemSystem.ts#L5) | - |
 | `RiftItemId` | `type` | [`game/src/shared/types/entities.ts:51`](../../game/src/shared/types/entities.ts#L51) | - |
 | `RiftTeleporter` | `class` | [`game/src/world/RiftTeleporter.ts:32`](../../game/src/world/RiftTeleporter.ts#L32) | 2.5D Dimensional Rift (Разлом) for biome transitions. - Closed state: Dark ... |
-| `RiftTeleporter.activate` | `method` | [`game/src/world/RiftTeleporter.ts:127`](../../game/src/world/RiftTeleporter.ts#L127) | - |
-| `RiftTeleporter.createTeleporterVisuals` | `method` | [`game/src/world/RiftTeleporter.ts:71`](../../game/src/world/RiftTeleporter.ts#L71) | - |
-| `RiftTeleporter.destroy` | `method` | [`game/src/world/RiftTeleporter.ts:310`](../../game/src/world/RiftTeleporter.ts#L310) | - |
-| `RiftTeleporter.disableForFinalStage` | `method` | [`game/src/world/RiftTeleporter.ts:245`](../../game/src/world/RiftTeleporter.ts#L245) | Disables the teleporter for the final stage (Rift Core) where no transition... |
-| `RiftTeleporter.getInteraction` | `method` | [`game/src/world/RiftTeleporter.ts:278`](../../game/src/world/RiftTeleporter.ts#L278) | - |
-| `RiftTeleporter.getSnapshot` | `method` | [`game/src/world/RiftTeleporter.ts:318`](../../game/src/world/RiftTeleporter.ts#L318) | - |
-| `RiftTeleporter.resetForStage` | `method` | [`game/src/world/RiftTeleporter.ts:218`](../../game/src/world/RiftTeleporter.ts#L218) | Resets teleporter for a new stage at new random location. |
-| `RiftTeleporter.stabilizeVoluntaryPortal` | `method` | [`game/src/world/RiftTeleporter.ts:257`](../../game/src/world/RiftTeleporter.ts#L257) | Automatically stabilizes the teleporter when 5 minutes on the biome have el... |
-| `RiftTeleporter.update` | `method` | [`game/src/world/RiftTeleporter.ts:150`](../../game/src/world/RiftTeleporter.ts#L150) | - |
+| `RiftTeleporter.activate` | `method` | [`game/src/world/RiftTeleporter.ts:132`](../../game/src/world/RiftTeleporter.ts#L132) | - |
+| `RiftTeleporter.closeAndDisappear` | `method` | [`game/src/world/RiftTeleporter.ts:247`](../../game/src/world/RiftTeleporter.ts#L247) | Closes and permanently removes the teleporter from the scene. |
+| `RiftTeleporter.createTeleporterVisuals` | `method` | [`game/src/world/RiftTeleporter.ts:76`](../../game/src/world/RiftTeleporter.ts#L76) | - |
+| `RiftTeleporter.destroy` | `method` | [`game/src/world/RiftTeleporter.ts:361`](../../game/src/world/RiftTeleporter.ts#L361) | - |
+| `RiftTeleporter.disableForFinalStage` | `method` | [`game/src/world/RiftTeleporter.ts:289`](../../game/src/world/RiftTeleporter.ts#L289) | Disables the teleporter for the final stage (Rift Core) where no transition... |
+| `RiftTeleporter.getInteraction` | `method` | [`game/src/world/RiftTeleporter.ts:322`](../../game/src/world/RiftTeleporter.ts#L322) | - |
+| `RiftTeleporter.getSnapshot` | `method` | [`game/src/world/RiftTeleporter.ts:369`](../../game/src/world/RiftTeleporter.ts#L369) | - |
+| `RiftTeleporter.resetForStage` | `method` | [`game/src/world/RiftTeleporter.ts:259`](../../game/src/world/RiftTeleporter.ts#L259) | Resets teleporter for a new stage at new random location. |
+| `RiftTeleporter.stabilizeVoluntaryPortal` | `method` | [`game/src/world/RiftTeleporter.ts:301`](../../game/src/world/RiftTeleporter.ts#L301) | Automatically stabilizes the teleporter when 5 minutes on the biome have el... |
+| `RiftTeleporter.startStage5CloseTimer` | `method` | [`game/src/world/RiftTeleporter.ts:239`](../../game/src/world/RiftTeleporter.ts#L239) | Starts the 60-second closure timer on Stage 5 upon boss defeat. |
+| `RiftTeleporter.update` | `method` | [`game/src/world/RiftTeleporter.ts:155`](../../game/src/world/RiftTeleporter.ts#L155) | - |
 | `RiftUpdateResult` | `interface` | [`game/src/world/RiftTeleporter.ts:19`](../../game/src/world/RiftTeleporter.ts#L19) | - |
 | `rollChestDropPair` | `function` | [`game/src/items/RiftItemSystem.ts:327`](../../game/src/items/RiftItemSystem.ts#L327) | Rolls two distinct item drops from a chest (no duplicates allowed). Filters... |
 | `rollRiftItem` | `function` | [`game/src/items/RiftItemSystem.ts:394`](../../game/src/items/RiftItemSystem.ts#L394) | Legacy weights roller kept for backwards compatibility. |

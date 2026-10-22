@@ -189,7 +189,7 @@ export class EnemyManager {
       type: 'stage5_boss',
       name: 'Древний Титан Святилища',
       texturePrefix: '/textures/bosses/boss_hydra',
-      hp: 340000,
+      hp: 100000000,
       speed: 3.2,
       damage: 95,
       width: 10.5,
@@ -327,11 +327,12 @@ export class EnemyManager {
     const minute = this.gameTime / 60;
     const baseMult = 1 + (minute * 0.35 + Math.pow(minute / 4.0, 1.8) * 0.45) * 1.5;
     const mPost = Math.max(0, minute - 15);
-    const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
+    const hpPostSurge = this.isEndlessHordeActive ? 0 : Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
     const stageMult = Math.pow(1.40, Math.max(0, this.currentStage - 1));
+    const arenaMins = this.isEndlessHordeActive ? Math.floor(this.endlessHordeTimer / 60) : 0;
     const hordeHpMult = this.isEndlessHordeActive
-      ? Math.pow(1.20, this.endlessHordeTimer / 15)
+      ? Math.pow(1.18, arenaMins)
       : 1.0;
     return (baseMult + hpPostSurge) * overstay.hpMult * stageMult * hordeHpMult;
   }
@@ -340,11 +341,12 @@ export class EnemyManager {
     const minute = this.gameTime / 60;
     const baseMult = 1 + (minute * 0.15 + Math.pow(minute / 6.0, 1.5) * 0.30) * 1.5;
     const mPost = Math.max(0, minute - 15);
-    const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
+    const dmgPostSurge = this.isEndlessHordeActive ? 0 : Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
     const stageMult = Math.pow(1.25, Math.max(0, this.currentStage - 1));
+    const arenaMins = this.isEndlessHordeActive ? Math.floor(this.endlessHordeTimer / 60) : 0;
     const hordeDmgMult = this.isEndlessHordeActive
-      ? Math.pow(1.15, this.endlessHordeTimer / 15)
+      ? Math.pow(1.10, arenaMins)
       : 1.0;
     return (baseMult + dmgPostSurge) * overstay.dmgMult * stageMult * hordeDmgMult;
   }
@@ -353,11 +355,12 @@ export class EnemyManager {
     const minute = this.gameTime / 60;
     const mPost = Math.max(0, minute - 15);
     const stageBonus = Math.max(0, this.currentStage - 1) * 0.04;
+    const arenaMins = this.isEndlessHordeActive ? Math.floor(this.endlessHordeTimer / 60) : 0;
     const hordeSpeedBonus = this.isEndlessHordeActive
-      ? Math.min(0.50, (this.endlessHordeTimer / 60) * 0.15)
+      ? Math.min(0.30, arenaMins * 0.03)
       : 0;
-    const maxSpeed = this.isEndlessHordeActive ? 2.35 : 1.85;
-    return Math.min(maxSpeed, 1 + (minute * 0.015) * 1.5 + mPost * 0.01 + stageBonus + hordeSpeedBonus);
+    const maxSpeed = this.isEndlessHordeActive ? 2.10 : 1.85;
+    return Math.min(maxSpeed, 1 + (minute * 0.015) * 1.5 + (this.isEndlessHordeActive ? 0 : mPost * 0.01) + stageBonus + hordeSpeedBonus);
   }
 
   public resetStageTime(): void {
@@ -443,8 +446,8 @@ export class EnemyManager {
       ? Math.max(0.18, this.spawnInterval / (1 + tMin * 0.28))
       : Math.max(0.12, 0.18 - (tMin - 15) * 0.006);
     if (this.isEndlessHordeActive) {
-      const hordeMins = this.endlessHordeTimer / 60;
-      currentInterval = Math.max(0.06, currentInterval / (1 + hordeMins * 0.5));
+      const arenaMins = Math.floor(this.endlessHordeTimer / 60);
+      currentInterval = Math.max(0.20, currentInterval / (1 + arenaMins * 0.20));
     }
 
     if (this.spawnTimer >= currentInterval) {
@@ -530,21 +533,18 @@ export class EnemyManager {
       }
 
       enemy.ccResistance = enemy.isStage5FinalBoss
-        ? Math.max(0.85, this.getLateGameCcResistance(true))
+        ? Math.max(0.65, this.getLateGameCcResistance(true))
         : this.getLateGameCcResistance(enemy.isBoss);
       enemy.damageResistance = enemy.isStage5FinalBoss
-        ? Math.max(0.60, this.getLateGameDamageResistance(true))
+        ? Math.max(0.15, this.getLateGameDamageResistance(true))
         : this.getLateGameDamageResistance(enemy.isBoss);
       const isTough = enemy.type === 'brute' || enemy.type === 'bison';
       enemy.knockbackResistance = enemy.isStage5FinalBoss
-        ? 0.98
+        ? 0.95
         : this.getKnockbackResistance(enemy.isBoss, isTough);
 
-      if (enemy.isBoss && enemy.isStage5Boss && this.camera) {
-        const proj = enemy.position.clone().project(this.camera);
-        const margin = 0.20;
-        const onScreen = Math.abs(proj.x) <= 1.0 + margin && Math.abs(proj.y) <= 1.0 + margin && proj.z >= -1.0 && proj.z <= 1.0;
-        enemy.isPausedOffScreen = !onScreen;
+      if (enemy.isBoss && enemy.isStage5Boss) {
+        enemy.isPausedOffScreen = false;
       }
 
       enemy.updateSimulation(dt, closestTargetPos);
@@ -809,8 +809,8 @@ export class EnemyManager {
     const baseSpd = stageBaseConfig.speed;
 
     const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
-    const hpStageMult = isStage5 ? (2.2 + (stage - 1) * 1.4) : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
-    const tierHp = Math.round(baseHp * hpStageMult * diffCoeff);
+    const hpStageMult = isStage5 ? 1.0 : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
+    const tierHp = isStage5 ? 100_000_000 : Math.round(baseHp * hpStageMult * diffCoeff);
     const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.35) * (1 + (diffCoeff - 1) * 0.25));
 
     const stageBossNames = [
@@ -840,11 +840,10 @@ export class EnemyManager {
     if (isStage5) {
       boss.isStage5Boss = true;
       boss.isStage5FinalBoss = true;
-      boss.ccResistance = Math.max(0.85, boss.ccResistance);
-      boss.damageResistance = Math.max(0.60, boss.damageResistance);
-      boss.knockbackResistance = 0.98;
-      this.finalBossPylonManager.camera = this.camera;
-      this.finalBossPylonManager.bindBoss(boss, this.hud, this.getElevation);
+      boss.ccResistance = Math.max(0.65, boss.ccResistance);
+      boss.damageResistance = 0.15;
+      boss.knockbackResistance = 0.95;
+      // Boss mechanics removed: pure 100M HP titan, no invulnerability pylons!
     } else if (isSporeQueen) {
       boss.ccResistance = Math.max(0.75, boss.ccResistance);
       boss.damageResistance = Math.max(0.35, boss.damageResistance);
@@ -1004,7 +1003,8 @@ export class EnemyManager {
     }
 
     if (this.isEndlessHordeActive) {
-      count = Math.max(count, 8 + Math.min(6, Math.floor(this.endlessHordeTimer / 30)));
+      const arenaMins = Math.floor(this.endlessHordeTimer / 60);
+      count = Math.max(count, Math.min(8, 4 + Math.floor(arenaMins * 0.5)));
     }
 
     for (let i = 0; i < count; i++) {

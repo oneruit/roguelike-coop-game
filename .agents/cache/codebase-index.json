@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-22T05:37:52.373Z",
+  "generatedAt": "2026-10-22T06:52:57.004Z",
   "totalFiles": 206,
-  "totalSymbols": 1951,
+  "totalSymbols": 1953,
   "topLevelCount": 606,
-  "methodsCount": 1345,
+  "methodsCount": 1347,
   "entities": {
     "heroes": [
       {
@@ -504,7 +504,7 @@
       {
         "id": "stage5_boss",
         "name": "Древний Титан Святилища",
-        "hp": 340000,
+        "hp": 100000000,
         "speed": 3.2,
         "damage": 95,
         "description": "Древний хранитель рунического святилища 5 тира"
@@ -4222,7 +4222,7 @@
       "name": "EnemyManager.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 339,
+      "line": 340,
       "className": "EnemyManager",
       "methodName": "getDamageMultiplier"
     },
@@ -4239,7 +4239,7 @@
       "name": "EnemyManager.getKnockbackResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 380,
+      "line": 383,
       "className": "EnemyManager",
       "methodName": "getKnockbackResistance"
     },
@@ -4247,7 +4247,7 @@
       "name": "EnemyManager.getLateGameCcResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 369,
+      "line": 372,
       "className": "EnemyManager",
       "methodName": "getLateGameCcResistance"
     },
@@ -4255,7 +4255,7 @@
       "name": "EnemyManager.getLateGameDamageResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 395,
+      "line": 398,
       "className": "EnemyManager",
       "methodName": "getLateGameDamageResistance"
     },
@@ -4280,7 +4280,7 @@
       "name": "EnemyManager.getSpeedMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 352,
+      "line": 354,
       "className": "EnemyManager",
       "methodName": "getSpeedMultiplier"
     },
@@ -4312,7 +4312,7 @@
       "name": "EnemyManager.resetStageTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 363,
+      "line": 366,
       "className": "EnemyManager",
       "methodName": "resetStageTime"
     },
@@ -4361,7 +4361,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 869,
+      "line": 868,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -4421,7 +4421,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 905,
+      "line": 904,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -5120,7 +5120,7 @@
       "name": "GameNetworkCoordinator.broadcastNetworkState",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 589,
+      "line": 590,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastNetworkState"
     },
@@ -5128,7 +5128,7 @@
       "name": "GameNetworkCoordinator.broadcastTimeFreeze",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 973,
+      "line": 974,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastTimeFreeze"
     },
@@ -5144,7 +5144,7 @@
       "name": "GameNetworkCoordinator.handleClientDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 815,
+      "line": 816,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientDevAction"
     },
@@ -5152,7 +5152,7 @@
       "name": "GameNetworkCoordinator.handleClientSync",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 480,
+      "line": 481,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientSync"
     },
@@ -5160,7 +5160,7 @@
       "name": "GameNetworkCoordinator.handleHostDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 777,
+      "line": 778,
       "className": "GameNetworkCoordinator",
       "methodName": "handleHostDevAction"
     },
@@ -5176,7 +5176,7 @@
       "name": "GameNetworkCoordinator.isTeamWiped",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 964,
+      "line": 965,
       "className": "GameNetworkCoordinator",
       "methodName": "isTeamWiped"
     },
@@ -5200,7 +5200,7 @@
       "name": "GameNetworkCoordinator.updateRevives",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 871,
+      "line": 872,
       "className": "GameNetworkCoordinator",
       "methodName": "updateRevives"
     },
@@ -11564,15 +11564,24 @@
       "name": "RiftTeleporter.activate",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 127,
+      "line": 132,
       "className": "RiftTeleporter",
       "methodName": "activate"
+    },
+    {
+      "name": "RiftTeleporter.closeAndDisappear",
+      "kind": "method",
+      "file": "game/src/world/RiftTeleporter.ts",
+      "line": 247,
+      "className": "RiftTeleporter",
+      "methodName": "closeAndDisappear",
+      "doc": "Closes and permanently removes the teleporter from the scene."
     },
     {
       "name": "RiftTeleporter.createTeleporterVisuals",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 71,
+      "line": 76,
       "className": "RiftTeleporter",
       "methodName": "createTeleporterVisuals"
     },
@@ -11580,7 +11589,7 @@
       "name": "RiftTeleporter.destroy",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 310,
+      "line": 361,
       "className": "RiftTeleporter",
       "methodName": "destroy"
     },
@@ -11588,7 +11597,7 @@
       "name": "RiftTeleporter.disableForFinalStage",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 245,
+      "line": 289,
       "className": "RiftTeleporter",
       "methodName": "disableForFinalStage",
       "doc": "Disables the teleporter for the final stage (Rift Core) where no transitions occur."
@@ -11597,7 +11606,7 @@
       "name": "RiftTeleporter.getInteraction",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 278,
+      "line": 322,
       "className": "RiftTeleporter",
       "methodName": "getInteraction"
     },
@@ -11605,7 +11614,7 @@
       "name": "RiftTeleporter.getSnapshot",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 318,
+      "line": 369,
       "className": "RiftTeleporter",
       "methodName": "getSnapshot"
     },
@@ -11613,7 +11622,7 @@
       "name": "RiftTeleporter.resetForStage",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 218,
+      "line": 259,
       "className": "RiftTeleporter",
       "methodName": "resetForStage",
       "doc": "Resets teleporter for a new stage at new random location."
@@ -11622,16 +11631,25 @@
       "name": "RiftTeleporter.stabilizeVoluntaryPortal",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 257,
+      "line": 301,
       "className": "RiftTeleporter",
       "methodName": "stabilizeVoluntaryPortal",
       "doc": "Automatically stabilizes the teleporter when 5 minutes on the biome have elapsed."
     },
     {
+      "name": "RiftTeleporter.startStage5CloseTimer",
+      "kind": "method",
+      "file": "game/src/world/RiftTeleporter.ts",
+      "line": 239,
+      "className": "RiftTeleporter",
+      "methodName": "startStage5CloseTimer",
+      "doc": "Starts the 60-second closure timer on Stage 5 upon boss defeat."
+    },
+    {
       "name": "RiftTeleporter.update",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 150,
+      "line": 155,
       "className": "RiftTeleporter",
       "methodName": "update"
     },
