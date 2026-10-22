@@ -144,17 +144,23 @@ export class ChunkManager {
     let teleX = 75;
     let teleZ = 75;
     if (riftTeleporter) {
-      // Pick deterministic sector away from spawn
-      const teleAngle = rng.range(0, Math.PI * 2);
-      const teleDist = rng.range(85, 130);
-      teleX = Math.cos(teleAngle) * teleDist;
-      teleZ = Math.sin(teleAngle) * teleDist;
-      riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
-      occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
       if (stageNumber === 4) {
-        // On stage 4, the portal is secretly hidden until all chests are collected
-        riftTeleporter.mesh.visible = false;
-        riftTeleporter.isDiscovered = false;
+        // Stage 4 (Caldera Crucible): Central Rift Sanctuary at (0, 0)
+        teleX = 0;
+        teleZ = 0;
+        riftTeleporter.resetForStage(new Vector3(0, 0, 0));
+        occupied.push({ x: 0, z: 0, radius: 18.0 });
+        riftTeleporter.mesh.visible = true;
+        riftTeleporter.isDiscovered = true;
+        riftTeleporter.isStage4 = true;
+      } else {
+        // Pick deterministic sector away from spawn
+        const teleAngle = rng.range(0, Math.PI * 2);
+        const teleDist = rng.range(85, 130);
+        teleX = Math.cos(teleAngle) * teleDist;
+        teleZ = Math.sin(teleAngle) * teleDist;
+        riftTeleporter.resetForStage(new Vector3(teleX, 0, teleZ));
+        occupied.push({ x: teleX, z: teleZ, radius: 18.0 });
       }
     }
 

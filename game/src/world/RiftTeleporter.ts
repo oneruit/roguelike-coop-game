@@ -43,6 +43,9 @@ export class RiftTeleporter {
   public isDiscovered: boolean = false;
   public stage5CloseTimer: number = -1; // -1 if inactive; countdown in seconds on stage 5 arena
   public isClosedAndGone: boolean = false;
+  public isStage4: boolean = false;
+  public coresDelivered: number = 0;
+  public isAwakened: boolean = false;
   public onCloseExpired?: () => void;
   public onCloseWarning?: (secondsLeft: number) => void;
   private hasNotified10s: boolean = false;
@@ -268,6 +271,9 @@ export class RiftTeleporter {
     this.stage5CloseTimer = -1;
     this.isClosedAndGone = false;
     this.hasNotified10s = false;
+    this.isStage4 = false;
+    this.coresDelivered = 0;
+    this.isAwakened = false;
 
     // Reset visuals to closed dormant rift
     this.riftSpriteMat.map = this.riftClosedTex;
@@ -331,6 +337,13 @@ export class RiftTeleporter {
     }
 
     if (this.state === 'IDLE') {
+      if (this.isStage4 && this.coresDelivered < 4) {
+        return {
+          canInteract: false,
+          prompt: `⚡ ДОСТАВЬТЕ АСТРАЛЬНЫЕ ЯДРА: ${this.coresDelivered} / 4`,
+          action: null
+        };
+      }
       return {
         canInteract: true,
         prompt: '[E] Прикоснуться к Разлому (Призыв Босса)',

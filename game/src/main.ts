@@ -145,6 +145,16 @@ class Game {
     this.riftTeleporter = new RiftTeleporter(this.engine.scene, new Vector3(75, 0, 75));
     this.merchantManager = new MerchantManager(this.engine.scene, this.biomeManager);
     this.mobNestManager = new MobNestManager(this.engine.scene);
+    this.mobNestManager.riftTeleporter = this.riftTeleporter;
+    this.player.onDropAstralCore = (dropPos) => {
+      this.mobNestManager.spawnDroppedCore(dropPos);
+      this.hud.triggerAltarNotification(
+        'ЯДРО ВЫПАЛО ПРИ РЫВКЕ!',
+        'Вы совершили рывок и выронили Астральное Ядро! Подберите его!',
+        '⚠️',
+        '#f59e0b'
+      );
+    };
     this.merchantManager.onMerchantSpawn = () => {
       this.hud.triggerAltarNotification('ТОРГОВЕЦ РАЗЛОМА', 'Таинственный купец прибыл в сектор!', '💰', '#f59e0b');
     };
@@ -718,7 +728,50 @@ class Game {
       this.sessionDirector.completeGreedTrial(altar);
     };
 
-    // Mob Nests events (Stage 4)
+    // Astral Core & Generator events (Stage 4)
+    this.mobNestManager.onCoreExtracted = (_nest, remaining) => {
+      this.hud.triggerAltarNotification(
+        'АСТРАЛЬНОЕ ЯДРО ИЗВЛЕЧЕНО!',
+        `Доставьте его в Портал в центре! (Осталось генераторов: ${remaining}). При рывке ядро выпадает!`,
+        '⚡',
+        '#38bdf8'
+      );
+    };
+
+    this.mobNestManager.onCorePickedUp = () => {
+      this.hud.triggerAltarNotification(
+        'ЯДРО ПОДОБРАНО!',
+        'Продолжайте доставку в центральный Пространственный Разлом!',
+        '⚡',
+        '#38bdf8'
+      );
+    };
+
+    this.mobNestManager.onCoreDelivered = (delivered, total) => {
+      const remaining = total - delivered;
+      this.hud.triggerAltarNotification(
+        `ЯДРО СТАБИЛИЗИРОВАНО (${delivered}/${total})!`,
+        `Разлом накапливает энергию! Доставьте еще ${remaining} ядра из квадрантов!`,
+        '⚡',
+        '#38bdf8'
+      );
+    };
+
+    this.mobNestManager.onAllCoresDelivered = () => {
+      this.riftTeleporter.isAwakened = true;
+      this.riftTeleporter.coresDelivered = 4;
+      this.hud.triggerAltarNotification(
+        'ВСЕ 4 ЯДРА ДОСТАВЛЕНЫ!',
+        'Пространственный Разлом полностью стабилизирован! Хранитель Разлома пробуждается!',
+        '🌀',
+        '#10b981'
+      );
+      SulfurSmokeManager.spawn(this.engine.scene, this.riftTeleporter.position);
+      SoundManager.playTeleporterActivate?.();
+      this.sessionDirector.activateRift();
+    };
+
+    // Mob Nests events (Stage 4 backwards compatibility)
     this.mobNestManager.onNestExploded = (_nest, destroyed, total) => {
       const remaining = total - destroyed;
       if (remaining > 0) {
@@ -890,14 +943,15 @@ class Game {
     this.mapManager.update(dt);
 
     // 8. The Rift: Teleporter, Chests, Prompts
-    // Stage 4 Secret Rift Teleporter: reveals only after all chests on stage 4 are opened
-    // Stage 4 Secret Rift Teleporter: reveals only after all 4 mob nests on stage 4 are destroyed
-    if (this.biomeManager.stageNumber === 4 && !this.riftTeleporter.mesh.visible) {
+    // Stage 4 Astral Cores: awakens portal once all 4 cores are delivered
+    if (this.biomeManager.stageNumber === 4 && this.riftTeleporter.state === 'IDLE' && !this.riftTeleporter.isAwakened) {
       if (this.mobNestManager.isAllNestsDestroyed()) {
-        this.riftTeleporter.mesh.visible = true;
+        this.riftTeleporter.isAwakened = true;
+        this.riftTeleporter.coresDelivered = 4;
         SulfurSmokeManager.spawn(this.engine.scene, this.riftTeleporter.position);
         SoundManager.playTeleporterActivate?.();
-        this.hud.triggerAltarNotification('ПРОСТРАНСТВЕННЫЙ РАЗЛОМ', 'Гнезда Бездны уничтожены! Портал стабилизировался!', '🌀', '#38bdf8');
+        this.hud.triggerAltarNotification('ПРОСТРАНСТВЕННЫЙ РАЗЛОМ', 'Все 4 Ядра доставлены! Портал стабилизировался! Босс пробуждается!', '🌀', '#10b981');
+        this.sessionDirector.activateRift();
       }
     }
 
@@ -918,6 +972,10 @@ class Game {
 
     // Touch trigger: walking into closed rift awakens it and summons the boss
     if (justTouched && this.riftTeleporter.state === 'IDLE' && this.sessionDirector) {
+      if (this.biomeManager.stageNumber === 4 && !this.mobNestManager.isAllNestsDestroyed()) {
+        // Stage 4 requires delivering all 4 Astral Cores first!
+        return;
+      }
       this.sessionDirector.activateRift();
     }
 
@@ -944,7 +1002,7 @@ class Game {
     }
 
     const merchantPrompt = this.merchantManager.getInteraction(this.player.position);
-    const nestPrompt = this.mobNestManager.getInteraction(this.player.position);
+    const nestPrompt = this.mobNestManager.getInteraction(this.player.position, this.player.hasAstralCore);
     if (nestPrompt.prompt) {
       this.hud.showInteractionPrompt(nestPrompt.prompt);
     } else if (merchantPrompt.canInteract) {

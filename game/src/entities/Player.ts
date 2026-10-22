@@ -179,6 +179,9 @@ export class Player {
   private damageAuraMesh!: Mesh;
   private speedAuraMesh!: Mesh;
   private regenAuraMesh!: Mesh;
+  private astralCoreAuraMesh!: Mesh;
+  public hasAstralCore: boolean = false;
+  public onDropAstralCore?: (pos: Vector3) => void;
 
   // Developer Cheats
   public isGodMode: boolean = false;
@@ -364,6 +367,20 @@ export class Player {
     this.regenAuraMesh.position.y = 0.8;
     this.regenAuraMesh.visible = false;
     this.mesh.add(this.regenAuraMesh);
+
+    // 5. Astral Core Glowing Energy Ring (Stage 4 Core Carrying)
+    const coreGeom = new TorusGeometry(0.85, 0.05, 6, 24);
+    coreGeom.rotateX(Math.PI / 2);
+    const coreMat = new MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.9,
+      side: DoubleSide
+    });
+    this.astralCoreAuraMesh = new Mesh(coreGeom, coreMat);
+    this.astralCoreAuraMesh.position.y = 0.9;
+    this.astralCoreAuraMesh.visible = false;
+    this.mesh.add(this.astralCoreAuraMesh);
   }
 
   public isAnimatedCharacter(): boolean {
@@ -618,9 +635,27 @@ export class Player {
     this.dashCooldown = this.motor.dashCooldown;
     this.dashDirection.copy(this.motor.dashDirection);
 
+    // Dropping Astral Core upon tactical dash (core destabilizes from extreme acceleration)
+    if (this.hasAstralCore) {
+      this.dropAstralCore();
+    }
+
     SoundManager.playDash();
     GameEventBus.emit('player:dash', { cooldown: this.dashCooldown, maxCooldown: this.maxDashCooldown });
     return true;
+  }
+
+  public pickupAstralCore(): void {
+    this.hasAstralCore = true;
+  }
+
+  public dropAstralCore(): void {
+    if (!this.hasAstralCore) return;
+    this.hasAstralCore = false;
+    const dropPos = this.position.clone();
+    if (this.onDropAstralCore) {
+      this.onDropAstralCore(dropPos);
+    }
   }
 
   public recalculateStats() {
@@ -914,6 +949,14 @@ export class Player {
       this.regenAuraMesh.position.y = 0.5 + ((this.animTimer * 1.4) % 1.5);
     }
 
+    this.astralCoreAuraMesh.visible = this.hasAstralCore;
+    if (this.hasAstralCore) {
+      this.astralCoreAuraMesh.rotation.z += dt * 4.0;
+      this.astralCoreAuraMesh.rotation.y += dt * 2.5;
+      const pulse = 1.0 + Math.sin(this.animTimer * 6.0) * 0.15;
+      this.astralCoreAuraMesh.scale.set(pulse, pulse, pulse);
+    }
+
     // Downed / dead state handling: player cannot move, attack, or crawl
     if (this.isDowned || !this.isAlive) {
       this.spriteMesh.rotation.z = Math.PI / 2.3;
@@ -942,7 +985,8 @@ export class Player {
     this.isTerrainSlowed = terrainSlow < 0.99;
 
     if (isMoving) {
-      const effectiveSpeed = this.speed * terrainSlow * this.statusManager.movementMultiplier;
+      const coreSlow = this.hasAstralCore ? 0.88 : 1.0;
+      const effectiveSpeed = this.speed * terrainSlow * this.statusManager.movementMultiplier * coreSlow;
       this.position.addScaledVector(moveDir, effectiveSpeed * dt);
       this.animTimer += dt * 12 * terrainSlow;
 
@@ -1154,6 +1198,9 @@ export class Player {
         name: sourceName || 'Монстр Разлома',
         damage: Math.round(finalAmount)
       };
+      if (this.hasAstralCore) {
+        this.dropAstralCore();
+      }
       if (this.isCoop && !ignoreInvuln) {
         this.isDowned = true;
         this.hp = 0;
@@ -1340,6 +1387,7 @@ export class Player {
     this.recalculateStats();
     this.shield = this.maxShield;
     this.shieldRegenDelay = 0;
+    this.hasAstralCore = false;
     this.lastDrawnHp = -1;
     this.lastDrawnShield = -1;
     this.redrawOverhead();
@@ -1392,6 +1440,10 @@ export class Player {
     if (this.regenAuraMesh) {
       this.regenAuraMesh.geometry.dispose();
       (this.regenAuraMesh.material as Material).dispose();
+    }
+    if (this.astralCoreAuraMesh) {
+      this.astralCoreAuraMesh.geometry.dispose();
+      (this.astralCoreAuraMesh.material as Material).dispose();
     }
   }
 

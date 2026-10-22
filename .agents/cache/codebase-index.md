@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-22T06:52:57.004Z | **Files:** 206 | **Top-level:** 606 | **Class Methods:** 1347
+> **Generated:** 2026-10-22T08:30:10.221Z | **Files:** 206 | **Top-level:** 611 | **Class Methods:** 1355
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 560 |
+| `game/src` | 565 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -94,6 +94,10 @@ Run `npm run index` to refresh this cache.
 | `AssetResolver.getHeroTexture` | `method` | [`game/src/utils/AssetResolver.ts:15`](../../game/src/utils/AssetResolver.ts#L15) | Get hero texture URL for a given action. Path: /textures/heroes/<heroId>/<a... |
 | `AssetResolver.getWeaponIcon` | `method` | [`game/src/utils/AssetResolver.ts:34`](../../game/src/utils/AssetResolver.ts#L34) | Get weapon icon URL. Path: /textures/weapons/weapon_<weaponId>.png |
 | `AssetResolver.normalizeTextureUrl` | `method` | [`game/src/utils/AssetResolver.ts:42`](../../game/src/utils/AssetResolver.ts#L42) | Normalizes legacy URLs to modular structure if applicable. |
+| `AstralCoreManager` | `type` | [`game/src/world/MobNestManager.ts:345`](../../game/src/world/MobNestManager.ts#L345) | - |
+| `AstralCoreManager` | `const` | [`game/src/world/MobNestManager.ts:346`](../../game/src/world/MobNestManager.ts#L346) | - |
+| `AstralGenerator` | `type` | [`game/src/world/MobNest.ts:616`](../../game/src/world/MobNest.ts#L616) | - |
+| `AstralGenerator` | `const` | [`game/src/world/MobNest.ts:617`](../../game/src/world/MobNest.ts#L617) | - |
 | `AstralStaffWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:335`](../../game/src/combat/weapons/MagicWeapons.ts#L335) | Astral Staff (Звёздный Посох) - Hero 4 Sorceress starting weapon Casts high... |
 | `AstralStaffWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:424`](../../game/src/combat/weapons/MagicWeapons.ts#L424) | - |
 | `AstralStaffWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/MagicWeapons.ts:360`](../../game/src/combat/weapons/MagicWeapons.ts#L360) | - |
@@ -351,14 +355,14 @@ Run `npm run index` to refresh this cache.
 | `ChestTier` | `type` | [`game/src/world/ChestManager.ts:26`](../../game/src/world/ChestManager.ts#L26) | - |
 | `ChunkManager` | `class` | [`game/src/world/ChunkManager.ts:29`](../../game/src/world/ChunkManager.ts#L29) | - |
 | `ChunkManager.addChunkListener` | `method` | [`game/src/world/ChunkManager.ts:60`](../../game/src/world/ChunkManager.ts#L60) | - |
-| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:358`](../../game/src/world/ChunkManager.ts#L358) | Deep cleanup of all chunk geometries and entities. |
-| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:346`](../../game/src/world/ChunkManager.ts#L346) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
+| `ChunkManager.clear` | `method` | [`game/src/world/ChunkManager.ts:364`](../../game/src/world/ChunkManager.ts#L364) | Deep cleanup of all chunk geometries and entities. |
+| `ChunkManager.cull` | `method` | [`game/src/world/ChunkManager.ts:352`](../../game/src/world/ChunkManager.ts#L352) | Frustum Culling: Hides chunks that are completely outside the camera view. ... |
 | `ChunkManager.getActiveChunks` | `method` | [`game/src/world/ChunkManager.ts:65`](../../game/src/world/ChunkManager.ts#L65) | - |
 | `ChunkManager.getElevation` | `method` | [`game/src/world/ChunkManager.ts:86`](../../game/src/world/ChunkManager.ts#L86) | Returns terrain elevation Y at world coordinate (x, z) (always 0 for 2D/2.5... |
 | `ChunkManager.getNormal` | `method` | [`game/src/world/ChunkManager.ts:100`](../../game/src/world/ChunkManager.ts#L100) | Returns surface normal vector at world coordinate (x, z). |
 | `ChunkManager.getSlowFactor` | `method` | [`game/src/world/ChunkManager.ts:93`](../../game/src/world/ChunkManager.ts#L93) | Returns rough terrain slow multiplier (0.65 on dunes/rough zones, 1.0 norma... |
 | `ChunkManager.setDeclarative` | `method` | [`game/src/world/ChunkManager.ts:69`](../../game/src/world/ChunkManager.ts#L69) | - |
-| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:338`](../../game/src/world/ChunkManager.ts#L338) | With the fixed preloaded map, update does not need to stream or unload chun... |
+| `ChunkManager.update` | `method` | [`game/src/world/ChunkManager.ts:344`](../../game/src/world/ChunkManager.ts#L344) | With the fixed preloaded map, update does not need to stream or unload chun... |
 | `ClientSyncMessage` | `interface` | [`game/src/shared/types/network.ts:232`](../../game/src/shared/types/network.ts#L232) | - |
 | `CloudSyncManager` | `class` | [`game/src/meta/CloudSyncManager.ts:24`](../../game/src/meta/CloudSyncManager.ts#L24) | Cloud Synchronization Manager for The Rift. Bridges local client storage (M... |
 | `CloudSyncManager.deleteAccount` | `method` | [`game/src/meta/CloudSyncManager.ts:312`](../../game/src/meta/CloudSyncManager.ts#L312) | Permanently deletes user profile data and unlinks account. |
@@ -454,6 +458,11 @@ Run `npm run index` to refresh this cache.
 | `DropManager.updateVisuals` | `method` | [`game/src/drops/DropManager.ts:224`](../../game/src/drops/DropManager.ts#L224) | Rendering phase: Viewport/Frustum culling across all ground gems. Culled ge... |
 | `DropManager.updateWithCollectors` | `method` | [`game/src/drops/DropManager.ts:100`](../../game/src/drops/DropManager.ts#L100) | Updates gem attraction and pickup with multi-player support. Dead/downed pl... |
 | `DropManager.vacuumAll` | `method` | [`game/src/drops/DropManager.ts:212`](../../game/src/drops/DropManager.ts#L212) | - |
+| `DroppedAstralCore` | `class` | [`game/src/world/MobNest.ts:28`](../../game/src/world/MobNest.ts#L28) | - |
+| `DroppedAstralCore.createOverheadUI` | `method` | [`game/src/world/MobNest.ts:80`](../../game/src/world/MobNest.ts#L80) | - |
+| `DroppedAstralCore.dispose` | `method` | [`game/src/world/MobNest.ts:139`](../../game/src/world/MobNest.ts#L139) | - |
+| `DroppedAstralCore.redrawOverhead` | `method` | [`game/src/world/MobNest.ts:104`](../../game/src/world/MobNest.ts#L104) | - |
+| `DroppedAstralCore.update` | `method` | [`game/src/world/MobNest.ts:128`](../../game/src/world/MobNest.ts#L128) | - |
 | `DropSnapshot` | `interface` | [`game/src/shared/types/network.ts:32`](../../game/src/shared/types/network.ts#L32) | - |
 | `DualRevolversWeapon` | `const` | [`game/src/combat/weapons/MeleeWeapons.ts:117`](../../game/src/combat/weapons/MeleeWeapons.ts#L117) | Backwards compatibility alias |
 | `DualRevolversWeapon` | `type` | [`game/src/combat/weapons/MeleeWeapons.ts:118`](../../game/src/combat/weapons/MeleeWeapons.ts#L118) | - |
@@ -1149,18 +1158,20 @@ Run `npm run index` to refresh this cache.
 | `MinimapEntityCoord` | `interface` | [`game/src/ui/stores/GameStateBridge.ts:6`](../../game/src/ui/stores/GameStateBridge.ts#L6) | - |
 | `MinimapListener` | `type` | [`game/src/ui/stores/GameStateBridge.ts:19`](../../game/src/ui/stores/GameStateBridge.ts#L19) | - |
 | `MinimapSnapshot` | `interface` | [`game/src/ui/stores/GameStateBridge.ts:13`](../../game/src/ui/stores/GameStateBridge.ts#L13) | - |
-| `MobNest` | `class` | [`game/src/world/MobNest.ts:27`](../../game/src/world/MobNest.ts#L27) | - |
-| `MobNest.createOverheadUI` | `method` | [`game/src/world/MobNest.ts:169`](../../game/src/world/MobNest.ts#L169) | - |
-| `MobNest.createVisuals` | `method` | [`game/src/world/MobNest.ts:102`](../../game/src/world/MobNest.ts#L102) | - |
-| `MobNest.dispose` | `method` | [`game/src/world/MobNest.ts:376`](../../game/src/world/MobNest.ts#L376) | - |
-| `MobNest.getCraterTexture` | `method` | [`game/src/world/MobNest.ts:90`](../../game/src/world/MobNest.ts#L90) | - |
-| `MobNest.getNestTexture` | `method` | [`game/src/world/MobNest.ts:78`](../../game/src/world/MobNest.ts#L78) | - |
-| `MobNest.redrawOverhead` | `method` | [`game/src/world/MobNest.ts:195`](../../game/src/world/MobNest.ts#L195) | - |
-| `MobNestManager` | `class` | [`game/src/world/MobNestManager.ts:15`](../../game/src/world/MobNestManager.ts#L15) | - |
-| `MobNestManager.clear` | `method` | [`game/src/world/MobNestManager.ts:207`](../../game/src/world/MobNestManager.ts#L207) | - |
-| `MobNestManager.getInteraction` | `method` | [`game/src/world/MobNestManager.ts:162`](../../game/src/world/MobNestManager.ts#L162) | Returns interaction prompt details when the player is near a nest. |
-| `MobNestManager.isAllNestsDestroyed` | `method` | [`game/src/world/MobNestManager.ts:203`](../../game/src/world/MobNestManager.ts#L203) | - |
-| `MobNestManager.setDeclarative` | `method` | [`game/src/world/MobNestManager.ts:26`](../../game/src/world/MobNestManager.ts#L26) | - |
+| `MobNest` | `class` | [`game/src/world/MobNest.ts:153`](../../game/src/world/MobNest.ts#L153) | - |
+| `MobNest.createOverheadUI` | `method` | [`game/src/world/MobNest.ts:328`](../../game/src/world/MobNest.ts#L328) | - |
+| `MobNest.createVisuals` | `method` | [`game/src/world/MobNest.ts:233`](../../game/src/world/MobNest.ts#L233) | - |
+| `MobNest.dispose` | `method` | [`game/src/world/MobNest.ts:582`](../../game/src/world/MobNest.ts#L582) | - |
+| `MobNest.extractCore` | `method` | [`game/src/world/MobNest.ts:435`](../../game/src/world/MobNest.ts#L435) | - |
+| `MobNest.getCraterTexture` | `method` | [`game/src/world/MobNest.ts:221`](../../game/src/world/MobNest.ts#L221) | - |
+| `MobNest.getNestTexture` | `method` | [`game/src/world/MobNest.ts:209`](../../game/src/world/MobNest.ts#L209) | - |
+| `MobNest.redrawOverhead` | `method` | [`game/src/world/MobNest.ts:355`](../../game/src/world/MobNest.ts#L355) | - |
+| `MobNestManager` | `class` | [`game/src/world/MobNestManager.ts:18`](../../game/src/world/MobNestManager.ts#L18) | - |
+| `MobNestManager.clear` | `method` | [`game/src/world/MobNestManager.ts:331`](../../game/src/world/MobNestManager.ts#L331) | - |
+| `MobNestManager.getInteraction` | `method` | [`game/src/world/MobNestManager.ts:247`](../../game/src/world/MobNestManager.ts#L247) | Returns interaction prompt details when the player is near a dropped core, ... |
+| `MobNestManager.isAllNestsDestroyed` | `method` | [`game/src/world/MobNestManager.ts:327`](../../game/src/world/MobNestManager.ts#L327) | - |
+| `MobNestManager.setDeclarative` | `method` | [`game/src/world/MobNestManager.ts:40`](../../game/src/world/MobNestManager.ts#L40) | - |
+| `MobNestManager.spawnDroppedCore` | `method` | [`game/src/world/MobNestManager.ts:110`](../../game/src/world/MobNestManager.ts#L110) | Spawns a dropped Astral Core in 3D world (e.g. when player dashes or is dow... |
 | `ModalManager` | `class` | [`admin/src/ui/modal.ts:3`](../../admin/src/ui/modal.ts#L3) | - |
 | `ModalManager.bindEvents` | `method` | [`admin/src/ui/modal.ts:13`](../../admin/src/ui/modal.ts#L13) | - |
 | `ModalManager.closeReviewModal` | `method` | [`admin/src/ui/modal.ts:58`](../../admin/src/ui/modal.ts#L58) | - |
@@ -1169,7 +1180,7 @@ Run `npm run index` to refresh this cache.
 | `MONSTER_COLORS` | `const` | [`admin/src/constants.ts:89`](../../admin/src/constants.ts#L89) | - |
 | `MonsterBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:50`](../../game/src/balance/BalanceTypes.ts#L50) | - |
 | `MonsterTextures` | `interface` | [`game/src/core/TextureManager.ts:39`](../../game/src/core/TextureManager.ts#L39) | - |
-| `NestState` | `type` | [`game/src/world/MobNest.ts:25`](../../game/src/world/MobNest.ts#L25) | - |
+| `NestState` | `type` | [`game/src/world/MobNest.ts:26`](../../game/src/world/MobNest.ts#L26) | - |
 | `NetBuffInfo` | `interface` | [`game/src/shared/types/network.ts:46`](../../game/src/shared/types/network.ts#L46) | - |
 | `NetEvent` | `interface` | [`game/src/shared/types/network.ts:115`](../../game/src/shared/types/network.ts#L115) | - |
 | `NetMessage` | `type` | [`game/src/shared/types/network.ts:266`](../../game/src/shared/types/network.ts#L266) | - |
@@ -1214,7 +1225,7 @@ Run `npm run index` to refresh this cache.
 | `ObstacleManager.toHash` | `method` | [`game/src/world/ObstacleManager.ts:19`](../../game/src/world/ObstacleManager.ts#L19) | - |
 | `ObstacleType` | `type` | [`game/src/world/ObstacleManager.ts:1`](../../game/src/world/ObstacleManager.ts#L1) | - |
 | `OccupiedArea` | `interface` | [`game/src/world/ChunkManager.ts:23`](../../game/src/world/ChunkManager.ts#L23) | - |
-| `OccupiedArea` | `interface` | [`game/src/world/MobNestManager.ts:9`](../../game/src/world/MobNestManager.ts#L9) | - |
+| `OccupiedArea` | `interface` | [`game/src/world/MobNestManager.ts:12`](../../game/src/world/MobNestManager.ts#L12) | - |
 | `ONE_MONTH_MS` | `const` | [`game/src/auth/AuthManager.ts:20`](../../game/src/auth/AuthManager.ts#L20) | - |
 | `packHostSnapshot` | `function` | [`game/src/net/BinarySnapshot.ts:47`](../../game/src/net/BinarySnapshot.ts#L47) | Packs a HostSnapshotMessage into an ultra-compact binary ArrayBuffer. Reduc... |
 | `PASSIVE_BUFF_IDS` | `const` | [`game/src/drops/PassiveBuffs.ts:76`](../../game/src/drops/PassiveBuffs.ts#L76) | - |
@@ -1224,63 +1235,65 @@ Run `npm run index` to refresh this cache.
 | `PassiveBuffId` | `type` | [`game/src/drops/PassiveBuffs.ts:1`](../../game/src/drops/PassiveBuffs.ts#L1) | - |
 | `Player` | `class` | [`game/src/entities/Player.ts:65`](../../game/src/entities/Player.ts#L65) | - |
 | `PLAYER_COLORS` | `const` | [`game/src/shared/types/network.ts:169`](../../game/src/shared/types/network.ts#L169) | - |
-| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:697`](../../game/src/entities/Player.ts#L697) | - |
-| `Player.addBuff` | `method` | [`game/src/entities/Player.ts:569`](../../game/src/entities/Player.ts#L569) | - |
-| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:716`](../../game/src/entities/Player.ts#L716) | - |
-| `Player.addCritChanceBonus` | `method` | [`game/src/entities/Player.ts:737`](../../game/src/entities/Player.ts#L737) | - |
-| `Player.addCritDamageBonus` | `method` | [`game/src/entities/Player.ts:732`](../../game/src/entities/Player.ts#L732) | - |
-| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:714`](../../game/src/entities/Player.ts#L714) | - |
-| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:723`](../../game/src/entities/Player.ts#L723) | - |
-| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:713`](../../game/src/entities/Player.ts#L713) | - |
-| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1272`](../../game/src/entities/Player.ts#L1272) | - |
-| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:730`](../../game/src/entities/Player.ts#L730) | - |
-| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:698`](../../game/src/entities/Player.ts#L698) | - |
-| `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:581`](../../game/src/entities/Player.ts#L581) | - |
-| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:712`](../../game/src/entities/Player.ts#L712) | - |
-| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:711`](../../game/src/entities/Player.ts#L711) | - |
+| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:732`](../../game/src/entities/Player.ts#L732) | - |
+| `Player.addBuff` | `method` | [`game/src/entities/Player.ts:586`](../../game/src/entities/Player.ts#L586) | - |
+| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:751`](../../game/src/entities/Player.ts#L751) | - |
+| `Player.addCritChanceBonus` | `method` | [`game/src/entities/Player.ts:772`](../../game/src/entities/Player.ts#L772) | - |
+| `Player.addCritDamageBonus` | `method` | [`game/src/entities/Player.ts:767`](../../game/src/entities/Player.ts#L767) | - |
+| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:749`](../../game/src/entities/Player.ts#L749) | - |
+| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:758`](../../game/src/entities/Player.ts#L758) | - |
+| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:748`](../../game/src/entities/Player.ts#L748) | - |
+| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1319`](../../game/src/entities/Player.ts#L1319) | - |
+| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:765`](../../game/src/entities/Player.ts#L765) | - |
+| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:733`](../../game/src/entities/Player.ts#L733) | - |
+| `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:598`](../../game/src/entities/Player.ts#L598) | - |
+| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:747`](../../game/src/entities/Player.ts#L747) | - |
+| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:746`](../../game/src/entities/Player.ts#L746) | - |
 | `Player.applyBurn` | `method` | [`game/src/entities/Player.ts:139`](../../game/src/entities/Player.ts#L139) | - |
-| `Player.applyCharacterPerks` | `method` | [`game/src/entities/Player.ts:490`](../../game/src/entities/Player.ts#L490) | - |
-| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:790`](../../game/src/entities/Player.ts#L790) | - |
+| `Player.applyCharacterPerks` | `method` | [`game/src/entities/Player.ts:507`](../../game/src/entities/Player.ts#L507) | - |
+| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:825`](../../game/src/entities/Player.ts#L825) | - |
 | `Player.applyShock` | `method` | [`game/src/entities/Player.ts:144`](../../game/src/entities/Player.ts#L144) | - |
 | `Player.applySlow` | `method` | [`game/src/entities/Player.ts:149`](../../game/src/entities/Player.ts#L149) | - |
-| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1226`](../../game/src/entities/Player.ts#L1226) | - |
-| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1268`](../../game/src/entities/Player.ts#L1268) | - |
-| `Player.clearWeapons` | `method` | [`game/src/entities/Player.ts:477`](../../game/src/entities/Player.ts#L477) | - |
-| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1374`](../../game/src/entities/Player.ts#L1374) | - |
-| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1195`](../../game/src/entities/Player.ts#L1195) | - |
-| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1280`](../../game/src/entities/Player.ts#L1280) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
-| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1222`](../../game/src/entities/Player.ts#L1222) | - |
-| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1407`](../../game/src/entities/Player.ts#L1407) | - |
-| `Player.getCharacterGeometry` | `method` | [`game/src/entities/Player.ts:224`](../../game/src/entities/Player.ts#L224) | - |
-| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:684`](../../game/src/entities/Player.ts#L684) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
-| `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:577`](../../game/src/entities/Player.ts#L577) | - |
-| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:747`](../../game/src/entities/Player.ts#L747) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
-| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1398`](../../game/src/entities/Player.ts#L1398) | - |
-| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1231`](../../game/src/entities/Player.ts#L1231) | - |
-| `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:573`](../../game/src/entities/Player.ts#L573) | - |
-| `Player.heal` | `method` | [`game/src/entities/Player.ts:1190`](../../game/src/entities/Player.ts#L1190) | - |
-| `Player.isAnimatedCharacter` | `method` | [`game/src/entities/Player.ts:369`](../../game/src/entities/Player.ts#L369) | - |
-| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:753`](../../game/src/entities/Player.ts#L753) | - |
-| `Player.loadCharacterTextures` | `method` | [`game/src/entities/Player.ts:373`](../../game/src/entities/Player.ts#L373) | - |
-| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1260`](../../game/src/entities/Player.ts#L1260) | - |
-| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:626`](../../game/src/entities/Player.ts#L626) | - |
-| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:700`](../../game/src/entities/Player.ts#L700) | - |
-| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1348`](../../game/src/entities/Player.ts#L1348) | - |
-| `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:592`](../../game/src/entities/Player.ts#L592) | - |
-| `Player.reset` | `method` | [`game/src/entities/Player.ts:1297`](../../game/src/entities/Player.ts#L1297) | - |
-| `Player.revive` | `method` | [`game/src/entities/Player.ts:1170`](../../game/src/entities/Player.ts#L1170) | - |
-| `Player.setCharacter` | `method` | [`game/src/entities/Player.ts:412`](../../game/src/entities/Player.ts#L412) | - |
-| `Player.setDirection` | `method` | [`game/src/entities/Player.ts:436`](../../game/src/entities/Player.ts#L436) | - |
-| `Player.setupAuras` | `method` | [`game/src/entities/Player.ts:313`](../../game/src/entities/Player.ts#L313) | - |
-| `Player.syncBalance` | `method` | [`game/src/entities/Player.ts:547`](../../game/src/entities/Player.ts#L547) | - |
-| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1091`](../../game/src/entities/Player.ts#L1091) | - |
-| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1199`](../../game/src/entities/Player.ts#L1199) | - |
-| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1214`](../../game/src/entities/Player.ts#L1214) | - |
-| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1208`](../../game/src/entities/Player.ts#L1208) | - |
-| `Player.triggerAttackAnim` | `method` | [`game/src/entities/Player.ts:448`](../../game/src/entities/Player.ts#L448) | - |
-| `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:608`](../../game/src/entities/Player.ts#L608) | - |
-| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:1074`](../../game/src/entities/Player.ts#L1074) | - |
-| `Player.updateVisuals` | `method` | [`game/src/entities/Player.ts:1427`](../../game/src/entities/Player.ts#L1427) | Smoothly interpolates the player mesh position between the previous and cur... |
+| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1273`](../../game/src/entities/Player.ts#L1273) | - |
+| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1315`](../../game/src/entities/Player.ts#L1315) | - |
+| `Player.clearWeapons` | `method` | [`game/src/entities/Player.ts:494`](../../game/src/entities/Player.ts#L494) | - |
+| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1422`](../../game/src/entities/Player.ts#L1422) | - |
+| `Player.dropAstralCore` | `method` | [`game/src/entities/Player.ts:652`](../../game/src/entities/Player.ts#L652) | - |
+| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1242`](../../game/src/entities/Player.ts#L1242) | - |
+| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1327`](../../game/src/entities/Player.ts#L1327) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
+| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1269`](../../game/src/entities/Player.ts#L1269) | - |
+| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1459`](../../game/src/entities/Player.ts#L1459) | - |
+| `Player.getCharacterGeometry` | `method` | [`game/src/entities/Player.ts:227`](../../game/src/entities/Player.ts#L227) | - |
+| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:719`](../../game/src/entities/Player.ts#L719) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
+| `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:594`](../../game/src/entities/Player.ts#L594) | - |
+| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:782`](../../game/src/entities/Player.ts#L782) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
+| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1450`](../../game/src/entities/Player.ts#L1450) | - |
+| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1278`](../../game/src/entities/Player.ts#L1278) | - |
+| `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:590`](../../game/src/entities/Player.ts#L590) | - |
+| `Player.heal` | `method` | [`game/src/entities/Player.ts:1237`](../../game/src/entities/Player.ts#L1237) | - |
+| `Player.isAnimatedCharacter` | `method` | [`game/src/entities/Player.ts:386`](../../game/src/entities/Player.ts#L386) | - |
+| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:788`](../../game/src/entities/Player.ts#L788) | - |
+| `Player.loadCharacterTextures` | `method` | [`game/src/entities/Player.ts:390`](../../game/src/entities/Player.ts#L390) | - |
+| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1307`](../../game/src/entities/Player.ts#L1307) | - |
+| `Player.pickupAstralCore` | `method` | [`game/src/entities/Player.ts:648`](../../game/src/entities/Player.ts#L648) | - |
+| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:661`](../../game/src/entities/Player.ts#L661) | - |
+| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:735`](../../game/src/entities/Player.ts#L735) | - |
+| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1396`](../../game/src/entities/Player.ts#L1396) | - |
+| `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:609`](../../game/src/entities/Player.ts#L609) | - |
+| `Player.reset` | `method` | [`game/src/entities/Player.ts:1344`](../../game/src/entities/Player.ts#L1344) | - |
+| `Player.revive` | `method` | [`game/src/entities/Player.ts:1217`](../../game/src/entities/Player.ts#L1217) | - |
+| `Player.setCharacter` | `method` | [`game/src/entities/Player.ts:429`](../../game/src/entities/Player.ts#L429) | - |
+| `Player.setDirection` | `method` | [`game/src/entities/Player.ts:453`](../../game/src/entities/Player.ts#L453) | - |
+| `Player.setupAuras` | `method` | [`game/src/entities/Player.ts:316`](../../game/src/entities/Player.ts#L316) | - |
+| `Player.syncBalance` | `method` | [`game/src/entities/Player.ts:564`](../../game/src/entities/Player.ts#L564) | - |
+| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1135`](../../game/src/entities/Player.ts#L1135) | - |
+| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1246`](../../game/src/entities/Player.ts#L1246) | - |
+| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1261`](../../game/src/entities/Player.ts#L1261) | - |
+| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1255`](../../game/src/entities/Player.ts#L1255) | - |
+| `Player.triggerAttackAnim` | `method` | [`game/src/entities/Player.ts:465`](../../game/src/entities/Player.ts#L465) | - |
+| `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:625`](../../game/src/entities/Player.ts#L625) | - |
+| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:1118`](../../game/src/entities/Player.ts#L1118) | - |
+| `Player.updateVisuals` | `method` | [`game/src/entities/Player.ts:1479`](../../game/src/entities/Player.ts#L1479) | Smoothly interpolates the player mesh position between the previous and cur... |
 | `PlayerAnimation` | `class` | [`game/src/mechanics/player/PlayerAnimation.ts:21`](../../game/src/mechanics/player/PlayerAnimation.ts#L21) | Handles sprite direction, sheet animations (IDLE, WALK, ATTACK), texture lo... |
 | `PlayerAnimation.isAnimatedCharacter` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:80`](../../game/src/mechanics/player/PlayerAnimation.ts#L80) | - |
 | `PlayerAnimation.loadCharacterTextures` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:84`](../../game/src/mechanics/player/PlayerAnimation.ts#L84) | - |
@@ -1461,17 +1474,17 @@ Run `npm run index` to refresh this cache.
 | `RiftItemId` | `type` | [`game/src/items/RiftItemSystem.ts:5`](../../game/src/items/RiftItemSystem.ts#L5) | - |
 | `RiftItemId` | `type` | [`game/src/shared/types/entities.ts:51`](../../game/src/shared/types/entities.ts#L51) | - |
 | `RiftTeleporter` | `class` | [`game/src/world/RiftTeleporter.ts:32`](../../game/src/world/RiftTeleporter.ts#L32) | 2.5D Dimensional Rift (Разлом) for biome transitions. - Closed state: Dark ... |
-| `RiftTeleporter.activate` | `method` | [`game/src/world/RiftTeleporter.ts:132`](../../game/src/world/RiftTeleporter.ts#L132) | - |
-| `RiftTeleporter.closeAndDisappear` | `method` | [`game/src/world/RiftTeleporter.ts:247`](../../game/src/world/RiftTeleporter.ts#L247) | Closes and permanently removes the teleporter from the scene. |
-| `RiftTeleporter.createTeleporterVisuals` | `method` | [`game/src/world/RiftTeleporter.ts:76`](../../game/src/world/RiftTeleporter.ts#L76) | - |
-| `RiftTeleporter.destroy` | `method` | [`game/src/world/RiftTeleporter.ts:361`](../../game/src/world/RiftTeleporter.ts#L361) | - |
-| `RiftTeleporter.disableForFinalStage` | `method` | [`game/src/world/RiftTeleporter.ts:289`](../../game/src/world/RiftTeleporter.ts#L289) | Disables the teleporter for the final stage (Rift Core) where no transition... |
-| `RiftTeleporter.getInteraction` | `method` | [`game/src/world/RiftTeleporter.ts:322`](../../game/src/world/RiftTeleporter.ts#L322) | - |
-| `RiftTeleporter.getSnapshot` | `method` | [`game/src/world/RiftTeleporter.ts:369`](../../game/src/world/RiftTeleporter.ts#L369) | - |
-| `RiftTeleporter.resetForStage` | `method` | [`game/src/world/RiftTeleporter.ts:259`](../../game/src/world/RiftTeleporter.ts#L259) | Resets teleporter for a new stage at new random location. |
-| `RiftTeleporter.stabilizeVoluntaryPortal` | `method` | [`game/src/world/RiftTeleporter.ts:301`](../../game/src/world/RiftTeleporter.ts#L301) | Automatically stabilizes the teleporter when 5 minutes on the biome have el... |
-| `RiftTeleporter.startStage5CloseTimer` | `method` | [`game/src/world/RiftTeleporter.ts:239`](../../game/src/world/RiftTeleporter.ts#L239) | Starts the 60-second closure timer on Stage 5 upon boss defeat. |
-| `RiftTeleporter.update` | `method` | [`game/src/world/RiftTeleporter.ts:155`](../../game/src/world/RiftTeleporter.ts#L155) | - |
+| `RiftTeleporter.activate` | `method` | [`game/src/world/RiftTeleporter.ts:135`](../../game/src/world/RiftTeleporter.ts#L135) | - |
+| `RiftTeleporter.closeAndDisappear` | `method` | [`game/src/world/RiftTeleporter.ts:250`](../../game/src/world/RiftTeleporter.ts#L250) | Closes and permanently removes the teleporter from the scene. |
+| `RiftTeleporter.createTeleporterVisuals` | `method` | [`game/src/world/RiftTeleporter.ts:79`](../../game/src/world/RiftTeleporter.ts#L79) | - |
+| `RiftTeleporter.destroy` | `method` | [`game/src/world/RiftTeleporter.ts:374`](../../game/src/world/RiftTeleporter.ts#L374) | - |
+| `RiftTeleporter.disableForFinalStage` | `method` | [`game/src/world/RiftTeleporter.ts:295`](../../game/src/world/RiftTeleporter.ts#L295) | Disables the teleporter for the final stage (Rift Core) where no transition... |
+| `RiftTeleporter.getInteraction` | `method` | [`game/src/world/RiftTeleporter.ts:328`](../../game/src/world/RiftTeleporter.ts#L328) | - |
+| `RiftTeleporter.getSnapshot` | `method` | [`game/src/world/RiftTeleporter.ts:382`](../../game/src/world/RiftTeleporter.ts#L382) | - |
+| `RiftTeleporter.resetForStage` | `method` | [`game/src/world/RiftTeleporter.ts:262`](../../game/src/world/RiftTeleporter.ts#L262) | Resets teleporter for a new stage at new random location. |
+| `RiftTeleporter.stabilizeVoluntaryPortal` | `method` | [`game/src/world/RiftTeleporter.ts:307`](../../game/src/world/RiftTeleporter.ts#L307) | Automatically stabilizes the teleporter when 5 minutes on the biome have el... |
+| `RiftTeleporter.startStage5CloseTimer` | `method` | [`game/src/world/RiftTeleporter.ts:242`](../../game/src/world/RiftTeleporter.ts#L242) | Starts the 60-second closure timer on Stage 5 upon boss defeat. |
+| `RiftTeleporter.update` | `method` | [`game/src/world/RiftTeleporter.ts:158`](../../game/src/world/RiftTeleporter.ts#L158) | - |
 | `RiftUpdateResult` | `interface` | [`game/src/world/RiftTeleporter.ts:19`](../../game/src/world/RiftTeleporter.ts#L19) | - |
 | `rollChestDropPair` | `function` | [`game/src/items/RiftItemSystem.ts:327`](../../game/src/items/RiftItemSystem.ts#L327) | Rolls two distinct item drops from a chest (no duplicates allowed). Filters... |
 | `rollRiftItem` | `function` | [`game/src/items/RiftItemSystem.ts:394`](../../game/src/items/RiftItemSystem.ts#L394) | Legacy weights roller kept for backwards compatibility. |

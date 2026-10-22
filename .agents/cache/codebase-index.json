@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-22T06:52:57.004Z",
+  "generatedAt": "2026-10-22T08:30:10.221Z",
   "totalFiles": 206,
-  "totalSymbols": 1953,
-  "topLevelCount": 606,
-  "methodsCount": 1347,
+  "totalSymbols": 1966,
+  "topLevelCount": 611,
+  "methodsCount": 1355,
   "entities": {
     "heroes": [
       {
@@ -1262,6 +1262,30 @@
       "className": "AssetResolver",
       "methodName": "normalizeTextureUrl",
       "doc": "Normalizes legacy URLs to modular structure if applicable."
+    },
+    {
+      "name": "AstralCoreManager",
+      "kind": "type",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 345
+    },
+    {
+      "name": "AstralCoreManager",
+      "kind": "const",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 346
+    },
+    {
+      "name": "AstralGenerator",
+      "kind": "type",
+      "file": "game/src/world/MobNest.ts",
+      "line": 616
+    },
+    {
+      "name": "AstralGenerator",
+      "kind": "const",
+      "file": "game/src/world/MobNest.ts",
+      "line": 617
     },
     {
       "name": "AstralStaffWeapon",
@@ -3178,7 +3202,7 @@
       "name": "ChunkManager.clear",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 358,
+      "line": 364,
       "className": "ChunkManager",
       "methodName": "clear",
       "doc": "Deep cleanup of all chunk geometries and entities."
@@ -3187,7 +3211,7 @@
       "name": "ChunkManager.cull",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 346,
+      "line": 352,
       "className": "ChunkManager",
       "methodName": "cull",
       "doc": "Frustum Culling: Hides chunks that are completely outside the camera view. Keeps active rendering to only the 6-9 chunks in front of the camera."
@@ -3239,7 +3263,7 @@
       "name": "ChunkManager.update",
       "kind": "method",
       "file": "game/src/world/ChunkManager.ts",
-      "line": 338,
+      "line": 344,
       "className": "ChunkManager",
       "methodName": "update",
       "doc": "With the fixed preloaded map, update does not need to stream or unload chunks. Runs in 0ms without runtime memory allocation."
@@ -3970,6 +3994,44 @@
       "line": 212,
       "className": "DropManager",
       "methodName": "vacuumAll"
+    },
+    {
+      "name": "DroppedAstralCore",
+      "kind": "class",
+      "file": "game/src/world/MobNest.ts",
+      "line": 28
+    },
+    {
+      "name": "DroppedAstralCore.createOverheadUI",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 80,
+      "className": "DroppedAstralCore",
+      "methodName": "createOverheadUI"
+    },
+    {
+      "name": "DroppedAstralCore.dispose",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 139,
+      "className": "DroppedAstralCore",
+      "methodName": "dispose"
+    },
+    {
+      "name": "DroppedAstralCore.redrawOverhead",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 104,
+      "className": "DroppedAstralCore",
+      "methodName": "redrawOverhead"
+    },
+    {
+      "name": "DroppedAstralCore.update",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 128,
+      "className": "DroppedAstralCore",
+      "methodName": "update"
     },
     {
       "name": "DropSnapshot",
@@ -9232,13 +9294,13 @@
       "name": "MobNest",
       "kind": "class",
       "file": "game/src/world/MobNest.ts",
-      "line": 27
+      "line": 153
     },
     {
       "name": "MobNest.createOverheadUI",
       "kind": "method",
       "file": "game/src/world/MobNest.ts",
-      "line": 169,
+      "line": 328,
       "className": "MobNest",
       "methodName": "createOverheadUI"
     },
@@ -9246,7 +9308,7 @@
       "name": "MobNest.createVisuals",
       "kind": "method",
       "file": "game/src/world/MobNest.ts",
-      "line": 102,
+      "line": 233,
       "className": "MobNest",
       "methodName": "createVisuals"
     },
@@ -9254,15 +9316,23 @@
       "name": "MobNest.dispose",
       "kind": "method",
       "file": "game/src/world/MobNest.ts",
-      "line": 376,
+      "line": 582,
       "className": "MobNest",
       "methodName": "dispose"
+    },
+    {
+      "name": "MobNest.extractCore",
+      "kind": "method",
+      "file": "game/src/world/MobNest.ts",
+      "line": 435,
+      "className": "MobNest",
+      "methodName": "extractCore"
     },
     {
       "name": "MobNest.getCraterTexture",
       "kind": "method",
       "file": "game/src/world/MobNest.ts",
-      "line": 90,
+      "line": 221,
       "className": "MobNest",
       "methodName": "getCraterTexture"
     },
@@ -9270,7 +9340,7 @@
       "name": "MobNest.getNestTexture",
       "kind": "method",
       "file": "game/src/world/MobNest.ts",
-      "line": 78,
+      "line": 209,
       "className": "MobNest",
       "methodName": "getNestTexture"
     },
@@ -9278,7 +9348,7 @@
       "name": "MobNest.redrawOverhead",
       "kind": "method",
       "file": "game/src/world/MobNest.ts",
-      "line": 195,
+      "line": 355,
       "className": "MobNest",
       "methodName": "redrawOverhead"
     },
@@ -9286,13 +9356,13 @@
       "name": "MobNestManager",
       "kind": "class",
       "file": "game/src/world/MobNestManager.ts",
-      "line": 15
+      "line": 18
     },
     {
       "name": "MobNestManager.clear",
       "kind": "method",
       "file": "game/src/world/MobNestManager.ts",
-      "line": 207,
+      "line": 331,
       "className": "MobNestManager",
       "methodName": "clear"
     },
@@ -9300,16 +9370,16 @@
       "name": "MobNestManager.getInteraction",
       "kind": "method",
       "file": "game/src/world/MobNestManager.ts",
-      "line": 162,
+      "line": 247,
       "className": "MobNestManager",
       "methodName": "getInteraction",
-      "doc": "Returns interaction prompt details when the player is near a nest."
+      "doc": "Returns interaction prompt details when the player is near a dropped core, generator, or rift teleporter."
     },
     {
       "name": "MobNestManager.isAllNestsDestroyed",
       "kind": "method",
       "file": "game/src/world/MobNestManager.ts",
-      "line": 203,
+      "line": 327,
       "className": "MobNestManager",
       "methodName": "isAllNestsDestroyed"
     },
@@ -9317,9 +9387,18 @@
       "name": "MobNestManager.setDeclarative",
       "kind": "method",
       "file": "game/src/world/MobNestManager.ts",
-      "line": 26,
+      "line": 40,
       "className": "MobNestManager",
       "methodName": "setDeclarative"
+    },
+    {
+      "name": "MobNestManager.spawnDroppedCore",
+      "kind": "method",
+      "file": "game/src/world/MobNestManager.ts",
+      "line": 110,
+      "className": "MobNestManager",
+      "methodName": "spawnDroppedCore",
+      "doc": "Spawns a dropped Astral Core in 3D world (e.g. when player dashes or is downed)."
     },
     {
       "name": "ModalManager",
@@ -9379,7 +9458,7 @@
       "name": "NestState",
       "kind": "type",
       "file": "game/src/world/MobNest.ts",
-      "line": 25
+      "line": 26
     },
     {
       "name": "NetBuffInfo",
@@ -9724,7 +9803,7 @@
       "name": "OccupiedArea",
       "kind": "interface",
       "file": "game/src/world/MobNestManager.ts",
-      "line": 9
+      "line": 12
     },
     {
       "name": "ONE_MONTH_MS",
@@ -9785,7 +9864,7 @@
       "name": "Player.addAmplifierBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 697,
+      "line": 732,
       "className": "Player",
       "methodName": "addAmplifierBonus"
     },
@@ -9793,7 +9872,7 @@
       "name": "Player.addBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 569,
+      "line": 586,
       "className": "Player",
       "methodName": "addBuff"
     },
@@ -9801,7 +9880,7 @@
       "name": "Player.addCooldownReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 716,
+      "line": 751,
       "className": "Player",
       "methodName": "addCooldownReduction"
     },
@@ -9809,7 +9888,7 @@
       "name": "Player.addCritChanceBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 737,
+      "line": 772,
       "className": "Player",
       "methodName": "addCritChanceBonus"
     },
@@ -9817,7 +9896,7 @@
       "name": "Player.addCritDamageBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 732,
+      "line": 767,
       "className": "Player",
       "methodName": "addCritDamageBonus"
     },
@@ -9825,7 +9904,7 @@
       "name": "Player.addDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 714,
+      "line": 749,
       "className": "Player",
       "methodName": "addDamageReduction"
     },
@@ -9833,7 +9912,7 @@
       "name": "Player.addFlaskBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 723,
+      "line": 758,
       "className": "Player",
       "methodName": "addFlaskBonus"
     },
@@ -9841,7 +9920,7 @@
       "name": "Player.addHpRegen",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 713,
+      "line": 748,
       "className": "Player",
       "methodName": "addHpRegen"
     },
@@ -9849,7 +9928,7 @@
       "name": "Player.addLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1272,
+      "line": 1319,
       "className": "Player",
       "methodName": "addLevel"
     },
@@ -9857,7 +9936,7 @@
       "name": "Player.addMagnetBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 730,
+      "line": 765,
       "className": "Player",
       "methodName": "addMagnetBonus"
     },
@@ -9865,7 +9944,7 @@
       "name": "Player.addMightElixirBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 698,
+      "line": 733,
       "className": "Player",
       "methodName": "addMightElixirBonus"
     },
@@ -9873,7 +9952,7 @@
       "name": "Player.addRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 581,
+      "line": 598,
       "className": "Player",
       "methodName": "addRiftItem"
     },
@@ -9881,7 +9960,7 @@
       "name": "Player.addSpeedBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 712,
+      "line": 747,
       "className": "Player",
       "methodName": "addSpeedBonus"
     },
@@ -9889,7 +9968,7 @@
       "name": "Player.addSpeedBootsBonus",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 711,
+      "line": 746,
       "className": "Player",
       "methodName": "addSpeedBootsBonus"
     },
@@ -9905,7 +9984,7 @@
       "name": "Player.applyCharacterPerks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 490,
+      "line": 507,
       "className": "Player",
       "methodName": "applyCharacterPerks"
     },
@@ -9913,7 +9992,7 @@
       "name": "Player.applyPassiveBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 790,
+      "line": 825,
       "className": "Player",
       "methodName": "applyPassiveBuff"
     },
@@ -9937,7 +10016,7 @@
       "name": "Player.areAllWeaponsMaxed",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1226,
+      "line": 1273,
       "className": "Player",
       "methodName": "areAllWeaponsMaxed"
     },
@@ -9945,7 +10024,7 @@
       "name": "Player.calculateXpToNextLevel",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1268,
+      "line": 1315,
       "className": "Player",
       "methodName": "calculateXpToNextLevel"
     },
@@ -9953,7 +10032,7 @@
       "name": "Player.clearWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 477,
+      "line": 494,
       "className": "Player",
       "methodName": "clearWeapons"
     },
@@ -9961,15 +10040,23 @@
       "name": "Player.destroy",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1374,
+      "line": 1422,
       "className": "Player",
       "methodName": "destroy"
+    },
+    {
+      "name": "Player.dropAstralCore",
+      "kind": "method",
+      "file": "game/src/entities/Player.ts",
+      "line": 652,
+      "className": "Player",
+      "methodName": "dropAstralCore"
     },
     {
       "name": "Player.fullHeal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1195,
+      "line": 1242,
       "className": "Player",
       "methodName": "fullHeal"
     },
@@ -9977,7 +10064,7 @@
       "name": "Player.gainXp",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1280,
+      "line": 1327,
       "className": "Player",
       "methodName": "gainXp",
       "doc": "onLevelGained queues upgrades; the returned count is for visual feedback only."
@@ -9986,7 +10073,7 @@
       "name": "Player.getAwakenedCap",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1222,
+      "line": 1269,
       "className": "Player",
       "methodName": "getAwakenedCap"
     },
@@ -9994,7 +10081,7 @@
       "name": "Player.getBuffsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1407,
+      "line": 1459,
       "className": "Player",
       "methodName": "getBuffsNetState"
     },
@@ -10002,7 +10089,7 @@
       "name": "Player.getCharacterGeometry",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 224,
+      "line": 227,
       "className": "Player",
       "methodName": "getCharacterGeometry"
     },
@@ -10010,7 +10097,7 @@
       "name": "Player.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 684,
+      "line": 719,
       "className": "Player",
       "methodName": "getDamageMultiplier",
       "doc": "Calculates effective damage multiplier for a given weapon. Per rule: initial hero damage bonus applies ONLY to their starting weapon! Other weapons receive 1.0  general bonuses (passive damage, altars, buffs, cheats, energy amplifier, void catalyst)."
@@ -10019,7 +10106,7 @@
       "name": "Player.getItemStacks",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 577,
+      "line": 594,
       "className": "Player",
       "methodName": "getItemStacks"
     },
@@ -10027,7 +10114,7 @@
       "name": "Player.getNaniteDamageReduction",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 747,
+      "line": 782,
       "className": "Player",
       "methodName": "getNaniteDamageReduction",
       "doc": "Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level 1 gives 5%, diminishing returns up to 60% at level 20, capped at 60%."
@@ -10036,7 +10123,7 @@
       "name": "Player.getWeaponsNetState",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1398,
+      "line": 1450,
       "className": "Player",
       "methodName": "getWeaponsNetState"
     },
@@ -10044,7 +10131,7 @@
       "name": "Player.giveAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1231,
+      "line": 1278,
       "className": "Player",
       "methodName": "giveAllWeapons"
     },
@@ -10052,7 +10139,7 @@
       "name": "Player.hasBuff",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 573,
+      "line": 590,
       "className": "Player",
       "methodName": "hasBuff"
     },
@@ -10060,7 +10147,7 @@
       "name": "Player.heal",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1190,
+      "line": 1237,
       "className": "Player",
       "methodName": "heal"
     },
@@ -10068,7 +10155,7 @@
       "name": "Player.isAnimatedCharacter",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 369,
+      "line": 386,
       "className": "Player",
       "methodName": "isAnimatedCharacter"
     },
@@ -10076,7 +10163,7 @@
       "name": "Player.isStatMaxedForItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 753,
+      "line": 788,
       "className": "Player",
       "methodName": "isStatMaxedForItem"
     },
@@ -10084,7 +10171,7 @@
       "name": "Player.loadCharacterTextures",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 373,
+      "line": 390,
       "className": "Player",
       "methodName": "loadCharacterTextures"
     },
@@ -10092,15 +10179,23 @@
       "name": "Player.maxAllWeapons",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1260,
+      "line": 1307,
       "className": "Player",
       "methodName": "maxAllWeapons"
+    },
+    {
+      "name": "Player.pickupAstralCore",
+      "kind": "method",
+      "file": "game/src/entities/Player.ts",
+      "line": 648,
+      "className": "Player",
+      "methodName": "pickupAstralCore"
     },
     {
       "name": "Player.recalculateStats",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 626,
+      "line": 661,
       "className": "Player",
       "methodName": "recalculateStats"
     },
@@ -10108,7 +10203,7 @@
       "name": "Player.recordWeaponDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 700,
+      "line": 735,
       "className": "Player",
       "methodName": "recordWeaponDamage"
     },
@@ -10116,7 +10211,7 @@
       "name": "Player.redrawOverhead",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1348,
+      "line": 1396,
       "className": "Player",
       "methodName": "redrawOverhead"
     },
@@ -10124,7 +10219,7 @@
       "name": "Player.removeRiftItem",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 592,
+      "line": 609,
       "className": "Player",
       "methodName": "removeRiftItem"
     },
@@ -10132,7 +10227,7 @@
       "name": "Player.reset",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1297,
+      "line": 1344,
       "className": "Player",
       "methodName": "reset"
     },
@@ -10140,7 +10235,7 @@
       "name": "Player.revive",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1170,
+      "line": 1217,
       "className": "Player",
       "methodName": "revive"
     },
@@ -10148,7 +10243,7 @@
       "name": "Player.setCharacter",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 412,
+      "line": 429,
       "className": "Player",
       "methodName": "setCharacter"
     },
@@ -10156,7 +10251,7 @@
       "name": "Player.setDirection",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 436,
+      "line": 453,
       "className": "Player",
       "methodName": "setDirection"
     },
@@ -10164,7 +10259,7 @@
       "name": "Player.setupAuras",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 313,
+      "line": 316,
       "className": "Player",
       "methodName": "setupAuras"
     },
@@ -10172,7 +10267,7 @@
       "name": "Player.syncBalance",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 547,
+      "line": 564,
       "className": "Player",
       "methodName": "syncBalance"
     },
@@ -10180,7 +10275,7 @@
       "name": "Player.takeDamage",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1091,
+      "line": 1135,
       "className": "Player",
       "methodName": "takeDamage"
     },
@@ -10188,7 +10283,7 @@
       "name": "Player.toggleGodMode",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1199,
+      "line": 1246,
       "className": "Player",
       "methodName": "toggleGodMode"
     },
@@ -10196,7 +10291,7 @@
       "name": "Player.toggleOneHitKill",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1214,
+      "line": 1261,
       "className": "Player",
       "methodName": "toggleOneHitKill"
     },
@@ -10204,7 +10299,7 @@
       "name": "Player.toggleSpeedCheat",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1208,
+      "line": 1255,
       "className": "Player",
       "methodName": "toggleSpeedCheat"
     },
@@ -10212,7 +10307,7 @@
       "name": "Player.triggerAttackAnim",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 448,
+      "line": 465,
       "className": "Player",
       "methodName": "triggerAttackAnim"
     },
@@ -10220,7 +10315,7 @@
       "name": "Player.triggerDash",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 608,
+      "line": 625,
       "className": "Player",
       "methodName": "triggerDash"
     },
@@ -10228,7 +10323,7 @@
       "name": "Player.updateAnimatedCharacterAnimation",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1074,
+      "line": 1118,
       "className": "Player",
       "methodName": "updateAnimatedCharacterAnimation"
     },
@@ -10236,7 +10331,7 @@
       "name": "Player.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/Player.ts",
-      "line": 1427,
+      "line": 1479,
       "className": "Player",
       "methodName": "updateVisuals",
       "doc": "Smoothly interpolates the player mesh position between the previous and current fixed simulation states. Eliminates character stutter/ghosting/judder on variable refresh rates (60Hz, 120Hz, 144Hz+)."
@@ -11564,7 +11659,7 @@
       "name": "RiftTeleporter.activate",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 132,
+      "line": 135,
       "className": "RiftTeleporter",
       "methodName": "activate"
     },
@@ -11572,7 +11667,7 @@
       "name": "RiftTeleporter.closeAndDisappear",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 247,
+      "line": 250,
       "className": "RiftTeleporter",
       "methodName": "closeAndDisappear",
       "doc": "Closes and permanently removes the teleporter from the scene."
@@ -11581,7 +11676,7 @@
       "name": "RiftTeleporter.createTeleporterVisuals",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 76,
+      "line": 79,
       "className": "RiftTeleporter",
       "methodName": "createTeleporterVisuals"
     },
@@ -11589,7 +11684,7 @@
       "name": "RiftTeleporter.destroy",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 361,
+      "line": 374,
       "className": "RiftTeleporter",
       "methodName": "destroy"
     },
@@ -11597,7 +11692,7 @@
       "name": "RiftTeleporter.disableForFinalStage",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 289,
+      "line": 295,
       "className": "RiftTeleporter",
       "methodName": "disableForFinalStage",
       "doc": "Disables the teleporter for the final stage (Rift Core) where no transitions occur."
@@ -11606,7 +11701,7 @@
       "name": "RiftTeleporter.getInteraction",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 322,
+      "line": 328,
       "className": "RiftTeleporter",
       "methodName": "getInteraction"
     },
@@ -11614,7 +11709,7 @@
       "name": "RiftTeleporter.getSnapshot",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 369,
+      "line": 382,
       "className": "RiftTeleporter",
       "methodName": "getSnapshot"
     },
@@ -11622,7 +11717,7 @@
       "name": "RiftTeleporter.resetForStage",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 259,
+      "line": 262,
       "className": "RiftTeleporter",
       "methodName": "resetForStage",
       "doc": "Resets teleporter for a new stage at new random location."
@@ -11631,7 +11726,7 @@
       "name": "RiftTeleporter.stabilizeVoluntaryPortal",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 301,
+      "line": 307,
       "className": "RiftTeleporter",
       "methodName": "stabilizeVoluntaryPortal",
       "doc": "Automatically stabilizes the teleporter when 5 minutes on the biome have elapsed."
@@ -11640,7 +11735,7 @@
       "name": "RiftTeleporter.startStage5CloseTimer",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 239,
+      "line": 242,
       "className": "RiftTeleporter",
       "methodName": "startStage5CloseTimer",
       "doc": "Starts the 60-second closure timer on Stage 5 upon boss defeat."
@@ -11649,7 +11744,7 @@
       "name": "RiftTeleporter.update",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 155,
+      "line": 158,
       "className": "RiftTeleporter",
       "methodName": "update"
     },
