@@ -198,7 +198,7 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
 
       ctx.font = 'bold 8px Montserrat, sans-serif';
       ctx.fillStyle = color;
-      const label = isReady ? 'РАЗЛОМ' : (isStage4Waiting ? `ЯДРА: ${riftTeleporter.coresDelivered}/4` : 'БОСС НУЖЕН');
+      const label = isReady ? 'ТЕЛЕПОРТ' : (isStage4Waiting ? `ЯДРА: ${riftTeleporter.coresDelivered}/4` : 'БОСС НУЖЕН');
       ctx.fillText(label, tx, tz + 14);
     }
   }

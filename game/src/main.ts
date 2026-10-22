@@ -1010,7 +1010,7 @@ class Game {
     } else {
       const isFinalStage = this.biomeManager.stageNumber >= 5;
       const telePrompt = this.riftTeleporter.getInteraction(this.player.position, isFinalStage);
-      if (telePrompt.canInteract) {
+      if (telePrompt.canInteract || telePrompt.prompt) {
         this.hud.showInteractionPrompt(telePrompt.prompt);
       } else {
         const chestData = this.chestManager.getClosestInteractableChest(
