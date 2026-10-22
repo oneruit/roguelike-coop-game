@@ -189,7 +189,7 @@ export class EnemyManager {
       type: 'stage5_boss',
       name: 'Древний Титан Святилища',
       texturePrefix: '/textures/bosses/boss_hydra',
-      hp: 130000,
+      hp: 340000,
       speed: 3.2,
       damage: 95,
       width: 10.5,
@@ -529,10 +529,16 @@ export class EnemyManager {
         continue;
       }
 
-      enemy.ccResistance = this.getLateGameCcResistance(enemy.isBoss);
-      enemy.damageResistance = this.getLateGameDamageResistance(enemy.isBoss);
+      enemy.ccResistance = enemy.isStage5FinalBoss
+        ? Math.max(0.85, this.getLateGameCcResistance(true))
+        : this.getLateGameCcResistance(enemy.isBoss);
+      enemy.damageResistance = enemy.isStage5FinalBoss
+        ? Math.max(0.60, this.getLateGameDamageResistance(true))
+        : this.getLateGameDamageResistance(enemy.isBoss);
       const isTough = enemy.type === 'brute' || enemy.type === 'bison';
-      enemy.knockbackResistance = this.getKnockbackResistance(enemy.isBoss, isTough);
+      enemy.knockbackResistance = enemy.isStage5FinalBoss
+        ? 0.98
+        : this.getKnockbackResistance(enemy.isBoss, isTough);
 
       if (enemy.isBoss && enemy.isStage5Boss && this.camera) {
         const proj = enemy.position.clone().project(this.camera);
@@ -803,7 +809,7 @@ export class EnemyManager {
     const baseSpd = stageBaseConfig.speed;
 
     const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
-    const hpStageMult = isStage5 ? (1.5 + (stage - 1) * 1.0) : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
+    const hpStageMult = isStage5 ? (2.2 + (stage - 1) * 1.4) : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
     const tierHp = Math.round(baseHp * hpStageMult * diffCoeff);
     const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.35) * (1 + (diffCoeff - 1) * 0.25));
 
@@ -834,8 +840,8 @@ export class EnemyManager {
     if (isStage5) {
       boss.isStage5Boss = true;
       boss.isStage5FinalBoss = true;
-      boss.ccResistance = Math.max(0.80, boss.ccResistance);
-      boss.damageResistance = Math.max(0.35, boss.damageResistance);
+      boss.ccResistance = Math.max(0.85, boss.ccResistance);
+      boss.damageResistance = Math.max(0.60, boss.damageResistance);
       boss.knockbackResistance = 0.98;
       this.finalBossPylonManager.camera = this.camera;
       this.finalBossPylonManager.bindBoss(boss, this.hud, this.getElevation);

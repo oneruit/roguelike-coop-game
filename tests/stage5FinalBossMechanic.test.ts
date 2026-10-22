@@ -137,10 +137,10 @@ test('FinalBossPylonManager - 4 Spheres, 10s hold timer, and 2-phase lifecycle',
   assert.equal(boss.isInvulnerable, true, 'Boss must be invulnerable');
   assert.equal(pylonManager.spheres.length, 4, 'Exactly 4 spheres must be spawned');
 
-  // Verify sphere positions are ~14m from boss
+  // Verify sphere positions are ~22m from boss (+8m / 2 cells further away)
   for (const s of pylonManager.spheres) {
     const dist = s.position.distanceTo(boss.position);
-    assert.ok(Math.abs(dist - 14.0) < 0.1, `Sphere distance should be ~14m, got ${dist}`);
+    assert.ok(Math.abs(dist - 22.0) < 0.1, `Sphere distance should be ~22m, got ${dist}`);
     assert.equal(s.active, true);
     assert.equal(s.holdTimer, 0);
   }
@@ -214,10 +214,15 @@ test('EnemyManager - spawnTieredBoss vs spawnTeleporterBoss stage 5 final boss f
   const stage4Boss = enemyManager.spawnTeleporterBoss(new Vector3(10, 0, 10), 4);
   assert.equal(stage4Boss.isStage5FinalBoss, false);
 
-  // 3. Spawning stage 5 teleporter boss DOES mark isStage5FinalBoss
+  // 3. Spawning stage 5 teleporter boss DOES mark isStage5FinalBoss and grants dense tanky resistance
   const stage5Boss = enemyManager.spawnTeleporterBoss(new Vector3(20, 0, 20), 5);
   assert.equal(stage5Boss.isStage5FinalBoss, true);
   assert.equal(stage5Boss.isBoss, true);
+  assert.ok(stage5Boss.damageResistance >= 0.60, 'Stage 5 Final Boss must spawn with >= 60% damage resistance');
+
+  // Verify damage resistance is preserved across EnemyManager.update() ticks
+  enemyManager.update(0.1, new Vector3(0, 0, 0));
+  assert.ok(stage5Boss.damageResistance >= 0.60, 'Stage 5 Final Boss must retain >= 60% damage resistance in update loop');
 
   // 4. onBossDefeat receives the specific boss entity
   let defeatedBossParam: Enemy | undefined;

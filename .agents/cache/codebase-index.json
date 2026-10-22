@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T05:29:28.665Z",
+  "generatedAt": "2026-10-22T05:37:52.373Z",
   "totalFiles": 206,
   "totalSymbols": 1951,
   "topLevelCount": 606,
@@ -504,7 +504,7 @@
       {
         "id": "stage5_boss",
         "name": "Древний Титан Святилища",
-        "hp": 130000,
+        "hp": 340000,
         "speed": 3.2,
         "damage": 95,
         "description": "Древний хранитель рунического святилища 5 тира"
@@ -3696,7 +3696,7 @@
       "name": "DEFAULT_DEMO_LEADERBOARDS",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 226
+      "line": 227
     },
     {
       "name": "DetailedPlayerResult",
@@ -4197,7 +4197,7 @@
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1310,
+      "line": 1316,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -4205,7 +4205,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1420,
+      "line": 1426,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -4213,7 +4213,7 @@
       "name": "EnemyManager.damageEnemiesInRadius",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1207,
+      "line": 1213,
       "className": "EnemyManager",
       "methodName": "damageEnemiesInRadius",
       "doc": "Deals friendly fire blast wave damage to all non-immortal monsters in radius."
@@ -4263,7 +4263,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1063,
+      "line": 1069,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -4272,7 +4272,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1297,
+      "line": 1303,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -4288,7 +4288,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1088,
+      "line": 1094,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -4296,7 +4296,7 @@
       "name": "EnemyManager.killNonBossesAround",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1221,
+      "line": 1227,
       "className": "EnemyManager",
       "methodName": "killNonBossesAround"
     },
@@ -4328,7 +4328,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1281,
+      "line": 1287,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -4336,7 +4336,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1268,
+      "line": 1274,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -4344,7 +4344,7 @@
       "name": "EnemyManager.spawnGreedTrialWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1099,
+      "line": 1105,
       "className": "EnemyManager",
       "methodName": "spawnGreedTrialWave",
       "doc": "Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position."
@@ -4353,7 +4353,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1273,
+      "line": 1279,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -4361,7 +4361,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 863,
+      "line": 869,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -4370,7 +4370,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1277,
+      "line": 1283,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -4378,7 +4378,7 @@
       "name": "EnemyManager.spawnNestSwarm",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1155,
+      "line": 1161,
       "className": "EnemyManager",
       "methodName": "spawnNestSwarm",
       "doc": "Spawns a furious swarm of volcanic/void monsters bursting out from a detonated mob nest."
@@ -4387,7 +4387,7 @@
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1010,
+      "line": 1016,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -4395,7 +4395,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1252,
+      "line": 1258,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -4403,7 +4403,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 778,
+      "line": 784,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -4412,7 +4412,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 704,
+      "line": 710,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -4421,7 +4421,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 899,
+      "line": 905,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -4437,7 +4437,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1392,
+      "line": 1398,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -4680,7 +4680,7 @@
       "name": "FinalBossPylonManager.bindBoss",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 61,
+      "line": 63,
       "className": "FinalBossPylonManager",
       "methodName": "bindBoss"
     },
@@ -4688,7 +4688,7 @@
       "name": "FinalBossPylonManager.breakShield",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 382,
+      "line": 384,
       "className": "FinalBossPylonManager",
       "methodName": "breakShield"
     },
@@ -4696,7 +4696,7 @@
       "name": "FinalBossPylonManager.cleanup",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 411,
+      "line": 413,
       "className": "FinalBossPylonManager",
       "methodName": "cleanup"
     },
@@ -4704,7 +4704,7 @@
       "name": "FinalBossPylonManager.cleanupSpheres",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 402,
+      "line": 404,
       "className": "FinalBossPylonManager",
       "methodName": "cleanupSpheres"
     },
@@ -4712,7 +4712,7 @@
       "name": "FinalBossPylonManager.deactivateSphere",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 361,
+      "line": 363,
       "className": "FinalBossPylonManager",
       "methodName": "deactivateSphere"
     },
@@ -4720,7 +4720,7 @@
       "name": "FinalBossPylonManager.destroy",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 422,
+      "line": 424,
       "className": "FinalBossPylonManager",
       "methodName": "destroy"
     },
@@ -4728,7 +4728,7 @@
       "name": "FinalBossPylonManager.renderBillboard",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 302,
+      "line": 304,
       "className": "FinalBossPylonManager",
       "methodName": "renderBillboard"
     },
@@ -4736,7 +4736,7 @@
       "name": "FinalBossPylonManager.triggerShieldPhase",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 166,
+      "line": 168,
       "className": "FinalBossPylonManager",
       "methodName": "triggerShieldPhase"
     },
@@ -4744,7 +4744,7 @@
       "name": "FinalBossPylonManager.update",
       "kind": "method",
       "file": "game/src/entities/FinalBossPylonManager.ts",
-      "line": 70,
+      "line": 72,
       "className": "FinalBossPylonManager",
       "methodName": "update"
     },
@@ -5525,7 +5525,7 @@
       "name": "getEntityTexture",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 181
+      "line": 182
     },
     {
       "name": "getExclusiveWeaponOwner",
@@ -5611,7 +5611,7 @@
       "name": "getMonsterColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 113
+      "line": 114
     },
     {
       "name": "getPassiveBuffId",
@@ -5680,7 +5680,7 @@
       "name": "getWeaponColor",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 103
+      "line": 104
     },
     {
       "name": "getWeaponEffectiveCap",
@@ -5755,7 +5755,7 @@
       "name": "HERO_NAMES",
       "kind": "const",
       "file": "admin/src/constants.ts",
-      "line": 212
+      "line": 213
     },
     {
       "name": "HERO_ORDER",
@@ -14705,13 +14705,13 @@
       "name": "toPluralCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 152
+      "line": 153
     },
     {
       "name": "toSingularCategory",
       "kind": "function",
       "file": "admin/src/constants.ts",
-      "line": 123
+      "line": 124
     },
     {
       "name": "TreeManager",

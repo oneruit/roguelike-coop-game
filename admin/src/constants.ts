@@ -97,7 +97,8 @@ export const MONSTER_COLORS: Record<string, string> = {
   bison: '#ef4444',
   boss: '#dc2626',
   hydra: '#7c3aed',
-  spore_queen: '#10b981'
+  spore_queen: '#10b981',
+  stage5_boss: '#06b6d4'
 };
 
 export function getWeaponColor(id: string): string {

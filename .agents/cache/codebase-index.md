@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-22T05:29:28.665Z | **Files:** 206 | **Top-level:** 606 | **Class Methods:** 1345
+> **Generated:** 2026-10-22T05:37:52.373Z | **Files:** 206 | **Top-level:** 606 | **Class Methods:** 1345
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -418,7 +418,7 @@ Run `npm run index` to refresh this cache.
 | `DedicatedServerOptions` | `interface` | [`server/dedicatedServer.ts:18`](../../server/dedicatedServer.ts#L18) | - |
 | `DEFAULT_BALANCE` | `const` | [`game/src/balance/defaultBalance.ts:4`](../../game/src/balance/defaultBalance.ts#L4) | - |
 | `DEFAULT_CLASS_CONFIGS` | `const` | [`game/src/character-lab/CharacterSandboxApp.ts:20`](../../game/src/character-lab/CharacterSandboxApp.ts#L20) | - |
-| `DEFAULT_DEMO_LEADERBOARDS` | `const` | [`admin/src/constants.ts:226`](../../admin/src/constants.ts#L226) | - |
+| `DEFAULT_DEMO_LEADERBOARDS` | `const` | [`admin/src/constants.ts:227`](../../admin/src/constants.ts#L227) | - |
 | `DetailedPlayerResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:14`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L14) | - |
 | `DevManager` | `class` | [`game/src/ui/DevManager.ts:8`](../../game/src/ui/DevManager.ts#L8) | - |
 | `DevManager.bindEvents` | `method` | [`game/src/ui/DevManager.ts:83`](../../game/src/ui/DevManager.ts#L83) | - |
@@ -484,36 +484,36 @@ Run `npm run index` to refresh this cache.
 | `EnemyConfig` | `interface` | [`game/src/entities/Enemy.ts:24`](../../game/src/entities/Enemy.ts#L24) | - |
 | `EnemyManager` | `class` | [`game/src/entities/EnemyManager.ts:23`](../../game/src/entities/EnemyManager.ts#L23) | - |
 | `EnemyManager.activateEndlessHorde` | `method` | [`game/src/entities/EnemyManager.ts:318`](../../game/src/entities/EnemyManager.ts#L318) | - |
-| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1310`](../../game/src/entities/EnemyManager.ts#L1310) | - |
-| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1420`](../../game/src/entities/EnemyManager.ts#L1420) | - |
-| `EnemyManager.damageEnemiesInRadius` | `method` | [`game/src/entities/EnemyManager.ts:1207`](../../game/src/entities/EnemyManager.ts#L1207) | Deals friendly fire blast wave damage to all non-immortal monsters in radiu... |
+| `EnemyManager.applySnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1316`](../../game/src/entities/EnemyManager.ts#L1316) | - |
+| `EnemyManager.clear` | `method` | [`game/src/entities/EnemyManager.ts:1426`](../../game/src/entities/EnemyManager.ts#L1426) | - |
+| `EnemyManager.damageEnemiesInRadius` | `method` | [`game/src/entities/EnemyManager.ts:1213`](../../game/src/entities/EnemyManager.ts#L1213) | Deals friendly fire blast wave damage to all non-immortal monsters in radiu... |
 | `EnemyManager.getDamageMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:339`](../../game/src/entities/EnemyManager.ts#L339) | - |
 | `EnemyManager.getHpMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:326`](../../game/src/entities/EnemyManager.ts#L326) | Continuous progressive scaling multipliers with endless scaling, stage prog... |
 | `EnemyManager.getKnockbackResistance` | `method` | [`game/src/entities/EnemyManager.ts:380`](../../game/src/entities/EnemyManager.ts#L380) | - |
 | `EnemyManager.getLateGameCcResistance` | `method` | [`game/src/entities/EnemyManager.ts:369`](../../game/src/entities/EnemyManager.ts#L369) | - |
 | `EnemyManager.getLateGameDamageResistance` | `method` | [`game/src/entities/EnemyManager.ts:395`](../../game/src/entities/EnemyManager.ts#L395) | - |
-| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:1063`](../../game/src/entities/EnemyManager.ts#L1063) | Fast query for enemies within radius using the Spatial Grid. |
-| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1297`](../../game/src/entities/EnemyManager.ts#L1297) | - |
+| `EnemyManager.getNearbyEnemies` | `method` | [`game/src/entities/EnemyManager.ts:1069`](../../game/src/entities/EnemyManager.ts#L1069) | Fast query for enemies within radius using the Spatial Grid. |
+| `EnemyManager.getSnapshot` | `method` | [`game/src/entities/EnemyManager.ts:1303`](../../game/src/entities/EnemyManager.ts#L1303) | - |
 | `EnemyManager.getSpeedMultiplier` | `method` | [`game/src/entities/EnemyManager.ts:352`](../../game/src/entities/EnemyManager.ts#L352) | - |
-| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:1088`](../../game/src/entities/EnemyManager.ts#L1088) | - |
-| `EnemyManager.killNonBossesAround` | `method` | [`game/src/entities/EnemyManager.ts:1221`](../../game/src/entities/EnemyManager.ts#L1221) | - |
+| `EnemyManager.killAll` | `method` | [`game/src/entities/EnemyManager.ts:1094`](../../game/src/entities/EnemyManager.ts#L1094) | - |
+| `EnemyManager.killNonBossesAround` | `method` | [`game/src/entities/EnemyManager.ts:1227`](../../game/src/entities/EnemyManager.ts#L1227) | - |
 | `EnemyManager.registerEnemy` | `method` | [`game/src/entities/EnemyManager.ts:263`](../../game/src/entities/EnemyManager.ts#L263) | - |
 | `EnemyManager.resetStageTime` | `method` | [`game/src/entities/EnemyManager.ts:363`](../../game/src/entities/EnemyManager.ts#L363) | - |
 | `EnemyManager.setDeclarative` | `method` | [`game/src/entities/EnemyManager.ts:41`](../../game/src/entities/EnemyManager.ts#L41) | - |
-| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1281`](../../game/src/entities/EnemyManager.ts#L1281) | - |
-| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1268`](../../game/src/entities/EnemyManager.ts#L1268) | - |
-| `EnemyManager.spawnGreedTrialWave` | `method` | [`game/src/entities/EnemyManager.ts:1099`](../../game/src/entities/EnemyManager.ts#L1099) | Spawns a high-threat frenzied wave of guaranteed elite monsters around the ... |
-| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1273`](../../game/src/entities/EnemyManager.ts#L1273) | - |
-| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:863`](../../game/src/entities/EnemyManager.ts#L863) | Spawns an endgame rift boss |
-| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1277`](../../game/src/entities/EnemyManager.ts#L1277) | - |
-| `EnemyManager.spawnNestSwarm` | `method` | [`game/src/entities/EnemyManager.ts:1155`](../../game/src/entities/EnemyManager.ts#L1155) | Spawns a furious swarm of volcanic/void monsters bursting out from a detona... |
-| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1010`](../../game/src/entities/EnemyManager.ts#L1010) | - |
-| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1252`](../../game/src/entities/EnemyManager.ts#L1252) | - |
-| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:778`](../../game/src/entities/EnemyManager.ts#L778) | Spawns a stage boss explicitly when the Teleporter event is activated. |
-| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:704`](../../game/src/entities/EnemyManager.ts#L704) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
-| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:899`](../../game/src/entities/EnemyManager.ts#L899) | - |
+| `EnemyManager.setGameTime` | `method` | [`game/src/entities/EnemyManager.ts:1287`](../../game/src/entities/EnemyManager.ts#L1287) | - |
+| `EnemyManager.spawnBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1274`](../../game/src/entities/EnemyManager.ts#L1274) | - |
+| `EnemyManager.spawnGreedTrialWave` | `method` | [`game/src/entities/EnemyManager.ts:1105`](../../game/src/entities/EnemyManager.ts#L1105) | Spawns a high-threat frenzied wave of guaranteed elite monsters around the ... |
+| `EnemyManager.spawnHydraNow` | `method` | [`game/src/entities/EnemyManager.ts:1279`](../../game/src/entities/EnemyManager.ts#L1279) | - |
+| `EnemyManager.spawnImmortalBoss` | `method` | [`game/src/entities/EnemyManager.ts:869`](../../game/src/entities/EnemyManager.ts#L869) | Spawns an endgame rift boss |
+| `EnemyManager.spawnImmortalBossNow` | `method` | [`game/src/entities/EnemyManager.ts:1283`](../../game/src/entities/EnemyManager.ts#L1283) | - |
+| `EnemyManager.spawnNestSwarm` | `method` | [`game/src/entities/EnemyManager.ts:1161`](../../game/src/entities/EnemyManager.ts#L1161) | Spawns a furious swarm of volcanic/void monsters bursting out from a detona... |
+| `EnemyManager.spawnSingleEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1016`](../../game/src/entities/EnemyManager.ts#L1016) | - |
+| `EnemyManager.spawnSpecificEnemy` | `method` | [`game/src/entities/EnemyManager.ts:1258`](../../game/src/entities/EnemyManager.ts#L1258) | - |
+| `EnemyManager.spawnTeleporterBoss` | `method` | [`game/src/entities/EnemyManager.ts:784`](../../game/src/entities/EnemyManager.ts#L784) | Spawns a stage boss explicitly when the Teleporter event is activated. |
+| `EnemyManager.spawnTieredBoss` | `method` | [`game/src/entities/EnemyManager.ts:710`](../../game/src/entities/EnemyManager.ts#L710) | Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m) |
+| `EnemyManager.spawnWave` | `method` | [`game/src/entities/EnemyManager.ts:905`](../../game/src/entities/EnemyManager.ts#L905) | - |
 | `EnemyManager.syncBalance` | `method` | [`game/src/entities/EnemyManager.ts:227`](../../game/src/entities/EnemyManager.ts#L227) | - |
-| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1392`](../../game/src/entities/EnemyManager.ts#L1392) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
+| `EnemyManager.updateVisuals` | `method` | [`game/src/entities/EnemyManager.ts:1398`](../../game/src/entities/EnemyManager.ts#L1398) | Rendering phase: Viewport/Frustum culling across all active enemies. Enemie... |
 | `EnemySnapshot` | `interface` | [`game/src/shared/types/network.ts:21`](../../game/src/shared/types/network.ts#L21) | - |
 | `EnemyType` | `type` | [`game/src/shared/types/entities.ts:16`](../../game/src/shared/types/entities.ts#L16) | - |
 | `Engine` | `class` | [`game/src/core/Engine.ts:20`](../../game/src/core/Engine.ts#L20) | - |
@@ -544,15 +544,15 @@ Run `npm run index` to refresh this cache.
 | `FeatureFlags.setFlag` | `method` | [`game/src/core/FeatureFlags.ts:95`](../../game/src/core/FeatureFlags.ts#L95) | Sets a runtime override for a feature flag. |
 | `filterAndShuffleForReroll` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:47`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L47) | Partitions and shuffles the pool for reroll: Options not in `excludedIds` a... |
 | `FinalBossPylonManager` | `class` | [`game/src/entities/FinalBossPylonManager.ts:40`](../../game/src/entities/FinalBossPylonManager.ts#L40) | - |
-| `FinalBossPylonManager.bindBoss` | `method` | [`game/src/entities/FinalBossPylonManager.ts:61`](../../game/src/entities/FinalBossPylonManager.ts#L61) | - |
-| `FinalBossPylonManager.breakShield` | `method` | [`game/src/entities/FinalBossPylonManager.ts:382`](../../game/src/entities/FinalBossPylonManager.ts#L382) | - |
-| `FinalBossPylonManager.cleanup` | `method` | [`game/src/entities/FinalBossPylonManager.ts:411`](../../game/src/entities/FinalBossPylonManager.ts#L411) | - |
-| `FinalBossPylonManager.cleanupSpheres` | `method` | [`game/src/entities/FinalBossPylonManager.ts:402`](../../game/src/entities/FinalBossPylonManager.ts#L402) | - |
-| `FinalBossPylonManager.deactivateSphere` | `method` | [`game/src/entities/FinalBossPylonManager.ts:361`](../../game/src/entities/FinalBossPylonManager.ts#L361) | - |
-| `FinalBossPylonManager.destroy` | `method` | [`game/src/entities/FinalBossPylonManager.ts:422`](../../game/src/entities/FinalBossPylonManager.ts#L422) | - |
-| `FinalBossPylonManager.renderBillboard` | `method` | [`game/src/entities/FinalBossPylonManager.ts:302`](../../game/src/entities/FinalBossPylonManager.ts#L302) | - |
-| `FinalBossPylonManager.triggerShieldPhase` | `method` | [`game/src/entities/FinalBossPylonManager.ts:166`](../../game/src/entities/FinalBossPylonManager.ts#L166) | - |
-| `FinalBossPylonManager.update` | `method` | [`game/src/entities/FinalBossPylonManager.ts:70`](../../game/src/entities/FinalBossPylonManager.ts#L70) | - |
+| `FinalBossPylonManager.bindBoss` | `method` | [`game/src/entities/FinalBossPylonManager.ts:63`](../../game/src/entities/FinalBossPylonManager.ts#L63) | - |
+| `FinalBossPylonManager.breakShield` | `method` | [`game/src/entities/FinalBossPylonManager.ts:384`](../../game/src/entities/FinalBossPylonManager.ts#L384) | - |
+| `FinalBossPylonManager.cleanup` | `method` | [`game/src/entities/FinalBossPylonManager.ts:413`](../../game/src/entities/FinalBossPylonManager.ts#L413) | - |
+| `FinalBossPylonManager.cleanupSpheres` | `method` | [`game/src/entities/FinalBossPylonManager.ts:404`](../../game/src/entities/FinalBossPylonManager.ts#L404) | - |
+| `FinalBossPylonManager.deactivateSphere` | `method` | [`game/src/entities/FinalBossPylonManager.ts:363`](../../game/src/entities/FinalBossPylonManager.ts#L363) | - |
+| `FinalBossPylonManager.destroy` | `method` | [`game/src/entities/FinalBossPylonManager.ts:424`](../../game/src/entities/FinalBossPylonManager.ts#L424) | - |
+| `FinalBossPylonManager.renderBillboard` | `method` | [`game/src/entities/FinalBossPylonManager.ts:304`](../../game/src/entities/FinalBossPylonManager.ts#L304) | - |
+| `FinalBossPylonManager.triggerShieldPhase` | `method` | [`game/src/entities/FinalBossPylonManager.ts:168`](../../game/src/entities/FinalBossPylonManager.ts#L168) | - |
+| `FinalBossPylonManager.update` | `method` | [`game/src/entities/FinalBossPylonManager.ts:72`](../../game/src/entities/FinalBossPylonManager.ts#L72) | - |
 | `findClosestEnemies` | `function` | [`game/src/combat/WeaponBase.ts:28`](../../game/src/combat/WeaponBase.ts#L28) | Zero-allocation fast O(N) lookup for the top K closest alive enemies. Avoid... |
 | `findClosestSimEnemies` | `function` | [`game/src/sim/weapons/SimWeaponBase.ts:56`](../../game/src/sim/weapons/SimWeaponBase.ts#L56) | - |
 | `FireballWeapon` | `class` | [`game/src/combat/weapons/MagicWeapons.ts:662`](../../game/src/combat/weapons/MagicWeapons.ts#L662) | Fireball (Огненный Шар) Calls down flaming meteors from the sky that plumme... |
@@ -656,7 +656,7 @@ Run `npm run index` to refresh this cache.
 | `getChapterDef` | `function` | [`game/src/core/ChapterQuestsConfig.ts:258`](../../game/src/core/ChapterQuestsConfig.ts#L258) | - |
 | `getChapterQuestDef` | `function` | [`game/src/core/ChapterQuestsConfig.ts:262`](../../game/src/core/ChapterQuestsConfig.ts#L262) | - |
 | `getCharacterAnimLayout` | `function` | [`game/src/entities/CharacterAnimator.ts:74`](../../game/src/entities/CharacterAnimator.ts#L74) | Resolves standard row layouts for all playable characters. |
-| `getEntityTexture` | `function` | [`admin/src/constants.ts:181`](../../admin/src/constants.ts#L181) | - |
+| `getEntityTexture` | `function` | [`admin/src/constants.ts:182`](../../admin/src/constants.ts#L182) | - |
 | `getExclusiveWeaponOwner` | `function` | [`game/src/shared/UniqueCharacters.ts:115`](../../game/src/shared/UniqueCharacters.ts#L115) | Returns the character type that owns the given weapon ID, or null if it's a... |
 | `getGradeColor` | `function` | [`game/src/combat/WeaponGrades.ts:108`](../../game/src/combat/WeaponGrades.ts#L108) | - |
 | `getGradeLabel` | `function` | [`game/src/combat/WeaponGrades.ts:104`](../../game/src/combat/WeaponGrades.ts#L104) | - |
@@ -670,7 +670,7 @@ Run `npm run index` to refresh this cache.
 | `getInvokerSpellDuration` | `function` | [`game/src/shared/InvokerSpells.ts:240`](../../game/src/shared/InvokerSpells.ts#L240) | - |
 | `getInvokerSphereScaling` | `function` | [`game/src/shared/InvokerSpells.ts:46`](../../game/src/shared/InvokerSpells.ts#L46) | - |
 | `getItemsByGrade` | `function` | [`game/src/items/RiftItemSystem.ts:291`](../../game/src/items/RiftItemSystem.ts#L291) | - |
-| `getMonsterColor` | `function` | [`admin/src/constants.ts:113`](../../admin/src/constants.ts#L113) | - |
+| `getMonsterColor` | `function` | [`admin/src/constants.ts:114`](../../admin/src/constants.ts#L114) | - |
 | `getPassiveBuffId` | `function` | [`game/src/drops/PassiveBuffs.ts:92`](../../game/src/drops/PassiveBuffs.ts#L92) | Deterministically pick a passive buff ID based on seed (or random if no see... |
 | `getPlayerSlotDisplayName` | `function` | [`game/src/shared/types/network.ts:189`](../../game/src/shared/types/network.ts#L189) | - |
 | `getPlayerSlotNumber` | `function` | [`game/src/shared/types/network.ts:179`](../../game/src/shared/types/network.ts#L179) | - |
@@ -681,7 +681,7 @@ Run `npm run index` to refresh this cache.
 | `getSupabaseServiceRoleKey` | `function` | [`game/src/balance/supabaseClient.ts:40`](../../game/src/balance/supabaseClient.ts#L40) | - |
 | `getSupabaseUrl` | `function` | [`game/src/balance/supabaseClient.ts:24`](../../game/src/balance/supabaseClient.ts#L24) | - |
 | `getUniqueCharacterConfig` | `function` | [`game/src/shared/UniqueCharacters.ts:101`](../../game/src/shared/UniqueCharacters.ts#L101) | Returns configuration for a unique character, if registered. |
-| `getWeaponColor` | `function` | [`admin/src/constants.ts:103`](../../admin/src/constants.ts#L103) | - |
+| `getWeaponColor` | `function` | [`admin/src/constants.ts:104`](../../admin/src/constants.ts#L104) | - |
 | `getWeaponEffectiveCap` | `function` | [`game/src/combat/WeaponBase.ts:299`](../../game/src/combat/WeaponBase.ts#L299) | Calculates the level cap for a weapon based on tier rules: - Tier 3 (awaken... |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/modules/HeroUIHelpers.ts:205`](../../game/src/ui/modules/HeroUIHelpers.ts#L205) | - |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:45`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L45) | - |
@@ -692,7 +692,7 @@ Run `npm run index` to refresh this cache.
 | `GreatswordWeapon.upgrade` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:363`](../../game/src/combat/weapons/MeleeWeapons.ts#L363) | - |
 | `HeavyColtWeapon` | `const` | [`game/src/combat/weapons/RangedWeapons.ts:127`](../../game/src/combat/weapons/RangedWeapons.ts#L127) | Backwards compatibility alias |
 | `HeavyColtWeapon` | `type` | [`game/src/combat/weapons/RangedWeapons.ts:128`](../../game/src/combat/weapons/RangedWeapons.ts#L128) | - |
-| `HERO_NAMES` | `const` | [`admin/src/constants.ts:212`](../../admin/src/constants.ts#L212) | - |
+| `HERO_NAMES` | `const` | [`admin/src/constants.ts:213`](../../admin/src/constants.ts#L213) | - |
 | `HERO_ORDER` | `const` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:9`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L9) | - |
 | `HeroAbility` | `interface` | [`game/src/ui/modules/HeroUIHelpers.ts:38`](../../game/src/ui/modules/HeroUIHelpers.ts#L38) | - |
 | `HeroAnimState` | `type` | [`game/src/shared/types/entities.ts:8`](../../game/src/shared/types/entities.ts#L8) | - |
@@ -1869,8 +1869,8 @@ Run `npm run index` to refresh this cache.
 | `TextureManager.normalizeTextureUrl` | `method` | [`game/src/core/TextureManager.ts:55`](../../game/src/core/TextureManager.ts#L55) | - |
 | `TextureManager.preloadAll` | `method` | [`game/src/core/TextureManager.ts:490`](../../game/src/core/TextureManager.ts#L490) | Preloads all entity sprite sheets upfront to eliminate mid-game texture loa... |
 | `toggleRow` | `function` | [`admin/src/views/controlHelpers.ts:52`](../../admin/src/views/controlHelpers.ts#L52) | - |
-| `toPluralCategory` | `function` | [`admin/src/constants.ts:152`](../../admin/src/constants.ts#L152) | - |
-| `toSingularCategory` | `function` | [`admin/src/constants.ts:123`](../../admin/src/constants.ts#L123) | - |
+| `toPluralCategory` | `function` | [`admin/src/constants.ts:153`](../../admin/src/constants.ts#L153) | - |
+| `toSingularCategory` | `function` | [`admin/src/constants.ts:124`](../../admin/src/constants.ts#L124) | - |
 | `TreeManager` | `class` | [`game/src/world/TreeManager.ts:95`](../../game/src/world/TreeManager.ts#L95) | - |
 | `TreeManager.createTreeMesh` | `method` | [`game/src/world/TreeManager.ts:163`](../../game/src/world/TreeManager.ts#L163) | Creates a pseudo-3D tree mesh with directional silhouette shadow matching m... |
 | `TreeManager.getDepthMaterial` | `method` | [`game/src/world/TreeManager.ts:146`](../../game/src/world/TreeManager.ts#L146) | - |

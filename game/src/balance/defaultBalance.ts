@@ -447,7 +447,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     stage5_boss: {
       id: 'stage5_boss',
       name: 'Древний Титан Святилища',
-      hp: 130000,
+      hp: 340000,
       speed: 3.2,
       damage: 95,
       description: 'Древний хранитель рунического святилища 5 тира'
