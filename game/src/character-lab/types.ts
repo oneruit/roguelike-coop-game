@@ -1,6 +1,6 @@
 import type * as THREE from 'three';
 
-export type CharacterClass = 'warrior' | 'archer' | 'mage';
+export type CharacterClass = 'warrior' | 'archer' | 'mage' | 'vampire';
 
 export type CharacterAnimationState = 'idle' | 'walk' | 'run' | 'attack' | 'special';
 

@@ -396,7 +396,7 @@ export class CharacterRig {
     this.pelvisNode.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         // Keep sockets or external objects untouched if they have custom flags
-        if (!child.name.startsWith('Socket_') && !child.name.includes('Mage')) {
+        if (!child.name.startsWith('Socket_') && !child.name.includes('Mage') && !child.name.includes('Vampire')) {
           child.visible = visible;
         }
       }

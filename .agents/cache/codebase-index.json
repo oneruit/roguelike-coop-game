@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-21T23:52:28.664Z",
-  "totalFiles": 204,
-  "totalSymbols": 1925,
-  "topLevelCount": 600,
-  "methodsCount": 1325,
+  "generatedAt": "2026-10-22T00:27:29.626Z",
+  "totalFiles": 205,
+  "totalSymbols": 1941,
+  "topLevelCount": 605,
+  "methodsCount": 1336,
   "entities": {
     "heroes": [
       {
@@ -2249,7 +2249,7 @@
       "name": "CharacterAnimator.animateArcherShoot",
       "kind": "method",
       "file": "game/src/character-lab/CharacterAnimator.ts",
-      "line": 237,
+      "line": 246,
       "className": "CharacterAnimator",
       "methodName": "animateArcherShoot"
     },
@@ -2257,7 +2257,7 @@
       "name": "CharacterAnimator.animateAttack",
       "kind": "method",
       "file": "game/src/character-lab/CharacterAnimator.ts",
-      "line": 189,
+      "line": 196,
       "className": "CharacterAnimator",
       "methodName": "animateAttack",
       "doc": "=========================================="
@@ -2275,7 +2275,7 @@
       "name": "CharacterAnimator.animateLocomotion",
       "kind": "method",
       "file": "game/src/character-lab/CharacterAnimator.ts",
-      "line": 154,
+      "line": 161,
       "className": "CharacterAnimator",
       "methodName": "animateLocomotion",
       "doc": "=========================================="
@@ -2284,15 +2284,23 @@
       "name": "CharacterAnimator.animateMageCast",
       "kind": "method",
       "file": "game/src/character-lab/CharacterAnimator.ts",
-      "line": 270,
+      "line": 279,
       "className": "CharacterAnimator",
       "methodName": "animateMageCast"
+    },
+    {
+      "name": "CharacterAnimator.animateVampireCurse",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterAnimator.ts",
+      "line": 309,
+      "className": "CharacterAnimator",
+      "methodName": "animateVampireCurse"
     },
     {
       "name": "CharacterAnimator.animateWarriorSlash",
       "kind": "method",
       "file": "game/src/character-lab/CharacterAnimator.ts",
-      "line": 199,
+      "line": 208,
       "className": "CharacterAnimator",
       "methodName": "animateWarriorSlash"
     },
@@ -2431,7 +2439,7 @@
       "name": "CharacterModularSystem.buildArcher",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 253,
+      "line": 256,
       "className": "CharacterModularSystem",
       "methodName": "buildArcher",
       "doc": "=========================================="
@@ -2440,7 +2448,7 @@
       "name": "CharacterModularSystem.buildMage",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 364,
+      "line": 367,
       "className": "CharacterModularSystem",
       "methodName": "buildMage",
       "doc": "=========================================="
@@ -2449,7 +2457,7 @@
       "name": "CharacterModularSystem.buildWarrior",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 116,
+      "line": 119,
       "className": "CharacterModularSystem",
       "methodName": "buildWarrior",
       "doc": "=========================================="
@@ -2458,7 +2466,7 @@
       "name": "CharacterModularSystem.clearEquipment",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 90,
+      "line": 93,
       "className": "CharacterModularSystem",
       "methodName": "clearEquipment"
     },
@@ -2466,7 +2474,7 @@
       "name": "CharacterModularSystem.updateColors",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 498,
+      "line": 501,
       "className": "CharacterModularSystem",
       "methodName": "updateColors"
     },
@@ -2474,7 +2482,7 @@
       "name": "CharacterModularSystem.updateMaterials",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 509,
+      "line": 512,
       "className": "CharacterModularSystem",
       "methodName": "updateMaterials"
     },
@@ -2482,7 +2490,7 @@
       "name": "CharacterModularSystem.updateVFX",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 485,
+      "line": 488,
       "className": "CharacterModularSystem",
       "methodName": "updateVFX",
       "doc": "VFX Update loop (spins crystal and particles)"
@@ -2623,13 +2631,13 @@
       "name": "CharacterSandboxApp",
       "kind": "class",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 84
+      "line": 106
     },
     {
       "name": "CharacterSandboxApp.applyClass",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 226,
+      "line": 250,
       "className": "CharacterSandboxApp",
       "methodName": "applyClass"
     },
@@ -2637,7 +2645,7 @@
       "name": "CharacterSandboxApp.buildPedestal",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 195,
+      "line": 219,
       "className": "CharacterSandboxApp",
       "methodName": "buildPedestal"
     },
@@ -2645,7 +2653,7 @@
       "name": "CharacterSandboxApp.dispose",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 421,
+      "line": 466,
       "className": "CharacterSandboxApp",
       "methodName": "dispose"
     },
@@ -2653,7 +2661,7 @@
       "name": "CharacterSandboxApp.resetCamera",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 367,
+      "line": 402,
       "className": "CharacterSandboxApp",
       "methodName": "resetCamera"
     },
@@ -2661,7 +2669,7 @@
       "name": "CharacterSandboxApp.rotateMageTripo90",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 299,
+      "line": 334,
       "className": "CharacterSandboxApp",
       "methodName": "rotateMageTripo90"
     },
@@ -2669,7 +2677,7 @@
       "name": "CharacterSandboxApp.setAnimation",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 303,
+      "line": 338,
       "className": "CharacterSandboxApp",
       "methodName": "setAnimation"
     },
@@ -2677,7 +2685,7 @@
       "name": "CharacterSandboxApp.setLightingPreset",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 338,
+      "line": 373,
       "className": "CharacterSandboxApp",
       "methodName": "setLightingPreset"
     },
@@ -2685,7 +2693,7 @@
       "name": "CharacterSandboxApp.setMageAngleMode",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 287,
+      "line": 322,
       "className": "CharacterSandboxApp",
       "methodName": "setMageAngleMode"
     },
@@ -2693,7 +2701,7 @@
       "name": "CharacterSandboxApp.setMageRenderMode",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 282,
+      "line": 317,
       "className": "CharacterSandboxApp",
       "methodName": "setMageRenderMode"
     },
@@ -2701,7 +2709,7 @@
       "name": "CharacterSandboxApp.setMageTripoFigure",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 291,
+      "line": 326,
       "className": "CharacterSandboxApp",
       "methodName": "setMageTripoFigure"
     },
@@ -2709,15 +2717,23 @@
       "name": "CharacterSandboxApp.setPlaybackSpeed",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 313,
+      "line": 348,
       "className": "CharacterSandboxApp",
       "methodName": "setPlaybackSpeed"
+    },
+    {
+      "name": "CharacterSandboxApp.setVampirePalette",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 458,
+      "className": "CharacterSandboxApp",
+      "methodName": "setVampirePalette"
     },
     {
       "name": "CharacterSandboxApp.toggleEquipment",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 329,
+      "line": 364,
       "className": "CharacterSandboxApp",
       "methodName": "toggleEquipment"
     },
@@ -2725,15 +2741,23 @@
       "name": "CharacterSandboxApp.toggleMageTripoRotate180",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 295,
+      "line": 330,
       "className": "CharacterSandboxApp",
       "methodName": "toggleMageTripoRotate180"
+    },
+    {
+      "name": "CharacterSandboxApp.toggleVampirePart",
+      "kind": "method",
+      "file": "game/src/character-lab/CharacterSandboxApp.ts",
+      "line": 462,
+      "className": "CharacterSandboxApp",
+      "methodName": "toggleVampirePart"
     },
     {
       "name": "CharacterSandboxApp.toggleWireframe",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 334,
+      "line": 369,
       "className": "CharacterSandboxApp",
       "methodName": "toggleWireframe"
     },
@@ -2741,7 +2765,7 @@
       "name": "CharacterSandboxApp.triggerAttack",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 308,
+      "line": 343,
       "className": "CharacterSandboxApp",
       "methodName": "triggerAttack"
     },
@@ -2749,7 +2773,7 @@
       "name": "CharacterSandboxApp.updateColor",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 318,
+      "line": 353,
       "className": "CharacterSandboxApp",
       "methodName": "updateColor"
     },
@@ -2757,7 +2781,7 @@
       "name": "CharacterSandboxApp.updateMaterialProperty",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 324,
+      "line": 359,
       "className": "CharacterSandboxApp",
       "methodName": "updateMaterialProperty"
     },
@@ -3595,7 +3619,7 @@
       "name": "DEFAULT_CLASS_CONFIGS",
       "kind": "const",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 18
+      "line": 19
     },
     {
       "name": "DEFAULT_DEMO_LEADERBOARDS",
@@ -14982,6 +15006,101 @@
       "file": "game/src/ui/stores/useUIModalStore.ts",
       "line": 50,
       "doc": "UI Modal store coordinating modal stack, overlays, and card draft dialogs."
+    },
+    {
+      "name": "VAMPIRE_PALETTES",
+      "kind": "const",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 16
+    },
+    {
+      "name": "VampireCutoutRig",
+      "kind": "class",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 77,
+      "doc": "Skeletal Cutout / Paperdoll Rig for the Vampire / Succubus character. Assembles segmented pixel-art parts onto CharacterRig joints with procedural wing-flapping, hovering, skirt sway, and real-time palette tinting."
+    },
+    {
+      "name": "VampireCutoutRig.buildMeshes",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 221,
+      "className": "VampireCutoutRig",
+      "methodName": "buildMeshes"
+    },
+    {
+      "name": "VampireCutoutRig.configurePixelTexture",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 172,
+      "className": "VampireCutoutRig",
+      "methodName": "configurePixelTexture"
+    },
+    {
+      "name": "VampireCutoutRig.getTextureUrl",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 167,
+      "className": "VampireCutoutRig",
+      "methodName": "getTextureUrl"
+    },
+    {
+      "name": "VampireCutoutRig.loadTextures",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 179,
+      "className": "VampireCutoutRig",
+      "methodName": "loadTextures"
+    },
+    {
+      "name": "VampireCutoutRig.setPalette",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 395,
+      "className": "VampireCutoutRig",
+      "methodName": "setPalette"
+    },
+    {
+      "name": "VampireCutoutRig.setToggle",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 346,
+      "className": "VampireCutoutRig",
+      "methodName": "setToggle"
+    },
+    {
+      "name": "VampireCutoutRig.setVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 313,
+      "className": "VampireCutoutRig",
+      "methodName": "setVisible"
+    },
+    {
+      "name": "VampireCutoutRig.update",
+      "kind": "method",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 413,
+      "className": "VampireCutoutRig",
+      "methodName": "update"
+    },
+    {
+      "name": "VampireCutoutToggles",
+      "kind": "interface",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 64
+    },
+    {
+      "name": "VampirePaletteConfig",
+      "kind": "interface",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 6
+    },
+    {
+      "name": "VampirePaletteName",
+      "kind": "type",
+      "file": "game/src/character-lab/VampireCutoutRig.ts",
+      "line": 4
     },
     {
       "name": "VersionInfo",

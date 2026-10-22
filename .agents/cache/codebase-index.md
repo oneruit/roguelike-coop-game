@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-21T23:52:28.664Z | **Files:** 204 | **Top-level:** 600 | **Class Methods:** 1325
+> **Generated:** 2026-10-22T00:27:29.626Z | **Files:** 205 | **Top-level:** 605 | **Class Methods:** 1336
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 554 |
+| `game/src` | 559 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -230,12 +230,13 @@ Run `npm run index` to refresh this cache.
 | `CharacterAnimationState` | `type` | [`game/src/character-lab/types.ts:5`](../../game/src/character-lab/types.ts#L5) | - |
 | `CharacterAnimator` | `class` | [`game/src/character-lab/CharacterAnimator.ts:9`](../../game/src/character-lab/CharacterAnimator.ts#L9) | Procedural kinematic animation controller for realistic and natural charact... |
 | `CharacterAnimator` | `class` | [`game/src/entities/CharacterAnimator.ts:102`](../../game/src/entities/CharacterAnimator.ts#L102) | Modular Character Animator Handles directional sprite state machines, UV re... |
-| `CharacterAnimator.animateArcherShoot` | `method` | [`game/src/character-lab/CharacterAnimator.ts:237`](../../game/src/character-lab/CharacterAnimator.ts#L237) | - |
-| `CharacterAnimator.animateAttack` | `method` | [`game/src/character-lab/CharacterAnimator.ts:189`](../../game/src/character-lab/CharacterAnimator.ts#L189) | ========================================== |
+| `CharacterAnimator.animateArcherShoot` | `method` | [`game/src/character-lab/CharacterAnimator.ts:246`](../../game/src/character-lab/CharacterAnimator.ts#L246) | - |
+| `CharacterAnimator.animateAttack` | `method` | [`game/src/character-lab/CharacterAnimator.ts:196`](../../game/src/character-lab/CharacterAnimator.ts#L196) | ========================================== |
 | `CharacterAnimator.animateIdle` | `method` | [`game/src/character-lab/CharacterAnimator.ts:103`](../../game/src/character-lab/CharacterAnimator.ts#L103) | ========================================== |
-| `CharacterAnimator.animateLocomotion` | `method` | [`game/src/character-lab/CharacterAnimator.ts:154`](../../game/src/character-lab/CharacterAnimator.ts#L154) | ========================================== |
-| `CharacterAnimator.animateMageCast` | `method` | [`game/src/character-lab/CharacterAnimator.ts:270`](../../game/src/character-lab/CharacterAnimator.ts#L270) | - |
-| `CharacterAnimator.animateWarriorSlash` | `method` | [`game/src/character-lab/CharacterAnimator.ts:199`](../../game/src/character-lab/CharacterAnimator.ts#L199) | - |
+| `CharacterAnimator.animateLocomotion` | `method` | [`game/src/character-lab/CharacterAnimator.ts:161`](../../game/src/character-lab/CharacterAnimator.ts#L161) | ========================================== |
+| `CharacterAnimator.animateMageCast` | `method` | [`game/src/character-lab/CharacterAnimator.ts:279`](../../game/src/character-lab/CharacterAnimator.ts#L279) | - |
+| `CharacterAnimator.animateVampireCurse` | `method` | [`game/src/character-lab/CharacterAnimator.ts:309`](../../game/src/character-lab/CharacterAnimator.ts#L309) | - |
+| `CharacterAnimator.animateWarriorSlash` | `method` | [`game/src/character-lab/CharacterAnimator.ts:208`](../../game/src/character-lab/CharacterAnimator.ts#L208) | - |
 | `CharacterAnimator.buildWeaponTrail` | `method` | [`game/src/character-lab/CharacterAnimator.ts:34`](../../game/src/character-lab/CharacterAnimator.ts#L34) | - |
 | `CharacterAnimator.getActiveTexture` | `method` | [`game/src/entities/CharacterAnimator.ts:147`](../../game/src/entities/CharacterAnimator.ts#L147) | - |
 | `CharacterAnimator.setClass` | `method` | [`game/src/character-lab/CharacterAnimator.ts:50`](../../game/src/character-lab/CharacterAnimator.ts#L50) | - |
@@ -254,13 +255,13 @@ Run `npm run index` to refresh this cache.
 | `CharacterMaterialsConfig` | `interface` | [`game/src/character-lab/types.ts:18`](../../game/src/character-lab/types.ts#L18) | - |
 | `CharacterModularSystem` | `class` | [`game/src/character-lab/CharacterModularSystem.ts:8`](../../game/src/character-lab/CharacterModularSystem.ts#L8) | Modular equipment and class visual identity builder for Warrior, Archer, an... |
 | `CharacterModularSystem.applyClass` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:73`](../../game/src/character-lab/CharacterModularSystem.ts#L73) | - |
-| `CharacterModularSystem.buildArcher` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:253`](../../game/src/character-lab/CharacterModularSystem.ts#L253) | ========================================== |
-| `CharacterModularSystem.buildMage` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:364`](../../game/src/character-lab/CharacterModularSystem.ts#L364) | ========================================== |
-| `CharacterModularSystem.buildWarrior` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:116`](../../game/src/character-lab/CharacterModularSystem.ts#L116) | ========================================== |
-| `CharacterModularSystem.clearEquipment` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:90`](../../game/src/character-lab/CharacterModularSystem.ts#L90) | - |
-| `CharacterModularSystem.updateColors` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:498`](../../game/src/character-lab/CharacterModularSystem.ts#L498) | - |
-| `CharacterModularSystem.updateMaterials` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:509`](../../game/src/character-lab/CharacterModularSystem.ts#L509) | - |
-| `CharacterModularSystem.updateVFX` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:485`](../../game/src/character-lab/CharacterModularSystem.ts#L485) | VFX Update loop (spins crystal and particles) |
+| `CharacterModularSystem.buildArcher` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:256`](../../game/src/character-lab/CharacterModularSystem.ts#L256) | ========================================== |
+| `CharacterModularSystem.buildMage` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:367`](../../game/src/character-lab/CharacterModularSystem.ts#L367) | ========================================== |
+| `CharacterModularSystem.buildWarrior` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:119`](../../game/src/character-lab/CharacterModularSystem.ts#L119) | ========================================== |
+| `CharacterModularSystem.clearEquipment` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:93`](../../game/src/character-lab/CharacterModularSystem.ts#L93) | - |
+| `CharacterModularSystem.updateColors` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:501`](../../game/src/character-lab/CharacterModularSystem.ts#L501) | - |
+| `CharacterModularSystem.updateMaterials` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:512`](../../game/src/character-lab/CharacterModularSystem.ts#L512) | - |
+| `CharacterModularSystem.updateVFX` | `method` | [`game/src/character-lab/CharacterModularSystem.ts:488`](../../game/src/character-lab/CharacterModularSystem.ts#L488) | VFX Update loop (spins crystal and particles) |
 | `CharacterPreviewRenderer` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:8`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L8) | Renders an animated 2.5D chibi hero preview on the character selection dais... |
 | `CharacterPreviewRenderer.dispose` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:135`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L135) | - |
 | `CharacterPreviewRenderer.getFrameDimensions` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts:60`](../../game/src/ui/screens/CharacterSelect/CharacterPreviewRenderer.ts#L60) | - |
@@ -278,24 +279,26 @@ Run `npm run index` to refresh this cache.
 | `CharacterRig.setProceduralMeshesVisible` | `method` | [`game/src/character-lab/CharacterRig.ts:395`](../../game/src/character-lab/CharacterRig.ts#L395) | - |
 | `CharacterRig.updateColors` | `method` | [`game/src/character-lab/CharacterRig.ts:406`](../../game/src/character-lab/CharacterRig.ts#L406) | - |
 | `CHARACTERS` | `const` | [`game/src/shared/types/registry.ts:15`](../../game/src/shared/types/registry.ts#L15) | - |
-| `CharacterSandboxApp` | `class` | [`game/src/character-lab/CharacterSandboxApp.ts:84`](../../game/src/character-lab/CharacterSandboxApp.ts#L84) | - |
-| `CharacterSandboxApp.applyClass` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:226`](../../game/src/character-lab/CharacterSandboxApp.ts#L226) | - |
-| `CharacterSandboxApp.buildPedestal` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:195`](../../game/src/character-lab/CharacterSandboxApp.ts#L195) | - |
-| `CharacterSandboxApp.dispose` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:421`](../../game/src/character-lab/CharacterSandboxApp.ts#L421) | - |
-| `CharacterSandboxApp.resetCamera` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:367`](../../game/src/character-lab/CharacterSandboxApp.ts#L367) | - |
-| `CharacterSandboxApp.rotateMageTripo90` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:299`](../../game/src/character-lab/CharacterSandboxApp.ts#L299) | - |
-| `CharacterSandboxApp.setAnimation` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:303`](../../game/src/character-lab/CharacterSandboxApp.ts#L303) | - |
-| `CharacterSandboxApp.setLightingPreset` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:338`](../../game/src/character-lab/CharacterSandboxApp.ts#L338) | - |
-| `CharacterSandboxApp.setMageAngleMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:287`](../../game/src/character-lab/CharacterSandboxApp.ts#L287) | - |
-| `CharacterSandboxApp.setMageRenderMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:282`](../../game/src/character-lab/CharacterSandboxApp.ts#L282) | - |
-| `CharacterSandboxApp.setMageTripoFigure` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:291`](../../game/src/character-lab/CharacterSandboxApp.ts#L291) | - |
-| `CharacterSandboxApp.setPlaybackSpeed` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:313`](../../game/src/character-lab/CharacterSandboxApp.ts#L313) | - |
-| `CharacterSandboxApp.toggleEquipment` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:329`](../../game/src/character-lab/CharacterSandboxApp.ts#L329) | - |
-| `CharacterSandboxApp.toggleMageTripoRotate180` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:295`](../../game/src/character-lab/CharacterSandboxApp.ts#L295) | - |
-| `CharacterSandboxApp.toggleWireframe` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:334`](../../game/src/character-lab/CharacterSandboxApp.ts#L334) | - |
-| `CharacterSandboxApp.triggerAttack` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:308`](../../game/src/character-lab/CharacterSandboxApp.ts#L308) | - |
-| `CharacterSandboxApp.updateColor` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:318`](../../game/src/character-lab/CharacterSandboxApp.ts#L318) | - |
-| `CharacterSandboxApp.updateMaterialProperty` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:324`](../../game/src/character-lab/CharacterSandboxApp.ts#L324) | - |
+| `CharacterSandboxApp` | `class` | [`game/src/character-lab/CharacterSandboxApp.ts:106`](../../game/src/character-lab/CharacterSandboxApp.ts#L106) | - |
+| `CharacterSandboxApp.applyClass` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:250`](../../game/src/character-lab/CharacterSandboxApp.ts#L250) | - |
+| `CharacterSandboxApp.buildPedestal` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:219`](../../game/src/character-lab/CharacterSandboxApp.ts#L219) | - |
+| `CharacterSandboxApp.dispose` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:466`](../../game/src/character-lab/CharacterSandboxApp.ts#L466) | - |
+| `CharacterSandboxApp.resetCamera` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:402`](../../game/src/character-lab/CharacterSandboxApp.ts#L402) | - |
+| `CharacterSandboxApp.rotateMageTripo90` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:334`](../../game/src/character-lab/CharacterSandboxApp.ts#L334) | - |
+| `CharacterSandboxApp.setAnimation` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:338`](../../game/src/character-lab/CharacterSandboxApp.ts#L338) | - |
+| `CharacterSandboxApp.setLightingPreset` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:373`](../../game/src/character-lab/CharacterSandboxApp.ts#L373) | - |
+| `CharacterSandboxApp.setMageAngleMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:322`](../../game/src/character-lab/CharacterSandboxApp.ts#L322) | - |
+| `CharacterSandboxApp.setMageRenderMode` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:317`](../../game/src/character-lab/CharacterSandboxApp.ts#L317) | - |
+| `CharacterSandboxApp.setMageTripoFigure` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:326`](../../game/src/character-lab/CharacterSandboxApp.ts#L326) | - |
+| `CharacterSandboxApp.setPlaybackSpeed` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:348`](../../game/src/character-lab/CharacterSandboxApp.ts#L348) | - |
+| `CharacterSandboxApp.setVampirePalette` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:458`](../../game/src/character-lab/CharacterSandboxApp.ts#L458) | - |
+| `CharacterSandboxApp.toggleEquipment` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:364`](../../game/src/character-lab/CharacterSandboxApp.ts#L364) | - |
+| `CharacterSandboxApp.toggleMageTripoRotate180` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:330`](../../game/src/character-lab/CharacterSandboxApp.ts#L330) | - |
+| `CharacterSandboxApp.toggleVampirePart` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:462`](../../game/src/character-lab/CharacterSandboxApp.ts#L462) | - |
+| `CharacterSandboxApp.toggleWireframe` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:369`](../../game/src/character-lab/CharacterSandboxApp.ts#L369) | - |
+| `CharacterSandboxApp.triggerAttack` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:343`](../../game/src/character-lab/CharacterSandboxApp.ts#L343) | - |
+| `CharacterSandboxApp.updateColor` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:353`](../../game/src/character-lab/CharacterSandboxApp.ts#L353) | - |
+| `CharacterSandboxApp.updateMaterialProperty` | `method` | [`game/src/character-lab/CharacterSandboxApp.ts:359`](../../game/src/character-lab/CharacterSandboxApp.ts#L359) | - |
 | `CharacterSelectScreen` | `class` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:40`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L40) | Modular Character Selection Screen (Rift ARPG UI). Manages carousel track, ... |
 | `CharacterSelectScreen.attemptLaunch` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:275`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L275) | - |
 | `CharacterSelectScreen.bindElements` | `method` | [`game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts:67`](../../game/src/ui/screens/CharacterSelect/CharacterSelectScreen.ts#L67) | - |
@@ -405,7 +408,7 @@ Run `npm run index` to refresh this cache.
 | `DedicatedGameServer.tick` | `method` | [`server/dedicatedServer.ts:201`](../../server/dedicatedServer.ts#L201) | Authoritative tick: updates mobs, bullets, collisions, drops, altars, reviv... |
 | `DedicatedServerOptions` | `interface` | [`server/dedicatedServer.ts:18`](../../server/dedicatedServer.ts#L18) | - |
 | `DEFAULT_BALANCE` | `const` | [`game/src/balance/defaultBalance.ts:4`](../../game/src/balance/defaultBalance.ts#L4) | - |
-| `DEFAULT_CLASS_CONFIGS` | `const` | [`game/src/character-lab/CharacterSandboxApp.ts:18`](../../game/src/character-lab/CharacterSandboxApp.ts#L18) | - |
+| `DEFAULT_CLASS_CONFIGS` | `const` | [`game/src/character-lab/CharacterSandboxApp.ts:19`](../../game/src/character-lab/CharacterSandboxApp.ts#L19) | - |
 | `DEFAULT_DEMO_LEADERBOARDS` | `const` | [`admin/src/constants.ts:226`](../../admin/src/constants.ts#L226) | - |
 | `DetailedPlayerResult` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:14`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L14) | - |
 | `DevManager` | `class` | [`game/src/ui/DevManager.ts:8`](../../game/src/ui/DevManager.ts#L8) | - |
@@ -1907,6 +1910,19 @@ Run `npm run index` to refresh this cache.
 | `useLobbyStore` | `const` | [`game/src/ui/stores/useLobbyStore.ts:33`](../../game/src/ui/stores/useLobbyStore.ts#L33) | Co-op Lobby store coordinating network rooms, slots, and peer readiness. |
 | `usePlayerStore` | `const` | [`game/src/ui/stores/usePlayerStore.ts:111`](../../game/src/ui/stores/usePlayerStore.ts#L111) | Player store featuring dual-frequency updates: - Continuous meters (HP, shi... |
 | `useUIModalStore` | `const` | [`game/src/ui/stores/useUIModalStore.ts:50`](../../game/src/ui/stores/useUIModalStore.ts#L50) | UI Modal store coordinating modal stack, overlays, and card draft dialogs. |
+| `VAMPIRE_PALETTES` | `const` | [`game/src/character-lab/VampireCutoutRig.ts:16`](../../game/src/character-lab/VampireCutoutRig.ts#L16) | - |
+| `VampireCutoutRig` | `class` | [`game/src/character-lab/VampireCutoutRig.ts:77`](../../game/src/character-lab/VampireCutoutRig.ts#L77) | Skeletal Cutout / Paperdoll Rig for the Vampire / Succubus character. Assem... |
+| `VampireCutoutRig.buildMeshes` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:221`](../../game/src/character-lab/VampireCutoutRig.ts#L221) | - |
+| `VampireCutoutRig.configurePixelTexture` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:172`](../../game/src/character-lab/VampireCutoutRig.ts#L172) | - |
+| `VampireCutoutRig.getTextureUrl` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:167`](../../game/src/character-lab/VampireCutoutRig.ts#L167) | - |
+| `VampireCutoutRig.loadTextures` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:179`](../../game/src/character-lab/VampireCutoutRig.ts#L179) | - |
+| `VampireCutoutRig.setPalette` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:395`](../../game/src/character-lab/VampireCutoutRig.ts#L395) | - |
+| `VampireCutoutRig.setToggle` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:346`](../../game/src/character-lab/VampireCutoutRig.ts#L346) | - |
+| `VampireCutoutRig.setVisible` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:313`](../../game/src/character-lab/VampireCutoutRig.ts#L313) | - |
+| `VampireCutoutRig.update` | `method` | [`game/src/character-lab/VampireCutoutRig.ts:413`](../../game/src/character-lab/VampireCutoutRig.ts#L413) | - |
+| `VampireCutoutToggles` | `interface` | [`game/src/character-lab/VampireCutoutRig.ts:64`](../../game/src/character-lab/VampireCutoutRig.ts#L64) | - |
+| `VampirePaletteConfig` | `interface` | [`game/src/character-lab/VampireCutoutRig.ts:6`](../../game/src/character-lab/VampireCutoutRig.ts#L6) | - |
+| `VampirePaletteName` | `type` | [`game/src/character-lab/VampireCutoutRig.ts:4`](../../game/src/character-lab/VampireCutoutRig.ts#L4) | - |
 | `VersionInfo` | `interface` | [`game/src/core/UpdateNotifier.ts:1`](../../game/src/core/UpdateNotifier.ts#L1) | - |
 | `VfxEnvironment` | `const` | [`game/src/ui/react/r3f/world/VfxEnvironment.tsx:21`](../../game/src/ui/react/r3f/world/VfxEnvironment.tsx#L21) | Ambient environmental VFX component for The Rift. Renders drifting dust mot... |
 | `VfxEnvironmentProps` | `interface` | [`game/src/ui/react/r3f/world/VfxEnvironment.tsx:11`](../../game/src/ui/react/r3f/world/VfxEnvironment.tsx#L11) | - |

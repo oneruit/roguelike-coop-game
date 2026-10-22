@@ -154,7 +154,7 @@
 
       .class-tabs {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 6px;
       }
 
@@ -403,6 +403,51 @@
               <span class="icon">🔮</span>
               <span>Маг</span>
             </button>
+            <button class="class-tab-btn" data-class="vampire">
+              <span class="icon">🧛</span>
+              <span>Вампирша</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Vampire Paper-Doll Options (Visible when Vampire is selected) -->
+        <section id="vampire-custom-section" style="display: none; background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.35); padding: 12px; border-radius: 8px;">
+          <div class="section-title" style="color: #fb7185;">🧛 Вампирша: Paper-Doll Rig</div>
+          <div style="font-size: 0.75rem; color: #fecdd3; line-height: 1.4; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px; margin-bottom: 10px;">
+            💡 <b>Модульный Paper-Doll Скелет:</b> 8 2D-спрайтов сегментированы и смонтированы на анатомический 3D-риг с процедурным дыханием, взмахами крыльев и аурой.
+          </div>
+
+          <div class="field-label" style="margin-bottom: 6px; color: #fecdd3;">Палитра (Tinting):</div>
+          <div class="presets-row" id="vampire-palette-buttons" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px;">
+            <button class="preset-btn active vampire-pal-btn" data-palette="crimson" style="border-left: 3px solid #ef4444;">🩸 Кровавая Луна</button>
+            <button class="preset-btn vampire-pal-btn" data-palette="violet" style="border-left: 3px solid #a855f7;">🔮 Суккуб Бездны</button>
+            <button class="preset-btn vampire-pal-btn" data-palette="emerald" style="border-left: 3px solid #10b981;">🌿 Нефрит</button>
+            <button class="preset-btn vampire-pal-btn" data-palette="frost" style="border-left: 3px solid #38bdf8;">❄️ Ледяная Графиня</button>
+            <button class="preset-btn vampire-pal-btn" data-palette="gold" style="border-left: 3px solid #f59e0b; grid-column: span 2;">👑 Солнечная Царица</button>
+          </div>
+
+          <div class="field-label" style="margin-bottom: 6px; color: #fecdd3;">Модульные Части:</div>
+          <div class="toggles-list">
+            <label class="toggle-item">
+              <span>🦇 Крылья летучей мыши</span>
+              <input type="checkbox" id="toggle-vampire-wings" checked />
+            </label>
+            <label class="toggle-item">
+              <span>👗 Готический шлейф платья</span>
+              <input type="checkbox" id="toggle-vampire-skirt" checked />
+            </label>
+            <label class="toggle-item">
+              <span>👢 Чулки и сапоги</span>
+              <input type="checkbox" id="toggle-vampire-legs" checked />
+            </label>
+            <label class="toggle-item">
+              <span>🧤 Руки с перчатками</span>
+              <input type="checkbox" id="toggle-vampire-arms" checked />
+            </label>
+            <label class="toggle-item">
+              <span>✨ Аура крови и сферы</span>
+              <input type="checkbox" id="toggle-vampire-aura" checked />
+            </label>
           </div>
         </section>
 
