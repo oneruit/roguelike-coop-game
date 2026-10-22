@@ -732,7 +732,7 @@ class Game {
     this.mobNestManager.onCoreExtracted = (_nest, remaining) => {
       this.hud.triggerAltarNotification(
         'АСТРАЛЬНОЕ ЯДРО ИЗВЛЕЧЕНО!',
-        `Доставьте его в Портал в центре! (Осталось генераторов: ${remaining}). При рывке ядро выпадает!`,
+        `Доставьте его в Портал в центре! (Осталось генераторов: ${remaining})`,
         '⚡',
         '#38bdf8'
       );

@@ -635,11 +635,6 @@ export class Player {
     this.dashCooldown = this.motor.dashCooldown;
     this.dashDirection.copy(this.motor.dashDirection);
 
-    // Dropping Astral Core upon tactical dash (core destabilizes from extreme acceleration)
-    if (this.hasAstralCore) {
-      this.dropAstralCore();
-    }
-
     SoundManager.playDash();
     GameEventBus.emit('player:dash', { cooldown: this.dashCooldown, maxCooldown: this.maxDashCooldown });
     return true;

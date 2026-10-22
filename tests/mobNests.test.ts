@@ -203,7 +203,7 @@ test('Astral Core - Extracting core from generator gives player core and marks g
   generator.dispose(scene);
 });
 
-test('Astral Core - Tactical dash forces player to drop core to ground', () => {
+test('Astral Core - Tactical dash does NOT drop core (player retains core while dashing)', () => {
   const scene = new Scene();
   const player = new Player(scene);
   const nestManager = new MobNestManager(scene);
@@ -224,12 +224,10 @@ test('Astral Core - Tactical dash forces player to drop core to ground', () => {
   const dashed = player.triggerDash(new Vector3(1, 0, 0));
   assert.equal(dashed, true);
 
-  // Player must have dropped the core
-  assert.equal(player.hasAstralCore, false, 'Player loses core upon dashing');
-  assert.ok(droppedPos !== null, 'onDropAstralCore callback was fired');
-  assert.equal(nestManager.droppedCores.length, 1, 'Dropped Astral Core spawned in manager');
-  assert.equal(nestManager.droppedCores[0].position.x, 10);
-  assert.equal(nestManager.droppedCores[0].position.z, 20);
+  // Player must retain the core upon dashing
+  assert.equal(player.hasAstralCore, true, 'Player must retain core upon dashing');
+  assert.equal(droppedPos, null, 'onDropAstralCore callback must not fire on dash');
+  assert.equal(nestManager.droppedCores.length, 0, 'No dropped core spawned on dash');
 
   nestManager.clear();
 });
