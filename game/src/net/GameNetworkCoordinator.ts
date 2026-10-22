@@ -343,6 +343,15 @@ export class GameNetworkCoordinator {
         }
         this.hud.resetBossUI();
         ProgressionManager.getInstance().recordBossKilled();
+        if (this.biomeManager.stageNumber >= 5) {
+          this.enemyManager.activateEndlessHorde();
+          this.hud.triggerAltarNotification(
+            'ХРАНИТЕЛЬ ПОВЕРЖЕН!',
+            'Войдите в Разлом [E] для завершения экспедиции или сразитесь с Бесконечной Ордой!',
+            '👑',
+            '#f59e0b'
+          );
+        }
       } else if (event.type === 'stage_warp' && typeof event.stage === 'number') {
         this.onStageTransition?.(event.stage, event.biomeName);
       } else if (event.type === 'revive') {

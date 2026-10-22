@@ -83,6 +83,7 @@ export class SessionDirector {
 
   public gameState: GameState = GameState.MAIN_MENU;
   public gameTime = 0;
+  public isVictoryAchieved = false;
   public currentSeed: number | string = 1337;
   public isTrainingMode = false;
   public devPausedGame = false;
@@ -199,6 +200,10 @@ export class SessionDirector {
       this.triggerLevelUp();
     };
     this.netCoordinator.onWarpRequested = () => {
+      if (this.biomeManager.stageNumber >= 5) {
+        this.triggerGameOver(true);
+        return;
+      }
       this.warpToNextStage();
     };
     this.netCoordinator.onGreedTrialRequested = (altar) => {
@@ -456,6 +461,7 @@ export class SessionDirector {
     this.activeGreedAltar = null;
     this.hud?.hideGreedTrialTimer?.();
     this.gameTime = 0;
+    this.isVictoryAchieved = false;
     this.isTrainingMode = false;
     ProgressionManager.getInstance().isTrainingMode = false;
     this.hud.setTrainingModeActive(false);
@@ -593,6 +599,7 @@ export class SessionDirector {
       this.hud.resetBossUI();
       this.merchantManager.reset();
       this.gameTime = 0;
+      this.isVictoryAchieved = false;
       ProgressionManager.getInstance()?.resetRunSessionProgress?.();
       this.gameState = GameState.PLAYING;
       this.hud?.clearMenuStack?.();
@@ -630,7 +637,8 @@ export class SessionDirector {
     }
 
     // 1. Check Teleporter interaction
-    const teleInteraction = this.riftTeleporter.getInteraction(this.player.position);
+    const isFinalStage = this.biomeManager.stageNumber >= 5;
+    const teleInteraction = this.riftTeleporter.getInteraction(this.player.position, isFinalStage);
     if (teleInteraction.canInteract && teleInteraction.action) {
       if (teleInteraction.action === 'activate') {
         this.activateRift();
@@ -640,6 +648,10 @@ export class SessionDirector {
       if (teleInteraction.action === 'warp') {
         if (this.net.role === 'client') {
           this.net.send({ type: 'WARP_REQUEST' as any });
+          return;
+        }
+        if (isFinalStage) {
+          this.triggerGameOver(true);
           return;
         }
         this.warpToNextStage();
@@ -1034,6 +1046,7 @@ export class SessionDirector {
   }
 
   public triggerGameOver(isVictory: boolean = false): void {
+    const effectiveVictory = isVictory || this.isVictoryAchieved;
     this.resetRewardChoices();
     this.gameState = GameState.GAME_OVER;
     this.updateUI.onRunEnded();
@@ -1087,8 +1100,8 @@ export class SessionDirector {
     RunSaveManager.clearSavedRun();
 
     // Save last completed run summary (including killer info on defeat)
-    const killer = isVictory
-      ? undefined
+    const killer = effectiveVictory
+      ? (this.isVictoryAchieved && !isVictory ? { name: 'Бесконечная Орда', damage: 0 } : undefined)
       : (this.player.killerInfo || { name: 'Монстры Разлома', damage: 0 });
 
     const weaponsData = this.player.weapons.map((w) => ({
@@ -1114,7 +1127,7 @@ export class SessionDirector {
     LastRunManager.saveLastRun({
       timestamp: Date.now(),
       dateFormatted: LastRunManager.formatDate(Date.now()),
-      isVictory,
+      isVictory: effectiveVictory,
       stageNumber: this.biomeManager.stageNumber,
       biomeName: this.biomeManager.currentBiome.name,
       seed: typeof this.currentSeed === 'number' ? this.currentSeed : SeededRNG.hashString(String(this.currentSeed)),
@@ -1139,10 +1152,10 @@ export class SessionDirector {
       survivalTimeSec: this.gameTime,
       kills: this.player.kills,
       credits: this.player.credits,
-      isVictory
+      isVictory: effectiveVictory
     }).catch(err => console.warn('[SessionDirector] Leaderboard submit error:', err));
 
-    this.hud.showGameOver(timeStr, myStats, null, this.player.isCoop, isVictory, this.player.weapons, allPlayersResults, bpResult);
+    this.hud.showGameOver(timeStr, myStats, null, this.player.isCoop, effectiveVictory, this.player.weapons, allPlayersResults, bpResult);
   }
 
   /**

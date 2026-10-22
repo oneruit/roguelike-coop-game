@@ -113,6 +113,7 @@ class Game {
       }
     };
     this.enemyManager.onVortexPullTrigger = (pos, radius, pullSpeed) => {
+      if (this.biomeManager.stageNumber >= 5) return;
       const maxPull = Math.min(pullSpeed || 2.8, 2.8);
       const diffX = pos.x - this.player.position.x;
       const diffZ = pos.z - this.player.position.z;
@@ -610,9 +611,15 @@ class Game {
         this.netCoordinator.pendingNetworkEvents.push({ type: 'boss_defeat' });
       }
       if (boss?.isStage5FinalBoss) {
-        setTimeout(() => {
-          this.sessionDirector.triggerGameOver(true);
-        }, 3000);
+        this.sessionDirector.isVictoryAchieved = true;
+        this.enemyManager.activateEndlessHorde();
+        SoundManager.playVictory?.();
+        this.hud.triggerAltarNotification(
+          'ХРАНИТЕЛЬ ПОВЕРЖЕН!',
+          'Войдите в Разлом [E] для завершения экспедиции или сразитесь с Бесконечной Ордой!',
+          '👑',
+          '#f59e0b'
+        );
       }
     };
 
@@ -926,7 +933,8 @@ class Game {
     } else if (merchantPrompt.canInteract) {
       this.hud.showInteractionPrompt(merchantPrompt.prompt);
     } else {
-      const telePrompt = this.riftTeleporter.getInteraction(this.player.position);
+      const isFinalStage = this.biomeManager.stageNumber >= 5;
+      const telePrompt = this.riftTeleporter.getInteraction(this.player.position, isFinalStage);
       if (telePrompt.canInteract) {
         this.hud.showInteractionPrompt(telePrompt.prompt);
       } else {

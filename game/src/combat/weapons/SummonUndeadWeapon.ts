@@ -239,7 +239,11 @@ export class SummonUndeadWeapon extends Weapon {
       }
 
       // Attack execution
-      if (isEngaging && targetEnemy && distToTarget <= this.minionAttackRange) {
+      const currentDistToTarget = isEngaging && targetEnemy
+        ? Math.hypot(targetEnemy.position.x - minion.pos.x, targetEnemy.position.z - minion.pos.z)
+        : distToTarget;
+
+      if (isEngaging && targetEnemy && currentDistToTarget <= this.minionAttackRange) {
         if (minion.attackCooldown <= 0) {
           minion.attackCooldown = this.effectiveCooldown;
           minion.attackAnimTimer = 0.32;

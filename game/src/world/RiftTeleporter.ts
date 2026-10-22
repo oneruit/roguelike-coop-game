@@ -275,7 +275,7 @@ export class RiftTeleporter {
     return true;
   }
 
-  public getInteraction(playerPos: Vector3): { canInteract: boolean; prompt: string; action: 'activate' | 'warp' | null } {
+  public getInteraction(playerPos: Vector3, isFinalStage: boolean = false): { canInteract: boolean; prompt: string; action: 'activate' | 'warp' | null } {
     if (!this.mesh.visible) {
       return { canInteract: false, prompt: '', action: null };
     }
@@ -297,7 +297,9 @@ export class RiftTeleporter {
     if (this.state === 'WARP_READY') {
       return {
         canInteract: true,
-        prompt: '[E] Войти в Разлом (Переход на следующий биом)',
+        prompt: isFinalStage
+          ? '[E] Войти в Разлом (Завершить экспедицию с Победой!)'
+          : '[E] Войти в Разлом (Переход на следующий биом)',
         action: 'warp'
       };
     }

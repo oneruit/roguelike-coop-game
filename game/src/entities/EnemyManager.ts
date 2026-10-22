@@ -303,6 +303,7 @@ export class EnemyManager {
       });
     };
     enemy.onVortexPull = (vortexEnemy, radius, pullSpeed) => {
+      if (this.currentStage >= 5) return;
       if (this.onVortexPullTrigger) {
         this.onVortexPullTrigger(vortexEnemy.position, radius, pullSpeed);
       }
@@ -311,6 +312,13 @@ export class EnemyManager {
   }
 
   public stageTime: number = 0;
+  public isEndlessHordeActive: boolean = false;
+  public endlessHordeTimer: number = 0;
+
+  public activateEndlessHorde(): void {
+    this.isEndlessHordeActive = true;
+    this.endlessHordeTimer = 0;
+  }
 
   /**
    * Continuous progressive scaling multipliers with endless scaling, stage progression, and biome overstay penalties.
@@ -322,7 +330,10 @@ export class EnemyManager {
     const hpPostSurge = Math.pow(mPost / 3.5, 2.3) * 3.5 * (1 + mPost * 0.15);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
     const stageMult = Math.pow(1.40, Math.max(0, this.currentStage - 1));
-    return (baseMult + hpPostSurge) * overstay.hpMult * stageMult;
+    const hordeHpMult = this.isEndlessHordeActive
+      ? Math.pow(1.20, this.endlessHordeTimer / 15)
+      : 1.0;
+    return (baseMult + hpPostSurge) * overstay.hpMult * stageMult * hordeHpMult;
   }
 
   public getDamageMultiplier(): number {
@@ -332,18 +343,27 @@ export class EnemyManager {
     const dmgPostSurge = Math.pow(mPost / 4.0, 2.0) * 1.8 * (1 + mPost * 0.10);
     const overstay = DifficultyDirector.getBiomeOverstayMultiplier(this.stageTime, this.currentStage >= 4);
     const stageMult = Math.pow(1.25, Math.max(0, this.currentStage - 1));
-    return (baseMult + dmgPostSurge) * overstay.dmgMult * stageMult;
+    const hordeDmgMult = this.isEndlessHordeActive
+      ? Math.pow(1.15, this.endlessHordeTimer / 15)
+      : 1.0;
+    return (baseMult + dmgPostSurge) * overstay.dmgMult * stageMult * hordeDmgMult;
   }
 
   public getSpeedMultiplier(): number {
     const minute = this.gameTime / 60;
     const mPost = Math.max(0, minute - 15);
     const stageBonus = Math.max(0, this.currentStage - 1) * 0.04;
-    return Math.min(1.85, 1 + (minute * 0.015) * 1.5 + mPost * 0.01 + stageBonus);
+    const hordeSpeedBonus = this.isEndlessHordeActive
+      ? Math.min(0.50, (this.endlessHordeTimer / 60) * 0.15)
+      : 0;
+    const maxSpeed = this.isEndlessHordeActive ? 2.35 : 1.85;
+    return Math.min(maxSpeed, 1 + (minute * 0.015) * 1.5 + mPost * 0.01 + stageBonus + hordeSpeedBonus);
   }
 
   public resetStageTime(): void {
     this.stageTime = 0;
+    this.isEndlessHordeActive = false;
+    this.endlessHordeTimer = 0;
   }
 
   public getLateGameCcResistance(isBoss: boolean): number {
@@ -397,6 +417,9 @@ export class EnemyManager {
   ) {
     this.gameTime += dt;
     this.stageTime += dt;
+    if (this.isEndlessHordeActive) {
+      this.endlessHordeTimer += dt;
+    }
     this.spawnTimer += dt;
     VolatileRingManager.update(dt);
 
@@ -416,9 +439,13 @@ export class EnemyManager {
     // (~0.47s at 4 min, ~0.35s at 8 min, ~0.26s at 10 min), and surges down to 0.14s-0.12s
     // from minute 15+ for high-intensity late-game swarm pressure.
     const tMin = this.gameTime / 60;
-    const currentInterval = tMin < 15
+    let currentInterval = tMin < 15
       ? Math.max(0.18, this.spawnInterval / (1 + tMin * 0.28))
       : Math.max(0.12, 0.18 - (tMin - 15) * 0.006);
+    if (this.isEndlessHordeActive) {
+      const hordeMins = this.endlessHordeTimer / 60;
+      currentInterval = Math.max(0.06, currentInterval / (1 + hordeMins * 0.5));
+    }
 
     if (this.spawnTimer >= currentInterval) {
       this.spawnTimer = 0;
@@ -970,6 +997,10 @@ export class EnemyManager {
       count = Math.max(1, Math.round(count * (1 + (this.activePlayerCount - 1) * 0.35)));
     }
 
+    if (this.isEndlessHordeActive) {
+      count = Math.max(count, 8 + Math.min(6, Math.floor(this.endlessHordeTimer / 30)));
+    }
+
     for (let i = 0; i < count; i++) {
       const type = types[Math.floor(Math.random() * types.length)];
       this.spawnSingleEnemy(type, playerPos);
@@ -997,7 +1028,7 @@ export class EnemyManager {
     // Check elite spawn chance from Difficulty Director (100% on Stage 5)
     const isStage5 = this.currentStage >= 5;
     const isElite = isStage5 || Math.random() < DifficultyDirector.getEliteSpawnChance(this.gameTime, this.currentStage);
-    const stage5Affixes: EliteAffix[] = ['juggernaut', 'vortex', 'volatile', 'avenger'];
+    const stage5Affixes: EliteAffix[] = ['juggernaut', 'volatile', 'avenger', 'blazing', 'glacial', 'overloading'];
     const standardAffixes: EliteAffix[] = ['blazing', 'glacial', 'overloading'];
     const chosenAffix = isElite
       ? (isStage5 ? stage5Affixes[Math.floor(Math.random() * stage5Affixes.length)] : standardAffixes[Math.floor(Math.random() * standardAffixes.length)])
@@ -1068,7 +1099,7 @@ export class EnemyManager {
   public spawnGreedTrialWave(centerPos: Vector3, count: number = 4) {
     const types: EnemyType[] = ['brute', 'bison', 'scorpion', 'ghost', 'skeleton'];
     const affixes: EliteAffix[] = this.currentStage >= 5
-      ? ['juggernaut', 'vortex', 'volatile', 'avenger']
+      ? ['juggernaut', 'volatile', 'avenger', 'blazing', 'glacial', 'overloading']
       : ['blazing', 'glacial', 'overloading'];
 
     if (this.enemies.length >= 120) return;

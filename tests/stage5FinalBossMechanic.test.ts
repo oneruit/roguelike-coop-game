@@ -255,3 +255,50 @@ test('ChunkManager - Stage 5 generates teleporter normally (not disabled)', () =
   assert.equal(teleporter.isOpened, false, 'Teleporter is closed until activated');
   assert.ok(teleporter.position.length() > 0, 'Teleporter must have a non-zero sector position on stage 5');
 });
+
+test('RiftTeleporter - Stage 5 interaction prompt provides Victory Expedition completion', () => {
+  const scene = new Scene();
+  const teleporter = new RiftTeleporter(scene, new Vector3(0, 0, 0));
+  teleporter.state = 'WARP_READY';
+
+  // 1. Stage 1-4 standard transition prompt
+  const normalPrompt = teleporter.getInteraction(new Vector3(0, 0, 0), false);
+  assert.equal(normalPrompt.canInteract, true);
+  assert.equal(normalPrompt.action, 'warp');
+  assert.match(normalPrompt.prompt, /Переход на следующий биом/);
+
+  // 2. Stage 5 victory completion prompt
+  const stage5Prompt = teleporter.getInteraction(new Vector3(0, 0, 0), true);
+  assert.equal(stage5Prompt.canInteract, true);
+  assert.equal(stage5Prompt.action, 'warp');
+  assert.match(stage5Prompt.prompt, /Завершить экспедицию с Победой!/);
+});
+
+test('EnemyManager - Endless Horde mode increases mob HP, damage, and speed scaling', () => {
+  const scene = new Scene();
+  const dropManager = new DropManager(scene);
+  const damageNumbers = new DamageNumberManager();
+  const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
+
+  enemyManager.currentStage = 5;
+  const initialHpMult = enemyManager.getHpMultiplier();
+  const initialDmgMult = enemyManager.getDamageMultiplier();
+  const initialSpdMult = enemyManager.getSpeedMultiplier();
+
+  // Activate endless horde
+  enemyManager.activateEndlessHorde();
+  assert.equal(enemyManager.isEndlessHordeActive, true);
+  assert.equal(enemyManager.endlessHordeTimer, 0);
+
+  // Advance time by 60 seconds (1 minute of horde survival)
+  enemyManager.update(60, new Vector3(0, 0, 0));
+  assert.equal(enemyManager.endlessHordeTimer, 60);
+
+  const hordeHpMult = enemyManager.getHpMultiplier();
+  const hordeDmgMult = enemyManager.getDamageMultiplier();
+  const hordeSpdMult = enemyManager.getSpeedMultiplier();
+
+  assert.ok(hordeHpMult > initialHpMult * 1.5, `Horde HP multiplier (${hordeHpMult}) should scale strongly above base (${initialHpMult})`);
+  assert.ok(hordeDmgMult > initialDmgMult * 1.4, `Horde damage multiplier (${hordeDmgMult}) should scale above base (${initialDmgMult})`);
+  assert.ok(hordeSpdMult > initialSpdMult, `Horde speed multiplier (${hordeSpdMult}) should exceed base (${initialSpdMult})`);
+});

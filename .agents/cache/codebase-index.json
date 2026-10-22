@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-22T01:00:04.711Z",
+  "generatedAt": "2026-10-22T05:29:28.665Z",
   "totalFiles": 206,
-  "totalSymbols": 1950,
+  "totalSymbols": 1951,
   "topLevelCount": 606,
-  "methodsCount": 1344,
+  "methodsCount": 1345,
   "entities": {
     "heroes": [
       {
@@ -4186,10 +4186,18 @@
       "line": 23
     },
     {
+      "name": "EnemyManager.activateEndlessHorde",
+      "kind": "method",
+      "file": "game/src/entities/EnemyManager.ts",
+      "line": 318,
+      "className": "EnemyManager",
+      "methodName": "activateEndlessHorde"
+    },
+    {
       "name": "EnemyManager.applySnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1279,
+      "line": 1310,
       "className": "EnemyManager",
       "methodName": "applySnapshot"
     },
@@ -4197,7 +4205,7 @@
       "name": "EnemyManager.clear",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1389,
+      "line": 1420,
       "className": "EnemyManager",
       "methodName": "clear"
     },
@@ -4205,7 +4213,7 @@
       "name": "EnemyManager.damageEnemiesInRadius",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1176,
+      "line": 1207,
       "className": "EnemyManager",
       "methodName": "damageEnemiesInRadius",
       "doc": "Deals friendly fire blast wave damage to all non-immortal monsters in radius."
@@ -4214,7 +4222,7 @@
       "name": "EnemyManager.getDamageMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 328,
+      "line": 339,
       "className": "EnemyManager",
       "methodName": "getDamageMultiplier"
     },
@@ -4222,7 +4230,7 @@
       "name": "EnemyManager.getHpMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 318,
+      "line": 326,
       "className": "EnemyManager",
       "methodName": "getHpMultiplier",
       "doc": "Continuous progressive scaling multipliers with endless scaling, stage progression, and biome overstay penalties."
@@ -4231,7 +4239,7 @@
       "name": "EnemyManager.getKnockbackResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 360,
+      "line": 380,
       "className": "EnemyManager",
       "methodName": "getKnockbackResistance"
     },
@@ -4239,7 +4247,7 @@
       "name": "EnemyManager.getLateGameCcResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 349,
+      "line": 369,
       "className": "EnemyManager",
       "methodName": "getLateGameCcResistance"
     },
@@ -4247,7 +4255,7 @@
       "name": "EnemyManager.getLateGameDamageResistance",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 375,
+      "line": 395,
       "className": "EnemyManager",
       "methodName": "getLateGameDamageResistance"
     },
@@ -4255,7 +4263,7 @@
       "name": "EnemyManager.getNearbyEnemies",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1032,
+      "line": 1063,
       "className": "EnemyManager",
       "methodName": "getNearbyEnemies",
       "doc": "Fast query for enemies within radius using the Spatial Grid."
@@ -4264,7 +4272,7 @@
       "name": "EnemyManager.getSnapshot",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1266,
+      "line": 1297,
       "className": "EnemyManager",
       "methodName": "getSnapshot"
     },
@@ -4272,7 +4280,7 @@
       "name": "EnemyManager.getSpeedMultiplier",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 338,
+      "line": 352,
       "className": "EnemyManager",
       "methodName": "getSpeedMultiplier"
     },
@@ -4280,7 +4288,7 @@
       "name": "EnemyManager.killAll",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1057,
+      "line": 1088,
       "className": "EnemyManager",
       "methodName": "killAll"
     },
@@ -4288,7 +4296,7 @@
       "name": "EnemyManager.killNonBossesAround",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1190,
+      "line": 1221,
       "className": "EnemyManager",
       "methodName": "killNonBossesAround"
     },
@@ -4304,7 +4312,7 @@
       "name": "EnemyManager.resetStageTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 345,
+      "line": 363,
       "className": "EnemyManager",
       "methodName": "resetStageTime"
     },
@@ -4320,7 +4328,7 @@
       "name": "EnemyManager.setGameTime",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1250,
+      "line": 1281,
       "className": "EnemyManager",
       "methodName": "setGameTime"
     },
@@ -4328,7 +4336,7 @@
       "name": "EnemyManager.spawnBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1237,
+      "line": 1268,
       "className": "EnemyManager",
       "methodName": "spawnBossNow"
     },
@@ -4336,7 +4344,7 @@
       "name": "EnemyManager.spawnGreedTrialWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1068,
+      "line": 1099,
       "className": "EnemyManager",
       "methodName": "spawnGreedTrialWave",
       "doc": "Spawns a high-threat frenzied wave of guaranteed elite monsters around the given altar position."
@@ -4345,7 +4353,7 @@
       "name": "EnemyManager.spawnHydraNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1242,
+      "line": 1273,
       "className": "EnemyManager",
       "methodName": "spawnHydraNow"
     },
@@ -4353,7 +4361,7 @@
       "name": "EnemyManager.spawnImmortalBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 836,
+      "line": 863,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBoss",
       "doc": "Spawns an endgame rift boss"
@@ -4362,7 +4370,7 @@
       "name": "EnemyManager.spawnImmortalBossNow",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1246,
+      "line": 1277,
       "className": "EnemyManager",
       "methodName": "spawnImmortalBossNow"
     },
@@ -4370,7 +4378,7 @@
       "name": "EnemyManager.spawnNestSwarm",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1124,
+      "line": 1155,
       "className": "EnemyManager",
       "methodName": "spawnNestSwarm",
       "doc": "Spawns a furious swarm of volcanic/void monsters bursting out from a detonated mob nest."
@@ -4379,7 +4387,7 @@
       "name": "EnemyManager.spawnSingleEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 979,
+      "line": 1010,
       "className": "EnemyManager",
       "methodName": "spawnSingleEnemy"
     },
@@ -4387,7 +4395,7 @@
       "name": "EnemyManager.spawnSpecificEnemy",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1221,
+      "line": 1252,
       "className": "EnemyManager",
       "methodName": "spawnSpecificEnemy"
     },
@@ -4395,7 +4403,7 @@
       "name": "EnemyManager.spawnTeleporterBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 751,
+      "line": 778,
       "className": "EnemyManager",
       "methodName": "spawnTeleporterBoss",
       "doc": "Spawns a stage boss explicitly when the Teleporter event is activated."
@@ -4404,7 +4412,7 @@
       "name": "EnemyManager.spawnTieredBoss",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 677,
+      "line": 704,
       "className": "EnemyManager",
       "methodName": "spawnTieredBoss",
       "doc": "Spawns a 5-minute boss with stats scaling by tier (5m, 10m, 15m, 20m, 25m)"
@@ -4413,7 +4421,7 @@
       "name": "EnemyManager.spawnWave",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 872,
+      "line": 899,
       "className": "EnemyManager",
       "methodName": "spawnWave"
     },
@@ -4429,7 +4437,7 @@
       "name": "EnemyManager.updateVisuals",
       "kind": "method",
       "file": "game/src/entities/EnemyManager.ts",
-      "line": 1361,
+      "line": 1392,
       "className": "EnemyManager",
       "methodName": "updateVisuals",
       "doc": "Rendering phase: Viewport/Frustum culling across all active enemies. Enemies outside the camera frustum are culled (mesh.visible = false, zero draw calls)."
@@ -5112,7 +5120,7 @@
       "name": "GameNetworkCoordinator.broadcastNetworkState",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 580,
+      "line": 589,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastNetworkState"
     },
@@ -5120,7 +5128,7 @@
       "name": "GameNetworkCoordinator.broadcastTimeFreeze",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 964,
+      "line": 973,
       "className": "GameNetworkCoordinator",
       "methodName": "broadcastTimeFreeze"
     },
@@ -5136,7 +5144,7 @@
       "name": "GameNetworkCoordinator.handleClientDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 806,
+      "line": 815,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientDevAction"
     },
@@ -5144,7 +5152,7 @@
       "name": "GameNetworkCoordinator.handleClientSync",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 471,
+      "line": 480,
       "className": "GameNetworkCoordinator",
       "methodName": "handleClientSync"
     },
@@ -5152,7 +5160,7 @@
       "name": "GameNetworkCoordinator.handleHostDevAction",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 768,
+      "line": 777,
       "className": "GameNetworkCoordinator",
       "methodName": "handleHostDevAction"
     },
@@ -5168,7 +5176,7 @@
       "name": "GameNetworkCoordinator.isTeamWiped",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 955,
+      "line": 964,
       "className": "GameNetworkCoordinator",
       "methodName": "isTeamWiped"
     },
@@ -5192,7 +5200,7 @@
       "name": "GameNetworkCoordinator.updateRevives",
       "kind": "method",
       "file": "game/src/net/GameNetworkCoordinator.ts",
-      "line": 862,
+      "line": 871,
       "className": "GameNetworkCoordinator",
       "methodName": "updateRevives"
     },
@@ -11572,7 +11580,7 @@
       "name": "RiftTeleporter.destroy",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 308,
+      "line": 310,
       "className": "RiftTeleporter",
       "methodName": "destroy"
     },
@@ -11597,7 +11605,7 @@
       "name": "RiftTeleporter.getSnapshot",
       "kind": "method",
       "file": "game/src/world/RiftTeleporter.ts",
-      "line": 316,
+      "line": 318,
       "className": "RiftTeleporter",
       "methodName": "getSnapshot"
     },
@@ -12135,7 +12143,7 @@
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 749,
+      "line": 761,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -12144,7 +12152,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 958,
+      "line": 970,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -12152,7 +12160,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1153,
+      "line": 1166,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -12161,7 +12169,7 @@
       "name": "SessionDirector.completeGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 804,
+      "line": 816,
       "className": "SessionDirector",
       "methodName": "completeGreedTrial"
     },
@@ -12169,7 +12177,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 485,
+      "line": 491,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -12177,7 +12185,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 607,
+      "line": 614,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -12185,7 +12193,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 476,
+      "line": 482,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -12193,7 +12201,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 527,
+      "line": 533,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -12201,7 +12209,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 468,
+      "line": 474,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -12209,7 +12217,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1315,
+      "line": 1328,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -12218,7 +12226,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 408,
+      "line": 413,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -12226,7 +12234,7 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1237,
+      "line": 1250,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
@@ -12235,7 +12243,7 @@
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 351,
+      "line": 356,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -12243,7 +12251,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 295,
+      "line": 300,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -12251,7 +12259,7 @@
       "name": "SessionDirector.startGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 768,
+      "line": 780,
       "className": "SessionDirector",
       "methodName": "startGreedTrial"
     },
@@ -12259,7 +12267,7 @@
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 400,
+      "line": 405,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -12267,7 +12275,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1183,
+      "line": 1196,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -12276,7 +12284,7 @@
       "name": "SessionDirector.toggleDevMode",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 209,
+      "line": 214,
       "className": "SessionDirector",
       "methodName": "toggleDevMode"
     },
@@ -12284,7 +12292,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1036,
+      "line": 1048,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -12292,7 +12300,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 495,
+      "line": 501,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -12300,7 +12308,7 @@
       "name": "SessionDirector.updateChestsHUD",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 178,
+      "line": 179,
       "className": "SessionDirector",
       "methodName": "updateChestsHUD"
     },
@@ -12308,7 +12316,7 @@
       "name": "SessionDirector.updateGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 788,
+      "line": 800,
       "className": "SessionDirector",
       "methodName": "updateGreedTrial"
     },
@@ -12316,7 +12324,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 837,
+      "line": 849,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },
@@ -12324,7 +12332,7 @@
       "name": "SessionDirector.wireCoordinatorCallbacks",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 184,
+      "line": 185,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
     },
@@ -14060,7 +14068,7 @@
       "name": "SummonUndeadWeapon.destroy",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 303,
+      "line": 307,
       "className": "SummonUndeadWeapon",
       "methodName": "destroy"
     },
@@ -14068,7 +14076,7 @@
       "name": "SummonUndeadWeapon.getNextUpgradeDescription",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 287,
+      "line": 291,
       "className": "SummonUndeadWeapon",
       "methodName": "getNextUpgradeDescription"
     },
@@ -14076,7 +14084,7 @@
       "name": "SummonUndeadWeapon.initVisual",
       "kind": "method",
       "file": "game/src/combat/weapons/SummonUndeadWeapon.ts",
-      "line": 266,
+      "line": 270,
       "className": "SummonUndeadWeapon",
       "methodName": "initVisual"
     },
