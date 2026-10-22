@@ -159,6 +159,7 @@ export class ReaperScytheWeapon extends Weapon {
  * Fiery ring of blazing animated flames surrounding the hero, searing all monsters within its perimeter.
  */
 export class FireRingWeapon extends Weapon {
+  public hasInitVisual: boolean = false;
   private static vfxOpacity: number = 1.0;
   private static instances = new Set<FireRingWeapon>();
 
@@ -178,6 +179,19 @@ export class FireRingWeapon extends Weapon {
       inst.destroy(scene);
     }
     FireRingWeapon.instances.clear();
+    // Safety purge of any lingering aura meshes from scene
+    if (scene && scene.children) {
+      const lingering = scene.children.filter(c => c.name === 'fire_ring_aura');
+      for (const m of lingering) {
+        scene.remove(m);
+        if ((m as Mesh).geometry) (m as Mesh).geometry.dispose();
+        if ((m as Mesh).material) {
+          const mat = (m as Mesh).material;
+          if (Array.isArray(mat)) mat.forEach(x => x.dispose());
+          else mat.dispose();
+        }
+      }
+    }
   }
 
   private radius: number = 3.5;
@@ -243,6 +257,18 @@ export class FireRingWeapon extends Weapon {
   }
 
   public initVisual(scene: Scene, playerPos: Vector3) {
+    if (this.hasInitVisual && this.auraMesh) return;
+    if (this.auraMesh) {
+      scene.remove(this.auraMesh);
+      this.auraMesh.geometry.dispose();
+      if (this.auraMat) {
+        this.auraMat.dispose();
+        this.auraMat = null;
+      }
+      this.auraMesh = null;
+    }
+    this.hasInitVisual = true;
+
     this.fireTex = TextureManager.getFireRingTexture().clone();
     this.fireTex.needsUpdate = true;
     this.fireTex.repeat.set(0.25, 0.25);
@@ -258,6 +284,7 @@ export class FireRingWeapon extends Weapon {
       visible: FireRingWeapon.vfxOpacity > 0.005
     });
     this.auraMesh = new Mesh(geom, this.auraMat);
+    this.auraMesh.name = 'fire_ring_aura';
     this.auraMesh.rotation.x = -Math.PI / 2;
     this.auraMesh.position.set(playerPos.x, 0.08, playerPos.z);
     scene.add(this.auraMesh);
@@ -265,6 +292,7 @@ export class FireRingWeapon extends Weapon {
   }
 
   public destroy(scene: Scene) {
+    this.hasInitVisual = false;
     FireRingWeapon.instances.delete(this);
     if (this.auraMesh) {
       scene.remove(this.auraMesh);
@@ -374,7 +402,9 @@ export class AstralStaffWeapon extends Weapon {
           lifetime: 2.2,
           radius: 0.32,
           color: 0xc084fc, // Radiant Astral Purple
-          isMagic: true
+          isMagic: true,
+          isStar: true,
+          sourceWeaponId: this.id
         });
 
         spawnProjectile(proj);

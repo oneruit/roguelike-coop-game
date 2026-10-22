@@ -1,6 +1,6 @@
 ---
-description: Mandatory requirement that all documentation, rules, skills, prompts, and markdown files are written in English
-globs: ["**/*.md"]
+description: "Mandatory requirement that all documentation, rules, skills, prompts, and markdown files are written in English"
+globs: "**/*.md"
 ---
 
 # Documentation Language Rule

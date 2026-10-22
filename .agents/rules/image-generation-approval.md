@@ -1,6 +1,6 @@
 ---
-description: Mandatory human approval gateway for all generated visual assets (characters, monsters, bosses, UI, HUD, icons)
-globs: ["**/*"]
+description: "Mandatory human approval gateway for all generated visual assets (characters, monsters, bosses, UI, HUD, icons)"
+globs: "**/*"
 ---
 
 # Image Generation Approval Rule

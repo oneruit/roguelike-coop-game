@@ -84,6 +84,12 @@ export class CharacterModularSystem {
       case 'mage':
         this.buildMage(toggles);
         break;
+      case 'vampire':
+        // Vampire equipment is handled by VampireCutoutRig
+        break;
+      case 'anime_warrior':
+        // Anime warrior 3D mesh is handled by AnimeWarrior3DSystem
+        break;
     }
   }
 

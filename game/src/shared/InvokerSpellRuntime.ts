@@ -28,6 +28,8 @@ export interface SpellContext<E extends SpellEnemy> {
 interface ActiveSpell {
   cast: InvokerSpellCast;
   damage: number;
+  controlMult?: number;
+  speedMult?: number;
   age: number;
   nextTick: number;
   hit: Set<string>;
@@ -45,6 +47,8 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
     target: E,
     context: SpellContext<E>,
     baseRadius = INVOKER_SPELLS[spellId].radius,
+    controlMult: number = 1.0,
+    speedMult: number = 1.0
   ): InvokerSpellCast {
     const def = INVOKER_SPELLS[spellId];
     const dx = target.position.x - context.position.x,
@@ -62,7 +66,7 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
       targetId: target.id,
       dx: dx / length,
       dz: dz / length,
-      radius: baseRadius * getInvokerScaling(level).radius,
+      radius: baseRadius * getInvokerScaling(level).radius * (speedMult || 1.0),
       duration: getInvokerSpellDuration(spellId, level),
       delay: def.delay,
     };
@@ -73,6 +77,8 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
     this.active.push({
       cast,
       damage,
+      controlMult,
+      speedMult,
       age: 0,
       nextTick: def.delay,
       hit: new Set(),
@@ -106,14 +112,16 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
             across <= c.radius
           ) {
             spell.hit.add(enemy.id);
+            const ctrl = spell.controlMult || 1.0;
+            const spd = spell.speedMult || 1.0;
             context.control(
               enemy,
               c.spellId === "tornado"
-                ? { stunDuration: 1.2 * scaling.control }
+                ? { stunDuration: 1.2 * scaling.control * ctrl }
                 : {
-                    disarmDuration: 1.8 * scaling.control,
-                    pushX: c.dx * 12,
-                    pushZ: c.dz * 12,
+                    disarmDuration: 1.8 * scaling.control * ctrl,
+                    pushX: c.dx * 12 * spd,
+                    pushZ: c.dz * 12 * spd,
                   },
             );
             context.damage(enemy, spell.damage, source);
@@ -129,10 +137,11 @@ export class InvokerSpellRuntime<E extends SpellEnemy> {
               (e) => e.id === c.targetId && e.isAlive,
             );
             if (target) {
+              const ctrl = spell.controlMult || 1.0;
               context.control(target, {
-                stunDuration: 0.16 * scaling.control,
+                stunDuration: 0.16 * scaling.control * ctrl,
                 slowFactor: slow(0.7),
-                slowDuration: 0.6 * scaling.control,
+                slowDuration: 0.6 * scaling.control * ctrl,
               });
               context.damage(target, spell.damage / 4, source);
             }

@@ -3,7 +3,7 @@
  * Platform-agnostic core types used across client, server, and simulation layers.
  */
 
-export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer' | 'rocket' | 'invoker' | 'necromancer' | 'amazon';
+export type CharacterType = 'ronin' | 'valkyrie' | 'flail' | 'sorceress' | 'chakram' | 'archer' | 'rocket' | 'invoker' | 'necromancer' | 'amazon' | 'vampire';
 
 export type HeroAnimState = 'IDLE' | 'WALK' | 'IDLE_ATTACK' | 'WALK_ATTACK';
 

@@ -22,7 +22,8 @@ export const CHARACTERS: readonly CharacterType[] = [
   'rocket',
   'invoker',
   'necromancer',
-  'amazon'
+  'amazon',
+  'vampire'
 ] as const;
 
 export const CHEST_TIERS = ['small', 'large', 'legendary'] as const;

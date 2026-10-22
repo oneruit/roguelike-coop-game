@@ -57,7 +57,7 @@ export const PASSIVE_BUFFS: Record<PassiveBuffId, PassiveBuffDef> = {
     id: 'stat_watch',
     title: 'Карманные Часы',
     icon: '⏱️',
-    description: '-1% к времени перезарядки оружий (с угасающей эффективностью до 50% на 200 ур., макс. 50%)'
+    description: '-0.5% к времени перезарядки оружий (с угасающей эффективностью до 25% на 200 ур., макс. 25%)'
   },
   stat_crit_damage: {
     id: 'stat_crit_damage',

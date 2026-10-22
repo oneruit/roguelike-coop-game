@@ -1,6 +1,6 @@
 ---
-description: High-level architectural map, entity registry, and fast navigation guide for the codebase
-globs: ["**/*"]
+description: "High-level architectural map, entity registry, and fast navigation guide for the codebase"
+globs: "**/*"
 ---
 
 # Codebase Architectural Map & Fast Navigation

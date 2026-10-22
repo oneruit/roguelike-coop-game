@@ -7,6 +7,7 @@ import type { MerchantManager } from '../world/MerchantManager';
 import type { RemotePlayer } from '../entities/RemotePlayer';
 import type { DiscoveredAltar } from './MapManager';
 import type { MobNestManager } from '../world/MobNestManager';
+import { ChunkManager } from '../world/ChunkManager';
 
 export interface CenterSquareMapRenderContext {
   ctx: CanvasRenderingContext2D;
@@ -60,7 +61,8 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
   const px = Math.round(player.position.x);
   const pz = Math.round(player.position.z);
   if (elMinimapCoords) {
-    elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${exploredChunks.size}/81 зон`;
+    const totalChunks = ChunkManager.GRID_SIZE * ChunkManager.GRID_SIZE;
+    elMinimapCoords.innerText = `X: ${px}, Z: ${pz} | ${exploredChunks.size}/${totalChunks} зон`;
   }
 
   // 1. Semi-transparent dark tactical backdrop
@@ -68,16 +70,16 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
   ctx.fillRect(0, 0, w, h);
 
   // 2. World Coordinate Transform for 9x9 chunks (450x450m bounds, -225 to +225)
-  const halfWorld = 225;
-  const worldSize = 450;
+  const halfWorld = ChunkManager.HALF_MAP;
+  const worldSize = ChunkManager.MAP_SIZE;
   const toScreenX = (worldX: number) => ((worldX + halfWorld) / worldSize) * w;
   const toScreenZ = (worldZ: number) => ((worldZ + halfWorld) / worldSize) * h;
   const chunkScreenW = (50 / worldSize) * w;
   const chunkScreenH = (50 / worldSize) * h;
 
   // Chunks & Fog of War (9x9 chunks, 50m each from cx = -4..4, cz = -4..4)
-  for (let cx = -4; cx <= 4; cx++) {
-    for (let cz = -4; cz <= 4; cz++) {
+  for (let cx = ChunkManager.MIN_CHUNK; cx <= ChunkManager.MAX_CHUNK; cx++) {
+    for (let cz = ChunkManager.MIN_CHUNK; cz <= ChunkManager.MAX_CHUNK; cz++) {
       const chunkX = toScreenX(cx * 50 - 25);
       const chunkZ = toScreenZ(cz * 50 - 25);
       const key = `${cx},${cz}`;
@@ -179,8 +181,9 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
     const tz = toScreenZ(riftTeleporter.position.z);
     if (tx >= 0 && tx <= w && tz >= 0 && tz <= h) {
       const isReady = riftTeleporter.state === 'WARP_READY';
+      const isStage4Waiting = riftTeleporter.isStage4 && riftTeleporter.coresDelivered < 4;
       const pulse = Math.sin(animTimer * 4) * 2;
-      const color = isReady ? '#10b981' : '#f59e0b';
+      const color = isReady ? '#10b981' : (isStage4Waiting ? '#38bdf8' : '#f59e0b');
 
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
@@ -195,7 +198,8 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
 
       ctx.font = 'bold 8px Montserrat, sans-serif';
       ctx.fillStyle = color;
-      ctx.fillText(isReady ? 'РАЗЛОМ' : 'БОСС НУЖЕН', tx, tz + 14);
+      const label = isReady ? 'РАЗЛОМ' : (isStage4Waiting ? `ЯДРА: ${riftTeleporter.coresDelivered}/4` : 'БОСС НУЖЕН');
+      ctx.fillText(label, tx, tz + 14);
     }
   }
 
@@ -227,29 +231,33 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
     }
   }
 
-  // 6c. Mob Nests on Stage 4
+  // 6c. Astral Core Generators & Dropped Cores on Stage 4
   if (mobNestManager && mobNestManager.nests.length > 0) {
     for (const nest of mobNestManager.nests) {
       const nx = toScreenX(nest.position.x);
       const nz = toScreenZ(nest.position.z);
       if (nx >= 0 && nx <= w && nz >= 0 && nz <= h) {
         if (nest.state === 'DESTROYED') {
-          // Dimmed crater mark
-          ctx.fillStyle = 'rgba(75, 85, 99, 0.7)';
+          // Dimmed extracted generator
+          ctx.fillStyle = 'rgba(51, 65, 85, 0.7)';
           ctx.beginPath();
           ctx.arc(nx, nz, 7, 0, Math.PI * 2);
           ctx.fill();
-          ctx.strokeStyle = '#374151';
+          ctx.strokeStyle = '#475569';
           ctx.lineWidth = 1.5;
           ctx.stroke();
           ctx.font = '10px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText('✕', nx, nz);
+          ctx.fillText('⚙️', nx, nz);
+
+          ctx.font = 'bold 8px Montserrat, sans-serif';
+          ctx.fillStyle = '#64748b';
+          ctx.fillText('ОПУСТОШЕН', nx, nz + 13);
         } else if (nest.state === 'ARMED') {
           // Blinking warning beacon & 1-cell blast danger ring on map (radius 25m)
           const pulse = Math.sin(animTimer * 12) * 2;
-          const cellRadiusPx = (25 / worldSize) * w; // 25m radius = 1 full cell across
+          const cellRadiusPx = (25 / worldSize) * w;
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.55)';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
@@ -273,25 +281,52 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
           ctx.fillStyle = '#ef4444';
           ctx.fillText(`${Math.ceil(nest.fuseTimer)}с`, nx, nz + 13);
         } else {
-          // IDLE or PLANTING: purple abyss nest maw
-          const pulse = Math.sin(animTimer * 3) * 1.5;
-          ctx.fillStyle = nest.state === 'PLANTING' ? '#f59e0b' : '#7c3aed';
+          // Charged Astral Generator
+          const pulse = Math.sin(animTimer * 4) * 1.5;
+          ctx.fillStyle = '#0284c7';
           ctx.beginPath();
           ctx.arc(nx, nz, 9 + pulse, 0, Math.PI * 2);
           ctx.fill();
-          ctx.strokeStyle = '#c084fc';
+          ctx.strokeStyle = '#38bdf8';
           ctx.lineWidth = 1.8;
           ctx.stroke();
 
           ctx.font = '11px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(nest.state === 'PLANTING' ? '⚙️' : '🕳️', nx, nz);
+          ctx.fillText('⚡', nx, nz);
 
           ctx.font = 'bold 8px Montserrat, sans-serif';
-          ctx.fillStyle = '#c084fc';
-          ctx.fillText('ГНЕЗДО', nx, nz + 13);
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillText('ГЕНЕРАТОР', nx, nz + 13);
         }
+      }
+    }
+  }
+
+  // 6d. Dropped Astral Cores on Ground (from tactical dash or knockout)
+  if (mobNestManager && mobNestManager.droppedCores.length > 0) {
+    for (const core of mobNestManager.droppedCores) {
+      const cx = toScreenX(core.position.x);
+      const cz = toScreenZ(core.position.z);
+      if (cx >= 0 && cx <= w && cz >= 0 && cz <= h) {
+        const pulse = Math.sin(animTimer * 8) * 2;
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(cx, cz, 8 + pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('⚡', cx, cz);
+
+        ctx.font = 'bold 8px Montserrat, sans-serif';
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillText('ЯДРО', cx, cz + 13);
       }
     }
   }
@@ -411,7 +446,7 @@ export function renderCenterSquareMap(context: CenterSquareMapRenderContext): vo
   ctx.textAlign = 'left';
   ctx.fillText('ИНТЕРАКТИВНАЯ КАРТА [TAB]', 8, 14);
 
-  const exploredPct = Math.min(100, Math.round((exploredChunks.size / 81) * 100));
+  const exploredPct = Math.min(100, Math.round((exploredChunks.size / (ChunkManager.GRID_SIZE * ChunkManager.GRID_SIZE)) * 100));
   ctx.textAlign = 'right';
   ctx.fillStyle = '#38bdf8';
   ctx.fillText(`ТУМАН ВОЙНЫ: ${exploredPct}% ОТКРЫТО`, 492, 14);

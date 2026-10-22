@@ -95,13 +95,26 @@ export class PlayerStats {
     const magnetCfg = BalanceManager.getPassiveConfig('stat_magnet');
     const bootsCfg = BalanceManager.getPassiveConfig('stat_speed_boots');
 
+    // Quas/Wex/Exort sphere passives
+    const quasWeapon = weapons.find(w => w.id === 'invoker_quas');
+    const wexWeapon = weapons.find(w => w.id === 'invoker_wex');
+    const exortWeapon = weapons.find(w => w.id === 'invoker_exort');
+
+    const wexCdrBonus = wexWeapon ? wexWeapon.level * 0.02 : 0;
+    const wexSpeedBonus = wexWeapon ? wexWeapon.level * 0.03 : 0;
+    const quasRegenBonus = quasWeapon ? quasWeapon.level * 1.5 : 0;
+    const exortDmgBonus = exortWeapon ? exortWeapon.level * 0.06 : 0;
+
+    speedBonus += wexSpeedBonus;
+    dmgBonus += exortDmgBonus;
+
     // Speed: +12% per Adrenaline Dart stack
     speedBonus += adrenalineStacks * 0.12;
 
     // HP Regen: +2.5 HP/s and +0.5% max HP/s per Health Vial stack, +15 HP/s per Titan Heart, +1.0 HP/s per Amulet stack, + meta HP regen, NO LIMIT
     const amuletScale = amuletCfg?.perStackValue ?? 1.0;
     const vialMaxHpRegen = vialStacks * (_baseMaxHp * 0.005);
-    const hpRegen = (counts.amuletCount * amuletScale) + (vialStacks * 2.5) + vialMaxHpRegen + (titanHeartStacks * 15) + (metaBonuses?.hpRegenBonus ?? 0);
+    const hpRegen = (counts.amuletCount * amuletScale) + (vialStacks * 2.5) + vialMaxHpRegen + (titanHeartStacks * 15) + (metaBonuses?.hpRegenBonus ?? 0) + quasRegenBonus;
 
     // Max Shield (Armor): 35 base + meta shield + 25 per Phase Carapace stack, capped at (160 + meta)
     const baseShield = globalCfg?.baseShield ?? 35;
@@ -137,17 +150,22 @@ export class PlayerStats {
     }
     damageReduction = Math.min(maxReduction, damageReduction);
 
-    // Attack Cooldown Multiplier: Pocket Watch reaches 50% max at 200 lvl
-    const watchMaxReduction = (watchCfg?.maxValue ?? 50) / 100;
-    const watchReduction = counts.watchCount <= 0 ? 0 : Math.min(watchMaxReduction, 0.01 * Math.pow(counts.watchCount, Math.log(watchMaxReduction * 100) / Math.log(200)));
+    // Attack Cooldown Multiplier: Pocket Watch reaches 25% max at 200 lvl (reduced ~2x)
+    const watchMaxReduction = (watchCfg?.maxValue ?? 25) / 100;
+    const watchBaseReduction = (watchCfg?.baseValue ?? 0.5) / 100;
+    const watchRatio = watchBaseReduction > 0 ? watchMaxReduction / watchBaseReduction : 50;
+    const watchReduction = counts.watchCount <= 0 ? 0 : Math.min(watchMaxReduction, watchBaseReduction * Math.pow(counts.watchCount, Math.log(watchRatio) / Math.log(200)));
     const metaCdr = metaBonuses?.cooldownReductionBonus ?? 0;
-    const watchMult = Math.max(0.40, 1 - watchReduction - metaCdr);
-    const injectorMult = Math.pow(0.90, injectorStacks);
-    const overclockMult = Math.pow(0.82, overclockStacks);
-    const cooldownMultiplier = Math.max(0.15, watchMult * injectorMult * overclockMult);
+
+    // All attack speed and cooldown reduction bonuses ADD together (not multiply):
+    const injectorBonus = injectorStacks * 0.10;
+    const overclockBonus = overclockStacks * 0.18;
+    const alacrityBonus = alacrityBuff?.value ?? 0;
+    const totalAttackSpeedReduction = watchReduction + metaCdr + injectorBonus + overclockBonus + alacrityBonus + wexCdrBonus;
+    const cooldownMultiplier = Math.max(0.15, 1 - totalAttackSpeedReduction);
 
     for (const weapon of weapons) {
-      weapon.cooldownMultiplier = cooldownMultiplier / (1 + (alacrityBuff?.value ?? 0));
+      weapon.cooldownMultiplier = cooldownMultiplier;
     }
 
     // Magnet pickup radius: base from globalCfg, diminishing returns up to maxValue at level 100, capped at maxValue (+ meta bonus)

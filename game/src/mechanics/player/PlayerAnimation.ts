@@ -55,6 +55,8 @@ export class PlayerAnimation {
         ? TextureManager.loadArcherTextures()
         : charType === 'rocket'
         ? TextureManager.loadRocketTextures()
+        : charType === 'vampire'
+        ? TextureManager.loadVampireTextures()
         : charType === 'necromancer'
         ? TextureManager.loadNecromancerTextures()
         : TextureManager.loadRoninTextures();

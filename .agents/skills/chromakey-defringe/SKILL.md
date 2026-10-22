@@ -5,6 +5,9 @@ description: Automated removal of pure magenta RGB(255, 0, 255) chromakey backgr
 
 # Magenta Chromakey & Defringing Pipeline
 
+> [!NOTE]
+> **Project Standard Update**: New assets in the game are generated on **pure solid flat white background `rgb(255,255,255)`** and extracted via **`rembg` AI matting**, which completely eliminates color halos and palette erosion at generation time. This `chromakey-defringe` tool is retained for legacy magenta-keyed assets and backwards compatibility.
+
 This skill provides a mathematically sound, automated pipeline to remove pure magenta (`#FF00FF` / `RGB(255, 0, 255)`) backgrounds from AI-generated or rendered 2D game assets, eliminating pink/purple halos (*chroma fringing*) while completely preserving internal colors (such as flames, red eyes, purple magic, and skin tones).
 
 ---

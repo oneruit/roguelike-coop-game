@@ -38,6 +38,8 @@ export interface BossSphere {
 }
 
 export class FinalBossPylonManager {
+  public static readonly SPHERE_DISTANCE: number = 22.0;
+
   private scene: Scene;
   private damageNumbers?: DamageNumberManager;
   public camera?: Camera;
@@ -189,8 +191,8 @@ export class FinalBossPylonManager {
     // 2. Clear old spheres if any exist
     this.cleanupSpheres();
 
-    // 3. Spawn 4 spheres in 4 orthogonal directions at 14m distance
-    const distance = 14.0;
+    // 3. Spawn 4 spheres in 4 orthogonal directions at 22m distance (+8m / 2 cells further away)
+    const distance = FinalBossPylonManager.SPHERE_DISTANCE;
     const angles = [0, Math.PI * 0.5, Math.PI, Math.PI * 1.5];
 
     for (let i = 0; i < 4; i++) {

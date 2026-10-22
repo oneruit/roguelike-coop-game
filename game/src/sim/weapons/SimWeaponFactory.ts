@@ -20,9 +20,11 @@ import {
   SimLightningStrikeWeapon,
   SimIceSpikeWeapon,
   SimFireballWeapon,
-  SimPoisonPuddleWeapon
+  SimPoisonPuddleWeapon,
+  SimSummonUndeadWeapon
 } from './SimMagicWeapons';
-import { SimInvokerWeapon } from './SimInvokerWeapon';
+import { SimBloodBatsWeapon } from './SimBloodBatsWeapon';
+import { SimInvokerWeapon, SimInvokerQuasWeapon, SimInvokerWexWeapon, SimInvokerExortWeapon } from './SimInvokerWeapon';
 
 /** Creates the starting weapon for character selection. */
 export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon {
@@ -34,8 +36,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'flail':
       return new SimFlailWeapon();
     case 'sorceress':
-    case 'necromancer':
       return new SimAstralStaffWeapon();
+    case 'necromancer':
+      return new SimSummonUndeadWeapon();
     case 'chakram':
       return new SimChakramWeapon();
     case 'archer':
@@ -45,6 +48,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
     case 'amazon':
       return new SimReaperScytheWeapon();
     case 'ronin':
+      return new SimKatanaSlashWeapon();
+    case 'vampire':
+      return new SimBloodBatsWeapon();
     default:
       return new SimWhirlwindSlashWeapon();
   }
@@ -55,6 +61,9 @@ export function createSimWeaponForCharacter(charType: CharacterType): SimWeapon 
  */
 export function createSimWeaponById(id: string): SimWeapon | null {
   if (id === 'invoker_invoke') return new SimInvokerWeapon();
+  if (id === 'invoker_quas') return new SimInvokerQuasWeapon();
+  if (id === 'invoker_wex') return new SimInvokerWexWeapon();
+  if (id === 'invoker_exort') return new SimInvokerExortWeapon();
   const spell = invokerSpellFromWeaponId(id);
   if (spell) return new SimInvokerWeapon(spell);
   switch (id) {
@@ -92,6 +101,10 @@ export function createSimWeaponById(id: string): SimWeapon | null {
       return new SimKatanaSlashWeapon();
     case 'poison_puddle':
       return new SimPoisonPuddleWeapon();
+    case 'summon_undead':
+      return new SimSummonUndeadWeapon();
+    case 'blood_bats':
+      return new SimBloodBatsWeapon();
     default:
       return null;
   }

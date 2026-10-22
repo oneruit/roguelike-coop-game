@@ -536,6 +536,7 @@ export class LobbyScreen extends Screen {
     if (charType === 'invoker') return 'Инвокер «Маг стихий»';
     if (charType === 'necromancer') return 'Мортис «Некромант»';
     if (charType === 'amazon') return 'Амазонка «Воительница»';
+    if (charType === 'vampire') return 'Кармилла «Вампир»';
     return charType === 'ronin'
       ? 'Рен «Ронин»'
       : charType === 'valkyrie'
@@ -717,7 +718,8 @@ export class LobbyScreen extends Screen {
       valkyrie: 'Каэла (Меч)',
       flail: 'Бригитта (Цеп)',
       sorceress: 'Ария (Магия)',
-      chakram: 'Кира (Чакрам)'
+      chakram: 'Кира (Чакрам)',
+      vampire: 'Кармилла (Вампир)'
     };
 
     if (typeof document === 'undefined') return;

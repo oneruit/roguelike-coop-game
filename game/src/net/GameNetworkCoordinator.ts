@@ -343,6 +343,16 @@ export class GameNetworkCoordinator {
         }
         this.hud.resetBossUI();
         ProgressionManager.getInstance().recordBossKilled();
+        if (this.biomeManager.stageNumber >= 5) {
+          this.enemyManager.activateEndlessHorde();
+          this.riftTeleporter.startStage5CloseTimer(60);
+          this.hud.triggerAltarNotification(
+            'АРЕНА ВЫЖИВАНИЯ',
+            'Босс повержен! Портал закроется через 60 сек. Войдите в Разлом [E] для ПОБЕДЫ или останьтесь выживать!',
+            '⚔️',
+            '#f59e0b'
+          );
+        }
       } else if (event.type === 'stage_warp' && typeof event.stage === 'number') {
         this.onStageTransition?.(event.stage, event.biomeName);
       } else if (event.type === 'revive') {

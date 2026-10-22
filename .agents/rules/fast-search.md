@@ -1,6 +1,6 @@
 ---
-description: Mandatory performance rule for codebase searching, symbol lookup, and exploration
-globs: ["**/*"]
+description: "Mandatory performance rule for codebase searching, symbol lookup, and exploration"
+globs: "**/*"
 ---
 
 # Fast Codebase Search and Exploration Rule

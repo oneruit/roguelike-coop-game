@@ -5,6 +5,7 @@ import {
   MeshBasicMaterial,
   PlaneGeometry,
   RingGeometry,
+  OctahedronGeometry,
   DoubleSide,
   Texture,
   TextureLoader,
@@ -22,7 +23,132 @@ import type { RemotePlayer } from '../entities/RemotePlayer';
 import type { EnemyManager } from '../entities/EnemyManager';
 import type { DamageNumberManager } from '../combat/DamageNumberManager';
 
-export type NestState = 'IDLE' | 'PLANTING' | 'ARMED' | 'DESTROYED';
+export type NestState = 'IDLE' | 'PLANTING' | 'ARMED' | 'DESTROYED' | 'CHARGED' | 'EXTRACTED';
+
+export class DroppedAstralCore {
+  public id: string;
+  public position: Vector3;
+  public mesh: Group;
+  private coreMesh: Mesh;
+  private groundRing: Mesh;
+  private light: PointLight;
+  private animTimer: number = 0;
+
+  private overheadSprite?: Mesh;
+  private overheadCanvas?: HTMLCanvasElement;
+  private overheadCtx?: CanvasRenderingContext2D;
+  private overheadTex?: CanvasTexture;
+
+  constructor(id: string, position: Vector3) {
+    this.id = id;
+    this.position = position.clone();
+    this.mesh = new Group();
+    this.mesh.position.copy(this.position);
+
+    // 1. Floating Octahedron Core
+    const coreGeom = new OctahedronGeometry(0.75);
+    const coreMat = new MeshBasicMaterial({
+      color: 0x38bdf8,
+      wireframe: false
+    });
+    this.coreMesh = new Mesh(coreGeom, coreMat);
+    this.coreMesh.position.y = 1.1;
+    this.mesh.add(this.coreMesh);
+
+    // 2. Ground beacon ring
+    const ringGeom = new RingGeometry(0.5, 2.0, 32);
+    ringGeom.rotateX(-Math.PI / 2);
+    const ringMat = new MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.65,
+      side: DoubleSide,
+      depthWrite: false
+    });
+    this.groundRing = new Mesh(ringGeom, ringMat);
+    this.groundRing.position.y = 0.04;
+    this.mesh.add(this.groundRing);
+
+    // 3. Glowing cyan point light
+    this.light = new PointLight(0x38bdf8, 3.0, 14);
+    this.light.position.set(0, 1.1, 0);
+    this.mesh.add(this.light);
+
+    this.createOverheadUI();
+  }
+
+  private createOverheadUI() {
+    if (typeof document === 'undefined') return;
+    this.overheadCanvas = document.createElement('canvas');
+    this.overheadCanvas.width = 256;
+    this.overheadCanvas.height = 64;
+    this.overheadCtx = this.overheadCanvas.getContext('2d')!;
+    this.overheadTex = new CanvasTexture(this.overheadCanvas);
+
+    const planeGeom = new PlaneGeometry(3.0, 0.75);
+    const planeMat = new MeshBasicMaterial({
+      map: this.overheadTex,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false
+    });
+    this.overheadSprite = new Mesh(planeGeom, planeMat);
+    this.overheadSprite.position.set(0, 2.3, 0);
+    this.overheadSprite.rotation.x = -Math.PI / 4.8;
+    this.overheadSprite.renderOrder = 999;
+    this.mesh.add(this.overheadSprite);
+
+    this.redrawOverhead();
+  }
+
+  private redrawOverhead() {
+    if (!this.overheadCanvas || !this.overheadCtx || !this.overheadTex) return;
+    const ctx = this.overheadCtx;
+    const w = this.overheadCanvas.width;
+    const h = this.overheadCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(12, 74, 110, 0.92)';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(8, 6, w - 16, h - 12, 10);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px "Cinzel", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⚡ АСТРАЛЬНОЕ ЯДРО', w / 2, h / 2);
+
+    this.overheadTex.needsUpdate = true;
+  }
+
+  public update(dt: number): void {
+    this.animTimer += dt;
+    this.coreMesh.rotation.y += dt * 3.5;
+    this.coreMesh.rotation.z += dt * 1.8;
+    this.coreMesh.position.y = 1.1 + Math.sin(this.animTimer * 4.5) * 0.18;
+
+    const ringScale = 1.0 + Math.sin(this.animTimer * 3.5) * 0.2;
+    this.groundRing.scale.set(ringScale, ringScale, 1.0);
+    this.light.intensity = 2.5 + Math.sin(this.animTimer * 5.0) * 0.8;
+  }
+
+  public dispose(scene: Scene): void {
+    scene.remove(this.mesh);
+    this.coreMesh.geometry.dispose();
+    (this.coreMesh.material as MeshBasicMaterial).dispose();
+    this.groundRing.geometry.dispose();
+    (this.groundRing.material as MeshBasicMaterial).dispose();
+    this.overheadTex?.dispose();
+    if (this.overheadSprite) {
+      this.overheadSprite.geometry.dispose();
+      (this.overheadSprite.material as MeshBasicMaterial).dispose();
+    }
+  }
+}
 
 export class MobNest {
   /** 1 map grid square diameter (50m across, radius 25m) */
@@ -51,6 +177,11 @@ export class MobNest {
   private innerDangerRing!: Mesh;
   private innerDangerMat!: MeshBasicMaterial;
   private beaconLight!: PointLight;
+
+  // Astral Core Hovering Visuals (Stage 4 Generator)
+  private coreOrbMesh!: Mesh;
+  private coreOrbLight!: PointLight;
+  private coreEnergyRing!: Mesh;
 
   // Overhead canvas UI
   private overheadSprite!: Mesh;
@@ -113,7 +244,7 @@ export class MobNest {
     this.shadowMesh.position.y = 0.02;
     this.mesh.add(this.shadowMesh);
 
-    // 2. Central 2.5D Nest Maw Sprite
+    // 2. Central 2.5D Nest / Generator Base Sprite
     const spriteGeom = new PlaneGeometry(4.8, 4.8);
     spriteGeom.translate(0, 2.1, 0); // anchor near ground
     this.spriteMat = new MeshBasicMaterial({
@@ -127,7 +258,7 @@ export class MobNest {
     this.spriteMesh.rotation.x = -Math.PI / 4.8; // standard 2.5D camera tilt
     this.mesh.add(this.spriteMesh);
 
-    // 3. Danger zone circle on ground (1 map grid cell across, radius 25m)
+    // 3. Danger zone circle on ground (used in legacy fuse countdown)
     const dangerGeom = new RingGeometry(0.5, MobNest.BLAST_RADIUS, 64);
     dangerGeom.rotateX(-Math.PI / 2);
     this.dangerZoneMat = new MeshBasicMaterial({
@@ -157,7 +288,35 @@ export class MobNest {
     this.innerDangerRing.visible = false;
     this.mesh.add(this.innerDangerRing);
 
-    // 4. Red blinking point light for armed state
+    // 4. Floating Astral Core (when charged / idle)
+    const coreGeom = new OctahedronGeometry(0.85);
+    const coreMat = new MeshBasicMaterial({
+      color: 0x38bdf8,
+      wireframe: false
+    });
+    this.coreOrbMesh = new Mesh(coreGeom, coreMat);
+    this.coreOrbMesh.position.set(0, 2.2, 0);
+    this.mesh.add(this.coreOrbMesh);
+
+    // Ground energy aura ring (pulsing cyan)
+    const ringGeom = new RingGeometry(1.0, 3.2, 32);
+    ringGeom.rotateX(-Math.PI / 2);
+    const ringMat = new MeshBasicMaterial({
+      color: 0x0284c7,
+      transparent: true,
+      opacity: 0.55,
+      side: DoubleSide,
+      depthWrite: false
+    });
+    this.coreEnergyRing = new Mesh(ringGeom, ringMat);
+    this.coreEnergyRing.position.y = 0.03;
+    this.mesh.add(this.coreEnergyRing);
+
+    this.coreOrbLight = new PointLight(0x38bdf8, 2.8, 16);
+    this.coreOrbLight.position.set(0, 2.2, 0);
+    this.mesh.add(this.coreOrbLight);
+
+    // Red blinking point light for armed bomb state
     this.beaconLight = new PointLight(0xef4444, 0, 15);
     this.beaconLight.position.set(0, 0.8, 0);
     this.mesh.add(this.beaconLight);
@@ -188,8 +347,9 @@ export class MobNest {
     this.overheadSprite.position.set(0, 3.8, 0);
     this.overheadSprite.rotation.x = -Math.PI / 4.8;
     this.overheadSprite.renderOrder = 999;
-    if (this.overheadSprite) this.overheadSprite.visible = false;
+    if (this.overheadSprite) this.overheadSprite.visible = true;
     this.mesh.add(this.overheadSprite);
+    this.redrawOverhead();
   }
 
   private redrawOverhead() {
@@ -201,7 +361,21 @@ export class MobNest {
     const h = this.overheadCanvas.height;
     ctx.clearRect(0, 0, w, h);
 
-    if (this.state === 'PLANTING') {
+    if (this.state === 'IDLE' || this.state === 'CHARGED') {
+      ctx.fillStyle = 'rgba(12, 74, 110, 0.90)';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(10, 8, w - 20, h - 16, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 18px "Cinzel", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚡ ГЕНЕРАТОР ЯДРА', w / 2, h / 2 - 2);
+    } else if (this.state === 'PLANTING') {
       // Background pill
       ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
       ctx.strokeStyle = '#f59e0b';
@@ -218,14 +392,12 @@ export class MobNest {
       ctx.roundRect(18, 14, barW, h - 28, 8);
       ctx.fill();
 
-      // Text
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px "Cinzel", sans-serif';
+      ctx.font = 'bold 18px "Cinzel", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`ЗАРЯД: ${Math.round(this.plantProgress * 100)}%`, w / 2, h / 2);
+      ctx.fillText(`ИЗВЛЕЧЕНИЕ: ${Math.round(this.plantProgress * 100)}%`, w / 2, h / 2);
     } else if (this.state === 'ARMED') {
-      // Danger blinking pill
       const isFlash = Math.floor(this.fuseTimer * 4) % 2 === 0;
       ctx.fillStyle = isFlash ? 'rgba(220, 38, 38, 0.95)' : 'rgba(15, 23, 42, 0.90)';
       ctx.strokeStyle = '#ef4444';
@@ -241,9 +413,40 @@ export class MobNest {
       ctx.textBaseline = 'middle';
       const sec = Math.max(0.1, this.fuseTimer).toFixed(1);
       ctx.fillText(`⚠️ ВЗРЫВ: ${sec}с`, w / 2, h / 2);
+    } else if (this.state === 'DESTROYED' || this.state === 'EXTRACTED') {
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.85)';
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(12, 10, w - 24, h - 20, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 16px "Cinzel", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚙️ ОПУСТОШЕН', w / 2, h / 2);
     }
 
     this.overheadTex.needsUpdate = true;
+  }
+
+  public extractCore(player: Player): boolean {
+    if (this.state !== 'IDLE' && this.state !== 'CHARGED') {
+      return false;
+    }
+    this.state = 'DESTROYED';
+    if (this.coreOrbMesh) this.coreOrbMesh.visible = false;
+    if (this.coreOrbLight) this.coreOrbLight.intensity = 0;
+    if (this.coreEnergyRing) this.coreEnergyRing.visible = false;
+    this.spriteMat.map = MobNest.getCraterTexture();
+    this.spriteMat.needsUpdate = true;
+
+    player.pickupAstralCore();
+    SoundManager.playLightning();
+    this.redrawOverhead();
+    return true;
   }
 
   public update(
@@ -254,14 +457,24 @@ export class MobNest {
     enemyManager: EnemyManager,
     damageNumbers?: DamageNumberManager,
     camera?: Camera
-  ): { justExploded: boolean } {
+  ): { justExploded: boolean; justExtracted?: boolean } {
     this.animTimer += dt;
 
-    if (this.state === 'IDLE') {
-      // Gentle breathing pulsation
-      const s = 1.0 + Math.sin(this.animTimer * 2.2) * 0.035;
-      this.spriteMesh.scale.set(s, s, 1.0);
-      if (this.overheadSprite) this.overheadSprite.visible = false;
+    if (this.state === 'IDLE' || this.state === 'CHARGED') {
+      // Gentle core rotation & hovering
+      if (this.coreOrbMesh) {
+        this.coreOrbMesh.rotation.y += dt * 3.0;
+        this.coreOrbMesh.rotation.z += dt * 1.5;
+        this.coreOrbMesh.position.y = 2.2 + Math.sin(this.animTimer * 3.5) * 0.2;
+      }
+      if (this.coreOrbLight) {
+        this.coreOrbLight.intensity = 2.5 + Math.sin(this.animTimer * 4.0) * 0.6;
+      }
+      if (this.coreEnergyRing) {
+        const ringScale = 1.0 + Math.sin(this.animTimer * 2.5) * 0.15;
+        this.coreEnergyRing.scale.set(ringScale, ringScale, 1.0);
+      }
+      if (this.overheadSprite) this.overheadSprite.visible = true;
       this.dangerZoneMesh.visible = false;
       this.innerDangerRing.visible = false;
       this.beaconLight.intensity = 0;
@@ -271,7 +484,6 @@ export class MobNest {
     if (this.state === 'PLANTING') {
       if (this.overheadSprite) this.overheadSprite.visible = true;
       this.redrawOverhead();
-      // Slight mechanical shake while planting
       this.spriteMesh.position.x = (Math.random() - 0.5) * 0.04;
       return { justExploded: false };
     }
@@ -283,26 +495,22 @@ export class MobNest {
 
       this.fuseTimer -= dt;
 
-      // Accelerated ticking sound & beeping
       const currentSec = Math.ceil(this.fuseTimer);
       if (currentSec !== this.lastTickSecond && this.fuseTimer > 0) {
         this.lastTickSecond = currentSec;
         SoundManager.playBombTick(this.fuseTimer);
       }
 
-      // Danger circle pulse (speeds up as timer nears 0)
       const pulseSpeed = 4.0 + (MobNest.FUSE_DURATION - this.fuseTimer) * 2.5;
       const alpha = 0.22 + 0.18 * Math.sin(this.animTimer * pulseSpeed);
       this.dangerZoneMat.opacity = alpha;
       this.innerDangerMat.opacity = Math.min(1.0, alpha * 2.2);
 
-      // Beacon flashing light
       const flash = (Math.sin(this.animTimer * pulseSpeed * 2) + 1) * 0.5;
       this.beaconLight.intensity = flash * 3.5;
 
       this.redrawOverhead();
 
-      // Detonation moment!
       if (this.fuseTimer <= 0) {
         this.detonate(scene, player, remotePlayers, enemyManager, damageNumbers, camera);
         return { justExploded: true };
@@ -310,8 +518,10 @@ export class MobNest {
       return { justExploded: false };
     }
 
-    // DESTROYED
-    if (this.overheadSprite) this.overheadSprite.visible = false;
+    // DESTROYED / EXTRACTED
+    if (this.coreOrbMesh) this.coreOrbMesh.visible = false;
+    if (this.coreOrbLight) this.coreOrbLight.intensity = 0;
+    if (this.coreEnergyRing) this.coreEnergyRing.visible = false;
     this.dangerZoneMesh.visible = false;
     this.innerDangerRing.visible = false;
     this.beaconLight.intensity = 0;
@@ -329,26 +539,26 @@ export class MobNest {
     this.state = 'DESTROYED';
     this.spriteMat.map = MobNest.getCraterTexture();
     this.spriteMat.needsUpdate = true;
-    this.spriteMesh.scale.set(1.15, 0.85, 1.0); // collapsed crater form
+    this.spriteMesh.scale.set(1.15, 0.85, 1.0);
     this.spriteMesh.position.y = -0.3;
 
-    // 1. Play massive explosion audio
+    if (this.coreOrbMesh) this.coreOrbMesh.visible = false;
+    if (this.coreOrbLight) this.coreOrbLight.intensity = 0;
+    if (this.coreEnergyRing) this.coreEnergyRing.visible = false;
+
     SoundManager.playBombExplosion();
 
-    // 2. Spawn sulfur explosion smoke VFX
     SulfurSmokeManager.spawn(scene, this.position.clone(), {
       size: 14.0,
       fps: 12
     });
 
-    // 3. Player damage check (deals non-lethal but noticeable 35 damage if inside 25m cell radius)
     const pDist = player.position.distanceTo(this.position);
     if (pDist <= this.blastRadius && player.isAlive && !player.isDowned) {
       player.takeDamage(MobNest.BLAST_DAMAGE, false, 'Взрыв логова');
       if (damageNumbers && camera) {
         damageNumbers.spawnDamage(player.position, MobNest.BLAST_DAMAGE, false, camera);
       }
-      // Small knockback away from crater
       const pushDir = player.position.clone().sub(this.position).setY(0);
       if (pushDir.lengthSq() > 0.01) {
         pushDir.normalize();
@@ -356,7 +566,6 @@ export class MobNest {
       }
     }
 
-    // 3b. Remote players damage check
     for (const remote of remotePlayers.values()) {
       if (remote.isDowned) continue;
       const rDist = remote.position.distanceTo(this.position);
@@ -366,10 +575,7 @@ export class MobNest {
       }
     }
 
-    // 4. Friendly Fire: Obliterate ordinary enemies caught in the blast wave!
     enemyManager.damageEnemiesInRadius(this.position, this.blastRadius, 1500, camera);
-
-    // 5. Swarm Eruption: 14 volcanic/void monsters burst out from the crater!
     enemyManager.spawnNestSwarm(this.position, 14);
   }
 
@@ -387,6 +593,16 @@ export class MobNest {
     this.innerDangerRing.geometry.dispose();
     this.innerDangerMat.dispose();
 
+    if (this.coreOrbMesh) {
+      this.coreOrbMesh.geometry.dispose();
+      (this.coreOrbMesh.material as MeshBasicMaterial).dispose();
+    }
+    if (this.coreEnergyRing) {
+      this.coreEnergyRing.geometry.dispose();
+      (this.coreEnergyRing.material as MeshBasicMaterial).dispose();
+    }
+    this.coreOrbLight?.dispose();
+
     if (this.overheadSprite) {
       this.overheadSprite.geometry.dispose();
       (this.overheadSprite.material as MeshBasicMaterial).dispose();
@@ -396,3 +612,6 @@ export class MobNest {
     this.beaconLight.dispose();
   }
 }
+
+export type AstralGenerator = MobNest;
+export const AstralGenerator = MobNest;

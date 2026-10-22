@@ -9,7 +9,7 @@ Use the reference character image / prompt as the primary visual lock for the **
 ### Mode A: Ready Prompt or Image Reference
 If the user provides an existing text prompt or image reference:
 * Adopt the character's visual identity directly.
-* Ensure mandatory engine requirements are met: pure solid magenta background `rgb(255,0,255)`, chibi 2.5–3 heads tall proportions, zero ground shadows / platforms, strict side profile for left/right rows, and the mandatory negative constraint block.
+* Ensure mandatory engine requirements are met: pure solid flat white background `rgb(255,255,255)` with `rembg` AI matting, chibi 2.5–3 heads tall proportions, zero ground shadows / platforms, strict side profile for left/right rows, and the mandatory negative constraint block.
 * Proceed directly without redundant questionnaires.
 
 ### Mode B: Brief / Incomplete Character Description (Auto-Enrichment)
@@ -24,7 +24,7 @@ If the user provides a brief description (e.g. *"female amazon in red bikini wit
 | **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), compact stylized armor fitted to stubby chibi anatomy, crisp pixel-art clusters |
 | **Held Item / Weapon** | Held with both hands or combat-ready stance, clearly visible beside character. If unarmed, hands raised in ready combat stance. No extra weapons |
 | **Effects** | Faint localized magical motes / energy orbs only if specified by archetype; no oversized clutter |
-| **Background / Chromakey** | Pure solid magenta background rgb(255,0,255) by default. **MANDATORY Green Chromakey RGB(0,255,0) (#00ff00)** if character has purple, lavender, pink, or magenta elements (hair, clothes, gems) to preserve 100% of colors. No shadows under feet, no ground line, no floor, no platform |
+| **Background / AI Matting** | Pure solid flat white background rgb(255,255,255) (#ffffff). Processed via rembg AI matting (preserves 100% of character colors including purple, magenta, pink, green, and white). No shadows under feet, no ground line, no floor, no platform |
 | **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no giant spherical profile head, no balloon head, no basketball head, no elongated horizontal skull, head horizontal depth must not exceed frontal width.` |
 
 ---
@@ -46,7 +46,7 @@ Super-deformed chibi proportions (strictly 2.0 to 2.4 heads tall max) with an in
 
 [Optional magical/energy effects].
 
-Pure solid magenta background rgb(255,0,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
+Pure solid flat white background rgb(255,255,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
 
 Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite super-deformed chibi proportions.
 
@@ -106,10 +106,10 @@ The animation pipeline supports both **6×3** (recommended for generation effici
 
 ---
 
-## 7. Chromakey & Edge Cleanup Contract
+## 7. White Background & `rembg` AI Matting Contract
 
-* **Pure Solid Magenta Background `rgb(255,0,255)` (`#ff00ff`)**: Strict chromakey background for automated transparent extraction.
-* **Global Removal**: Magenta is NEVER used as a character color. Magenta is removed completely and globally — **both outside the character and inside any enclosed gaps, holes, limbs, or weapon loops**.
-* **Zero Magenta Aura**: The pipeline cleans all boundary pixels touching transparency with a crisp 1px black outline `[0, 0, 0, 255]`, preventing any purple/magenta halo or fringe while leaving all interior character textures 100% untouched.
+* **Pure Solid Flat White Background `rgb(255,255,255)` (`#ffffff`)**: Clean flat white canvas across all cells.
+* **AI Matting via `rembg`**: Background is removed using neural AI matting (`rembg` with alpha thresholding $\ge 30$). Zero color bleeding, zero edge halos (no pink/magenta/green fringe), and complete preservation of all character palettes (purple hair, pink fabrics, green mantles, white armor).
+* **Dynamic Row Gutters & Intact Frames**: Automatically detects true row split gutters to prevent severed feet or robes, and extracts intact animation frames.
 * **Zero Floor Elements**: Absolutely NO shadows under feet, NO drop shadows, NO cast shadows, NO ground line, NO floor tiles, NO platform, NO pedestal.
 * **Cell Clearance**: Every cell is 96×96 px. All body parts, weapon tips, hair, and accessories must remain inside the cell with ~8 px bottom margin (`feet baseline y ≈ 88`).

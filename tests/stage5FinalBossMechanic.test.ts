@@ -137,10 +137,10 @@ test('FinalBossPylonManager - 4 Spheres, 10s hold timer, and 2-phase lifecycle',
   assert.equal(boss.isInvulnerable, true, 'Boss must be invulnerable');
   assert.equal(pylonManager.spheres.length, 4, 'Exactly 4 spheres must be spawned');
 
-  // Verify sphere positions are ~14m from boss
+  // Verify sphere positions are ~22m from boss (+8m / 2 cells further away)
   for (const s of pylonManager.spheres) {
     const dist = s.position.distanceTo(boss.position);
-    assert.ok(Math.abs(dist - 14.0) < 0.1, `Sphere distance should be ~14m, got ${dist}`);
+    assert.ok(Math.abs(dist - 22.0) < 0.1, `Sphere distance should be ~22m, got ${dist}`);
     assert.equal(s.active, true);
     assert.equal(s.holdTimer, 0);
   }
@@ -214,10 +214,16 @@ test('EnemyManager - spawnTieredBoss vs spawnTeleporterBoss stage 5 final boss f
   const stage4Boss = enemyManager.spawnTeleporterBoss(new Vector3(10, 0, 10), 4);
   assert.equal(stage4Boss.isStage5FinalBoss, false);
 
-  // 3. Spawning stage 5 teleporter boss DOES mark isStage5FinalBoss
+  // 3. Spawning stage 5 teleporter boss DOES mark isStage5FinalBoss, has 100M HP and standard boss resistance
   const stage5Boss = enemyManager.spawnTeleporterBoss(new Vector3(20, 0, 20), 5);
   assert.equal(stage5Boss.isStage5FinalBoss, true);
   assert.equal(stage5Boss.isBoss, true);
+  assert.equal(stage5Boss.hp, 100_000_000, 'Stage 5 Final Boss must spawn with exactly 100M HP');
+  assert.equal(stage5Boss.isInvulnerable, false, 'Stage 5 Boss must not have invulnerability shield');
+
+  // Verify damage resistance is preserved across EnemyManager.update() ticks
+  enemyManager.update(0.1, new Vector3(0, 0, 0));
+  assert.ok(stage5Boss.damageResistance >= 0.15, 'Stage 5 Final Boss must retain standard damage resistance');
 
   // 4. onBossDefeat receives the specific boss entity
   let defeatedBossParam: Enemy | undefined;
@@ -254,4 +260,79 @@ test('ChunkManager - Stage 5 generates teleporter normally (not disabled)', () =
   assert.equal(teleporter.state, 'IDLE', 'Teleporter must remain in IDLE state on stage 5, ready for player activation');
   assert.equal(teleporter.isOpened, false, 'Teleporter is closed until activated');
   assert.ok(teleporter.position.length() > 0, 'Teleporter must have a non-zero sector position on stage 5');
+});
+
+test('RiftTeleporter - Stage 5 interaction prompt provides Victory Expedition completion and 60s countdown', () => {
+  const scene = new Scene();
+  const teleporter = new RiftTeleporter(scene, new Vector3(0, 0, 0));
+  teleporter.state = 'WARP_READY';
+
+  // 1. Stage 1-4 standard transition prompt
+  const normalPrompt = teleporter.getInteraction(new Vector3(0, 0, 0), false);
+  assert.equal(normalPrompt.canInteract, true);
+  assert.equal(normalPrompt.action, 'warp');
+  assert.match(normalPrompt.prompt, /Переход на следующий биом/);
+
+  // 2. Stage 5 victory completion prompt before countdown
+  const stage5Prompt = teleporter.getInteraction(new Vector3(0, 0, 0), true);
+  assert.equal(stage5Prompt.canInteract, true);
+  assert.equal(stage5Prompt.action, 'warp');
+  assert.match(stage5Prompt.prompt, /Победой/);
+
+  // 3. Stage 5 countdown starts (60s timer)
+  let expiredCalled = false;
+  teleporter.onCloseExpired = () => {
+    expiredCalled = true;
+  };
+  teleporter.startStage5CloseTimer(60);
+  assert.equal(teleporter.stage5CloseTimer, 60);
+
+  // Prompt shows remaining time
+  const promptDuringTimer = teleporter.getInteraction(new Vector3(0, 0, 0), true);
+  assert.match(promptDuringTimer.prompt, /Осталось: 60с/);
+
+  // Advance 30 seconds
+  teleporter.update(30, []);
+  assert.equal(Math.ceil(teleporter.stage5CloseTimer), 30);
+  const promptAt30s = teleporter.getInteraction(new Vector3(0, 0, 0), true);
+  assert.match(promptAt30s.prompt, /Осталось: 30с/);
+
+  // Advance remaining 30.1 seconds (timer expires)
+  teleporter.update(30.1, []);
+  assert.equal(expiredCalled, true, 'onCloseExpired callback must be invoked');
+  assert.equal(teleporter.isClosedAndGone, true, 'Teleporter must be closed and gone');
+  assert.equal(teleporter.mesh.visible, false, 'Mesh must be invisible');
+
+  // Can no longer interact after portal disappears
+  const promptAfterClose = teleporter.getInteraction(new Vector3(0, 0, 0), true);
+  assert.equal(promptAfterClose.canInteract, false);
+});
+
+test('EnemyManager - Endless Horde mode increases mob HP, damage, and speed scaling every 1 minute', () => {
+  const scene = new Scene();
+  const dropManager = new DropManager(scene);
+  const damageNumbers = new DamageNumberManager();
+  const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
+
+  enemyManager.currentStage = 5;
+  const initialHpMult = enemyManager.getHpMultiplier();
+  const initialDmgMult = enemyManager.getDamageMultiplier();
+  const initialSpdMult = enemyManager.getSpeedMultiplier();
+
+  // Activate endless horde
+  enemyManager.activateEndlessHorde();
+  assert.equal(enemyManager.isEndlessHordeActive, true);
+  assert.equal(enemyManager.endlessHordeTimer, 0);
+
+  // Advance time by 60 seconds (1 full minute of horde survival)
+  enemyManager.update(60, new Vector3(0, 0, 0));
+  assert.equal(enemyManager.endlessHordeTimer, 60);
+
+  const hordeHpMult = enemyManager.getHpMultiplier();
+  const hordeDmgMult = enemyManager.getDamageMultiplier();
+  const hordeSpdMult = enemyManager.getSpeedMultiplier();
+
+  assert.ok(hordeHpMult > initialHpMult * 1.15, `Horde HP multiplier (${hordeHpMult}) should scale by +18% after 1 minute over base (${initialHpMult})`);
+  assert.ok(hordeDmgMult > initialDmgMult * 1.08, `Horde damage multiplier (${hordeDmgMult}) should scale by +10% after 1 minute over base (${initialDmgMult})`);
+  assert.ok(hordeSpdMult > initialSpdMult, `Horde speed multiplier (${hordeSpdMult}) should exceed base (${initialSpdMult})`);
 });

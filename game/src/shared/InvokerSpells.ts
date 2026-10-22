@@ -12,6 +12,64 @@ export const INVOKER_SPELL_IDS = [
   "chaos_meteor",
   "deafening_blast",
 ] as const;
+
+export const INVOKER_SPHERE_IDS = ["quas", "wex", "exort"] as const;
+export type InvokerSphereId = (typeof INVOKER_SPHERE_IDS)[number];
+
+export interface SphereWeights {
+  q: number;
+  w: number;
+  e: number;
+}
+
+/** Formula combinations for each of the 10 spells matching authentic Dota 2 / Invoker lore */
+export const SPELL_SPHERE_RECIPES: Record<InvokerSpellId, SphereWeights> = {
+  cold_snap:       { q: 3, w: 0, e: 0 },
+  emp:             { q: 0, w: 3, e: 0 },
+  sun_strike:      { q: 0, w: 0, e: 3 },
+  ghost_walk:      { q: 2, w: 1, e: 0 },
+  ice_wall:        { q: 2, w: 0, e: 1 },
+  tornado:         { q: 1, w: 2, e: 0 },
+  alacrity:        { q: 0, w: 2, e: 1 },
+  forge_spirit:    { q: 1, w: 0, e: 2 },
+  chaos_meteor:    { q: 0, w: 1, e: 2 },
+  deafening_blast: { q: 1, w: 1, e: 1 },
+};
+
+export interface InvokerSphereMastery {
+  qLevel: number;
+  wLevel: number;
+  eLevel: number;
+  invokeLevel: number;
+}
+
+export function getInvokerSphereScaling(
+  spellId: InvokerSpellId,
+  mastery: InvokerSphereMastery
+) {
+  const recipe = SPELL_SPHERE_RECIPES[spellId];
+  const qLvl = Math.max(0, mastery.qLevel);
+  const wLvl = Math.max(0, mastery.wLevel);
+  const eLvl = Math.max(0, mastery.eLevel);
+  const invLvl = Math.max(1, mastery.invokeLevel);
+
+  // Quas enhances freeze/stun/slow durations:
+  const controlMult = 1 + (recipe.q * qLvl * 0.14);
+  // Wex enhances flight speed, radius, travel distance:
+  const radiusSpeedMult = 1 + (recipe.w * wLvl * 0.12);
+  // Exort enhances raw destructive damage:
+  const damageMult = 1 + (recipe.e * eLvl * 0.20);
+
+  // Composite level:
+  const compositeLevel = Math.max(1, Math.min(20, Math.round(invLvl + (recipe.q * qLvl + recipe.w * wLvl + recipe.e * eLvl) / 3)));
+
+  return {
+    compositeLevel,
+    controlMult,
+    radiusSpeedMult,
+    damageMult,
+  };
+}
 export type InvokerSpellId = (typeof INVOKER_SPELL_IDS)[number];
 export interface InvokerSpellDefinition {
   name: string;

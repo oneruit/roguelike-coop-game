@@ -8,6 +8,21 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       cooldown: 1.4, damagePerLevel: INVOKE_DAMAGE_PER_LEVEL, maxLevel: 12, range: 22,
       notes: 'При каждом срабатывании равновероятно выбирает одно из десяти заклинаний Инвокера.'
     },
+    invoker_quas: {
+      id: 'invoker_quas', name: 'Quas — Сфера Льда', icon: '❄️', damage: 15,
+      cooldown: 1.0, damagePerLevel: 5, maxLevel: 12, range: 4.5,
+      notes: '+1.5 HP/с регенерации за уровень. Усиливает контроль и заморозку Quas-заклинаний.'
+    },
+    invoker_wex: {
+      id: 'invoker_wex', name: 'Wex — Сфера Бури', icon: '⚡', damage: 15,
+      cooldown: 1.0, damagePerLevel: 5, maxLevel: 12, range: 9.0,
+      notes: '+3% скорости бега и +2% скорости атаки за уровень. Усиливает скорость и радиус Wex-заклинаний.'
+    },
+    invoker_exort: {
+      id: 'invoker_exort', name: 'Exort — Сфера Огня', icon: '🔥', damage: 20,
+      cooldown: 1.0, damagePerLevel: 6, maxLevel: 12, range: 6.0,
+      notes: '+6% общего урона за уровень. Усиливает разрушительный урон Exort-заклинаний.'
+    },
     ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => {
       const def = INVOKER_SPELLS[spell];
       const id = invokerWeaponId(spell);
@@ -205,6 +220,35 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       splashRadius: 2.2,
       count: 1,
       notes: 'Токсичные пузырящиеся лужи кислоты, наносящие периодический урон и замедляющие врагов'
+    },
+    blood_bats: {
+      id: 'blood_bats',
+      name: 'Стая летучих мышей',
+      icon: '🦇',
+      damage: 18,
+      damagePerLevel: 3,
+      maxLevel: 12,
+      cooldown: 1.6,
+      count: 4,
+      bleedDps: 14,
+      bleedDuration: 3.0,
+      speed: 15,
+      pierce: 1,
+      range: 26,
+      notes: 'Хаотичный полет к случайным целям, наложение кровотечения, 1% вампиризм от тиков кровотечения, до 24 мышей на 12-м уровне.'
+    },
+    summon_undead: {
+      id: 'summon_undead',
+      name: 'Призыв мёртвых',
+      icon: '💀',
+      damage: 22,
+      cooldown: 0.75,
+      damagePerLevel: 6,
+      maxLevel: 12,
+      count: 2,
+      range: 16,
+      speed: 7.5,
+      notes: 'Призывает верных скелетов-воинов, которые преследуют и сокрушают врагов в ближнем бою'
     }
   },
   heroes: {
@@ -279,8 +323,17 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       maxHp: 110,
       baseSpeed: 8.6,
       damageMultiplier: 1.40,
-      startingWeapon: 'astral_staff',
-      role: 'Маг смерти: дальнобойные мистические снаряды и контроль поля боя'
+      startingWeapon: 'summon_undead',
+      role: 'Повелитель нежити: призывает свирепых скелетов-воинов и сокрушает врагов тёмной магией'
+    },
+    vampire: {
+      id: 'vampire',
+      name: 'Кармилла (Вампир)',
+      maxHp: 110,
+      baseSpeed: 8.8,
+      damageMultiplier: 1.35,
+      startingWeapon: 'blood_bats',
+      role: 'Повелительница ночи: призывает стаи кровожадных мышей и восстанавливает здоровье от кровотечений'
     },
     amazon: {
       id: 'amazon',
@@ -394,7 +447,7 @@ export const DEFAULT_BALANCE: GameBalanceState = {
     stage5_boss: {
       id: 'stage5_boss',
       name: 'Древний Титан Святилища',
-      hp: 130000,
+      hp: 100000000,
       speed: 3.2,
       damage: 95,
       description: 'Древний хранитель рунического святилища 5 тира'
@@ -468,12 +521,12 @@ export const DEFAULT_BALANCE: GameBalanceState = {
       id: 'stat_watch',
       name: 'Карманные Часы',
       icon: '⏱️',
-      description: '-1% к времени перезарядки оружий (угасающая эффективность до 50% на 200 ур., макс. 50%)',
-      baseValue: 1,
-      perStackValue: 1,
-      maxValue: 50,
+      description: '-0.5% к времени перезарядки оружий (угасающая эффективность до 25% на 200 ур., макс. 25%)',
+      baseValue: 0.5,
+      perStackValue: 0.5,
+      maxValue: 25,
       scalingType: 'diminishing',
-      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 1%, 200 ур. = 50% (макс. 50%)'
+      notes: 'Угасающая экспоненциальная эффективность: 1 ур. = 0.5%, 200 ур. = 25% (макс. 25%)'
     },
     stat_crit_damage: {
       id: 'stat_crit_damage',

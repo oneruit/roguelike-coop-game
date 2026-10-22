@@ -105,7 +105,8 @@ export class TextureManager {
     '/textures/weapons/weapon_reaper_scythe.png',
     '/textures/weapons/weapon_whirlwind_slash.png',
     '/textures/weapons/weapon_assault_rifle.png',
-    '/textures/weapons/weapon_poison_puddle.png'
+    '/textures/weapons/weapon_poison_puddle.png',
+    '/textures/weapons/weapon_summon_undead.png'
   ];
 
   public static getWeaponBlobUrl(pathOrId: string): string {
@@ -220,6 +221,7 @@ export class TextureManager {
     '/textures/weapons/weapon_reaper_scythe.png',
     '/textures/weapons/weapon_assault_rifle.png',
     '/textures/weapons/weapon_poison_puddle.png',
+    '/textures/weapons/weapon_summon_undead.png',
     '/textures/vfx/vfx_bullet.png',
     '/textures/vfx/vfx_lightning.png',
     '/textures/vfx/vfx_fire_ring.png',
@@ -285,6 +287,14 @@ export class TextureManager {
     '/textures/heroes/necromancer/walk.png',
     '/textures/heroes/necromancer/attack.png',
     '/textures/heroes/necromancer/walk_attack.png',
+
+    '/textures/heroes/vampire/front.png',
+    '/textures/heroes/vampire/portrait.png',
+    '/textures/heroes/vampire/idle.png',
+    '/textures/heroes/vampire/walk.png',
+    '/textures/heroes/vampire/attack.png',
+    '/textures/heroes/vampire/walk_attack.png',
+    '/textures/weapons/weapon_blood_bats.png',
 
     '/textures/heroes/amazon/front.png',
     '/textures/heroes/amazon/portrait.png',
@@ -567,6 +577,10 @@ export class TextureManager {
 
   public static loadNecromancerTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
     return this.loadAnimatedTextures('hero_necromancer', renderer);
+  }
+
+  public static loadVampireTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {
+    return this.loadAnimatedTextures('hero_vampire', renderer);
   }
 
   public static loadAmazonTextures(renderer?: WebGLRenderer): AnimatedCharacterTextures {

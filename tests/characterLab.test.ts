@@ -7,6 +7,8 @@ import { CharacterAnimator } from '../game/src/character-lab/CharacterAnimator';
 import { MageTexturedSystem } from '../game/src/character-lab/MageTexturedSystem';
 import { MageCutoutRig } from '../game/src/character-lab/MageCutoutRig';
 import { MageReal3DSystem } from '../game/src/character-lab/MageReal3DSystem';
+import { VampireCutoutRig } from '../game/src/character-lab/VampireCutoutRig';
+import { AnimeWarrior3DSystem } from '../game/src/character-lab/AnimeWarrior3DSystem';
 import { DEFAULT_CLASS_CONFIGS } from '../game/src/character-lab/CharacterSandboxApp';
 
 test('CharacterRig - creates anatomical hierarchy and sockets', () => {
@@ -296,3 +298,112 @@ test('MageReal3DSystem - loads authentic 3D model with PBR, turnaround figure is
   assert.equal(real3D.isVisible, false);
   assert.equal(real3D.root.parent, null);
 });
+
+test('VampireCutoutRig - mounts 8 paper-doll parts, supports toggles, palettes, and animations', () => {
+  const vampireCfg = DEFAULT_CLASS_CONFIGS.vampire;
+  assert.ok(vampireCfg, 'DEFAULT_CLASS_CONFIGS should include vampire');
+  const rig = new CharacterRig(vampireCfg.colors, vampireCfg.materials);
+  const vampire = new VampireCutoutRig(rig);
+
+  assert.ok(vampire.isLoaded, 'Headless mode should initialize meshes synchronously');
+  assert.ok(vampire.headMesh, 'Head mesh should exist');
+  assert.ok(vampire.torsoMesh, 'Torso mesh should exist');
+  assert.ok(vampire.skirtMesh, 'Skirt mesh should exist');
+  assert.ok(vampire.legsMesh, 'Legs mesh should exist');
+  assert.ok(vampire.leftArmMesh, 'Left arm mesh should exist');
+  assert.ok(vampire.rightArmMesh, 'Right arm mesh should exist');
+  assert.ok(vampire.leftWingMesh, 'Left wing mesh should exist');
+  assert.ok(vampire.rightWingMesh, 'Right wing mesh should exist');
+  assert.ok(vampire.bloodLight, 'Aura light should exist');
+  assert.ok(vampire.motesGroup, 'Blood motes should exist');
+
+  // Test setVisible
+  vampire.setVisible(true);
+  assert.equal(vampire.isVisible, true);
+  assert.equal(vampire.headMesh.parent, rig.headNode);
+  assert.equal(vampire.torsoMesh.parent, rig.chestNode);
+  assert.equal(vampire.skirtMesh.parent, rig.pelvisNode);
+  assert.equal(vampire.legsMesh.parent, rig.pelvisNode);
+  assert.equal(vampire.leftArmMesh.parent, rig.leftArm);
+  assert.equal(vampire.rightArmMesh.parent, rig.rightArm);
+  assert.equal(vampire.leftWingPivot.parent, rig.chestNode);
+  assert.equal(vampire.rightWingPivot.parent, rig.chestNode);
+
+  // Test Part Toggles
+  vampire.setToggle('wings', false);
+  assert.equal(vampire.toggles.wings, false);
+  assert.equal(vampire.leftWingPivot.parent, null);
+  vampire.setToggle('wings', true);
+  assert.equal(vampire.leftWingPivot.parent, rig.chestNode);
+
+  vampire.setToggle('skirt', false);
+  assert.equal(vampire.skirtMesh.parent, null);
+  vampire.setToggle('skirt', true);
+  assert.equal(vampire.skirtMesh.parent, rig.pelvisNode);
+
+  // Test Palettes
+  vampire.setPalette('violet');
+  assert.equal(vampire.currentPalette, 'violet');
+  assert.equal(vampire.bloodLight.color.getHex(), 0xa855f7);
+
+  vampire.setPalette('emerald');
+  assert.equal(vampire.currentPalette, 'emerald');
+  assert.equal(vampire.bloodLight.color.getHex(), 0x10b981);
+
+  vampire.setPalette('crimson');
+  assert.equal(vampire.currentPalette, 'crimson');
+  assert.equal(vampire.bloodLight.color.getHex(), 0xef4444);
+
+  // Test procedural update loop
+  vampire.update(0.5, 'idle', 1.0);
+  const idleWingAngle = vampire.leftWingPivot.rotation.y;
+  assert.ok(!Number.isNaN(idleWingAngle), 'Wing angle should be a valid number');
+
+  vampire.update(1.0, 'walk', 1.5);
+  const walkWingAngle = vampire.leftWingPivot.rotation.y;
+  assert.ok(!Number.isNaN(walkWingAngle), 'Walk wing angle should be a valid number');
+
+  // Test Animator integration
+  const animator = new CharacterAnimator(rig);
+  animator.setClass('vampire');
+  animator.setState('idle');
+  animator.update(0.016);
+  animator.triggerAttack();
+  assert.equal(animator.currentState, 'attack');
+  animator.update(0.2);
+  animator.update(0.7);
+
+  // Unmount
+  vampire.setVisible(false);
+  assert.equal(vampire.isVisible, false);
+  assert.equal(vampire.headMesh.parent, null);
+});
+
+test('AnimeWarrior3DSystem - initializes FBX skeletal system, toggles visibility, and handles animations safely', () => {
+  const warriorCfg = DEFAULT_CLASS_CONFIGS.anime_warrior;
+  assert.ok(warriorCfg, 'DEFAULT_CLASS_CONFIGS should include anime_warrior');
+
+  const rig = new CharacterRig(warriorCfg.colors, warriorCfg.materials);
+  const animeWarrior = new AnimeWarrior3DSystem(rig);
+
+  assert.ok(animeWarrior.root, 'Root group should exist');
+  assert.equal(animeWarrior.isLoaded, true, 'Headless mode should initialize synchronously');
+
+  // Test setVisible
+  animeWarrior.setVisible(true);
+  assert.equal(animeWarrior.isVisible, true);
+  assert.equal(animeWarrior.root.parent, rig.root);
+
+  // Test animation states
+  animeWarrior.setAnimationState('walk');
+  animeWarrior.setAnimationState('idle');
+  animeWarrior.triggerAttack();
+  animeWarrior.update(0.016);
+
+  // Test hide
+  animeWarrior.setVisible(false);
+  assert.equal(animeWarrior.isVisible, false);
+  assert.equal(animeWarrior.root.parent, null);
+});
+
+

@@ -1,6 +1,6 @@
 ---
-description: Mandatory bug fixing and reporting protocol when bugs or unexpected defects are discovered
-globs: ["**/*"]
+description: "Mandatory bug fixing and reporting protocol when bugs or unexpected defects are discovered"
+globs: "**/*"
 ---
 
 # Bug Fixing and Reporting Rule

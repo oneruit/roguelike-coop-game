@@ -41,6 +41,14 @@ export class RiftTeleporter {
   public isPlayerInsideZone: boolean = false;
   public isBossDefeated: boolean = false;
   public isDiscovered: boolean = false;
+  public stage5CloseTimer: number = -1; // -1 if inactive; countdown in seconds on stage 5 arena
+  public isClosedAndGone: boolean = false;
+  public isStage4: boolean = false;
+  public coresDelivered: number = 0;
+  public isAwakened: boolean = false;
+  public onCloseExpired?: () => void;
+  public onCloseWarning?: (secondsLeft: number) => void;
+  private hasNotified10s: boolean = false;
   public get isOpened(): boolean {
     return this.state !== 'IDLE';
   }
@@ -209,7 +217,43 @@ export class RiftTeleporter {
       this.groundAuraMat.opacity = 0.60 + Math.sin(this.animTimer * 3.0) * 0.15;
     }
 
+    // Stage 5 Survival Arena 60-second close timer
+    if (this.stage5CloseTimer > 0) {
+      this.stage5CloseTimer -= dt;
+      if (this.stage5CloseTimer <= 10 && !this.hasNotified10s) {
+        this.hasNotified10s = true;
+        this.onCloseWarning?.(10);
+      }
+      if (this.stage5CloseTimer <= 0) {
+        this.stage5CloseTimer = 0;
+        this.closeAndDisappear();
+        if (this.onCloseExpired) {
+          this.onCloseExpired();
+        }
+      }
+    }
+
     return { justCompleted, justTouched };
+  }
+
+  /**
+   * Starts the 60-second closure timer on Stage 5 upon boss defeat.
+   */
+  public startStage5CloseTimer(seconds: number = 60): void {
+    this.stage5CloseTimer = seconds;
+    this.hasNotified10s = false;
+  }
+
+  /**
+   * Closes and permanently removes the teleporter from the scene.
+   */
+  public closeAndDisappear(): void {
+    this.stage5CloseTimer = -1;
+    this.isClosedAndGone = true;
+    this.mesh.visible = false;
+    this.state = 'IDLE';
+    this.position.set(99999, -999, 99999);
+    this.mesh.position.copy(this.position);
   }
 
   /**
@@ -224,6 +268,12 @@ export class RiftTeleporter {
     this.chargeProgress = 0;
     this.isBossDefeated = false;
     this.isPlayerInsideZone = false;
+    this.stage5CloseTimer = -1;
+    this.isClosedAndGone = false;
+    this.hasNotified10s = false;
+    this.isStage4 = false;
+    this.coresDelivered = 0;
+    this.isAwakened = false;
 
     // Reset visuals to closed dormant rift
     this.riftSpriteMat.map = this.riftClosedTex;
@@ -275,8 +325,8 @@ export class RiftTeleporter {
     return true;
   }
 
-  public getInteraction(playerPos: Vector3): { canInteract: boolean; prompt: string; action: 'activate' | 'warp' | null } {
-    if (!this.mesh.visible) {
+  public getInteraction(playerPos: Vector3, isFinalStage: boolean = false): { canInteract: boolean; prompt: string; action: 'activate' | 'warp' | null } {
+    if (!this.mesh.visible || this.isClosedAndGone) {
       return { canInteract: false, prompt: '', action: null };
     }
 
@@ -287,6 +337,13 @@ export class RiftTeleporter {
     }
 
     if (this.state === 'IDLE') {
+      if (this.isStage4 && this.coresDelivered < 4) {
+        return {
+          canInteract: false,
+          prompt: `⚡ ДОСТАВЬТЕ АСТРАЛЬНЫЕ ЯДРА: ${this.coresDelivered} / 4`,
+          action: null
+        };
+      }
       return {
         canInteract: true,
         prompt: '[E] Прикоснуться к Разлому (Призыв Босса)',
@@ -295,9 +352,18 @@ export class RiftTeleporter {
     }
 
     if (this.state === 'WARP_READY') {
+      let prompt = '[E] Войти в Разлом (Переход на следующий биом)';
+      if (isFinalStage) {
+        if (this.stage5CloseTimer > 0) {
+          const remainingSec = Math.max(0, Math.ceil(this.stage5CloseTimer));
+          prompt = `[E] Войти в Разлом (Завершить с Победой!) [Осталось: ${remainingSec}с]`;
+        } else {
+          prompt = '[E] Войти в Разлом (Завершить экспедицию с Победой!)';
+        }
+      }
       return {
         canInteract: true,
-        prompt: '[E] Войти в Разлом (Переход на следующий биом)',
+        prompt,
         action: 'warp'
       };
     }
@@ -320,13 +386,22 @@ export class RiftTeleporter {
       isActivated: this.state !== 'IDLE',
       chargeProgress: this.chargeProgress,
       isCompleted: this.state === 'WARP_READY',
-      isDiscovered: this.isDiscovered || this.state !== 'IDLE'
+      isDiscovered: this.isDiscovered || this.state !== 'IDLE',
+      stage5CloseTimer: this.stage5CloseTimer,
+      isClosedAndGone: this.isClosedAndGone
     };
   }
 
-  public applySnapshot(snap: { x: number; z: number; isActivated: boolean; chargeProgress: number; isCompleted: boolean; isDiscovered?: boolean }) {
+  public applySnapshot(snap: { x: number; z: number; isActivated: boolean; chargeProgress: number; isCompleted: boolean; isDiscovered?: boolean; stage5CloseTimer?: number; isClosedAndGone?: boolean }) {
     if (this.position.x !== snap.x || this.position.z !== snap.z) {
       this.resetForStage(new Vector3(snap.x, 0, snap.z));
+    }
+    if (snap.isClosedAndGone) {
+      this.closeAndDisappear();
+      return;
+    }
+    if (typeof snap.stage5CloseTimer === 'number') {
+      this.stage5CloseTimer = snap.stage5CloseTimer;
     }
     if (snap.isDiscovered || snap.isActivated || snap.isCompleted) {
       this.isDiscovered = true;

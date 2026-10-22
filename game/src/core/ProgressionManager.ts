@@ -150,7 +150,8 @@ export class ProgressionManager {
         invoker: true,   // Invoker (unlocked)
         necromancer: true, // Mortis (unlocked)
         amazon: true,    // Amazon (unlocked)
-        archer: true     // Archer / Elf (unlocked)
+        archer: true,    // Archer / Elf (unlocked)
+        vampire: true    // Carmilla (unlocked)
       },
       dailyQuestsProgress: {
         daily_goblins: { current: 0, isClaimed: false },
@@ -212,7 +213,8 @@ export class ProgressionManager {
             invoker: true,
             necromancer: parsed.unlockedHeroes?.necromancer ?? true,
             amazon: parsed.unlockedHeroes?.amazon ?? true,
-            archer: parsed.unlockedHeroes?.archer ?? true
+            archer: parsed.unlockedHeroes?.archer ?? true,
+            vampire: parsed.unlockedHeroes?.vampire ?? true
           },
           dailyQuestsProgress: isReworked && parsed.dailyQuestsProgress && typeof parsed.dailyQuestsProgress === 'object'
             ? { ...defaults.dailyQuestsProgress, ...parsed.dailyQuestsProgress }
@@ -318,7 +320,7 @@ export class ProgressionManager {
   }
 
   public isHeroUnlocked(hero: CharacterType): boolean {
-    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker' || hero === 'necromancer' || hero === 'amazon' || hero === 'archer') return true;
+    if (hero === 'ronin' || hero === 'rocket' || hero === 'invoker' || hero === 'necromancer' || hero === 'amazon' || hero === 'archer' || hero === 'vampire') return true;
     // Existing base heroes are unlocked by default
     if (hero === 'valkyrie' || hero === 'flail' || hero === 'sorceress' || hero === 'chakram') {
       return this.data.unlockedHeroes[hero] ?? true;
@@ -358,6 +360,10 @@ export class ProgressionManager {
     }
     if (!this.data.unlockedHeroes.archer) {
       this.data.unlockedHeroes.archer = true;
+      changed = true;
+    }
+    if (!this.data.unlockedHeroes.vampire) {
+      this.data.unlockedHeroes.vampire = true;
       changed = true;
     }
 
@@ -1193,11 +1199,11 @@ export class ProgressionManager {
           hero: 'necromancer',
           heroName: 'Мортис',
           heroSubtitle: '«Повелитель Нежити»',
-          weaponIcon: getAssetUrl('/textures/weapons/weapon_astral_staff.png'),
-          weaponName: 'Астральный посох',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_summon_undead.png'),
+          weaponName: 'Призыв мёртвых',
           avatarIcon: AssetResolver.getHeroTexture('necromancer', 'front'),
           questTitle: 'Зов Тёмных Душ',
-          questDesc: 'Могущественный маг смерти с посохом душ, поражающий врагов тёмной магией.',
+          questDesc: 'Могущественный маг смерти, призывающий орду верных скелетов-воинов.',
           steps: [
             'Доступен сразу всем защитникам Рифта.'
           ],
@@ -1233,7 +1239,6 @@ export class ProgressionManager {
         };
 
       case 'archer':
-      default:
         return {
           hero: 'archer',
           heroName: 'Лучница',
@@ -1251,6 +1256,29 @@ export class ProgressionManager {
             coins: 1200,
             rings: 3,
             crystals: 24
+          },
+          unlockConditionHint: 'Разблокирована по умолчанию'
+        };
+
+      case 'vampire':
+      default:
+        return {
+          hero: 'vampire',
+          heroName: 'Кармилла',
+          heroSubtitle: '«Стая Летучих Мышей»',
+          weaponIcon: getAssetUrl('/textures/weapons/weapon_blood_bats.png'),
+          weaponName: 'Стая летучих мышей',
+          avatarIcon: AssetResolver.getHeroTexture('vampire', 'front'),
+          questTitle: 'Кровавая Стая',
+          questDesc: 'Повелительница теней и летучих мышей, вытягивающая жизненную силу врагов через кровотечение.',
+          steps: [
+            'Доступна сразу всем защитникам Рифта.'
+          ],
+          rewards: {
+            potions: 3,
+            coins: 1500,
+            rings: 3,
+            crystals: 30
           },
           unlockConditionHint: 'Разблокирована по умолчанию'
         };

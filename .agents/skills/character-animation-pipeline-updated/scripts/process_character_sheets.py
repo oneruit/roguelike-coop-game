@@ -141,7 +141,7 @@ def parse_bg_color(
 
 def detect_and_clean_background(
     img_arr: np.ndarray,
-    bg_mode: str = "auto",
+    bg_mode: str = "rembg",
     tolerance: float = 36.0,
     bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> np.ndarray:
@@ -173,6 +173,19 @@ def detect_and_clean_background(
             alpha = np.full((h, w, 1), 255, dtype=np.uint8)
             return np.concatenate((arr, alpha), axis=2)
         return arr
+
+    if bg_mode == "rembg":
+        try:
+            from rembg import remove
+            pil_img = Image.fromarray(arr[:, :, :3] if arr.shape[2] == 4 else arr)
+            cleaned = remove(pil_img)
+            res_arr = np.asarray(cleaned, dtype=np.uint8).copy()
+            res_arr[res_arr[:, :, 3] < 30, 3] = 0
+            res_arr[res_arr[:, :, 3] == 0, :3] = 0
+            return res_arr
+        except Exception as exc:
+            _print(f"WARNING: rembg extraction failed ({exc}), falling back to white background mode.")
+            bg_mode = "white"
 
     corners = np.concatenate(
         [
@@ -382,7 +395,7 @@ def pad_grid_cells_to_square(
     img_arr: np.ndarray,
     cols: int = COLS,
     rows: int = ROWS,
-    bg_mode: str = "magenta",
+    bg_mode: str = "rembg",
     bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> np.ndarray:
     """If cells are non-square, pad each cell individually with background to make it square.
@@ -409,7 +422,7 @@ def pad_grid_cells_to_square(
         bg_val = [0, 255, 0, 255] if img_arr.shape[2] == 4 else [0, 255, 0]
     elif bg_mode == "blue":
         bg_val = [0, 0, 255, 255] if img_arr.shape[2] == 4 else [0, 0, 255]
-    elif bg_mode == "white":
+    elif bg_mode in ("rembg", "white"):
         bg_val = [255, 255, 255, 255] if img_arr.shape[2] == 4 else [255, 255, 255]
     elif bg_mode == "black":
         bg_val = [0, 0, 0, 255] if img_arr.shape[2] == 4 else [0, 0, 0]
@@ -675,7 +688,7 @@ def process_portrait(
     out_path: Path,
     cell_size: int = CELL_SIZE,
     fallback_idle_sheet: Optional[Image.Image] = None,
-    bg_mode: str = "auto",
+    bg_mode: str = "rembg",
     bg_tolerance: float = 36.0,
     bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> None:
@@ -714,7 +727,7 @@ def extract_turnaround_assets(
     turnaround_path: Path,
     out_dir: Path,
     character_name: str,
-    bg_mode: str = "magenta",
+    bg_mode: str = "rembg",
     bg_tolerance: float = 65.0,
     bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
 ) -> tuple[Optional[Path], Optional[Path]]:
@@ -960,7 +973,7 @@ def process_character(
     max_char_h: float = 72.0,
     mirror_left: bool = False,
     mirror_right: bool = False,
-    bg_mode: str = "magenta",
+    bg_mode: str = "rembg",
     bg_tolerance: float = 65.0,
     bg_color: Optional[Union[str, tuple, list, np.ndarray]] = None,
     legacy_front_portrait: bool = False,
@@ -1127,7 +1140,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--feet-y", type=int, default=88, help="Target foot baseline (default: 88; 8px bottom buffer)")
     parser.add_argument("--char-h", type=float, default=68.0, help="Target estimated body height in output pixels (default: 68)")
     parser.add_argument("--max-h", type=float, default=72.0, help="Maximum estimated body height in output pixels (default: 72)")
-    parser.add_argument("--bg-mode", choices=("magenta", "green", "blue", "auto", "white", "black", "chroma", "none"), default="magenta", help="Background to remove (default: magenta RGB(255,0,255); green RGB(0,255,0) recommended for characters with pink/purple/magenta elements); auto detects from corners")
+    parser.add_argument("--bg-mode", choices=("rembg", "white", "magenta", "green", "blue", "auto", "black", "chroma", "none"), default="rembg", help="Background removal mode (default: rembg AI matting on flat white background; white, magenta, green, auto also supported)")
     parser.add_argument("--bg-color", help="Explicit background color to remove, e.g. '#00ff00', 'green', 'magenta', or '0,255,0'. Overrides --bg-mode")
     parser.add_argument("--bg-tolerance", type=float, default=65.0, help="Euclidean RGB background tolerance (default: 65.0)")
     parser.add_argument("--row-order", choices=("fbrl", "fblr"), default="fbrl", help="Row order: fbrl (FRONT, BACK, RIGHT, LEFT) or fblr (FRONT, BACK, LEFT, RIGHT). Default: fbrl")

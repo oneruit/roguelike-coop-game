@@ -6,6 +6,8 @@ import { DropManager, GemCollector } from '../game/src/drops/DropManager';
 import { Gem } from '../game/src/drops/Gem';
 import { RIFT_ITEMS } from '../game/src/items/RiftItemSystem';
 import { BowWeapon, KukriWeapon, OrbitingBarrierWeapon, GreatswordWeapon } from '../game/src/combat/Weapon';
+import { FireRingWeapon, AstralStaffWeapon } from '../game/src/combat/weapons/MagicWeapons';
+import { Projectile } from '../game/src/combat/Projectile';
 import { LevelUpUI, LevelUpUIContext } from '../game/src/ui/modules/LevelUpUI';
 
 // Mock DOM for Node.js
@@ -250,5 +252,71 @@ test('Level Up options always offer 3 choices and require level 12 for grades', 
     // Upgrades for the Tier 2 weapon should be available
     const hasUpgrade = options.some(opt => opt.id === `upgrade_${player.weapons[0].id}`);
     assert.equal(hasUpgrade, true, 'Tier 2 weapon upgrade should be available in the options');
+  });
+});
+
+test('FireRingWeapon - Visual lifecycle and persistent trail prevention', async (t) => {
+  await t.test('initVisual creates exactly one aura mesh and marks hasInitVisual', () => {
+    const scene = new Scene();
+    const weapon = new FireRingWeapon();
+    assert.equal(weapon.hasInitVisual, false);
+
+    weapon.initVisual(scene, new Vector3(0, 0, 0));
+    assert.equal(weapon.hasInitVisual, true);
+    assert.equal(scene.children.length, 1);
+    assert.equal(scene.children[0].name, 'fire_ring_aura');
+
+    // Repeated calls must be no-ops and NOT spawn duplicate meshes
+    weapon.initVisual(scene, new Vector3(5, 0, 5));
+    weapon.initVisual(scene, new Vector3(10, 0, 10));
+    assert.equal(scene.children.length, 1, 'Scene must only retain exactly one mesh');
+
+    // Destroy cleanly removes mesh and resets hasInitVisual
+    weapon.destroy(scene);
+    assert.equal(weapon.hasInitVisual, false);
+    assert.equal(scene.children.length, 0, 'Mesh must be removed from scene on destroy');
+  });
+
+  await t.test('FireRingWeapon.destroyAll purges active instances and any lingering aura meshes from scene', () => {
+    const scene = new Scene();
+    const weapon = new FireRingWeapon();
+    weapon.initVisual(scene, new Vector3(0, 0, 0));
+    assert.equal(scene.children.length, 1);
+
+    FireRingWeapon.destroyAll(scene);
+    assert.equal(scene.children.length, 0);
+    assert.equal(weapon.hasInitVisual, false);
+  });
+});
+
+test('AstralStaffWeapon - Star projectile procedural redesign', async (t) => {
+  await t.test('shoots projectiles with isStar=true and constructs celestial star meshes', () => {
+    const weapon = new AstralStaffWeapon();
+    let spawnedProj: Projectile | null = null;
+    const fakeEnemy: any = {
+      isAlive: true,
+      position: new Vector3(5, 0, 0),
+      width: 1,
+      height: 1
+    };
+
+    // Advance weapon timer to trigger attack
+    weapon.update(2.0, new Vector3(0, 0, 0), [fakeEnemy], (p) => {
+      spawnedProj = p;
+    });
+
+    assert.ok(spawnedProj, 'Astral staff must spawn a projectile');
+    assert.equal((spawnedProj as Projectile).isStar, true, 'Projectile must have isStar set to true');
+    assert.equal((spawnedProj as Projectile).sourceWeaponId, 'astral_staff');
+
+    // Verify star geometry and mesh hierarchy
+    const projMesh = (spawnedProj as Projectile).mesh;
+    assert.ok(projMesh.children.length > 0, 'Projectile must contain child meshes for star rendering');
+
+    // Update projectile in flight and verify it remains alive and moves
+    const startX = (spawnedProj as Projectile).position.x;
+    (spawnedProj as Projectile).update(0.016);
+    assert.ok((spawnedProj as Projectile).position.x > startX, 'Star projectile must travel in target direction');
+    assert.equal((spawnedProj as Projectile).isAlive, true);
   });
 });

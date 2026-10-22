@@ -1,6 +1,6 @@
 ---
-description: Full autonomy permissions for file changes and tool execution within the project
-globs: ["**/*"]
+description: "Full autonomy permissions for file changes and tool execution within the project"
+globs: "**/*"
 ---
 
 # Autonomy and Tool Execution Permissions

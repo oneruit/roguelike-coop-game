@@ -3,6 +3,9 @@ import { GameBalanceState } from '../../game/src/balance/BalanceTypes';
 
 export const TEXTURE_MAP: Record<string, string> = {
   'weapon-invoker_invoke':'/textures/weapons/weapon_invoker_invoke.png',
+  'weapon-invoker_quas':'/textures/weapons/weapon_invoker_quas.png',
+  'weapon-invoker_wex':'/textures/weapons/weapon_invoker_wex.png',
+  'weapon-invoker_exort':'/textures/weapons/weapon_invoker_exort.png',
   ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => ['weapon-'+invokerWeaponId(spell),'/textures/weapons/weapon_'+invokerWeaponId(spell)+'.png'])),
   // Weapons
   'weapon-fireball': '/textures/weapons/weapon_fireball.png',
@@ -20,6 +23,8 @@ export const TEXTURE_MAP: Record<string, string> = {
   'weapon-ice_spike': '/textures/weapons/weapon_ice_spike.png',
   'weapon-assault_rifle': '/textures/weapons/weapon_assault_rifle.png',
   'weapon-poison_puddle': '/textures/weapons/weapon_poison_puddle.png',
+  'weapon-summon_undead': '/textures/weapons/weapon_summon_undead.png',
+  'weapon-blood_bats': '/textures/weapons/weapon_blood_bats.png',
 
   // Heroes
   'hero-ronin': '/textures/heroes/ronin/front.png',
@@ -32,6 +37,7 @@ export const TEXTURE_MAP: Record<string, string> = {
   'hero-necromancer': '/textures/heroes/necromancer/front.png',
   'hero-amazon': '/textures/heroes/amazon/front.png',
   'hero-invoker': '/textures/heroes/invoker/front.png',
+  'hero-vampire': '/textures/heroes/vampire/front.png',
 
   // Monsters
   'monster-coyote': '/textures/monsters/monster_coyote_front.png',
@@ -57,6 +63,9 @@ export const TEXTURE_MAP: Record<string, string> = {
 
 export const WEAPON_COLORS: Record<string, string> = {
   invoker_invoke:'#a78bfa',
+  invoker_quas:'#38bdf8',
+  invoker_wex:'#c084fc',
+  invoker_exort:'#f97316',
   ...Object.fromEntries(INVOKER_SPELL_IDS.map(spell => [invokerWeaponId(spell),'#'+INVOKER_SPELLS[spell].color.toString(16).padStart(6,'0')])),
   fireball: '#ef4444',
   bow: '#10b981',
@@ -72,7 +81,9 @@ export const WEAPON_COLORS: Record<string, string> = {
   lightning_strike: '#eab308',
   ice_spike: '#3b82f6',
   assault_rifle: '#f97316',
-  poison_puddle: '#22c55e'
+  poison_puddle: '#22c55e',
+  summon_undead: '#a855f7',
+  blood_bats: '#be123c'
 };
 
 export const MONSTER_COLORS: Record<string, string> = {
@@ -86,7 +97,8 @@ export const MONSTER_COLORS: Record<string, string> = {
   bison: '#ef4444',
   boss: '#dc2626',
   hydra: '#7c3aed',
-  spore_queen: '#10b981'
+  spore_queen: '#10b981',
+  stage5_boss: '#06b6d4'
 };
 
 export function getWeaponColor(id: string): string {
@@ -208,7 +220,8 @@ export const HERO_NAMES: Record<string, string> = {
   rocket: 'Ракетчик',
   necromancer: 'Некромант',
   amazon: 'Амазонка',
-  invoker: 'Инвокер'
+  invoker: 'Инвокер',
+  vampire: 'Вампир'
 };
 
 export const DEFAULT_DEMO_LEADERBOARDS = [

@@ -27,7 +27,7 @@ export class PlayerMotor {
   public animTimer: number = 0;
 
   public collisionRadius: number = 0.45;
-  public mapBound: number = 218;
+  public mapBound: number = 168;
 
   constructor(options?: PlayerMotorOptions) {
     if (options?.dashDuration !== undefined) this.dashDuration = options.dashDuration;

@@ -1,6 +1,6 @@
 ---
 name: monster-animation-pipeline
-description: Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 96x96px per cell) in menacing 16-bit pixel art style (strictly NO anime/chibi/cute) with 8px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine.
+description: "Standardized pipeline for creating, generating, extracting, aligning, mirroring, packaging, and integrating 4-frame animated regular monsters and enemies (2 states: WALK and ATTACK across 4 directional rows, 4 cols x 4 rows @ 96x96px per cell) in menacing 16-bit pixel art style (strictly NO anime/chibi/cute) with 8px bottom margin, 3rd frame attack hit registration, contact ground shadow, and ground anchoring into the game engine."
 ---
 
 # Monster Animation Pipeline Skill

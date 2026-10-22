@@ -131,6 +131,13 @@ export class CharacterAnimator {
       // Right arm relaxed with arrow
       this.rig.rightArm.rotation.set(0.15, -0.1, -0.2);
       this.rig.rightForearm.rotation.set(-0.35, -0.2, 0);
+    } else if (this.currentClass === 'vampire') {
+      // Graceful hovering vampire / succubus stance
+      this.rig.pelvisNode.position.y = 1.05 + breath * 0.035;
+      this.rig.leftArm.rotation.set(-0.15 + breath * 0.02, 0.2, 0.25);
+      this.rig.leftForearm.rotation.set(-0.35, 0.1, 0);
+      this.rig.rightArm.rotation.set(-0.15 + breath * 0.02, -0.2, -0.25);
+      this.rig.rightForearm.rotation.set(-0.35, -0.1, 0);
     } else {
       // Mage holding staff upright
       this.rig.rightArm.rotation.set(0.15, -0.15, -0.22);
@@ -191,6 +198,8 @@ export class CharacterAnimator {
       this.animateWarriorSlash(progress);
     } else if (this.currentClass === 'archer') {
       this.animateArcherShoot(progress);
+    } else if (this.currentClass === 'vampire') {
+      this.animateVampireCurse(progress);
     } else {
       this.animateMageCast(progress);
     }
@@ -294,6 +303,35 @@ export class CharacterAnimator {
       this.rig.rightArm.rotation.set(0.6 * (1 - t), 0, 0);
       this.rig.leftArm.rotation.set(0.4 * (1 - t), 0, 0);
       this.rig.chestNode.rotation.x = 0.25 * (1 - t);
+    }
+  }
+
+  private animateVampireCurse(p: number) {
+    // Phase 1: Ascend and spread wings/arms (0.0 -> 0.45)
+    // Phase 2: Unleash dark vampiric screech / blood burst (0.45 -> 0.7)
+    // Phase 3: Glide down (0.7 -> 1.0)
+    if (p < 0.45) {
+      const t = p / 0.45;
+      this.rig.pelvisNode.position.y = 1.05 + 0.3 * t; // High levitation
+      this.rig.leftArm.rotation.set(-1.6 * t, 0.4 * t, 0.8 * t);
+      this.rig.rightArm.rotation.set(-1.6 * t, -0.4 * t, -0.8 * t);
+      this.rig.chestNode.rotation.x = -0.25 * t;
+      this.rig.headNode.rotation.x = -0.35 * t;
+    } else if (p < 0.7) {
+      const t = (p - 0.45) / 0.25;
+      // Strike forward with talons / dark burst
+      this.rig.pelvisNode.position.y = 1.35 - 0.2 * t;
+      this.rig.leftArm.rotation.set(-1.6 + 2.4 * t, 0.2, 0.2);
+      this.rig.rightArm.rotation.set(-1.6 + 2.4 * t, -0.2, -0.2);
+      this.rig.chestNode.rotation.x = -0.25 + 0.5 * t;
+      this.rig.headNode.rotation.x = 0.25;
+    } else {
+      const t = (p - 0.7) / 0.3;
+      this.rig.pelvisNode.position.y = 1.15 - 0.1 * t;
+      this.rig.leftArm.rotation.set(0.8 * (1 - t), 0.2 * (1 - t), 0.25);
+      this.rig.rightArm.rotation.set(0.8 * (1 - t), -0.2 * (1 - t), -0.25);
+      this.rig.chestNode.rotation.x = 0.25 * (1 - t);
+      this.rig.headNode.rotation.x = 0.25 * (1 - t);
     }
   }
 }

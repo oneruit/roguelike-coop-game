@@ -164,3 +164,39 @@ test('Vortex Affix - Pull trigger fires and pulls player with tangible impulse',
   assert.equal(pullCalled, true, 'Vortex pull should trigger every 5.5s');
   assert.equal(pullRadius, 14, 'Vortex pull radius should be 14m');
 });
+
+test('Stage 5 - Vortex pull is suppressed and vortex affix is excluded on stage 5', () => {
+  const scene = new Scene();
+  const dropManager = new DropManager(scene);
+  const damageNumbers = new DamageNumberManager();
+  const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
+
+  enemyManager.currentStage = 5;
+
+  let pullFired = false;
+  enemyManager.onVortexPullTrigger = () => {
+    pullFired = true;
+  };
+
+  // 1. Manually registered enemy with vortex affix does NOT trigger pull on stage 5
+  const vortexEnemy = createEliteEnemy('vortex', 1000, 100);
+  (enemyManager as any).registerEnemy(vortexEnemy);
+
+  vortexEnemy.onVortexPull?.(vortexEnemy, 14, 5.0);
+  assert.equal(pullFired, false, 'Vortex pull trigger must be completely suppressed on stage 5');
+
+  // 2. Regular wave spawns on stage 5 must NEVER roll 'vortex'
+  for (let i = 0; i < 40; i++) {
+    (enemyManager as any).spawnSingleEnemy('brute', new Vector3(0, 0, 0));
+  }
+  const spawnedElites = enemyManager.enemies;
+  assert.ok(spawnedElites.length > 0);
+  const hasVortex = spawnedElites.some(e => e.eliteAffix === 'vortex');
+  assert.equal(hasVortex, false, 'No enemy spawned on Stage 5 must have vortex affix');
+
+  // 3. Greed trial wave on stage 5 must NEVER roll 'vortex'
+  enemyManager.enemies.length = 0;
+  enemyManager.spawnGreedTrialWave(new Vector3(0, 0, 0), 20);
+  const greedVortex = enemyManager.enemies.some(e => e.eliteAffix === 'vortex');
+  assert.equal(greedVortex, false, 'No greed trial enemy on Stage 5 must have vortex affix');
+});

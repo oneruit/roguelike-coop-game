@@ -1,5 +1,6 @@
 import { CharacterSandboxApp, DEFAULT_CLASS_CONFIGS } from './CharacterSandboxApp';
 import { CharacterClass, LightingPreset } from './types';
+import { VampirePaletteName } from './VampireCutoutRig';
 
 // Wait for DOM
 window.addEventListener('DOMContentLoaded', () => {
@@ -190,10 +191,62 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Vampire Palette Buttons
+  const vampirePalButtons = document.querySelectorAll<HTMLButtonElement>('.vampire-pal-btn');
+  vampirePalButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      vampirePalButtons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const palette = btn.dataset.palette as VampirePaletteName;
+      app.setVampirePalette(palette);
+    });
+  });
+
+  // Vampire Part Toggles
+  const toggleVampireWings = document.getElementById('toggle-vampire-wings') as HTMLInputElement;
+  const toggleVampireSkirt = document.getElementById('toggle-vampire-skirt') as HTMLInputElement;
+  const toggleVampireLegs = document.getElementById('toggle-vampire-legs') as HTMLInputElement;
+  const toggleVampireArms = document.getElementById('toggle-vampire-arms') as HTMLInputElement;
+  const toggleVampireAura = document.getElementById('toggle-vampire-aura') as HTMLInputElement;
+
+  toggleVampireWings?.addEventListener('change', (e) => app.toggleVampirePart('wings', (e.target as HTMLInputElement).checked));
+  toggleVampireSkirt?.addEventListener('change', (e) => app.toggleVampirePart('skirt', (e.target as HTMLInputElement).checked));
+  toggleVampireLegs?.addEventListener('change', (e) => app.toggleVampirePart('legs', (e.target as HTMLInputElement).checked));
+  toggleVampireArms?.addEventListener('change', (e) => app.toggleVampirePart('arms', (e.target as HTMLInputElement).checked));
+  toggleVampireAura?.addEventListener('change', (e) => app.toggleVampirePart('aura', (e.target as HTMLInputElement).checked));
+
+  // Anime Warrior Buttons
+  const btnAnimeIdle = document.getElementById('btn-anime-idle');
+  const btnAnimeWalk = document.getElementById('btn-anime-walk');
+  const btnAnimeAttack = document.getElementById('btn-anime-attack');
+
+  btnAnimeIdle?.addEventListener('click', () => {
+    app.setAnimation('idle');
+    animButtons.forEach((b) => b.classList.toggle('active', b.dataset.anim === 'idle'));
+  });
+  btnAnimeWalk?.addEventListener('click', () => {
+    app.setAnimation('walk');
+    animButtons.forEach((b) => b.classList.toggle('active', b.dataset.anim === 'walk'));
+  });
+  btnAnimeAttack?.addEventListener('click', () => {
+    app.triggerAttack();
+  });
+
   function syncUIWithConfig(classType: CharacterClass) {
     const mageSection = document.getElementById('mage-texture-section');
     if (mageSection) {
       mageSection.style.display = classType === 'mage' ? 'block' : 'none';
+    }
+
+    const vampireSection = document.getElementById('vampire-custom-section');
+    if (vampireSection) {
+      vampireSection.style.display = classType === 'vampire' ? 'block' : 'none';
+    }
+
+    const animeWarriorSection = document.getElementById('anime-warrior-section');
+    if (animeWarriorSection) {
+      animeWarriorSection.style.display = classType === 'anime_warrior' ? 'block' : 'none';
     }
 
     const config = DEFAULT_CLASS_CONFIGS[classType];

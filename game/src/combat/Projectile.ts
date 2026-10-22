@@ -9,6 +9,8 @@ import {
   PlaneGeometry,
   RingGeometry,
   type Scene,
+  Shape,
+  ShapeGeometry,
   SphereGeometry,
   Vector3
 } from 'three';
@@ -25,6 +27,7 @@ export interface ProjectileOptions {
   radius: number;
   color: number;
   isMagic?: boolean;
+  isStar?: boolean;
   isChakram?: boolean;
   curveSign?: number;
   isOrbiting?: boolean;
@@ -39,6 +42,8 @@ export interface ProjectileOptions {
   isFireball?: boolean;
   isKineticBeam?: boolean;
   isPoisonPuddle?: boolean;
+  isBat?: boolean;
+  wobblePhase?: number;
   bleedDps?: number;
   sourceWeaponId?: string;
   critChance?: number;
@@ -63,6 +68,16 @@ export class Projectile {
   public isFireball = false;
   public isKineticBeam = false;
   public isPoisonPuddle = false;
+  public isBat = false;
+  public wobblePhase = 0;
+  private batWingLeft?: Mesh;
+  private batWingRight?: Mesh;
+  public isStar = false;
+  private starGroup?: Group;
+  private starOuterMesh?: Mesh;
+  private starCrossOuterMesh?: Mesh;
+  private starInnerMesh?: Mesh;
+  private starGlowMesh?: Mesh;
   public hasImpacted = false;
   public isCosmetic: boolean;
   public ownerId?: string;
@@ -147,6 +162,18 @@ export class Projectile {
       Projectile.orbCoreMat.opacity = clamped;
       Projectile.orbCoreMat.visible = clamped > 0.005;
     }
+    if (Projectile.starInnerMat) {
+      Projectile.starInnerMat.opacity = clamped;
+      Projectile.starInnerMat.visible = clamped > 0.005;
+    }
+    if (Projectile.starGlowMat) {
+      Projectile.starGlowMat.opacity = 0.85 * clamped;
+      Projectile.starGlowMat.visible = clamped > 0.005;
+    }
+    for (const mat of Projectile.starOuterMatCache.values()) {
+      mat.opacity = 0.95 * clamped;
+      mat.visible = clamped > 0.005;
+    }
     for (const mat of Projectile.orbMatCache.values()) {
       mat.transparent = true;
       mat.opacity = clamped;
@@ -206,6 +233,91 @@ export class Projectile {
   private static orbCoreGeom = new SphereGeometry(0.5, 8, 8);
   private static orbCoreMat = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0 });
   private static orbMatCache = new Map<number, MeshStandardMaterial>();
+
+  // Shared assets for Astral Star Projectiles
+  private static starOuterGeom: ShapeGeometry | null = null;
+  private static starInnerGeom: ShapeGeometry | null = null;
+  private static starGlowGeom: CircleGeometry | null = null;
+  private static starOuterMatCache = new Map<number, MeshBasicMaterial>();
+  private static starInnerMat: MeshBasicMaterial | null = null;
+  private static starGlowMat: MeshBasicMaterial | null = null;
+
+  private static initStarAssets(color: number): void {
+    if (!Projectile.starOuterGeom) {
+      // 8-pointed radiant celestial star (ShapeGeometry)
+      const outerShape = new Shape();
+      const points = 16;
+      for (let i = 0; i < points; i++) {
+        const angle = (i * Math.PI * 2) / points;
+        let r: number;
+        if (i % 4 === 0) {
+          r = 1.0; // 4 primary cardinal points
+        } else if (i % 2 === 0) {
+          r = 0.52; // 4 secondary diagonal points
+        } else {
+          r = 0.18; // 8 deep waists
+        }
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        if (i === 0) outerShape.moveTo(x, y);
+        else outerShape.lineTo(x, y);
+      }
+      outerShape.closePath();
+      Projectile.starOuterGeom = new ShapeGeometry(outerShape);
+
+      // Inner 4-pointed radiant core star
+      const innerShape = new Shape();
+      const innerPoints = 8;
+      for (let i = 0; i < innerPoints; i++) {
+        const angle = (i * Math.PI * 2) / innerPoints + Math.PI / 4;
+        const r = (i % 2 === 0) ? 0.50 : 0.12;
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        if (i === 0) innerShape.moveTo(x, y);
+        else innerShape.lineTo(x, y);
+      }
+      innerShape.closePath();
+      Projectile.starInnerGeom = new ShapeGeometry(innerShape);
+
+      // Soft luminous central glow halo
+      Projectile.starGlowGeom = new CircleGeometry(0.35, 16);
+
+      // Pure glowing white celestial core material
+      Projectile.starInnerMat = new MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: Projectile.vfxOpacity,
+        blending: AdditiveBlending,
+        side: DoubleSide,
+        depthWrite: false,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+
+      // Ethereal outer astral glow
+      Projectile.starGlowMat = new MeshBasicMaterial({
+        color: 0xfdf4ff,
+        transparent: true,
+        opacity: 0.85 * Projectile.vfxOpacity,
+        blending: AdditiveBlending,
+        side: DoubleSide,
+        depthWrite: false,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+    }
+
+    if (!Projectile.starOuterMatCache.has(color)) {
+      const mat = new MeshBasicMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.95 * Projectile.vfxOpacity,
+        blending: AdditiveBlending,
+        side: DoubleSide,
+        depthWrite: false,
+        visible: Projectile.vfxOpacity > 0.005
+      });
+      Projectile.starOuterMatCache.set(color, mat);
+    }
+  }
 
   // Shared assets for Poison Puddle
   private static poisonPuddleDiscGeom: CircleGeometry | null = null;
@@ -278,6 +390,7 @@ export class Projectile {
     this.radius = options.radius;
     this.color = options.color;
     this.isMagic = !!options.isMagic;
+    this.isStar = !!options.isStar || options.sourceWeaponId === 'astral_staff' || (!!options.isMagic && !options.isKineticBeam);
     this.isCosmetic = !!options.isCosmetic;
     this.ownerId = options.ownerId;
     this.isOrbiting = !!options.isOrbiting;
@@ -291,6 +404,8 @@ export class Projectile {
     this.isFireball = !!options.isFireball;
     this.isKineticBeam = !!options.isKineticBeam;
     this.isPoisonPuddle = !!options.isPoisonPuddle;
+    this.isBat = !!options.isBat;
+    this.wobblePhase = options.wobblePhase ?? (Math.random() * Math.PI * 2);
     this.curveSign = options.curveSign ?? 1;
     this.bleedDps = options.bleedDps ?? 0;
     this.sourceWeaponId = options.sourceWeaponId;
@@ -551,6 +666,44 @@ export class Projectile {
       this.mesh.add(scytheMesh);
       const scale = this.radius * 3.4;
       this.mesh.scale.set(scale, scale, scale);
+    } else if (this.isBat) {
+      // Procedural gothic bat mesh
+      const bodyGeom = new SphereGeometry(0.20, 6, 6);
+      bodyGeom.scale(1.2, 0.65, 0.65);
+      const bodyMat = new MeshBasicMaterial({ color: 0x1f1625 }); // deep obsidian-purple
+      const bodyMesh = new Mesh(bodyGeom, bodyMat);
+      this.mesh.add(bodyMesh);
+
+      // Glowing ruby eyes
+      const eyeGeom = new SphereGeometry(0.04, 4, 4);
+      const eyeMat = new MeshBasicMaterial({ color: 0xff1535 });
+      const eyeL = new Mesh(eyeGeom, eyeMat);
+      eyeL.position.set(0.18, 0.04, 0.07);
+      const eyeR = new Mesh(eyeGeom, eyeMat);
+      eyeR.position.set(0.18, 0.04, -0.07);
+      this.mesh.add(eyeL);
+      this.mesh.add(eyeR);
+
+      // Left & right bat wings
+      const wingGeom = new PlaneGeometry(0.48, 0.32);
+      wingGeom.translate(0.24, 0, 0); // pivot at wing joint
+      const wingMat = new MeshBasicMaterial({ color: 0x3b1220, side: DoubleSide });
+
+      this.batWingLeft = new Mesh(wingGeom, wingMat);
+      this.batWingLeft.position.set(-0.02, 0.04, 0.08);
+      this.batWingLeft.rotation.x = Math.PI / 2;
+      this.mesh.add(this.batWingLeft);
+
+      this.batWingRight = new Mesh(wingGeom, wingMat);
+      this.batWingRight.position.set(-0.02, 0.04, -0.08);
+      this.batWingRight.rotation.x = -Math.PI / 2;
+      this.batWingRight.rotation.y = Math.PI;
+      this.mesh.add(this.batWingRight);
+
+      const scale = this.radius * 3.2;
+      this.mesh.scale.set(scale, scale, scale);
+      const angle = Math.atan2(this.direction.z, this.direction.x);
+      this.mesh.rotation.y = -angle;
     } else if (this.isKineticBeam) {
       const beamGeomA = new PlaneGeometry(0.45, 3.4);
       beamGeomA.rotateX(Math.PI / 2);
@@ -642,6 +795,34 @@ export class Projectile {
       }
 
       this.mesh.scale.set(this.radius, 1, this.radius);
+    } else if (this.isStar) {
+      Projectile.initStarAssets(options.color);
+
+      this.starGroup = new Group();
+      // Tilt to align face-on with 2.5D camera perspective (-Math.PI / 4.8)
+      this.starGroup.rotation.x = -Math.PI / 4.8;
+
+      const outerMat = Projectile.starOuterMatCache.get(options.color) || Projectile.starOuterMatCache.get(0xc084fc)!;
+      this.starOuterMesh = new Mesh(Projectile.starOuterGeom!, outerMat);
+      this.starGroup.add(this.starOuterMesh);
+
+      // Crossed 3D flair: a second outer star rotated 90 degrees around Y for full 3D volumetric sparkle
+      this.starCrossOuterMesh = new Mesh(Projectile.starOuterGeom!, outerMat);
+      this.starCrossOuterMesh.rotation.y = Math.PI / 2;
+      this.starGroup.add(this.starCrossOuterMesh);
+
+      this.starInnerMesh = new Mesh(Projectile.starInnerGeom!, Projectile.starInnerMat!);
+      this.starInnerMesh.position.z = 0.01;
+      this.starGroup.add(this.starInnerMesh);
+
+      this.starGlowMesh = new Mesh(Projectile.starGlowGeom!, Projectile.starGlowMat!);
+      this.starGlowMesh.position.z = 0.015;
+      this.starGroup.add(this.starGlowMesh);
+
+      this.mesh.add(this.starGroup);
+
+      const starScale = this.radius * 2.8;
+      this.mesh.scale.set(starScale, starScale, starScale);
     } else if (options.isMagic) {
       const sphere = new Mesh(Projectile.orbGeom, Projectile.getOrbMaterial(options.color));
       this.mesh.add(sphere);
@@ -698,6 +879,7 @@ export class Projectile {
       this.isAlive = false;
       return;
     }
+    this.elapsedTime += dt;
 
     if (this.isIceSpike) {
       const progress = 1 - Math.max(0, this.lifetime / this.maxLifetime);
@@ -889,11 +1071,41 @@ export class Projectile {
         }
       }
       this.mesh.position.copy(this.position);
+    } else if (this.isBat) {
+      const flutterTime = this.elapsedTime * 16 + this.wobblePhase;
+      // Chaotic lateral flutter steering
+      const flutterAngle = Math.sin(flutterTime) * 3.8 * dt;
+      this.direction.applyAxisAngle(new Vector3(0, 1, 0), flutterAngle);
+
+      // Vertical wave bobbing
+      const bobbing = Math.cos(flutterTime * 0.9) * 0.035;
+      this.position.y += bobbing;
+      this.position.addScaledVector(this.direction, this.speed * dt);
+      this.mesh.position.copy(this.position);
+
+      const angle = Math.atan2(this.direction.z, this.direction.x);
+      this.mesh.rotation.y = -angle;
+
+      // Animate wing flap
+      if (this.batWingLeft && this.batWingRight) {
+        const flap = Math.sin(flutterTime * 1.8) * 0.75;
+        this.batWingLeft.rotation.z = flap;
+        this.batWingRight.rotation.z = flap;
+      }
     } else if (this.isKukri) {
       this.mesh.rotation.y += dt * 25;
       this.position.addScaledVector(this.direction, this.speed * dt);
       this.mesh.position.copy(this.position);
     } else {
+      if (this.isStar) {
+        if (this.starOuterMesh) this.starOuterMesh.rotation.z += dt * 8.0;
+        if (this.starCrossOuterMesh) this.starCrossOuterMesh.rotation.z += dt * 8.0;
+        if (this.starInnerMesh) this.starInnerMesh.rotation.z -= dt * 12.0;
+        if (this.starGroup) {
+          const pulse = 1.0 + Math.sin(this.elapsedTime * 14.0) * 0.08;
+          this.starGroup.scale.set(pulse, pulse, pulse);
+        }
+      }
       this.position.addScaledVector(this.direction, this.speed * dt);
       this.mesh.position.copy(this.position);
     }

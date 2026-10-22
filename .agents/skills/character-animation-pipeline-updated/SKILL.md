@@ -1,6 +1,6 @@
 ---
 name: character-animation-pipeline
-description: Standardized pipeline for creating, reviewing, validating, and integrating four 6x4 animation sprite sheets (IDLE, WALK, IDLE_ATTACK, WALK_ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure magenta RGB(255,0,255) chromakey background with closed eyes on frame 3. Each cell is 96x96 px. Rows top to bottom are FRONT, BACK, RIGHT, LEFT. In RIGHT and LEFT rows, the body is strictly sideways and face in profile. Preserve character identity and weapon continuity; no visual attack effects by default.
+description: Standardized pipeline for creating, reviewing, validating, and integrating four 6x4 animation sprite sheets (IDLE, WALK, IDLE_ATTACK, WALK_ATTACK) for 2.5D pixel-art chibi characters (heroic 2.5-3 heads tall chibi proportions without anime/kawaii styling) on pure solid flat white RGB(255,255,255) background with rembg AI matting and closed eyes on frame 3. Each cell is 96x96 px. Rows top to bottom are FRONT, BACK, RIGHT, LEFT. In RIGHT and LEFT rows, the body is strictly sideways and face in profile. Preserve character identity and weapon continuity; no visual attack effects by default.
 ---
 
 # Character Animation Pipeline Skill
@@ -25,7 +25,7 @@ The pipeline accepts two primary modes of user input:
 * If the user supplies an already prepared text prompt or an image reference (e.g. concept art, character sheet):
   - Do **NOT** prompt the user with long multi-part questionnaires.
   - Adopt the character description or reference image directly.
-  - Ensure the prompt incorporates the mandatory engine rules: pure magenta chromakey background `rgb(255,0,255)`, chibi 2.5–3 heads tall anatomy, zero floor shadows/platforms, strict side profile for left/right rows, and mandatory negative constraints.
+  - Ensure the prompt incorporates the mandatory engine rules: pure solid flat white background `rgb(255,255,255)`, chibi 2.5–3 heads tall anatomy, zero floor shadows/platforms, strict side profile for left/right rows, and mandatory negative constraints.
   - Proceed directly to turnaround generation or animation generation.
 
 ### Mode B: Brief / Incomplete Character Description (`Auto-Enrichment via Defaults`)
@@ -43,7 +43,7 @@ The pipeline accepts two primary modes of user input:
 | **Armor / Clothing** | Saturated dark fantasy palette (deep steels, leathers, crimson, forest green, obsidian, bronze), crisp pixel-art clusters |
 | **Held Item / Weapon** | Held with both hands or combat-ready stance, clearly visible beside character. If unarmed, hands raised in ready combat stance. No extra weapons |
 | **Magical Effects** | Faint localized magical motes / energy orbs only if specified by archetype; no oversized clutter |
-| **Background** | Pure solid magenta background rgb(255,0,255), no shadows under feet, no ground line, no floor, no platform |
+| **Background** | Pure solid flat white background rgb(255,255,255), no shadows under feet, no ground line, no floor, no platform |
 | **Negative Constraints** | `No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic proportions, no photorealism, no smooth gradients.` |
 
 ---
@@ -65,7 +65,7 @@ Chibi proportions with an intentionally oversized head and compact body, [body t
 
 [Optional magical/energy effects].
 
-Pure solid magenta background rgb(255,0,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
+Pure solid flat white background rgb(255,255,255), clean 16-bit pixel art game sprite, crisp hard pixel edges, limited color palette, strong contrast, chunky simplified forms, detailed equipment, clear readable silhouette.
 
 Heroic [fantasy/dark fantasy/sci-fi] RPG game character design, battle-ready and dangerous despite chibi proportions.
 
@@ -83,9 +83,9 @@ Additional character details to include: [list all extra details the user specif
 - **Facial Features**: Sharp jawline, defined chin, small-to-medium sharp eyes, stern closed mouth or fierce grimace. No anime sparkling eyes, no kawaii blushing cheeks, no baby faces.
 - **Mandatory Negative Constraint Block**:
   > **No anime style, no kawaii style, no cute expression, no childish appearance, no soft pastel colors, no realistic human proportions, no photorealism, no smooth gradients, no stiff body, no frozen torso, no mannequin animation, no lifeless posture, no bulging eyes, no wide crazy stare, no shocked expression, no cartoon eyes, no tall adult body, no 4+ heads proportions, no broad adult shoulders with small head, no one-leg gliding, no sliding feet, no frozen hips, no twisted 3/4 torso in front row, no duplicate frame 1 and 6, no static frames 1 2 3.**
-- **Pure Solid Magenta Chromakey**: Every source generation MUST use pure solid magenta background `RGB: 255, 0, 255` (`#ff00ff`).
-- **Global Magenta Removal**: Magenta is NEVER used on characters. Magenta is keyed out globally, **both outside the silhouette and inside any enclosed gaps, holes, and limbs**.
-- **No Magenta Aura (1px Black Outline Defringing)**: The post-processing script converts any boundary pixel touching transparency that has magenta spill/fringe into a crisp 1px black outline `[0, 0, 0, 255]`. This eliminates any purple/magenta halo without painting over or altering inner character textures.
+- **Pure Solid Flat White Background (`#ffffff`)**: Every source generation MUST use pure solid flat white background `RGB: 255, 255, 255` (`#ffffff`).
+- **AI Matting via `rembg` (u2net)**: Background is extracted using neural network AI matting (`rembg` with alpha thresholding $\ge 30$). This eliminates chromakey color halos (no pink/magenta/green fringe), protects character palettes completely (no erosion of purple, magenta, pink, green, or white clothing/hair), and produces natural crisp pixel art alpha edges.
+- **Dynamic Row Gutters & Intact Frames**: Automatically detects true row split gutters to prevent severed feet or robes, and extracts intact animation frames.
 - **Zero Floor Clutter**: **No shadows under feet, no drop shadows, no cast shadows, no ground line, no platform, no pedestal, no floor tiles**.
 - **Proportion Equality**: Proportions, scale, and weapon presence must be identical across all views.
 
@@ -160,9 +160,9 @@ Row 3 LEFT:  [L1][L2][L3 (closed eyes)][L4][L5][L6]  <-- Body strictly sideways,
 The package includes two verified scripts:
 
 ### 1. `scripts/process_character_sheets.py`
-- Targets pure magenta chromakey `RGB(255, 0, 255)` (`#ff00ff`) globally by default (`--bg-mode magenta --bg-tolerance 65`).
-- Removes magenta both outside and inside the silhouette.
-- Defringes boundary pixels with a crisp 1px black outline, removing any magenta halo without painting over inner textures.
+- Targets pure solid flat white background via neural AI matting by default (`--bg-mode rembg`), with fallback to white/chroma.
+- Eliminates color halos and protects all character costume and hair colors (including purple, magenta, and green).
+- Automatically cleans low-alpha noise with thresholding.
 - **Auto-Square Padding**: Automatically pads non-square source grids (e.g. 896×1200 or 1376×768) with background color so individual cells are perfectly square without distortion or manual pre-processing.
 - **6×3 Grid & Automated Left Mirroring**: Supports `--rows 3` (FRONT, BACK, RIGHT) where Row 3 (LEFT) is automatically generated by horizontally mirroring Row 2 (RIGHT). Saves 25% token budget and eliminates left-profile hallucination!
 - **Turnaround Asset Auto-Extraction**: `--turnaround <path>` automatically crops panel 1 into `hero_<name>_portrait.png` and panel 5 into `weapon_<name>.png`.
@@ -182,7 +182,7 @@ python .agents/skills/character-animation-pipeline-updated/scripts/process_chara
   --turnaround path/to/<name>_turnaround.png \
   --rows 3 \
   --out-dir public/textures/heroes \
-  --bg-mode magenta \
+  --bg-mode rembg \
   --row-order fbrl
 ```
 
@@ -221,9 +221,8 @@ If image generation returns an HTTP 429 quota exhaustion error (`RESOURCE_EXHAUS
 - [ ] Four animation sheets exist: IDLE (rest), WALK (movement), IDLE_ATTACK (stationary attack / attack), WALK_ATTACK (attack while moving) (6×4 grid, 96×96 cells, 576×384 px).
 - [ ] Row mapping: Row 0 FRONT, Row 1 BACK, Row 2 (3rd row) RIGHT, Row 3 (4th row) LEFT.
 - [ ] **Strict Profile Checked**: In Row 2 and Row 3, character body is ALWAYS sideways and face in profile, no 3/4 turn.
-- [ ] Background is pure solid magenta `rgb(255,0,255)` (`#ff00ff`) in generation sources.
-- [ ] Magenta is keyed out globally (inside and outside character).
-- [ ] No magenta aura / halo remains (defringed with 1px crisp black outline).
+- [ ] Background is pure solid flat white `rgb(255,255,255)` (`#ffffff`) in generation sources.
+- [ ] Background is cleanly removed via rembg AI matting (zero pink/magenta/green halo, complete palette preservation).
 - [ ] No ground shadows, drop shadows, platforms, floor lines, or pedestals.
 - [ ] Heroic Chibi proportions (2.5–3 heads tall) maintained consistently across all frames.
 - [ ] Negative constraints verified: No anime, kawaii, pastel colors, or photorealism.

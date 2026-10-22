@@ -8,8 +8,15 @@ export function selectWeaponUpgradeOptions<T extends { id: string }>(
 ): T[] {
   if (hero !== 'invoker') return shuffled.slice(0, 3);
 
+  const isInvokerSpell = (id: string) =>
+    invokerSpellFromWeaponId(id) !== null ||
+    id === 'invoker_quas' ||
+    id === 'invoker_wex' ||
+    id === 'invoker_exort' ||
+    id === 'invoker_invoke';
+
   const newSpells = shuffled.filter(option =>
-    option.id.startsWith('new_') && invokerSpellFromWeaponId(option.id.slice(4)) !== null
+    option.id.startsWith('new_') && isInvokerSpell(option.id.slice(4))
   );
   if (newSpells.length === 0) return shuffled.slice(0, 3);
 

@@ -183,3 +183,96 @@ test('Mob Nest Manager - isAllNestsDestroyed turns true only when all 4 nests ar
 
   nestManager.clear();
 });
+
+
+test('Astral Core - Extracting core from generator gives player core and marks generator destroyed', () => {
+  const scene = new Scene();
+  const player = new Player(scene);
+  const generator = new MobNest('gen_1', new Vector3(0, 0, 0));
+
+  assert.equal(player.hasAstralCore, false);
+  assert.equal(generator.state, 'IDLE');
+
+  const success = generator.extractCore(player);
+  assert.equal(success, true);
+  assert.equal(player.hasAstralCore, true);
+  assert.equal(generator.state, 'DESTROYED');
+
+  // Cannot extract again from depleted generator
+  const secondAttempt = generator.extractCore(player);
+  assert.equal(secondAttempt, false);
+
+  generator.dispose(scene);
+});
+
+test('Astral Core - Tactical dash forces player to drop core to ground', () => {
+  const scene = new Scene();
+  const player = new Player(scene);
+  const nestManager = new MobNestManager(scene);
+
+  let droppedPos: Vector3 | null = null;
+  player.onDropAstralCore = (pos) => {
+    droppedPos = pos.clone();
+    nestManager.spawnDroppedCore(pos);
+  };
+
+  // Give player an astral core
+  player.pickupAstralCore();
+  assert.equal(player.hasAstralCore, true);
+  assert.equal(nestManager.droppedCores.length, 0);
+
+  // Trigger dash
+  player.position.set(10, 0, 20);
+  const dashed = player.triggerDash(new Vector3(1, 0, 0));
+  assert.equal(dashed, true);
+
+  // Player must have dropped the core
+  assert.equal(player.hasAstralCore, false, 'Player loses core upon dashing');
+  assert.ok(droppedPos !== null, 'onDropAstralCore callback was fired');
+  assert.equal(nestManager.droppedCores.length, 1, 'Dropped Astral Core spawned in manager');
+  assert.equal(nestManager.droppedCores[0].position.x, 10);
+  assert.equal(nestManager.droppedCores[0].position.z, 20);
+
+  nestManager.clear();
+});
+
+test('Astral Core - Delivery to Rift Teleporter increments count and stabilizes portal at 4/4', () => {
+  const scene = new Scene();
+  const nestManager = new MobNestManager(scene);
+  nestManager.generateStageNests(4, new SeededRNG(123), []);
+
+  const fakeTeleporter = {
+    position: new Vector3(0, 0, 0),
+    coresDelivered: 0
+  } as any;
+  nestManager.riftTeleporter = fakeTeleporter;
+
+  const player = new Player(scene);
+  player.position.set(0, 0, 2); // 2m from teleporter (within 5.5m delivery zone)
+  player.pickupAstralCore();
+  assert.equal(player.hasAstralCore, true);
+
+  const dropManager = new DropManager(scene);
+  const damageNumbers = { spawnDamage: () => {}, spawnPassiveBuff: () => {} } as any;
+  const enemyManager = new EnemyManager(scene, dropManager, damageNumbers);
+
+  // Update delivers 1st core
+  nestManager.update(0.1, player, new Map(), false, enemyManager, damageNumbers);
+
+  assert.equal(player.hasAstralCore, false, 'Core absorbed by portal');
+  assert.equal(nestManager.deliveredCount, 1);
+  assert.equal(fakeTeleporter.coresDelivered, 1);
+  assert.equal(nestManager.isAllNestsDestroyed(), false);
+
+  // Deliver remaining 3 cores
+  for (let i = 2; i <= 4; i++) {
+    player.pickupAstralCore();
+    nestManager.update(0.1, player, new Map(), false, enemyManager, damageNumbers);
+    assert.equal(nestManager.deliveredCount, i);
+  }
+
+  assert.equal(nestManager.deliveredCount, 4);
+  assert.equal(nestManager.isAllNestsDestroyed(), true, 'All 4 cores delivered stabilizes portal');
+
+  nestManager.clear();
+});

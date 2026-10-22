@@ -413,8 +413,8 @@ export class ChestManager {
 
       for (let attempt = 0; attempt < 45; attempt++) {
         // Sample candidate
-        const candX = prng.range(-195, 195);
-        const candZ = prng.range(-195, 195);
+        const candX = prng.range(-145, 145);
+        const candZ = prng.range(-145, 145);
 
         // Distance from spawn (0, 0)
         if (Math.hypot(candX, candZ) < 26.0) continue;
@@ -450,7 +450,7 @@ export class ChestManager {
       if (!valid) {
         // Fallback with radial distribution if random box attempts were dense
         const ang = (i / count) * Math.PI * 2 + prng.range(-0.2, 0.2);
-        const dist = 35 + prng.range(15, 170);
+        const dist = 30 + prng.range(10, 115);
         chosenX = centerX + Math.cos(ang) * dist;
         chosenZ = centerZ + Math.sin(ang) * dist;
       }

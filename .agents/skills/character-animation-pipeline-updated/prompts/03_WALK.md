@@ -13,7 +13,7 @@ This instruction defines the exact prompt structure and frame-by-frame progressi
 | Grid Dimensions | **6 columns × 3 rows** (18 source cells; Row 3 LEFT is auto-mirrored by script) |
 | Cell Dimensions | 96 × 96 px (or native square cells e.g. 200×200 / 256×256) |
 | Total Resolution | 576 × 288 px (or 1536 × 768 px high-res source) |
-| Background | Pure solid magenta `rgb(255,0,255)` (`#ff00ff`) by default; **Pure Green `rgb(0,255,0)` (`#00ff00`) if character contains purple/pink/magenta** |
+| Background | Pure solid flat white `rgb(255,255,255)` (`#ffffff`); transparent alpha extracted via rembg AI matting |
 | Direction Rows (Top to Bottom) | Row 0: `FRONT` (walking toward camera)<br>Row 1: `BACK` (walking away — 100% rear view, no eyes/face)<br>Row 2: `RIGHT` (walking to right, body sideways, face in 90° profile)<br>*(Row 3 LEFT is automatically generated via script mirroring)* |
 
 ---
