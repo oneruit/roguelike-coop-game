@@ -1,18 +1,17 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const { convertGlbTo3mf } = require('./tripo-converter.cjs');
+const { convertGlbTo3mf, parseModelBuffer } = require('./tripo-converter.cjs');
+const THREE = require('three');
+const { GLTFExporter } = require('three/examples/jsm/exporters/GLTFExporter.js');
 
 /**
  * Universal Tripo3D Model Downloader & 3MF Converter.
  *
+ * Supports both GLB and FBX model formats from Tripo3D.
+ *
  * Usage:
  *   node scripts/download-tripo.cjs <model-id-or-url> [format: glb | 3mf | both] [outputPath] [--figure=3|1|2|all] [--scale=120]
- *
- * Examples:
- *   node scripts/download-tripo.cjs 256a044c-15eb-408d-806a-841b0b764c07
- *   node scripts/download-tripo.cjs 256a044c-15eb-408d-806a-841b0b764c07 3mf
- *   node scripts/download-tripo.cjs 256a044c-15eb-408d-806a-841b0b764c07 both public/models/witch --figure=3 --scale=120
  */
 
 async function fetchBuffer(url) {
@@ -51,11 +50,11 @@ async function scrapeModelUrlFromPage(modelId) {
   const buf = await fetchBuffer(pageUrl);
   const cleanBody = buf.toString('utf8').replace(/\\u002F/g, '/');
 
-  const regex = /https:\/\/tripo-data[^\s"'<>]+\.glb[^\s"'<>]*/g;
+  const regex = /https:\/\/tripo-data[^\s"'<>]+\.(glb|fbx)[^\s"'<>]*/gi;
   const matches = Array.from(new Set(cleanBody.match(regex) || []));
 
   if (matches.length === 0) {
-    throw new Error('No GLB models found on Tripo page.');
+    throw new Error('No 3D models found on Tripo page.');
   }
 
   const chosenUrl = matches.find(u => u.includes(modelId) && u.includes('pbr_model')) ||
@@ -64,6 +63,10 @@ async function scrapeModelUrlFromPage(modelId) {
                     matches[0];
 
   return { modelUrl: chosenUrl, projectName: 'TripoModel' };
+}
+
+function sanitizeFilename(name) {
+  return name.toLowerCase().replace(/[^a-z0-9_-]/g, '_').replace(/_+/g, '_').slice(0, 40) || 'tripo_model';
 }
 
 async function main() {
@@ -114,29 +117,58 @@ async function main() {
     modelInfo = await scrapeModelUrlFromPage(modelId);
   }
 
-  console.log(`Found model: "${modelInfo.projectName}"`);
-  console.log('Downloading GLB asset from cloud storage...');
-  const glbBuffer = await fetchBuffer(modelInfo.modelUrl);
-  console.log(`Downloaded GLB asset: ${(glbBuffer.length / 1024 / 1024).toFixed(2)} MB`);
+  const cleanUrl = modelInfo.modelUrl.split('?')[0];
+  const isFbx = cleanUrl.endsWith('.fbx');
+  const sourceExt = isFbx ? 'FBX' : 'GLB';
+
+  console.log(`Found model: "${modelInfo.projectName}" (Source: ${sourceExt})`);
+  console.log(`Downloading ${sourceExt} asset from cloud storage...`);
+  const rawBuffer = await fetchBuffer(modelInfo.modelUrl);
+  console.log(`Downloaded ${sourceExt} asset: ${(rawBuffer.length / 1024 / 1024).toFixed(2)} MB`);
 
   // Default output paths
-  const defaultBase = path.resolve('public/models/mage_tripo');
-  const baseOut = outPath ? path.resolve(outPath).replace(/\.(glb|3mf)$/i, '') : defaultBase;
+  const safeName = sanitizeFilename(modelInfo.projectName);
+  const defaultBase = path.resolve(`public/models/${safeName}`);
+  const baseOut = outPath ? path.resolve(outPath).replace(/\.(glb|3mf|fbx)$/i, '') : defaultBase;
   const outDir = path.dirname(baseOut);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
   // 1. Export GLB
   if (format === 'glb' || format === 'both') {
     const glbOut = `${baseOut}.glb`;
-    fs.writeFileSync(glbOut, glbBuffer);
-    const stat = fs.statSync(glbOut);
-    console.log(`\n✔ GLB saved: ${glbOut} (${(stat.size / 1024 / 1024).toFixed(2)} MB)`);
+    if (!isFbx) {
+      fs.writeFileSync(glbOut, rawBuffer);
+      const stat = fs.statSync(glbOut);
+      console.log(`\n✔ GLB saved: ${glbOut} (${(stat.size / 1024 / 1024).toFixed(2)} MB)`);
+    } else {
+      console.log('Converting FBX to standard GLB container...');
+      const scene = await parseModelBuffer(rawBuffer, cleanUrl);
+      const exporter = new GLTFExporter();
+      await new Promise((resolve, reject) => {
+        exporter.parse(
+          scene,
+          (glb) => {
+            fs.writeFileSync(glbOut, Buffer.from(glb));
+            const stat = fs.statSync(glbOut);
+            console.log(`\n✔ GLB converted & saved: ${glbOut} (${(stat.size / 1024 / 1024).toFixed(2)} MB)`);
+            resolve();
+          },
+          reject,
+          { binary: true }
+        );
+      });
+      // Also save original FBX
+      const fbxOut = `${baseOut}.fbx`;
+      fs.writeFileSync(fbxOut, rawBuffer);
+      console.log(`✔ Original FBX saved: ${fbxOut}`);
+    }
   }
 
   // 2. Export 3MF
   if (format === '3mf' || format === 'both') {
-    console.log(`\nConverting to 3MF format (isolating figure ${figure}, scaling to ${scaleMm}mm)...`);
-    const result = await convertGlbTo3mf(glbBuffer, {
+    console.log(`\nConverting to 3MF format (isolating figure: ${figure}, scaling to ${scaleMm}mm)...`);
+    const result = await convertGlbTo3mf(rawBuffer, {
+      fileHint: cleanUrl,
       figure,
       scale: scaleMm,
       title: modelInfo.projectName || 'TripoModel',
@@ -146,8 +178,8 @@ async function main() {
     fs.writeFileSync(mfOut, Buffer.from(result.data));
     const stat = fs.statSync(mfOut);
     console.log(`✔ 3MF saved: ${mfOut} (${(stat.size / 1024 / 1024).toFixed(2)} MB)`);
-    console.log(`  - 3MF Vertices: ${result.verticesCount}`);
-    console.log(`  - 3MF Triangles: ${result.trianglesCount}`);
+    console.log(`  - 3MF Vertices: ${result.verticesCount.toLocaleString()}`);
+    console.log(`  - 3MF Triangles: ${result.trianglesCount.toLocaleString()}`);
     console.log(`  - Orientation: Z-Up (3D Printer build plate ready for Bambu Studio / Prusa / Cura)`);
   }
 

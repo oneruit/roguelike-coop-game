@@ -2,13 +2,31 @@ const fs = require('fs');
 const path = require('path');
 const fflate = require('fflate');
 
-// In Node environment, setup global polyfills for Three.js GLTFLoader if running in Node
-if (typeof global !== 'undefined' && !global.self) {
-  global.self = global;
+function createMockElement() {
+  return {
+    addEventListener: (event, handler) => {
+      if (event === 'load') setTimeout(() => handler({ type: 'load' }), 0);
+    },
+    removeEventListener: () => {},
+    setAttribute: () => {},
+    style: {}
+  };
+}
+
+// In Node environment, setup global polyfills for Three.js loaders
+if (typeof global !== 'undefined') {
+  if (!global.self) global.self = global;
+  if (!global.document) {
+    global.document = {
+      createElementNS: () => createMockElement(),
+      createElement: () => createMockElement(),
+    };
+  }
 }
 
 const THREE = require('three');
 const { GLTFLoader } = require('three/examples/jsm/loaders/GLTFLoader.js');
+const { FBXLoader } = require('three/examples/jsm/loaders/FBXLoader.js');
 const { MeshoptDecoder } = require('three/examples/jsm/libs/meshopt_decoder.module.js');
 
 /**
@@ -200,51 +218,69 @@ ${triangles.join('\n')}
 }
 
 /**
- * Loads a GLB buffer and converts it to a 3MF buffer.
+ * Universal parser that loads either GLB or FBX buffers into a Three.js Object3D hierarchy.
  */
-function convertGlbTo3mf(glbBuffer, options = {}) {
-  return new Promise((resolve, reject) => {
+function parseModelBuffer(buffer, fileHint = '') {
+  const ab = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+
+  // Check magic header or file extension
+  const headerStr = buffer.subarray(0, 24).toString('utf8');
+  const isFbx = fileHint.toLowerCase().endsWith('.fbx') || headerStr.includes('Kaydara FBX');
+
+  if (isFbx) {
+    const loader = new FBXLoader();
+    const group = loader.parse(ab, '');
+    return Promise.resolve(group);
+  } else {
+    // GLB / GLTF
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
+    return new Promise((resolve, reject) => {
+      loader.parse(
+        ab,
+        '',
+        (gltf) => resolve(gltf.scene),
+        (err) => reject(err)
+      );
+    });
+  }
+}
 
-    const ab = glbBuffer.buffer.slice(glbBuffer.byteOffset, glbBuffer.byteOffset + glbBuffer.byteLength);
+/**
+ * Loads a model buffer (GLB or FBX) and converts it to a 3MF buffer.
+ */
+async function convertGlbTo3mf(modelBuffer, options = {}) {
+  const scene = await parseModelBuffer(modelBuffer, options.fileHint || '');
 
-    loader.parse(
-      ab,
-      '',
-      (gltf) => {
-        let mainMesh = null;
-        gltf.scene.traverse((child) => {
-          if (child.isMesh && !mainMesh) {
-            mainMesh = child;
-          }
-        });
-
-        if (!mainMesh) {
-          return reject(new Error('No 3D mesh found in GLB'));
-        }
-
-        const figure = options.figure ?? 3;
-        const isolatedGeo = isolateTurnaroundFigure(mainMesh.geometry, figure);
-        const zip3mf = geometryTo3MF(isolatedGeo, {
-          targetHeightMm: options.scale || 120,
-          title: options.title || 'TripoModel',
-          zUp: options.zUp !== false,
-        });
-
-        resolve({
-          data: zip3mf,
-          verticesCount: isolatedGeo.attributes.position.count,
-          trianglesCount: isolatedGeo.index ? isolatedGeo.index.count / 3 : isolatedGeo.attributes.position.count / 3,
-        });
-      },
-      (err) => reject(err)
-    );
+  let mainMesh = null;
+  scene.traverse((child) => {
+    if (child.isMesh && !mainMesh) {
+      mainMesh = child;
+    }
   });
+
+  if (!mainMesh) {
+    throw new Error('No 3D mesh found in model');
+  }
+
+  const figure = options.figure ?? 3;
+  const isolatedGeo = isolateTurnaroundFigure(mainMesh.geometry, figure);
+  const zip3mf = geometryTo3MF(isolatedGeo, {
+    targetHeightMm: options.scale || 120,
+    title: options.title || 'TripoModel',
+    zUp: options.zUp !== false,
+  });
+
+  return {
+    data: zip3mf,
+    verticesCount: isolatedGeo.attributes.position.count,
+    trianglesCount: isolatedGeo.index ? isolatedGeo.index.count / 3 : isolatedGeo.attributes.position.count / 3,
+  };
 }
 
 module.exports = {
   isolateTurnaroundFigure,
   geometryTo3MF,
+  parseModelBuffer,
   convertGlbTo3mf,
 };

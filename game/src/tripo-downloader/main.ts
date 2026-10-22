@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import * as fflate from 'fflate';
@@ -176,6 +177,44 @@ class TripoDownloaderApp {
     }
 
     this.originalGlbBuffer = arrayBuffer;
+
+    // Check if format is FBX
+    const headerStr = new TextDecoder().decode(new Uint8Array(arrayBuffer.slice(0, 24)));
+    const isFbx = (typeof source === 'string' && source.split('?')[0].toLowerCase().endsWith('.fbx')) ||
+                  headerStr.includes('Kaydara FBX');
+
+    if (isFbx) {
+      try {
+        const fbxLoader = new FBXLoader();
+        const obj = fbxLoader.parse(arrayBuffer, '');
+        if (this.modelGroup) {
+          this.scene.remove(this.modelGroup);
+        }
+        this.rawModelGroup = obj;
+        this.rawGeometry = undefined;
+        obj.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh && !this.rawGeometry) {
+            this.rawGeometry = (child as THREE.Mesh).geometry.clone();
+          }
+        });
+
+        this.currentMeta = {
+          id: meta?.id || 'model',
+          projectName: meta?.projectName || 'TripoModel',
+          author: meta?.author || 'Tripo User',
+          thumbnailUrl: meta?.thumbnailUrl,
+          modelUrl: typeof source === 'string' ? source : '',
+        };
+
+        this.applyFigureSelection(this.activeFigure);
+        this.showStatus(`Модель "${this.currentMeta.projectName}" (FBX) успешно загружена!`, 'success');
+        this.updateStatsUI();
+        return Promise.resolve();
+      } catch (err: any) {
+        this.showStatus(`Ошибка парсинга FBX: ${err.message}`, 'error');
+        return Promise.reject(err);
+      }
+    }
 
     return new Promise<void>((resolve, reject) => {
       this.loader.parse(

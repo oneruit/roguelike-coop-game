@@ -5,7 +5,7 @@ import * as fflate from 'fflate';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { isolateTurnaroundFigure, geometryTo3MF } = require('../scripts/tripo-converter.cjs');
+const { isolateTurnaroundFigure, geometryTo3MF, convertGlbTo3mf } = require('../scripts/tripo-converter.cjs');
 
 test('Tripo Converter - isolateTurnaroundFigure extracts requested figure from multi-character geometry', () => {
   const geo = new THREE.BufferGeometry();
@@ -60,4 +60,16 @@ test('Tripo Converter - geometryTo3MF produces compliant OPC/ZIP 3MF package', (
   assert.ok(modelXml.includes('<vertex x="'), 'Contains vertex definitions');
   assert.ok(modelXml.includes('<triangle v1="0" v2="1" v3="2" />'), 'Contains triangle definition');
   assert.ok(modelXml.includes('<item objectid="1" />'), 'Contains build item');
+});
+
+
+test('Tripo Converter - convertGlbTo3mf converts real model file', async () => {
+  const fs = require('fs');
+  if (fs.existsSync('public/models/mage_tripo.glb')) {
+    const glbBuf = fs.readFileSync('public/models/mage_tripo.glb');
+    const res = await convertGlbTo3mf(glbBuf, { figure: 3, scale: 120, fileHint: 'mage.glb' });
+    assert.ok(res.data instanceof Uint8Array, 'Returns Uint8Array binary buffer');
+    assert.ok(res.verticesCount > 1000, 'Parsed vertices');
+    assert.ok(res.trianglesCount > 1000, 'Parsed triangles');
+  }
 });
