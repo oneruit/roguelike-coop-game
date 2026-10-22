@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tripo3D Downloader &amp; 3MF Converter | Roguelike Coop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-main: #07090e;
+        --bg-panel: rgba(15, 23, 42, 0.85);
+        --bg-card: rgba(30, 41, 59, 0.6);
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --border-highlight: rgba(168, 85, 247, 0.4);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --accent-purple: #c084fc;
+        --accent-glow: #a855f7;
+        --accent-blue: #38bdf8;
+        --accent-green: #4ade80;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      /* Navigation Header */
+      header {
+        height: 60px;
+        background: rgba(11, 15, 25, 0.95);
+        border-bottom: 1px solid var(--border-glass);
+        backdrop-filter: blur(12px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        z-index: 100;
+      }
+
+      .logo-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Cinzel', serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #c084fc 0%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+      }
+
+      .nav-btn {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(51, 65, 85, 0.8);
+        color: var(--text-primary);
+        border-color: var(--accent-purple);
+      }
+
+      /* Main Layout */
+      main {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        height: calc(100vh - 60px);
+        position: relative;
+      }
+
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+      }
+
+      /* Left: 3D Viewport */
+      .viewport-area {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+        background: radial-gradient(circle at center, #131b2e 0%, #07090e 100%);
+        overflow: hidden;
+      }
+
+      #viewport-container {
+        width: 100%;
+        height: 100%;
+      }
+
+      .viewport-overlay {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .viewport-controls {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        z-index: 10;
+        display: flex;
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(8px);
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border-glass);
+      }
+
+      .status-banner {
+        display: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        backdrop-filter: blur(8px);
+        border: 1px solid transparent;
+      }
+
+      .status-loading {
+        background: rgba(14, 165, 233, 0.2);
+        border-color: rgba(14, 165, 233, 0.4);
+        color: #7dd3fc;
+      }
+
+      .status-success {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: rgba(34, 197, 94, 0.4);
+        color: #86efac;
+      }
+
+      .status-error {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
+      }
+
+      /* Right: Sidebar Panel */
+      .sidebar-panel {
+        background: var(--bg-panel);
+        border-left: 1px solid var(--border-glass);
+        backdrop-filter: blur(16px);
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .section-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-glass);
+        border-radius: 10px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--accent-purple);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 6px;
+      }
+
+      input[type='text'], input[type='number'] {
+        flex: 1;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid var(--border-glass);
+        border-radius: 6px;
+        padding: 9px 12px;
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      input[type='text']:focus, input[type='number']:focus {
+        border-color: var(--accent-purple);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 9px 16px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+        box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .presets-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .chip-btn {
+        background: rgba(51, 65, 85, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-secondary);
+        border-radius: 12px;
+        padding: 3px 10px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .chip-btn:hover {
+        background: rgba(168, 85, 247, 0.2);
+        color: var(--text-primary);
+        border-color: var(--accent-purple);
+      }
+
+      /* Figure Selection Tabs */
+      .fig-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+
+      .fig-btn {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+
+      .fig-btn:hover {
+        background: rgba(51, 65, 85, 0.8);
+        color: var(--text-primary);
+      }
+
+      .fig-btn.active {
+        background: rgba(168, 85, 247, 0.25);
+        border-color: var(--accent-purple);
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      /* Stats Badges */
+      #model-stats {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .stat-badge {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-glass);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .stat-badge b {
+        color: var(--text-primary);
+      }
+
+      /* Big Download Buttons */
+      .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn-download-3mf {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        transition: all 0.2s;
+      }
+
+      .btn-download-3mf:hover {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        box-shadow: 0 6px 20px rgba(52, 211, 153, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .btn-download-glb {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 11px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+        transition: all 0.2s;
+      }
+
+      .btn-download-glb:hover {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        box-shadow: 0 6px 18px rgba(96, 165, 250, 0.4);
+      }
+
+      .cli-box {
+        background: #05070c;
+        border: 1px solid var(--border-glass);
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.73rem;
+        color: #a7f3d0;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo-title">
+        <span>🔮</span>
+        <span>Tripo3D Model &amp; 3MF Downloader</span>
+      </div>
+      <div class="nav-links">
+        <a href="/game/character-lab.html" class="nav-btn">🧪 Character Lab</a>
+        <a href="/game/index.html" class="nav-btn">🎮 В игру</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- 3D Viewport -->
+      <section class="viewport-area">
+        <div id="viewport-container"></div>
+
+        <div class="viewport-overlay">
+          <div id="status-msg" class="status-banner"></div>
+        </div>
+
+        <div class="viewport-controls">
+          <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="checkbox" id="toggle-rotate" />
+            <span>Вращение</span>
+          </label>
+          <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="checkbox" id="toggle-wireframe" />
+            <span>Сетка (Wireframe)</span>
+          </label>
+          <button id="btn-reset-cam" style="background: none; border: none; color: var(--accent-purple); font-size: 0.75rem; cursor: pointer;">
+            Сброс камеры
+          </button>
+        </div>
+      </section>
+
+      <!-- Sidebar Controls -->
+      <aside class="sidebar-panel">
+        <!-- Input Model Section -->
+        <div class="section-card">
+          <div class="section-title">🔗 Модель Tripo3D</div>
+          <div class="input-group">
+            <input
+              type="text"
+              id="input-url"
+              placeholder="Вставьте URL или UUID модели..."
+              value="https://studio.tripo3d.ai/3d-model/256a044c-15eb-408d-806a-841b0b764c07"
+            />
+            <button class="btn-primary" id="btn-fetch">🔍 Загрузить</button>
+          </div>
+          <div class="presets-chips">
+            <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center;">Примеры:</span>
+            <button class="chip-btn preset-link-btn" data-url="256a044c-15eb-408d-806a-841b0b764c07">🧙 Маг (Turnaround)</button>
+            <button class="chip-btn preset-link-btn" data-url="c4b15442-4098-457b-b5f0-b15773fe5aff">🔮 Маг (v1)</button>
+          </div>
+          <div style="border-top: 1px dashed var(--border-glass); padding-top: 8px;">
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Или выберите локальный .glb:</label>
+            <input type="file" id="file-input" accept=".glb,.gltf" style="font-size: 0.75rem; color: var(--text-secondary);" />
+          </div>
+        </div>
+
+        <!-- Model Info & Stats -->
+        <div class="section-card">
+          <div class="section-title">📊 Данные модели</div>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <img id="meta-thumb" src="" alt="Thumbnail" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-glass); display: none;" />
+            <div>
+              <div id="meta-title" style="font-weight: 600; font-size: 0.9rem;">witch character 3d model</div>
+              <div id="meta-author" style="font-size: 0.75rem; color: var(--text-muted);">Автор: all-cs-russia</div>
+            </div>
+          </div>
+          <div id="model-stats"></div>
+        </div>
+
+        <!-- Turnaround Figure Slicer -->
+        <div class="section-card">
+          <div class="section-title">✂️ Вырезка Turnaround (Фигурки)</div>
+          <div class="fig-grid">
+            <button class="fig-btn active" data-fig="3">✨ Фигура 3 (Анфас)</button>
+            <button class="fig-btn" data-fig="1">Фигура 1 (Спина)</button>
+            <button class="fig-btn" data-fig="2">Фигура 2 (Центр)</button>
+            <button class="fig-btn" data-fig="all">Все фигурки</button>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.35;">
+            💡 Изолирует чистую одиночную модель из 3-в-1 Turnaround листа, автоматически центрирует и ставит на пол.
+          </div>
+        </div>
+
+        <!-- 3D Print Settings (.3MF) -->
+        <div class="section-card">
+          <div class="section-title">🖨️ Параметры 3D-печати (.3MF)</div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+              <span style="color: var(--text-secondary);">Высота фигурки:</span>
+              <span id="val-scale" style="font-weight: 600; color: #4ade80;">120 мм</span>
+            </div>
+            <input type="range" id="print-scale" min="50" max="250" step="5" value="120" style="width: 100%; accent-color: #10b981;" />
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">
+            Ориентация: <b>Z-Up</b> (готова для слайсеров Bambu Studio, OrcaSlicer, PrusaSlicer, Cura).
+          </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="action-buttons">
+          <button class="btn-download-3mf" id="btn-dl-3mf">
+            <span>🖨️ Скачать .3MF (3D Печать)</span>
+          </button>
+          <button class="btn-download-glb" id="btn-dl-glb">
+            <span>⬇️ Скачать .GLB (3D Mesh / Three.js)</span>
+          </button>
+        </div>
+
+        <!-- Terminal CLI Helper -->
+        <div class="section-card">
+          <div class="section-title">💻 Команда для терминала (CLI)</div>
+          <div class="cli-box" id="cli-code">node scripts/download-tripo.cjs 256a044c-15eb-408d-806a-841b0b764c07 3mf</div>
+        </div>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/tripo-downloader/main.ts"></script>
+  </body>
+</html>
