@@ -7,6 +7,7 @@ import { SeededRNG } from '../game/src/core/SeededRNG';
 import { EnemyManager } from '../game/src/entities/EnemyManager';
 import { DropManager } from '../game/src/drops/DropManager';
 import { Player } from '../game/src/entities/Player';
+import { RiftTeleporter } from '../game/src/world/RiftTeleporter';
 
 if (typeof (globalThis as any).window === 'undefined') {
   (globalThis as any).window = globalThis;
@@ -21,18 +22,15 @@ if (typeof (globalThis as any).document === 'undefined') {
       style: {}
     }),
     createElement: () => ({
-      getContext: () => ({
-        clearRect: () => {},
-        fillRect: () => {},
-        fillText: () => {},
+      getContext: () => new Proxy({
         measureText: () => ({ width: 50 }),
-        beginPath: () => {},
-        arc: () => {},
-        roundRect: () => {},
-        fill: () => {},
-        stroke: () => {},
-        save: () => {},
-        restore: () => {}
+        createLinearGradient: () => ({ addColorStop: () => {} }),
+        createRadialGradient: () => ({ addColorStop: () => {} })
+      }, {
+        get: (target, prop) => {
+          if (prop in target) return target[prop];
+          return () => {};
+        }
       }),
       width: 256,
       height: 72
@@ -205,7 +203,7 @@ test('Astral Core - Extracting core from generator gives player core and marks g
   generator.dispose(scene);
 });
 
-test('Astral Core - Tactical dash forces player to drop core to ground', () => {
+test('Astral Core - Tactical dash does NOT drop core (player retains core while dashing)', () => {
   const scene = new Scene();
   const player = new Player(scene);
   const nestManager = new MobNestManager(scene);
@@ -226,12 +224,10 @@ test('Astral Core - Tactical dash forces player to drop core to ground', () => {
   const dashed = player.triggerDash(new Vector3(1, 0, 0));
   assert.equal(dashed, true);
 
-  // Player must have dropped the core
-  assert.equal(player.hasAstralCore, false, 'Player loses core upon dashing');
-  assert.ok(droppedPos !== null, 'onDropAstralCore callback was fired');
-  assert.equal(nestManager.droppedCores.length, 1, 'Dropped Astral Core spawned in manager');
-  assert.equal(nestManager.droppedCores[0].position.x, 10);
-  assert.equal(nestManager.droppedCores[0].position.z, 20);
+  // Player must retain the core upon dashing
+  assert.equal(player.hasAstralCore, true, 'Player must retain core upon dashing');
+  assert.equal(droppedPos, null, 'onDropAstralCore callback must not fire on dash');
+  assert.equal(nestManager.droppedCores.length, 0, 'No dropped core spawned on dash');
 
   nestManager.clear();
 });
@@ -243,7 +239,9 @@ test('Astral Core - Delivery to Rift Teleporter increments count and stabilizes 
 
   const fakeTeleporter = {
     position: new Vector3(0, 0, 0),
-    coresDelivered: 0
+    coresDelivered: 0,
+    isStage4: true,
+    state: 'IDLE'
   } as any;
   nestManager.riftTeleporter = fakeTeleporter;
 
@@ -275,4 +273,86 @@ test('Astral Core - Delivery to Rift Teleporter increments count and stabilizes 
   assert.equal(nestManager.isAllNestsDestroyed(), true, 'All 4 cores delivered stabilizes portal');
 
   nestManager.clear();
+});
+
+test('Portal Prompts - Stages 1-3 teleporter displays teleport prompt upon boss defeat without core delivery prompt', () => {
+  const scene = new Scene();
+  const nestManager = new MobNestManager(scene);
+  nestManager.generateStageNests(1, new SeededRNG(42), []);
+
+  const teleporter = new RiftTeleporter(scene, new Vector3(0, 0, 0));
+  nestManager.riftTeleporter = teleporter;
+  assert.equal(teleporter.isStage4, false);
+
+  const playerNear = new Vector3(0, 0, 2);
+
+  // 1. Before boss fight: teleporter is IDLE
+  // MobNestManager must NOT show any core prompt on stages 1-3
+  const nestInteractionIdle = nestManager.getInteraction(playerNear, false);
+  assert.equal(nestInteractionIdle.prompt, '');
+  assert.equal(nestInteractionIdle.canInteract, false);
+
+  // RiftTeleporter offers boss summoning
+  const teleInteractionIdle = teleporter.getInteraction(playerNear, false);
+  assert.equal(teleInteractionIdle.canInteract, true);
+  assert.equal(teleInteractionIdle.action, 'activate');
+  assert.match(teleInteractionIdle.prompt, /Прикоснуться к Разлому/);
+
+  // 2. Boss is defeated: teleporter transitions to WARP_READY
+  teleporter.state = 'WARP_READY';
+
+  // MobNestManager still must NOT intercept or display core prompt
+  const nestInteractionReady = nestManager.getInteraction(playerNear, false);
+  assert.equal(nestInteractionReady.prompt, '');
+  assert.equal(nestInteractionReady.canInteract, false);
+
+  // RiftTeleporter offers teleportation to next biome
+  const teleInteractionReady = teleporter.getInteraction(playerNear, false);
+  assert.equal(teleInteractionReady.canInteract, true);
+  assert.equal(teleInteractionReady.action, 'warp');
+  assert.match(teleInteractionReady.prompt, /Телепортироваться/);
+  assert.doesNotMatch(teleInteractionReady.prompt, /ядра/i);
+
+  nestManager.clear();
+  teleporter.destroy();
+});
+
+test('Portal Prompts - Stage 4 enforces astral core delivery before boss awakening and teleports after defeat', () => {
+  const scene = new Scene();
+  const nestManager = new MobNestManager(scene);
+  nestManager.generateStageNests(4, new SeededRNG(99), []);
+
+  const teleporter = new RiftTeleporter(scene, new Vector3(0, 0, 0));
+  teleporter.isStage4 = true;
+  nestManager.riftTeleporter = teleporter;
+
+  const playerNear = new Vector3(0, 0, 2);
+
+  // 1. Stage 4 IDLE with 0 cores: shows delivery requirement
+  const nestPromptNoCore = nestManager.getInteraction(playerNear, false);
+  assert.equal(nestPromptNoCore.canInteract, false);
+  assert.equal(nestPromptNoCore.prompt, '⚡ ДОСТАВЬТЕ АСТРАЛЬНЫЕ ЯДРА: 0 / 4');
+
+  // 2. Stage 4 IDLE with core carried: shows deposit prompt
+  const nestPromptWithCore = nestManager.getInteraction(playerNear, true);
+  assert.equal(nestPromptWithCore.canInteract, true);
+  assert.match(nestPromptWithCore.prompt, /Вставить Астральное Ядро в Разлом/);
+
+  // 3. Boss summoned (cores delivered): teleporter is CHARGING
+  teleporter.state = 'CHARGING';
+  const nestPromptCharging = nestManager.getInteraction(playerNear, false);
+  assert.equal(nestPromptCharging.prompt, '');
+
+  // 4. Boss defeated: teleporter is WARP_READY
+  teleporter.state = 'WARP_READY';
+  const nestPromptReady = nestManager.getInteraction(playerNear, false);
+  assert.equal(nestPromptReady.prompt, '');
+
+  const telePromptReady = teleporter.getInteraction(playerNear, false);
+  assert.equal(telePromptReady.canInteract, true);
+  assert.equal(telePromptReady.action, 'warp');
+  assert.match(telePromptReady.prompt, /Телепортироваться/);
+
+  nestManager.clear();
+  teleporter.destroy();
 });

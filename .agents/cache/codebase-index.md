@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-22T08:30:10.221Z | **Files:** 206 | **Top-level:** 611 | **Class Methods:** 1355
+> **Generated:** 2026-10-22T15:00:34.404Z | **Files:** 206 | **Top-level:** 611 | **Class Methods:** 1355
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -1235,65 +1235,65 @@ Run `npm run index` to refresh this cache.
 | `PassiveBuffId` | `type` | [`game/src/drops/PassiveBuffs.ts:1`](../../game/src/drops/PassiveBuffs.ts#L1) | - |
 | `Player` | `class` | [`game/src/entities/Player.ts:65`](../../game/src/entities/Player.ts#L65) | - |
 | `PLAYER_COLORS` | `const` | [`game/src/shared/types/network.ts:169`](../../game/src/shared/types/network.ts#L169) | - |
-| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:732`](../../game/src/entities/Player.ts#L732) | - |
+| `Player.addAmplifierBonus` | `method` | [`game/src/entities/Player.ts:727`](../../game/src/entities/Player.ts#L727) | - |
 | `Player.addBuff` | `method` | [`game/src/entities/Player.ts:586`](../../game/src/entities/Player.ts#L586) | - |
-| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:751`](../../game/src/entities/Player.ts#L751) | - |
-| `Player.addCritChanceBonus` | `method` | [`game/src/entities/Player.ts:772`](../../game/src/entities/Player.ts#L772) | - |
-| `Player.addCritDamageBonus` | `method` | [`game/src/entities/Player.ts:767`](../../game/src/entities/Player.ts#L767) | - |
-| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:749`](../../game/src/entities/Player.ts#L749) | - |
-| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:758`](../../game/src/entities/Player.ts#L758) | - |
-| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:748`](../../game/src/entities/Player.ts#L748) | - |
-| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1319`](../../game/src/entities/Player.ts#L1319) | - |
-| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:765`](../../game/src/entities/Player.ts#L765) | - |
-| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:733`](../../game/src/entities/Player.ts#L733) | - |
+| `Player.addCooldownReduction` | `method` | [`game/src/entities/Player.ts:746`](../../game/src/entities/Player.ts#L746) | - |
+| `Player.addCritChanceBonus` | `method` | [`game/src/entities/Player.ts:767`](../../game/src/entities/Player.ts#L767) | - |
+| `Player.addCritDamageBonus` | `method` | [`game/src/entities/Player.ts:762`](../../game/src/entities/Player.ts#L762) | - |
+| `Player.addDamageReduction` | `method` | [`game/src/entities/Player.ts:744`](../../game/src/entities/Player.ts#L744) | - |
+| `Player.addFlaskBonus` | `method` | [`game/src/entities/Player.ts:753`](../../game/src/entities/Player.ts#L753) | - |
+| `Player.addHpRegen` | `method` | [`game/src/entities/Player.ts:743`](../../game/src/entities/Player.ts#L743) | - |
+| `Player.addLevel` | `method` | [`game/src/entities/Player.ts:1314`](../../game/src/entities/Player.ts#L1314) | - |
+| `Player.addMagnetBonus` | `method` | [`game/src/entities/Player.ts:760`](../../game/src/entities/Player.ts#L760) | - |
+| `Player.addMightElixirBonus` | `method` | [`game/src/entities/Player.ts:728`](../../game/src/entities/Player.ts#L728) | - |
 | `Player.addRiftItem` | `method` | [`game/src/entities/Player.ts:598`](../../game/src/entities/Player.ts#L598) | - |
-| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:747`](../../game/src/entities/Player.ts#L747) | - |
-| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:746`](../../game/src/entities/Player.ts#L746) | - |
+| `Player.addSpeedBonus` | `method` | [`game/src/entities/Player.ts:742`](../../game/src/entities/Player.ts#L742) | - |
+| `Player.addSpeedBootsBonus` | `method` | [`game/src/entities/Player.ts:741`](../../game/src/entities/Player.ts#L741) | - |
 | `Player.applyBurn` | `method` | [`game/src/entities/Player.ts:139`](../../game/src/entities/Player.ts#L139) | - |
 | `Player.applyCharacterPerks` | `method` | [`game/src/entities/Player.ts:507`](../../game/src/entities/Player.ts#L507) | - |
-| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:825`](../../game/src/entities/Player.ts#L825) | - |
+| `Player.applyPassiveBuff` | `method` | [`game/src/entities/Player.ts:820`](../../game/src/entities/Player.ts#L820) | - |
 | `Player.applyShock` | `method` | [`game/src/entities/Player.ts:144`](../../game/src/entities/Player.ts#L144) | - |
 | `Player.applySlow` | `method` | [`game/src/entities/Player.ts:149`](../../game/src/entities/Player.ts#L149) | - |
-| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1273`](../../game/src/entities/Player.ts#L1273) | - |
-| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1315`](../../game/src/entities/Player.ts#L1315) | - |
+| `Player.areAllWeaponsMaxed` | `method` | [`game/src/entities/Player.ts:1268`](../../game/src/entities/Player.ts#L1268) | - |
+| `Player.calculateXpToNextLevel` | `method` | [`game/src/entities/Player.ts:1310`](../../game/src/entities/Player.ts#L1310) | - |
 | `Player.clearWeapons` | `method` | [`game/src/entities/Player.ts:494`](../../game/src/entities/Player.ts#L494) | - |
-| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1422`](../../game/src/entities/Player.ts#L1422) | - |
-| `Player.dropAstralCore` | `method` | [`game/src/entities/Player.ts:652`](../../game/src/entities/Player.ts#L652) | - |
-| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1242`](../../game/src/entities/Player.ts#L1242) | - |
-| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1327`](../../game/src/entities/Player.ts#L1327) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
-| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1269`](../../game/src/entities/Player.ts#L1269) | - |
-| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1459`](../../game/src/entities/Player.ts#L1459) | - |
+| `Player.destroy` | `method` | [`game/src/entities/Player.ts:1417`](../../game/src/entities/Player.ts#L1417) | - |
+| `Player.dropAstralCore` | `method` | [`game/src/entities/Player.ts:647`](../../game/src/entities/Player.ts#L647) | - |
+| `Player.fullHeal` | `method` | [`game/src/entities/Player.ts:1237`](../../game/src/entities/Player.ts#L1237) | - |
+| `Player.gainXp` | `method` | [`game/src/entities/Player.ts:1322`](../../game/src/entities/Player.ts#L1322) | onLevelGained queues upgrades; the returned count is for visual feedback on... |
+| `Player.getAwakenedCap` | `method` | [`game/src/entities/Player.ts:1264`](../../game/src/entities/Player.ts#L1264) | - |
+| `Player.getBuffsNetState` | `method` | [`game/src/entities/Player.ts:1454`](../../game/src/entities/Player.ts#L1454) | - |
 | `Player.getCharacterGeometry` | `method` | [`game/src/entities/Player.ts:227`](../../game/src/entities/Player.ts#L227) | - |
-| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:719`](../../game/src/entities/Player.ts#L719) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
+| `Player.getDamageMultiplier` | `method` | [`game/src/entities/Player.ts:714`](../../game/src/entities/Player.ts#L714) | Calculates effective damage multiplier for a given weapon. Per rule: initia... |
 | `Player.getItemStacks` | `method` | [`game/src/entities/Player.ts:594`](../../game/src/entities/Player.ts#L594) | - |
-| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:782`](../../game/src/entities/Player.ts#L782) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
-| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1450`](../../game/src/entities/Player.ts#L1450) | - |
-| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1278`](../../game/src/entities/Player.ts#L1278) | - |
+| `Player.getNaniteDamageReduction` | `method` | [`game/src/entities/Player.ts:777`](../../game/src/entities/Player.ts#L777) | Calculates damage reduction provided by Nanite Plating (Нано-Броня). Level ... |
+| `Player.getWeaponsNetState` | `method` | [`game/src/entities/Player.ts:1445`](../../game/src/entities/Player.ts#L1445) | - |
+| `Player.giveAllWeapons` | `method` | [`game/src/entities/Player.ts:1273`](../../game/src/entities/Player.ts#L1273) | - |
 | `Player.hasBuff` | `method` | [`game/src/entities/Player.ts:590`](../../game/src/entities/Player.ts#L590) | - |
-| `Player.heal` | `method` | [`game/src/entities/Player.ts:1237`](../../game/src/entities/Player.ts#L1237) | - |
+| `Player.heal` | `method` | [`game/src/entities/Player.ts:1232`](../../game/src/entities/Player.ts#L1232) | - |
 | `Player.isAnimatedCharacter` | `method` | [`game/src/entities/Player.ts:386`](../../game/src/entities/Player.ts#L386) | - |
-| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:788`](../../game/src/entities/Player.ts#L788) | - |
+| `Player.isStatMaxedForItem` | `method` | [`game/src/entities/Player.ts:783`](../../game/src/entities/Player.ts#L783) | - |
 | `Player.loadCharacterTextures` | `method` | [`game/src/entities/Player.ts:390`](../../game/src/entities/Player.ts#L390) | - |
-| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1307`](../../game/src/entities/Player.ts#L1307) | - |
-| `Player.pickupAstralCore` | `method` | [`game/src/entities/Player.ts:648`](../../game/src/entities/Player.ts#L648) | - |
-| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:661`](../../game/src/entities/Player.ts#L661) | - |
-| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:735`](../../game/src/entities/Player.ts#L735) | - |
-| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1396`](../../game/src/entities/Player.ts#L1396) | - |
+| `Player.maxAllWeapons` | `method` | [`game/src/entities/Player.ts:1302`](../../game/src/entities/Player.ts#L1302) | - |
+| `Player.pickupAstralCore` | `method` | [`game/src/entities/Player.ts:643`](../../game/src/entities/Player.ts#L643) | - |
+| `Player.recalculateStats` | `method` | [`game/src/entities/Player.ts:656`](../../game/src/entities/Player.ts#L656) | - |
+| `Player.recordWeaponDamage` | `method` | [`game/src/entities/Player.ts:730`](../../game/src/entities/Player.ts#L730) | - |
+| `Player.redrawOverhead` | `method` | [`game/src/entities/Player.ts:1391`](../../game/src/entities/Player.ts#L1391) | - |
 | `Player.removeRiftItem` | `method` | [`game/src/entities/Player.ts:609`](../../game/src/entities/Player.ts#L609) | - |
-| `Player.reset` | `method` | [`game/src/entities/Player.ts:1344`](../../game/src/entities/Player.ts#L1344) | - |
-| `Player.revive` | `method` | [`game/src/entities/Player.ts:1217`](../../game/src/entities/Player.ts#L1217) | - |
+| `Player.reset` | `method` | [`game/src/entities/Player.ts:1339`](../../game/src/entities/Player.ts#L1339) | - |
+| `Player.revive` | `method` | [`game/src/entities/Player.ts:1212`](../../game/src/entities/Player.ts#L1212) | - |
 | `Player.setCharacter` | `method` | [`game/src/entities/Player.ts:429`](../../game/src/entities/Player.ts#L429) | - |
 | `Player.setDirection` | `method` | [`game/src/entities/Player.ts:453`](../../game/src/entities/Player.ts#L453) | - |
 | `Player.setupAuras` | `method` | [`game/src/entities/Player.ts:316`](../../game/src/entities/Player.ts#L316) | - |
 | `Player.syncBalance` | `method` | [`game/src/entities/Player.ts:564`](../../game/src/entities/Player.ts#L564) | - |
-| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1135`](../../game/src/entities/Player.ts#L1135) | - |
-| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1246`](../../game/src/entities/Player.ts#L1246) | - |
-| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1261`](../../game/src/entities/Player.ts#L1261) | - |
-| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1255`](../../game/src/entities/Player.ts#L1255) | - |
+| `Player.takeDamage` | `method` | [`game/src/entities/Player.ts:1130`](../../game/src/entities/Player.ts#L1130) | - |
+| `Player.toggleGodMode` | `method` | [`game/src/entities/Player.ts:1241`](../../game/src/entities/Player.ts#L1241) | - |
+| `Player.toggleOneHitKill` | `method` | [`game/src/entities/Player.ts:1256`](../../game/src/entities/Player.ts#L1256) | - |
+| `Player.toggleSpeedCheat` | `method` | [`game/src/entities/Player.ts:1250`](../../game/src/entities/Player.ts#L1250) | - |
 | `Player.triggerAttackAnim` | `method` | [`game/src/entities/Player.ts:465`](../../game/src/entities/Player.ts#L465) | - |
 | `Player.triggerDash` | `method` | [`game/src/entities/Player.ts:625`](../../game/src/entities/Player.ts#L625) | - |
-| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:1118`](../../game/src/entities/Player.ts#L1118) | - |
-| `Player.updateVisuals` | `method` | [`game/src/entities/Player.ts:1479`](../../game/src/entities/Player.ts#L1479) | Smoothly interpolates the player mesh position between the previous and cur... |
+| `Player.updateAnimatedCharacterAnimation` | `method` | [`game/src/entities/Player.ts:1113`](../../game/src/entities/Player.ts#L1113) | - |
+| `Player.updateVisuals` | `method` | [`game/src/entities/Player.ts:1474`](../../game/src/entities/Player.ts#L1474) | Smoothly interpolates the player mesh position between the previous and cur... |
 | `PlayerAnimation` | `class` | [`game/src/mechanics/player/PlayerAnimation.ts:21`](../../game/src/mechanics/player/PlayerAnimation.ts#L21) | Handles sprite direction, sheet animations (IDLE, WALK, ATTACK), texture lo... |
 | `PlayerAnimation.isAnimatedCharacter` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:80`](../../game/src/mechanics/player/PlayerAnimation.ts#L80) | - |
 | `PlayerAnimation.loadCharacterTextures` | `method` | [`game/src/mechanics/player/PlayerAnimation.ts:84`](../../game/src/mechanics/player/PlayerAnimation.ts#L84) | - |

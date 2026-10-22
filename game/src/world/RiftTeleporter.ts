@@ -352,7 +352,7 @@ export class RiftTeleporter {
     }
 
     if (this.state === 'WARP_READY') {
-      let prompt = '[E] Войти в Разлом (Переход на следующий биом)';
+      let prompt = '[E] Телепортироваться (Переход на следующий биом)';
       if (isFinalStage) {
         if (this.stage5CloseTimer > 0) {
           const remainingSec = Math.max(0, Math.ceil(this.stage5CloseTimer));

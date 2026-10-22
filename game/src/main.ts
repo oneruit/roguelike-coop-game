@@ -732,7 +732,7 @@ class Game {
     this.mobNestManager.onCoreExtracted = (_nest, remaining) => {
       this.hud.triggerAltarNotification(
         'АСТРАЛЬНОЕ ЯДРО ИЗВЛЕЧЕНО!',
-        `Доставьте его в Портал в центре! (Осталось генераторов: ${remaining}). При рывке ядро выпадает!`,
+        `Доставьте его в Портал в центре! (Осталось генераторов: ${remaining})`,
         '⚡',
         '#38bdf8'
       );
@@ -1010,7 +1010,7 @@ class Game {
     } else {
       const isFinalStage = this.biomeManager.stageNumber >= 5;
       const telePrompt = this.riftTeleporter.getInteraction(this.player.position, isFinalStage);
-      if (telePrompt.canInteract) {
+      if (telePrompt.canInteract || telePrompt.prompt) {
         this.hud.showInteractionPrompt(telePrompt.prompt);
       } else {
         const chestData = this.chestManager.getClosestInteractableChest(

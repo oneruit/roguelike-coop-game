@@ -150,7 +150,7 @@ export class MobNestManager {
     }
 
     // 2. Delivery to Central Rift Teleporter
-    if (player.hasAstralCore && this.riftTeleporter && player.isAlive && !player.isDowned) {
+    if (player.hasAstralCore && this.riftTeleporter && this.riftTeleporter.isStage4 && player.isAlive && !player.isDowned) {
       const distToTele = player.position.distanceTo(this.riftTeleporter.position);
       if (distToTele <= 5.5) {
         player.hasAstralCore = false;
@@ -245,8 +245,8 @@ export class MobNestManager {
    * Returns interaction prompt details when the player is near a dropped core, generator, or rift teleporter.
    */
   public getInteraction(playerPos: Vector3, playerHasCore: boolean = false): { canInteract: boolean; prompt: string } {
-    // 1. Teleporter Delivery check
-    if (this.riftTeleporter) {
+    // 1. Teleporter Delivery check (Stage 4 only, while portal is waiting for cores)
+    if (this.riftTeleporter && this.riftTeleporter.isStage4 && this.riftTeleporter.state === 'IDLE') {
       const dist = playerPos.distanceTo(this.riftTeleporter.position);
       if (dist <= 6.0) {
         if (playerHasCore) {
