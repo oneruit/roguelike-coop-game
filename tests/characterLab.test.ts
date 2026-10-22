@@ -8,6 +8,7 @@ import { MageTexturedSystem } from '../game/src/character-lab/MageTexturedSystem
 import { MageCutoutRig } from '../game/src/character-lab/MageCutoutRig';
 import { MageReal3DSystem } from '../game/src/character-lab/MageReal3DSystem';
 import { VampireCutoutRig } from '../game/src/character-lab/VampireCutoutRig';
+import { AnimeWarrior3DSystem } from '../game/src/character-lab/AnimeWarrior3DSystem';
 import { DEFAULT_CLASS_CONFIGS } from '../game/src/character-lab/CharacterSandboxApp';
 
 test('CharacterRig - creates anatomical hierarchy and sockets', () => {
@@ -377,4 +378,32 @@ test('VampireCutoutRig - mounts 8 paper-doll parts, supports toggles, palettes, 
   assert.equal(vampire.isVisible, false);
   assert.equal(vampire.headMesh.parent, null);
 });
+
+test('AnimeWarrior3DSystem - initializes FBX skeletal system, toggles visibility, and handles animations safely', () => {
+  const warriorCfg = DEFAULT_CLASS_CONFIGS.anime_warrior;
+  assert.ok(warriorCfg, 'DEFAULT_CLASS_CONFIGS should include anime_warrior');
+
+  const rig = new CharacterRig(warriorCfg.colors, warriorCfg.materials);
+  const animeWarrior = new AnimeWarrior3DSystem(rig);
+
+  assert.ok(animeWarrior.root, 'Root group should exist');
+  assert.equal(animeWarrior.isLoaded, true, 'Headless mode should initialize synchronously');
+
+  // Test setVisible
+  animeWarrior.setVisible(true);
+  assert.equal(animeWarrior.isVisible, true);
+  assert.equal(animeWarrior.root.parent, rig.root);
+
+  // Test animation states
+  animeWarrior.setAnimationState('walk');
+  animeWarrior.setAnimationState('idle');
+  animeWarrior.triggerAttack();
+  animeWarrior.update(0.016);
+
+  // Test hide
+  animeWarrior.setVisible(false);
+  assert.equal(animeWarrior.isVisible, false);
+  assert.equal(animeWarrior.root.parent, null);
+});
+
 

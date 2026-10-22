@@ -154,7 +154,7 @@
 
       .class-tabs {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
         gap: 6px;
       }
 
@@ -407,6 +407,24 @@
               <span class="icon">🧛</span>
               <span>Вампирша</span>
             </button>
+            <button class="class-tab-btn" data-class="anime_warrior">
+              <span class="icon">🗡️</span>
+              <span>Катана</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Anime Warrior Mixamo 3D Section (Visible when Anime Warrior is selected) -->
+        <section id="anime-warrior-section" style="display: none; background: rgba(244, 114, 182, 0.1); border: 1px solid rgba(244, 114, 182, 0.35); padding: 12px; border-radius: 8px;">
+          <div class="section-title" style="color: #f472b6;">🗡️ 3D Аниме-Воин (Mixamo FBX)</div>
+          <div style="font-size: 0.75rem; color: #fbcfe8; line-height: 1.4; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px; margin-bottom: 10px;">
+            💡 <b>Скелетные FBX-анимации:</b> 3D-модель со скелетом (33 кости) из Mixamo. Воспроизведение анимаций через Three.js AnimationMixer с плавным сглаживанием переходов.
+          </div>
+          <div class="field-label" style="margin-bottom: 6px; color: #fbcfe8;">Быстрые действия:</div>
+          <div class="presets-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+            <button class="preset-btn" id="btn-anime-idle">🧘 Стойка</button>
+            <button class="preset-btn" id="btn-anime-walk">🏃 Шаг</button>
+            <button class="preset-btn" id="btn-anime-attack" style="border-color: #f472b6; color: #fbcfe8;">⚡ Удар</button>
           </div>
         </section>
 

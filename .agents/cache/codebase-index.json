@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-22T00:27:29.626Z",
-  "totalFiles": 205,
-  "totalSymbols": 1941,
-  "topLevelCount": 605,
-  "methodsCount": 1336,
+  "generatedAt": "2026-10-22T01:00:04.711Z",
+  "totalFiles": 206,
+  "totalSymbols": 1950,
+  "topLevelCount": 606,
+  "methodsCount": 1344,
   "entities": {
     "heroes": [
       {
@@ -1095,6 +1095,77 @@
       "kind": "interface",
       "file": "game/src/core/TextureManager.ts",
       "line": 26
+    },
+    {
+      "name": "AnimeWarrior3DSystem",
+      "kind": "class",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 10,
+      "doc": "3D Skinned Skeletal Mesh System for Anime Warrior Girl. Loads Mixamo-rigged FBX files (Idle, Walk, Attack), calibrates humanoid scale and ground alignment, and manages smooth state transitions via Three.js AnimationMixer."
+    },
+    {
+      "name": "AnimeWarrior3DSystem.getModelUrl",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 36,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "getModelUrl"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.loadCharacter",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 41,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "loadCharacter"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.playAnimation",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 162,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "playAnimation"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.setAnimationState",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 190,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "setAnimationState"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.setupModel",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 95,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "setupModel"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.setVisible",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 149,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "setVisible"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.triggerAttack",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 186,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "triggerAttack"
+    },
+    {
+      "name": "AnimeWarrior3DSystem.update",
+      "kind": "method",
+      "file": "game/src/character-lab/AnimeWarrior3DSystem.ts",
+      "line": 200,
+      "className": "AnimeWarrior3DSystem",
+      "methodName": "update"
     },
     {
       "name": "AssaultRifleWeapon",
@@ -2439,7 +2510,7 @@
       "name": "CharacterModularSystem.buildArcher",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 256,
+      "line": 259,
       "className": "CharacterModularSystem",
       "methodName": "buildArcher",
       "doc": "=========================================="
@@ -2448,7 +2519,7 @@
       "name": "CharacterModularSystem.buildMage",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 367,
+      "line": 370,
       "className": "CharacterModularSystem",
       "methodName": "buildMage",
       "doc": "=========================================="
@@ -2457,7 +2528,7 @@
       "name": "CharacterModularSystem.buildWarrior",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 119,
+      "line": 122,
       "className": "CharacterModularSystem",
       "methodName": "buildWarrior",
       "doc": "=========================================="
@@ -2466,7 +2537,7 @@
       "name": "CharacterModularSystem.clearEquipment",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 93,
+      "line": 96,
       "className": "CharacterModularSystem",
       "methodName": "clearEquipment"
     },
@@ -2474,7 +2545,7 @@
       "name": "CharacterModularSystem.updateColors",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 501,
+      "line": 504,
       "className": "CharacterModularSystem",
       "methodName": "updateColors"
     },
@@ -2482,7 +2553,7 @@
       "name": "CharacterModularSystem.updateMaterials",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 512,
+      "line": 515,
       "className": "CharacterModularSystem",
       "methodName": "updateMaterials"
     },
@@ -2490,7 +2561,7 @@
       "name": "CharacterModularSystem.updateVFX",
       "kind": "method",
       "file": "game/src/character-lab/CharacterModularSystem.ts",
-      "line": 488,
+      "line": 491,
       "className": "CharacterModularSystem",
       "methodName": "updateVFX",
       "doc": "VFX Update loop (spins crystal and particles)"
@@ -2631,13 +2702,13 @@
       "name": "CharacterSandboxApp",
       "kind": "class",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 106
+      "line": 128
     },
     {
       "name": "CharacterSandboxApp.applyClass",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 250,
+      "line": 274,
       "className": "CharacterSandboxApp",
       "methodName": "applyClass"
     },
@@ -2645,7 +2716,7 @@
       "name": "CharacterSandboxApp.buildPedestal",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 219,
+      "line": 243,
       "className": "CharacterSandboxApp",
       "methodName": "buildPedestal"
     },
@@ -2653,7 +2724,7 @@
       "name": "CharacterSandboxApp.dispose",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 466,
+      "line": 509,
       "className": "CharacterSandboxApp",
       "methodName": "dispose"
     },
@@ -2661,7 +2732,7 @@
       "name": "CharacterSandboxApp.resetCamera",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 402,
+      "line": 443,
       "className": "CharacterSandboxApp",
       "methodName": "resetCamera"
     },
@@ -2669,7 +2740,7 @@
       "name": "CharacterSandboxApp.rotateMageTripo90",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 334,
+      "line": 372,
       "className": "CharacterSandboxApp",
       "methodName": "rotateMageTripo90"
     },
@@ -2677,7 +2748,7 @@
       "name": "CharacterSandboxApp.setAnimation",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 338,
+      "line": 376,
       "className": "CharacterSandboxApp",
       "methodName": "setAnimation"
     },
@@ -2685,7 +2756,7 @@
       "name": "CharacterSandboxApp.setLightingPreset",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 373,
+      "line": 414,
       "className": "CharacterSandboxApp",
       "methodName": "setLightingPreset"
     },
@@ -2693,7 +2764,7 @@
       "name": "CharacterSandboxApp.setMageAngleMode",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 322,
+      "line": 360,
       "className": "CharacterSandboxApp",
       "methodName": "setMageAngleMode"
     },
@@ -2701,7 +2772,7 @@
       "name": "CharacterSandboxApp.setMageRenderMode",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 317,
+      "line": 355,
       "className": "CharacterSandboxApp",
       "methodName": "setMageRenderMode"
     },
@@ -2709,7 +2780,7 @@
       "name": "CharacterSandboxApp.setMageTripoFigure",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 326,
+      "line": 364,
       "className": "CharacterSandboxApp",
       "methodName": "setMageTripoFigure"
     },
@@ -2717,7 +2788,7 @@
       "name": "CharacterSandboxApp.setPlaybackSpeed",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 348,
+      "line": 388,
       "className": "CharacterSandboxApp",
       "methodName": "setPlaybackSpeed"
     },
@@ -2725,7 +2796,7 @@
       "name": "CharacterSandboxApp.setVampirePalette",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 458,
+      "line": 501,
       "className": "CharacterSandboxApp",
       "methodName": "setVampirePalette"
     },
@@ -2733,7 +2804,7 @@
       "name": "CharacterSandboxApp.toggleEquipment",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 364,
+      "line": 405,
       "className": "CharacterSandboxApp",
       "methodName": "toggleEquipment"
     },
@@ -2741,7 +2812,7 @@
       "name": "CharacterSandboxApp.toggleMageTripoRotate180",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 330,
+      "line": 368,
       "className": "CharacterSandboxApp",
       "methodName": "toggleMageTripoRotate180"
     },
@@ -2749,7 +2820,7 @@
       "name": "CharacterSandboxApp.toggleVampirePart",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 462,
+      "line": 505,
       "className": "CharacterSandboxApp",
       "methodName": "toggleVampirePart"
     },
@@ -2757,7 +2828,7 @@
       "name": "CharacterSandboxApp.toggleWireframe",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 369,
+      "line": 410,
       "className": "CharacterSandboxApp",
       "methodName": "toggleWireframe"
     },
@@ -2765,7 +2836,7 @@
       "name": "CharacterSandboxApp.triggerAttack",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 343,
+      "line": 382,
       "className": "CharacterSandboxApp",
       "methodName": "triggerAttack"
     },
@@ -2773,7 +2844,7 @@
       "name": "CharacterSandboxApp.updateColor",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 353,
+      "line": 394,
       "className": "CharacterSandboxApp",
       "methodName": "updateColor"
     },
@@ -2781,7 +2852,7 @@
       "name": "CharacterSandboxApp.updateMaterialProperty",
       "kind": "method",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 359,
+      "line": 400,
       "className": "CharacterSandboxApp",
       "methodName": "updateMaterialProperty"
     },
@@ -3619,7 +3690,7 @@
       "name": "DEFAULT_CLASS_CONFIGS",
       "kind": "const",
       "file": "game/src/character-lab/CharacterSandboxApp.ts",
-      "line": 19
+      "line": 20
     },
     {
       "name": "DEFAULT_DEMO_LEADERBOARDS",

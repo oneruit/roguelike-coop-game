@@ -7,6 +7,7 @@ import { MageTexturedSystem, MageViewAngleMode } from './MageTexturedSystem';
 import { MageCutoutRig } from './MageCutoutRig';
 import { MageReal3DSystem } from './MageReal3DSystem';
 import { VampireCutoutRig, VampirePaletteName, VampireCutoutToggles } from './VampireCutoutRig';
+import { AnimeWarrior3DSystem } from './AnimeWarrior3DSystem';
 import {
   CharacterClass,
   CharacterColors,
@@ -101,6 +102,27 @@ export const DEFAULT_CLASS_CONFIGS: Record<CharacterClass, CharacterConfig> = {
       showSecondary: true,
     },
   },
+  anime_warrior: {
+    classType: 'anime_warrior',
+    colors: {
+      skin: '#fce7f3',
+      hair: '#f43f5e',
+      primaryArmor: '#1e293b',
+      secondaryArmor: '#f472b6',
+      accent: '#ec4899',
+      emissive: '#f472b6',
+    },
+    materials: {
+      metalness: 0.2,
+      roughness: 0.55,
+    },
+    equipment: {
+      showHelmet: false,
+      showShoulders: false,
+      showCape: false,
+      showSecondary: true,
+    },
+  },
 };
 
 export class CharacterSandboxApp {
@@ -118,6 +140,7 @@ export class CharacterSandboxApp {
   public mageCutoutRig: MageCutoutRig;
   public mageReal3DSystem: MageReal3DSystem;
   public vampireCutoutRig: VampireCutoutRig;
+  public animeWarrior3DSystem: AnimeWarrior3DSystem;
   public mageRenderMode: 'real3d' | 'cutout' | 'textured' | 'procedural' = 'real3d';
 
   // Active configuration
@@ -205,6 +228,7 @@ export class CharacterSandboxApp {
     this.mageCutoutRig = new MageCutoutRig(this.rig);
     this.mageReal3DSystem = new MageReal3DSystem(this.rig);
     this.vampireCutoutRig = new VampireCutoutRig(this.rig);
+    this.animeWarrior3DSystem = new AnimeWarrior3DSystem(this.rig);
 
     this.scene.add(this.rig.root);
     this.applyClass('warrior');
@@ -255,7 +279,17 @@ export class CharacterSandboxApp {
     this.modularSystem.updateColors(this.currentConfig.colors);
     this.modularSystem.updateMaterials(this.currentConfig.materials);
 
-    if (classType === 'vampire') {
+    if (classType === 'anime_warrior') {
+      this.rig.setProceduralMeshesVisible(false);
+      this.modularSystem.clearEquipment();
+      this.mageReal3DSystem.setVisible(false);
+      this.mageCutoutRig.setVisible(false);
+      this.mageTexturedSystem.setVisible(false);
+      this.vampireCutoutRig.setVisible(false);
+      this.animeWarrior3DSystem.setVisible(true);
+      this.animeWarrior3DSystem.setAnimationState('idle');
+    } else if (classType === 'vampire') {
+      this.animeWarrior3DSystem.setVisible(false);
       this.rig.setProceduralMeshesVisible(false);
       this.modularSystem.clearEquipment();
       this.mageReal3DSystem.setVisible(false);
@@ -263,6 +297,7 @@ export class CharacterSandboxApp {
       this.mageTexturedSystem.setVisible(false);
       this.vampireCutoutRig.setVisible(true);
     } else if (classType === 'mage') {
+      this.animeWarrior3DSystem.setVisible(false);
       this.vampireCutoutRig.setVisible(false);
       if (this.mageRenderMode === 'real3d') {
         this.rig.setProceduralMeshesVisible(false);
@@ -290,6 +325,7 @@ export class CharacterSandboxApp {
         this.modularSystem.applyClass('mage', this.currentConfig.equipment);
       }
     } else {
+      this.animeWarrior3DSystem.setVisible(false);
       this.vampireCutoutRig.setVisible(false);
       this.mageReal3DSystem.setVisible(false);
       this.mageCutoutRig.setVisible(false);
@@ -309,6 +345,8 @@ export class CharacterSandboxApp {
       this.rimLight.color.set(0x34d399); // Emerald leaf
     } else if (classType === 'vampire') {
       this.rimLight.color.set(0xef4444); // Crimson blood
+    } else if (classType === 'anime_warrior') {
+      this.rimLight.color.set(0xf472b6); // Sakura blossom pink
     } else {
       this.rimLight.color.set(0xa855f7); // Violet arcane
     }
@@ -338,16 +376,19 @@ export class CharacterSandboxApp {
   public setAnimation(state: 'idle' | 'walk' | 'run' | 'attack') {
     this.animator.setState(state);
     this.mageReal3DSystem.setAnimationState(state);
+    this.animeWarrior3DSystem.setAnimationState(state);
   }
 
   public triggerAttack() {
     this.animator.triggerAttack();
     this.mageReal3DSystem.setAnimationState('attack');
+    this.animeWarrior3DSystem.triggerAttack();
   }
 
   public setPlaybackSpeed(speed: number) {
     this.animator.playbackSpeed = speed;
     this.mageReal3DSystem.playbackSpeed = speed;
+    this.animeWarrior3DSystem.playbackSpeed = speed;
   }
 
   public updateColor(slot: keyof CharacterColors, value: string) {
@@ -436,7 +477,9 @@ export class CharacterSandboxApp {
     this.controls.update();
     this.animator.update(delta);
 
-    if (this.currentClass === 'vampire') {
+    if (this.currentClass === 'anime_warrior') {
+      this.animeWarrior3DSystem.update(delta);
+    } else if (this.currentClass === 'vampire') {
       this.vampireCutoutRig.update(elapsedTime, this.animator.currentState, this.animator.playbackSpeed);
     } else if (this.currentClass === 'mage') {
       if (this.mageRenderMode === 'real3d') {

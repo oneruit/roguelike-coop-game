@@ -216,6 +216,23 @@ window.addEventListener('DOMContentLoaded', () => {
   toggleVampireArms?.addEventListener('change', (e) => app.toggleVampirePart('arms', (e.target as HTMLInputElement).checked));
   toggleVampireAura?.addEventListener('change', (e) => app.toggleVampirePart('aura', (e.target as HTMLInputElement).checked));
 
+  // Anime Warrior Buttons
+  const btnAnimeIdle = document.getElementById('btn-anime-idle');
+  const btnAnimeWalk = document.getElementById('btn-anime-walk');
+  const btnAnimeAttack = document.getElementById('btn-anime-attack');
+
+  btnAnimeIdle?.addEventListener('click', () => {
+    app.setAnimation('idle');
+    animButtons.forEach((b) => b.classList.toggle('active', b.dataset.anim === 'idle'));
+  });
+  btnAnimeWalk?.addEventListener('click', () => {
+    app.setAnimation('walk');
+    animButtons.forEach((b) => b.classList.toggle('active', b.dataset.anim === 'walk'));
+  });
+  btnAnimeAttack?.addEventListener('click', () => {
+    app.triggerAttack();
+  });
+
   function syncUIWithConfig(classType: CharacterClass) {
     const mageSection = document.getElementById('mage-texture-section');
     if (mageSection) {
@@ -225,6 +242,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const vampireSection = document.getElementById('vampire-custom-section');
     if (vampireSection) {
       vampireSection.style.display = classType === 'vampire' ? 'block' : 'none';
+    }
+
+    const animeWarriorSection = document.getElementById('anime-warrior-section');
+    if (animeWarriorSection) {
+      animeWarriorSection.style.display = classType === 'anime_warrior' ? 'block' : 'none';
     }
 
     const config = DEFAULT_CLASS_CONFIGS[classType];
