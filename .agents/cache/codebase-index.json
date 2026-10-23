@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-23T06:35:50.805Z",
+  "generatedAt": "2026-10-23T13:58:00.732Z",
   "totalFiles": 207,
   "totalSymbols": 1971,
   "topLevelCount": 611,
@@ -504,7 +504,7 @@
       {
         "id": "stage5_boss",
         "name": "Древний Титан Святилища",
-        "hp": 100000000,
+        "hp": 20000000,
         "speed": 3.2,
         "damage": 95,
         "description": "Древний хранитель рунического святилища 5 тира"
