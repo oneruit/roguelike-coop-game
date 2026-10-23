@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-22T23:05:28.071Z | **Files:** 207 | **Top-level:** 611 | **Class Methods:** 1355
+> **Generated:** 2026-10-23T06:35:50.805Z | **Files:** 207 | **Top-level:** 611 | **Class Methods:** 1360
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -223,7 +223,7 @@ Run `npm run index` to refresh this cache.
 | `BP_SEASON_SUBTITLE` | `const` | [`game/src/core/BattlePassManager.ts:16`](../../game/src/core/BattlePassManager.ts#L16) | - |
 | `BP_SEASON_TITLE` | `const` | [`game/src/core/BattlePassManager.ts:15`](../../game/src/core/BattlePassManager.ts#L15) | - |
 | `BUFF_TYPES` | `const` | [`game/src/shared/types/registry.ts:47`](../../game/src/shared/types/registry.ts#L47) | - |
-| `BufferedInputAction` | `interface` | [`game/src/core/InputBuffer.ts:19`](../../game/src/core/InputBuffer.ts#L19) | - |
+| `BufferedInputAction` | `interface` | [`game/src/core/InputBuffer.ts:20`](../../game/src/core/InputBuffer.ts#L20) | - |
 | `BuffType` | `type` | [`game/src/shared/types/entities.ts:12`](../../game/src/shared/types/entities.ts#L12) | - |
 | `calculateBattlePassPoints` | `function` | [`game/src/core/BattlePassManager.ts:30`](../../game/src/core/BattlePassManager.ts#L30) | Calculates Battle Pass experience points awarded for a run based on surviva... |
 | `CalculatedPlayerStats` | `interface` | [`game/src/mechanics/player/PlayerStats.ts:14`](../../game/src/mechanics/player/PlayerStats.ts#L14) | - |
@@ -719,9 +719,9 @@ Run `npm run index` to refresh this cache.
 | `HUD.clearTeammates` | `method` | [`game/src/ui/HUD.ts:1429`](../../game/src/ui/HUD.ts#L1429) | - |
 | `HUD.closeAllPreGameModals` | `method` | [`game/src/ui/HUD.ts:816`](../../game/src/ui/HUD.ts#L816) | - |
 | `HUD.getChapterQuests` | `method` | [`game/src/ui/HUD.ts:1174`](../../game/src/ui/HUD.ts#L1174) | - |
-| `HUD.getHeroAvatar` | `method` | [`game/src/ui/HUD.ts:1560`](../../game/src/ui/HUD.ts#L1560) | - |
-| `HUD.getHeroIcon` | `method` | [`game/src/ui/HUD.ts:1552`](../../game/src/ui/HUD.ts#L1552) | --- Hero Info Static / Instance Helpers --- |
-| `HUD.getHeroName` | `method` | [`game/src/ui/HUD.ts:1556`](../../game/src/ui/HUD.ts#L1556) | - |
+| `HUD.getHeroAvatar` | `method` | [`game/src/ui/HUD.ts:1564`](../../game/src/ui/HUD.ts#L1564) | - |
+| `HUD.getHeroIcon` | `method` | [`game/src/ui/HUD.ts:1556`](../../game/src/ui/HUD.ts#L1556) | --- Hero Info Static / Instance Helpers --- |
+| `HUD.getHeroName` | `method` | [`game/src/ui/HUD.ts:1560`](../../game/src/ui/HUD.ts#L1560) | - |
 | `HUD.handleClaimAllBattlePass` | `method` | [`game/src/ui/HUD.ts:1212`](../../game/src/ui/HUD.ts#L1212) | - |
 | `HUD.handleEscape` | `method` | [`game/src/ui/HUD.ts:982`](../../game/src/ui/HUD.ts#L982) | - |
 | `HUD.hideAuthModal` | `method` | [`game/src/ui/HUD.ts:965`](../../game/src/ui/HUD.ts#L965) | - |
@@ -769,7 +769,7 @@ Run `npm run index` to refresh this cache.
 | `HUD.setHostPartnerConnected` | `method` | [`game/src/ui/HUD.ts:1226`](../../game/src/ui/HUD.ts#L1226) | - |
 | `HUD.setInGameHUDVisible` | `method` | [`game/src/ui/HUD.ts:1166`](../../game/src/ui/HUD.ts#L1166) | - |
 | `HUD.setJoinStatus` | `method` | [`game/src/ui/HUD.ts:1262`](../../game/src/ui/HUD.ts#L1262) | - |
-| `HUD.setTrainingModeActive` | `method` | [`game/src/ui/HUD.ts:1537`](../../game/src/ui/HUD.ts#L1537) | - |
+| `HUD.setTrainingModeActive` | `method` | [`game/src/ui/HUD.ts:1541`](../../game/src/ui/HUD.ts#L1541) | - |
 | `HUD.setupExitListeners` | `method` | [`game/src/ui/HUD.ts:729`](../../game/src/ui/HUD.ts#L729) | - |
 | `HUD.showAuthModal` | `method` | [`game/src/ui/HUD.ts:958`](../../game/src/ui/HUD.ts#L958) | - |
 | `HUD.showBalanceToast` | `method` | [`game/src/ui/HUD.ts:1485`](../../game/src/ui/HUD.ts#L1485) | - |
@@ -792,6 +792,7 @@ Run `npm run index` to refresh this cache.
 | `HUD.showSettings` | `method` | [`game/src/ui/HUD.ts:868`](../../game/src/ui/HUD.ts#L868) | - |
 | `HUD.showShopModal` | `method` | [`game/src/ui/HUD.ts:830`](../../game/src/ui/HUD.ts#L830) | - |
 | `HUD.switchJoinTab` | `method` | [`game/src/ui/HUD.ts:1274`](../../game/src/ui/HUD.ts#L1274) | - |
+| `HUD.toggleDpsMeter` | `method` | [`game/src/ui/HUD.ts:1537`](../../game/src/ui/HUD.ts#L1537) | - |
 | `HUD.toggleInventory` | `method` | [`game/src/ui/HUD.ts:1298`](../../game/src/ui/HUD.ts#L1298) | - |
 | `HUD.togglePause` | `method` | [`game/src/ui/HUD.ts:919`](../../game/src/ui/HUD.ts#L919) | - |
 | `HUD.toggleQuestsInMainMenu` | `method` | [`game/src/ui/HUD.ts:1149`](../../game/src/ui/HUD.ts#L1149) | --- Quests Methods Forwarding --- |
@@ -825,52 +826,56 @@ Run `npm run index` to refresh this cache.
 | `InGameHUDScreen.getTemplate` | `method` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:18`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L18) | - |
 | `InGameHUDScreenOptions` | `interface` | [`game/src/ui/screens/InGameHUD/InGameHUDScreen.ts:4`](../../game/src/ui/screens/InGameHUD/InGameHUDScreen.ts#L4) | - |
 | `InGameOverlayUI` | `class` | [`game/src/ui/modules/InGameOverlayUI.ts:16`](../../game/src/ui/modules/InGameOverlayUI.ts#L16) | - |
-| `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:484`](../../game/src/ui/modules/InGameOverlayUI.ts#L484) | - |
-| `InGameOverlayUI.hideGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:967`](../../game/src/ui/modules/InGameOverlayUI.ts#L967) | - |
-| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:710`](../../game/src/ui/modules/InGameOverlayUI.ts#L710) | - |
-| `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:511`](../../game/src/ui/modules/InGameOverlayUI.ts#L511) | - |
-| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:716`](../../game/src/ui/modules/InGameOverlayUI.ts#L716) | - |
-| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:929`](../../game/src/ui/modules/InGameOverlayUI.ts#L929) | - |
-| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1050`](../../game/src/ui/modules/InGameOverlayUI.ts#L1050) | - |
-| `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:171`](../../game/src/ui/modules/InGameOverlayUI.ts#L171) | - |
-| `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:166`](../../game/src/ui/modules/InGameOverlayUI.ts#L166) | - |
-| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1082`](../../game/src/ui/modules/InGameOverlayUI.ts#L1082) | - |
-| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:760`](../../game/src/ui/modules/InGameOverlayUI.ts#L760) | - |
-| `InGameOverlayUI.showGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:949`](../../game/src/ui/modules/InGameOverlayUI.ts#L949) | - |
-| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:703`](../../game/src/ui/modules/InGameOverlayUI.ts#L703) | - |
-| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:742`](../../game/src/ui/modules/InGameOverlayUI.ts#L742) | - |
-| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:889`](../../game/src/ui/modules/InGameOverlayUI.ts#L889) | - |
-| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:874`](../../game/src/ui/modules/InGameOverlayUI.ts#L874) | - |
-| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:909`](../../game/src/ui/modules/InGameOverlayUI.ts#L909) | - |
-| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:807`](../../game/src/ui/modules/InGameOverlayUI.ts#L807) | - |
-| `InGameOverlayUI.updateGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:956`](../../game/src/ui/modules/InGameOverlayUI.ts#L956) | - |
-| `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:494`](../../game/src/ui/modules/InGameOverlayUI.ts#L494) | - |
-| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1008`](../../game/src/ui/modules/InGameOverlayUI.ts#L1008) | - |
-| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1013`](../../game/src/ui/modules/InGameOverlayUI.ts#L1013) | - |
-| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:644`](../../game/src/ui/modules/InGameOverlayUI.ts#L644) | - |
-| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:686`](../../game/src/ui/modules/InGameOverlayUI.ts#L686) | - |
-| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:973`](../../game/src/ui/modules/InGameOverlayUI.ts#L973) | - |
+| `InGameOverlayUI.applyDpsMeterState` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1160`](../../game/src/ui/modules/InGameOverlayUI.ts#L1160) | - |
+| `InGameOverlayUI.clearTeammates` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:524`](../../game/src/ui/modules/InGameOverlayUI.ts#L524) | - |
+| `InGameOverlayUI.formatDpsNumber` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1171`](../../game/src/ui/modules/InGameOverlayUI.ts#L1171) | - |
+| `InGameOverlayUI.hideGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1010`](../../game/src/ui/modules/InGameOverlayUI.ts#L1010) | - |
+| `InGameOverlayUI.hideInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:753`](../../game/src/ui/modules/InGameOverlayUI.ts#L753) | - |
+| `InGameOverlayUI.hidePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:551`](../../game/src/ui/modules/InGameOverlayUI.ts#L551) | - |
+| `InGameOverlayUI.renderItemInventory` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:759`](../../game/src/ui/modules/InGameOverlayUI.ts#L759) | - |
+| `InGameOverlayUI.resetBossUI` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:972`](../../game/src/ui/modules/InGameOverlayUI.ts#L972) | - |
+| `InGameOverlayUI.resetSessionHUD` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1093`](../../game/src/ui/modules/InGameOverlayUI.ts#L1093) | - |
+| `InGameOverlayUI.setCoopBadge` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:211`](../../game/src/ui/modules/InGameOverlayUI.ts#L211) | - |
+| `InGameOverlayUI.setInGameHUDVisible` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:206`](../../game/src/ui/modules/InGameOverlayUI.ts#L206) | - |
+| `InGameOverlayUI.setTrainingModeActive` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1134`](../../game/src/ui/modules/InGameOverlayUI.ts#L1134) | - |
+| `InGameOverlayUI.showBalanceToast` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:803`](../../game/src/ui/modules/InGameOverlayUI.ts#L803) | - |
+| `InGameOverlayUI.showGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:992`](../../game/src/ui/modules/InGameOverlayUI.ts#L992) | - |
+| `InGameOverlayUI.showInteractionPrompt` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:746`](../../game/src/ui/modules/InGameOverlayUI.ts#L746) | - |
+| `InGameOverlayUI.toggleDpsMeter` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1150`](../../game/src/ui/modules/InGameOverlayUI.ts#L1150) | - |
+| `InGameOverlayUI.triggerAltarNotification` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:785`](../../game/src/ui/modules/InGameOverlayUI.ts#L785) | - |
+| `InGameOverlayUI.triggerBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:932`](../../game/src/ui/modules/InGameOverlayUI.ts#L932) | - |
+| `InGameOverlayUI.triggerDamageFlash` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:917`](../../game/src/ui/modules/InGameOverlayUI.ts#L917) | - |
+| `InGameOverlayUI.triggerImmortalBossWarning` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:952`](../../game/src/ui/modules/InGameOverlayUI.ts#L952) | - |
+| `InGameOverlayUI.updateBuffsTray` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:850`](../../game/src/ui/modules/InGameOverlayUI.ts#L850) | - |
+| `InGameOverlayUI.updateDpsMeter` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1184`](../../game/src/ui/modules/InGameOverlayUI.ts#L1184) | - |
+| `InGameOverlayUI.updateGreedTrialTimer` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:999`](../../game/src/ui/modules/InGameOverlayUI.ts#L999) | - |
+| `InGameOverlayUI.updatePartnerHp` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:534`](../../game/src/ui/modules/InGameOverlayUI.ts#L534) | - |
+| `InGameOverlayUI.updatePassivesBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1051`](../../game/src/ui/modules/InGameOverlayUI.ts#L1051) | - |
+| `InGameOverlayUI.updatePerformance` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1056`](../../game/src/ui/modules/InGameOverlayUI.ts#L1056) | - |
+| `InGameOverlayUI.updateStageText` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:687`](../../game/src/ui/modules/InGameOverlayUI.ts#L687) | - |
+| `InGameOverlayUI.updateTeleportButton` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:729`](../../game/src/ui/modules/InGameOverlayUI.ts#L729) | - |
+| `InGameOverlayUI.updateWeaponsBar` | `method` | [`game/src/ui/modules/InGameOverlayUI.ts:1016`](../../game/src/ui/modules/InGameOverlayUI.ts#L1016) | - |
 | `initReactUI` | `function` | [`game/src/ui/react/mountReactUI.tsx:9`](../../game/src/ui/react/mountReactUI.tsx#L9) | Initializes and mounts React UI Root into DOM container. |
 | `InputActionType` | `type` | [`game/src/core/InputBuffer.ts:6`](../../game/src/core/InputBuffer.ts#L6) | High-performance, zero-React input buffer for game actions and continuous d... |
-| `InputBuffer` | `class` | [`game/src/core/InputBuffer.ts:25`](../../game/src/core/InputBuffer.ts#L25) | - |
-| `InputBuffer.clear` | `method` | [`game/src/core/InputBuffer.ts:118`](../../game/src/core/InputBuffer.ts#L118) | Clears all queued actions and resets vectors. |
-| `InputBuffer.consumeAction` | `method` | [`game/src/core/InputBuffer.ts:69`](../../game/src/core/InputBuffer.ts#L69) | Consumes and removes the earliest action of a specific type. |
-| `InputBuffer.consumeActions` | `method` | [`game/src/core/InputBuffer.ts:59`](../../game/src/core/InputBuffer.ts#L59) | Consumes and removes all pending actions at the start of a simulation tick. |
-| `InputBuffer.getAimPosition` | `method` | [`game/src/core/InputBuffer.ts:111`](../../game/src/core/InputBuffer.ts#L111) | Returns current aim world position. |
-| `InputBuffer.getInstance` | `method` | [`game/src/core/InputBuffer.ts:31`](../../game/src/core/InputBuffer.ts#L31) | - |
-| `InputBuffer.getMoveVector` | `method` | [`game/src/core/InputBuffer.ts:96`](../../game/src/core/InputBuffer.ts#L96) | Returns current continuous move vector. |
-| `InputBuffer.hasAction` | `method` | [`game/src/core/InputBuffer.ts:81`](../../game/src/core/InputBuffer.ts#L81) | Checks if a specific action is queued without consuming it. |
-| `InputBuffer.queueAction` | `method` | [`game/src/core/InputBuffer.ts:48`](../../game/src/core/InputBuffer.ts#L48) | Pushes a discrete action into the queue. |
-| `InputBuffer.resetInstance` | `method` | [`game/src/core/InputBuffer.ts:41`](../../game/src/core/InputBuffer.ts#L41) | Resets singleton instance (useful for unit testing). |
-| `InputBuffer.setAimPosition` | `method` | [`game/src/core/InputBuffer.ts:103`](../../game/src/core/InputBuffer.ts#L103) | Sets current mouse/aim world position on XZ plane. |
-| `InputBuffer.setMoveVector` | `method` | [`game/src/core/InputBuffer.ts:88`](../../game/src/core/InputBuffer.ts#L88) | Sets continuous 2D move vector on XZ plane. |
+| `InputBuffer` | `class` | [`game/src/core/InputBuffer.ts:26`](../../game/src/core/InputBuffer.ts#L26) | - |
+| `InputBuffer.clear` | `method` | [`game/src/core/InputBuffer.ts:119`](../../game/src/core/InputBuffer.ts#L119) | Clears all queued actions and resets vectors. |
+| `InputBuffer.consumeAction` | `method` | [`game/src/core/InputBuffer.ts:70`](../../game/src/core/InputBuffer.ts#L70) | Consumes and removes the earliest action of a specific type. |
+| `InputBuffer.consumeActions` | `method` | [`game/src/core/InputBuffer.ts:60`](../../game/src/core/InputBuffer.ts#L60) | Consumes and removes all pending actions at the start of a simulation tick. |
+| `InputBuffer.getAimPosition` | `method` | [`game/src/core/InputBuffer.ts:112`](../../game/src/core/InputBuffer.ts#L112) | Returns current aim world position. |
+| `InputBuffer.getInstance` | `method` | [`game/src/core/InputBuffer.ts:32`](../../game/src/core/InputBuffer.ts#L32) | - |
+| `InputBuffer.getMoveVector` | `method` | [`game/src/core/InputBuffer.ts:97`](../../game/src/core/InputBuffer.ts#L97) | Returns current continuous move vector. |
+| `InputBuffer.hasAction` | `method` | [`game/src/core/InputBuffer.ts:82`](../../game/src/core/InputBuffer.ts#L82) | Checks if a specific action is queued without consuming it. |
+| `InputBuffer.queueAction` | `method` | [`game/src/core/InputBuffer.ts:49`](../../game/src/core/InputBuffer.ts#L49) | Pushes a discrete action into the queue. |
+| `InputBuffer.resetInstance` | `method` | [`game/src/core/InputBuffer.ts:42`](../../game/src/core/InputBuffer.ts#L42) | Resets singleton instance (useful for unit testing). |
+| `InputBuffer.setAimPosition` | `method` | [`game/src/core/InputBuffer.ts:104`](../../game/src/core/InputBuffer.ts#L104) | Sets current mouse/aim world position on XZ plane. |
+| `InputBuffer.setMoveVector` | `method` | [`game/src/core/InputBuffer.ts:89`](../../game/src/core/InputBuffer.ts#L89) | Sets continuous 2D move vector on XZ plane. |
 | `InputManager` | `class` | [`game/src/core/InputManager.ts:4`](../../game/src/core/InputManager.ts#L4) | - |
-| `InputManager.isInteractHeld` | `method` | [`game/src/core/InputManager.ts:131`](../../game/src/core/InputManager.ts#L131) | - |
-| `InputManager.isKeyDown` | `method` | [`game/src/core/InputManager.ts:127`](../../game/src/core/InputManager.ts#L127) | - |
-| `InputManager.onKeyDown` | `method` | [`game/src/core/InputManager.ts:27`](../../game/src/core/InputManager.ts#L27) | - |
-| `InputManager.onKeyUp` | `method` | [`game/src/core/InputManager.ts:97`](../../game/src/core/InputManager.ts#L97) | - |
-| `InputManager.onMouseMove` | `method` | [`game/src/core/InputManager.ts:101`](../../game/src/core/InputManager.ts#L101) | - |
-| `InputManager.update` | `method` | [`game/src/core/InputManager.ts:106`](../../game/src/core/InputManager.ts#L106) | - |
+| `InputManager.isInteractHeld` | `method` | [`game/src/core/InputManager.ts:139`](../../game/src/core/InputManager.ts#L139) | - |
+| `InputManager.isKeyDown` | `method` | [`game/src/core/InputManager.ts:135`](../../game/src/core/InputManager.ts#L135) | - |
+| `InputManager.onKeyDown` | `method` | [`game/src/core/InputManager.ts:28`](../../game/src/core/InputManager.ts#L28) | - |
+| `InputManager.onKeyUp` | `method` | [`game/src/core/InputManager.ts:105`](../../game/src/core/InputManager.ts#L105) | - |
+| `InputManager.onMouseMove` | `method` | [`game/src/core/InputManager.ts:109`](../../game/src/core/InputManager.ts#L109) | - |
+| `InputManager.update` | `method` | [`game/src/core/InputManager.ts:114`](../../game/src/core/InputManager.ts#L114) | - |
 | `InventoryScreen` | `class` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:12`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L12) | - |
 | `InventoryScreen.bindElements` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:48`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L48) | - |
 | `InventoryScreen.bindEvents` | `method` | [`game/src/ui/screens/Inventory/InventoryScreen.ts:67`](../../game/src/ui/screens/Inventory/InventoryScreen.ts#L67) | - |

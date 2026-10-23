@@ -14,6 +14,7 @@ export class InputManager {
   public onToggleMap?: () => void;
   public onToggleDebugHud?: () => void;
   public onToggleInventory?: () => void;
+  public onToggleDpsMeter?: () => void;
   public onInteract?: () => void;
   public onDash?: () => void;
   public onTeleportToRift?: () => void;
@@ -83,6 +84,13 @@ export class InputManager {
       inputBuffer.queueAction('toggle_pause');
       if (this.onTogglePause) {
         this.onTogglePause();
+      }
+    }
+
+    if (e.code === 'KeyQ') {
+      inputBuffer.queueAction('toggle_dps_meter');
+      if (this.onToggleDpsMeter) {
+        this.onToggleDpsMeter();
       }
     }
 

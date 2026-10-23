@@ -1534,6 +1534,10 @@ export class HUD {
     this.inGameOverlayUI.updatePerformance(fps, pingMs);
   }
 
+  public toggleDpsMeter() {
+    this.inGameOverlayUI.toggleDpsMeter();
+  }
+
   public setTrainingModeActive(active: boolean) {
     this.isTrainingModeActive = active;
     this.inGameOverlayUI.setTrainingModeActive(active);
