@@ -214,11 +214,11 @@ test('EnemyManager - spawnTieredBoss vs spawnTeleporterBoss stage 5 final boss f
   const stage4Boss = enemyManager.spawnTeleporterBoss(new Vector3(10, 0, 10), 4);
   assert.equal(stage4Boss.isStage5FinalBoss, false);
 
-  // 3. Spawning stage 5 teleporter boss DOES mark isStage5FinalBoss, has 100M HP and standard boss resistance
+  // 3. Spawning stage 5 teleporter boss DOES mark isStage5FinalBoss, has 20M HP and standard boss resistance
   const stage5Boss = enemyManager.spawnTeleporterBoss(new Vector3(20, 0, 20), 5);
   assert.equal(stage5Boss.isStage5FinalBoss, true);
   assert.equal(stage5Boss.isBoss, true);
-  assert.equal(stage5Boss.hp, 100_000_000, 'Stage 5 Final Boss must spawn with exactly 100M HP');
+  assert.equal(stage5Boss.hp, 20_000_000, 'Stage 5 Final Boss must spawn with exactly 20M HP');
   assert.equal(stage5Boss.isInvulnerable, false, 'Stage 5 Boss must not have invulnerability shield');
 
   // Verify damage resistance is preserved across EnemyManager.update() ticks

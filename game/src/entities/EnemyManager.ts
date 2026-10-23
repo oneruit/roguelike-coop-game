@@ -189,7 +189,7 @@ export class EnemyManager {
       type: 'stage5_boss',
       name: 'Древний Титан Святилища',
       texturePrefix: '/textures/bosses/boss_hydra',
-      hp: 100000000,
+      hp: 20000000,
       speed: 3.2,
       damage: 95,
       width: 10.5,
@@ -810,7 +810,7 @@ export class EnemyManager {
 
     const diffCoeff = DifficultyDirector.getDifficultyCoefficient(this.gameTime, this.activePlayerCount, stage);
     const hpStageMult = isStage5 ? 1.0 : isSporeQueen ? (1.3 + (stage - 1) * 0.8) : isHydra ? (1.1 + (stage - 1) * 0.7) : (1.2 + (stage - 1) * 1.5);
-    const tierHp = isStage5 ? 100_000_000 : Math.round(baseHp * hpStageMult * diffCoeff);
+    const tierHp = isStage5 ? (this.configs.stage5_boss?.hp ?? 20_000_000) : Math.round(baseHp * hpStageMult * diffCoeff);
     const tierDmg = Math.round(baseDmg * (1 + (stage - 1) * 0.35) * (1 + (diffCoeff - 1) * 0.25));
 
     const stageBossNames = [
@@ -843,7 +843,7 @@ export class EnemyManager {
       boss.ccResistance = Math.max(0.65, boss.ccResistance);
       boss.damageResistance = 0.15;
       boss.knockbackResistance = 0.95;
-      // Boss mechanics removed: pure 100M HP titan, no invulnerability pylons!
+      // Boss mechanics removed: pure 20M HP titan, no invulnerability pylons!
     } else if (isSporeQueen) {
       boss.ccResistance = Math.max(0.75, boss.ccResistance);
       boss.damageResistance = Math.max(0.35, boss.damageResistance);
