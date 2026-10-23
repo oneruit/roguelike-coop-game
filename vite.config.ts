@@ -176,7 +176,8 @@ export default defineConfig(({ command }) => {
         input: {
           main: path.resolve(process.cwd(), 'index.html'),
           game: path.resolve(process.cwd(), 'game/index.html'),
-          characterLab: path.resolve(process.cwd(), 'game/character-lab.html')
+          characterLab: path.resolve(process.cwd(), 'game/character-lab.html'),
+          tripoDownloader: path.resolve(process.cwd(), 'game/tripo-downloader.html')
         },
         output: {
           manualChunks(id) {
