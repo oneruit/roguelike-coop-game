@@ -486,6 +486,19 @@ class Game {
       this.hud.toggleInventory(this.player);
     };
 
+    this.input.onToggleDpsMeter = () => {
+      if (
+        this.sessionDirector.gameState === GameState.MAIN_MENU ||
+        this.sessionDirector.gameState === GameState.HOST_LOBBY ||
+        this.sessionDirector.gameState === GameState.JOIN_LOBBY ||
+        this.sessionDirector.gameState === GameState.CHARACTER_SELECT ||
+        this.sessionDirector.gameState === GameState.GAME_OVER
+      ) {
+        return;
+      }
+      this.hud.toggleDpsMeter();
+    };
+
     this.input.onToggleMap = () => {
       if (
         this.sessionDirector.isRewardChoiceActive ||

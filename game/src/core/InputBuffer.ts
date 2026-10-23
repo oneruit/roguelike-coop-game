@@ -12,6 +12,7 @@ export type InputActionType =
   | 'toggle_pause'
   | 'toggle_dev_mode'
   | 'toggle_debug_hud'
+  | 'toggle_dps_meter'
   | 'cast_ability_1'
   | 'cast_ability_2'
   | 'cast_ability_3';

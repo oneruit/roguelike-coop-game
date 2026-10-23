@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-22T23:05:28.071Z",
+  "generatedAt": "2026-10-23T06:35:50.805Z",
   "totalFiles": 207,
-  "totalSymbols": 1966,
+  "totalSymbols": 1971,
   "topLevelCount": 611,
-  "methodsCount": 1355,
+  "methodsCount": 1360,
   "entities": {
     "heroes": [
       {
@@ -2211,7 +2211,7 @@
       "name": "BufferedInputAction",
       "kind": "interface",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 19
+      "line": 20
     },
     {
       "name": "BuffType",
@@ -5942,7 +5942,7 @@
       "name": "HUD.getHeroAvatar",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1560,
+      "line": 1564,
       "className": "HUD",
       "methodName": "getHeroAvatar"
     },
@@ -5950,7 +5950,7 @@
       "name": "HUD.getHeroIcon",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1552,
+      "line": 1556,
       "className": "HUD",
       "methodName": "getHeroIcon",
       "doc": "--- Hero Info Static / Instance Helpers ---"
@@ -5959,7 +5959,7 @@
       "name": "HUD.getHeroName",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1556,
+      "line": 1560,
       "className": "HUD",
       "methodName": "getHeroName"
     },
@@ -6346,7 +6346,7 @@
       "name": "HUD.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/HUD.ts",
-      "line": 1537,
+      "line": 1541,
       "className": "HUD",
       "methodName": "setTrainingModeActive"
     },
@@ -6530,6 +6530,14 @@
       "line": 1274,
       "className": "HUD",
       "methodName": "switchJoinTab"
+    },
+    {
+      "name": "HUD.toggleDpsMeter",
+      "kind": "method",
+      "file": "game/src/ui/HUD.ts",
+      "line": 1537,
+      "className": "HUD",
+      "methodName": "toggleDpsMeter"
     },
     {
       "name": "HUD.toggleInventory",
@@ -6790,18 +6798,34 @@
       "line": 16
     },
     {
+      "name": "InGameOverlayUI.applyDpsMeterState",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 1160,
+      "className": "InGameOverlayUI",
+      "methodName": "applyDpsMeterState"
+    },
+    {
       "name": "InGameOverlayUI.clearTeammates",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 484,
+      "line": 524,
       "className": "InGameOverlayUI",
       "methodName": "clearTeammates"
+    },
+    {
+      "name": "InGameOverlayUI.formatDpsNumber",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 1171,
+      "className": "InGameOverlayUI",
+      "methodName": "formatDpsNumber"
     },
     {
       "name": "InGameOverlayUI.hideGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 967,
+      "line": 1010,
       "className": "InGameOverlayUI",
       "methodName": "hideGreedTrialTimer"
     },
@@ -6809,7 +6833,7 @@
       "name": "InGameOverlayUI.hideInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 710,
+      "line": 753,
       "className": "InGameOverlayUI",
       "methodName": "hideInteractionPrompt"
     },
@@ -6817,7 +6841,7 @@
       "name": "InGameOverlayUI.hidePartnerHp",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 511,
+      "line": 551,
       "className": "InGameOverlayUI",
       "methodName": "hidePartnerHp"
     },
@@ -6825,7 +6849,7 @@
       "name": "InGameOverlayUI.renderItemInventory",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 716,
+      "line": 759,
       "className": "InGameOverlayUI",
       "methodName": "renderItemInventory"
     },
@@ -6833,7 +6857,7 @@
       "name": "InGameOverlayUI.resetBossUI",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 929,
+      "line": 972,
       "className": "InGameOverlayUI",
       "methodName": "resetBossUI"
     },
@@ -6841,7 +6865,7 @@
       "name": "InGameOverlayUI.resetSessionHUD",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1050,
+      "line": 1093,
       "className": "InGameOverlayUI",
       "methodName": "resetSessionHUD"
     },
@@ -6849,7 +6873,7 @@
       "name": "InGameOverlayUI.setCoopBadge",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 171,
+      "line": 211,
       "className": "InGameOverlayUI",
       "methodName": "setCoopBadge"
     },
@@ -6857,7 +6881,7 @@
       "name": "InGameOverlayUI.setInGameHUDVisible",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 166,
+      "line": 206,
       "className": "InGameOverlayUI",
       "methodName": "setInGameHUDVisible"
     },
@@ -6865,7 +6889,7 @@
       "name": "InGameOverlayUI.setTrainingModeActive",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1082,
+      "line": 1134,
       "className": "InGameOverlayUI",
       "methodName": "setTrainingModeActive"
     },
@@ -6873,7 +6897,7 @@
       "name": "InGameOverlayUI.showBalanceToast",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 760,
+      "line": 803,
       "className": "InGameOverlayUI",
       "methodName": "showBalanceToast"
     },
@@ -6881,7 +6905,7 @@
       "name": "InGameOverlayUI.showGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 949,
+      "line": 992,
       "className": "InGameOverlayUI",
       "methodName": "showGreedTrialTimer"
     },
@@ -6889,15 +6913,23 @@
       "name": "InGameOverlayUI.showInteractionPrompt",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 703,
+      "line": 746,
       "className": "InGameOverlayUI",
       "methodName": "showInteractionPrompt"
+    },
+    {
+      "name": "InGameOverlayUI.toggleDpsMeter",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 1150,
+      "className": "InGameOverlayUI",
+      "methodName": "toggleDpsMeter"
     },
     {
       "name": "InGameOverlayUI.triggerAltarNotification",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 742,
+      "line": 785,
       "className": "InGameOverlayUI",
       "methodName": "triggerAltarNotification"
     },
@@ -6905,7 +6937,7 @@
       "name": "InGameOverlayUI.triggerBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 889,
+      "line": 932,
       "className": "InGameOverlayUI",
       "methodName": "triggerBossWarning"
     },
@@ -6913,7 +6945,7 @@
       "name": "InGameOverlayUI.triggerDamageFlash",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 874,
+      "line": 917,
       "className": "InGameOverlayUI",
       "methodName": "triggerDamageFlash"
     },
@@ -6921,7 +6953,7 @@
       "name": "InGameOverlayUI.triggerImmortalBossWarning",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 909,
+      "line": 952,
       "className": "InGameOverlayUI",
       "methodName": "triggerImmortalBossWarning"
     },
@@ -6929,15 +6961,23 @@
       "name": "InGameOverlayUI.updateBuffsTray",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 807,
+      "line": 850,
       "className": "InGameOverlayUI",
       "methodName": "updateBuffsTray"
+    },
+    {
+      "name": "InGameOverlayUI.updateDpsMeter",
+      "kind": "method",
+      "file": "game/src/ui/modules/InGameOverlayUI.ts",
+      "line": 1184,
+      "className": "InGameOverlayUI",
+      "methodName": "updateDpsMeter"
     },
     {
       "name": "InGameOverlayUI.updateGreedTrialTimer",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 956,
+      "line": 999,
       "className": "InGameOverlayUI",
       "methodName": "updateGreedTrialTimer"
     },
@@ -6945,7 +6985,7 @@
       "name": "InGameOverlayUI.updatePartnerHp",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 494,
+      "line": 534,
       "className": "InGameOverlayUI",
       "methodName": "updatePartnerHp"
     },
@@ -6953,7 +6993,7 @@
       "name": "InGameOverlayUI.updatePassivesBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1008,
+      "line": 1051,
       "className": "InGameOverlayUI",
       "methodName": "updatePassivesBar"
     },
@@ -6961,7 +7001,7 @@
       "name": "InGameOverlayUI.updatePerformance",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 1013,
+      "line": 1056,
       "className": "InGameOverlayUI",
       "methodName": "updatePerformance"
     },
@@ -6969,7 +7009,7 @@
       "name": "InGameOverlayUI.updateStageText",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 644,
+      "line": 687,
       "className": "InGameOverlayUI",
       "methodName": "updateStageText"
     },
@@ -6977,7 +7017,7 @@
       "name": "InGameOverlayUI.updateTeleportButton",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 686,
+      "line": 729,
       "className": "InGameOverlayUI",
       "methodName": "updateTeleportButton"
     },
@@ -6985,7 +7025,7 @@
       "name": "InGameOverlayUI.updateWeaponsBar",
       "kind": "method",
       "file": "game/src/ui/modules/InGameOverlayUI.ts",
-      "line": 973,
+      "line": 1016,
       "className": "InGameOverlayUI",
       "methodName": "updateWeaponsBar"
     },
@@ -7007,13 +7047,13 @@
       "name": "InputBuffer",
       "kind": "class",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 25
+      "line": 26
     },
     {
       "name": "InputBuffer.clear",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 118,
+      "line": 119,
       "className": "InputBuffer",
       "methodName": "clear",
       "doc": "Clears all queued actions and resets vectors."
@@ -7022,7 +7062,7 @@
       "name": "InputBuffer.consumeAction",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 69,
+      "line": 70,
       "className": "InputBuffer",
       "methodName": "consumeAction",
       "doc": "Consumes and removes the earliest action of a specific type."
@@ -7031,7 +7071,7 @@
       "name": "InputBuffer.consumeActions",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 59,
+      "line": 60,
       "className": "InputBuffer",
       "methodName": "consumeActions",
       "doc": "Consumes and removes all pending actions at the start of a simulation tick."
@@ -7040,7 +7080,7 @@
       "name": "InputBuffer.getAimPosition",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 111,
+      "line": 112,
       "className": "InputBuffer",
       "methodName": "getAimPosition",
       "doc": "Returns current aim world position."
@@ -7049,7 +7089,7 @@
       "name": "InputBuffer.getInstance",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 31,
+      "line": 32,
       "className": "InputBuffer",
       "methodName": "getInstance"
     },
@@ -7057,7 +7097,7 @@
       "name": "InputBuffer.getMoveVector",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 96,
+      "line": 97,
       "className": "InputBuffer",
       "methodName": "getMoveVector",
       "doc": "Returns current continuous move vector."
@@ -7066,7 +7106,7 @@
       "name": "InputBuffer.hasAction",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 81,
+      "line": 82,
       "className": "InputBuffer",
       "methodName": "hasAction",
       "doc": "Checks if a specific action is queued without consuming it."
@@ -7075,7 +7115,7 @@
       "name": "InputBuffer.queueAction",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 48,
+      "line": 49,
       "className": "InputBuffer",
       "methodName": "queueAction",
       "doc": "Pushes a discrete action into the queue."
@@ -7084,7 +7124,7 @@
       "name": "InputBuffer.resetInstance",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 41,
+      "line": 42,
       "className": "InputBuffer",
       "methodName": "resetInstance",
       "doc": "Resets singleton instance (useful for unit testing)."
@@ -7093,7 +7133,7 @@
       "name": "InputBuffer.setAimPosition",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 103,
+      "line": 104,
       "className": "InputBuffer",
       "methodName": "setAimPosition",
       "doc": "Sets current mouse/aim world position on XZ plane."
@@ -7102,7 +7142,7 @@
       "name": "InputBuffer.setMoveVector",
       "kind": "method",
       "file": "game/src/core/InputBuffer.ts",
-      "line": 88,
+      "line": 89,
       "className": "InputBuffer",
       "methodName": "setMoveVector",
       "doc": "Sets continuous 2D move vector on XZ plane."
@@ -7117,7 +7157,7 @@
       "name": "InputManager.isInteractHeld",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 131,
+      "line": 139,
       "className": "InputManager",
       "methodName": "isInteractHeld"
     },
@@ -7125,7 +7165,7 @@
       "name": "InputManager.isKeyDown",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 127,
+      "line": 135,
       "className": "InputManager",
       "methodName": "isKeyDown"
     },
@@ -7133,7 +7173,7 @@
       "name": "InputManager.onKeyDown",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 27,
+      "line": 28,
       "className": "InputManager",
       "methodName": "onKeyDown"
     },
@@ -7141,7 +7181,7 @@
       "name": "InputManager.onKeyUp",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 97,
+      "line": 105,
       "className": "InputManager",
       "methodName": "onKeyUp"
     },
@@ -7149,7 +7189,7 @@
       "name": "InputManager.onMouseMove",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 101,
+      "line": 109,
       "className": "InputManager",
       "methodName": "onMouseMove"
     },
@@ -7157,7 +7197,7 @@
       "name": "InputManager.update",
       "kind": "method",
       "file": "game/src/core/InputManager.ts",
-      "line": 106,
+      "line": 114,
       "className": "InputManager",
       "methodName": "update"
     },

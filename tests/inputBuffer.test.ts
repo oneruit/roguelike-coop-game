@@ -59,3 +59,16 @@ test('InputBuffer - Continuous vector polling', () => {
   assert.equal(buffer.getMoveVector().x, 0);
   assert.equal(buffer.getAimPosition().x, 0);
 });
+
+test('InputBuffer - Queues and consumes toggle_dps_meter', () => {
+  InputBuffer.resetInstance();
+  const buffer = InputBuffer.getInstance();
+
+  buffer.queueAction('toggle_dps_meter');
+  assert.equal(buffer.hasAction('toggle_dps_meter'), true);
+
+  const action = buffer.consumeAction('toggle_dps_meter');
+  assert.ok(action);
+  assert.equal(action.type, 'toggle_dps_meter');
+  assert.equal(buffer.hasAction('toggle_dps_meter'), false);
+});

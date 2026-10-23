@@ -80,6 +80,18 @@ export class InGameOverlayUI extends InGameHUDScreen {
   private isPerfOverlayEnabled: boolean = true;
   private lastPerfUiUpdate: number = 0;
 
+  // Real-Time Weapon DPS Meter
+  private dpsMeter: HTMLElement | null = null;
+  private dpsList: HTMLElement | null = null;
+  private dpsTotalVal: HTMLElement | null = null;
+  private dpsRateVal: HTMLElement | null = null;
+  private dpsCollapsedVal: HTMLElement | null = null;
+  private dpsCollapsedRate: HTMLElement | null = null;
+  private dpsToggleBtn: HTMLElement | null = null;
+  private dpsToggleLabel: HTMLElement | null = null;
+  private lastDpsUiUpdate: number = 0;
+  private isDpsMeterCollapsed: boolean = false;
+
   // Timeouts & State
   private bossWarningTimeout: number | null = null;
   private damageFlashTimeout: number | null = null;
@@ -149,6 +161,34 @@ export class InGameOverlayUI extends InGameHUDScreen {
     this.perfOverlay = SafeDOM.getElementById('perf-overlay');
     this.perfFps = SafeDOM.getElementById('perf-fps');
     this.perfPing = SafeDOM.getElementById('perf-ping');
+
+    // Real-Time Weapon DPS Meter
+    this.dpsMeter = SafeDOM.getElementById('hud-dps-meter');
+    this.dpsList = SafeDOM.getElementById('hud-dps-list');
+    this.dpsTotalVal = SafeDOM.getElementById('hud-dps-total-val');
+    this.dpsRateVal = SafeDOM.getElementById('hud-dps-rate-val');
+    this.dpsCollapsedVal = SafeDOM.getElementById('hud-dps-collapsed-val');
+    this.dpsCollapsedRate = SafeDOM.getElementById('hud-dps-collapsed-rate');
+    this.dpsToggleBtn = SafeDOM.getElementById('btn-toggle-dps-meter');
+    this.dpsToggleLabel = SafeDOM.getElementById('hud-dps-toggle-label');
+
+    try {
+      this.isDpsMeterCollapsed = localStorage.getItem('rift_dps_meter_collapsed') === 'true';
+    } catch {
+      this.isDpsMeterCollapsed = false;
+    }
+    this.applyDpsMeterState();
+
+    this.dpsToggleBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleDpsMeter();
+    });
+
+    this.dpsMeter?.addEventListener('click', () => {
+      if (this.isDpsMeterCollapsed) {
+        this.toggleDpsMeter();
+      }
+    });
   }
 
   public override show(): void {
@@ -581,6 +621,9 @@ export class InGameOverlayUI extends InGameHUDScreen {
 
     // Active Shrine Buffs Tray
     this.updateBuffsTray(player.activeBuffs);
+
+    // Real-Time Weapon DPS Meter
+    this.updateDpsMeter(player, gameTime);
 
     // Boss Bar
     if (activeBoss && activeBoss.isAlive) {
@@ -1071,6 +1114,15 @@ export class InGameOverlayUI extends InGameHUDScreen {
     if (this.dashCooldownBadge) this.dashCooldownBadge.classList.remove('cooling-down');
     if (this.dashCooldownFloating) this.dashCooldownFloating.classList.add('hidden');
 
+    if (this.dpsList) {
+      this.dpsList.innerHTML = '<div class="hud-dps-empty">Ожидание урона...</div>';
+      delete this.dpsList.dataset.empty;
+    }
+    if (this.dpsTotalVal) this.dpsTotalVal.innerText = '0';
+    if (this.dpsRateVal) this.dpsRateVal.innerText = '0';
+    if (this.dpsCollapsedVal) this.dpsCollapsedVal.innerText = '0';
+    if (this.dpsCollapsedRate) this.dpsCollapsedRate.innerText = '0/с';
+
     const damageFlash = document.getElementById('damage-flash-layer');
     if (damageFlash) damageFlash.style.opacity = '0';
     const lowHp = document.getElementById('low-hp-vignette-layer');
@@ -1093,5 +1145,122 @@ export class InGameOverlayUI extends InGameHUDScreen {
       pauseDevBtn?.classList.add('hidden');
       pauseRestartSameBtn?.classList.add('hidden');
     }
+  }
+
+  public toggleDpsMeter(): void {
+    this.isDpsMeterCollapsed = !this.isDpsMeterCollapsed;
+    try {
+      localStorage.setItem('rift_dps_meter_collapsed', this.isDpsMeterCollapsed ? 'true' : 'false');
+    } catch {
+      // Ignore storage errors in restricted contexts
+    }
+    this.applyDpsMeterState();
+  }
+
+  private applyDpsMeterState(): void {
+    if (!this.dpsMeter) return;
+    if (this.isDpsMeterCollapsed) {
+      this.dpsMeter.classList.add('is-collapsed');
+      if (this.dpsToggleLabel) this.dpsToggleLabel.textContent = 'Развернуть';
+    } else {
+      this.dpsMeter.classList.remove('is-collapsed');
+      if (this.dpsToggleLabel) this.dpsToggleLabel.textContent = 'Скрыть';
+    }
+  }
+
+  private formatDpsNumber(val: number): string {
+    if (val >= 1_000_000) {
+      return (val / 1_000_000).toFixed(1) + 'M';
+    }
+    if (val >= 10_000) {
+      return (val / 1_000).toFixed(1) + 'k';
+    }
+    if (val >= 1_000) {
+      return (val / 1_000).toFixed(1) + 'k';
+    }
+    return Math.round(val).toString();
+  }
+
+  public updateDpsMeter(player: Player, gameTime: number): void {
+    if (!this.dpsMeter) return;
+
+    const now = performance.now();
+    if (now - this.lastDpsUiUpdate < 250) return;
+    this.lastDpsUiUpdate = now;
+
+    const weapons = player.weapons || [];
+    let totalDamage = 0;
+    for (let i = 0; i < weapons.length; i++) {
+      totalDamage += weapons[i].damageDealt || 0;
+    }
+    const safeTime = Math.max(1, gameTime);
+    const dps = Math.round(totalDamage / safeTime);
+
+    const totalFmt = this.formatDpsNumber(totalDamage);
+    const dpsFmt = this.formatDpsNumber(dps);
+
+    if (this.dpsTotalVal && this.dpsTotalVal.innerText !== totalFmt) {
+      this.dpsTotalVal.innerText = totalFmt;
+    }
+    if (this.dpsRateVal) {
+      const dpsText = dps.toLocaleString('ru-RU');
+      if (this.dpsRateVal.innerText !== dpsText) {
+        this.dpsRateVal.innerText = dpsText;
+      }
+    }
+    if (this.dpsCollapsedVal && this.dpsCollapsedVal.innerText !== totalFmt) {
+      this.dpsCollapsedVal.innerText = totalFmt;
+    }
+    if (this.dpsCollapsedRate && this.dpsCollapsedRate.innerText !== `${dpsFmt}/с`) {
+      this.dpsCollapsedRate.innerText = `${dpsFmt}/с`;
+    }
+
+    if (this.isDpsMeterCollapsed || !this.dpsList) {
+      return;
+    }
+
+    if (weapons.length === 0) {
+      if (this.dpsList.dataset.empty !== 'no-weapons') {
+        this.dpsList.innerHTML = '<div class="hud-dps-empty">Ожидание оружия...</div>';
+        this.dpsList.dataset.empty = 'no-weapons';
+      }
+      return;
+    }
+
+    delete this.dpsList.dataset.empty;
+    const sorted = [...weapons].sort((a, b) => (b.damageDealt || 0) - (a.damageDealt || 0));
+
+    let html = '';
+    for (let i = 0; i < sorted.length; i++) {
+      const w = sorted[i];
+      const dmg = Math.round(w.damageDealt || 0);
+      const pct = totalDamage > 0 ? (dmg / totalDamage) * 100 : 0;
+      const isTop = i === 0 && dmg > 0;
+      const iconUrl = TextureManager.getWeaponBlobUrl(w.iconImage || getWeaponIconUrl(w.id));
+      const dmgStr = this.formatDpsNumber(dmg);
+      const pctStr = pct.toFixed(0);
+
+      html += `
+        <div class="hud-dps-row ${isTop ? 'is-top' : ''}" title="${w.name}: ${dmg.toLocaleString('ru-RU')} ед. (${pct.toFixed(1)}%)">
+          <div class="hud-dps-row-info">
+            <div class="hud-dps-row-left">
+              <img src="${iconUrl}" class="hud-dps-icon-img" alt="${w.name}" onerror="this.style.display='none';if(this.nextElementSibling)(this.nextElementSibling as HTMLElement).style.display='inline'" />
+              <span class="hud-dps-icon-fallback" style="display:none">${w.icon}</span>
+              <span class="hud-dps-name">${w.name}</span>
+              <span class="hud-dps-lvl">Ур.${w.level}</span>
+            </div>
+            <div class="hud-dps-row-right">
+              <span class="hud-dps-val">${dmgStr}</span>
+              <span class="hud-dps-pct">${pctStr}%</span>
+            </div>
+          </div>
+          <div class="hud-dps-bar-track">
+            <div class="hud-dps-bar-fill" style="width: ${pct.toFixed(1)}%;"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    this.dpsList.innerHTML = html;
   }
 }

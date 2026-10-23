@@ -178,6 +178,29 @@
           <div id="active-buffs-tray" class="buffs-tray"></div>
           <!-- Path of Exile Style Party List -->
           <div id="poe-party-list" class="poe-party-list"></div>
+
+          <!-- Real-Time Weapon DPS Meter (Below Character Banner) -->
+          <div id="hud-dps-meter" class="hud-dps-meter">
+            <div class="hud-dps-header">
+              <div class="hud-dps-header-left">
+                <span class="hud-dps-title">⚔️ БОЕВОЙ УРОН</span>
+                <span class="hud-dps-collapsed-summary">
+                  ⚔️ <strong id="hud-dps-collapsed-val">0</strong> (<span id="hud-dps-collapsed-rate">0/с</span>)
+                </span>
+              </div>
+              <button id="btn-toggle-dps-meter" class="hud-dps-toggle-btn" type="button" title="Скрыть/показать панель урона [Q]">
+                <span class="hud-dps-key-tag">Q</span>
+                <span id="hud-dps-toggle-label">Скрыть</span>
+              </button>
+            </div>
+            <div id="hud-dps-list" class="hud-dps-list">
+              <div class="hud-dps-empty">Ожидание урона...</div>
+            </div>
+            <div class="hud-dps-footer">
+              <span class="hud-dps-footer-total">Всего: <strong id="hud-dps-total-val">0</strong></span>
+              <span class="hud-dps-footer-dps">DPS: <span id="hud-dps-rate-val">0</span></span>
+            </div>
+          </div>
         </div>
 
         <!-- Bottom Level & XP Progression Bar -->

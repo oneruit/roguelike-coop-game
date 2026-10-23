@@ -1177,6 +1177,278 @@
   color: #34d399;
 }
 
+/* ==========================================================================
+   REAL-TIME WEAPON DPS METER (BELOW CHARACTER BANNER IN TOP-LEFT HUD)
+   ========================================================================== */
+.hud-dps-meter {
+  width: 250px;
+  background: rgba(18, 12, 28, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(168, 85, 247, 0.3);
+  border-radius: 14px;
+  padding: 8px 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(168, 85, 247, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-top: 2px;
+}
+
+.hud-dps-meter:hover {
+  border-color: rgba(192, 132, 252, 0.55);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(168, 85, 247, 0.22);
+}
+
+.hud-dps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.hud-dps-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hud-dps-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #c084fc;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hud-dps-collapsed-summary {
+  display: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #e2e8f0;
+  white-space: nowrap;
+}
+
+.hud-dps-collapsed-summary strong {
+  color: #fbbf24;
+}
+
+.hud-dps-collapsed-summary span {
+  color: #38bdf8;
+  font-size: 9.5px;
+}
+
+.hud-dps-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.hud-dps-toggle-btn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: #c084fc;
+  color: #ffffff;
+}
+
+.hud-dps-key-tag {
+  background: rgba(168, 85, 247, 0.5);
+  color: #f8fafc;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* List of active weapons */
+.hud-dps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow: hidden;
+}
+
+.hud-dps-empty {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 4px 2px;
+  text-align: center;
+}
+
+.hud-dps-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  padding: 3px 6px;
+  transition: background 0.15s ease;
+}
+
+.hud-dps-row.is-top {
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 2px solid #f59e0b;
+}
+
+.hud-dps-row-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.hud-dps-row-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.hud-dps-icon-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.hud-dps-icon-fallback {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.hud-dps-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-dps-lvl {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.hud-dps-row-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.hud-dps-val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.hud-dps-pct {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  color: #94a3b8;
+  min-width: 24px;
+  text-align: right;
+}
+
+.hud-dps-bar-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hud-dps-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9333ea, #c084fc);
+  border-radius: 999px;
+  transition: width 0.2s ease-out;
+}
+
+.hud-dps-row.is-top .hud-dps-bar-fill {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+/* Footer summary */
+.hud-dps-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+  border-top: 1px solid rgba(168, 85, 247, 0.18);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.hud-dps-footer-total {
+  color: #e2e8f0;
+}
+
+.hud-dps-footer-total strong {
+  color: #fbbf24;
+}
+
+.hud-dps-footer-dps {
+  color: #38bdf8;
+}
+
+/* Minimized / Collapsed state */
+.hud-dps-meter.is-collapsed {
+  padding: 5px 8px;
+  gap: 0;
+  cursor: pointer;
+}
+
+.hud-dps-meter.is-collapsed .hud-dps-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.hud-dps-meter.is-collapsed .hud-dps-title {
+  display: none !important;
+}
+
+.hud-dps-meter.is-collapsed .hud-dps-collapsed-summary {
+  display: inline-block !important;
+}
+
+.hud-dps-meter.is-collapsed .hud-dps-list,
+.hud-dps-meter.is-collapsed .hud-dps-footer {
+  display: none !important;
+}
+
 /* Minimap & Full Map styles are modularized in hud-minimap.css */
 
 
