@@ -2,22 +2,30 @@
   <div class="modal-backdrop menu-scenic-backdrop"></div>
   <div class="quest-modal-container">
     
-    <!-- Top Centered Faceted Purple Plaque Header -->
-    <div class="quest-book-top-plaque">
-      <span class="plaque-diamond-l">◆</span>
-      <span class="plaque-title-text">Задания</span>
-      <span class="plaque-diamond-r">◆</span>
-    </div>
+    <!-- Top Header Navigation Bar (balanced 3-part layout) -->
+          <div class="quest-top-header-bar">
+            <!-- Left: Account Progression Pill -->
+            <div class="quest-account-badge" title="Уровень аккаунта и опыт">
+              <span class="quest-acc-icon">⚔️</span>
+              <span class="quest-acc-lvl" id="quest-acc-lvl-text">УРОВЕНЬ АККАУНТА: 1</span>
+              <span class="quest-acc-xp" id="quest-acc-xp-text">(0 / 200 XP)</span>
+            </div>
 
-    <!-- Top-Right Close Button and Account Badge -->
-    <div class="quest-top-controls">
-      <div class="quest-account-badge">
-        <span class="quest-acc-lvl" id="quest-acc-lvl-text">УРОВЕНЬ АККАУНТА: 1</span>
-        <span class="quest-acc-xp" id="quest-acc-xp-text">(0 / 200 XP)</span>
-        <span class="quest-acc-coins" id="quest-acc-coins-text">🪙 0</span>
-      </div>
-      <button id="quests-btn-close" class="quest-book-close-btn" type="button" title="Закрыть книгу (ESC)">✕</button>
-    </div>
+            <!-- Center: Faceted Purple Plaque Header -->
+            <div class="quest-book-top-plaque">
+              <span class="plaque-diamond-l">◆</span>
+              <span class="plaque-title-text">Задания</span>
+              <span class="plaque-diamond-r">◆</span>
+            </div>
+
+            <!-- Right: Currency Wallet & Close Button -->
+            <div class="quest-top-controls">
+              <div class="quest-coins-badge" title="Золотые монеты">
+                <span class="quest-acc-coins" id="quest-acc-coins-text">🪙 0</span>
+              </div>
+              <button id="quests-btn-close" class="quest-book-close-btn" type="button" title="Закрыть книгу (ESC)">✕</button>
+            </div>
+          </div>
 
     <!-- Floating Magic Sparkle Particles (matching concept screenshot) -->
     <div class="quest-magic-particles" aria-hidden="true">
