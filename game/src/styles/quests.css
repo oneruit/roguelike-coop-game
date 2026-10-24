@@ -22,9 +22,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(96vw, 980px);
+  width: min(96vw, 1020px);
   max-height: 96vh;
-  padding-top: 26px;
+  padding-top: 14px;
   box-sizing: border-box;
   z-index: 1001;
   animation: questModalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -41,26 +41,41 @@
   }
 }
 
-/* Top Centered Faceted Purple Plaque Header */
+/* Unified Top Header Bar (balanced 3-part layout) */
+.quest-top-header-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 940px;
+  min-height: 44px;
+  margin-bottom: -16px;
+  z-index: 45;
+  box-sizing: border-box;
+  padding: 0 6px;
+}
+
+/* Center Faceted Purple Plaque Header */
 .quest-book-top-plaque {
   position: absolute;
-  top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 45;
+  z-index: 47;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  min-width: 240px;
+  gap: 14px;
+  min-width: 220px;
   height: 42px;
-  padding: 0 30px;
+  padding: 0 26px;
   background: linear-gradient(180deg, #32164a 0%, #1c0a2d 100%);
   border: 2px solid #a855f7;
   outline: 2px solid #1a0528;
   clip-path: polygon(18px 0%, calc(100% - 18px) 0%, 100% 50%, calc(100% - 18px) 100%, 18px 100%, 0% 50%);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9), 0 0 16px rgba(168, 85, 247, 0.6);
   box-sizing: border-box;
+  user-select: none;
 }
 
 .plaque-diamond-l,
@@ -72,51 +87,80 @@
 
 .plaque-title-text {
   font-family: 'Montserrat', 'Cinzel', sans-serif;
-  font-size: 18.5px;
+  font-size: 18px;
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 1.2px;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95);
 }
 
-/* Top-Right Close Button and Account Badge */
-.quest-top-controls {
-  position: absolute;
-  top: -12px;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 50;
-}
-
+/* Left: Account Progression Badge */
 .quest-account-badge {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(22, 9, 36, 0.92);
-  border: 1.5px solid rgba(168, 85, 247, 0.45);
+  gap: 8px;
+  background: rgba(22, 9, 36, 0.94);
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
   border-radius: 20px;
-  padding: 5px 16px;
-  font-size: 12px;
+  padding: 6px 14px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #f3e8ff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 0 10px rgba(168, 85, 247, 0.25);
   backdrop-filter: blur(8px);
+  user-select: none;
+  flex-shrink: 0;
+  z-index: 46;
+}
+
+.quest-acc-icon {
+  font-size: 12px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
 .quest-acc-lvl {
   color: #c084fc;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
 .quest-acc-xp {
-  color: #94a3b8;
+  color: #a78bfa;
   font-size: 11px;
+  font-weight: 600;
+}
+
+/* Right: Coins Wallet & Close Button */
+.quest-top-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 46;
+}
+
+.quest-coins-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(30, 16, 8, 0.94);
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 0 10px rgba(245, 158, 11, 0.25);
+  backdrop-filter: blur(8px);
+  user-select: none;
 }
 
 .quest-acc-coins {
   color: #fbbf24;
-  font-size: 13px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .quest-book-close-btn {
@@ -149,24 +193,24 @@
   align-items: stretch;
   width: 100%;
   max-width: 940px;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 /* Left Sidebar Tabs: Chapters of the Grimoire */
 .quest-book-tabs-sidebar {
   position: absolute;
-  left: -44px;
-  top: 48px;
+  left: -38px;
+  top: 44px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  z-index: 25;
+  gap: 10px;
+  z-index: 15;
 }
 
 .quest-chapter-tab {
   position: relative;
-  width: 58px;
-  height: 52px;
+  width: 54px;
+  height: 48px;
   border-radius: 12px 0 0 12px;
   border: 2.5px solid #5a2e16;
   border-right: none;
@@ -294,8 +338,8 @@
 /* Special Bottom Tabs */
 .quest-special-tab {
   position: relative;
-  width: 58px;
-  height: 52px;
+  width: 54px;
+  height: 48px;
   border-radius: 12px 0 0 12px;
   border: 2.5px solid #1e3a5f;
   border-right: none;
@@ -439,13 +483,13 @@
 .quest-book-card {
   position: relative;
   width: 100%;
-  height: clamp(380px, calc(84vh - 30px), 570px);
+  height: clamp(430px, calc(86vh - 30px), 590px);
   background: transparent;
   border: none;
   outline: none;
   border-radius: 8px;
   box-shadow: none;
-  padding: 10px 18px 10px 18px;
+  padding: 22px 34px 20px 34px;
   box-sizing: border-box;
   display: flex;
   filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.45));
@@ -536,7 +580,7 @@
 
 /* Left Page: Quest Items List */
 .quest-page-left {
-  padding: 12px 10px 12px 14px;
+  padding: 10px 10px 10px 14px;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -548,8 +592,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
-  padding: 5px 8px;
+  margin-bottom: 7px;
+  padding: 4px 8px;
   background: rgba(90, 60, 30, 0.14);
   border: 1px solid rgba(142, 115, 76, 0.35);
   border-radius: 8px;
@@ -578,8 +622,8 @@
 
 /* Chapter Final Reward Card on Left Page */
 .quest-chapter-final-card {
-  margin-top: 8px;
-  padding: 8px 10px;
+  margin-top: 6px;
+  padding: 6px 10px;
   background: linear-gradient(135deg, #382417 0%, #201309 100%);
   border: 1.5px solid #8e734c;
   outline: 1px solid #4a3420;
@@ -587,7 +631,7 @@
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7), 0 3px 6px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 0;
 }
 
@@ -660,8 +704,9 @@
 .quest-heroes-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -691,18 +736,18 @@
 .quest-hero-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: linear-gradient(135deg, #493526 0%, #38271a 100%);
   border: 1.5px solid #5d422e;
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 5px 8px;
   cursor: pointer;
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
   box-sizing: border-box;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   position: relative;
   flex-shrink: 0;
-  min-height: 52px;
+  min-height: 48px;
 }
 
 .quest-hero-item:hover {
@@ -846,7 +891,7 @@
    Right Page: Details
    ========================================================================== */
 .quest-page-right {
-  padding: 10px 16px 8px 16px;
+  padding: 10px 14px 8px 14px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -871,7 +916,7 @@
 
 .quest-detail-title {
   font-family: 'Cinzel', 'Montserrat', serif, sans-serif;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 900;
   color: #1f140b;
   text-align: center;
@@ -1248,47 +1293,51 @@
 /* Responsive Adaptive Sizing for Shorter Viewports */
 @media (max-height: 720px) {
   .quest-modal-container {
-    padding-top: 22px;
+    padding-top: 8px;
     max-height: 98vh;
   }
+  .quest-top-header-bar {
+    min-height: 38px;
+    margin-bottom: -14px;
+  }
   .quest-book-card {
-    height: clamp(380px, calc(86vh - 20px), 520px);
-    padding: 8px;
+    height: clamp(400px, calc(86vh - 20px), 540px);
+    padding: 18px 28px 16px 28px;
   }
   .quest-book-top-plaque {
     height: 38px;
-    top: 3px;
-    min-width: 210px;
+    min-width: 190px;
     padding: 0 20px;
   }
   .plaque-title-text {
     font-size: 16px;
   }
-  .quest-top-controls {
-    top: -12px;
-  }
   .quest-account-badge {
     padding: 4px 12px;
     font-size: 11px;
   }
+  .quest-coins-badge {
+    padding: 4px 12px;
+    font-size: 11.5px;
+  }
   .quest-hero-item {
-    padding: 5px 8px;
-    gap: 8px;
-    min-height: 48px;
+    padding: 4px 7px;
+    gap: 7px;
+    min-height: 44px;
   }
   .quest-item-icon-box {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
   .quest-item-avatar {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
   .quest-page-right {
-    padding: 8px 14px 6px 14px;
+    padding: 8px 12px 6px 12px;
   }
   .quest-detail-title {
-    font-size: 17px;
+    font-size: 16px;
     margin-bottom: 4px;
   }
   .quest-detail-target-row {
@@ -1297,15 +1346,15 @@
     padding: 3px 6px;
   }
   .quest-target-avatar-frame {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
   }
   .quest-target-avatar-img {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
   .quest-detail-desc {
-    font-size: 11px;
+    font-size: 10.5px;
     line-height: 1.25;
   }
   .quest-detail-divider {
@@ -1316,7 +1365,7 @@
     margin-bottom: 3px;
   }
   .quest-step-item {
-    font-size: 11px;
+    font-size: 10.5px;
     padding: 2px 6px;
   }
   .quest-rewards-block {
@@ -1341,7 +1390,7 @@
     margin-top: 2px;
   }
   .quest-status-text {
-    font-size: 10.5px;
+    font-size: 10px;
     line-height: 1.25;
   }
   .quest-btn-unlocked-badge {
@@ -1360,72 +1409,85 @@
 
 @media (max-height: 540px) {
   .quest-modal-container {
-    padding-top: 16px;
+    padding-top: 6px;
+  }
+  .quest-top-header-bar {
+    min-height: 32px;
+    margin-bottom: -10px;
   }
   .quest-book-card {
     height: clamp(340px, calc(88vh - 10px), 440px);
-    padding: 6px;
+    padding: 14px 22px 12px 22px;
   }
   .quest-book-top-plaque {
     height: 32px;
-    top: 2px;
     min-width: 170px;
     padding: 0 16px;
   }
   .plaque-title-text {
     font-size: 14px;
   }
-  .quest-top-controls {
-    top: -14px;
+  .quest-account-badge {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  .quest-coins-badge {
+    padding: 3px 8px;
+    font-size: 10.5px;
+  }
+  .quest-book-close-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
   }
   .quest-page-right {
-    padding: 6px 12px 4px 12px;
+    padding: 6px 10px 4px 10px;
   }
   .quest-detail-title {
-    font-size: 15px;
-    margin-bottom: 3px;
+    font-size: 14px;
+    margin-bottom: 2px;
   }
   .quest-target-avatar-frame {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
   .quest-target-avatar-img {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
   .quest-detail-desc {
-    font-size: 10px;
+    font-size: 9.5px;
     line-height: 1.2;
   }
   .quest-step-item {
-    font-size: 10px;
-    padding: 1.5px 5px;
+    font-size: 9.5px;
+    padding: 1px 4px;
   }
   .quest-hero-item {
-    min-height: 40px;
-    padding: 3px 6px;
+    min-height: 38px;
+    padding: 3px 5px;
   }
   .quest-item-icon-box {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
   .quest-item-avatar {
-    width: 26px;
-    height: 26px;
-  }
-  .quest-item-title {
-    font-size: 11px;
-  }
-  .reward-slot {
-    width: 34px;
-    height: 34px;
-  }
-  .reward-pixel-icon {
     width: 24px;
     height: 24px;
   }
+  .quest-item-title {
+    font-size: 10.5px;
+  }
+  .reward-slot {
+    width: 32px;
+    height: 32px;
+  }
+  .reward-pixel-icon {
+    width: 22px;
+    height: 22px;
+  }
   .quest-status-text {
-    font-size: 10px;
+    font-size: 9.5px;
     line-height: 1.2;
   }
   .quest-btn-unlocked-badge {
@@ -1433,4 +1495,3 @@
     font-size: 10px;
   }
 }
-
