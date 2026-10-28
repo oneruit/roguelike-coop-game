@@ -17,6 +17,8 @@ export class LuckyTestDraftScreen extends Screen {
   private startingWeaponId!: string;
   private draftedWeaponIds: string[] = [];
   private currentWeaponChoices: [WeaponDraftChoice, WeaponDraftChoice] | null = null;
+  private weaponLevels: Record<string, number> = {};
+  private currentUpgradeChoices: WeaponUpgradeResult[] = [];
   private appliedUpgrades: WeaponUpgradeResult[] = [];
   private chosenPassives: LuckyPassiveChoice[] = [];
   private currentPassiveChoices: LuckyPassiveChoice[] = [];
@@ -50,6 +52,7 @@ export class LuckyTestDraftScreen extends Screen {
     this.draftedWeaponIds = [];
     this.appliedUpgrades = [];
     this.chosenPassives = [];
+    this.weaponLevels = {};
 
     // 1. Roll Random Hero
     this.rolledHero = this.manager.rollRandomHero();
@@ -136,45 +139,72 @@ export class LuckyTestDraftScreen extends Screen {
         if (round < 3) {
           this.renderWeaponDraft(round + 1);
         } else {
-          this.renderUpgradesReveal();
+          // Initialize levels for all 4 weapons
+          const all4 = [this.startingWeaponId, ...this.draftedWeaponIds];
+          for (const wId of all4) {
+            this.weaponLevels[wId] = 1;
+          }
+          this.renderUpgradeDraft(1);
         }
       });
     });
   }
 
-  private renderUpgradesReveal(): void {
-    this.setStepBadge('ЭТАП 3: 12 СЛУЧАЙНЫХ УЛУЧШЕНИЙ (CAP LV. 4)');
+  private renderUpgradeDraft(round: number): void {
+    this.setStepBadge(`ЭТАП 3: ВЫБОР УЛУЧШЕНИЙ (${round}/12) • CAP LV. 4`);
     const content = this.container.querySelector('#lucky-test-content');
     if (!content) return;
 
-    const all4Weapons = [this.startingWeaponId, ...this.draftedWeaponIds];
-    this.appliedUpgrades = this.manager.generate12Upgrades(all4Weapons);
+    const all4 = [this.startingWeaponId, ...this.draftedWeaponIds];
+    this.currentUpgradeChoices = this.manager.generateUpgradeChoices(all4, this.weaponLevels, 3);
+
+    // If no more weapons can be upgraded (all lv. 4), proceed to passives
+    if (this.currentUpgradeChoices.length === 0) {
+      this.renderPassiveDraft(1);
+      return;
+    }
 
     content.innerHTML = `
-      <div class="lucky-prompt">Система распределила 12 случайных улучшений с редкостью (макс. 4 ур. на оружие):</div>
-      <div class="lucky-upgrades-grid">
-        ${this.appliedUpgrades
+      <div class="lucky-prompt">Выберите 1 улучшение оружия (${round} из 12 выборов):</div>
+      <div class="lucky-cards-row">
+        ${this.currentUpgradeChoices
           .map(
-            (up, i) => `
-          <div class="lucky-upgrade-pill grade-${up.grade}">
-            <span class="lucky-upgrade-num">#${i + 1}</span>
-            <span class="lucky-upgrade-target">${up.weaponName}</span>
-            <span class="lucky-upgrade-lvl">Ур. ${up.newLevel}</span>
-            <span class="lucky-upgrade-rarity" style="color: ${up.gradeColor}">${up.gradeName}</span>
+            (up, idx) => `
+          <div class="lucky-draft-card lucky-upgrade-card grade-${up.grade}" data-index="${idx}">
+            <div class="lucky-quality-badge" style="color: ${up.gradeColor}; border-color: ${up.gradeColor}">
+              ${up.gradeName.toUpperCase()}
+            </div>
+            <div class="lucky-card-icon">⚔️</div>
+            <div class="lucky-card-title">${up.weaponName}</div>
+            <div class="lucky-card-desc">Повышение до <strong>Уровня ${up.newLevel}</strong> (макс. 4)</div>
+            <button class="lucky-btn-select">ВЫБРАТЬ</button>
           </div>
         `
           )
           .join('')}
       </div>
-      <button id="btn-lucky-upgrades-next" class="lucky-btn-primary" style="margin-top: 24px;">
-        ПЕРЕЙТИ К ВЫБОРУ ПАССИВНЫХ УМЕНИЙ (1/4) ➔
-      </button>
+      <div class="lucky-arsenal-status" style="margin-top: 20px; font-size: 13px; color: #94a3b8; text-align: center;">
+        Текущие уровни оружия: ${all4.map(id => `${id}: Ур. ${this.weaponLevels[id] || 1}/4`).join(' • ')}
+      </div>
     `;
 
-    const btn = content.querySelector('#btn-lucky-upgrades-next');
-    btn?.addEventListener('click', () => {
-      SoundManager.playButtonClick?.();
-      this.renderPassiveDraft(1);
+    const cards = content.querySelectorAll('.lucky-upgrade-card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.getAttribute('data-index') || '0', 10);
+        const chosen = this.currentUpgradeChoices[idx];
+        if (!chosen) return;
+
+        this.appliedUpgrades.push(chosen);
+        this.weaponLevels[chosen.weaponId] = chosen.newLevel;
+        SoundManager.playButtonClick?.();
+
+        if (round < 12) {
+          this.renderUpgradeDraft(round + 1);
+        } else {
+          this.renderPassiveDraft(1);
+        }
+      });
     });
   }
 
@@ -210,54 +240,75 @@ export class LuckyTestDraftScreen extends Screen {
         const idx = parseInt(card.getAttribute('data-index') || '0', 10);
         const chosen = this.currentPassiveChoices[idx];
         this.chosenPassives.push(chosen);
-        SoundManager.playLevelUp?.();
+        SoundManager.playButtonClick?.();
 
         if (round < 4) {
           this.renderPassiveDraft(round + 1);
         } else {
-          this.renderFinalSummary();
+          this.renderDraftSummary();
         }
       });
     });
   }
 
-  private renderFinalSummary(): void {
-    this.setStepBadge('ЭТАП 5: ГОТОВНОСТЬ К БОЮ');
+  private renderDraftSummary(): void {
+    this.setStepBadge('ИТОГ ДРАФТА: ВАШ БИЛД ГОТОВ');
     const content = this.container.querySelector('#lucky-test-content');
     if (!content) return;
 
+    const allWeapons = [this.startingWeaponId, ...this.draftedWeaponIds];
+
     content.innerHTML = `
       <div class="lucky-summary-container">
-        <h3 class="lucky-summary-hero">Гладиатор: ${this.rolledHero.name} (1500 HP • Стойкость 40%)</h3>
-        <div class="lucky-summary-section-title">Арсенал из 4 видов оружия (макс. 4 ур.):</div>
-        <div class="lucky-summary-weapons">
-          ${[this.startingWeaponId, ...this.draftedWeaponIds]
-            .map(wId => {
-              const choice = this.manager.getWeaponDraftChoice(wId);
-              return `<span class="lucky-summary-tag">${choice.icon} ${choice.name} (Ур. 4)</span>`;
-            })
-            .join('')}
+        <div class="lucky-summary-section">
+          <h3>ГЛАДИАТОР: ${this.rolledHero.name}</h3>
+          <p style="color: #64748b; font-size: 13px;">1500 HP • 40% Resilience PvP Баланс</p>
         </div>
-        <div class="lucky-summary-section-title" style="margin-top: 16px;">Выбранные пассивные таланты:</div>
-        <div class="lucky-summary-passives">
-          ${this.chosenPassives
-            .map(p => `<div class="lucky-summary-passive-item">${p.icon} <strong>${p.title}</strong>: ${p.description}</div>`)
-            .join('')}
+
+        <div class="lucky-summary-section">
+          <h4>АРСЕНАЛ ОРУЖИЯ (4 вида):</h4>
+          <div class="lucky-summary-weapons">
+            ${allWeapons
+              .map(id => {
+                const upList = this.appliedUpgrades.filter(u => u.weaponId === id);
+                const highestGrade = upList.length > 0 ? upList[upList.length - 1].gradeName : 'Обычное';
+                const lvl = this.weaponLevels[id] || 1;
+                return `
+                <div class="lucky-summary-pill">
+                  <strong>${id}</strong> (Ур. ${lvl}/4) — ${highestGrade}
+                </div>
+              `;
+              })
+              .join('')}
+          </div>
         </div>
-        <div class="lucky-summary-controls">
-          <button id="btn-lucky-enter-arena" class="lucky-btn-primary lucky-btn-large">
-            ВСТАТЬ НА КРУГ ГОТОВНОСТИ ➔
-          </button>
+
+        <div class="lucky-summary-section">
+          <h4>ПАССИВНЫЕ НАВЫКИ (4 шт):</h4>
+          <div class="lucky-summary-passives">
+            ${this.chosenPassives
+              .map(
+                p => `
+              <div class="lucky-summary-passive-item quality-${p.quality}">
+                <span>${p.icon} <strong>${p.title}:</strong> ${p.description}</span>
+              </div>
+            `
+              )
+              .join('')}
+          </div>
         </div>
+
+        <button id="btn-lucky-final-ready" class="lucky-btn-primary" style="margin-top: 24px; font-size: 18px; padding: 16px 36px;">
+          ВЫЙТИ НА АРЕНУ ГЛАДИАТОРОВ ⚔️
+        </button>
       </div>
     `;
 
-    const btn = content.querySelector('#btn-lucky-enter-arena');
-    btn?.addEventListener('click', () => {
+    const btnReady = content.querySelector('#btn-lucky-final-ready');
+    btnReady?.addEventListener('click', () => {
       SoundManager.playButtonClick?.();
       this.hide();
-
-      const finalBuild: LuckyTestBuildState = {
+      this.onDraftCompleted?.({
         hero: this.rolledHero.type,
         heroName: this.rolledHero.name,
         startingWeaponId: this.startingWeaponId,
@@ -265,9 +316,7 @@ export class LuckyTestDraftScreen extends Screen {
         appliedUpgrades: this.appliedUpgrades,
         chosenPassives: this.chosenPassives,
         isReady: true
-      };
-
-      this.onDraftCompleted?.(finalBuild);
+      });
     });
   }
 }

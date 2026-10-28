@@ -6,6 +6,9 @@ import { Projectile } from '../combat/Projectile';
 import { createWeaponInstanceById } from '../combat/WeaponFactory';
 import { LuckyTestBuildState } from '../mechanics/lucky-test/LuckyTestTypes';
 import { SoundManager } from '../core/SoundManager';
+import { MeleeAttackInfo } from '../shared/types';
+
+export type BotMeleeAttackHandler = (attack: MeleeAttackInfo, damageMultiplier: number, isCrit: boolean) => void;
 
 export class GladiatorBot extends RemotePlayer {
   public botWeapons: Weapon[] = [];
@@ -17,6 +20,15 @@ export class GladiatorBot extends RemotePlayer {
   public dashTimer: number = 0;
   public speed: number = 7.5;
 
+  public damageMultiplier: number = 1.0;
+  public critChance: number = 0.05;
+  public critDamage: number = 0.50;
+  public cooldownMultiplier: number = 1.0;
+  public hpRegen: number = 0;
+  public passiveDamageReduction: number = 0;
+
+  public onMeleeAttack?: BotMeleeAttackHandler;
+
   constructor(scene: Scene, build: LuckyTestBuildState) {
     super(scene, 'bot_gladiator', `Гладиатор (${build.heroName})`, build.hero, 0xef4444);
 
@@ -26,16 +38,21 @@ export class GladiatorBot extends RemotePlayer {
     this.hp = 1500;
     this.speed = 7.5;
 
-    // Instantiate all 4 weapons
+    // 1. Instantiate all 4 weapons
     const allWeaponIds = [build.startingWeaponId, ...build.draftedWeaponIds];
     for (const wId of allWeaponIds) {
       const wInstance = createWeaponInstanceById(wId);
       if (wInstance) {
+        wInstance.onMeleeAttack = (attack: MeleeAttackInfo) => {
+          this.triggerAttackAnim();
+          const isCrit = Math.random() < this.critChance;
+          this.onMeleeAttack?.(attack, this.damageMultiplier, isCrit);
+        };
         this.botWeapons.push(wInstance);
       }
     }
 
-    // Apply upgrades
+    // 2. Apply upgrades (cap at lv. 4)
     for (const up of build.appliedUpgrades) {
       const w = this.botWeapons.find(w => w.id === up.weaponId);
       if (w && w.level < 4) {
@@ -45,17 +62,48 @@ export class GladiatorBot extends RemotePlayer {
       }
     }
 
-    // Apply passives
+    // 3. Apply passives
     for (const passive of build.chosenPassives) {
-      if (passive.type === 'max_hp') {
-        this.maxHp += passive.value;
-        this.hp = this.maxHp;
-      } else if (passive.type === 'speed') {
-        this.speed *= 1 + passive.value / 100;
+      switch (passive.type) {
+        case 'damage':
+          this.damageMultiplier += passive.value / 100;
+          break;
+        case 'max_hp':
+          this.maxHp += passive.value;
+          this.hp = this.maxHp;
+          break;
+        case 'speed':
+          this.speed *= 1 + passive.value / 100;
+          break;
+        case 'crit_chance':
+          this.critChance = Math.min(1.0, this.critChance + passive.value / 100);
+          break;
+        case 'crit_damage':
+          this.critDamage += passive.value / 100;
+          break;
+        case 'cooldown_reduction':
+          this.cooldownMultiplier = Math.max(0.4, this.cooldownMultiplier * (1 - passive.value / 100));
+          break;
+        case 'hp_regen':
+          this.hpRegen += passive.value;
+          break;
+        case 'damage_reduction':
+          this.passiveDamageReduction = Math.min(0.60, passive.value / 100);
+          break;
       }
     }
 
+    // Apply cooldown reduction to all bot weapons
+    for (const w of this.botWeapons) {
+      w.cooldownMultiplier = this.cooldownMultiplier;
+    }
+
     this.redrawOverhead();
+  }
+
+  public override takeDamage(amount: number): boolean {
+    const afterPassive = Math.round(amount * (1 - this.passiveDamageReduction));
+    return super.takeDamage(afterPassive);
   }
 
   public updateAI(
@@ -67,6 +115,12 @@ export class GladiatorBot extends RemotePlayer {
     if (this.hp <= 0 || this.isDowned) return;
 
     this.dashTimer -= dt;
+
+    // Passive HP Regeneration
+    if (this.hpRegen > 0 && this.hp < this.maxHp) {
+      this.hp = Math.min(this.maxHp, this.hp + this.hpRegen * dt);
+      this.redrawOverhead();
+    }
 
     // 1. Aim directly towards player
     this.aimPosition.copy(player.position);
@@ -88,7 +142,7 @@ export class GladiatorBot extends RemotePlayer {
     );
     const targetPos = player.position.clone().add(targetOffset);
 
-    // Clamp within arena radius 22m
+    // Clamp within arena radius 21m
     if (targetPos.length() > 21) {
       targetPos.setLength(20);
     }
@@ -125,7 +179,11 @@ export class GladiatorBot extends RemotePlayer {
         [], // no pve enemies
         p => {
           p.ownerId = this.id;
+          p.damage = Math.round(p.damage * this.damageMultiplier);
+          p.critChance = this.critChance;
+          p.critDamage = this.critDamage;
           spawnProjectile(p);
+          this.triggerAttackAnim();
         },
         damageEnemy,
         this.aimPosition

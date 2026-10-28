@@ -22,6 +22,7 @@ import { ProgressionManager } from './ProgressionManager';
 import { BattlePassManager } from './BattlePassManager';
 import { SoundManager } from './SoundManager';
 import { SeededRNG } from './SeededRNG';
+import { BalanceManager } from '../balance/BalanceManager';
 import { UpdateNotificationUI } from '../ui/UpdateNotificationUI';
 import { AssetPreloader } from './AssetPreloader';
 import { CombatDirector } from '../combat/CombatDirector';
@@ -40,6 +41,9 @@ import { LastRunManager } from './LastRunManager';
 import { createWeaponInstanceById } from '../combat/WeaponFactory';
 import { Altar } from '../world/Altar';
 import { LuckyTestDraftScreen } from '../ui/screens/LuckyTest/LuckyTestDraftScreen';
+import { LuckyTestModeSelectModal } from '../ui/screens/LuckyTest/LuckyTestModeSelectModal';
+import { LuckyTestReadyModal } from '../ui/screens/LuckyTest/LuckyTestReadyModal';
+import { LuckyTestResultModal } from '../ui/screens/LuckyTest/LuckyTestResultModal';
 import { GladiatorArena } from '../world/GladiatorArena';
 import { GladiatorBot } from '../entities/GladiatorBot';
 import { LuckyTestManager } from '../mechanics/lucky-test/LuckyTestManager';
@@ -90,6 +94,12 @@ export class SessionDirector {
   public luckyTestDraftScreen?: LuckyTestDraftScreen;
   public gladiatorArena?: GladiatorArena;
   public gladiatorBot?: GladiatorBot;
+  public luckyTestModeSelectModal?: LuckyTestModeSelectModal;
+  public luckyTestReadyModal?: LuckyTestReadyModal;
+  public luckyTestResultModal?: LuckyTestResultModal;
+  public currentOpponentBuild?: LuckyTestBuildState;
+  public matchStartTime: number = 0;
+  public playerDamageStart: number = 0;
 
   public gameState: GameState = GameState.MAIN_MENU;
   public gameTime = 0;
@@ -247,6 +257,26 @@ export class SessionDirector {
 
   public startLuckyTest(): void {
     try {
+      this.hud.closeAllPreGameModals();
+      this.luckyTestModeSelectModal = new LuckyTestModeSelectModal({
+        onSoloVsBot: () => {
+          this.startLuckyTestDraft(true);
+        },
+        onPvPNetwork: () => {
+          this.hud.showCoopMenu();
+        },
+        onCancel: () => {
+          this.returnToMainMenu();
+        }
+      });
+      this.luckyTestModeSelectModal.show();
+    } catch (err) {
+      console.error('[SessionDirector] Failed to start Lucky Test:', err);
+    }
+  }
+
+  public startLuckyTestDraft(isVsBot: boolean = true): void {
+    try {
       this.gameState = GameState.LUCKY_TEST_DRAFT;
       document.body.classList.remove('is-main-menu');
       document.body.classList.add('is-in-game');
@@ -268,18 +298,18 @@ export class SessionDirector {
       }
 
       this.luckyTestDraftScreen.onDraftCompleted = (build) => {
-        this.initLuckyTestArena(build);
+        this.initLuckyTestArena(build, isVsBot);
       };
 
       this.luckyTestDraftScreen.startDraft();
     } catch (err) {
-      console.error('[SessionDirector] Failed to start Lucky Test:', err);
+      console.error('[SessionDirector] Failed to start Lucky Test Draft:', err);
     }
   }
 
-  public initLuckyTestArena(playerBuild: LuckyTestBuildState): void {
+  public initLuckyTestArena(playerBuild: LuckyTestBuildState, isVsBot: boolean = true): void {
     try {
-      this.gameState = GameState.LUCKY_TEST_ARENA;
+      this.gameState = GameState.PAUSED; // Keep paused until Ready Confirmation countdown finishes
 
       LuckyTestManager.getInstance().applyBuildToPlayer(this.player, playerBuild);
 
@@ -295,32 +325,84 @@ export class SessionDirector {
       this.engine.camera.lookAt(0, 0, 0);
 
       const botBuild = LuckyTestManager.getInstance().createBotGladiatorBuild();
+      this.currentOpponentBuild = botBuild;
+
       if (this.gladiatorBot) {
         this.gladiatorBot.destroy(this.engine.scene);
       }
       this.gladiatorBot = new GladiatorBot(this.engine.scene, botBuild);
       this.gladiatorBot.position.set(12, 0, 0);
       this.gladiatorBot.mesh.position.copy(this.gladiatorBot.position);
+      this.gladiatorBot.onMeleeAttack = this.combatDirector.handleBotMeleeAttack;
       this.remotePlayers.set('bot_gladiator', this.gladiatorBot);
-
-      this.gladiatorArena.setP2AutoReady(true);
-      this.gladiatorArena.onBothPlayersReady = () => {
-        this.gladiatorArena?.hidePads();
-        SoundManager.playLevelUp?.();
-      };
 
       this.combatDirector.onPvPKill = (targetId) => {
         if (targetId === 'bot_gladiator') {
-          SoundManager.playVictory();
-          setTimeout(() => {
-            alert('🏆 ПОБЕДА! Вы одолели гладиатора на Арене!');
-            this.returnToMainMenu();
-          }, 1000);
+          this.showLuckyTestResult(true);
         }
       };
+
+      // Show Ready Confirmation Modal
+      this.luckyTestReadyModal = new LuckyTestReadyModal({
+        playerBuild,
+        opponentBuild: botBuild,
+        isVsBot,
+        onFightStart: () => {
+          this.gameState = GameState.LUCKY_TEST_ARENA;
+          this.matchStartTime = Date.now();
+          this.playerDamageStart = this.player.totalDamageDealt;
+          this.gladiatorArena?.hidePads();
+          SoundManager.playLevelUp?.();
+        }
+      });
+      this.luckyTestReadyModal.show();
     } catch (err) {
       console.error('[SessionDirector] Failed to initialize Lucky Test Arena:', err);
     }
+  }
+
+  public showLuckyTestResult(isVictory: boolean): void {
+    this.gameState = GameState.PAUSED;
+    const duration = this.matchStartTime > 0 ? (Date.now() - this.matchStartTime) / 1000 : 20;
+    const oppBuild = this.currentOpponentBuild;
+    const bot = this.gladiatorBot;
+
+    // Determine top weapon
+    let topWeapon = '';
+    let maxDmg = 0;
+    for (const w of this.player.weapons) {
+      if (w.damageDealt > maxDmg) {
+        maxDmg = w.damageDealt;
+        topWeapon = w.name;
+      }
+    }
+
+    const heroCfg = BalanceManager.getHeroConfig(this.player.charType);
+    const winnerName = isVictory
+      ? (heroCfg?.name || 'Игрок')
+      : (oppBuild?.heroName || 'Гладиатор AI');
+
+    const resultModal = new LuckyTestResultModal({
+      stats: {
+        winnerName,
+        isVictory,
+        matchDurationSec: duration,
+        playerDamageDealt: Math.max(0, this.player.totalDamageDealt - this.playerDamageStart),
+        opponentDamageDealt: bot ? Math.max(0, bot.maxHp - bot.hp) : 0,
+        playerRemainingHp: Math.max(0, this.player.hp),
+        opponentRemainingHp: bot ? Math.max(0, bot.hp) : 0,
+        topWeaponName: topWeapon || undefined,
+        topWeaponDamage: maxDmg || undefined
+      },
+      onRematch: () => {
+        this.startLuckyTestDraft(true);
+      },
+      onMainMenu: () => {
+        this.returnToMainMenu();
+      }
+    });
+
+    resultModal.show();
   }
 
   public startSinglePlayerWithHero(
@@ -1134,6 +1216,11 @@ export class SessionDirector {
   }
 
   public triggerGameOver(isVictory: boolean = false): void {
+    if (this.gameState === GameState.LUCKY_TEST_ARENA) {
+      this.showLuckyTestResult(isVictory);
+      return;
+    }
+
     const effectiveVictory = isVictory;
     this.resetRewardChoices();
     this.gameState = GameState.GAME_OVER;

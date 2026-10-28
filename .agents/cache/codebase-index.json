@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-28T03:38:36.044Z",
-  "totalFiles": 213,
-  "totalSymbols": 2017,
-  "topLevelCount": 625,
-  "methodsCount": 1392,
+  "generatedAt": "2026-10-28T04:10:43.918Z",
+  "totalFiles": 216,
+  "totalSymbols": 2035,
+  "topLevelCount": 633,
+  "methodsCount": 1402,
   "entities": {
     "heroes": [
       {
@@ -2174,6 +2174,12 @@
       "line": 34
     },
     {
+      "name": "BotMeleeAttackHandler",
+      "kind": "type",
+      "file": "game/src/entities/GladiatorBot.ts",
+      "line": 11
+    },
+    {
       "name": "BowWeapon",
       "kind": "class",
       "file": "game/src/combat/weapons/RangedWeapons.ts",
@@ -3409,13 +3415,13 @@
       "name": "CombatDirector",
       "kind": "class",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 18
+      "line": 19
     },
     {
       "name": "CombatDirector.clear",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 841,
+      "line": 901,
       "className": "CombatDirector",
       "methodName": "clear"
     },
@@ -3423,7 +3429,7 @@
       "name": "CombatDirector.onLocalPlayerEnemyKill",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 310,
+      "line": 350,
       "className": "CombatDirector",
       "methodName": "onLocalPlayerEnemyKill"
     },
@@ -3431,7 +3437,7 @@
       "name": "CombatDirector.spawnChronosShockwave",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 400,
+      "line": 440,
       "className": "CombatDirector",
       "methodName": "spawnChronosShockwave"
     },
@@ -3439,7 +3445,7 @@
       "name": "CombatDirector.spawnCosmeticShot",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 145,
+      "line": 185,
       "className": "CombatDirector",
       "methodName": "spawnCosmeticShot"
     },
@@ -3447,7 +3453,7 @@
       "name": "CombatDirector.spawnFlameTrailPatch",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 425,
+      "line": 465,
       "className": "CombatDirector",
       "methodName": "spawnFlameTrailPatch"
     },
@@ -3455,7 +3461,7 @@
       "name": "CombatDirector.updateItemProcs",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 709,
+      "line": 769,
       "className": "CombatDirector",
       "methodName": "updateItemProcs"
     },
@@ -3463,7 +3469,7 @@
       "name": "CombatDirector.updateProjectiles",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 454,
+      "line": 494,
       "className": "CombatDirector",
       "methodName": "updateProjectiles"
     },
@@ -3471,7 +3477,7 @@
       "name": "CombatDirector.updateProjectileVisuals",
       "kind": "method",
       "file": "game/src/combat/CombatDirector.ts",
-      "line": 698,
+      "line": 758,
       "className": "CombatDirector",
       "methodName": "updateProjectileVisuals"
     },
@@ -5377,7 +5383,7 @@
       "name": "GameState",
       "kind": "enum",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 48
+      "line": 52
     },
     {
       "name": "GameStateBridge",
@@ -5812,7 +5818,7 @@
       "name": "GladiatorArena.buildArenaGeometry",
       "kind": "method",
       "file": "game/src/world/GladiatorArena.ts",
-      "line": 55,
+      "line": 63,
       "className": "GladiatorArena",
       "methodName": "buildArenaGeometry"
     },
@@ -5820,7 +5826,7 @@
       "name": "GladiatorArena.buildReadyPads",
       "kind": "method",
       "file": "game/src/world/GladiatorArena.ts",
-      "line": 122,
+      "line": 123,
       "className": "GladiatorArena",
       "methodName": "buildReadyPads"
     },
@@ -5828,7 +5834,7 @@
       "name": "GladiatorArena.destroy",
       "kind": "method",
       "file": "game/src/world/GladiatorArena.ts",
-      "line": 259,
+      "line": 236,
       "className": "GladiatorArena",
       "methodName": "destroy"
     },
@@ -5836,7 +5842,7 @@
       "name": "GladiatorArena.hidePads",
       "kind": "method",
       "file": "game/src/world/GladiatorArena.ts",
-      "line": 250,
+      "line": 227,
       "className": "GladiatorArena",
       "methodName": "hidePads"
     },
@@ -5844,7 +5850,7 @@
       "name": "GladiatorArena.setP2AutoReady",
       "kind": "method",
       "file": "game/src/world/GladiatorArena.ts",
-      "line": 240,
+      "line": 171,
       "className": "GladiatorArena",
       "methodName": "setP2AutoReady"
     },
@@ -5852,7 +5858,7 @@
       "name": "GladiatorArena.update",
       "kind": "method",
       "file": "game/src/world/GladiatorArena.ts",
-      "line": 180,
+      "line": 181,
       "className": "GladiatorArena",
       "methodName": "update"
     },
@@ -5860,13 +5866,13 @@
       "name": "GladiatorBot",
       "kind": "class",
       "file": "game/src/entities/GladiatorBot.ts",
-      "line": 10
+      "line": 13
     },
     {
       "name": "GladiatorBot.triggerAttackAnim",
       "kind": "method",
       "file": "game/src/entities/GladiatorBot.ts",
-      "line": 139,
+      "line": 197,
       "className": "GladiatorBot",
       "methodName": "triggerAttackAnim"
     },
@@ -8539,7 +8545,7 @@
       "name": "LuckyTestDraftScreen.bindElements",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 30,
+      "line": 32,
       "className": "LuckyTestDraftScreen",
       "methodName": "bindElements"
     },
@@ -8547,7 +8553,7 @@
       "name": "LuckyTestDraftScreen.bindEvents",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 31,
+      "line": 33,
       "className": "LuckyTestDraftScreen",
       "methodName": "bindEvents"
     },
@@ -8555,23 +8561,23 @@
       "name": "LuckyTestDraftScreen.getTemplate",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 33,
+      "line": 35,
       "className": "LuckyTestDraftScreen",
       "methodName": "getTemplate"
     },
     {
-      "name": "LuckyTestDraftScreen.renderFinalSummary",
+      "name": "LuckyTestDraftScreen.renderDraftSummary",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 224,
+      "line": 254,
       "className": "LuckyTestDraftScreen",
-      "methodName": "renderFinalSummary"
+      "methodName": "renderDraftSummary"
     },
     {
       "name": "LuckyTestDraftScreen.renderHeroReveal",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 69,
+      "line": 72,
       "className": "LuckyTestDraftScreen",
       "methodName": "renderHeroReveal"
     },
@@ -8579,23 +8585,23 @@
       "name": "LuckyTestDraftScreen.renderPassiveDraft",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 181,
+      "line": 211,
       "className": "LuckyTestDraftScreen",
       "methodName": "renderPassiveDraft"
     },
     {
-      "name": "LuckyTestDraftScreen.renderUpgradesReveal",
+      "name": "LuckyTestDraftScreen.renderUpgradeDraft",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 145,
+      "line": 153,
       "className": "LuckyTestDraftScreen",
-      "methodName": "renderUpgradesReveal"
+      "methodName": "renderUpgradeDraft"
     },
     {
       "name": "LuckyTestDraftScreen.renderWeaponDraft",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 101,
+      "line": 104,
       "className": "LuckyTestDraftScreen",
       "methodName": "renderWeaponDraft"
     },
@@ -8603,7 +8609,7 @@
       "name": "LuckyTestDraftScreen.setStepBadge",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 64,
+      "line": 67,
       "className": "LuckyTestDraftScreen",
       "methodName": "setStepBadge"
     },
@@ -8611,7 +8617,7 @@
       "name": "LuckyTestDraftScreen.startDraft",
       "kind": "method",
       "file": "game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts",
-      "line": 49,
+      "line": 51,
       "className": "LuckyTestDraftScreen",
       "methodName": "startDraft"
     },
@@ -8631,7 +8637,7 @@
       "name": "LuckyTestManager.applyBuildToPlayer",
       "kind": "method",
       "file": "game/src/mechanics/lucky-test/LuckyTestManager.ts",
-      "line": 244,
+      "line": 299,
       "className": "LuckyTestManager",
       "methodName": "applyBuildToPlayer",
       "doc": "Applies the complete draft build state to the player entity."
@@ -8640,16 +8646,16 @@
       "name": "LuckyTestManager.createBotGladiatorBuild",
       "kind": "method",
       "file": "game/src/mechanics/lucky-test/LuckyTestManager.ts",
-      "line": 314,
+      "line": 371,
       "className": "LuckyTestManager",
       "methodName": "createBotGladiatorBuild",
-      "doc": "Generates a balanced, randomized Gladiator build for the Solo Mode AI Bot."
+      "doc": "Generates a balanced, randomized Gladiator build for the Solo Mode AI Bot using the exact same 12-choice upgrade process and 4 passives."
     },
     {
       "name": "LuckyTestManager.generate12Upgrades",
       "kind": "method",
       "file": "game/src/mechanics/lucky-test/LuckyTestManager.ts",
-      "line": 86,
+      "line": 141,
       "className": "LuckyTestManager",
       "methodName": "generate12Upgrades",
       "doc": "Generates 12 random weapon upgrades distributed across the player's 4 weapons, strictly enforcing maxLevel = 4 so no weapon can exceed level 4."
@@ -8658,7 +8664,7 @@
       "name": "LuckyTestManager.generatePassiveChoices",
       "kind": "method",
       "file": "game/src/mechanics/lucky-test/LuckyTestManager.ts",
-      "line": 137,
+      "line": 192,
       "className": "LuckyTestManager",
       "methodName": "generatePassiveChoices"
     },
@@ -8693,6 +8699,113 @@
       "line": 56,
       "className": "LuckyTestManager",
       "methodName": "rollRandomHero"
+    },
+    {
+      "name": "LuckyTestModeSelectModal",
+      "kind": "class",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts",
+      "line": 12,
+      "doc": "Entry selection modal for Lucky Test: Choose between Solo vs AI Bot or Network PvP Duel."
+    },
+    {
+      "name": "LuckyTestModeSelectModal.hide",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts",
+      "line": 82,
+      "className": "LuckyTestModeSelectModal",
+      "methodName": "hide"
+    },
+    {
+      "name": "LuckyTestModeSelectModal.show",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts",
+      "line": 20,
+      "className": "LuckyTestModeSelectModal",
+      "methodName": "show"
+    },
+    {
+      "name": "LuckyTestModeSelectOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts",
+      "line": 3
+    },
+    {
+      "name": "LuckyTestReadyModal",
+      "kind": "class",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts",
+      "line": 11
+    },
+    {
+      "name": "LuckyTestReadyModal.checkStartCountdown",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts",
+      "line": 135,
+      "className": "LuckyTestReadyModal",
+      "methodName": "checkStartCountdown"
+    },
+    {
+      "name": "LuckyTestReadyModal.hide",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts",
+      "line": 163,
+      "className": "LuckyTestReadyModal",
+      "methodName": "hide"
+    },
+    {
+      "name": "LuckyTestReadyModal.setOpponentReady",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts",
+      "line": 119,
+      "className": "LuckyTestReadyModal",
+      "methodName": "setOpponentReady"
+    },
+    {
+      "name": "LuckyTestReadyModal.show",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts",
+      "line": 23,
+      "className": "LuckyTestReadyModal",
+      "methodName": "show"
+    },
+    {
+      "name": "LuckyTestReadyModalOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts",
+      "line": 4
+    },
+    {
+      "name": "LuckyTestResultModal",
+      "kind": "class",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts",
+      "line": 21
+    },
+    {
+      "name": "LuckyTestResultModal.hide",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts",
+      "line": 119,
+      "className": "LuckyTestResultModal",
+      "methodName": "hide"
+    },
+    {
+      "name": "LuckyTestResultModal.show",
+      "kind": "method",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts",
+      "line": 29,
+      "className": "LuckyTestResultModal",
+      "methodName": "show"
+    },
+    {
+      "name": "LuckyTestResultModalOptions",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts",
+      "line": 15
+    },
+    {
+      "name": "LuckyTestResultStats",
+      "kind": "interface",
+      "file": "game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts",
+      "line": 3
     },
     {
       "name": "MageCutoutRig",
@@ -12606,13 +12719,13 @@
       "name": "SessionDirector",
       "kind": "class",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 70
+      "line": 74
     },
     {
       "name": "SessionDirector.activateRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 849,
+      "line": 931,
       "className": "SessionDirector",
       "methodName": "activateRift",
       "doc": "Activates the dimensional rift: summons the stage boss directly from the rift and opens the portal into its luminous radiant state."
@@ -12621,7 +12734,7 @@
       "name": "SessionDirector.applyStageTransition",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1058,
+      "line": 1140,
       "className": "SessionDirector",
       "methodName": "applyStageTransition"
     },
@@ -12629,7 +12742,7 @@
       "name": "SessionDirector.canTeleportToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1254,
+      "line": 1341,
       "className": "SessionDirector",
       "methodName": "canTeleportToRift",
       "doc": "Checks whether the player is allowed to teleport to the dimensional rift. Teleport is available only after the teleporter is opened (state !== 'IDLE') and provided the player is at least two squares (100 meters) away from it."
@@ -12638,7 +12751,7 @@
       "name": "SessionDirector.completeGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 904,
+      "line": 986,
       "className": "SessionDirector",
       "methodName": "completeGreedTrial"
     },
@@ -12646,7 +12759,7 @@
       "name": "SessionDirector.finishRewardChoice",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 579,
+      "line": 661,
       "className": "SessionDirector",
       "methodName": "finishRewardChoice"
     },
@@ -12654,7 +12767,7 @@
       "name": "SessionDirector.handleInteract",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 702,
+      "line": 784,
       "className": "SessionDirector",
       "methodName": "handleInteract"
     },
@@ -12662,7 +12775,7 @@
       "name": "SessionDirector.initLuckyTestArena",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 280,
+      "line": 310,
       "className": "SessionDirector",
       "methodName": "initLuckyTestArena"
     },
@@ -12670,7 +12783,7 @@
       "name": "SessionDirector.resetRewardChoices",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 570,
+      "line": 652,
       "className": "SessionDirector",
       "methodName": "resetRewardChoices"
     },
@@ -12678,7 +12791,7 @@
       "name": "SessionDirector.restartGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 621,
+      "line": 703,
       "className": "SessionDirector",
       "methodName": "restartGame"
     },
@@ -12686,7 +12799,7 @@
       "name": "SessionDirector.resumeGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 562,
+      "line": 644,
       "className": "SessionDirector",
       "methodName": "resumeGame"
     },
@@ -12694,7 +12807,7 @@
       "name": "SessionDirector.resumeSavedRun",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1416,
+      "line": 1503,
       "className": "SessionDirector",
       "methodName": "resumeSavedRun",
       "doc": "Resumes a previously saved run from localStorage."
@@ -12703,7 +12816,7 @@
       "name": "SessionDirector.returnToMainMenu",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 501,
+      "line": 583,
       "className": "SessionDirector",
       "methodName": "returnToMainMenu"
     },
@@ -12711,16 +12824,24 @@
       "name": "SessionDirector.saveCurrentRunAndExit",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1338,
+      "line": 1425,
       "className": "SessionDirector",
       "methodName": "saveCurrentRunAndExit",
       "doc": "Serializes current run state and returns to Main Menu (\"Доиграть позднее\")."
     },
     {
+      "name": "SessionDirector.showLuckyTestResult",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 364,
+      "className": "SessionDirector",
+      "methodName": "showLuckyTestResult"
+    },
+    {
       "name": "SessionDirector.startCoopGameAsClient",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 444,
+      "line": 526,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsClient"
     },
@@ -12728,7 +12849,7 @@
       "name": "SessionDirector.startCoopGameAsHost",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 388,
+      "line": 470,
       "className": "SessionDirector",
       "methodName": "startCoopGameAsHost"
     },
@@ -12736,7 +12857,7 @@
       "name": "SessionDirector.startGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 868,
+      "line": 950,
       "className": "SessionDirector",
       "methodName": "startGreedTrial"
     },
@@ -12744,15 +12865,23 @@
       "name": "SessionDirector.startLuckyTest",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 248,
+      "line": 258,
       "className": "SessionDirector",
       "methodName": "startLuckyTest"
+    },
+    {
+      "name": "SessionDirector.startLuckyTestDraft",
+      "kind": "method",
+      "file": "game/src/core/SessionDirector.ts",
+      "line": 278,
+      "className": "SessionDirector",
+      "methodName": "startLuckyTestDraft"
     },
     {
       "name": "SessionDirector.surrenderGame",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 493,
+      "line": 575,
       "className": "SessionDirector",
       "methodName": "surrenderGame"
     },
@@ -12760,7 +12889,7 @@
       "name": "SessionDirector.teleportPlayerToRift",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1284,
+      "line": 1371,
       "className": "SessionDirector",
       "methodName": "teleportPlayerToRift",
       "doc": "Teleports player instantly to the Rift portal with sulfur smoke effects, granting a 1.5s invulnerability shield and advancing game & stage time by 20s. Available strictly after the rift is opened and when at least 2 squares away."
@@ -12769,7 +12898,7 @@
       "name": "SessionDirector.toggleDevMode",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 224,
+      "line": 234,
       "className": "SessionDirector",
       "methodName": "toggleDevMode"
     },
@@ -12777,7 +12906,7 @@
       "name": "SessionDirector.triggerGameOver",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 1136,
+      "line": 1218,
       "className": "SessionDirector",
       "methodName": "triggerGameOver"
     },
@@ -12785,7 +12914,7 @@
       "name": "SessionDirector.triggerLevelUp",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 589,
+      "line": 671,
       "className": "SessionDirector",
       "methodName": "triggerLevelUp"
     },
@@ -12793,7 +12922,7 @@
       "name": "SessionDirector.updateChestsHUD",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 189,
+      "line": 199,
       "className": "SessionDirector",
       "methodName": "updateChestsHUD"
     },
@@ -12801,7 +12930,7 @@
       "name": "SessionDirector.updateGreedTrial",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 888,
+      "line": 970,
       "className": "SessionDirector",
       "methodName": "updateGreedTrial"
     },
@@ -12809,7 +12938,7 @@
       "name": "SessionDirector.warpToNextStage",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 937,
+      "line": 1019,
       "className": "SessionDirector",
       "methodName": "warpToNextStage"
     },
@@ -12817,7 +12946,7 @@
       "name": "SessionDirector.wireCoordinatorCallbacks",
       "kind": "method",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 195,
+      "line": 205,
       "className": "SessionDirector",
       "methodName": "wireCoordinatorCallbacks"
     },
@@ -14398,7 +14527,7 @@
       "name": "SPAWN_OFFSETS",
       "kind": "const",
       "file": "game/src/core/SessionDirector.ts",
-      "line": 61
+      "line": 65
     },
     {
       "name": "SPECIAL_QUESTS_CONFIG",

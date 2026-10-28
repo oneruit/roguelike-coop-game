@@ -367,3 +367,289 @@
   padding: 8px 14px;
   border-radius: 6px;
 }
+
+
+/* ==========================================================================
+   LUCKY TEST • MODALS (MODE SELECT, READY, RESULT)
+   ========================================================================== */
+
+.lucky-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: radial-gradient(circle at center, rgba(10, 15, 30, 0.95) 0%, rgba(2, 6, 23, 0.98) 100%);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: luckyFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lucky-btn-secondary {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid #475569;
+  color: #cbd5e1;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lucky-btn-secondary:hover {
+  background: rgba(71, 85, 105, 0.9);
+  color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Mode Select */
+.lucky-mode-options {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lucky-mode-card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 2px solid #3b82f6;
+  border-radius: 14px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lucky-mode-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25);
+  border-color: #60a5fa;
+}
+
+.lucky-mode-icon {
+  font-size: 48px;
+}
+
+.lucky-mode-card-title {
+  font-family: 'Cinzel', serif, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.lucky-mode-card-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.lucky-mode-btn {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* Ready Confirmation Modal */
+.lucky-ready-combatants {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.lucky-ready-card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 380px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 2px solid #475569;
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.lucky-ready-card.ready {
+  border-color: #10b981;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+}
+
+.lucky-ready-badge {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #f87171;
+}
+
+.lucky-ready-badge.ready {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #34d399;
+}
+
+.lucky-ready-hero-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.lucky-ready-weapons-title, .lucky-ready-passives-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1px;
+}
+
+.lucky-ready-weapons-list, .lucky-ready-passives-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lucky-ready-pill {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.lucky-ready-vs {
+  font-family: 'Cinzel', serif, sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: #f59e0b;
+  text-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+}
+
+.lucky-ready-action-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.lucky-ready-countdown {
+  font-family: 'Cinzel', serif, sans-serif;
+  font-size: 42px;
+  font-weight: 900;
+  color: #f59e0b;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+  animation: countdownPulse 0.9s infinite;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(0.85); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0.8; }
+}
+
+/* Victory / Defeat Modal */
+.lucky-result-banner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.lucky-result-trophy {
+  font-size: 64px;
+}
+
+.lucky-result-title {
+  margin: 0;
+  font-family: 'Cinzel', serif, sans-serif;
+  font-size: 38px;
+  letter-spacing: 3px;
+}
+
+.lucky-result-title.victory {
+  color: #fbbf24;
+  text-shadow: 0 0 25px rgba(251, 191, 36, 0.7);
+}
+
+.lucky-result-title.defeat {
+  color: #ef4444;
+  text-shadow: 0 0 25px rgba(239, 68, 68, 0.7);
+}
+
+.lucky-result-subtitle {
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.lucky-result-stats-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lucky-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.lucky-stat-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.lucky-stat-label {
+  color: #94a3b8;
+}
+
+.lucky-stat-value {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.lucky-stat-value.highlight {
+  color: #38bdf8;
+}
+
+.lucky-stat-value.green {
+  color: #34d399;
+}
+
+.lucky-stat-value.red {
+  color: #f87171;
+}
+
+.lucky-result-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.lucky-result-btn {
+  font-size: 16px;
+  padding: 14px 28px;
+}

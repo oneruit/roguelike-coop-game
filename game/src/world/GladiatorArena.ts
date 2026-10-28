@@ -23,6 +23,14 @@ export interface ReadyPadState {
 }
 
 export class GladiatorArena {
+  public static readonly PILLARS = [
+    { x: -8, z: -8 },
+    { x: 8, z: -8 },
+    { x: -8, z: 8 },
+    { x: 8, z: 8 }
+  ];
+  public static readonly PILLAR_RADIUS = 1.6;
+
   public group: Group;
   public arenaRadius: number = 24;
 
@@ -86,14 +94,7 @@ export class GladiatorArena {
     }
 
     // 3. Four Tactical Cover Pillars (at radius 11m)
-    const pillarPositions = [
-      { x: -8, z: -8 },
-      { x: 8, z: -8 },
-      { x: -8, z: 8 },
-      { x: 8, z: 8 }
-    ];
-
-    for (const pos of pillarPositions) {
+    for (const pos of GladiatorArena.PILLARS) {
       const pillarGeom = new CylinderGeometry(1.4, 1.6, 4.2, 16);
       const pillarMat = new MeshStandardMaterial({
         color: 0x52525b,
@@ -130,151 +131,112 @@ export class GladiatorArena {
     });
     this.p1PadMesh = new Mesh(padGeom, p1Mat);
     this.p1PadMesh.rotation.x = -Math.PI / 2;
-    this.p1PadMesh.position.set(this.player1Pad.x, 0.05, this.player1Pad.z);
+    this.p1PadMesh.position.set(this.player1Pad.x, 0.02, this.player1Pad.z);
     this.group.add(this.p1PadMesh);
 
     const ringGeom = new RingGeometry(this.player1Pad.radius - 0.2, this.player1Pad.radius, 32);
-    const p1RingMat = new MeshBasicMaterial({
-      color: 0x22d3ee,
-      transparent: true,
-      opacity: 0.85,
-      side: DoubleSide
-    });
-    this.p1PadRing = new Mesh(ringGeom, p1RingMat);
+    const ringMat1 = new MeshBasicMaterial({ color: 0x22d3ee, side: DoubleSide });
+    this.p1PadRing = new Mesh(ringGeom, ringMat1);
     this.p1PadRing.rotation.x = -Math.PI / 2;
-    this.p1PadRing.position.set(this.player1Pad.x, 0.06, this.player1Pad.z);
+    this.p1PadRing.position.set(this.player1Pad.x, 0.03, this.player1Pad.z);
     this.group.add(this.p1PadRing);
 
     this.p1Light = new PointLight(0x06b6d4, 1.2, 6);
     this.p1Light.position.set(this.player1Pad.x, 1.0, this.player1Pad.z);
     this.group.add(this.p1Light);
 
-    // Player 2 Pad (Right)
+    // Player 2 / Bot Pad (Right)
     const p2Mat = new MeshBasicMaterial({
-      color: 0xf59e0b,
+      color: 0xf43f5e,
       transparent: true,
       opacity: 0.35,
       side: DoubleSide
     });
-    this.p2PadMesh = new Mesh(padGeom, p2Mat);
+    this.p2PadMesh = new Mesh(padGeom.clone(), p2Mat);
     this.p2PadMesh.rotation.x = -Math.PI / 2;
-    this.p2PadMesh.position.set(this.player2Pad.x, 0.05, this.player2Pad.z);
+    this.p2PadMesh.position.set(this.player2Pad.x, 0.02, this.player2Pad.z);
     this.group.add(this.p2PadMesh);
 
-    const p2RingMat = new MeshBasicMaterial({
-      color: 0xfbbf24,
-      transparent: true,
-      opacity: 0.85,
-      side: DoubleSide
-    });
-    this.p2PadRing = new Mesh(ringGeom, p2RingMat);
+    const ringMat2 = new MeshBasicMaterial({ color: 0xfb7185, side: DoubleSide });
+    this.p2PadRing = new Mesh(ringGeom.clone(), ringMat2);
     this.p2PadRing.rotation.x = -Math.PI / 2;
-    this.p2PadRing.position.set(this.player2Pad.x, 0.06, this.player2Pad.z);
+    this.p2PadRing.position.set(this.player2Pad.x, 0.03, this.player2Pad.z);
     this.group.add(this.p2PadRing);
 
-    this.p2Light = new PointLight(0xf59e0b, 1.2, 6);
+    this.p2Light = new PointLight(0xf43f5e, 1.2, 6);
     this.p2Light.position.set(this.player2Pad.x, 1.0, this.player2Pad.z);
     this.group.add(this.p2Light);
   }
 
+  public setP2AutoReady(isBot: boolean): void {
+    if (isBot) {
+      this.player2Pad.isActivated = true;
+      this.player2Pad.activationProgress = 1.0;
+      if (this.p2PadMesh) {
+        (this.p2PadMesh.material as MeshBasicMaterial).opacity = 0.85;
+      }
+    }
+  }
+
   public update(dt: number, p1Pos: Vector3, p2Pos?: Vector3): void {
-    // Check P1 on pad
-    const d1Sq = (p1Pos.x - this.player1Pad.x) ** 2 + (p1Pos.z - this.player1Pad.z) ** 2;
-    const isP1In = d1Sq <= this.player1Pad.radius ** 2;
+    // Animate glow rings
+    if (this.p1PadRing) this.p1PadRing.rotation.z += dt * 0.5;
+    if (this.p2PadRing) this.p2PadRing.rotation.z -= dt * 0.5;
 
-    if (isP1In) {
-      if (!this.player1Pad.isActivated) {
-        this.player1Pad.activationProgress = Math.min(1.0, this.player1Pad.activationProgress + dt * 2.0);
-        if (this.player1Pad.activationProgress >= 1.0) {
-          this.player1Pad.isActivated = true;
-          (this.p1PadMesh.material as MeshBasicMaterial).color.setHex(0x22c55e);
-          (this.p1PadRing.material as MeshBasicMaterial).color.setHex(0x4ade80);
-          this.p1Light.color.setHex(0x22c55e);
-          SoundManager.playLevelUp();
-        }
-      }
+    // Check P1 Pad presence
+    const dist1 = Math.hypot(p1Pos.x - this.player1Pad.x, p1Pos.z - this.player1Pad.z);
+    if (dist1 <= this.player1Pad.radius) {
+      this.player1Pad.activationProgress = Math.min(1.0, this.player1Pad.activationProgress + dt * 1.5);
     } else {
-      if (!this.isCountdownActive) {
-        this.player1Pad.isActivated = false;
-        this.player1Pad.activationProgress = Math.max(0, this.player1Pad.activationProgress - dt * 2.5);
-        (this.p1PadMesh.material as MeshBasicMaterial).color.setHex(0x06b6d4);
-        (this.p1PadRing.material as MeshBasicMaterial).color.setHex(0x22d3ee);
-        this.p1Light.color.setHex(0x06b6d4);
+      this.player1Pad.activationProgress = Math.max(0.0, this.player1Pad.activationProgress - dt * 2.0);
+    }
+    this.player1Pad.isActivated = this.player1Pad.activationProgress >= 0.95;
+    (this.p1PadMesh.material as MeshBasicMaterial).opacity = 0.25 + this.player1Pad.activationProgress * 0.65;
+
+    // Check P2 Pad presence (if not auto-ready)
+    if (p2Pos && !this.player2Pad.isActivated) {
+      const dist2 = Math.hypot(p2Pos.x - this.player2Pad.x, p2Pos.z - this.player2Pad.z);
+      if (dist2 <= this.player2Pad.radius) {
+        this.player2Pad.activationProgress = Math.min(1.0, this.player2Pad.activationProgress + dt * 1.5);
+      } else {
+        this.player2Pad.activationProgress = Math.max(0.0, this.player2Pad.activationProgress - dt * 2.0);
       }
+      this.player2Pad.isActivated = this.player2Pad.activationProgress >= 0.95;
+      (this.p2PadMesh.material as MeshBasicMaterial).opacity = 0.25 + this.player2Pad.activationProgress * 0.65;
     }
 
-    // Check P2 on pad (or auto-activated in solo bot mode)
-    if (p2Pos) {
-      const d2Sq = (p2Pos.x - this.player2Pad.x) ** 2 + (p2Pos.z - this.player2Pad.z) ** 2;
-      const isP2In = d2Sq <= this.player2Pad.radius ** 2;
-      if (isP2In && !this.player2Pad.isActivated) {
-        this.player2Pad.activationProgress = Math.min(1.0, this.player2Pad.activationProgress + dt * 2.0);
-        if (this.player2Pad.activationProgress >= 1.0) {
-          this.player2Pad.isActivated = true;
-          (this.p2PadMesh.material as MeshBasicMaterial).color.setHex(0x22c55e);
-          (this.p2PadRing.material as MeshBasicMaterial).color.setHex(0x4ade80);
-          this.p2Light.color.setHex(0x22c55e);
-        }
-      }
-    }
-
-    // Rotate pad rings gently
-    this.p1PadRing.rotation.z += dt * 0.8;
-    this.p2PadRing.rotation.z -= dt * 0.8;
-
-    // Ready countdown
+    // Check countdown trigger
     if (this.player1Pad.isActivated && this.player2Pad.isActivated) {
       if (!this.isCountdownActive) {
         this.isCountdownActive = true;
         this.countdownTimer = 3.0;
-        SoundManager.playLevelUp();
+        SoundManager.playLevelUp?.();
       } else {
         this.countdownTimer -= dt;
         if (this.countdownTimer <= 0) {
           this.onBothPlayersReady?.();
+          this.isCountdownActive = false;
         }
       }
-    }
-  }
-
-  public setP2AutoReady(ready: boolean = true): void {
-    this.player2Pad.isActivated = ready;
-    this.player2Pad.activationProgress = ready ? 1.0 : 0.0;
-    if (ready) {
-      (this.p2PadMesh.material as MeshBasicMaterial).color.setHex(0x22c55e);
-      (this.p2PadRing.material as MeshBasicMaterial).color.setHex(0x4ade80);
-      this.p2Light.color.setHex(0x22c55e);
+    } else {
+      this.isCountdownActive = false;
+      this.countdownTimer = 3.0;
     }
   }
 
   public hidePads(): void {
-    this.p1PadMesh.visible = false;
-    this.p1PadRing.visible = false;
-    this.p1Light.visible = false;
-    this.p2PadMesh.visible = false;
-    this.p2PadRing.visible = false;
-    this.p2Light.visible = false;
+    if (this.p1PadMesh) this.p1PadMesh.visible = false;
+    if (this.p2PadMesh) this.p2PadMesh.visible = false;
+    if (this.p1PadRing) this.p1PadRing.visible = false;
+    if (this.p2PadRing) this.p2PadRing.visible = false;
+    if (this.p1Light) this.p1Light.visible = false;
+    if (this.p2Light) this.p2Light.visible = false;
   }
 
   public destroy(): void {
+    if (this.obstacleManager) {
+      this.obstacleManager.removeChunkObstacles('0,0');
+    }
     this.scene.remove(this.group);
-    this.arenaFloorMesh.geometry.dispose();
-    (this.arenaFloorMesh.material as MeshStandardMaterial).dispose();
-    for (const w of this.wallMeshes) {
-      w.geometry.dispose();
-      (w.material as MeshStandardMaterial).dispose();
-    }
-    for (const p of this.pillarMeshes) {
-      p.geometry.dispose();
-      (p.material as MeshStandardMaterial).dispose();
-    }
-    this.p1PadMesh.geometry.dispose();
-    (this.p1PadMesh.material as MeshBasicMaterial).dispose();
-    this.p1PadRing.geometry.dispose();
-    (this.p1PadRing.material as MeshBasicMaterial).dispose();
-    this.p2PadMesh.geometry.dispose();
-    (this.p2PadMesh.material as MeshBasicMaterial).dispose();
-    this.p2PadRing.geometry.dispose();
-    (this.p2PadRing.material as MeshBasicMaterial).dispose();
   }
 }

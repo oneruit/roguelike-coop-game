@@ -14,6 +14,7 @@ import { SoundManager } from '../core/SoundManager';
 import { ProgressionManager } from '../core/ProgressionManager';
 import { MeleeAttackEffects } from './MeleeAttackEffects';
 import type { MeleeAttackInfo } from '../shared/types';
+import { GladiatorArena } from '../world/GladiatorArena';
 
 export class CombatDirector {
   private engine: Engine;
@@ -139,6 +140,45 @@ export class CombatDirector {
         melee: effect.weaponId,
         ownerId: this.net.mySlotId || (this.net.role === 'host' ? 'p1' : 'p2')
       });
+    }
+
+    if (this.isPvPMode || this.player.isGladiator) {
+      for (const [rpId, rp] of this.remotePlayers.entries()) {
+        if (rp.hp <= 0 || rp.isDowned) continue;
+        const dx = rp.position.x - attack.x;
+        const dz = rp.position.z - attack.z;
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist <= attack.radius + 0.8) {
+          const baseDmg = 35 * this.player.getDamageMultiplier(attack.weaponId);
+          const isCrit = Math.random() < this.player.critChance;
+          const finalDmg = isCrit ? Math.round(baseDmg * (1 + this.player.critDamage)) : Math.round(baseDmg);
+          const isKilled = rp.takeDamage(finalDmg);
+          this.damageNumbers.spawnDamage(rp.position, finalDmg, isCrit, this.engine.camera);
+          SoundManager.playSlash?.();
+          this.player.totalDamageDealt += finalDmg;
+          this.player.recordWeaponDamage(attack.weaponId, finalDmg);
+          if (isKilled) {
+            this.onPvPKill?.(rpId);
+          }
+        }
+      }
+    }
+  };
+
+  public handleBotMeleeAttack = (attack: MeleeAttackInfo, botDamageMultiplier: number = 1.0, isCrit: boolean = false): void => {
+    const effect = { ...attack, y: this.engine.chunkManager.getElevation(attack.x, attack.z) };
+    this.meleeEffects.play(effect);
+    SoundManager.playSlash?.();
+
+    if (this.player.hp <= 0 || this.player.isDowned) return;
+    const dx = this.player.position.x - attack.x;
+    const dz = this.player.position.z - attack.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+    if (dist <= attack.radius + 0.8) {
+      const baseDmg = Math.round(35 * botDamageMultiplier);
+      const finalDmg = isCrit ? Math.round(baseDmg * 1.5) : baseDmg;
+      this.player.takeDamage(finalDmg, false, 'Гладиатор AI');
+      this.damageNumbers.spawnDamage(this.player.position, finalDmg, isCrit, this.engine.camera);
     }
   };
 
@@ -546,6 +586,26 @@ export class CombatDirector {
 
       if (proj.isFireball && !proj.hasImpacted) {
         continue;
+      }
+
+      if (this.isPvPMode) {
+        let blockedByPillar = false;
+        for (const pillar of GladiatorArena.PILLARS) {
+          const dx = proj.position.x - pillar.x;
+          const dz = proj.position.z - pillar.z;
+          const hitDist = GladiatorArena.PILLAR_RADIUS + proj.radius;
+          if (dx * dx + dz * dz <= hitDist * hitDist) {
+            proj.isAlive = false;
+            blockedByPillar = true;
+            SoundManager.playHit?.();
+            break;
+          }
+        }
+        if (blockedByPillar) {
+          proj.destroy(this.engine.scene);
+          this.projectiles.splice(i, 1);
+          continue;
+        }
       }
 
       if (this.isPvPMode || this.player.isGladiator) {

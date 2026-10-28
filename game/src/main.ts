@@ -1021,10 +1021,9 @@ class Game {
     // 8b. Update Brimstone / Sulfur Smoke animations
     SulfurSmokeManager.update(dt);
 
-    this.chestManager.update(dt);
-
-    // 8c. Mob Nests simulation
-    this.mobNestManager.update(
+    if (!isArena) {
+      this.chestManager.update(dt);
+      this.mobNestManager.update(
       dt,
       this.player,
       this.remotePlayers,
@@ -1070,8 +1069,10 @@ class Game {
     }
 
 
+    }
+
     // 9. Enemies simulation
-    if (this.net.role !== 'client') {
+    if (this.net.role !== 'client' && !isArena) {
       const allTargets: PlayerTargetInfo[] = [
         {
           id: 'p1',

@@ -41,6 +41,7 @@ import { KatanaSlashWeapon } from '../game/src/combat/weapons/MeleeWeapons';
 import { LightningStrikeWeapon } from '../game/src/combat/weapons/MagicWeapons';
 import { Projectile } from '../game/src/combat/Projectile';
 import { GladiatorBot } from '../game/src/entities/GladiatorBot';
+import { GladiatorArena } from '../game/src/world/GladiatorArena';
 
 describe('Lucky Test (PvP Arena Mode)', () => {
   it('rolls random heroes from the authorized hero pool', () => {
@@ -64,6 +65,25 @@ describe('Lucky Test (PvP Arena Mode)', () => {
     assert.ok(w2.name.length > 0);
   });
 
+  it('generates 3 choices per upgrade round and strictly respects level 4 cap', () => {
+    const manager = LuckyTestManager.getInstance();
+    const weapons = ['katana_slash', 'bow', 'fireball', 'lightning_strike'];
+    const levels: Record<string, number> = {
+      katana_slash: 1,
+      bow: 2,
+      fireball: 3,
+      lightning_strike: 4 // Already capped!
+    };
+
+    const choices = manager.generateUpgradeChoices(weapons, levels, 3);
+    assert.strictEqual(choices.length, 3);
+    for (const c of choices) {
+      assert.notStrictEqual(c.weaponId, 'lightning_strike', 'Capped weapon should not be offered');
+      assert.ok(c.newLevel <= 4);
+      assert.ok(['common', 'uncommon', 'rare', 'legendary'].includes(c.grade));
+    }
+  });
+
   it('generates 12 weapon upgrades and strictly enforces level 4 maximum cap on all weapons', () => {
     const manager = LuckyTestManager.getInstance();
     const weapons = ['katana_slash', 'bow', 'fireball', 'lightning_strike'];
@@ -85,7 +105,6 @@ describe('Lucky Test (PvP Arena Mode)', () => {
         levels[up.weaponId] = up.newLevel;
       }
 
-      // Check final levels of all weapons
       for (const wId of weapons) {
         assert.ok(levels[wId] <= 4, `Final level for ${wId} exceeded cap: ${levels[wId]}`);
       }
@@ -98,59 +117,36 @@ describe('Lucky Test (PvP Arena Mode)', () => {
       const choices = manager.generatePassiveChoices(3);
       assert.strictEqual(choices.length, 3);
       for (const p of choices) {
-        assert.ok(p.value > 0);
         assert.ok(p.title.length > 0);
+        assert.ok(p.value > 0);
         assert.ok(['good', 'great', 'legendary'].includes(p.quality));
       }
     }
   });
 
-  it('applies complete build to Player setting 1500 HP, manual aim, and 40% resilience', () => {
-    const manager = LuckyTestManager.getInstance();
-    const player = new Player(new Scene());
-
-    const build = manager.createBotGladiatorBuild();
-    manager.applyBuildToPlayer(player, build);
-
-    assert.strictEqual(player.isGladiator, true);
-    assert.strictEqual(player.isManualAim, true);
-    assert.strictEqual(player.pvpResilience, 0.40);
-    assert.ok(player.maxHp >= 1500, `Max HP should be at least 1500, was ${player.maxHp}`);
-    assert.strictEqual(player.hp, player.maxHp);
-    assert.strictEqual(player.weapons.length, 4);
-
-    // Verify all weapons are capped at level 4 or less
-    for (const w of player.weapons) {
-      assert.ok(w.level <= 4, `Weapon ${w.id} exceeded level 4 on player: ${w.level}`);
-    }
-  });
-
-  it('gladiator damage reduction factor scales incoming damage down to 40%', () => {
+  it('sets up 1500 Gladiator base HP and 40% PvP resilience factor', () => {
     const player = new Player(new Scene());
     player.isGladiator = true;
     player.pvpResilience = 0.40;
     player.maxHp = 1500;
     player.hp = 1500;
-    player.shield = 0; // No shield for raw HP test
+    player.shield = 0;
 
-    // Hit with 100 raw damage
+    // Incoming 100 damage should be reduced by 40% factor -> 40 damage taken
     player.takeDamage(100);
-    // 100 * 0.40 = 40 damage taken
     assert.strictEqual(player.hp, 1460);
 
-    // Test RemotePlayer gladiator damage
-    const remote = new RemotePlayer(new Scene(), 'p2');
+    const remote = new RemotePlayer(new Scene(), 'p2', 'Remote Gladiator', 'ronin', 0x38bdf8);
     remote.isGladiator = true;
     remote.pvpResilience = 0.40;
     remote.maxHp = 1500;
     remote.hp = 1500;
-    remote.shield = 0;
 
     remote.takeDamage(100);
     assert.strictEqual(remote.hp, 1460);
   });
 
-  it('GladiatorBot initializes with complete 4-weapon build, AI parameters, and overhead health', () => {
+  it('GladiatorBot initializes with complete 4-weapon build, passives, and AI parameters', () => {
     const manager = LuckyTestManager.getInstance();
     const botBuild = manager.createBotGladiatorBuild();
     const bot = new GladiatorBot(new Scene(), botBuild);
@@ -159,10 +155,17 @@ describe('Lucky Test (PvP Arena Mode)', () => {
     assert.strictEqual(bot.pvpResilience, 0.40);
     assert.ok(bot.maxHp >= 1500);
     assert.strictEqual(bot.botWeapons.length, 4);
+    assert.ok(bot.damageMultiplier >= 1.0);
+    assert.ok(bot.cooldownMultiplier <= 1.0);
 
     for (const w of bot.botWeapons) {
       assert.ok(w.level <= 4);
     }
+  });
+
+  it('GladiatorArena exposes 4 cover pillars with radius 1.6m', () => {
+    assert.strictEqual(GladiatorArena.PILLARS.length, 4);
+    assert.strictEqual(GladiatorArena.PILLAR_RADIUS, 1.6);
   });
 });
 

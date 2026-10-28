@@ -1,7 +1,7 @@
 # Codebase Symbol Index
 
 > Automatically generated index of all exported classes, interfaces, types, functions, constants, and class methods.
-> **Generated:** 2026-10-28T03:38:36.044Z | **Files:** 213 | **Top-level:** 625 | **Class Methods:** 1392
+> **Generated:** 2026-10-28T04:10:43.918Z | **Files:** 216 | **Top-level:** 633 | **Class Methods:** 1402
 > **Entities Registered:** 11 Heroes, 31 Weapons, 4 Bosses, 8 Monsters
 
 Run `npm run index` to refresh this cache.
@@ -10,7 +10,7 @@ Run `npm run index` to refresh this cache.
 
 | Module | Top-Level Symbols |
 | :--- | :--- |
-| `game/src` | 579 |
+| `game/src` | 587 |
 | `admin/src` | 44 |
 | `server` | 2 |
 
@@ -217,6 +217,7 @@ Run `npm run index` to refresh this cache.
 | `BossSpawnPayload` | `interface` | [`game/src/mechanics/events/GameEventBus.ts:35`](../../game/src/mechanics/events/GameEventBus.ts#L35) | - |
 | `BossSphere` | `interface` | [`game/src/entities/FinalBossPylonManager.ts:24`](../../game/src/entities/FinalBossPylonManager.ts#L24) | - |
 | `BossTextures` | `interface` | [`game/src/core/TextureManager.ts:34`](../../game/src/core/TextureManager.ts#L34) | - |
+| `BotMeleeAttackHandler` | `type` | [`game/src/entities/GladiatorBot.ts:11`](../../game/src/entities/GladiatorBot.ts#L11) | - |
 | `BowWeapon` | `class` | [`game/src/combat/weapons/RangedWeapons.ts:13`](../../game/src/combat/weapons/RangedWeapons.ts#L13) | Hunting Bow (Охотничий Лук) Long-range sharp piercing arrows cutting throug... |
 | `BowWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:126`](../../game/src/combat/weapons/RangedWeapons.ts#L126) | - |
 | `BowWeapon.setAttackCallback` | `method` | [`game/src/combat/weapons/RangedWeapons.ts:38`](../../game/src/combat/weapons/RangedWeapons.ts#L38) | - |
@@ -380,15 +381,15 @@ Run `npm run index` to refresh this cache.
 | `CloudSyncManager.scheduleSave` | `method` | [`game/src/meta/CloudSyncManager.ts:202`](../../game/src/meta/CloudSyncManager.ts#L202) | Debounced cloud save after any local mutation. |
 | `CloudSyncManager.setStatus` | `method` | [`game/src/meta/CloudSyncManager.ts:83`](../../game/src/meta/CloudSyncManager.ts#L83) | - |
 | `CloudSyncManager.syncOnLogin` | `method` | [`game/src/meta/CloudSyncManager.ts:98`](../../game/src/meta/CloudSyncManager.ts#L98) | Called when a player logs in via Google/Email. Pulls existing cloud save or... |
-| `CombatDirector` | `class` | [`game/src/combat/CombatDirector.ts:18`](../../game/src/combat/CombatDirector.ts#L18) | - |
-| `CombatDirector.clear` | `method` | [`game/src/combat/CombatDirector.ts:841`](../../game/src/combat/CombatDirector.ts#L841) | - |
-| `CombatDirector.onLocalPlayerEnemyKill` | `method` | [`game/src/combat/CombatDirector.ts:310`](../../game/src/combat/CombatDirector.ts#L310) | - |
-| `CombatDirector.spawnChronosShockwave` | `method` | [`game/src/combat/CombatDirector.ts:400`](../../game/src/combat/CombatDirector.ts#L400) | - |
-| `CombatDirector.spawnCosmeticShot` | `method` | [`game/src/combat/CombatDirector.ts:145`](../../game/src/combat/CombatDirector.ts#L145) | - |
-| `CombatDirector.spawnFlameTrailPatch` | `method` | [`game/src/combat/CombatDirector.ts:425`](../../game/src/combat/CombatDirector.ts#L425) | - |
-| `CombatDirector.updateItemProcs` | `method` | [`game/src/combat/CombatDirector.ts:709`](../../game/src/combat/CombatDirector.ts#L709) | - |
-| `CombatDirector.updateProjectiles` | `method` | [`game/src/combat/CombatDirector.ts:454`](../../game/src/combat/CombatDirector.ts#L454) | - |
-| `CombatDirector.updateProjectileVisuals` | `method` | [`game/src/combat/CombatDirector.ts:698`](../../game/src/combat/CombatDirector.ts#L698) | - |
+| `CombatDirector` | `class` | [`game/src/combat/CombatDirector.ts:19`](../../game/src/combat/CombatDirector.ts#L19) | - |
+| `CombatDirector.clear` | `method` | [`game/src/combat/CombatDirector.ts:901`](../../game/src/combat/CombatDirector.ts#L901) | - |
+| `CombatDirector.onLocalPlayerEnemyKill` | `method` | [`game/src/combat/CombatDirector.ts:350`](../../game/src/combat/CombatDirector.ts#L350) | - |
+| `CombatDirector.spawnChronosShockwave` | `method` | [`game/src/combat/CombatDirector.ts:440`](../../game/src/combat/CombatDirector.ts#L440) | - |
+| `CombatDirector.spawnCosmeticShot` | `method` | [`game/src/combat/CombatDirector.ts:185`](../../game/src/combat/CombatDirector.ts#L185) | - |
+| `CombatDirector.spawnFlameTrailPatch` | `method` | [`game/src/combat/CombatDirector.ts:465`](../../game/src/combat/CombatDirector.ts#L465) | - |
+| `CombatDirector.updateItemProcs` | `method` | [`game/src/combat/CombatDirector.ts:769`](../../game/src/combat/CombatDirector.ts#L769) | - |
+| `CombatDirector.updateProjectiles` | `method` | [`game/src/combat/CombatDirector.ts:494`](../../game/src/combat/CombatDirector.ts#L494) | - |
+| `CombatDirector.updateProjectileVisuals` | `method` | [`game/src/combat/CombatDirector.ts:758`](../../game/src/combat/CombatDirector.ts#L758) | - |
 | `CombatVfxRenderer` | `const` | [`game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx:25`](../../game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx#L25) | Pre-allocated projectile and combat VFX pool. Uses InstancedMesh to batch r... |
 | `CombatVfxRendererProps` | `interface` | [`game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx:16`](../../game/src/ui/react/r3f/entities/CombatVfxRenderer.tsx#L16) | - |
 | `COMMON_ITEMS` | `const` | [`game/src/items/RiftItemSystem.ts:254`](../../game/src/items/RiftItemSystem.ts#L254) | - |
@@ -636,7 +637,7 @@ Run `npm run index` to refresh this cache.
 | `GameOverScreenOptions` | `interface` | [`game/src/ui/screens/GameOver/GameOverScreen.ts:32`](../../game/src/ui/screens/GameOver/GameOverScreen.ts#L32) | - |
 | `GameOverUI` | `class` | [`game/src/ui/modules/GameOverUI.ts:13`](../../game/src/ui/modules/GameOverUI.ts#L13) | - |
 | `GameStartMessage` | `interface` | [`game/src/shared/types/network.ts:252`](../../game/src/shared/types/network.ts#L252) | - |
-| `GameState` | `enum` | [`game/src/core/SessionDirector.ts:48`](../../game/src/core/SessionDirector.ts#L48) | - |
+| `GameState` | `enum` | [`game/src/core/SessionDirector.ts:52`](../../game/src/core/SessionDirector.ts#L52) | - |
 | `GameStateBridge` | `class` | [`game/src/ui/stores/GameStateBridge.ts:27`](../../game/src/ui/stores/GameStateBridge.ts#L27) | GameStateBridge decouples headless game simulation from the UI stores. - Ro... |
 | `GameStateBridge.cleanup` | `method` | [`game/src/ui/stores/GameStateBridge.ts:54`](../../game/src/ui/stores/GameStateBridge.ts#L54) | - |
 | `GameStateBridge.emitMinimapSnapshot` | `method` | [`game/src/ui/stores/GameStateBridge.ts:68`](../../game/src/ui/stores/GameStateBridge.ts#L68) | - |
@@ -700,14 +701,14 @@ Run `npm run index` to refresh this cache.
 | `getWeaponIconUrl` | `function` | [`game/src/ui/modules/HeroUIHelpers.ts:205`](../../game/src/ui/modules/HeroUIHelpers.ts#L205) | - |
 | `getWeaponIconUrl` | `function` | [`game/src/ui/screens/LevelUp/LevelUpScreen.ts:45`](../../game/src/ui/screens/LevelUp/LevelUpScreen.ts#L45) | - |
 | `GladiatorArena` | `class` | [`game/src/world/GladiatorArena.ts:25`](../../game/src/world/GladiatorArena.ts#L25) | - |
-| `GladiatorArena.buildArenaGeometry` | `method` | [`game/src/world/GladiatorArena.ts:55`](../../game/src/world/GladiatorArena.ts#L55) | - |
-| `GladiatorArena.buildReadyPads` | `method` | [`game/src/world/GladiatorArena.ts:122`](../../game/src/world/GladiatorArena.ts#L122) | - |
-| `GladiatorArena.destroy` | `method` | [`game/src/world/GladiatorArena.ts:259`](../../game/src/world/GladiatorArena.ts#L259) | - |
-| `GladiatorArena.hidePads` | `method` | [`game/src/world/GladiatorArena.ts:250`](../../game/src/world/GladiatorArena.ts#L250) | - |
-| `GladiatorArena.setP2AutoReady` | `method` | [`game/src/world/GladiatorArena.ts:240`](../../game/src/world/GladiatorArena.ts#L240) | - |
-| `GladiatorArena.update` | `method` | [`game/src/world/GladiatorArena.ts:180`](../../game/src/world/GladiatorArena.ts#L180) | - |
-| `GladiatorBot` | `class` | [`game/src/entities/GladiatorBot.ts:10`](../../game/src/entities/GladiatorBot.ts#L10) | - |
-| `GladiatorBot.triggerAttackAnim` | `method` | [`game/src/entities/GladiatorBot.ts:139`](../../game/src/entities/GladiatorBot.ts#L139) | - |
+| `GladiatorArena.buildArenaGeometry` | `method` | [`game/src/world/GladiatorArena.ts:63`](../../game/src/world/GladiatorArena.ts#L63) | - |
+| `GladiatorArena.buildReadyPads` | `method` | [`game/src/world/GladiatorArena.ts:123`](../../game/src/world/GladiatorArena.ts#L123) | - |
+| `GladiatorArena.destroy` | `method` | [`game/src/world/GladiatorArena.ts:236`](../../game/src/world/GladiatorArena.ts#L236) | - |
+| `GladiatorArena.hidePads` | `method` | [`game/src/world/GladiatorArena.ts:227`](../../game/src/world/GladiatorArena.ts#L227) | - |
+| `GladiatorArena.setP2AutoReady` | `method` | [`game/src/world/GladiatorArena.ts:171`](../../game/src/world/GladiatorArena.ts#L171) | - |
+| `GladiatorArena.update` | `method` | [`game/src/world/GladiatorArena.ts:181`](../../game/src/world/GladiatorArena.ts#L181) | - |
+| `GladiatorBot` | `class` | [`game/src/entities/GladiatorBot.ts:13`](../../game/src/entities/GladiatorBot.ts#L13) | - |
+| `GladiatorBot.triggerAttackAnim` | `method` | [`game/src/entities/GladiatorBot.ts:197`](../../game/src/entities/GladiatorBot.ts#L197) | - |
 | `GlobalBalanceConfig` | `interface` | [`game/src/balance/BalanceTypes.ts:94`](../../game/src/balance/BalanceTypes.ts#L94) | - |
 | `GreatswordWeapon` | `class` | [`game/src/combat/weapons/MeleeWeapons.ts:317`](../../game/src/combat/weapons/MeleeWeapons.ts#L317) | Greatsword (Двуручный Меч) - Hero 2 Valkyrie starting weapon Massive sweepi... |
 | `GreatswordWeapon.getNextUpgradeDescription` | `method` | [`game/src/combat/weapons/MeleeWeapons.ts:389`](../../game/src/combat/weapons/MeleeWeapons.ts#L389) | - |
@@ -1061,26 +1062,41 @@ Run `npm run index` to refresh this cache.
 | `LuckyPassiveType` | `type` | [`game/src/mechanics/lucky-test/LuckyTestTypes.ts:35`](../../game/src/mechanics/lucky-test/LuckyTestTypes.ts#L35) | - |
 | `LuckyTestBuildState` | `interface` | [`game/src/mechanics/lucky-test/LuckyTestTypes.ts:55`](../../game/src/mechanics/lucky-test/LuckyTestTypes.ts#L55) | - |
 | `LuckyTestDraftScreen` | `class` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:13`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L13) | - |
-| `LuckyTestDraftScreen.bindElements` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:30`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L30) | - |
-| `LuckyTestDraftScreen.bindEvents` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:31`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L31) | - |
-| `LuckyTestDraftScreen.getTemplate` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:33`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L33) | - |
-| `LuckyTestDraftScreen.renderFinalSummary` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:224`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L224) | - |
-| `LuckyTestDraftScreen.renderHeroReveal` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:69`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L69) | - |
-| `LuckyTestDraftScreen.renderPassiveDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:181`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L181) | - |
-| `LuckyTestDraftScreen.renderUpgradesReveal` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:145`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L145) | - |
-| `LuckyTestDraftScreen.renderWeaponDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:101`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L101) | - |
-| `LuckyTestDraftScreen.setStepBadge` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:64`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L64) | - |
-| `LuckyTestDraftScreen.startDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:49`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L49) | - |
+| `LuckyTestDraftScreen.bindElements` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:32`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L32) | - |
+| `LuckyTestDraftScreen.bindEvents` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:33`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L33) | - |
+| `LuckyTestDraftScreen.getTemplate` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:35`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L35) | - |
+| `LuckyTestDraftScreen.renderDraftSummary` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:254`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L254) | - |
+| `LuckyTestDraftScreen.renderHeroReveal` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:72`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L72) | - |
+| `LuckyTestDraftScreen.renderPassiveDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:211`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L211) | - |
+| `LuckyTestDraftScreen.renderUpgradeDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:153`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L153) | - |
+| `LuckyTestDraftScreen.renderWeaponDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:104`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L104) | - |
+| `LuckyTestDraftScreen.setStepBadge` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:67`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L67) | - |
+| `LuckyTestDraftScreen.startDraft` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts:51`](../../game/src/ui/screens/LuckyTest/LuckyTestDraftScreen.ts#L51) | - |
 | `LuckyTestDraftStep` | `type` | [`game/src/mechanics/lucky-test/LuckyTestTypes.ts:4`](../../game/src/mechanics/lucky-test/LuckyTestTypes.ts#L4) | - |
 | `LuckyTestManager` | `class` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:46`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L46) | - |
-| `LuckyTestManager.applyBuildToPlayer` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:244`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L244) | Applies the complete draft build state to the player entity. |
-| `LuckyTestManager.createBotGladiatorBuild` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:314`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L314) | Generates a balanced, randomized Gladiator build for the Solo Mode AI Bot. |
-| `LuckyTestManager.generate12Upgrades` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:86`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L86) | Generates 12 random weapon upgrades distributed across the player's 4 weapo... |
-| `LuckyTestManager.generatePassiveChoices` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:137`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L137) | - |
+| `LuckyTestManager.applyBuildToPlayer` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:299`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L299) | Applies the complete draft build state to the player entity. |
+| `LuckyTestManager.createBotGladiatorBuild` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:371`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L371) | Generates a balanced, randomized Gladiator build for the Solo Mode AI Bot u... |
+| `LuckyTestManager.generate12Upgrades` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:141`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L141) | Generates 12 random weapon upgrades distributed across the player's 4 weapo... |
+| `LuckyTestManager.generatePassiveChoices` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:192`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L192) | - |
 | `LuckyTestManager.generateWeaponDraft` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:61`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L61) | - |
 | `LuckyTestManager.getInstance` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:49`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L49) | - |
 | `LuckyTestManager.getWeaponDraftChoice` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:71`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L71) | - |
 | `LuckyTestManager.rollRandomHero` | `method` | [`game/src/mechanics/lucky-test/LuckyTestManager.ts:56`](../../game/src/mechanics/lucky-test/LuckyTestManager.ts#L56) | - |
+| `LuckyTestModeSelectModal` | `class` | [`game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts:12`](../../game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts#L12) | Entry selection modal for Lucky Test: Choose between Solo vs AI Bot or Netw... |
+| `LuckyTestModeSelectModal.hide` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts:82`](../../game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts#L82) | - |
+| `LuckyTestModeSelectModal.show` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts:20`](../../game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts#L20) | - |
+| `LuckyTestModeSelectOptions` | `interface` | [`game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts:3`](../../game/src/ui/screens/LuckyTest/LuckyTestModeSelectModal.ts#L3) | - |
+| `LuckyTestReadyModal` | `class` | [`game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts:11`](../../game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts#L11) | - |
+| `LuckyTestReadyModal.checkStartCountdown` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts:135`](../../game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts#L135) | - |
+| `LuckyTestReadyModal.hide` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts:163`](../../game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts#L163) | - |
+| `LuckyTestReadyModal.setOpponentReady` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts:119`](../../game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts#L119) | - |
+| `LuckyTestReadyModal.show` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts:23`](../../game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts#L23) | - |
+| `LuckyTestReadyModalOptions` | `interface` | [`game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts:4`](../../game/src/ui/screens/LuckyTest/LuckyTestReadyModal.ts#L4) | - |
+| `LuckyTestResultModal` | `class` | [`game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts:21`](../../game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts#L21) | - |
+| `LuckyTestResultModal.hide` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts:119`](../../game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts#L119) | - |
+| `LuckyTestResultModal.show` | `method` | [`game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts:29`](../../game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts#L29) | - |
+| `LuckyTestResultModalOptions` | `interface` | [`game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts:15`](../../game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts#L15) | - |
+| `LuckyTestResultStats` | `interface` | [`game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts:3`](../../game/src/ui/screens/LuckyTest/LuckyTestResultModal.ts#L3) | - |
 | `MageCutoutRig` | `class` | [`game/src/character-lab/MageCutoutRig.ts:9`](../../game/src/character-lab/MageCutoutRig.ts#L9) | Skeletal Cutout / Paperdoll Rig for the Mage. Mounts 9 segmented pixel-art ... |
 | `MageCutoutRig.buildMeshes` | `method` | [`game/src/character-lab/MageCutoutRig.ts:115`](../../game/src/character-lab/MageCutoutRig.ts#L115) | - |
 | `MageCutoutRig.configurePixelTexture` | `method` | [`game/src/character-lab/MageCutoutRig.ts:66`](../../game/src/character-lab/MageCutoutRig.ts#L66) | - |
@@ -1597,33 +1613,35 @@ Run `npm run index` to refresh this cache.
 | `SeededRNG.range` | `method` | [`game/src/core/SeededRNG.ts:38`](../../game/src/core/SeededRNG.ts#L38) | Generates a deterministic float in range [min, max) |
 | `SeededRNG.rangeInt` | `method` | [`game/src/core/SeededRNG.ts:45`](../../game/src/core/SeededRNG.ts#L45) | Generates a deterministic integer in range [min, max] inclusive |
 | `selectWeaponUpgradeOptions` | `function` | [`game/src/ui/selectWeaponUpgradeOptions.ts:5`](../../game/src/ui/selectWeaponUpgradeOptions.ts#L5) | The pool is already shuffled and filtered for ownership, prerequisites and ... |
-| `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:70`](../../game/src/core/SessionDirector.ts#L70) | - |
-| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:849`](../../game/src/core/SessionDirector.ts#L849) | Activates the dimensional rift: summons the stage boss directly from the ri... |
-| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:1058`](../../game/src/core/SessionDirector.ts#L1058) | - |
-| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:1254`](../../game/src/core/SessionDirector.ts#L1254) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
-| `SessionDirector.completeGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:904`](../../game/src/core/SessionDirector.ts#L904) | - |
-| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:579`](../../game/src/core/SessionDirector.ts#L579) | - |
-| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:702`](../../game/src/core/SessionDirector.ts#L702) | - |
-| `SessionDirector.initLuckyTestArena` | `method` | [`game/src/core/SessionDirector.ts:280`](../../game/src/core/SessionDirector.ts#L280) | - |
-| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:570`](../../game/src/core/SessionDirector.ts#L570) | - |
-| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:621`](../../game/src/core/SessionDirector.ts#L621) | - |
-| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:562`](../../game/src/core/SessionDirector.ts#L562) | - |
-| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1416`](../../game/src/core/SessionDirector.ts#L1416) | Resumes a previously saved run from localStorage. |
-| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:501`](../../game/src/core/SessionDirector.ts#L501) | - |
-| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1338`](../../game/src/core/SessionDirector.ts#L1338) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
-| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:444`](../../game/src/core/SessionDirector.ts#L444) | - |
-| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:388`](../../game/src/core/SessionDirector.ts#L388) | - |
-| `SessionDirector.startGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:868`](../../game/src/core/SessionDirector.ts#L868) | - |
-| `SessionDirector.startLuckyTest` | `method` | [`game/src/core/SessionDirector.ts:248`](../../game/src/core/SessionDirector.ts#L248) | - |
-| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:493`](../../game/src/core/SessionDirector.ts#L493) | - |
-| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1284`](../../game/src/core/SessionDirector.ts#L1284) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
-| `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:224`](../../game/src/core/SessionDirector.ts#L224) | - |
-| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:1136`](../../game/src/core/SessionDirector.ts#L1136) | - |
-| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:589`](../../game/src/core/SessionDirector.ts#L589) | - |
-| `SessionDirector.updateChestsHUD` | `method` | [`game/src/core/SessionDirector.ts:189`](../../game/src/core/SessionDirector.ts#L189) | - |
-| `SessionDirector.updateGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:888`](../../game/src/core/SessionDirector.ts#L888) | - |
-| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:937`](../../game/src/core/SessionDirector.ts#L937) | - |
-| `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:195`](../../game/src/core/SessionDirector.ts#L195) | - |
+| `SessionDirector` | `class` | [`game/src/core/SessionDirector.ts:74`](../../game/src/core/SessionDirector.ts#L74) | - |
+| `SessionDirector.activateRift` | `method` | [`game/src/core/SessionDirector.ts:931`](../../game/src/core/SessionDirector.ts#L931) | Activates the dimensional rift: summons the stage boss directly from the ri... |
+| `SessionDirector.applyStageTransition` | `method` | [`game/src/core/SessionDirector.ts:1140`](../../game/src/core/SessionDirector.ts#L1140) | - |
+| `SessionDirector.canTeleportToRift` | `method` | [`game/src/core/SessionDirector.ts:1341`](../../game/src/core/SessionDirector.ts#L1341) | Checks whether the player is allowed to teleport to the dimensional rift. T... |
+| `SessionDirector.completeGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:986`](../../game/src/core/SessionDirector.ts#L986) | - |
+| `SessionDirector.finishRewardChoice` | `method` | [`game/src/core/SessionDirector.ts:661`](../../game/src/core/SessionDirector.ts#L661) | - |
+| `SessionDirector.handleInteract` | `method` | [`game/src/core/SessionDirector.ts:784`](../../game/src/core/SessionDirector.ts#L784) | - |
+| `SessionDirector.initLuckyTestArena` | `method` | [`game/src/core/SessionDirector.ts:310`](../../game/src/core/SessionDirector.ts#L310) | - |
+| `SessionDirector.resetRewardChoices` | `method` | [`game/src/core/SessionDirector.ts:652`](../../game/src/core/SessionDirector.ts#L652) | - |
+| `SessionDirector.restartGame` | `method` | [`game/src/core/SessionDirector.ts:703`](../../game/src/core/SessionDirector.ts#L703) | - |
+| `SessionDirector.resumeGame` | `method` | [`game/src/core/SessionDirector.ts:644`](../../game/src/core/SessionDirector.ts#L644) | - |
+| `SessionDirector.resumeSavedRun` | `method` | [`game/src/core/SessionDirector.ts:1503`](../../game/src/core/SessionDirector.ts#L1503) | Resumes a previously saved run from localStorage. |
+| `SessionDirector.returnToMainMenu` | `method` | [`game/src/core/SessionDirector.ts:583`](../../game/src/core/SessionDirector.ts#L583) | - |
+| `SessionDirector.saveCurrentRunAndExit` | `method` | [`game/src/core/SessionDirector.ts:1425`](../../game/src/core/SessionDirector.ts#L1425) | Serializes current run state and returns to Main Menu ("Доиграть позднее"). |
+| `SessionDirector.showLuckyTestResult` | `method` | [`game/src/core/SessionDirector.ts:364`](../../game/src/core/SessionDirector.ts#L364) | - |
+| `SessionDirector.startCoopGameAsClient` | `method` | [`game/src/core/SessionDirector.ts:526`](../../game/src/core/SessionDirector.ts#L526) | - |
+| `SessionDirector.startCoopGameAsHost` | `method` | [`game/src/core/SessionDirector.ts:470`](../../game/src/core/SessionDirector.ts#L470) | - |
+| `SessionDirector.startGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:950`](../../game/src/core/SessionDirector.ts#L950) | - |
+| `SessionDirector.startLuckyTest` | `method` | [`game/src/core/SessionDirector.ts:258`](../../game/src/core/SessionDirector.ts#L258) | - |
+| `SessionDirector.startLuckyTestDraft` | `method` | [`game/src/core/SessionDirector.ts:278`](../../game/src/core/SessionDirector.ts#L278) | - |
+| `SessionDirector.surrenderGame` | `method` | [`game/src/core/SessionDirector.ts:575`](../../game/src/core/SessionDirector.ts#L575) | - |
+| `SessionDirector.teleportPlayerToRift` | `method` | [`game/src/core/SessionDirector.ts:1371`](../../game/src/core/SessionDirector.ts#L1371) | Teleports player instantly to the Rift portal with sulfur smoke effects, gr... |
+| `SessionDirector.toggleDevMode` | `method` | [`game/src/core/SessionDirector.ts:234`](../../game/src/core/SessionDirector.ts#L234) | - |
+| `SessionDirector.triggerGameOver` | `method` | [`game/src/core/SessionDirector.ts:1218`](../../game/src/core/SessionDirector.ts#L1218) | - |
+| `SessionDirector.triggerLevelUp` | `method` | [`game/src/core/SessionDirector.ts:671`](../../game/src/core/SessionDirector.ts#L671) | - |
+| `SessionDirector.updateChestsHUD` | `method` | [`game/src/core/SessionDirector.ts:199`](../../game/src/core/SessionDirector.ts#L199) | - |
+| `SessionDirector.updateGreedTrial` | `method` | [`game/src/core/SessionDirector.ts:970`](../../game/src/core/SessionDirector.ts#L970) | - |
+| `SessionDirector.warpToNextStage` | `method` | [`game/src/core/SessionDirector.ts:1019`](../../game/src/core/SessionDirector.ts#L1019) | - |
+| `SessionDirector.wireCoordinatorCallbacks` | `method` | [`game/src/core/SessionDirector.ts:205`](../../game/src/core/SessionDirector.ts#L205) | - |
 | `SettingsModal` | `const` | [`game/src/ui/react/modals/SettingsModal.tsx:10`](../../game/src/ui/react/modals/SettingsModal.tsx#L10) | - |
 | `SettingsModalProps` | `interface` | [`game/src/ui/react/modals/SettingsModal.tsx:5`](../../game/src/ui/react/modals/SettingsModal.tsx#L5) | - |
 | `SettingsScreen` | `class` | [`game/src/ui/screens/Settings/SettingsScreen.ts:29`](../../game/src/ui/screens/Settings/SettingsScreen.ts#L29) | Modular Settings Screen. Manages Graphics, Audio, HUD preferences, Controls... |
@@ -1829,7 +1847,7 @@ Run `npm run index` to refresh this cache.
 | `SpatialGrid.separateCellPair` | `method` | [`game/src/entities/SpatialGrid.ts:101`](../../game/src/entities/SpatialGrid.ts#L101) | - |
 | `SpatialGrid.separatePair` | `method` | [`game/src/entities/SpatialGrid.ts:121`](../../game/src/entities/SpatialGrid.ts#L121) | - |
 | `SpatialGrid.toKey` | `method` | [`game/src/entities/SpatialGrid.ts:26`](../../game/src/entities/SpatialGrid.ts#L26) | - |
-| `SPAWN_OFFSETS` | `const` | [`game/src/core/SessionDirector.ts:61`](../../game/src/core/SessionDirector.ts#L61) | - |
+| `SPAWN_OFFSETS` | `const` | [`game/src/core/SessionDirector.ts:65`](../../game/src/core/SessionDirector.ts#L65) | - |
 | `SPECIAL_QUESTS_CONFIG` | `const` | [`game/src/core/SpecialQuestsConfig.ts:19`](../../game/src/core/SpecialQuestsConfig.ts#L19) | - |
 | `SpecialQuestDef` | `interface` | [`game/src/core/SpecialQuestsConfig.ts:1`](../../game/src/core/SpecialQuestsConfig.ts#L1) | - |
 | `SPELL_SPHERE_RECIPES` | `const` | [`game/src/shared/InvokerSpells.ts:26`](../../game/src/shared/InvokerSpells.ts#L26) | Formula combinations for each of the 10 spells matching authentic Dota 2 / ... |

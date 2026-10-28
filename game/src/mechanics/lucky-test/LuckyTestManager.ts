@@ -80,6 +80,61 @@ export class LuckyTestManager {
   }
 
   /**
+   * Generates upgrade choices (e.g. 3 options) for a draft round from weapons with level < 4.
+   */
+  public generateUpgradeChoices(
+    weaponIds: string[],
+    levels: Record<string, number>,
+    count: number = 3
+  ): WeaponUpgradeResult[] {
+    const candidates = weaponIds.filter(id => (levels[id] || 1) < 4);
+    if (candidates.length === 0) return [];
+
+    const gradesPool: { grade: WeaponGrade; weight: number }[] = [
+      { grade: 'common', weight: 40 },
+      { grade: 'uncommon', weight: 35 },
+      { grade: 'rare', weight: 18 },
+      { grade: 'legendary', weight: 7 }
+    ];
+
+    const rollGrade = (): WeaponGrade => {
+      const roll = Math.random() * 100;
+      let cumulative = 0;
+      for (const entry of gradesPool) {
+        cumulative += entry.weight;
+        if (roll <= cumulative) return entry.grade;
+      }
+      return 'common';
+    };
+
+    const choices: WeaponUpgradeResult[] = [];
+    const usedCombos = new Set<string>();
+
+    for (let i = 0; i < count; i++) {
+      const availableCandidates = candidates.filter(id => !usedCombos.has(id));
+      const pool = availableCandidates.length > 0 ? availableCandidates : candidates;
+      const chosenId = pool[Math.floor(Math.random() * pool.length)];
+      usedCombos.add(chosenId);
+
+      const chosenGrade = rollGrade();
+      const gradeCfg = WEAPON_GRADES[chosenGrade];
+      const weaponCfg = BalanceManager.getWeaponConfig(chosenId);
+      const nextLvl = Math.min(4, (levels[chosenId] || 1) + 1);
+
+      choices.push({
+        weaponId: chosenId,
+        weaponName: weaponCfg?.name || chosenId,
+        newLevel: nextLvl,
+        grade: chosenGrade,
+        gradeName: gradeCfg.name,
+        gradeColor: gradeCfg.color
+      });
+    }
+
+    return choices;
+  }
+
+  /**
    * Generates 12 random weapon upgrades distributed across the player's 4 weapons,
    * strictly enforcing maxLevel = 4 so no weapon can exceed level 4.
    */
@@ -251,6 +306,7 @@ export class LuckyTestManager {
     player.baseMaxHp = 1500;
     player.maxHp = 1500;
     player.hp = 1500;
+    player.shield = 0;
 
     // Add 3 drafted weapons (1st starting weapon is already created by setCharacter)
     for (const weaponId of build.draftedWeaponIds) {
@@ -309,7 +365,8 @@ export class LuckyTestManager {
   }
 
   /**
-   * Generates a balanced, randomized Gladiator build for the Solo Mode AI Bot.
+   * Generates a balanced, randomized Gladiator build for the Solo Mode AI Bot
+   * using the exact same 12-choice upgrade process and 4 passives.
    */
   public createBotGladiatorBuild(): LuckyTestBuildState {
     const heroInfo = this.rollRandomHero();
@@ -326,12 +383,38 @@ export class LuckyTestManager {
     const pick3 = weaponChoices3[Math.floor(Math.random() * weaponChoices3.length)].id;
 
     const all4Weapons = [startingWeapon, pick1, pick2, pick3];
-    const upgrades = this.generate12Upgrades(all4Weapons);
+    const levels: Record<string, number> = {};
+    for (const wId of all4Weapons) {
+      levels[wId] = 1;
+    }
+
+    const upgrades: WeaponUpgradeResult[] = [];
+    const gradeScores: Record<WeaponGrade, number> = {
+      legendary: 4,
+      rare: 3,
+      uncommon: 2,
+      common: 1
+    };
+
+    // 12 rounds of 3 upgrade choices
+    for (let r = 0; r < 12; r++) {
+      const choices = this.generateUpgradeChoices(all4Weapons, levels, 3);
+      if (choices.length === 0) break;
+      // Bot chooses highest rarity or first
+      choices.sort((a, b) => (gradeScores[b.grade] || 1) - (gradeScores[a.grade] || 1));
+      const chosen = choices[0];
+      levels[chosen.weaponId] = chosen.newLevel;
+      upgrades.push(chosen);
+    }
 
     const chosenPassives: LuckyPassiveChoice[] = [];
     for (let r = 0; r < 4; r++) {
       const options = this.generatePassiveChoices(3);
-      // Pick best quality or random
+      // Pick best quality
+      options.sort((a, b) => {
+        const qScore = { legendary: 3, great: 2, good: 1 };
+        return qScore[b.quality] - qScore[a.quality];
+      });
       chosenPassives.push(options[0]);
     }
 
