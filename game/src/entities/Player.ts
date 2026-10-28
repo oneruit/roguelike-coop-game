@@ -134,6 +134,10 @@ export class Player {
   public golemCoreTimer: number = 6.0;
   public moltenScaleTimer: number = 0.28;
   public isMoving: boolean = false;
+  public isManualAim: boolean = false;
+  public aimPosition: Vector3 = new Vector3();
+  public isGladiator: boolean = false;
+  public pvpResilience: number = 0.40;
   public statusManager: PlayerStatusManager = new PlayerStatusManager();
 
   public applyBurn(duration?: number): void {
@@ -1093,7 +1097,8 @@ export class Player {
         weapon.onSpellBuff = (spell, level) => this.addBuff(createInvokerBuff(spell, level));
       }
       weapon.onMeleeAttack = this.onMeleeAttack;
-      weapon.update(dt, this.position, enemies, spawnProjectileWithWeapon, damageEnemyWithMultiplier);
+      const aim = this.isManualAim ? this.aimPosition : undefined;
+      weapon.update(dt, this.position, enemies, spawnProjectileWithWeapon, damageEnemyWithMultiplier, aim);
     }
 
     // Update overhead billboard UI (Name, Level, HP Bar, Revive progress)
@@ -1136,9 +1141,12 @@ export class Player {
     this.shieldRegenDelay = this.shieldRegenBaseDelay;
 
     // Apply shock vulnerability (+10% damage taken) and Nanite Plating damage reduction
-    const incomingAmount = this.isShocked
+    let incomingAmount = this.isShocked
       ? Math.round(amount * this.statusManager.incomingDamageMultiplier)
       : amount;
+    if (this.isGladiator) {
+      incomingAmount = Math.max(1, Math.round(incomingAmount * this.pvpResilience));
+    }
     const naniteReduction = this.getNaniteDamageReduction();
     let finalAmount = ignoreInvuln
       ? incomingAmount

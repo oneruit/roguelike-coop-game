@@ -37,20 +37,36 @@ export class KukriWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
       const sorted = findClosestEnemies(enemies, playerPos, this.burstCount);
-      if (sorted.length === 0) return;
+      if (!aimPosition && sorted.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
 
       const burstDelay = Math.max(30, Math.round(110 * this.cooldownMultiplier));
       for (let i = 0; i < this.burstCount; i++) {
         setTimeout(() => {
+          if (aimPosition) {
+            const spawnPos = playerPos.clone().add(new Vector3(0, 0.7, 0));
+            const dir = new Vector3(aimPosition.x - playerPos.x, 0, aimPosition.z - playerPos.z);
+            if (dir.lengthSq() > 0.001) dir.normalize(); else dir.set(0, 0, -1);
+            const spreadAngle = (i % 2 === 0 ? 0.08 : -0.08);
+            dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
+            const proj = new Projectile({
+              position: spawnPos, direction: dir, speed: this.projectileSpeed,
+              damage: this.damage, pierce: this.pierce, lifetime: 1.8, radius: 0.28, color: 0x94a3b8, isKukri: true
+            });
+            spawnProjectile(proj);
+            SoundManager.playSlash();
+            return;
+          }
           let target = sorted[i % sorted.length];
           if (!target || !target.isAlive) {
             const fallback = findClosestEnemies(enemies, playerPos, 1);
@@ -149,13 +165,14 @@ export class KatanaSlashWeapon extends Weapon {
     playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
-      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies, aimPosition);
       let hitCount = 0;
 
       for (const enemy of enemies) {
@@ -175,7 +192,7 @@ export class KatanaSlashWeapon extends Weapon {
 
       // If enemies are nearby or hit, trigger the swing animation and sound
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 45);
-      if (hitCount > 0 || nearby) {
+      if (hitCount > 0 || nearby || aimPosition) {
         this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('katana_slash', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
@@ -237,13 +254,14 @@ export class WhirlwindSlashWeapon extends Weapon {
     playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
-      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies, aimPosition);
       let hitCount = 0;
 
       for (const enemy of enemies) {
@@ -262,7 +280,7 @@ export class WhirlwindSlashWeapon extends Weapon {
       }
 
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 40);
-      if (hitCount > 0 || nearby) {
+      if (hitCount > 0 || nearby || aimPosition) {
         this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('whirlwind_slash', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
@@ -324,13 +342,14 @@ export class GreatswordWeapon extends Weapon {
     playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
-      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies, aimPosition);
       let hitCount = 0;
 
       for (const enemy of enemies) {
@@ -349,7 +368,7 @@ export class GreatswordWeapon extends Weapon {
       }
 
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 48);
-      if (hitCount > 0 || nearby) {
+      if (hitCount > 0 || nearby || aimPosition) {
         this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('greatsword', playerPos, this.slashRadius, attackAngle);
         if (this.onTriggerAttack) {
@@ -416,13 +435,14 @@ export class FlailWeapon extends Weapon {
     playerPos: Vector3,
     enemies: Enemy[],
     _spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
-      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies);
+      const attackAngle = this.getMeleeAttackAngle(playerPos, enemies, aimPosition);
       let hitCount = 0;
 
       for (const enemy of enemies) {
@@ -447,7 +467,7 @@ export class FlailWeapon extends Weapon {
       }
 
       const nearby = enemies.some(e => e.isAlive && e.position.distanceToSquared(playerPos) < 42);
-      if (hitCount > 0 || nearby) {
+      if (hitCount > 0 || nearby || aimPosition) {
         this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
         this.emitMeleeAttack('flail', playerPos, this.flailRadius, attackAngle);
         if (this.onTriggerAttack) {

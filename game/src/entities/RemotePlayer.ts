@@ -341,6 +341,35 @@ export class RemotePlayer {
     }
   }
 
+  public isGladiator: boolean = false;
+  public pvpResilience: number = 0.40;
+
+  public takeDamage(amount: number): boolean {
+    if (this.hp <= 0 || this.isDowned) return false;
+    let finalAmount = amount;
+    if (this.isGladiator) {
+      finalAmount = Math.max(1, Math.round(finalAmount * this.pvpResilience));
+    }
+    if (this.shield > 0) {
+      if (this.shield >= finalAmount) {
+        this.shield -= finalAmount;
+        finalAmount = 0;
+      } else {
+        finalAmount -= this.shield;
+        this.shield = 0;
+      }
+    }
+    if (finalAmount > 0) {
+      this.hp = Math.max(0, this.hp - finalAmount);
+      if (this.hp === 0) {
+        this.isDowned = true;
+      }
+    }
+    this.lastDrawnHp = -1;
+    this.redrawOverhead();
+    return this.hp <= 0;
+  }
+
   public gainXp(amount: number) {
     this.xp += amount;
     while (this.xp >= this.xpToNextLevel) {

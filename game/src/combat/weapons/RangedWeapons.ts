@@ -43,14 +43,16 @@ export class BowWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount);
-      if (candidates.length === 0) return;
+      if (!aimPosition && candidates.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
 
@@ -61,6 +63,22 @@ export class BowWeapon extends Weapon {
       const burstDelay = Math.max(25, Math.round(70 * this.cooldownMultiplier));
       for (let index = 0; index < this.projectileCount; index++) {
         setTimeout(() => {
+          if (aimPosition) {
+            const spawnPos = playerPos.clone().add(new Vector3(0, 0.7, 0));
+            const dir = new Vector3(aimPosition.x - playerPos.x, 0, aimPosition.z - playerPos.z);
+            if (dir.lengthSq() > 0.001) dir.normalize(); else dir.set(0, 0, -1);
+            if (this.projectileCount > 1) {
+              const spreadAngle = (index - (this.projectileCount - 1) / 2) * 0.08;
+              dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
+            }
+            const proj = new Projectile({
+              position: spawnPos, direction: dir, speed: this.projectileSpeed,
+              damage: this.damage, pierce: this.pierce, lifetime: 2.2, radius: 0.32, color: 0xf59e0b, isArrow: true
+            });
+            spawnProjectile(proj);
+            SoundManager.playBowShoot();
+            return;
+          }
           let target = candidates[index % candidates.length];
           if (!target || !target.isAlive) {
             const fallback = findClosestEnemies(enemies, playerPos, 1);
@@ -165,20 +183,42 @@ export class ChakramWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
       const targets = findClosestEnemies(enemies, playerPos, 1, 20 * 20);
-      if (targets.length === 0) return;
+      if (!aimPosition && targets.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
+      if (aimPosition) {
+        const spawnPos = playerPos.clone().add(new Vector3(0, 0.6, 0));
+        const baseDir = new Vector3(aimPosition.x - playerPos.x, 0, aimPosition.z - playerPos.z);
+        if (baseDir.lengthSq() > 0.001) baseDir.normalize(); else baseDir.set(1, 0, 0);
+        this.alternateSign = -this.alternateSign;
+        for (let i = 0; i < this.chakramCount; i++) {
+          let sign = this.alternateSign;
+          if (this.chakramCount > 1) sign = i % 2 === 0 ? 1 : -1;
+          const angleOffset = (i - (this.chakramCount - 1) / 2) * 0.16;
+          const throwDir = baseDir.clone().applyAxisAngle(new Vector3(0, 1, 0), angleOffset);
+          const proj = new Projectile({
+            position: spawnPos, direction: throwDir, speed: this.flightSpeed,
+            damage: this.damage, pierce: 999, lifetime: 1.35,
+            radius: this.chakramRadius, color: 0xf59e0b, isChakram: true, curveSign: sign
+          });
+          spawnProjectile(proj);
+        }
+        SoundManager.playSlash();
+        return;
+      }
       const target = targets[0];
       const spawnPos = playerPos.clone().add(new Vector3(0, 0.6, 0));
       const targetPos = target.position.clone().add(new Vector3(0, 0.4, 0));
@@ -282,14 +322,16 @@ export class AssaultRifleWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
       const candidates = findClosestEnemies(enemies, playerPos, this.projectileCount, 18.2 * 18.2);
-      if (candidates.length === 0) return;
+      if (!aimPosition && candidates.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
 
@@ -298,6 +340,20 @@ export class AssaultRifleWeapon extends Weapon {
       }
 
       for (let index = 0; index < this.projectileCount; index++) {
+        if (aimPosition) {
+          const spawnPos = playerPos.clone().add(new Vector3(0, 0.65, 0));
+          const dir = new Vector3(aimPosition.x - playerPos.x, 0, aimPosition.z - playerPos.z);
+          if (dir.lengthSq() > 0.001) dir.normalize(); else dir.set(0, 0, -1);
+          const spreadAngle = (this.projectileCount > 1 ? (index - (this.projectileCount - 1) / 2) * 0.10 : 0) + (Math.random() - 0.5) * 0.04;
+          dir.applyAxisAngle(new Vector3(0, 1, 0), spreadAngle);
+          const proj = new Projectile({
+            position: spawnPos, direction: dir, speed: this.projectileSpeed,
+            damage: this.damage, pierce: this.pierce, lifetime: 1.12, radius: 0.28, color: 0xffaa22
+          });
+          spawnProjectile(proj);
+          SoundManager.playShoot();
+          continue;
+        }
         let target = candidates[index % candidates.length];
         if (!target || !target.isAlive) {
           const fallback = findClosestEnemies(enemies, playerPos, 1, 18.2 * 18.2);

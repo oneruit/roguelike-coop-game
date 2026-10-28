@@ -23,6 +23,8 @@ export class CombatDirector {
   private net: NetworkManager;
   private remotePlayers: Map<string, RemotePlayer>;
 
+  public isPvPMode: boolean = false;
+  public onPvPKill?: (targetId: string) => void;
   public projectiles: Projectile[] = [];
   public pendingClientHits: DamageDealtEvent[] = [];
   public pendingLocalShots: NetShotInfo[] = [];
@@ -544,6 +546,54 @@ export class CombatDirector {
 
       if (proj.isFireball && !proj.hasImpacted) {
         continue;
+      }
+
+      if (this.isPvPMode || this.player.isGladiator) {
+        const isLocalProj = !proj.ownerId || proj.ownerId === (this.net.mySlotId || 'p1');
+        if (isLocalProj) {
+          for (const [rpId, rp] of this.remotePlayers.entries()) {
+            if (rp.hp <= 0 || rp.isDowned) continue;
+            if (proj.hitEnemies.has(`pvp_${rpId}`)) continue;
+            const hitDist = proj.radius + 0.6;
+            const dx = proj.position.x - rp.position.x;
+            const dz = proj.position.z - rp.position.z;
+            if (dx * dx + dz * dz <= hitDist * hitDist) {
+              proj.hitEnemies.add(`pvp_${rpId}`);
+              const baseDmg = proj.damage * this.player.getDamageMultiplier(proj.sourceWeaponId);
+              const isCrit = Math.random() < (proj.critChance ?? this.player.critChance);
+              const finalDmg = isCrit ? Math.round(baseDmg * (1.0 + (proj.critDamage ?? this.player.critDamage))) : Math.round(baseDmg);
+              const isKilled = rp.takeDamage(finalDmg);
+              this.damageNumbers.spawnDamage(rp.position, finalDmg, isCrit, this.engine.camera);
+              SoundManager.playHit();
+              this.player.totalDamageDealt += finalDmg;
+              this.player.recordWeaponDamage(proj.sourceWeaponId, finalDmg);
+              if (isKilled) {
+                this.onPvPKill?.(rpId);
+              }
+              proj.pierce--;
+              if (proj.pierce <= 0) {
+                proj.isAlive = false;
+                break;
+              }
+            }
+          }
+        } else {
+          if (!proj.hitEnemies.has('local_player')) {
+            const hitDist = proj.radius + 0.6;
+            const dx = proj.position.x - this.player.position.x;
+            const dz = proj.position.z - this.player.position.z;
+            if (dx * dx + dz * dz <= hitDist * hitDist) {
+              proj.hitEnemies.add('local_player');
+              const finalDmg = Math.round(proj.damage);
+              this.player.takeDamage(finalDmg, false, 'Opponent');
+              this.damageNumbers.spawnDamage(this.player.position, finalDmg, false, this.engine.camera);
+              proj.pierce--;
+              if (proj.pierce <= 0) {
+                proj.isAlive = false;
+              }
+            }
+          }
+        }
       }
 
       const nearbyEnemies = this.enemyManager.getNearbyEnemies(

@@ -38,6 +38,7 @@ import { SulfurSmokeManager } from './vfx/SulfurSmokeVfx';
 import { GameStateBridge } from './ui/stores/GameStateBridge';
 import { initReactUI, disposeReactUI } from './ui/react/mountReactUI';
 import { FeatureFlags } from './core/FeatureFlags';
+import { AimReticle } from './vfx/AimReticle';
 
 class Game {
   private engine: Engine;
@@ -62,6 +63,7 @@ class Game {
   private netCoordinator: GameNetworkCoordinator;
   private sessionDirector: SessionDirector;
   private lobbyCoordinator: LobbyCoordinator;
+  private aimReticle: AimReticle;
   private lastVolatileHitTime: number = 0;
 
   private remotePlayers: Map<string, RemotePlayer> = new Map();
@@ -224,7 +226,7 @@ class Game {
       if (isCoop) return;
 
       if (isOpen) {
-        if (this.sessionDirector.gameState === GameState.PLAYING) {
+        if (this.sessionDirector.gameState === GameState.PLAYING || this.sessionDirector.gameState === GameState.LUCKY_TEST_ARENA) {
           this.sessionDirector.gameState = GameState.PAUSED;
         }
       } else {
@@ -286,7 +288,7 @@ class Game {
       if (isCoop) return;
 
       if (isOpen) {
-        if (this.sessionDirector.gameState === GameState.PLAYING) {
+        if (this.sessionDirector.gameState === GameState.PLAYING || this.sessionDirector.gameState === GameState.LUCKY_TEST_ARENA) {
           this.sessionDirector.gameState = GameState.PAUSED;
         }
       } else {
@@ -301,7 +303,7 @@ class Game {
       if (isCoop) return;
 
       if (isOpen) {
-        if (this.sessionDirector.gameState === GameState.PLAYING) {
+        if (this.sessionDirector.gameState === GameState.PLAYING || this.sessionDirector.gameState === GameState.LUCKY_TEST_ARENA) {
           this.sessionDirector.gameState = GameState.PAUSED;
         }
       } else {
@@ -364,6 +366,11 @@ class Game {
     // Lobby Coordinator
     this.lobbyCoordinator = new LobbyCoordinator(this.hud, this.net, this.player);
     this.sessionDirector.lobbyCoordinator = this.lobbyCoordinator;
+
+    this.aimReticle = new AimReticle(this.engine.scene);
+    this.hud.onLuckyTestSelected = () => {
+      this.sessionDirector.startLuckyTest();
+    };
 
     this.lobbyCoordinator.onSinglePlayerSelected = () => {
       this.sessionDirector.gameState = GameState.CHARACTER_SELECT;
@@ -456,6 +463,12 @@ class Game {
 
   private setupEventListeners(): void {
     // Input actions
+    this.input.onToggleAimMode = () => {
+      if (this.sessionDirector.gameState !== GameState.LUCKY_TEST_ARENA) {
+        this.player.isManualAim = !this.player.isManualAim;
+      }
+    };
+
     this.input.onInteract = () => {
       this.sessionDirector.handleInteract();
     };
@@ -465,7 +478,7 @@ class Game {
     };
 
     this.input.onDash = () => {
-      if (this.sessionDirector.gameState === GameState.PLAYING) {
+      if (this.sessionDirector.gameState === GameState.PLAYING || this.sessionDirector.gameState === GameState.LUCKY_TEST_ARENA) {
         this.player.triggerDash(this.input.moveDirection);
       }
     };
@@ -543,7 +556,7 @@ class Game {
       }
 
       if (escResult === 'noop') {
-        if (this.sessionDirector.gameState === GameState.PLAYING) {
+        if (this.sessionDirector.gameState === GameState.PLAYING || this.sessionDirector.gameState === GameState.LUCKY_TEST_ARENA) {
           this.sessionDirector.gameState = GameState.PAUSED;
           this.hud.showPause(this.sessionDirector.currentSeed);
         } else if (this.sessionDirector.gameState === GameState.PAUSED) {
@@ -834,6 +847,19 @@ class Game {
     this.input.update(this.engine.camera);
     if (this.player.isDowned || !this.player.isAlive) {
       this.input.moveDirection.set(0, 0, 0);
+    }
+
+    const isArena = this.sessionDirector.gameState === GameState.LUCKY_TEST_ARENA;
+    const elev = isArena ? 0 : (this.engine.chunkManager.getElevation(this.input.mouseWorldPosition.x, this.input.mouseWorldPosition.z) || 0);
+    this.player.aimPosition.set(this.input.mouseWorldPosition.x, elev, this.input.mouseWorldPosition.z);
+    this.aimReticle.setVisible(this.player.isManualAim);
+    if (this.player.isManualAim) {
+      this.aimReticle.update(dt, this.input.mouseWorldPosition.x, elev, this.input.mouseWorldPosition.z);
+    }
+
+    if (isArena) {
+      this.sessionDirector.gladiatorArena?.update(dt, this.player.position, this.sessionDirector.gladiatorBot?.position);
+      this.sessionDirector.gladiatorBot?.updateAI(dt, this.player, this.combatDirector.spawnProjectile);
     }
 
     // 2. Update Player

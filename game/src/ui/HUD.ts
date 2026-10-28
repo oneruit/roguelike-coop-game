@@ -81,6 +81,7 @@ export class HUD {
 
   // Public Callbacks
   public onSinglePlayerSelected?: () => void;
+  public onLuckyTestSelected?: () => void;
   public onSaveRunLater?: () => void;
   public onResumeSavedRun?: () => void;
   public onTeleportToRift?: () => void;
@@ -534,6 +535,11 @@ export class HUD {
         this.hideMainMenu();
         this.showCharacterSelect();
         this.onSinglePlayerSelected?.();
+      },
+      onLuckyTest: () => {
+        this.hideQuestsModal();
+        this.hideMainMenu();
+        this.onLuckyTestSelected?.();
       },
       onCoop: () => {
         this.hideQuestsModal();

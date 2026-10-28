@@ -18,6 +18,7 @@ export class InputManager {
   public onInteract?: () => void;
   public onDash?: () => void;
   public onTeleportToRift?: () => void;
+  public onToggleAimMode?: () => void;
 
   constructor() {
     window.addEventListener('keydown', (e) => this.onKeyDown(e));
@@ -52,6 +53,12 @@ export class InputManager {
       inputBuffer.queueAction('dash');
       if (this.onDash) {
         this.onDash();
+      }
+    }
+
+    if (e.code === 'KeyZ') {
+      if (this.onToggleAimMode) {
+        this.onToggleAimMode();
       }
     }
 

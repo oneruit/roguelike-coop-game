@@ -62,7 +62,9 @@ export class ReaperScytheWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    _aimPosition?: Vector3
   ) {
     this.orbs = this.orbs.filter(o => o.isAlive);
 
@@ -365,26 +367,34 @@ export class AstralStaffWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+      if (!aimPosition && enemies.length === 0) return;
 
-      const targets = findClosestEnemies(enemies, playerPos, 1, 22 * 22);
-      if (targets.length === 0) return;
+      const targets = enemies.length > 0 ? findClosestEnemies(enemies, playerPos, 1, 22 * 22) : [];
+      if (!aimPosition && targets.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
-      const baseTarget = targets[0];
       const spawnPos = playerPos.clone().add(new Vector3(0, 0.8, 0));
-      const targetPos = baseTarget.position.clone().add(new Vector3(0, 0.4, 0));
-      const baseDir = new Vector3().subVectors(targetPos, spawnPos);
-      if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
-      baseDir.normalize();
+      let baseDir: Vector3;
+      if (aimPosition) {
+        baseDir = new Vector3(aimPosition.x - playerPos.x, 0, aimPosition.z - playerPos.z);
+        if (baseDir.lengthSq() > 0.001) baseDir.normalize(); else baseDir.set(1, 0, 0);
+      } else {
+        const baseTarget = targets[0];
+        const targetPos = baseTarget.position.clone().add(new Vector3(0, 0.4, 0));
+        baseDir = new Vector3().subVectors(targetPos, spawnPos);
+        if (baseDir.lengthSq() === 0) baseDir.set(1, 0, 0);
+        baseDir.normalize();
+      }
 
       const spreadStep = 0.14; // radians
       const startAngle = -((this.projectileCount - 1) / 2) * spreadStep;
@@ -478,14 +488,17 @@ export class LightningStrikeWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
 
-      const candidates = findClosestEnemies(enemies, playerPos, this.strikeCount, this.range * this.range);
-      if (candidates.length === 0) return;
+
+      if (!aimPosition && enemies.length === 0) return;
+      const candidates = enemies.length > 0 ? findClosestEnemies(enemies, playerPos, this.strikeCount, this.range * this.range) : [];
+      if (!aimPosition && candidates.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
@@ -493,6 +506,24 @@ export class LightningStrikeWeapon extends Weapon {
       }
 
       const strikeTargets: { x: number; z: number }[] = [];
+      if (aimPosition) {
+        for (let i = 0; i < this.strikeCount; i++) {
+          const ox = i === 0 ? 0 : (Math.random() - 0.5) * 2.0;
+          const oz = i === 0 ? 0 : (Math.random() - 0.5) * 2.0;
+          strikeTargets.push({ x: aimPosition.x + ox, z: aimPosition.z + oz });
+        }
+        strikeTargets.forEach((pos, idx) => {
+          setTimeout(() => {
+            const proj = new Projectile({
+              position: new Vector3(pos.x, 0, pos.z), direction: new Vector3(0, 0, 1), speed: 0,
+              damage: this.damage, pierce: 999, lifetime: 0.24, radius: this.strikeRadius, color: 0x38bdf8, isLightning: true
+            });
+            spawnProjectile(proj);
+            SoundManager.playLightning();
+          }, idx * 75);
+        });
+        return;
+      }
       for (let i = 0; i < this.strikeCount; i++) {
         const targetCandidate = candidates[i % candidates.length];
         strikeTargets.push({
@@ -586,14 +617,16 @@ export class IceSpikeWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+
 
       const candidates = findClosestEnemies(enemies, playerPos, this.spikeCount, this.range * this.range);
-      if (candidates.length === 0) return;
+      if (!aimPosition && candidates.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
@@ -601,6 +634,24 @@ export class IceSpikeWeapon extends Weapon {
       }
 
       const strikeTargets: { x: number; z: number }[] = [];
+      if (aimPosition) {
+        for (let i = 0; i < this.spikeCount; i++) {
+          const ox = i === 0 ? 0 : (Math.random() - 0.5) * 2.0;
+          const oz = i === 0 ? 0 : (Math.random() - 0.5) * 2.0;
+          strikeTargets.push({ x: aimPosition.x + ox, z: aimPosition.z + oz });
+        }
+        strikeTargets.forEach((pos, idx) => {
+          setTimeout(() => {
+            const proj = new Projectile({
+              position: new Vector3(pos.x, 0, pos.z), direction: new Vector3(0, 1, 0), speed: 0,
+              damage: this.damage, pierce: 999, lifetime: 0.35, radius: this.spikeRadius, color: 0x93c5fd, isIceSpike: true
+            });
+            spawnProjectile(proj);
+            SoundManager.playIceSpike();
+          }, idx * 60);
+        });
+        return;
+      }
       for (let i = 0; i < this.spikeCount; i++) {
         const targetCandidate = candidates[i % candidates.length];
         strikeTargets.push({
@@ -696,14 +747,16 @@ export class FireballWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+
 
       const candidates = findClosestEnemies(enemies, playerPos, this.fireballCount, this.range * this.range);
-      if (candidates.length === 0) return;
+      if (!aimPosition && candidates.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
@@ -711,6 +764,26 @@ export class FireballWeapon extends Weapon {
       }
 
       const strikeTargets: { x: number; z: number }[] = [];
+      if (aimPosition) {
+        for (let i = 0; i < this.fireballCount; i++) {
+          const ox = i === 0 ? 0 : (Math.random() - 0.5) * 2.2;
+          const oz = i === 0 ? 0 : (Math.random() - 0.5) * 2.2;
+          strikeTargets.push({ x: aimPosition.x + ox, z: aimPosition.z + oz });
+        }
+        strikeTargets.forEach((pos, idx) => {
+          setTimeout(() => {
+            const startPos = new Vector3(pos.x, 18, pos.z);
+            const dir = new Vector3(0, -1, 0);
+            const proj = new Projectile({
+              position: startPos, direction: dir, speed: this.fallSpeed,
+              damage: this.damage, pierce: 999, lifetime: 2.0, radius: this.explosionRadius, color: 0xef4444, isFireball: true
+            });
+            spawnProjectile(proj);
+            SoundManager.playFireballLaunch();
+          }, idx * 80);
+        });
+        return;
+      }
       for (let i = 0; i < this.fireballCount; i++) {
         const targetCandidate = candidates[i % candidates.length];
         strikeTargets.push({
@@ -814,20 +887,37 @@ export class PoisonPuddleWeapon extends Weapon {
     dt: number,
     playerPos: Vector3,
     enemies: Enemy[],
-    spawnProjectile: (p: Projectile) => void
+    spawnProjectile: (p: Projectile) => void,
+    _damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ) {
     this.timer += dt;
     if (this.timer >= this.effectiveCooldown) {
-      if (enemies.length === 0) return;
+
 
       const candidates = findClosestEnemies(enemies, playerPos, this.puddleCount, this.range * this.range);
-      if (candidates.length === 0) return;
+      if (!aimPosition && candidates.length === 0) return;
 
       this.timer = Math.min(this.effectiveCooldown * 0.5, this.timer - this.effectiveCooldown);
       if (this.onTriggerAttack) {
         this.onTriggerAttack();
       }
 
+      if (aimPosition) {
+        for (let i = 0; i < this.puddleCount; i++) {
+          const offsetX = i > 0 ? (Math.random() - 0.5) * 1.5 : 0;
+          const offsetZ = i > 0 ? (Math.random() - 0.5) * 1.5 : 0;
+          const proj = new Projectile({
+            position: new Vector3(aimPosition.x + offsetX, 0, aimPosition.z + offsetZ),
+            direction: new Vector3(0, 0, 1), speed: 0, damage: this.damage,
+            pierce: 9999, lifetime: this.puddleDuration, radius: this.puddleRadius,
+            color: 0x84cc16, isPoisonPuddle: true
+          });
+          spawnProjectile(proj);
+        }
+        SoundManager.playPoisonPuddle();
+        return;
+      }
       const spawnTargets: { x: number; z: number }[] = [];
       for (let i = 0; i < this.puddleCount; i++) {
         const candidate = candidates[i % candidates.length];

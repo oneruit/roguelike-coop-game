@@ -8,6 +8,7 @@ import { RunSaveManager } from '../../../core/RunSaveManager';
 export interface MainMenuScreenOptions {
   container?: HTMLElement | null;
   onSinglePlayer?: () => void;
+  onLuckyTest?: () => void;
   onResumeRun?: () => void;
   onCoop?: () => void;
   onShop?: () => void;
@@ -57,6 +58,11 @@ export class MainMenuScreen extends Screen {
     SafeDOM.query(this.container, '#menu-btn-resume-run')?.addEventListener('click', () => {
       SoundManager.playButtonClick();
       this.options.onResumeRun?.();
+    });
+
+    SafeDOM.query(this.container, '#menu-btn-lucky-test')?.addEventListener('click', () => {
+      SoundManager.playButtonClick();
+      this.options.onLuckyTest?.();
     });
 
     SafeDOM.query(this.container, '#menu-btn-single')?.addEventListener('click', () => {

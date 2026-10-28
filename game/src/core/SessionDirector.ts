@@ -39,6 +39,11 @@ import { RunSaveManager, type SavedWeaponData, type SavedRunData } from './RunSa
 import { LastRunManager } from './LastRunManager';
 import { createWeaponInstanceById } from '../combat/WeaponFactory';
 import { Altar } from '../world/Altar';
+import { LuckyTestDraftScreen } from '../ui/screens/LuckyTest/LuckyTestDraftScreen';
+import { GladiatorArena } from '../world/GladiatorArena';
+import { GladiatorBot } from '../entities/GladiatorBot';
+import { LuckyTestManager } from '../mechanics/lucky-test/LuckyTestManager';
+import { LuckyTestBuildState } from '../mechanics/lucky-test/LuckyTestTypes';
 
 export enum GameState {
   MAIN_MENU,
@@ -48,7 +53,9 @@ export enum GameState {
   PLAYING,
   PAUSED,
   LEVEL_UP,
-  GAME_OVER
+  GAME_OVER,
+  LUCKY_TEST_DRAFT,
+  LUCKY_TEST_ARENA
 }
 
 export const SPAWN_OFFSETS: Record<string, [number, number]> = {
@@ -80,6 +87,9 @@ export class SessionDirector {
   private remotePlayers: Map<string, RemotePlayer>;
   public merchantManager: MerchantManager;
   public mobNestManager?: MobNestManager;
+  public luckyTestDraftScreen?: LuckyTestDraftScreen;
+  public gladiatorArena?: GladiatorArena;
+  public gladiatorBot?: GladiatorBot;
 
   public gameState: GameState = GameState.MAIN_MENU;
   public gameTime = 0;
@@ -232,6 +242,84 @@ export class SessionDirector {
         this.lastTime = performance.now();
       }
       this.devManager.setPauseState(false);
+    }
+  }
+
+  public startLuckyTest(): void {
+    try {
+      this.gameState = GameState.LUCKY_TEST_DRAFT;
+      document.body.classList.remove('is-main-menu');
+      document.body.classList.add('is-in-game');
+      this.hud.closeAllPreGameModals();
+      this.net.reset();
+      for (const rp of this.remotePlayers.values()) {
+        rp.destroy(this.engine.scene);
+      }
+      this.remotePlayers.clear();
+      this.enemyManager.clear();
+      this.dropManager.clear();
+      this.combatDirector.projectiles.forEach(p => p.destroy(this.engine.scene));
+      this.combatDirector.projectiles = [];
+      this.combatDirector.isPvPMode = true;
+
+      if (!this.luckyTestDraftScreen) {
+        this.luckyTestDraftScreen = new LuckyTestDraftScreen();
+        this.luckyTestDraftScreen.mount(document.body);
+      }
+
+      this.luckyTestDraftScreen.onDraftCompleted = (build) => {
+        this.initLuckyTestArena(build);
+      };
+
+      this.luckyTestDraftScreen.startDraft();
+    } catch (err) {
+      console.error('[SessionDirector] Failed to start Lucky Test:', err);
+    }
+  }
+
+  public initLuckyTestArena(playerBuild: LuckyTestBuildState): void {
+    try {
+      this.gameState = GameState.LUCKY_TEST_ARENA;
+
+      LuckyTestManager.getInstance().applyBuildToPlayer(this.player, playerBuild);
+
+      if (this.gladiatorArena) {
+        this.gladiatorArena.destroy();
+      }
+      this.engine.chunkManager.clear();
+      this.gladiatorArena = new GladiatorArena(this.engine.scene, this.engine.obstacleManager);
+
+      this.player.position.set(-12, 0, 0);
+      this.player.mesh.position.copy(this.player.position);
+      this.engine.camera.position.set(0, 24, 18);
+      this.engine.camera.lookAt(0, 0, 0);
+
+      const botBuild = LuckyTestManager.getInstance().createBotGladiatorBuild();
+      if (this.gladiatorBot) {
+        this.gladiatorBot.destroy(this.engine.scene);
+      }
+      this.gladiatorBot = new GladiatorBot(this.engine.scene, botBuild);
+      this.gladiatorBot.position.set(12, 0, 0);
+      this.gladiatorBot.mesh.position.copy(this.gladiatorBot.position);
+      this.remotePlayers.set('bot_gladiator', this.gladiatorBot);
+
+      this.gladiatorArena.setP2AutoReady(true);
+      this.gladiatorArena.onBothPlayersReady = () => {
+        this.gladiatorArena?.hidePads();
+        SoundManager.playLevelUp?.();
+      };
+
+      this.combatDirector.onPvPKill = (targetId) => {
+        if (targetId === 'bot_gladiator') {
+          SoundManager.playVictory();
+          setTimeout(() => {
+            alert('🏆 ПОБЕДА! Вы одолели гладиатора на Арене!');
+            this.returnToMainMenu();
+          }, 1000);
+        }
+      };
+    } catch (err) {
+      console.error('[SessionDirector] Failed to initialize Lucky Test Arena:', err);
     }
   }
 

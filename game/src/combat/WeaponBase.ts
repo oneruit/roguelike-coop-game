@@ -240,10 +240,18 @@ export abstract class Weapon {
     playerPos: Vector3,
     enemies: Enemy[],
     spawnProjectile: (p: Projectile) => void,
-    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void
+    damageEnemy?: (enemy: Enemy, amount: number, sourcePos?: Vector3) => void,
+    aimPosition?: Vector3
   ): void;
 
-  protected getMeleeAttackAngle(playerPos: Vector3, enemies: Enemy[]): number {
+  protected getMeleeAttackAngle(playerPos: Vector3, enemies: Enemy[], aimPosition?: Vector3): number {
+    if (aimPosition) {
+      const dx = aimPosition.x - playerPos.x;
+      const dz = aimPosition.z - playerPos.z;
+      if (dx * dx + dz * dz > 0.001) {
+        return Math.atan2(-dz, dx);
+      }
+    }
     let closestDistance = Infinity;
     let angle = 0;
     for (const enemy of enemies) {
